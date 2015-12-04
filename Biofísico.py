@@ -1,12 +1,14 @@
 import sys
-import importlib
+from importlib import import_module as importar_mod
+import os
 
-class CoberturaBF(object):
+
+class EnvolturaBF(object):
     def __init__(símismo, ubicación_modelo):
         # Cargar el modelo biofísico (debe ser un modelo Python)
-        directorio_modelo, nombre_modelo = ('a','b')
+        directorio_modelo, nombre_modelo = os.path.split(ubicación_modelo)
         sys.path.append(directorio_modelo)
-        módulo = importlib.import_module('nombre_modelo')
+        módulo = importar_mod(os.path.splitext(nombre_modelo)[0])
         símismo.modelo = módulo.Modelo()
 
         símismo.vars = símismo.sacar_vars()

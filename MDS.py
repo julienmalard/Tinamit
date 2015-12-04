@@ -1,10 +1,11 @@
 import ctypes
+import struct
 
 
-class CoberturaMDS(object):
+class EnvolturaMDS(object):
     def __init__(símismo, programa_mds, ubicación_modelo):
         símismo.programa = programa_mds.lower()
-        símismo.dll = símismo.cargar_mds(símismo.programa, ubicación_modelo)
+        símismo.dll = cargar_mds(símismo.programa, ubicación_modelo)
         símismo.vars = símismo.sacar_vars()
         símismo.vars_entrando = {}
         símismo.vars_saliendo = []
@@ -25,88 +26,71 @@ class CoberturaMDS(object):
         if símismo.programa == 'vensim':
             if tiempo_final is not None:
                 for v in [b'TIEMPO FINAL', b'FINAL TIME']:
-                    símismo.dll.vensim_command(b'SIMULATE>SETVAL|%s = %s' %
-                                               (v, str(tiempo_final).encode())
-                                               )
-
-            símismo.dll.vensim_start_simulation(1, 0, 1)
+                    símismo.intentar_función(símismo.dll.vensim_command,
+                                             [b'SIMULATE>SETVAL|%s = %s' % (v, str(tiempo_final).encode())]
+                                             )
+            símismo.intentar_función(símismo.dll.vensim_start_simulation,
+                                     [1, 0, 1]
+                                     )
             todobien = símismo.verificar_vensim() == 1
         else:
             raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
 
         if not todobien:
-            raise ConnectionError('Error en comanda Vensim para iniciar_modelo.')
+            raise ConnectionError('Error en comanda %s para iniciar_modelo.' % símismo.programa)
 
     def incrementar(símismo, paso):
         if símismo.programa == 'vensim':
-            funcionó = (símismo.dll.vensim_continute_simulation(paso) == 1)
+            símismo.intentar_función(símismo.dll.vensim_continue_simulation,
+                                     [paso]
+                                     )
+            funcionó = símismo.verificar_vensim()
         else:
             raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
+
         if not funcionó:
-            raise ConnectionError('Error en comanda Vensim para incrementar.')
+            raise ConnectionError('Error en comanda %s para incrementar.' % símismo.programa)
 
     def leer_vals(símismo):
-        funcionó = False
         egresos = {}
-        for var in símismo.vars_saliendo:
-            if símismo.programa == 'vensim':
-                buff = ctypes.create_string_buffer(100)
-                funcionó = (símismo.dll.vensim_get_val(var.encode(), buff) == 1)
-                # Para hacer: verificar el uso de val y de funcionó aquí
-                val = buff.decode()
-                egresos[var] = val
-            else:
-                raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
-        if not funcionó:
-            raise ConnectionError('Error en comanda Vensim para leer_vals.')
 
+        if símismo.programa == 'vensim':
+            for var in símismo.vars_saliendo:
+                mem_inter = ctypes.create_string_buffer(4)
+                símismo.intentar_función(símismo.dll.vensim_get_val,
+                                         [var.encode(), mem_inter]
+                                         )
+                val = struct.unpack('f', mem_inter)[0]
+                egresos[var] = val
+            todobien = símismo.verificar_vensim()
+        else:
+            raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
+        if not todobien:
+            raise ConnectionError('Error en comanda %s para actualizar_var.' % símismo.programa)
         return egresos
 
     def actualizar_vars(símismo, valores):
         if símismo.programa == 'vensim':
-            funcionó = False
             for variables in símismo.vars_entrando.items():
                 var_mds = variables[0]
                 valor = valores[variables[1]]
-                funcionó = (símismo.dll.vensim_command(b'SIMULATE>SETVAL|%s = %s' %
-                                                       (var_mds.encode, valor.encode)) == 1)
+                símismo.intentar_función(símismo.dll.vensim_command,
+                                         [b'SIMULATE>SETVAL|%s = %s' % (var_mds.encode, valor.encode)]
+                                         )
+            todobien = símismo.verificar_vensim()
         else:
             raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
-        if not funcionó:
-            raise ConnectionError('Error en comanda Vensim para actualizar_var.')
+
+        if not todobien:
+            raise ConnectionError('Error en comanda %s para actualizar_var.' % símismo.programa)
 
     def terminar_simul(símismo):
         if símismo.programa == 'vensim':
-            funcionó = (símismo.dll.vensim_finish_simul() == 1)
+            funcionó = (símismo.dll.vensim_finish_simulation() == 1)
         else:
             raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
         if not funcionó:
-            raise ConnectionError('Error en comanda Vensim para terminar_simul.')
-
-    def cargar_mds(símimso, programa_mds, ubicación_modelo):
-        if programa_mds == 'vensim':
-            dll = ctypes.cdll.LoadLibrary('C:\\Windows\\System32\\vendll32.dll')
-            símimso.intentar_función(dll.vensim_command,
-                                     [b'SPECIAL>LOADMODEL|%s' % ubicación_modelo.encode()]
-                                     )
-            todobien = símimso.verificar_vensim() == 0
-        else:
-            raise NotImplementedError('No se ha escrito una interfaz para este tipo de programa MDS. '
-                                      'Quejarse al programador.')
-
-        if todobien:
-            return dll
-        else:
-            raise FileNotFoundError('No se pudo cargar el modelo ')
-
-    @staticmethod
-    def intentar_función(función, parámetros):
-        try:
-            resultado = función(*parámetros)
-        except ValueError:
-            resultado = None
-
-        return resultado
+            raise ConnectionError('Error en comanda %s para terminar_simul.' % símismo.programa)
 
     def verificar_vensim(símismo):
         """
@@ -123,3 +107,32 @@ class CoberturaMDS(object):
         """
         estatus = int(símismo.dll.vensim_check_status())
         return estatus
+
+    @staticmethod
+    def intentar_función(función, parámetros):
+        try:
+            resultado = función(*parámetros)
+        except ValueError:
+            resultado = None
+
+        return resultado
+
+
+def cargar_mds(programa_mds, ubicación_modelo):
+        if programa_mds == 'vensim':
+            dll = ctypes.cdll.LoadLibrary('C:\\Windows\\System32\\vendll32.dll')
+
+            try:
+                dll.vensim_command(b'SPECIAL>LOADMODEL|%s' % ubicación_modelo.encode())
+            except ValueError:
+                pass
+
+            todobien = (int(dll.vensim_check_status()) == 0)
+        else:
+            raise NotImplementedError('No se ha escrito una interfaz para este tipo de programa MDS. '
+                                      'Quejarse al programador.')
+
+        if todobien:
+            return dll
+        else:
+            raise FileNotFoundError('No se pudo cargar el modelo ')
