@@ -1,20 +1,22 @@
-
+import sys
+import importlib
 
 class CoberturaBF(object):
     def __init__(símismo, ubicación_modelo):
+        # Cargar el modelo biofísico (debe ser un modelo Python)
+        directorio_modelo, nombre_modelo = ('a','b')
+        sys.path.append(directorio_modelo)
+        módulo = importlib.import_module('nombre_modelo')
+        símismo.modelo = módulo.Modelo()
+
         símismo.vars = símismo.sacar_vars()
-        símismo.modelo =
         símismo.vars_entrando = {}
         símismo.vars_saliendo = []
 
     def sacar_vars(símismo):
-        variables = símismo.modelo.
+        variables = list(símismo.modelo.variables.keys())
 
         return variables
-
-    def conectar(símismo, var_mds, var_bf):
-        símismo.vars_entrando[var_mds] = var_bf
-        símismo.vars_saliendo.append(var_mds)
 
     def iniciar_modelo(símismo):
         if hasattr(símismo.modelo, 'ejec'):
@@ -31,12 +33,12 @@ class CoberturaBF(object):
     def leer_vals(símismo):
         egresos = {}
         for var in símismo.vars_saliendo:
-            egresos[var] = símismo.modelo.
+            egresos[var] = símismo.modelo.variables[var]['var']
 
         return egresos
 
     def actualizar_vars(símismo, valores):
-        for variables in símismo.vars_entrando.items():
-            var_mds = variables[0]
-            valor = valores[variables[1]]
-            símismo.modelo.
+        for variable in símismo.vars_entrando.items():
+            var = variable[0]
+            valor = valores[variable[1]]
+            símismo.modelo.actualizar(var, valor)

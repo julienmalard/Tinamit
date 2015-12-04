@@ -9,13 +9,17 @@ class Conectado(object):
 
     def conectar(símismo, originario, var_mds, var_bf):
         if originario.lower() == 'mds':
-            símismo.mds.conectar(var_mds, var_bf)
+            símismo.bf.vars_entrando[var_bf] = var_mds
+            símismo.mds.vars_saliendo.append(var_mds)
+        elif originario.lower() == 'bf':
+            símismo.mds.vars_entrando[var_mds] = var_bf
+            símismo.bf.vars_saliendo.append(var_bf)
 
     def simular(símismo, paso=1, tiempo_final=None):
         símismo.mds.iniciar_modelo(tiempo_final)
         símismo.bf.iniciar_modelo()
 
-        terminó = True
+        terminó = False
         while not terminó:
             terminó = símismo.incrementar(paso)
             de_mds = símismo.mds.leer_vals()
