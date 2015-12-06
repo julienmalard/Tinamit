@@ -1,6 +1,8 @@
 import tkinter as tk
 import webbrowser
 import Formatos as fm
+import Gráficos as gr
+import Objetos as ob
 from MDS import cargar_mds
 
 
@@ -8,174 +10,133 @@ class Apli(tk.Frame):
     def __init__(símismo, pariente):
         tk.Frame.__init__(símismo, pariente)
         pariente.title('Tinamit')
-        pariente.geometry('%ix%i' % fm.dimensiones_ventana)
+        pariente.geometry('%ix%i' % fm.dim_ventana)
         pariente.configure(background='white')
 
-        símismo.img_logo = tk.PhotoImage(file='Interfaz\\Imágenes\\Logo.png')
-        símismo.img_logo_cent = tk.PhotoImage(file='Interfaz\\Imágenes\\Logo_cent.png')
-        símismo.img_bt_1 = tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_1.png')
-        símismo.img_bt_2 = tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_2.png')
-        símismo.img_bt_3 = tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_3.png')
-        símismo.img_bt_4 = tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_4.png')
-        símismo.img_bt_1_sel = tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_1_sel.png')
-        símismo.img_bt_2_sel = tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_2_sel.png')
-        símismo.img_bt_3_sel = tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_3_sel.png')
-        símismo.img_bt_4_sel = tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_4_sel.png')
-        símismo.img_bt_1_bloc = tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_1_bloc.png')
-        símismo.img_bt_2_bloc = tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_2_bloc.png')
-        símismo.img_bt_3_bloc = tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_3_bloc.png')
-        símismo.img_bt_4_bloc = tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_4_bloc.png')
-        símismo.img_ulew = tk.PhotoImage(file='Interfaz\\Imágenes\\Ulew.png')
+        símismo.imgs = gr.cargar_imágenes()
 
-        símismo.crear_pantalla_inicio()
+        símismo.pantalla_inicio = símismo.crear_pantalla_inicio(imgs=símismo.imgs)
+        símismo.pantalla_central = símismo.crear_pantalla_central(imgs=símismo.imgs)
+        símismo.caja_activa = None
+        símismo.pantalla_central.lower()
 
-    def crear_pantalla_inicio(símismo):
-        # Los formatos para los objetos en esta pantalla
-
-
+    def crear_pantalla_inicio(símismo, imgs):
         # La caja principal que contiene todo visible en esta pantalla
-        símismo.caja_pantalla_inic = tk.Frame(height=600, width=800, **fm.formato_cajas)
+        cj_pant_inic = tk.Frame(height=600, width=800, **fm.formato_cajas)
 
         # El logo 'Tinamit'
 
-        símismo.logo_inic = tk.Label(símismo.caja_pantalla_inic, image=símismo.img_logo, **fm.formato_logo_inic)
+        cj_pant_inic.logo_inic = tk.Label(cj_pant_inic, image=imgs['img_logo'], **fm.formato_logo_inic)
 
         # Una caja para los dos botones, tanto como los botones sí mismos
-        símismo.caja_bts_inic = tk.Frame(símismo.caja_pantalla_inic, **fm.formato_cajas)
-        símismo.bt_empezar = tk.Button(símismo.caja_bts_inic, text='Empezar', command=símismo.acción_bt_empezar,
-                                       **fm.formato_bts_inic)
-        símismo.bt_ayuda = tk.Button(símismo.caja_bts_inic, text='Ayuda', command=símismo.acción_bt_ayuda,
-                                     **fm.formato_bts_inic)
-        for i in [símismo.bt_empezar, símismo.bt_ayuda]:
+        cj_pant_inic.caja_bts_inic = tk.Frame(cj_pant_inic, **fm.formato_cajas)
+        cj_pant_inic.bt_empezar = tk.Button(cj_pant_inic.caja_bts_inic, text='Empezar',
+                                            command=símismo.acción_bt_empezar, **fm.formato_bts_inic)
+        cj_pant_inic.bt_ayuda = tk.Button(cj_pant_inic.caja_bts_inic, text='Ayuda', command=símismo.acción_bt_ayuda,
+                                          **fm.formato_bts_inic)
+        for i in [cj_pant_inic.bt_empezar, cj_pant_inic.bt_ayuda]:
             i.bind('<Enter>', lambda event, b=i: b.configure(bg='#ccff66'))
             i.bind('<Leave>', lambda event, b=i: b.configure(bg='white'))
 
         # Dibujar todo
-        símismo.logo_inic.pack(fm.emplacimiento_logo_inic)
-        símismo.bt_empezar.pack(fm.emplacimiento_bts_inic)
-        símismo.bt_ayuda.pack(fm.emplacimiento_bts_inic)
-        símismo.caja_bts_inic.pack(pady=20)
-        símismo.caja_pantalla_inic.pack(**fm.emplacimiento_cajas_cent)
+        cj_pant_inic.logo_inic.pack(fm.emplacimiento_logo_inic)
+        cj_pant_inic.bt_empezar.pack(fm.emplacimiento_bts_inic)
+        cj_pant_inic.bt_ayuda.pack(fm.emplacimiento_bts_inic)
+        cj_pant_inic.caja_bts_inic.pack(pady=20)
+        cj_pant_inic.place(**fm.emplacimiento_cajas_cent)
+
+        return cj_pant_inic
 
     def acción_bt_empezar(símismo):
-        símismo.caja_pantalla_inic.pack_forget()
-        símismo.crear_pantalla_central()
+        símismo.pantalla_inicio.destroy()
 
     @staticmethod
     def acción_bt_ayuda():
         webbrowser.open('Documentación.txt')
 
-    def crear_pantalla_central(símismo):
+    def crear_pantalla_central(símismo, imgs):
 
         # La caja principal que contiene todo visible en esta pantalla
-        símismo.caja_pantalla_central = tk.Frame(**fm.formato_cajas)
+        cj_pant_cent = tk.Frame(**fm.formato_cajas)
 
         #
-        símismo.caja_cabeza = tk.Frame(símismo.caja_pantalla_central, **fm.formato_cajas)
-        símismo.logo_cent = tk.Label(símismo.caja_cabeza, image=símismo.img_logo_cent, **fm.formato_logo_cent)
-        símismo.bt_leng = tk.Button(símismo.caja_cabeza, image=símismo.img_ulew, **fm.formato_bt_leng)
+        cj_pant_cent.caja_cabeza = tk.Frame(cj_pant_cent, **fm.formato_cajas)
+        cj_pant_cent.logo_cent = tk.Label(cj_pant_cent.caja_cabeza, image=imgs['img_logo_cent'], **fm.formato_logo_cent)
+        cj_pant_cent.bt_leng = tk.Button(cj_pant_cent.caja_cabeza, image=imgs['img_ulew'], **fm.formato_bt_leng)
 
         #
-        símismo.caja_izq = tk.Frame(símismo.caja_pantalla_central, **fm.formato_cajas)
+        cj_pant_cent.caja_izq = tk.Frame(cj_pant_cent, **fm.formato_cajas)
+        cj_izq = cj_pant_cent.caja_izq
 
         #
-        símismo.caja_líneas_izq = tk.Frame(símismo.caja_izq, **fm.formato_cajas)
-        símismo.lín_1 = tk.Label(símismo.caja_líneas_izq, **fm.formato_lín_bts)
-        símismo.lín_1.col = '#%02x%02x%02x' % fm.color_bt_1
-        símismo.lín_2 = tk.Label(símismo.caja_líneas_izq, **fm.formato_lín_bts)
-        símismo.lín_2.col = '#%02x%02x%02x' % fm.color_bt_2
-        símismo.lín_3 = tk.Label(símismo.caja_líneas_izq, **fm.formato_lín_bts)
-        símismo.lín_3.col = '#%02x%02x%02x' % fm.color_bt_3
-        símismo.lín_4 = tk.Label(símismo.caja_líneas_izq, **fm.formato_lín_bts)
-        símismo.lín_4.col = '#%02x%02x%02x' % fm.color_bt_4
+        cj_izq.cj_líns_izq = tk.Frame(cj_pant_cent.caja_izq, **fm.formato_cajas)
+        cj_líns_izq = cj_izq.cj_líns_izq
+        cj_líns_izq.líns = {}
+        for i in range(1, 5):
+            cj_líns_izq.líns[str(i)] = tk.Canvas(cj_izq.cj_líns_izq, **fm.formato_lín_bts)
+            cj_líns_izq.líns[str(i)].col = '#%02x%02x%02x' % fm.color_bts[str(i)]
 
         #
-        símismo.caja_bts_izq = tk.Frame(símismo.caja_izq, **fm.formato_cajas)
-        símismo.bt_1 = tk.Button(símismo.caja_bts_izq, image=símismo.img_bt_1, command=símismo.acción_bt_1,
-                                 **fm.formato_bts_cent)
-        símismo.bt_1.imagen = símismo.img_bt_1
-        símismo.bt_1.im_sel = símismo.img_bt_1_sel
-        símismo.bt_1.im_bloc = símismo.img_bt_1_bloc
-        símismo.bt_1.lín = símismo.lín_1
-        símismo.bt_2 = tk.Button(símismo.caja_bts_izq, image=símismo.img_bt_2, command=símismo.acción_bt_2,
-                                 **fm.formato_bts_cent)
-        símismo.bt_2.imagen = símismo.img_bt_2
-        símismo.bt_2.im_sel = símismo.img_bt_2_sel
-        símismo.bt_2.im_bloc = símismo.img_bt_2_bloc
-        símismo.bt_2.lín = símismo.lín_2
-        símismo.bt_3 = tk.Button(símismo.caja_bts_izq, image=símismo.img_bt_3, command=símismo.acción_bt_3,
-                                 **fm.formato_bts_cent)
-        símismo.bt_3.imagen = símismo.img_bt_3
-        símismo.bt_3.im_sel = símismo.img_bt_3_sel
-        símismo.bt_3.im_bloc = símismo.img_bt_3_bloc
-        símismo.bt_3.lín = símismo.lín_3
-        símismo.bt_4 = tk.Button(símismo.caja_bts_izq, image=símismo.img_bt_4, command=símismo.acción_bt_4,
-                                 **fm.formato_bts_cent)
-        símismo.bt_4.imagen = símismo.img_bt_4
-        símismo.bt_4.im_sel = símismo.img_bt_4_sel
-        símismo.bt_4.im_bloc = símismo.img_bt_4_bloc
-        símismo.bt_4.lín = símismo.lín_4
+        cj_izq.caja_bts_izq = tk.Frame(cj_izq, **fm.formato_cajas)
+        cj_bts_izq = cj_izq.caja_bts_izq
+
+        cj_bts_izq.bts = {}
+        for i in range(1, 5):
+            cj_bts_izq.bts[str(i)] = ob.BotónIzq(apli=símismo, pariente=cj_bts_izq, lín=cj_líns_izq.líns[str(i)], i=i,
+                                                 img=símismo.imgs['img_bt_%i' % i],
+                                                 img_bloc=símismo.imgs['img_bt_%i_bloc' % i],
+                                                 img_sel=símismo.imgs['img_bt_%i_sel' % i])
 
         # Desactivar los botones no disponibles
-        símismo.desactivar_bt(símismo.bt_2)
-        símismo.desactivar_bt(símismo.bt_3)
-        símismo.desactivar_bt(símismo.bt_4)
-        símismo.activar_bt(símismo.bt_1)
+        símismo.activar_bt(cj_bts_izq.bts['1'])
+        for i in [2, 3, 4]:
+            símismo.desactivar_bt(cj_bts_izq.bts[str(i)])
 
         # Dibujar todo
-        símismo.logo_cent.pack(**fm.emplacimiento_logo_cent)
-        símismo.bt_leng.pack(**fm.emplacimiento_bt_leng)
-        símismo.caja_cabeza.pack(**fm.emplacimiento_caja_cabeza)
+        cj_pant_cent.logo_cent.pack(**fm.emplacimiento_logo_cent)
+        cj_pant_cent.bt_leng.pack(**fm.emplacimiento_bt_leng)
+        cj_pant_cent.caja_cabeza.pack(**fm.emplacimiento_caja_cabeza)
 
-        for l in [símismo.lín_1, símismo.lín_2, símismo.lín_3, símismo.lín_4]:
-            l.pack(**fm.emplacimiento_lín_bts)
+        for l in sorted(cj_líns_izq.líns.keys()):
+            cj_líns_izq.líns[l].pack(**fm.emplacimiento_lín_bts)
+        cj_izq.cj_líns_izq.pack(side='right')
 
-        símismo.caja_líneas_izq.pack(side='right')
-
-        for b in [símismo.bt_1, símismo.bt_2, símismo.bt_3, símismo.bt_4]:
-            b.pack(fm.emplacimiento_bts_cent)
-        símismo.caja_bts_izq.pack(side='right')
-        símismo.caja_izq.pack(side='left', expand=False)
+        for b in sorted(cj_bts_izq.bts.keys()):
+            cj_bts_izq.bts[b].bt.pack(**fm.emplacimiento_bts_cent)
+        cj_bts_izq.pack(side='right')
+        cj_izq.pack(side='left', expand=False)
 
         # Crear las otras cajas
-        símismo.caja_1 = tk.Frame(símismo.caja_pantalla_central)
-        prueba = tk.Label(símismo.caja_1, text='prueba')
-        prueba.pack()
-        símismo.caja_1.pack(**fm.emplacimiento_cajas_núm)
+        cj_pant_cent.cajas_trabajo = {}
+        for i in range(1, 5):
+            cj_pant_cent.cajas_trabajo[str(i)] = símismo.crear_caja_trabajo(cj_pant_cent)
 
-        símismo.caja_pantalla_central.pack(**fm.emplacimiento_cajas_cent)
+        símismo.caja_activa = cj_pant_cent.cajas_trabajo['1']
 
+        # Poner la caja central en su lugar
+        cj_pant_cent.place(**fm.emplacimiento_cajas_cent)
 
-
-    def acción_bt_1(símismo):
-        if símismo.caja_activa is not símismo.caja_1:
-            símismo.intercambiar(símismo.caja_activa, símismo.caja_1)
-        símismo.caja_activa = símismo.caja_1
-
-    def acción_bt_2(símismo):
-        if símismo.caja_activa is not símismo.caja_2:
-            símismo.intercambiar(símismo.caja_activa, símismo.caja_2)
-        símismo.caja_activa = símismo.caja_2
-
-    def acción_bt_3(símismo):
-        if símismo.caja_activa is not símismo.caja_3:
-            símismo.intercambiar(símismo.caja_activa, símismo.caja_3)
-        símismo.caja_activa = símismo.caja_3
-
-    def acción_bt_4(símismo):
-        if símismo.caja_activa is not símismo.caja_4:
-            símismo.intercambiar(símismo.caja_activa, símismo.caja_4)
-        símismo.caja_activa = símismo.caja_4
+        return cj_pant_cent
 
     @staticmethod
     def desactivar_bt(botón):
-        botón.configure(image=botón.im_bloc, state='disabled')
+        botón.bt.configure(image=botón.im_bloc, state='disabled')
         botón.lín.configure(bg='#C3C3C3')
 
     @staticmethod
     def activar_bt(botón):
-        botón.configure(image=botón.imagen, state='normal')
+        botón.bt.configure(image=botón.imagen, state='normal')
         botón.lín.configure(bg=botón.lín.col)
+
+    @staticmethod
+    def crear_caja_trabajo(pariente):
+        caja = tk.Frame(pariente, **fm.formato_cajas_núm)
+        prueba = tk.Label(caja, text='prueba')
+        prueba.pack()
+        caja.pack_propagate(0)
+        caja.place(**fm.emplacimiento_cajas_núm)
+
+        return caja
 
 
 if __name__ == '__main__':
