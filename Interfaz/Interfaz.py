@@ -17,12 +17,14 @@ class Apli(tk.Frame):
 
         símismo.pantalla_inicio = símismo.crear_pantalla_inicio(imgs=símismo.imgs)
         símismo.pantalla_central = símismo.crear_pantalla_central(imgs=símismo.imgs)
-        símismo.caja_activa = None
+        símismo.pantalla_lengua = símismo.crear_pantalla_lengua(imgs=símismo.imgs)
+        símismo.caja_activa = símismo.pantalla_central.cajas_trabajo['1']
         símismo.pantalla_central.lower()
+        símismo.pantalla_lengua.lower()
 
     def crear_pantalla_inicio(símismo, imgs):
         # La caja principal que contiene todo visible en esta pantalla
-        cj_pant_inic = tk.Frame(height=600, width=800, **fm.formato_cajas)
+        cj_pant_inic = tk.Frame(**fm.formato_cajas)
 
         # El logo 'Tinamit'
 
@@ -62,7 +64,11 @@ class Apli(tk.Frame):
         #
         cj_pant_cent.caja_cabeza = tk.Frame(cj_pant_cent, **fm.formato_cajas)
         cj_pant_cent.logo_cent = tk.Label(cj_pant_cent.caja_cabeza, image=imgs['img_logo_cent'], **fm.formato_logo_cent)
-        cj_pant_cent.bt_leng = tk.Button(cj_pant_cent.caja_cabeza, image=imgs['img_ulew'], **fm.formato_bt_leng)
+        cj_pant_cent.bt_leng = tk.Button(cj_pant_cent.caja_cabeza, command=símismo.acción_bt_leng,
+                                         image=imgs['img_ulew'], **fm.formato_bt_leng)
+        bt_leng = cj_pant_cent.bt_leng
+        bt_leng.bind('<Enter>', lambda event, bt=bt_leng: bt.configure(image=imgs['img_ulew_act']))
+        bt_leng.bind('<Leave>', lambda event, bt=bt_leng: bt.configure(image=imgs['img_ulew']))
 
         #
         cj_pant_cent.caja_izq = tk.Frame(cj_pant_cent, **fm.formato_cajas)
@@ -82,20 +88,32 @@ class Apli(tk.Frame):
 
         cj_bts_izq.bts = {}
         for i in range(1, 5):
-            cj_bts_izq.bts[str(i)] = ob.BotónIzq(apli=símismo, pariente=cj_bts_izq, lín=cj_líns_izq.líns[str(i)], i=i,
-                                                 img=símismo.imgs['img_bt_%i' % i],
-                                                 img_bloc=símismo.imgs['img_bt_%i_bloc' % i],
-                                                 img_sel=símismo.imgs['img_bt_%i_sel' % i])
+            obj_bt = cj_bts_izq.bts
+            obj_bt[str(i)] = ob.BotónIzq(apli=símismo, pariente=cj_bts_izq, lín=cj_líns_izq.líns[str(i)], i=i,
+                                         img=símismo.imgs['img_bt_%i' % i],
+                                         img_bloc=símismo.imgs['img_bt_%i_bloc' % i],
+                                         img_sel=símismo.imgs['img_bt_%i_sel' % i])
+        for i in range(1, 5):
+            obj_bt[str(i)].bt.bind('<Enter>', lambda event, k=obj_bt[str(i)]: poner_enf(k))
+            obj_bt[str(i)].bt.bind('<Leave>', lambda event, k=obj_bt[str(i)]: quitar_énf(k))
+
+        def poner_enf(botón):
+            if botón.bt['state'] == 'normal':
+                botón.bt.configure(image=botón.img_sel)
+
+        def quitar_énf(botón):
+            if botón.bt['state'] == 'normal':
+                botón.bt.configure(image=botón.img)
 
         # Desactivar los botones no disponibles
         símismo.activar_bt(cj_bts_izq.bts['1'])
         for i in [2, 3, 4]:
             símismo.desactivar_bt(cj_bts_izq.bts[str(i)])
 
-        # Dibujar todo
-        cj_pant_cent.logo_cent.pack(**fm.emplacimiento_logo_cent)
-        cj_pant_cent.bt_leng.pack(**fm.emplacimiento_bt_leng)
-        cj_pant_cent.caja_cabeza.pack(**fm.emplacimiento_caja_cabeza)
+        # Dibujar lo que creamos
+        cj_pant_cent.logo_cent.place(**fm.emplacimiento_logo_cent)
+        cj_pant_cent.bt_leng.place(**fm.emplacimiento_bt_leng)
+        cj_pant_cent.caja_cabeza.place(**fm.emplacimiento_caja_cabeza)
 
         for l in sorted(cj_líns_izq.líns.keys()):
             cj_líns_izq.líns[l].pack(**fm.emplacimiento_lín_bts)
@@ -104,39 +122,83 @@ class Apli(tk.Frame):
         for b in sorted(cj_bts_izq.bts.keys()):
             cj_bts_izq.bts[b].bt.pack(**fm.emplacimiento_bts_cent)
         cj_bts_izq.pack(side='right')
-        cj_izq.pack(side='left', expand=False)
+        cj_izq.place(**fm.emplacimiento_cj_izq)
 
         # Crear las otras cajas
         cj_pant_cent.cajas_trabajo = {}
         for i in range(1, 5):
-            cj_pant_cent.cajas_trabajo[str(i)] = símismo.crear_caja_trabajo(cj_pant_cent)
+            cj_pant_cent.cajas_trabajo[str(i)] = símismo.crear_caja_trabajo(cj_pant_cent, i, imgs=símismo.imgs)
 
-        símismo.caja_activa = cj_pant_cent.cajas_trabajo['1']
 
         # Poner la caja central en su lugar
         cj_pant_cent.place(**fm.emplacimiento_cajas_cent)
 
         return cj_pant_cent
 
+    def crear_pantalla_lengua(símismo, imgs):
+                # La caja principal que contiene todo visible en esta pantalla
+        cj_pant_leng = tk.Frame(**fm.formato_cajas)
+
+        temp = tk.Label(cj_pant_leng,
+                        text='Falta implementar la interfaz para el manejo de lenguas. Siéntese libre de contribuir.')
+        temp.pack()
+        cj_pant_leng.place(**fm.emplacimiento_cajas_cent)
+
+        return cj_pant_leng
+
+    def cambiar_caja_trabajo(símismo, núm_nueva):
+        if símismo.caja_activa.núm is not núm_nueva:
+            símismo.intercambiar(símismo.caja_activa,
+                                 símismo.pantalla_central.cajas_trabajo[str(núm_nueva)])
+            símismo.caja_activa = símismo.pantalla_central.cajas_trabajo[str(símismo.núm)]
+
+    def acción_bt_leng(símismo):
+        símismo.pantalla_lengua.lift()
+
+    @staticmethod
+    def intercambiar(caja_orig, caja_nueva):
+        caja_orig.lower()
+        caja_nueva.lift()
+
     @staticmethod
     def desactivar_bt(botón):
-        botón.bt.configure(image=botón.im_bloc, state='disabled')
+        botón.bt.configure(image=botón.img_bloc, state='disabled')
         botón.lín.configure(bg='#C3C3C3')
 
     @staticmethod
     def activar_bt(botón):
-        botón.bt.configure(image=botón.imagen, state='normal')
+        botón.bt.configure(image=botón.img, state='normal')
         botón.lín.configure(bg=botón.lín.col)
 
-    @staticmethod
-    def crear_caja_trabajo(pariente):
+    def crear_caja_trabajo(símismo, pariente, i, imgs):
         caja = tk.Frame(pariente, **fm.formato_cajas_núm)
-        prueba = tk.Label(caja, text='prueba')
+        prueba = tk.Label(caja, text='prueba', bg='white')
         prueba.pack()
-        caja.pack_propagate(0)
+        if i > 1:
+            caja.bt_siguiente = tk.Button(caja, image=imgs['bt_sig'], command=símismo.ir_adelante,
+                                          **fm.formato_bts_ant_sig)
+            caja.bt_siguiente.place(**fm.emplacimiento_bt_siguiente)
+            caja.bt_siguiente.bind('<Enter>', lambda event, b=caja.bt_siguiente: b.configure(image=imgs['bt_sig_sel']))
+            caja.bt_siguiente.bind('<Leave>', lambda event, b=caja.bt_siguiente: b.configure(image=imgs['bt_sig']))
+        if i < 4:
+            caja.bt_anterior = tk.Button(caja, image=imgs['bt_ant'], command=símismo.ir_atrás,
+                                         **fm.formato_bts_ant_sig)
+            caja.bt_anterior.bind('<Enter>', lambda event, b=caja.bt_anterior: b.configure(image=imgs['bt_ant_sel']))
+            caja.bt_anterior.bind('<Leave>', lambda event, b=caja.bt_anterior: b.configure(image=imgs['bt_ant']))
+            caja.bt_anterior.place(**fm.emplacimiento_bt_anterior)
+
+        caja.núm = i
         caja.place(**fm.emplacimiento_cajas_núm)
 
         return caja
+
+    def ir_adelante(símismo):
+        símismo.intercambiar(símismo.caja_activa,
+                             símismo.pantalla_central.cajas_trabajo[str(símismo.caja_activa.núm + 1)])
+
+    def ir_atrás(símismo):
+        símismo.intercambiar(símismo.caja_activa,
+                             símismo.pantalla_central.cajas_trabajo[str(símismo.caja_activa.núm - 1)])
 
 
 if __name__ == '__main__':
