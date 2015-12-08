@@ -24,13 +24,13 @@ emplacimiento_lín_bts = dict(side='top', pady=20)
 formato_bts_cent = dict(bd=0, highlightthickness=0, relief='flat',
                         bg='white', activebackground='white', width=80, height=80)
 emplacimiento_bts_cent = dict(side='top', ipadx=5, ipady=5, padx=10, pady=20)
-color_bts = {'1': (179, 255, 102),
-             '2': (128, 255, 0),
-             '3': (102, 204, 0),
-             '4': (128, 64, 0)}
+color_bts = {'1': '#%02x%02x%02x' % (179, 255, 102),
+             '2': '#%02x%02x%02x' % (128, 255, 0),
+             '3': '#%02x%02x%02x' % (102, 204, 0),
+             '4': '#%02x%02x%02x' % (128, 64, 0)}
 
-formato_cajas_núm = dict(**formato_cajas)
-emplacimiento_cajas_núm = dict(x=140, y=80, relheight=1, height=-100, relwidth=1, width=-170)
+formato_cajas_trab = dict(**formato_cajas)
+emplacimiento_cajas_trab = dict(x=140, y=80, relheight=1, height=-100, relwidth=1, width=-170)
 emplacimiento_cj_izq = dict(relx=0, y=80)
 
 emplacimiento_bt_anterior = dict(relx=1, x=-60, rely=0)

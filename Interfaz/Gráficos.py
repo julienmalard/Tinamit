@@ -17,11 +17,14 @@ def cargar_imágenes():
             'img_bt_3_bloc': tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_3_bloc.png'),
             'img_bt_4_bloc': tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_4_bloc.png'),
             'img_ulew': tk.PhotoImage(file='Interfaz\\Imágenes\\Ulew.png'),
-            'img_ulew_act': tk.PhotoImage(file='Interfaz\\Imágenes\\Ulew_act.png'),
+            'img_ulew_sel': tk.PhotoImage(file='Interfaz\\Imágenes\\Ulew_act.png'),
+            'bt_regr_cent': tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_atrás.png'),
             'bt_sig': tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_adelante.png'),
             'bt_sig_sel': tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_adelante_sel.png'),
+            'bt_sig_bloc': tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_adelante_bloc.png'),
             'bt_ant': tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_atrás.png'),
             'bt_ant_sel': tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_atrás_sel.png'),
+            'bt_ant_bloc': tk.PhotoImage(file='Interfaz\\Imágenes\\Botón_atrás_bloc.png'),
             }
 
     return imgs
