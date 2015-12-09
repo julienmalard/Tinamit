@@ -5,7 +5,7 @@ from Biofísico import EnvolturaBF
 
 
 class Conectado(object):
-    def __init__(símismo, mds, biofísico, programa_mds='Vensim', archivo=None):
+    def __init__(símismo, mds=None, biofísico=None, programa_mds='Vensim', archivo=None):
         if archivo is not None:
             dic = json.load(archivo)
         else:

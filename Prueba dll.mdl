@@ -1,0 +1,65 @@
+{UTF-8}
+Causa=
+	RAMP(0.1, 0, 100)
+	~	
+	~		|
+
+Consequencia=
+	Efecto*3
+	~	
+	~		|
+
+Efecto=
+	Causa*2
+	~	
+	~		|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+INITIAL TIME  = 0
+	~	Month
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP 
+	~	Month [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIEMPO FINAL=
+	100
+	~	Month
+	~	The final time for the simulation.
+	|
+
+TIME STEP  = 1
+	~	Month [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,100,0
+10,1,Causa,290,205,21,11,8,3,0,0,0,0,0,0
+10,2,Efecto,488,220,22,11,8,3,0,0,0,0,0,0
+10,3,Consequencia,696,202,45,11,8,3,0,0,0,0,0,0
+1,4,1,2,1,0,0,0,0,128,0,-1--1--1,,1|(389,237)|
+1,5,2,3,1,0,0,0,0,128,0,-1--1--1,,1|(604,249)|
+10,6,TIEMPO FINAL,468,73,36,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|0||128-128-128
+///---\\\
+:L<%^E!@
+9:Current
+15:0,0,0,0,0,0
+19:100,0
+27:2,
+34:0,
+5:Causa
+24:0
+25:0
+26:0

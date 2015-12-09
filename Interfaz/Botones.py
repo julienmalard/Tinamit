@@ -8,10 +8,11 @@ class Botón(object):
         símismo.img_bloc = img_bloc
 
         símismo.bt = tk.Button(pariente, image=img, command=comanda, **kwargs)
+
         símismo.activado = True
         símismo.seleccionado = False
 
-        if símismo.img_sel is not None:
+        if img_sel is not None:
             símismo.bt.bind('<Enter>', lambda event, b=símismo: b.colorar_sel())
             símismo.bt.bind('<Leave>', lambda event, b=símismo: b.descolorar_sel())
 
@@ -24,16 +25,12 @@ class Botón(object):
             símismo.bt.configure(image=símismo.img)
 
     def activar(símismo):
-        símismo.bt.configure(image=símismo.img, state='normal')
         símismo.activado = True
+        símismo.bt.configure(image=símismo.img, cursor='arrow', state='normal')
 
     def desactivar(símismo):
-        if símismo.img_bloc is not None:
-            símismo.bt.configure(image=símismo.img_bloc, state='disabled')
-            símismo.activado = False
-        else:
-            print('¡Error!')
-            return NotImplementedError('Falta imagen para la versión desactivada de este botón.')
+        símismo.bt.configure(image=símismo.img_bloc, cursor='X_cursor', state='disabled')
+        símismo.activado = False
 
     def seleccionar(símismo):
         símismo.bt.configure(image=símismo.img_sel, state='normal')

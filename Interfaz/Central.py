@@ -1,6 +1,8 @@
 import tkinter as tk
+from tkinter import filedialog as diálogo
 import webbrowser
-from Interfaz import Formatos as Fm, Gráficos as Gr, Botones as Bts, Cajas as Cjs, Pantallas as Pants
+
+from Interfaz import Formatos as Fm, Gráficos as Gr, Pantallas as Pants
 
 from MDS import cargar_mds
 
@@ -53,6 +55,36 @@ class Apli(tk.Frame):
 
     def ir_atrás(símismo):
         símismo.pantalla_central.ir_atrás()
+
+    def buscar_mds(símismo):
+            nombre_archivo_mds = diálogo.askopenfilename(filetypes=[('Modelos publicados VENSIM', '*.vpm')],
+                                                         title='Cargar MDS')
+            if nombre_archivo_mds:
+                print(nombre_archivo_mds)
+                símismo.nombre_archivo_mds = nombre_archivo_mds
+            else:
+                print('¡Error!')
+                return FileNotFoundError('No se pudo cargar el archivo del MDS.')
+
+    def buscar_bf(símismo):
+        nombre_archivo_bf = diálogo.askopenfilename(filetypes=[('Modelos Python', '*.py')],
+                                                     title='Cargar modelo biofísico')
+        if nombre_archivo_bf:
+            print(nombre_archivo_bf)
+            símismo.nombre_archivo_bf = nombre_archivo_bf
+        else:
+            print('¡Error!')
+            return FileNotFoundError('No se pudo cargar el archivo del MDS.')
+
+    def buscar_con(símismo):
+        nombre_archivo_con = diálogo.askopenfilename(filetypes=[('Modelos Python', '*.py')],
+                                                     title='Cargar modelo conectado')
+        if nombre_archivo_con:
+            print(nombre_archivo_con)
+            símismo.nombre_archivo_con = nombre_archivo_con
+        else:
+            print('¡Error!')
+            return FileNotFoundError('No se pudo cargar el archivo del MDS.')
 
 
 if __name__ == '__main__':

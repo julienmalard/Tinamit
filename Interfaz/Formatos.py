@@ -1,3 +1,4 @@
+import tkinter as tk
 
 
 ancho_ventana = 800
@@ -37,3 +38,16 @@ emplacimiento_bt_anterior = dict(relx=1, x=-60, rely=0)
 emplacimiento_bt_siguiente = dict(relx=1, x=-60, rely=1, y=-60)
 formato_bts_ant_sig = dict(bd=0, highlightthickness=0, relief='flat',
                            bg='white', activebackground='white', width=60, height=60)
+
+emplacimiento_caja_cargar_mds = dict(x=0, y=0, relwidth=0.5, width=-10, relheight=0.5, height=-10)
+emplacimiento_caja_cargar_bf = dict(relx=0.5, y=0, x=+10, relwidth=0.5, width=-10, relheight=0.5, height=-10)
+emplacimiento_lín_vert_med = dict(relx=0.5, y=0, width=3, relheight=0.5, height=-10)
+emplacimiento_lín_hor = dict(relx=0, rely=0.5, relwidth=1, height=3)
+emplacimiento_caja_cargar_conectado = dict(x=0, rely=0.5, y=+10, relwidth=1, relheight=0.5, height=-10)
+
+formato_etiq_cargar_mod = dict(bg='white', font=('arial', 20, 'bold'), fg=color_bts['1'])
+formato_etiq_sino = dict(bg='white', font=('arial', 20, 'bold'), fg=color_bts['1'])
+formato_etiq_cargar_con = dict(bg='white', font=('arial', 20, 'bold'), fg=color_bts['1'])
+formato_bts_cargar = dict(relief='ridge', bg='white', activebackground='#99ff33', activeforeground='white',
+                          font=('arial', 20, 'bold'), height=2, width=10, wraplength=150)
+emplacimiento_bts_cargar_mod = dict(relx=0.5, rely=0.5, y=10, anchor=tk.CENTER)

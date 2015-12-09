@@ -1,6 +1,6 @@
 
 
-class ConexiónVar(object):
+class ConecciónVar(object):
     def __init__(símismo):
         pass
 
