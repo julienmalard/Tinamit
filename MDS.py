@@ -48,8 +48,7 @@ class EnvolturaMDS(object):
         else:
             raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
 
-        if not funcionó:
-            raise ConnectionError('Error en comanda %s para incrementar.' % símismo.programa)
+        return funcionó
 
     def leer_vals(símismo):
         egresos = {}
@@ -71,11 +70,11 @@ class EnvolturaMDS(object):
 
     def actualizar_vars(símismo, valores):
         if símismo.programa == 'vensim':
-            for variables in símismo.vars_entrando.items():
-                var_mds = variables[0]
-                valor = valores[variables[1]]
+            for var_mds in símismo.vars_entrando:
+                valor = valores[símismo.vars_entrando[var_mds]]
                 símismo.intentar_función(símismo.dll.vensim_command,
-                                         [b'SIMULATE>SETVAL|%s = %s' % (var_mds.encode, valor.encode)]
+                                         [b'SIMULATE>SETVAL|%s = %s' %
+                                          (var_mds.encode(), str(valor).encode())]
                                          )
             todobien = símismo.verificar_vensim()
         else:

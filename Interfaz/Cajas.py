@@ -48,6 +48,7 @@ class CajaTrabajo(object):
     def __init__(símismo, apli, pariente, núm, imgs):
         símismo.núm = núm
         símismo.caja = tk.Frame(pariente, **Fms.formato_cajas_trab)
+        símismo.bts = {}
 
         if núm == 1:
             símismo.crear_caja_1(apli=apli)
@@ -92,24 +93,33 @@ class CajaTrabajo(object):
         caja_con.place(**Fms.emplacimiento_caja_cargar_conectado)
 
         etiq_mds = tk.Label(caja_mds, text='MDS', **Fms.formato_etiq_cargar_mod)
-        bt_cargar_mds = tk.Button(caja_mds, text='Cargar', command=apli.buscar_mds, **Fms.formato_bts_cargar)
+        símismo.bts['bt_cargar_mds'] = tk.Button(caja_mds, text='Cargar', command=apli.buscar_mds,
+                                                 **Fms.formato_bts_cargar)
         etiq_bf = tk.Label(caja_bf, text='Modelo biofísico', **Fms.formato_etiq_cargar_mod)
-        bt_cargar_bf = tk.Button(caja_bf, text='Cargar', command=apli.buscar_bf, **Fms.formato_bts_cargar)
+        símismo.bts['bt_cargar_bf'] = tk.Button(caja_bf, text='Cargar', command=apli.buscar_bf,
+                                                **Fms.formato_bts_cargar)
         etiq_sino = tk.Label(caja_con, text='O...', **Fms.formato_etiq_sino)
         etiq_con = tk.Label(caja_con, text='Cargar un modelo ya conectado', **Fms.formato_etiq_cargar_con)
-        bt_cargar_con = tk.Button(caja_con, text='Modelo conectado', command=apli.buscar_con, **Fms.formato_bts_cargar)
+        símismo.bts['bt_cargar_con'] = tk.Button(caja_con, text='Modelo conectado', command=apli.buscar_con,
+                                                 **Fms.formato_bts_cargar)
 
-        for i in [bt_cargar_bf, bt_cargar_mds, bt_cargar_con]:
+        for i in [símismo.bts['bt_cargar_bf'], símismo.bts['bt_cargar_mds'], símismo.bts['bt_cargar_con']]:
             i.bind('<Enter>', lambda event, b=i: b.configure(bg=Fms.color_bts['1']))
             i.bind('<Leave>', lambda event, b=i: b.configure(bg='white'))
 
         etiq_mds.place(x=10, y=10)
-        bt_cargar_mds.place(**Fms.emplacimiento_bts_cargar_mod)
+        símismo.bts['bt_cargar_mds'].place(**Fms.emplacimiento_bts_cargar_mod)
         etiq_bf.place(x=10, y=10)
-        bt_cargar_bf.place(**Fms.emplacimiento_bts_cargar_mod)
+        símismo.bts['bt_cargar_bf'].place(**Fms.emplacimiento_bts_cargar_mod)
         etiq_sino.pack(pady=10)
         etiq_con.pack(pady=10)
-        bt_cargar_con.pack()
+        símismo.bts['bt_cargar_con'].pack()
+
+    def error(símismo, bt):
+        símismo.bts[bt].configure(bg=Fms.color_error)
+
+    def noerror(símismo, bt):
+        símismo.bts[bt].configure(bg=Fms.color_bts['1'])
 
     def crear_caja_2(símismo, apli, imgs):
         pass
@@ -125,3 +135,8 @@ class CajaTrabajo(object):
 
     def quitar(símismo):
         símismo.caja.lower()
+
+
+class CajaLista(object):
+    def __init__(símismo, máx_itemas):
+        pass

@@ -9,7 +9,12 @@ class EnvolturaBF(object):
         directorio_modelo, nombre_modelo = os.path.split(ubicación_modelo)
         sys.path.append(directorio_modelo)
         módulo = importar_mod(os.path.splitext(nombre_modelo)[0])
+        assert hasattr(módulo, 'Modelo')
         símismo.modelo = módulo.Modelo()
+
+        # Verificar que el modelo cargado tiene todas las propiedades necesarias
+        for a in ['ejec', 'incr', 'variables', 'actualizar']:
+            assert hasattr(símismo.modelo, a)
 
         símismo.vars = símismo.sacar_vars()
         símismo.vars_entrando = {}
@@ -40,7 +45,6 @@ class EnvolturaBF(object):
         return egresos
 
     def actualizar_vars(símismo, valores):
-        for variable in símismo.vars_entrando.items():
-            var = variable[0]
-            valor = valores[variable[1]]
+        for var in símismo.vars_entrando:
+            valor = valores[símismo.vars_entrando[var]]
             símismo.modelo.actualizar(var, valor)

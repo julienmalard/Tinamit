@@ -29,6 +29,7 @@ color_bts = {'1': '#%02x%02x%02x' % (179, 255, 102),
              '2': '#%02x%02x%02x' % (128, 255, 0),
              '3': '#%02x%02x%02x' % (102, 204, 0),
              '4': '#%02x%02x%02x' % (128, 64, 0)}
+color_error = '#%02x%02x%02x' % (255, 128, 128)
 
 formato_cajas_trab = dict(**formato_cajas)
 emplacimiento_cajas_trab = dict(x=140, y=80, relheight=1, height=-100, relwidth=1, width=-170)
@@ -41,8 +42,8 @@ formato_bts_ant_sig = dict(bd=0, highlightthickness=0, relief='flat',
 
 emplacimiento_caja_cargar_mds = dict(x=0, y=0, relwidth=0.5, width=-10, relheight=0.5, height=-10)
 emplacimiento_caja_cargar_bf = dict(relx=0.5, y=0, x=+10, relwidth=0.5, width=-10, relheight=0.5, height=-10)
-emplacimiento_lín_vert_med = dict(relx=0.5, y=0, width=3, relheight=0.5, height=-10)
-emplacimiento_lín_hor = dict(relx=0, rely=0.5, relwidth=1, height=3)
+emplacimiento_lín_vert_med = dict(relx=0.5, y=0, width=1, relheight=0.5, height=-10)
+emplacimiento_lín_hor = dict(relx=0, rely=0.5, relwidth=1, height=1)
 emplacimiento_caja_cargar_conectado = dict(x=0, rely=0.5, y=+10, relwidth=1, relheight=0.5, height=-10)
 
 formato_etiq_cargar_mod = dict(bg='white', font=('arial', 20, 'bold'), fg=color_bts['1'])

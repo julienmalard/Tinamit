@@ -3,8 +3,9 @@ from tkinter import filedialog as diálogo
 import webbrowser
 
 from Interfaz import Formatos as Fm, Gráficos as Gr, Pantallas as Pants
-
-from MDS import cargar_mds
+import MDS
+import Biofísico
+from Conectado import Conectado
 
 
 class Apli(tk.Frame):
@@ -34,6 +35,13 @@ class Apli(tk.Frame):
         símismo.pantalla_central.caja.lower()
         símismo.pantalla_lengua.caja.lower()
 
+        símismo.nombre_archivo_mds = None
+        símismo.nombre_archivo_bf = None
+        símismo.nombre_archivo_con = None
+        símismo.mod_mds = None
+        símismo.mod_bf = None
+        símismo.modelo = None
+
     def acción_bt_empezar(símismo):
         símismo.pantalla_inicio.caja.destroy()
 
@@ -57,35 +65,59 @@ class Apli(tk.Frame):
         símismo.pantalla_central.ir_atrás()
 
     def buscar_mds(símismo):
-            nombre_archivo_mds = diálogo.askopenfilename(filetypes=[('Modelos publicados VENSIM', '*.vpm')],
-                                                         title='Cargar MDS')
-            if nombre_archivo_mds:
-                print(nombre_archivo_mds)
-                símismo.nombre_archivo_mds = nombre_archivo_mds
-            else:
-                print('¡Error!')
-                return FileNotFoundError('No se pudo cargar el archivo del MDS.')
+        nombre_archivo_mds = diálogo.askopenfilename(filetypes=[('Modelos publicados VENSIM', '*.vpm')],
+                                                     title='Cargar MDS')
+        if nombre_archivo_mds:
+            símismo.nombre_archivo_mds = nombre_archivo_mds
+            try:
+                símismo.mod_mds = MDS.EnvolturaMDS(programa_mds='VENSIM', ubicación_modelo=símismo.nombre_archivo_mds)
+                símismo.pantalla_central.cajas_trabajo['1'].noerror('bt_cargar_mds')
+            except AssertionError:
+                símismo.pantalla_central.cajas_trabajo['1'].error('bt_cargar_mds')
+                for i in [2, 3, 4]:
+                    símismo.pantalla_central.bloquear_caja(i)
+                símismo.mod_bf = None
+        else:
+            return FileNotFoundError('No se pudo cargar el archivo del MDS.')
+        if símismo.mod_bf is not None:
+            símismo.crear_conectado()
 
     def buscar_bf(símismo):
         nombre_archivo_bf = diálogo.askopenfilename(filetypes=[('Modelos Python', '*.py')],
-                                                     title='Cargar modelo biofísico')
+                                                    title='Cargar modelo biofísico')
         if nombre_archivo_bf:
-            print(nombre_archivo_bf)
             símismo.nombre_archivo_bf = nombre_archivo_bf
+            try:
+                símismo.mod_bf = Biofísico.EnvolturaBF(ubicación_modelo=símismo.nombre_archivo_bf)
+                símismo.pantalla_central.cajas_trabajo['1'].noerror('bt_cargar_bf')
+            except AssertionError or AttributeError:
+                símismo.pantalla_central.cajas_trabajo['1'].error('bt_cargar_bf')
+                for i in [2, 3, 4]:
+                    símismo.pantalla_central.bloquear_caja(i)
+                símismo.mod_mds = None
         else:
-            print('¡Error!')
             return FileNotFoundError('No se pudo cargar el archivo del MDS.')
+        if símismo.mod_mds is not None:
+            símismo.crear_conectado()
 
     def buscar_con(símismo):
-        nombre_archivo_con = diálogo.askopenfilename(filetypes=[('Modelos Python', '*.py')],
+        nombre_archivo_con = diálogo.askopenfilename(filetypes=[('Modelos conectados', '*.con')],
                                                      title='Cargar modelo conectado')
         if nombre_archivo_con:
-            print(nombre_archivo_con)
             símismo.nombre_archivo_con = nombre_archivo_con
-        else:
-            print('¡Error!')
-            return FileNotFoundError('No se pudo cargar el archivo del MDS.')
+            símismo.pantalla_central.cajas_trabajo['1'].noerror('bt_cargar_con')
+            try:
+                símismo.crear_conectado()
+            except AttributeError:
+                símismo.pantalla_central.cajas_trabajo['1'].error('bt_cargar_con')
+                for i in [2, 3, 4]:
+                        símismo.pantalla_central.bloquear_caja(i)
+                return FileNotFoundError('No se pudo cargar el archivo del MDS.')
 
+    def crear_conectado(símismo):
+        símismo.modelo = Conectado(archivo_mds=símismo.nombre_archivo_mds, archivo_biofísico=símismo.nombre_archivo_bf,
+                                   mds=símismo.mod_mds, bf=símismo.mod_bf)
+        símismo.pantalla_central.desbloquear_caja(2)
 
 if __name__ == '__main__':
     raíz = tk.Tk()
