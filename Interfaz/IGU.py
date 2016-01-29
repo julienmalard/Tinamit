@@ -2,7 +2,10 @@ import tkinter as tk
 from tkinter import filedialog as diálogo
 import webbrowser
 
-from Interfaz import Formatos as Fm, Gráficos as Gr, Pantallas as Pants
+from Interfaz import Formatos as Fm
+from Interfaz import Traducciones as Trad
+from Interfaz import Cajas as Cj
+
 import MDS
 import Biofísico
 from Conectado import Conectado
@@ -12,14 +15,23 @@ class Apli(tk.Frame):
     def __init__(símismo, pariente):
         tk.Frame.__init__(símismo, pariente)
         pariente.title('Tinamit')
-        pariente.geometry('%ix%i' % Fm.dim_ventana)
-        pariente.configure(background='white')
 
-        símismo.imgs = Gr.cargar_imágenes()
+        pariente.geometry('%ix%i' % (Fm.ancho_ventana, Fm.altura_ventana))
+        pariente.configure(background=Fm.col_fondo)
+        pariente.minsize(width=Fm.ancho_ventana, height=Fm.altura_ventana)
 
-        símismo.pantalla_inicio = Pants.PantallaInicio(apli=símismo, imgs=símismo.imgs)
-        símismo.pantalla_central = Pants.PantallaCentral(apli=símismo, imgs=símismo.imgs)
-        símismo.pantalla_lengua = Pants.PantallaLengua(apli=símismo, imgs=símismo.imgs)
+        símismo.modelo = None
+
+        símismo.DicLeng = Trad.Diccionario()
+        símismo.Trads = símismo.DicLeng.trads_act
+
+        símismo.CajaInic = Cj.CajaInic(símismo)
+        símismo.CajaCentral = Cj.CajaCentral(símismo)
+        símismo.CajaLenguas = Cj.CajaLeng(símismo)
+        símismo.CajaCentral.lift()
+        símismo.CajaInic.lift()
+        símismo.pack()
+
 
         # Desactivar las ventanas no disponibles
         símismo.pantalla_central.desbloquear_caja(1)

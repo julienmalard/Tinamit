@@ -1,0 +1,17 @@
+{
+    "Actual": "Français",
+    "Lenguas": {
+        "Español": {
+            "Estado": 1.0,
+            "IzqaDerech": true,
+            "Trads": {
+                "AvisoReinic": "Hay que reiniciar Tinamit para aplicar el cambio de idioma.",
+                "Empezar": "Empezar",
+                "EnTrabajo": "En trabajo",
+                "Listas": "¡Listas!",
+                "OpsLengs": "Opciones de lenguas",
+                "ParaHacer": "Para hacer",
+            }
+        }
+    }
+}
