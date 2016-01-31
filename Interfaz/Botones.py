@@ -3,19 +3,6 @@ import tkinter as tk
 from Interfaz import Arte as Gr
 from Interfaz import Formatos as Fm
 
-class BotónNavIzq(Botón):
-    def __init__(símismo, apli, pariente, lín, núm, img, img_sel, img_bloc, **kwargs):
-        super().__init__(pariente=pariente, comanda=símismo.acción_bt_izq,
-                         img=img, img_sel=img_sel, img_bloc=img_bloc, **kwargs)
-
-        símismo.apli = apli
-
-        símismo.núm = núm
-
-    def acción_bt_izq(símismo):
-        símismo.apli.cambiar_caja_trabajo(símismo.núm)
-
-
 
 class Botón(object):
     def __init__(símismo, pariente, comanda=None, formato=None, img_norm=None, img_sel=None, img_bloq=None,
@@ -117,17 +104,31 @@ class BotónImagen(Botón):
                          ubicación=ubicación, tipo_ubic=tipo_ubic)
 
 
-class BotónNavIzq(BotónImagen):
-    def __init__(símismo, pariente, caja, lín):
+class BotónNavIzq(object):
+    def __init__(símismo, pariente, caja):
         img_norm = Gr.imagen('BtNavIzq_%i_norm' % caja.núm)
         img_bloq = Gr.imagen('BtNavIzq_%i_bloq' % caja.núm)
         img_sel = Gr.imagen('BtNavIzq_%i_sel' % caja.núm)
 
-        super().__init__(pariente=pariente, comanda=caja.traer_me, img_norm=img_norm, img_bloq=img_bloq,
-                         img_sel=img_sel, ubicación=Fm.ubic_BtNavIzq, tipo_ubic='pack',
-                         formato=Fm.formato_BtsNavIzq)
+        cj = tk.Frame(pariente, **Fm.formato_cajas)
+        símismo.bt = BotónImagen(pariente=cj, comanda=caja.traer_me, img_norm=img_norm, img_bloq=img_bloq,
+                                 img_sel=img_sel, ubicación=Fm.ubic_BtNavIzq, tipo_ubic='pack',
+                                 formato=Fm.formato_BtsNavIzq)
 
-        símismo.lín = lín
+        símismo.color = Fm.color_bts[str(caja.núm)]
+        símismo.lín = tk.Frame(cj, bg=símismo.color, **Fm.formato_lín_bts)
+
+        símismo.lín.pack(**Fm.ubic_LínNavIzq)
+        cj.pack(**Fm.ubic_CjBtNavIzq)
+
+    def desbloquear(símismo):
+        símismo.bt.desbloquear()
+        símismo.lín.configure(bg=símismo.color)
+
+    def bloquear(símismo):
+        símismo.bt.bloquear()
+        símismo.lín.configure(bg=Fm.color_gris)
+
 
 
 class BotónNavEtapa(BotónImagen):

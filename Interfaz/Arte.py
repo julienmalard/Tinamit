@@ -52,7 +52,25 @@ archivos_imgs = {'LogoInic': '%sLogoInic.png' % raíz_imgs,
 
                  'BtCasilla_norm': '%sBtCasilla_norm.png' % raíz_imgs,
                  'BtCasilla_sel': '%sBtCasilla_sel.png' % raíz_imgs,
-                 'BtCasilla_bloq': '%sBtCasilla_bloq.png' % raíz_imgs
+                 'BtCasilla_bloq': '%sBtCasilla_bloq.png' % raíz_imgs,
+
+                 'BtMarca_norm': '%sBtMarca_norm.png' % raíz_imgs,
+                 'BtMarca_sel': '%sBtMarca_sel.png' % raíz_imgs,
+                 'BtMarca_bloq': '%sBtMarca_bloq.png' % raíz_imgs,
+
+                 'BtPlus_norm': '%sBtPlus_norm.png' % raíz_imgs,
+                 'BtPlus_sel': '%sBtPlus_sel.png' % raíz_imgs,
+
+                 'BtEscribIzqDer': '%sBtEscribIzqDer.png' % raíz_imgs,
+                 'BtEscribDerIzq': '%sBtEscribDerIzq.png' % raíz_imgs,
+
+                 'BtConecciónIzqDer': '%sBtConecciónIzqDer.png' % raíz_imgs,
+                 'BtConecciónDerIzq': '%sBtConecciónDerIzq.png' % raíz_imgs,
+
+                 'FlchConex_colaizq': '%sFlchConex_colaizq.png' % raíz_imgs,
+                 'FlchConex_colader': '%sFlchConex_colader.png' % raíz_imgs,
+                 'FlchConex_cbzizq': '%sFlchConex_cbzizq.png' % raíz_imgs,
+                 'FlchConex_cbzder': '%sFlchConex_cbzder.png' % raíz_imgs
 
                  }
 
@@ -68,3 +86,28 @@ def escalar_colores(color1, color2, n):
     a = escalar(color1[2], color2[2], n)
 
     return list(zip(r, v, a))
+
+
+def inter_color(colores, p, tipo='rgb'):
+
+    def interpol(val1, val2, u):
+        return int(val1 + (val2 - val1)*u)
+
+    def interpol_col(col1, col2, u):
+        return tuple([interpol(col1[n], col2[n], u) for n in range(3)])
+
+    pos = (p * (len(colores)-1)) % 1
+    inic = max(0, int(pos) - 1)
+    fin = inic + 1
+    if fin >= len(colores):
+        fin = len(colores) - 1
+    col = interpol_col(colores[inic], colores[fin], u=pos)
+
+    if tipo == 'rgb':
+        col_final = col
+    elif tipo == 'hex':
+        col_final = '#%02x%02x%02x' % col
+    else:
+        raise KeyError
+
+    return col_final

@@ -22,7 +22,7 @@ dll = ctypes.cdll.LoadLibrary('C:\\Windows\\System32\\vendll32.dll')
 dll.vensim_check_status()
 ubicación_modelo = "F:\\Julien\\PhD\\Iximulew\\MDS 2015\\Tz'olöj Ya'\\Taller 12\\Prueba dll.vpm"
 try:
-    print(dll.vensim_command(b'SPECIAL>LOADMODEL|%s' % ubicación_modelo.encode()) == 1)
+    print(dll.vensim_command(('SPECIAL>LOADMODEL|%s' % ubicación_modelo).encode()) == 1)
 except ValueError:
     pass
 

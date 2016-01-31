@@ -16,9 +16,12 @@ class EnvolturaMDS(object):
             símismo.intentar_función(símismo.dll.vensim_get_varnames,
                                      ['*', 0, mem_inter, 1000000]
                                      )
+            variables = [x for x in mem_inter.raw.decode().split('\x00') if x]
+            for i in ['FINAL TIME', 'TIME STEP', 'INITIAL TIME', 'SAVEPER', 'Time']:
+                if i in variables:
+                    variables.remove(i)
         else:
             raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
-        variables = [x for x in mem_inter.raw.decode().split('\x00') if x]
 
         return variables
 
@@ -122,7 +125,7 @@ def cargar_mds(programa_mds, ubicación_modelo):
             dll = ctypes.cdll.LoadLibrary('C:\\Windows\\System32\\vendll32.dll')
 
             try:
-                dll.vensim_command(b'SPECIAL>LOADMODEL|%s' % ubicación_modelo.encode())
+                dll.vensim_command(('SPECIAL>LOADMODEL|%s' % ubicación_modelo).encode())
             except ValueError:
                 pass
 

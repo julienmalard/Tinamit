@@ -2,29 +2,6 @@ import tkinter as tk
 from Interfaz import Cajas as Cjs, Botones as Bts, Formatos as Fms
 
 
-class PantallaInicio(object):
-    def __init__(símismo, apli, imgs):
-        símismo.caja = tk.Frame(**Fms.formato_cajas)
-
-        # El logo 'Tinamit'
-        logo_inic = tk.Label(símismo.caja, image=imgs['img_logo'], **Fms.formato_logo_inic)
-
-        # Una caja para los dos botones, tanto como los botones sí mismos
-        caja_bts_inic = tk.Frame(símismo.caja, **Fms.formato_cajas)
-        bt_empezar = tk.Button(caja_bts_inic, text='Empezar', command=apli.acción_bt_empezar,
-                               **Fms.formato_bts_inic)
-        bt_ayuda = tk.Button(caja_bts_inic, text='Ayuda', command=apli.acción_bt_ayuda,
-                             **Fms.formato_bts_inic)
-        for i in [bt_empezar, bt_ayuda]:
-            i.bind('<Enter>', lambda event, b=i: b.configure(bg='#ccff66'))
-            i.bind('<Leave>', lambda event, b=i: b.configure(bg='white'))
-
-        # Dibujar todo
-        logo_inic.pack(Fms.emplacimiento_logo_inic)
-        bt_empezar.pack(Fms.emplacimiento_bts_inic)
-        bt_ayuda.pack(Fms.emplacimiento_bts_inic)
-        caja_bts_inic.pack(pady=20)
-        símismo.caja.place(**Fms.emplacimiento_cajas_cent)
 
 
 class PantallaCentral(object):

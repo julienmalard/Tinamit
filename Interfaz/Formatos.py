@@ -1,5 +1,6 @@
 import tkinter as tk
 import os
+import json
 
 
 emplacimiento_cajas_cent = dict(x=0, y=0, relheight=1, relwidth=1)
@@ -17,18 +18,12 @@ formato_logo_cent = dict(borderwidth=0, highlightthickness=0, height=60)
 emplacimiento_logo_cent = dict(relx=0.5, x=-90, rely=0)
 emplacimiento_caja_cabeza = dict(relx=0, rely=0, relwidth=1, height=80)
 
-formato_lín_bts = dict(bd=0, highlightthickness=0, width=7, height=90)
-emplacimiento_lín_bts = dict(side='top', pady=20)
+
 formato_bts_cent = dict(bd=0, highlightthickness=0, relief='flat',
                         bg='white', activebackground='white', width=80, height=80)
 emplacimiento_bts_cent = dict(side='top', ipadx=5, ipady=5, padx=10, pady=20)
-color_bts = {'1': '#%02x%02x%02x' % (179, 255, 102),
-             '2': '#%02x%02x%02x' % (128, 255, 0),
-             '3': '#%02x%02x%02x' % (102, 204, 0),
-             '4': '#%02x%02x%02x' % (128, 64, 0)}
-color_error = '#%02x%02x%02x' % (255, 128, 128)
 
-formato_cajas_trab = dict(**formato_cajas)
+
 emplacimiento_cajas_trab = dict(x=140, y=80, relheight=1, height=-100, relwidth=1, width=-170)
 emplacimiento_cj_izq = dict(relx=0, y=80)
 
@@ -37,18 +32,10 @@ emplacimiento_bt_siguiente = dict(relx=1, x=-60, rely=1, y=-60)
 formato_bts_ant_sig = dict(bd=0, highlightthickness=0, relief='flat',
                            bg='white', activebackground='white', width=60, height=60)
 
-emplacimiento_caja_cargar_mds = dict(x=0, y=0, relwidth=0.5, width=-10, relheight=0.5, height=-10)
-emplacimiento_caja_cargar_bf = dict(relx=0.5, y=0, x=+10, relwidth=0.5, width=-10, relheight=0.5, height=-10)
-emplacimiento_lín_vert_med = dict(relx=0.5, y=0, width=1, relheight=0.5, height=-10)
-emplacimiento_lín_hor = dict(relx=0, rely=0.5, relwidth=1, height=1)
-emplacimiento_caja_cargar_conectado = dict(x=0, rely=0.5, y=+10, relwidth=1, relheight=0.5, height=-10)
 
-formato_etiq_cargar_mod = dict(bg='white', font=('arial', 20, 'bold'), fg=color_bts['1'])
-formato_etiq_sino = dict(bg='white', font=('arial', 20, 'bold'), fg=color_bts['1'])
-formato_etiq_cargar_con = dict(bg='white', font=('arial', 20, 'bold'), fg=color_bts['1'])
-formato_bts_cargar = dict(relief='ridge', bg='white', activebackground='#99ff33', activeforeground='white',
-                          font=('arial', 20, 'bold'), height=2, width=10, wraplength=150)
-emplacimiento_bts_cargar_mod = dict(relx=0.5, rely=0.5, y=10, anchor=tk.CENTER)
+
+
+
 
 
 # Adiciones Kutuj
@@ -85,30 +72,38 @@ def gen_formato(formato):
 
 # Parámetros generales
 col_fondo = 'white'  # El color de fondo del interfaz
-col_1 = '#990000'
-col_2 = '#cc3300'
-col_3 = '#ffd633'
-col_4 = '#fffae5'
-col_5 = '#ffbf00'
+color_bts = {'1': '#%02x%02x%02x' % (218, 242, 142),
+             '2': '#%02x%02x%02x' % (181, 230, 29),
+             '3': '#%02x%02x%02x' % (102, 204, 0),
+             '4': '#%02x%02x%02x' % (128, 64, 0)}
+color_gris = '#C3C3C3'
+col_1 = color_bts['3']
+col_2 = color_bts['2']
+col_3 = color_bts['1']
+col_4 = color_bts['1']
+col_5 = color_bts['3']
 fuente = 'Comic Sans MS'
 formato_cajas = dict(bg=col_fondo, borderwidth=0, highlightthickness=0)
-formato_botones = dict(bd=0, borderwidth=0, highlightthickness=0)
+formato_botones = dict(borderwidth=0, highlightthickness=0)
 formato_etiq = dict(bg=col_fondo)
+
+formato_bts_norm = dict(activebackground=col_3, bg=col_2, fg='#000000', **formato_botones)
+formato_bts_sel = dict(bg=col_3)
 
 # Ventana central
 ancho_ventana = 1100
 altura_ventana = 800
+
 
 # Caja inicial
 formato_CjInic = dict(bg=col_fondo)
 ubic_CjInic = dict(x=0, y=0, relwidth=1, relheight=1)
 formato_LogoInic = dict(borderwidth=0, highlightthickness=0)
 ubic_LogoInic = dict(side='top', pady=(175, 50))
-formato_BtsInic = dict(borderwidth=0, highlightthickness=0, activebackground='#ffc34d',
-                       font=(fuente, 25, 'bold'), height=2, width=13)  # Formatos generales
-formato_BtsInic_norm = dict(bg='#cc9900', fg='#000000', **formato_BtsInic)
-formato_BtsInic_sel = dict(bg='#ffc34d')
+formato_BtsInic = dict(font=(fuente, 25, 'bold'), height=2, width=13, **formato_bts_norm)
+
 ubic_BtsInic = dict(side='left', ipadx=5, ipady=5, padx=10, pady=10)
+
 
 # Caja lenguas
 ubic_CjLeng = dict(relx=0, y=0, relwidth=1, relheight=1)
@@ -132,8 +127,20 @@ ubic_EtiqCbzColsLeng = dict(relx=0.5, rely=0, y=50, anchor=tk.S)
 formato_CjLstLengCentro = dict(highlightthickness=1, highlightbackground=col_5, bg=col_fondo)
 formato_CjLstLengLados = dict(highlightthickness=1, highlightbackground=col_3, bg=col_fondo)
 ubic_LstsLeng = dict(relx=0.5, rely=0, y=75, width=300, relheight=1, height=-150, anchor=tk.N)
+ubic_LstsLeng_bajo = dict(relx=0.5, rely=0, y=75+20, width=300, relheight=1, height=-150-20, anchor=tk.N)
+ubic_CjAñadirLeng = dict(relx=0, rely=0, x=20, y=60, height=20, anchor=tk.NW)
+ubic_CjCamposAñLeng = dict(side='left', padx=2)
+formato_cj_etiq_nombre_leng = dict(height=25, **formato_cajas)
+formato_etiq_nombre_leng = dict(anchor=tk.W, **formato_etiq)
+ubic_etiq_nombre_leng = dict(side='left')
+ancho_etiq_nombre_largo = 140
+ancho_etiq_nombre_estr = 80
 ubic_IzqLstLeng = dict(side='left', padx=5)
-ubic_DerechLstLeng = dict(side='right')
+ubic_DerLstLeng = dict(side='right', padx=5)
+ubic_CjCentLstLeng = dict(side='left', padx=5)
+colores_prog_leng = [(152, 103, 52), (181, 230, 29)]
+dim_barra_prog_leng = (20, 50)
+ubic_BtsAñadirLeng = dict(side='right', padx=2)
 ubic_CentralItemaLstLeng = dict(side='left')
 
 formato_CjEditLeng = dict(highlightthickness=1, highlightbackground=col_5, bg=col_fondo)
@@ -155,7 +162,7 @@ ubic_LstEditLeng = dict(relx=0, rely=0, relheight=1, width=ubic_CjEditLeng['widt
 ubic_CjBtsCjEditLeng = dict(side='top', pady=20, fill=tk.X)
 formato_CjLengTxOrig = dict(bg=col_fondo, highlightthickness=1, highlightbackground=col_5)
 formato_EtiqLengTxOrig = dict(font=(fuente, '14', 'bold'), fg=col_5, bg=col_fondo,
-                              width=20, wraplength=300, anchor=tk.W)
+                              width=20, wraplength=240, anchor=tk.W, justify=tk.LEFT)
 formato_CampoTexto = dict(font=(fuente, '14', 'bold'), bg=col_fondo,
                           highlightthickness=1, highlightbackground=col_3, highlightcolor=col_5,
                           width=25, height=3, wrap=tk.WORD, relief=tk.FLAT)
@@ -178,9 +185,11 @@ ubic_etiq_aviso_borrar_leng = dict(side='top', pady=(20, 0))
 ubic_bts_aviso_borrar_leng = dict(side='left', padx=25)
 ubic_cj_bts_aviso_borrar_leng = dict(side='bottom', pady=(0, 20))
 
+
 # Caja central
-formato_CjCent = dict(bg='green')
+formato_CjCent = dict(bg=col_fondo)
 ubic_CjCent = dict(x=0, y=0, relwidth=1, relheight=1)
+
 
 # Caja cabeza
 formato_CjCabeza = dict(height=110, **formato_cajas)
@@ -189,6 +198,16 @@ formato_LogoCabz = dict(borderwidth=0, highlightthickness=0, height=65)
 ubic_LogoCabz = dict(relx=0.5, rely=0.5, anchor=tk.CENTER)
 formato_BtLeng = dict(height=40, width=40, **formato_botones)
 ubic_BtLeng = dict(relx=1, rely=0.5, x=-20, anchor=tk.E)
+
+# Botones izquierda
+ubic_CjIzq = dict(side='top', fill=tk.Y, expand=True, anchor=tk.W)
+formato_BtsNavIzq = dict(width=86, height=86, borderwidth=0, highlightthickness=0)
+ubic_CjBtNavIzq = dict(side='top', padx=10, pady=15, expand=True)
+ubic_BtNavIzq = dict(side='left', padx=10)
+formato_lín_bts = dict(highlightthickness=0, width=7, height=120)
+ubic_LínNavIzq = dict(side='right', padx=10)
+formato_LínIzq = dict(bd=0, highlightthickness=0, width=2, bg='black')
+ubic_LínIzq = dict(side='right', pady=(0, 20), fill=tk.Y, expand=True)
 
 # Caja Contenedora de cajas etapas
 formato_CjContCjEtps = dict(**formato_cajas)
@@ -227,7 +246,7 @@ ubic_BaraDesp = dict(side="right", fill="y")
 ubic_CjTl = dict(anchor=tk.NW)
 
 formato_secciones_itemas = dict(height=20, **formato_cajas)
-ubic_CjItemas = dict(side='top', fill=tk.X, expand=True)
+ubic_CjItemas = dict(side='top', pady=2, fill=tk.X, expand=True)
 ancho_cj_bts_itemas = 85
 ubic_CjColsItemas = dict(side='left', fill=tk.BOTH, expand=True)
 ubic_BtsItemas = dict(side='left', padx=5)
@@ -280,3 +299,37 @@ formato_BtBorrar_sel = dict(bg='#e63500', fg='#ffffff')
 formato_BtBorrars_bloq = dict(bg='#ffebe5', disabledforeground='#ffffff')
 ubic_BtsGrupo = dict(side='left', expand=True)
 ubic_CjBtsGrupoCtrl = dict(side='top', padx=20, fill=tk.X, expand=True)
+
+
+# Caja subetapa 1.1
+
+ubic_caja_cargar_mds = dict(x=0, y=0, relwidth=0.5, width=-10, relheight=0.5, height=-10)
+ubic_caja_cargar_bf = dict(relx=0.5, y=0, x=+10, relwidth=0.5, width=-10, relheight=0.5, height=-10)
+ubic_lín_vert_med = dict(relx=0.5, y=0, width=1, relheight=0.5, height=-10)
+ubic_lín_hor = dict(relx=0, rely=0.5, relwidth=1,width=-10, height=1)
+ubic_caja_cargar_conectado = dict(x=0, rely=0.5, y=+10, relwidth=1, relheight=0.5, height=-10)
+
+formato_etiq_cargar_mod = dict(font=(fuente, 20, 'bold'), fg=color_bts['1'], **formato_etiq)
+formato_etiq_sino = dict(font=(fuente, 20, 'bold'), fg=color_bts['1'], **formato_etiq)
+formato_etiq_cargar_con = dict(font=(fuente, 20, 'bold'), fg=color_bts['1'], **formato_etiq)
+ubic_etiqs_bts_cargar = dict(x=10, y=10)
+ubic_etiqs_sino_con = dict(pady=10)
+
+formato_bts_cargar = dict(font=('arial', 20, 'bold'), height=2, width=10, wraplength=150, **formato_bts_norm)
+ubic_bts_cargar_mod = dict(relx=0.5, rely=0.5, y=10, anchor=tk.CENTER)
+ubic_EtiqErrCargarMod = dict(side='bottom', pady=20)
+
+
+# Caja subetapa 2.1
+ubic_CjLstConecciones = dict(relx=0.5, rely=0, y=50, width=0.8 * ancho_ventana, height=150, anchor=tk.N)
+anchos_cols_listacon = [0.25, 0.5, 0.25]
+
+ubic_CjCtrlsConectar = dict(relx=0.5, rely=0, y=200, relwidth=1, width=-20, height=150, anchor=tk.N)
+ancho_MnVars = 7
+ubic_CjBtsConectar = dict(relx=0.5, rely=0, y=400, width=200, anchor=tk.N)
+ubic_CtrlsConectar = dict(side='left', padx=20, pady=20, expand=True)
+
+ubic_ObjCjCentrCtrl = dict(side='top', pady=10)
+
+
+ubic_CjBajoConex = dict(relx=0, rely=0, x=10, y=10, relwidth=1, relheight=.8, width=-20, anchor=tk.NW)

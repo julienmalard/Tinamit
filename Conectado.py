@@ -5,35 +5,35 @@ from Biofísico import EnvolturaBF
 
 
 class Conectado(object):
-    def __init__(símismo, archivo_mds, archivo_biofísico, programa_mds='Vensim', archivo_conectado=None,
+    def __init__(símismo, archivo_mds=None, archivo_biofísico=None, programa_mds='Vensim', receta=None,
                  mds=None, bf=None):
-        if archivo_conectado is not None:
-            dic = json.load(archivo_conectado)
+        if receta is not None:
+            receta = json.load(receta)
         else:
-            dic = {'mds': archivo_mds, 'biofísico': archivo_biofísico, 'programa_mds': programa_mds}
+            receta = {'mds': archivo_mds, 'biofísico': archivo_biofísico, 'programa_mds': programa_mds}
 
-        símismo.dic = dic
+        símismo.dic = receta
 
         if type(mds) is EnvolturaMDS:
             símismo.mds = mds
         else:
-            símismo.mds = EnvolturaMDS(ubicación_modelo=dic['mds'], programa_mds=dic['programa_mds'])
+            símismo.mds = EnvolturaMDS(ubicación_modelo=receta['mds'], programa_mds=receta['programa_mds'])
 
         if type(bf) is EnvolturaBF:
             símismo.bf = bf
         else:
-            símismo.bf = EnvolturaBF(ubicación_modelo=dic['biofísico'])
+            símismo.bf = EnvolturaBF(ubicación_modelo=receta['biofísico'])
 
         símismo.vars_mds = símismo.mds.sacar_vars()
         símismo.vars_bf = símismo.mds.sacar_vars()
 
         try:
-            símismo.mds.vars_entrando = dic['mds_entrando']
+            símismo.mds.vars_entrando = receta['mds_entrando']
         except KeyError:
             pass
 
         try:
-            símismo.bf.vars_entrando = dic['bf_entrando']
+            símismo.bf.vars_entrando = receta['bf_entrando']
         except KeyError:
             pass
 

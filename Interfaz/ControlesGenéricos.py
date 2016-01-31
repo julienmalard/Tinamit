@@ -1,11 +1,12 @@
 import tkinter as tk
+
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
 from Interfaz import Arte as Art
-from Interfaz import Formatos as Fm
 from Interfaz import Botones as Bt
+from Interfaz import Formatos as Fm
 
 
 class ListaItemas(tk.Frame):
@@ -13,6 +14,7 @@ class ListaItemas(tk.Frame):
         super().__init__(pariente, **formato_cj)
         símismo.ancho = ubicación['width']
         símismo.objetos = {}
+        símismo.itemas = []
 
         ubic_tela = Fm.ubic_TlLstItemas.copy()
         if encabezado:
@@ -40,7 +42,20 @@ class ListaItemas(tk.Frame):
         símismo.Tela.configure(scrollregion=símismo.Tela.bbox("all"))
 
     def añadir(símismo, itema):
+        símismo.itemas.append(itema)
         itema.pack(**Fm.ubic_CjItemas)
+
+    def quitar(símismo, itema):
+        símismo.itemas.remove(itema)
+        if itema.objeto is not None:
+            símismo.objetos.pop(itema.objeto.nombre)
+
+    def borrar(símismo):
+        for i in símismo.itemas:
+            if i.objeto is not None:
+                símismo.objetos.pop(i.objeto.nombre)
+            i.destroy()
+        símismo.itemas = []
 
 
 class ListaEditable(ListaItemas):
@@ -72,8 +87,7 @@ class ListaEditable(ListaItemas):
 
     def quitar(símismo, itema):
         símismo.controles.borrar()
-        símismo.objetos.pop(itema.objeto.nombre)
-        itema.destroy()
+        super().quitar(itema)
 
 
 class Itema(tk.Frame):
@@ -192,10 +206,10 @@ class GrupoControles(object):
         símismo.objeto = None
         símismo.receta = {}
         for ll, control in símismo.controles.items():
-            control.confirmar_borrar()
+            control.borrar()
 
         if símismo.gráfico is not None:
-            símismo.gráfico.confirmar_borrar()
+            símismo.gráfico.borrar()
 
         if símismo.bt_guardar is not None:
             símismo.bt_guardar.bloquear()
@@ -294,7 +308,8 @@ class CampoIngreso(object):
                 return
             if nueva_val != símismo.val:
                 símismo.val = nueva_val
-                símismo.comanda(nueva_val)
+                if símismo.comanda is not None:
+                    símismo.comanda(nueva_val)
 
         except ValueError:
             símismo.var.set('')
@@ -332,6 +347,10 @@ class IngrNúm(CampoIngreso):
 
         if límites is None:
             límites = (float('-Inf'), float('Inf'))
+        if límites[0] is None:
+            límites = (float('-Inf'), límites[1])
+        if límites[1] is None:
+            límites = (límites[0], float('Inf'))
         símismo.límites = límites
 
         super().__init__(pariente, nombre, val_inic, comanda, ubicación, tipo_ubic, ancho, orden=orden)
