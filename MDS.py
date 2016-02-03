@@ -7,8 +7,9 @@ class EnvolturaMDS(object):
         símismo.programa = programa_mds.lower()
         símismo.dll = cargar_mds(símismo.programa, ubicación_modelo)
         símismo.vars = símismo.sacar_vars()
-        símismo.vars_entrando = {}
+        símismo.conex_entrando = {}
         símismo.vars_saliendo = []
+        símismo.unidades_tiempo = símismo.sacar_unidades_tiempo()
 
     def sacar_vars(símismo):
         if símismo.programa == 'vensim':
@@ -25,13 +26,25 @@ class EnvolturaMDS(object):
 
         return variables
 
+    def sacar_unidades_tiempo(símismo):
+        if símismo.programa == 'vensim':
+            mem_inter = ctypes.create_string_buffer(50)
+            símismo.intentar_función(símismo.dll.vensim_get_varattrib,
+                                     [b'TIME STEP', 1, mem_inter, 50]
+                                     )
+            unidades = mem_inter.raw.decode().strip()
+
+        else:
+            raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
+
+        return unidades
+
     def iniciar_modelo(símismo, tiempo_final):
         if símismo.programa == 'vensim':
             if tiempo_final is not None:
-                for v in [b'TIEMPO FINAL', b'FINAL TIME']:
-                    símismo.intentar_función(símismo.dll.vensim_command,
-                                             [b'SIMULATE>SETVAL|%s = %s' % (v, str(tiempo_final).encode())]
-                                             )
+                símismo.intentar_función(símismo.dll.vensim_command,
+                                         [('SIMULATE>SETVAL|%s = %s' % ('FINAL TIME', str(tiempo_final))).encode()]
+                                         )
             símismo.intentar_función(símismo.dll.vensim_start_simulation,
                                      [1, 0, 1]
                                      )
@@ -73,11 +86,12 @@ class EnvolturaMDS(object):
 
     def actualizar_vars(símismo, valores):
         if símismo.programa == 'vensim':
-            for var_mds in símismo.vars_entrando:
-                valor = valores[símismo.vars_entrando[var_mds]]
+            for var_propio, conex in símismo.conex_entrando.items():
+                var_entr = conex['var']
+                conv = conex['conv']
+                valor = valores[var_entr] * conv
                 símismo.intentar_función(símismo.dll.vensim_command,
-                                         [b'SIMULATE>SETVAL|%s = %s' %
-                                          (var_mds.encode(), str(valor).encode())]
+                                         [('SIMULATE>SETVAL|%s = %s' % (var_propio, str(valor))).encode()]
                                          )
             todobien = símismo.verificar_vensim()
         else:
@@ -114,7 +128,7 @@ class EnvolturaMDS(object):
     def intentar_función(función, parámetros):
         try:
             resultado = función(*parámetros)
-        except ValueError:
+        except ValueError as e:
             resultado = None
 
         return resultado

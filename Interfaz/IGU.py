@@ -4,6 +4,8 @@ from Interfaz import Formatos as Fm
 from Interfaz import Traducciones as Trad
 from Interfaz import Cajas as Cj
 
+from Conectado import Conectado
+
 
 class Apli(tk.Frame):
     def __init__(símismo, pariente):
@@ -14,7 +16,7 @@ class Apli(tk.Frame):
         pariente.configure(background=Fm.col_fondo)
         pariente.minsize(width=Fm.ancho_ventana, height=Fm.altura_ventana)
 
-        símismo.modelo = None
+        símismo.Modelo = Conectado()
 
         símismo.DicLeng = Trad.Diccionario()
         símismo.Trads = símismo.DicLeng.trads_act

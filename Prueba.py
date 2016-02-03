@@ -20,7 +20,7 @@ def verificar_vensim():
 
 dll = ctypes.cdll.LoadLibrary('C:\\Windows\\System32\\vendll32.dll')
 dll.vensim_check_status()
-ubicación_modelo = "F:\\Julien\\PhD\\Iximulew\\MDS 2015\\Tz'olöj Ya'\\Taller 12\\Prueba dll.vpm"
+ubicación_modelo = "C:\\Users\\jmalar1\\Documents\\PycharmProjects\\Tinamit\\Prueba dll.vpm"
 try:
     print(dll.vensim_command(('SPECIAL>LOADMODEL|%s' % ubicación_modelo).encode()) == 1)
 except ValueError:
@@ -62,9 +62,9 @@ print('Val: ', memimed_val.raw)
 x = struct.unpack('f', memimed_val)
 x = x[0]
 print('val: ', x)
-try:
-    dll.vensim_finish_simulation()
-except ValueError:
-    pass
+
+dll.vensim_finish_simulation()
 
 verificar_vensim()
+
+print('fin')

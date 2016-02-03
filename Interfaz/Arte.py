@@ -1,13 +1,13 @@
 import tkinter as tk
+import os
 
 
 def imagen(nombre):
     archivo = archivos_imgs[nombre]
     img = tk.PhotoImage(file=archivo)
-    
     return img
 
-raíz_imgs = 'Imágenes\\'
+raíz_imgs = os.path.join(os.path.split(__file__)[0], 'Imágenes\\')
 archivos_imgs = {'LogoInic': '%sLogoInic.png' % raíz_imgs,
 
                  'BtRegrCent_norm': '%sBtRegrCent_norm.png' % raíz_imgs,
@@ -16,6 +16,15 @@ archivos_imgs = {'LogoInic': '%sLogoInic.png' % raíz_imgs,
                  'LogoCent': '%sLogoCent.png' % raíz_imgs,
                  'BtLeng_norm': '%sBtLeng_norm.png' % raíz_imgs,
                  'BtLeng_sel': '%sBtLeng_sel.png' % raíz_imgs,
+                 'BtNuevo_norm': '%sBtNuevo_norm.png' % raíz_imgs,
+                 'BtNuevo_sel': '%sBtNuevo_sel.png' % raíz_imgs,
+                 'BtGuardar_norm': '%sBtGuardar_norm.png' % raíz_imgs,
+                 'BtGuardar_sel': '%sBtGuardar_sel.png' % raíz_imgs,
+                 'BtGuardarComo_norm': '%sBtGuardarComo_norm.png' % raíz_imgs,
+                 'BtGuardarComo_sel': '%sBtGuardarComo_sel.png' % raíz_imgs,
+                 'BtAbrir_norm': '%sBtAbrir_norm.png' % raíz_imgs,
+                 'BtAbrir_sel': '%sBtAbrir_sel.png' % raíz_imgs,
+
                  'BtNavIzq_1_norm': '%sBtNavIzq_1_norm.png' % raíz_imgs,
                  'BtNavIzq_1_bloq': '%sBtNavIzq_1_bloq.png' % raíz_imgs,
                  'BtNavIzq_1_sel': '%sBtNavIzq_1_sel.png' % raíz_imgs,

@@ -17,7 +17,7 @@ class EnvolturaBF(object):
             assert hasattr(símismo.modelo, a)
 
         símismo.vars = símismo.sacar_vars()
-        símismo.vars_entrando = {}
+        símismo.conex_entrando = {}
         símismo.vars_saliendo = []
 
     def sacar_vars(símismo):
@@ -45,6 +45,8 @@ class EnvolturaBF(object):
         return egresos
 
     def actualizar_vars(símismo, valores):
-        for var in símismo.vars_entrando:
-            valor = valores[símismo.vars_entrando[var]]
-            símismo.modelo.actualizar(var, valor)
+        for var_propio, conex in símismo.conex_entrando.items():
+            var_entr = conex['var']
+            conv = conex['conv']
+            valor = valores[var_entr] * conv
+            símismo.modelo.actualizar(var_propio, valor)

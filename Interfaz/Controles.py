@@ -58,14 +58,14 @@ class ItemaLeng(CtrG.Itema):
             img_norm = Art.imagen('BtCasilla_sel')
         else:
             img_norm = Art.imagen('BtCasilla_norm')
-        símismo.bt_utilizar = Bt.BotónImagen(cj_bt_utilizar, comanda=lambda x=nombre: pariente.utilizar(x),
-                                             formato=Fm.formato_botones,
-                                             img_norm=img_norm,
-                                             img_sel=Art.imagen('BtCasilla_sel'),
-                                             img_bloq=Art.imagen('BtCasilla_bloq'),
-                                             ubicación=Fm.ubic_IzqLstLeng, tipo_ubic='pack')
+        bt_utilizar = Bt.BotónImagen(cj_bt_utilizar, comanda=lambda x=nombre: pariente.utilizar(x),
+                                     formato=Fm.formato_botones,
+                                     img_norm=img_norm,
+                                     img_sel=Art.imagen('BtCasilla_sel'),
+                                     img_bloq=Art.imagen('BtCasilla_bloq'),
+                                     ubicación=Fm.ubic_IzqLstLeng, tipo_ubic='pack')
         if not utilizable:
-            símismo.bt_utilizar.bloquear()
+            bt_utilizar.bloquear()
 
         if 0 < estado < 1:
             ancho = Fm.ancho_etiq_nombre_estr
@@ -77,7 +77,7 @@ class ItemaLeng(CtrG.Itema):
         símismo.etiq_nombre = tk.Label(cj_etiq_nombre_leng, text=símismo.nombre,
                                        font=Fm.fuente_etiq_itema_norm, **Fm.formato_etiq_nombre_leng)
         símismo.etiq_nombre.pack(**Fm.ubic_etiq_nombre_leng)
-        cj_etiq_nombre_leng.pack(**Fm.ubic_IzqLstLeng)
+        cj_etiq_nombre_leng.pack(**Fm.ubic_EtiqNombreLstLeng)
 
         if 0 < estado < 1:
             color_barra = Art.inter_color(Fm.colores_prog_leng, p=estado, tipo='hex')
@@ -243,13 +243,14 @@ class CajaAvisoBorrar(tk.Frame):
 
 # Subcaja 2.1
 class GrpCtrlsConex(CtrG.GrupoControles):
-    def __init__(símismo, apli, controles, lista, bt_guardar, bt_borrar):
+    def __init__(símismo, pariente, apli, controles, lista, bt_guardar, bt_borrar):
         super().__init__(controles, constructor_itema=ItemaConexión, lista=lista,
                          bt_guardar=bt_guardar, bt_borrar=bt_borrar)
         símismo.apli = apli
+        símismo.pariente = pariente
 
     def verificar_completo(símismo):
-        campos_necesarios = ['VarMDS', 'DirIzqDer', 'Conversión', 'VarBf']
+        campos_necesarios = ['var_mds', 'mds_fuente', 'conv', 'var_bf']
         completos = [símismo.controles[x].val is not None and símismo.controles[x].val is not ''
                      for x in campos_necesarios]
         if min(completos):
@@ -260,22 +261,14 @@ class GrpCtrlsConex(CtrG.GrupoControles):
     def recrear_objeto(símismo):
         for ll, control in símismo.controles.items():
             símismo.receta[ll] = control.val
-        rec = símismo.receta
-
-        # try:
-        #     símismo.objeto = VariableBD(base_de_datos=símismo.apli.modelo.base_central,
-        #                                 nombre=rec['Nombre'], columna=rec['Columna'], interpol=rec['Interpol'],
-        #                                 transformación=rec['Transformación'], fecha_inic_año=rec['Fecha_inic'])
-        # except ValueError:
-        #     print('Error cargando datos... :(')
 
 
 class ListaConexiónes(CtrG.ListaEditable):
-    def __init__(símismo, pariente, ubicación, tipo_ubic):
+    def __init__(símismo, pariente, apli, ubicación, tipo_ubic):
         super().__init__(pariente, ubicación=ubicación, tipo_ubic=tipo_ubic)
 
         símismo.pariente = pariente
-        nombres_cols = ['Variable MDS', 'Conversión', 'Variable biofísico']
+        nombres_cols = [apli.Trads['VariableMDS'], apli.Trads['Conversión'], apli.Trads['VariableBiofísico']]
         anchuras = Fm.anchos_cols_listacon
         símismo.gen_encbz(nombres_cols, anchuras)
 
@@ -289,8 +282,12 @@ class ListaConexiónes(CtrG.ListaEditable):
 
 
 class ItemaConexión(CtrG.ItemaEditable):
-    def __init__(símismo, grupo_control, lista_itemas):
-        super().__init__(grupo_control=grupo_control, lista_itemas=lista_itemas)
+    def __init__(símismo, grupo_control, lista_itemas, receta=None, creando_manual=True):
+        símismo.pariente = grupo_control.pariente
+        if receta is not None:
+            símismo.receta = receta
+
+        super().__init__(grupo_control=grupo_control, lista_itemas=lista_itemas, creando_manual=creando_manual)
 
         símismo.cj_cols = cj_cols = tk.Frame(símismo, **Fm.formato_cajas)
         cj_var_mds = tk.Frame(cj_cols, **Fm.formato_secciones_itemas)
@@ -303,12 +300,13 @@ class ItemaConexión(CtrG.ItemaEditable):
                           'cbz_der': Art.imagen('FlchConex_cbzder')}
 
         símismo.etiq_varMDS = tk.Label(cj_var_mds, **Fm.formato_texto_itemas)
-        símismo.etiq_izqflecha = tk.Label(cj_conv)
-        símismo.etiq_conversión = tk.Label(cj_conv, **Fm.formato_texto_itemas)
-        símismo.etiq_derflecha = tk.Label(cj_conv)
+        símismo.etiq_izqflecha = tk.Label(cj_conv, **Fm.formato_etiq)
+        símismo.etiq_conversión = tk.Label(cj_conv, **Fm.formato_etiq_conversión)
+        símismo.etiq_derflecha = tk.Label(cj_conv, **Fm.formato_etiq)
         símismo.etiq_varBf = tk.Label(cj_var_bf, **Fm.formato_texto_itemas)
 
-        símismo.etiquetas = [símismo.etiq_varMDS, símismo.etiq_conversión, símismo.etiq_varBf]
+        símismo.etiquetas = [símismo.etiq_varMDS, símismo.etiq_izqflecha, símismo.etiq_conversión,
+                             símismo.etiq_derflecha, símismo.etiq_varBf]
         símismo.columnas = [cj_var_mds, cj_conv, cj_var_bf]
         for etiq in símismo.etiquetas:
             etiq.pack(**Fm.ubic_EtiqItemas)
@@ -318,21 +316,32 @@ class ItemaConexión(CtrG.ItemaEditable):
         símismo.actualizar()
 
     def actualizar(símismo):
-        símismo.etiq_varMDS.config(text=símismo.receta['VarMDS'])
-        símismo.etiq_conversión.config(text='X %s' % símismo.receta['Conversión'])
-        símismo.etiq_varBf.config(text=símismo.receta['VarBf'])
+        símismo.etiq_varMDS.config(text=símismo.receta['var_mds'])
+        símismo.etiq_conversión.config(text='X %s' % símismo.receta['conv'])
+        símismo.etiq_varBf.config(text=símismo.receta['var_bf'])
 
-        if símismo.receta['DirIzqDer'] is True:
-            símismo.etiq_izqflecha.config(image=símismo.flecha['cbz_izq'])
-            símismo.etiq_derflecha.config(image=símismo.flecha['cola_der'])
-        else:
+        if símismo.receta['mds_fuente'] is True:
             símismo.etiq_izqflecha.config(image=símismo.flecha['cola_izq'])
             símismo.etiq_derflecha.config(image=símismo.flecha['cbz_der'])
+        else:
+            símismo.etiq_izqflecha.config(image=símismo.flecha['cbz_izq'])
+            símismo.etiq_derflecha.config(image=símismo.flecha['cola_der'])
 
     def resaltar(símismo):
         for etiq in símismo.etiquetas:
-            etiq.config(font=Fm.fuente_etiq_itema_sel)
+            if etiq is not símismo.etiq_conversión:
+                etiq.config(font=Fm.fuente_etiq_itema_sel)
 
     def desresaltar(símismo):
-        for etiq in símismo.etiquetas:
-            etiq.config(font=Fm.fuente_etiq_itema_norm)
+        for etiq in símismo.etiquetas.copy():
+            if etiq is not símismo.etiq_conversión:
+                etiq.config(font=Fm.fuente_etiq_itema_norm)
+
+    def añadir(símismo):
+        símismo.pariente.añadir_conexión(símismo.receta)
+        super().añadir()
+
+    def quitar(símismo):
+        símismo.pariente.quitar_conexión(símismo.receta)
+        super().quitar()
+

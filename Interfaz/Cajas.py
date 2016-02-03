@@ -1,10 +1,13 @@
 import tkinter as tk
+from tkinter import filedialog as diálogo
 
 from Interfaz import CajasGenéricas as CjG
 from Interfaz import CajasSubEtapas as CjSE
 from Interfaz import Controles as Ctrl
 from Interfaz import ControlesGenéricos as CtrG
 from Interfaz import Formatos as Fm, Botones as Bt, Arte as Art, Animaciones as Anim
+
+from Conectado import Conectado
 
 
 class CajaInic(tk.Frame):
@@ -204,16 +207,69 @@ class CajaCabeza(tk.Frame):
     def __init__(símismo, pariente, apli):
         super().__init__(pariente, **Fm.formato_CjCabeza)
         símismo.apli = apli
+        símismo.pariente = pariente
         símismo.logo_cabeza = Art.imagen('LogoCent')
         logo_cabeza = tk.Label(símismo, image=símismo.logo_cabeza, **Fm.formato_LogoCabz)
         logo_cabeza.place(**Fm.ubic_LogoCabz)
 
-        símismo.bt_leng = Bt.BotónImagen(símismo, comanda=símismo.acción_bt_leng,
-                                         img_norm=Art.imagen('BtLeng_norm'),
-                                         img_sel=Art.imagen('BtLeng_sel'),
-                                         formato=Fm.formato_botones,
-                                         ubicación=Fm.ubic_BtLeng, tipo_ubic='place')
+        cj_bts_archivo = tk.Frame(símismo, **Fm.formato_cajas)
+        Bt.BotónImagen(cj_bts_archivo, comanda=símismo.acción_bt_nuevo,
+                       img_norm=Art.imagen('BtNuevo_norm'),
+                       img_sel=Art.imagen('BtNuevo_sel'),
+                       formato=Fm.formato_botones,
+                       ubicación=Fm.ubic_BtNuevo, tipo_ubic='grid')
+        Bt.BotónImagen(cj_bts_archivo, comanda=símismo.acción_bt_guardar,
+                       img_norm=Art.imagen('BtGuardar_norm'),
+                       img_sel=Art.imagen('BtGuardar_sel'),
+                       formato=Fm.formato_botones,
+                       ubicación=Fm.ubic_BtGuardar, tipo_ubic='grid')
+        Bt.BotónImagen(cj_bts_archivo, comanda=símismo.acción_bt_guardar_como,
+                       img_norm=Art.imagen('BtGuardarComo_norm'),
+                       img_sel=Art.imagen('BtGuardarComo_sel'),
+                       formato=Fm.formato_botones,
+                       ubicación=Fm.ubic_BtGuardarComo, tipo_ubic='grid')
+        Bt.BotónImagen(cj_bts_archivo, comanda=símismo.acción_bt_abrir,
+                       img_norm=Art.imagen('BtAbrir_norm'),
+                       img_sel=Art.imagen('BtAbrir_sel'),
+                       formato=Fm.formato_botones,
+                       ubicación=Fm.ubic_BtAbrir, tipo_ubic='grid')
+        cj_bts_archivo.place(**Fm.ubic_BtsArchivo)
+
+        Bt.BotónImagen(símismo, comanda=símismo.acción_bt_leng,
+                       img_norm=Art.imagen('BtLeng_norm'),
+                       img_sel=Art.imagen('BtLeng_sel'),
+                       formato=Fm.formato_botones,
+                       ubicación=Fm.ubic_BtLeng, tipo_ubic='place')
         símismo.pack(**Fm.ubic_CjCabeza)
+
+    def acción_bt_nuevo(símismo):
+        símismo.apli.Modelo.reinic()
+        símismo.pariente.ContCjEtapas.ir_a_caja(1)
+        símismo.pariente.desbloquear_cajas([1])
+        símismo.pariente.bloquear_cajas([2, 3, 4])
+
+    def acción_bt_guardar(símismo):
+        if símismo.apli.Modelo.archivo_receta is not None:
+            símismo.apli.Modelo.guardar()
+        else:
+            símismo.acción_bt_guardar_como()
+
+    def acción_bt_abrir(símismo):
+        apli = símismo.apli
+        nombre_archivo_con = diálogo.askopenfile(filetypes=[(apli.Trads['ArchivoTinamit'], '*.tin')],
+                                                       title=apli.Trads['CargarModeloConectado'])
+        if nombre_archivo_con:
+            símismo.apli.Modelo.cargar(nombre_archivo_con)
+            símismo.pariente.ContCjEtapas.ir_a_caja(1)
+            símismo.pariente.desbloquear_cajas([1])
+
+    def acción_bt_guardar_como(símismo):
+        apli = símismo.apli
+        nombre_archivo_con = diálogo.asksaveasfilename(defaultextension='.tin',
+                                                       filetypes=[(apli.Trads['ArchivoTinamit'], '*.tin')],
+                                                       title=apli.Trads['CargarModeloConectado'])
+        símismo.apli.Modelo.archivo_receta = nombre_archivo_con
+        símismo.apli.Modelo.guardar()
 
     def acción_bt_leng(símismo):
         Anim.sobreponer(símismo.apli.CajaCentral, símismo.apli.CajaLenguas, 'izquierda')
@@ -239,6 +295,9 @@ class CajaEtp1(CjG.CajaEtapa):
 
         símismo.especificar_subcajas(subcajas)
 
+    def acción_desbloquear(símismo):
+        símismo.desbloquear_subcajas([1])
+
 
 class CajaEtp2(CjG.CajaEtapa):
     def __init__(símismo, pariente, apli, total):
@@ -257,9 +316,9 @@ class CajaEtp3(CjG.CajaEtapa):
         super().__init__(pariente, nombre=apli.Trads['Simular'], núm=3, total=total)
 
         total_subcajas = 1
-        # subcajas = [CjSE.CajaSubEtp31(símismo, apli, total=total_subcajas)]
+        subcajas = [CjSE.CajaSubEtp31(símismo, apli, total=total_subcajas)]
 
-        # símismo.especificar_subcajas(subcajas)
+        símismo.especificar_subcajas(subcajas)
 
     def acción_desbloquear(símismo):
         símismo.desbloquear_subcajas([1])
@@ -269,9 +328,9 @@ class CajaEtp4(CjG.CajaEtapa):
     def __init__(símismo, pariente, apli, total):
         super().__init__(pariente, nombre=apli.Trads['AnálisisIncert'], núm=4, total=total)
         total_subcajas = 1
-        # subcajas = [CjSE.CajaSubEtp41(símismo, apli, total=total_subcajas)]
+        subcajas = [CjSE.CajaSubEtp41(símismo, apli, total=total_subcajas)]
 
-        # símismo.especificar_subcajas(subcajas)
+        símismo.especificar_subcajas(subcajas)
 
     def acción_desbloquear(símismo):
         símismo.desbloquear_subcajas([1])

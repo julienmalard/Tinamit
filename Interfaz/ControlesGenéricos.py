@@ -49,6 +49,7 @@ class ListaItemas(tk.Frame):
         símismo.itemas.remove(itema)
         if itema.objeto is not None:
             símismo.objetos.pop(itema.objeto.nombre)
+        itema.destroy()
 
     def borrar(símismo):
         for i in símismo.itemas:
@@ -82,7 +83,8 @@ class ListaEditable(ListaItemas):
         símismo.controles.editar(itema)
 
     def añadir(símismo, itema):
-        símismo.objetos[itema.objeto.nombre] = itema.objeto
+        if itema.objeto is not None:
+            símismo.objetos[itema.objeto.nombre] = itema.objeto
         super().añadir(itema)
 
     def quitar(símismo, itema):
@@ -96,16 +98,23 @@ class Itema(tk.Frame):
         símismo.objeto = objeto
         símismo.lista = lista_itemas
 
-        símismo.lista.añadir(símismo)
+        símismo.añadir()
 
     def quitar(símismo):
         símismo.lista.quitar(símismo)
 
+    def añadir(símismo):
+        símismo.lista.añadir(símismo)
+
 
 class ItemaEditable(Itema):
-    def __init__(símismo, grupo_control, lista_itemas):
+    def __init__(símismo, grupo_control, lista_itemas, creando_manual=True):
+        símismo.grupo_control = grupo_control
+        if creando_manual:
+            símismo.receta = grupo_control.receta
+
         super().__init__(lista_itemas, grupo_control.objeto)
-        símismo.receta = grupo_control.receta
+
         símismo.lista_itemas = lista_itemas
         símismo.columnas = []
 
@@ -176,7 +185,6 @@ class GrupoControles(object):
             símismo.bt_borrar.bloquear()
 
     def cambió_control(símismo, *args):
-
         if símismo.bt_borrar is not None:
             símismo.bt_borrar.desbloquear()
         if símismo.verificar_completo() is True:

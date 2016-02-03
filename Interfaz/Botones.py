@@ -58,6 +58,8 @@ class Botón(object):
             símismo.bt.pack(**ubicación)
         elif tipo_ubic == 'place':
             símismo.bt.place(**ubicación)
+        elif tipo_ubic == 'grid':
+            símismo.bt.grid(**ubicación)
 
     def bloquear(símismo):
         símismo.estado = 'Bloqueado'
@@ -188,7 +190,16 @@ class BotónAltern(BotónImagen):
         símismo.val = True
 
     def acción(símismo):
-        símismo.val = not símismo.val
+        símismo.poner(not símismo.val)
+
+        if símismo.comanda is not None:
+            símismo.comanda()
+
+    def borrar(símismo):
+        símismo.poner(True)
+
+    def poner(símismo, valor):
+        símismo.val = valor
 
         if símismo.val:
             símismo.formato_sel['image'] = símismo.img_2
@@ -197,5 +208,4 @@ class BotónAltern(BotónImagen):
             símismo.formato_sel['image'] = símismo.img_1
             símismo.formato_norm['image'] = símismo.img_2
 
-        if símismo.comanda is not None:
-            símismo.comanda()
+        símismo.bt.configure(image=símismo.formato_norm['image'])
