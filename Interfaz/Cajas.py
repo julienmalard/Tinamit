@@ -7,8 +7,6 @@ from Interfaz import Controles as Ctrl
 from Interfaz import ControlesGenéricos as CtrG
 from Interfaz import Formatos as Fm, Botones as Bt, Arte as Art, Animaciones as Anim
 
-from Conectado import Conectado
-
 
 class CajaInic(tk.Frame):
     def __init__(símismo, apli):
@@ -257,7 +255,7 @@ class CajaCabeza(tk.Frame):
     def acción_bt_abrir(símismo):
         apli = símismo.apli
         nombre_archivo_con = diálogo.askopenfile(filetypes=[(apli.Trads['ArchivoTinamit'], '*.tin')],
-                                                       title=apli.Trads['CargarModeloConectado'])
+                                                 title=apli.Trads['CargarModeloConectado'])
         if nombre_archivo_con:
             símismo.apli.Modelo.cargar(nombre_archivo_con)
             símismo.pariente.ContCjEtapas.ir_a_caja(1)

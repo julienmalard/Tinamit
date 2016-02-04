@@ -44,17 +44,17 @@ color_bts = {'1': '#%02x%02x%02x' % (218, 242, 142),
              '4': '#%02x%02x%02x' % (128, 64, 0)}
 color_gris = '#C3C3C3'
 col_1 = color_bts['3']
-col_2 = color_bts['2']
-col_3 = color_bts['1']
+col_2 = '#cc9900'
+col_3 = color_bts['2']
 col_4 = color_bts['1']
-col_5 = color_bts['3']
+col_5 = '#33cc33'
 fuente = 'Comic Sans MS'
 formato_cajas = dict(bg=col_fondo, borderwidth=0, highlightthickness=0)
 formato_botones = dict(borderwidth=0, highlightthickness=0)
 formato_etiq = dict(bg=col_fondo)
 
-formato_bts_norm = dict(activebackground=col_3, bg=col_2, fg='#000000', **formato_botones)
-formato_bts_sel = dict(bg=col_3)
+formato_bts_norm = dict(activebackground=col_1, bg=col_3, fg='#000000', **formato_botones)
+formato_bts_sel = dict(bg=col_1)
 
 # Ventana central
 ancho_ventana = 1100

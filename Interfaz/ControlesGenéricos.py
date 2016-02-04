@@ -320,8 +320,6 @@ class CampoIngreso(object):
                     símismo.comanda(nueva_val)
 
         except ValueError:
-            símismo.var.set('')
-            símismo.val = None
             símismo.CampoIngr.config(**Fm.formato_CampoIngr_error)
             return
 
@@ -344,7 +342,7 @@ class CampoIngreso(object):
 
 
 class IngrNúm(CampoIngreso):
-    def __init__(símismo, pariente, límites, prec, ubicación, tipo_ubic, ancho=5, comanda=None,
+    def __init__(símismo, pariente, límites, prec, ubicación, tipo_ubic, lím_incl=True, ancho=5, comanda=None,
                  nombre=None, val_inic='', orden='texto'):
 
         if prec not in ['dec', 'ent']:
@@ -352,6 +350,7 @@ class IngrNúm(CampoIngreso):
         símismo.prec = prec
 
         símismo.val_inic = val_inic
+        símismo.lím_incl = lím_incl
 
         if límites is None:
             límites = (float('-Inf'), float('Inf'))
@@ -371,8 +370,12 @@ class IngrNúm(CampoIngreso):
         else:
             raise KeyError('"Prec" debe ser uno de "ent" o "dec".')
 
-        if not (símismo.límites[0] <= nueva_val <= símismo.límites[1]):
-            raise ValueError
+        if símismo.lím_incl:
+            if not (símismo.límites[0] <= nueva_val <= símismo.límites[1]):
+                raise ValueError
+        else:
+            if not (símismo.límites[0] < nueva_val < símismo.límites[1]):
+                raise ValueError
 
         return nueva_val
 
@@ -460,7 +463,8 @@ class Menú(object):
                     menú.reinstaurar(símismo.val)
 
             símismo.val = nueva_val
-            símismo.comanda(nueva_val)
+            if símismo.comanda is not None:
+                símismo.comanda(nueva_val)
 
     def excluir(símismo, valor):
         menú = símismo.MenúOpciones['menu']

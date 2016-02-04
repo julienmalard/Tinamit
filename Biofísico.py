@@ -19,6 +19,7 @@ class EnvolturaBF(object):
         símismo.vars = símismo.sacar_vars()
         símismo.conex_entrando = {}
         símismo.vars_saliendo = []
+        símismo.unidades_tiempo = símismo.modelo.unidades_tiempo
 
     def sacar_vars(símismo):
         variables = list(símismo.modelo.variables.keys())

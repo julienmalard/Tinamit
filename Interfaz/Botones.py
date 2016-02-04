@@ -132,7 +132,6 @@ class BotónNavIzq(object):
         símismo.lín.configure(bg=Fm.color_gris)
 
 
-
 class BotónNavEtapa(BotónImagen):
     def __init__(símismo, pariente, tipo):
         if tipo == 'adelante':

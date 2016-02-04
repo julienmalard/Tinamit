@@ -7,8 +7,8 @@ class Modelo(object):
     def ejec(símismo):
         pass
 
-    def incr(símismo):
+    def incr(símismo, paso):
         pass
 
-    def actualizar(símismo):
+    def actualizar(símismo, var, valor):
         pass

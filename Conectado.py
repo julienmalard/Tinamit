@@ -9,15 +9,14 @@ class Conectado(object):
     def __init__(símismo, archivo_receta=None):
 
         símismo.archivo_receta = archivo_receta
-        símismo.receta = {'mds': '', 'bf': '', 'conexiones': [], 'unid_tiempo_mds':True, 'conv_unid_tiempo': 1}
+        símismo.receta = {'mds': '', 'bf': '', 'conexiones': [], 'ref_tiempo_mds': True, 'conv_unid_tiempo': 1}
 
         símismo.mds = None
         símismo.vars_mds = {}
         símismo.bf = None
         símismo.vars_bf = []
         símismo.conexiones = []
-        símismo.unid_tiempo_mds = True
-        símismo.conv_unid_tiempo =
+        símismo.ref_tiempo_mds = True
 
         símismo.cargar()
         símismo.actualizar()
@@ -87,9 +86,6 @@ class Conectado(object):
             símismo.mds.conex_entrando[var_mds] = {'var': var_bf, 'conv': conv}
             símismo.bf.vars_saliendo.append(var_bf)
 
-        print('con', símismo.bf.vars_saliendo, símismo.bf.conex_entrando)
-        print('con', símismo.mds.vars_saliendo, símismo.mds.conex_entrando)
-
     def desconectar(símismo, conexión):
         símismo.receta['conexiones'].remove(conexión)
 
@@ -108,7 +104,7 @@ class Conectado(object):
         símismo.mds.terminar_simul()
 
     def incrementar(símismo, paso=1):
-        if símismo.unid_tiempo_mds:
+        if símismo.ref_tiempo_mds:
             símismo.mds.incrementar(paso)
             símismo.bf.incrementar(paso*símismo.receta['conv_unid_tiempo'])
         else:
@@ -125,7 +121,7 @@ class Conectado(object):
             for i in temp['conexiones']:
                 símismo.receta['conexiones'].append(i)
             símismo.receta['conv_unid_tiempo'] = temp['conv_unid_tiempo']
-            símismo.receta['unid_tiempo_mds'] = temp['unid_tiempo_mds']
+            símismo.receta['ref_tiempo_mds'] = temp['ref_tiempo_mds']
 
     def reinic(símismo):
         símismo.receta['mds'] = ''
@@ -133,7 +129,7 @@ class Conectado(object):
         for i in reversed(símismo.receta['conexiones']):
             símismo.receta['conexiones'].remove(i)
         símismo.receta['conv_unid_tiempo'] = 1
-        símismo.receta['unid_tiempo_mds'] = True
+        símismo.receta['ref_tiempo_mds'] = True
 
         símismo.mds = None
         símismo.vars_mds = {}

@@ -9,10 +9,6 @@ from Interfaz import ControlesGenéricos as CtrG
 from Interfaz import Controles as Ctrl
 from Interfaz import Arte as Art
 
-from Conectado import Conectado
-from MDS import EnvolturaMDS
-from Biofísico import EnvolturaBF
-
 
 class CajaSubEtp11(CjG.CajaSubEtapa):
     def __init__(símismo, pariente, apli, total):
@@ -71,7 +67,7 @@ class CajaSubEtp11(CjG.CajaSubEtapa):
     def buscar_bf(símismo):
         apli = símismo.apli
         nombre_archivo_bf = diálogo.askopenfilename(filetypes=[(apli.Trads['ModelosPython'], '*.py')],
-                                                    title=apli.Trads['CargarModeloBF'])
+                                                    title=apli.Trads['CargarModeloBf'])
         if nombre_archivo_bf:
             rec = símismo.receta
             rec['bf'] = nombre_archivo_bf
@@ -89,9 +85,6 @@ class CajaSubEtp11(CjG.CajaSubEtapa):
 
     def verificar_completo(símismo):
         símismo.Modelo.actualizar()
-        print(símismo.Modelo.receta)
-        print(símismo.Modelo.mds)
-        print(símismo.Modelo.bf)
 
         if símismo.Modelo.mds is not None and símismo.Modelo.bf is not None:
             símismo.pariente.desbloquear_cajas([2])
@@ -171,7 +164,6 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
         símismo.verificar_completo()
 
     def añadir_conexión(símismo, conexión):
-        print(conexión)
         símismo.MnVarsMDS.excluir(conexión['var_mds'])
         símismo.MnVarsBf.excluir(conexión['var_bf'])
         símismo.Modelo.conectar(conexión)
@@ -182,7 +174,6 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
         símismo.Modelo.desconectar(conexión)
 
     def verificar_completo(símismo):
-        print(símismo.Modelo.receta)
         if len(símismo.Modelo.receta['conexiones']):
             símismo.pariente.desbloquear_cajas([3, 4])
             return True
@@ -199,22 +190,26 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
 
         cj_ctrls_tiempo = tk.Frame(símismo, **Fm.formato_cajas)
 
-        cj_unidades_tiempo = tk.Frame(símismo, **Fm.formato_cajas)
-        símismo.EtiqUnidTiempoMDS = tk.Label(cj_unidades_tiempo, **Fm.formato_EtiqCtrl)
-        símismo.EtiqUnidTiempoMDS.pack(**Fm.ubic_CtrlsUnidTiempo)
+        cj_unidades_tiempo = tk.Frame(cj_ctrls_tiempo, **Fm.formato_cajas)
+        etiq_1_tiempo_ref = tk.Label(cj_unidades_tiempo, text='1', **Fm.formato_EtiqCtrl)
+        etiq_1_tiempo_ref.pack(**Fm.ubic_CtrlsUnidTiempo)
+        símismo.MnTiempoRef = CtrG.Menú(cj_unidades_tiempo, opciones=[], ancho=7,
+                                        comanda=símismo.acción_cambió_ref_unid,
+                                        ubicación=Fm.ubic_CtrlsUnidTiempo, tipo_ubic='pack')
         símismo.IngrConvUnidTiempo = CtrG.IngrNúm(cj_unidades_tiempo, nombre='=',
-                                                  límites=(0, None), prec='dec',
+                                                  límites=(0, None), prec='ent',
                                                   comanda=símismo.acción_cambió_conversión,
                                                   ubicación=Fm.ubic_CtrlsUnidTiempo, tipo_ubic='pack')
-        símismo.EtiqUnidTiempoBf = tk.Label(cj_unidades_tiempo, **Fm.formato_EtiqCtrl)
-        símismo.EtiqUnidTiempoBf.pack(**Fm.ubic_CtrlsUnidTiempo)
+        símismo.EtiqUnidTiempoNoRef = tk.Label(cj_unidades_tiempo, text='Prueba', **Fm.formato_EtiqCtrl)
+        símismo.EtiqUnidTiempoNoRef.pack(**Fm.ubic_CtrlsUnidTiempo)
         cj_unidades_tiempo.pack(**Fm.ubic_CtrlsTiempo)
 
-        cj_tiempo_final = tk.Frame(símismo, **Fm.formato_cajas)
+        cj_tiempo_final = tk.Frame(cj_ctrls_tiempo, **Fm.formato_cajas)
         símismo.IngrTempFinal = CtrG.IngrNúm(cj_tiempo_final, nombre=apli.Trads['TiempoFinal'],
-                                             límites=(0, None), prec='ent', val_inic=100,
+                                             límites=(0, None), lím_incl=False, prec='ent', val_inic=100,
                                              ubicación=Fm.ubic_CtrlsUnidTiempo, tipo_ubic='pack')
         símismo.EtiqUnidTiempoFinal = tk.Label(cj_tiempo_final, **Fm.formato_EtiqCtrl)
+        símismo.EtiqUnidTiempoFinal.pack(**Fm.ubic_CtrlsTiempo)
         cj_tiempo_final.pack(**Fm.ubic_CtrlsTiempo)
 
         cj_bt_simul = tk.Frame(símismo, **Fm.formato_cajas)
@@ -231,33 +226,33 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
         cj_bt_simul.place(**Fm.ubic_cj_bt_simular)
 
     def acción_desbloquear(símismo):
-        símismo.actualizar()
+        unidades_tiempo_mds = símismo.Modelo.mds.unidades_tiempo
+        unidades_tiempo_bf = símismo.Modelo.bf.unidades_tiempo
+        símismo.MnTiempoRef.refrescar(opciones=[unidades_tiempo_mds, unidades_tiempo_bf])
+        if símismo.Modelo.receta['ref_tiempo_mds']:
+            símismo.MnTiempoRef.poner(unidades_tiempo_mds)
+        else:
+            símismo.MnTiempoRef.poner(unidades_tiempo_bf)
+        símismo.IngrConvUnidTiempo.poner(símismo.Modelo.receta['conv_unid_tiempo'])
 
         símismo.verificar_completo()
 
-    def acción_cambió_conversión(símismo):
-        val = símismo.IngrConvUnidTiempo.val
-        if val > 1:
-            símismo.Modelo.unid_tiempo_mds = True
-            símismo.Modelo.conv_unid_tiempo = round(val)
-        else:
-            símismo.Modelo.unid_tiempo_mds = False
-            símismo.Modelo.conv_unid_tiempo = val
-
-        símismo.actualizar()
-
-    def actualizar(símismo):
+    def acción_cambió_ref_unid(símismo, val):
         unidades_tiempo_mds = símismo.Modelo.mds.unidades_tiempo
         unidades_tiempo_bf = símismo.Modelo.bf.unidades_tiempo
-        símismo.EtiqUnidTiempoMDS.config(text=unidades_tiempo_mds)
-        símismo.EtiqUnidTiempoBf.config(text=unidades_tiempo_bf)
+        print(unidades_tiempo_mds, unidades_tiempo_bf)
 
-        if símismo.Modelo.unid_tiempo_mds is True:
-            símismo.IngrConvUnidTiempo.poner(símismo.Modelo.receta['conv_unid_tiempo'])
+        if val == unidades_tiempo_mds:
+            símismo.Modelo.receta['ref_tiempo_mds'] = True
             símismo.EtiqUnidTiempoFinal.config(text=unidades_tiempo_mds)
+            símismo.EtiqUnidTiempoNoRef.config(text=unidades_tiempo_bf)
         else:
-            símismo.IngrConvUnidTiempo.poner(round(1/símismo.Modelo.receta['conv_unid_tiempo']))
+            símismo.Modelo.receta['ref_tiempo_mds'] = False
             símismo.EtiqUnidTiempoFinal.config(text=unidades_tiempo_bf)
+            símismo.EtiqUnidTiempoNoRef.config(text=unidades_tiempo_mds)
+
+    def acción_cambió_conversión(símismo, val):
+        símismo.Modelo.receta['conv_unid_tiempo'] = val
 
     def acción_simular(símismo):
         símismo.CjSimulando.pack(**Fm.ubic_CjSimulando)
@@ -267,13 +262,6 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
 
         símismo.BtSimul.desbloquear()
         símismo.CjSimulando.pack_forget()
-
-    def verificar_completo(símismo):
-        return
-        if len(símismo.apli.modelo.config.varsX) > 0:
-            símismo.pariente.desbloquear_cajas([3, 4])
-        else:
-            símismo.pariente.bloquear_cajas([3, 4])
 
 
 class CajaSubEtp41(CjG.CajaSubEtapa):

@@ -32,7 +32,7 @@ class EnvolturaMDS(object):
             símismo.intentar_función(símismo.dll.vensim_get_varattrib,
                                      [b'TIME STEP', 1, mem_inter, 50]
                                      )
-            unidades = mem_inter.raw.decode().strip()
+            unidades = mem_inter.raw.decode().split('\x00')[0]
 
         else:
             raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
