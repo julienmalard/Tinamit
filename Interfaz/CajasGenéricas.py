@@ -1,6 +1,7 @@
 import tkinter as tk
 
 from Interfaz import Formatos as Fm
+from Interfaz.Formatos import gen_formato as gf
 from Interfaz import Botones as Bt
 from Interfaz import ControlesGenéricos as Ctrl
 from Interfaz import Arte as Ic
@@ -9,12 +10,12 @@ from Interfaz import Animaciones as Anim
 
 class ContCajaEtps(tk.Frame):
     def __init__(símismo, pariente):
-        super().__init__(pariente, **Fm.formato_CjContCjEtps)
+        super().__init__(pariente, **Fm.formato_cajas)
         símismo.pariente = pariente
 
         símismo.Cajas = []
         símismo.CajaActual = None
-        símismo.pack(**Fm.ubic_CjContCjEtps)
+        símismo.pack(**gf(Fm.ubic_CjContCjEtps))
         símismo.en_transición = False
 
     def establecer_cajas(símismo, cajas_etapas):
@@ -55,7 +56,7 @@ class CajaEtapa(tk.Frame):
         símismo.SubCajaActual = None
         
         etiq = tk.Label(símismo, text=nombre, **Fm.formato_EncbzCjEtp)
-        etiq.place(**Fm.ubic_EncbzCjEtp)
+        etiq.place(**gf(Fm.ubic_EncbzCjEtp))
 
         símismo.BtAtrás = símismo.BtAdelante = None
         if núm > 1:
@@ -63,7 +64,7 @@ class CajaEtapa(tk.Frame):
         if núm < total:
             símismo.BtAdelante = Bt.BotónNavEtapa(símismo, tipo='adelante')
 
-        símismo.place(**Fm.ubic_CjEtp)
+        símismo.place(**gf(Fm.ubic_CjEtp))
 
     def especificar_subcajas(símismo, subcajas):
         símismo.SubCajas = subcajas
@@ -138,7 +139,7 @@ class CajaSubEtapa(tk.Frame):
         
         if nombre is not None:
             etiq = tk.Label(símismo, text=nombre, **Fm.formato_EncbzCjSubEtp)
-            etiq.place(**Fm.ubic_EncbzCjSubEtp)
+            etiq.place(**gf(Fm.ubic_EncbzCjSubEtp))
             
         símismo.BtAdelante = None
         símismo.BtAtrás = None
@@ -147,7 +148,7 @@ class CajaSubEtapa(tk.Frame):
         if núm > 1:
             símismo.BtAtrás = Bt.BotónNavSub(símismo, tipo='atrás')
 
-        símismo.place(Fm.ubic_CjSubEtp)
+        símismo.place(gf(Fm.ubic_CjSubEtp))
 
     def bloquear_transición(símismo, dirección):
         if dirección == 'anterior' and símismo.BtAtrás is not None:
@@ -212,39 +213,3 @@ class CajaActivable(tk.Frame):
             etiq.configure(color=símismo.colores_etiquetas[n])
         for bt in símismo.botones:
             bt.acción_desbloquear()
-
-
-class CajaAvanzada(tk.Frame):
-    def __init__(símismo, pariente, ubicación, tipo_ubic):
-        super().__init__(pariente)
-
-        símismo.caja_móbil = None
-        símismo.flechita_avnz = Ic.imagen('FlchAvzd')
-        símismo.flechita_senc = Ic.imagen('FlchSenc')
-        símismo.bt = tk.Button(símismo, text='Avanzado', image=símismo.flechita_avnz,
-                               command=símismo.bajar,
-                               compound='right')
-        símismo.bt.pack()
-
-        if tipo_ubic == 'place':
-            símismo.place(**ubicación)
-        elif tipo_ubic == 'pack':
-            símismo.pack(**ubicación)
-
-    def establecer_caja_móbil(símismo, caja_móbil):
-        símismo.caja_móbil = caja_móbil
-        símismo.caja_móbil.cj.place(**Fm.ubic_CjMóbl)
-
-    def bajar(símismo):
-        símismo.bt.configure(text='Sencillo', image=símismo.flechita_senc, command=símismo.subir)
-        Anim.deslizar(objetos=[símismo.caja_móbil, símismo.bt],
-                      pos_inic=[símismo.caja_móbil.winfo_y(), símismo.bt.winfo_y()],
-                      dirección='abajo',
-                      distancia=símismo.caja_móbil.winfo_height())
-
-    def subir(símismo):
-        símismo.bt.configure(text='Avanzado', image=símismo.flechita_avnz, command=símismo.bajar)
-        Anim.deslizar(objetos=[símismo.caja_móbil, símismo.bt],
-                      pos_inic=[símismo.caja_móbil.winfo_y(), símismo.bt.winfo_y()],
-                      dirección='arriba',
-                      distancia=símismo.caja_móbil.winfo_height())

@@ -11,28 +11,44 @@ leng = dic['Actual']
 IzqaDerech = dic['Lenguas'][leng]['IzqaDerech']
 
 
-def gen_formato(formato):
+def gen_formato(formato, imprimir=False):
     if IzqaDerech:
         return formato
     else:
-        invers = [('e','w'), ('ne','nw'), ('se','sw'), ('right','left')]
-        if 'relx' not in formato.keys():
-            formato['relx'] = 0
-        for ll, v in formato.items():
-            if ll == 'x':
-                formato[ll] = -v
-                break
-            if ll == 'relx':
-                formato[ll] = (1 - v)
-                break
+        if type(formato) is str:
+            invers = [('e', 'w'), ('ne', 'nw'), ('se', 'sw'), ('right', 'left'), ('izquierda', 'derecha')]
             for inver in invers:
-                if v == inver[0]:
-                    formato[ll] = inver[1]
+                if formato == inver[0]:
+                    formato = inver[1]
                     break
-                elif v == inver[1]:
-                    formato[ll] = inver[0]
-                    break
+                elif formato == inver[1]:
+                    formato = inver[0]
 
+        if type(formato) is dict:
+            formato = formato.copy()
+            invers = [('e', 'w'), ('ne', 'nw'), ('se', 'sw'), ('right', 'left')]
+            if 'x' in formato.keys():
+                if 'relx' not in formato.keys():
+                    formato['relx'] = 0
+            if 'x' in formato.keys() or 'relx' in formato.keys():
+                if 'anchor' not in formato.keys():
+                    formato['anchor'] = tk.NW
+
+            for ll, v in formato.items():
+                if ll == 'x':
+                    formato[ll] = -v
+                if ll == 'relx':
+                    formato[ll] = (1 - v)
+                    continue
+                for inver in invers:
+                    if v == inver[0]:
+                        formato[ll] = inver[1]
+                        continue
+                    elif v == inver[1]:
+                        formato[ll] = inver[0]
+
+        if imprimir:
+            print(formato)
         return formato
 
 
@@ -130,6 +146,7 @@ ubic_CjBtsCjEditLeng = dict(side='top', pady=20, fill=tk.X)
 formato_CjLengTxOrig = dict(bg=col_fondo, highlightthickness=1, highlightbackground=col_5)
 formato_EtiqLengTxOrig = dict(font=(fuente, '14', 'bold'), fg=col_5, bg=col_fondo,
                               width=20, wraplength=240, anchor=tk.W, justify=tk.LEFT)
+ubic_CjTxOrigTradLeng = dict(side='left', padx=5, pady=5, fill=tk.Y, expand=True)
 formato_CampoTexto = dict(font=(fuente, '14', 'bold'), bg=col_fondo,
                           highlightthickness=1, highlightbackground=col_3, highlightcolor=col_5,
                           width=25, height=3, wrap=tk.WORD, relief=tk.FLAT)
@@ -185,7 +202,6 @@ formato_LínIzq = dict(bd=0, highlightthickness=0, width=2, bg='black')
 ubic_LínIzq = dict(side='right', pady=(0, 20), fill=tk.Y, expand=True)
 
 # Caja Contenedora de cajas etapas
-formato_CjContCjEtps = dict(**formato_cajas)
 ubic_CjContCjEtps = dict(side='right', fill=tk.BOTH, expand=True, anchor=tk.NW)
 
 # Cajas etapas

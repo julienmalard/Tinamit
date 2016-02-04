@@ -4,6 +4,7 @@ from Interfaz import Arte as Art
 from Interfaz import Botones as Bt
 from Interfaz import ControlesGenéricos as CtrG
 from Interfaz import Formatos as Fm
+from Interfaz.Formatos import gen_formato as gf
 
 
 # Caja lenguas
@@ -12,25 +13,26 @@ class CajaAñadirLeng(tk.Frame):
         super().__init__(caja, **Fm.formato_cajas)
         Bt.BotónImagen(símismo, comanda=símismo.acción_bt_plus, formato=Fm.formato_botones,
                        img_norm=Art.imagen('BtPlus_norm'), img_sel=Art.imagen('BtPlus_sel'),
-                       ubicación=Fm.ubic_CjCamposAñLeng, tipo_ubic='pack')
+                       ubicación=gf(Fm.ubic_CjCamposAñLeng), tipo_ubic='pack')
         símismo.pariente = pariente
 
         símismo.cj_campos = cj_campos = tk.Frame(símismo, **Fm.formato_cajas)
-        símismo.ingr_leng = CtrG.IngrTexto(cj_campos, nombre=None, ubicación=Fm.ubic_CjCamposAñLeng, tipo_ubic='pack')
+        símismo.ingr_leng = CtrG.IngrTexto(cj_campos, nombre=None,
+                                           ubicación=gf(Fm.ubic_CjCamposAñLeng), tipo_ubic='pack')
 
         Bt.BotónImagen(cj_campos, comanda=símismo.acción_bt_guardar, formato=Fm.formato_botones,
                        img_norm=Art.imagen('BtMarca_norm'), img_sel=Art.imagen('BtMarca_sel'),
-                       ubicación=Fm.ubic_BtsAñadirLeng, tipo_ubic='pack')
+                       ubicación=gf(Fm.ubic_BtsAñadirLeng), tipo_ubic='pack')
 
         símismo.IzqDer = Bt.BotónAltern(cj_campos, formato=Fm.formato_botones,
                                         img_1=Art.imagen('BtEscribIzqDer'), img_2=Art.imagen('BtEscribDerIzq'),
-                                        ubicación=Fm.ubic_BtsAñadirLeng, tipo_ubic='pack')
+                                        ubicación=gf(Fm.ubic_BtsAñadirLeng), tipo_ubic='pack')
 
         símismo.mostrando = False
 
     def acción_bt_plus(símismo):
         if not símismo.mostrando:
-            símismo.cj_campos.pack(**Fm.ubic_CjCamposAñLeng)
+            símismo.cj_campos.pack(**gf(Fm.ubic_CjCamposAñLeng))
         else:
             símismo.cj_campos.pack_forget()
 
@@ -39,7 +41,7 @@ class CajaAñadirLeng(tk.Frame):
     def acción_bt_guardar(símismo):
         nombre = símismo.ingr_leng.val
         if nombre is not None and len(nombre):
-            izqder = símismo.IzqDer.estado
+            izqder = símismo.IzqDer.val
             símismo.pariente.añadir_lengua(nombre=nombre, izqder=izqder)
         símismo.ingr_leng.borrar()
 
@@ -63,7 +65,7 @@ class ItemaLeng(CtrG.Itema):
                                      img_norm=img_norm,
                                      img_sel=Art.imagen('BtCasilla_sel'),
                                      img_bloq=Art.imagen('BtCasilla_bloq'),
-                                     ubicación=Fm.ubic_IzqLstLeng, tipo_ubic='pack')
+                                     ubicación=gf(Fm.ubic_IzqLstLeng), tipo_ubic='pack')
         if not utilizable:
             bt_utilizar.bloquear()
 
@@ -76,8 +78,8 @@ class ItemaLeng(CtrG.Itema):
         cj_etiq_nombre_leng.pack_propagate(0)
         símismo.etiq_nombre = tk.Label(cj_etiq_nombre_leng, text=símismo.nombre,
                                        font=Fm.fuente_etiq_itema_norm, **Fm.formato_etiq_nombre_leng)
-        símismo.etiq_nombre.pack(**Fm.ubic_etiq_nombre_leng)
-        cj_etiq_nombre_leng.pack(**Fm.ubic_EtiqNombreLstLeng)
+        símismo.etiq_nombre.pack(**gf(Fm.ubic_etiq_nombre_leng))
+        cj_etiq_nombre_leng.pack(**gf(Fm.ubic_EtiqNombreLstLeng))
 
         if 0 < estado < 1:
             color_barra = Art.inter_color(Fm.colores_prog_leng, p=estado, tipo='hex')
@@ -85,25 +87,25 @@ class ItemaLeng(CtrG.Itema):
             barra_prog = tk.Canvas(cj_central, width=ancho, height=altura, background=Fm.col_fondo,
                                    highlightthickness=1, highlightbackground=color_barra)
             barra_prog.create_rectangle(0, 0, round(ancho*estado), altura, fill=color_barra, outline=color_barra)
-            barra_prog.pack(Fm.ubic_DerLstLeng)
+            barra_prog.pack(gf(Fm.ubic_DerLstLeng))
 
         símismo.bt_editar = Bt.BotónImagen(cj_bts, comanda=lambda x=nombre: pariente.editar(x),
                                            formato=Fm.formato_botones,
                                            img_norm=Art.imagen('BtEditarItema_norm'),
                                            img_sel=Art.imagen('BtEditarItema_sel'),
-                                           ubicación=Fm.ubic_IzqLstLeng, tipo_ubic='pack')
+                                           ubicación=gf(Fm.ubic_IzqLstLeng), tipo_ubic='pack')
         símismo.bt_borrar = Bt.BotónImagen(cj_bts, comanda=lambda x=nombre: pariente.confirmar_borrar(x),
                                            formato=Fm.formato_botones,
                                            img_norm=Art.imagen('BtBorrarItema_norm'),
                                            img_sel=Art.imagen('BtBorrarItema_sel'),
                                            img_bloq=Art.imagen('BtBorrarItema_bloq'),
-                                           ubicación=Fm.ubic_IzqLstLeng, tipo_ubic='pack')
+                                           ubicación=gf(Fm.ubic_IzqLstLeng), tipo_ubic='pack')
         if not borrable:
             símismo.bt_borrar.bloquear()
 
-        cj_bt_utilizar.pack(**Fm.ubic_IzqLstLeng)
-        cj_central.pack(**Fm.ubic_CjCentLstLeng)
-        cj_bts.pack(**Fm.ubic_BtsAñadirLeng)
+        cj_bt_utilizar.pack(**gf(Fm.ubic_IzqLstLeng))
+        cj_central.pack(**gf(Fm.ubic_CjCentLstLeng))
+        cj_bts.pack(**gf(Fm.ubic_BtsAñadirLeng))
 
 
 class CajaEditLeng(tk.Frame):
@@ -121,17 +123,17 @@ class CajaEditLeng(tk.Frame):
         etiq_base = tk.Label(cj_nombres_lengs, text=leng_base, **Fm.formato_EtiqLengBase)
         etiq_edit = tk.Label(cj_nombres_lengs, text=leng_edit, **Fm.formato_EtiqLengEdit)
 
-        etiq_base.pack(**Fm.ubic_EtiqLengs)
-        etiq_edit.pack(**Fm.ubic_EtiqLengs)
+        etiq_base.pack(**gf(Fm.ubic_EtiqLengs))
+        etiq_edit.pack(**gf(Fm.ubic_EtiqLengs))
 
         lín_hor_1 = tk.Frame(símismo, **Fm.formato_LínHor)
 
-        etiq_cbz.pack(**Fm.ubic_CjNomEditLeng)
-        cj_nombres_lengs.pack(**Fm.ubic_CjNomEditLeng)
+        etiq_cbz.pack(**gf(Fm.ubic_CjNomEditLeng))
+        cj_nombres_lengs.pack(**gf(Fm.ubic_CjNomEditLeng))
 
         cj_lista = tk.Frame(símismo, **Fm.formato_cajas)
         lista = CtrG.ListaItemas(cj_lista, formato_cj=Fm.formato_LstEditLeng,
-                                 ubicación=Fm.ubic_LstEditLeng, tipo_ubic='place')
+                                 ubicación=gf(Fm.ubic_LstEditLeng), tipo_ubic='place')
         símismo.itemas = []
         for ll, texto in sorted(dic_leng_base['Trads'].items()):
             if ll in dic_leng_edit['Trads'].keys():
@@ -147,21 +149,21 @@ class CajaEditLeng(tk.Frame):
         símismo.bt_guardar = Bt.BotónTexto(cj_bts, texto=apli.Trads['Guardar'],
                                            formato_norm=Fm.formato_BtGuardar_norm,
                                            formato_sel=Fm.formato_BtGuardar_sel,
-                                           ubicación=Fm.ubic_BtsGrupo, tipo_ubic='pack',
+                                           ubicación=gf(Fm.ubic_BtsGrupo), tipo_ubic='pack',
                                            comanda=símismo.guardar)
 
         símismo.bt_no_guardar = Bt.BotónTexto(cj_bts, texto=apli.Trads['NoGuardar'],
                                               formato_norm=Fm.formato_BtBorrar_norm,
                                               formato_sel=Fm.formato_BtBorrar_sel,
-                                              ubicación=Fm.ubic_BtsGrupo, tipo_ubic='pack',
+                                              ubicación=gf(Fm.ubic_BtsGrupo), tipo_ubic='pack',
                                               comanda=símismo.cerrar)
 
-        cj_cbz.pack(**Fm.ubic_CjCbzCjEditLeng)
-        lín_hor_1.pack(**Fm.ubic_LínHorCjEditLeng)
-        cj_lista.pack(**Fm.ubic_CjCentrCjEditLeng)
-        lín_hor_2.pack(**Fm.ubic_LínHorCjEditLeng)
-        cj_bts.pack(**Fm.ubic_CjBtsCjEditLeng)
-        símismo.place(**Fm.ubic_CjEditLeng)
+        cj_cbz.pack(**gf(Fm.ubic_CjCbzCjEditLeng))
+        lín_hor_1.pack(**gf(Fm.ubic_LínHorCjEditLeng))
+        cj_lista.pack(**gf(Fm.ubic_CjCentrCjEditLeng))
+        lín_hor_2.pack(**gf(Fm.ubic_LínHorCjEditLeng))
+        cj_bts.pack(**gf(Fm.ubic_CjBtsCjEditLeng))
+        símismo.place(**gf(Fm.ubic_CjEditLeng))
 
     def guardar(símismo):
         for itema in símismo.itemas:
@@ -180,15 +182,16 @@ class ItemaEditTrad(CtrG.Itema):
         símismo.llave = llave
         cj_tx_orig = tk.Frame(símismo, **Fm.formato_CjLengTxOrig)
         etiq_tx_orig = tk.Label(cj_tx_orig, text=texto_origin, **Fm.formato_EtiqLengTxOrig)
-        cj_trad = tk.Frame(símismo, **Fm.formato_cajas)
+        etiq_tx_orig.pack(side='top')
 
+        cj_trad = tk.Frame(símismo, **Fm.formato_cajas)
         símismo.campo_texto = tk.Text(cj_trad, **Fm.formato_CampoTexto)
         símismo.campo_texto.insert('end', texto_trad)
 
-        etiq_tx_orig.pack(side='top')
         símismo.campo_texto.pack()
-        cj_tx_orig.pack(side='left', padx=5, pady=5, fill=tk.Y, expand=True)
-        cj_trad.pack(**Fm.ubic_EtiqLengs)
+        cj_tx_orig.pack(**gf(Fm.ubic_CjTxOrigTradLeng))
+
+        cj_trad.pack(**gf(Fm.ubic_EtiqLengs))
 
     def sacar_trad(símismo):
         return símismo.campo_texto.get('1.0', 'end').replace('\n', '')
@@ -199,15 +202,15 @@ class CajaAvisoReinic(tk.Frame):
         super().__init__(**Fm.formato_CajaAvisoReinic)
 
         etiq = tk.Label(símismo, text=texto, **Fm.formato_EtiqLengReinic)
-        etiq.pack(**Fm.ubic_etiq_aviso_inic_leng)
+        etiq.pack(**gf(Fm.ubic_etiq_aviso_inic_leng))
 
         símismo.bt = Bt.BotónTexto(símismo, texto=apli.Trads['Entendido'],
                                    formato_norm=Fm.formato_BtAvisoInic_norm,
                                    formato_sel=Fm.formato_BtAvisoInic_sel,
-                                   ubicación=Fm.ubic_bt_aviso_inic_leng, tipo_ubic='pack',
+                                   ubicación=gf(Fm.ubic_bt_aviso_inic_leng), tipo_ubic='pack',
                                    comanda=símismo.destroy)
 
-        símismo.place(**Fm.ubic_CjAvisoReinic)
+        símismo.place(**gf(Fm.ubic_CjAvisoReinic))
 
 
 class CajaAvisoBorrar(tk.Frame):
@@ -217,24 +220,24 @@ class CajaAvisoBorrar(tk.Frame):
         símismo.nombre = nombre
 
         etiq = tk.Label(símismo, text=apli.Trads["AvisoBorrarLeng"] % nombre, **Fm.formato_EtiqLengBorrar)
-        etiq.pack(**Fm.ubic_etiq_aviso_borrar_leng)
+        etiq.pack(**gf(Fm.ubic_etiq_aviso_borrar_leng))
 
         cj_bts = tk.Frame(símismo, **Fm.formato_cajas)
         símismo.bt_no = Bt.BotónTexto(cj_bts, texto=apli.Trads['No'],
                                       formato_norm=Fm.formato_BtGuardar_norm,
                                       formato_sel=Fm.formato_BtGuardar_sel,
-                                      ubicación=Fm.ubic_bts_aviso_borrar_leng, tipo_ubic='pack',
+                                      ubicación=gf(Fm.ubic_bts_aviso_borrar_leng), tipo_ubic='pack',
                                       comanda=símismo.destroy)
 
         símismo.bt_sí = Bt.BotónTexto(cj_bts, texto=apli.Trads['Sí'],
                                       formato_norm=Fm.formato_BtBorrar_norm,
                                       formato_sel=Fm.formato_BtBorrar_sel,
-                                      ubicación=Fm.ubic_bts_aviso_borrar_leng, tipo_ubic='pack',
+                                      ubicación=gf(Fm.ubic_bts_aviso_borrar_leng), tipo_ubic='pack',
                                       comanda=símismo.acción_borrar)
 
-        cj_bts.pack(**Fm.ubic_cj_bts_aviso_borrar_leng)
+        cj_bts.pack(**gf(Fm.ubic_cj_bts_aviso_borrar_leng))
 
-        símismo.place(**Fm.ubic_CjAvisoReinic)
+        símismo.place(**gf(Fm.ubic_CjAvisoReinic))
 
     def acción_borrar(símismo):
         símismo.acción(símismo.nombre)
@@ -268,7 +271,7 @@ class ListaConexiónes(CtrG.ListaEditable):
         super().__init__(pariente, ubicación=ubicación, tipo_ubic=tipo_ubic)
 
         símismo.pariente = pariente
-        nombres_cols = [apli.Trads['VariableMDS'], apli.Trads['Conversión'], apli.Trads['VariableBiofísico']]
+        nombres_cols = [apli.Trads['VariableMDS'], '', apli.Trads['VariableBiofísico']]
         anchuras = Fm.anchos_cols_listacon
         símismo.gen_encbz(nombres_cols, anchuras)
 
@@ -309,7 +312,7 @@ class ItemaConexión(CtrG.ItemaEditable):
                              símismo.etiq_derflecha, símismo.etiq_varBf]
         símismo.columnas = [cj_var_mds, cj_conv, cj_var_bf]
         for etiq in símismo.etiquetas:
-            etiq.pack(**Fm.ubic_EtiqItemas)
+            etiq.pack(**gf(Fm.ubic_EtiqItemas))
 
         símismo.estab_columnas(anchuras=Fm.anchos_cols_listacon)
 
@@ -321,21 +324,26 @@ class ItemaConexión(CtrG.ItemaEditable):
         símismo.etiq_varBf.config(text=símismo.receta['var_bf'])
 
         if símismo.receta['mds_fuente'] is True:
-            símismo.etiq_izqflecha.config(image=símismo.flecha['cola_izq'])
-            símismo.etiq_derflecha.config(image=símismo.flecha['cbz_der'])
+            if Fm.IzqaDerech:
+                símismo.etiq_izqflecha.config(image=símismo.flecha['cola_izq'])
+                símismo.etiq_derflecha.config(image=símismo.flecha['cbz_der'])
+            else:
+                símismo.etiq_izqflecha.config(image=símismo.flecha['cbz_izq'])
+                símismo.etiq_derflecha.config(image=símismo.flecha['cola_der'])
         else:
+
             símismo.etiq_izqflecha.config(image=símismo.flecha['cbz_izq'])
             símismo.etiq_derflecha.config(image=símismo.flecha['cola_der'])
 
     def resaltar(símismo):
         for etiq in símismo.etiquetas:
             if etiq is not símismo.etiq_conversión:
-                etiq.config(font=Fm.fuente_etiq_itema_sel)
+                etiq.config(font=gf(Fm.fuente_etiq_itema_sel))
 
     def desresaltar(símismo):
         for etiq in símismo.etiquetas.copy():
             if etiq is not símismo.etiq_conversión:
-                etiq.config(font=Fm.fuente_etiq_itema_norm)
+                etiq.config(font=gf(Fm.fuente_etiq_itema_norm))
 
     def añadir(símismo):
         símismo.pariente.añadir_conexión(símismo.receta)

@@ -6,6 +6,7 @@ from Interfaz import CajasSubEtapas as CjSE
 from Interfaz import Controles as Ctrl
 from Interfaz import ControlesGenéricos as CtrG
 from Interfaz import Formatos as Fm, Botones as Bt, Arte as Art, Animaciones as Anim
+from Interfaz.Formatos import gen_formato as gf
 
 
 class CajaInic(tk.Frame):
@@ -14,20 +15,20 @@ class CajaInic(tk.Frame):
         trads = apli.Trads
         símismo.logo = Art.imagen('LogoInic')
         logo = tk.Label(símismo, image=símismo.logo, **Fm.formato_LogoInic)
-        logo.pack(Fm.ubic_LogoInic)
+        logo.pack(**gf(Fm.ubic_LogoInic))
 
         cj_bts_inic = tk.Frame(símismo, **Fm.formato_cajas)
         Bt.BotónTexto(cj_bts_inic, comanda=símismo.acción_bt_empezar, texto=trads['Empezar'],
                       formato_norm=Fm.formato_BtsInic,
                       formato_sel=Fm.formato_bts_sel,
-                      ubicación=Fm.ubic_BtsInic, tipo_ubic='pack')
+                      ubicación=gf(Fm.ubic_BtsInic), tipo_ubic='pack')
         Bt.BotónTexto(cj_bts_inic, comanda=símismo.acción_bt_ayuda, texto=trads['Ayuda'],
                       formato_norm=Fm.formato_BtsInic,
                       formato_sel=Fm.formato_bts_sel,
-                      ubicación=Fm.ubic_BtsInic, tipo_ubic='pack')
+                      ubicación=gf(Fm.ubic_BtsInic), tipo_ubic='pack')
         cj_bts_inic.pack()
 
-        símismo.place(**Fm.ubic_CjInic)
+        símismo.place(**gf(Fm.ubic_CjInic))
 
     def acción_bt_empezar(símismo):
         Anim.quitar(símismo, 'arriba')
@@ -47,48 +48,48 @@ class CajaLeng(tk.Frame):
                                             img_norm=Art.imagen('BtRegrCent_norm'),
                                             img_sel=Art.imagen('BtRegrCent_sel'),
                                             formato=Fm.formato_botones,
-                                            ubicación=Fm.ubic_BtRegrCent, tipo_ubic='place')
+                                            ubicación=gf(Fm.ubic_BtRegrCent), tipo_ubic='place')
         etiq = tk.Label(símismo, text=apli.Trads['OpsLengs'], **Fm.formato_CbzLeng)
-        etiq.place(**Fm.ubic_CbzLeng)
+        etiq.place(**gf(Fm.ubic_CbzLeng))
 
         cj_central = tk.Frame(símismo, **Fm.formato_cajas)
 
         cj_izq = tk.Frame(cj_central, **Fm.formato_cajas)
         etiq_izq = tk.Label(cj_izq, text=apli.Trads['EnTrabajo'], **Fm.formato_EtiqLengLados)
-        etiq_izq.place(**Fm.ubic_EtiqCbzColsLeng)
+        etiq_izq.place(**gf(Fm.ubic_EtiqCbzColsLeng))
         símismo.lista_izq = CtrG.ListaItemas(cj_izq, formato_cj=Fm.formato_CjLstLengLados,
-                                             ubicación=Fm.ubic_LstsLeng, tipo_ubic='place')
+                                             ubicación=gf(Fm.ubic_LstsLeng), tipo_ubic='place')
 
         lín_vert_1 = tk.Frame(cj_central, **Fm.formato_LínVert)
 
         cj_med = tk.Frame(cj_central, **Fm.formato_cajas)
         etiq_med = tk.Label(cj_med, text=apli.Trads['Listas'], **Fm.formato_EtiqLengCentro)
-        etiq_med.place(**Fm.ubic_EtiqCbzColsLeng)
+        etiq_med.place(**gf(Fm.ubic_EtiqCbzColsLeng))
         símismo.lista_med = CtrG.ListaItemas(cj_med, formato_cj=Fm.formato_CjLstLengCentro,
-                                             ubicación=Fm.ubic_LstsLeng, tipo_ubic='place')
+                                             ubicación=gf(Fm.ubic_LstsLeng), tipo_ubic='place')
 
         lín_vert_2 = tk.Frame(cj_central, **Fm.formato_LínVert)
 
         cj_derech = tk.Frame(cj_central, **Fm.formato_cajas)
         etiq_derech = tk.Label(cj_derech, text=apli.Trads['ParaHacer'], **Fm.formato_EtiqLengLados)
-        etiq_derech.place(**Fm.ubic_EtiqCbzColsLeng)
+        etiq_derech.place(**gf(Fm.ubic_EtiqCbzColsLeng))
         cj_añadir = Ctrl.CajaAñadirLeng(símismo, cj_derech)
         símismo.lista_derech = CtrG.ListaItemas(cj_derech, formato_cj=Fm.formato_CjLstLengLados,
-                                                ubicación=Fm.ubic_LstsLeng_bajo, tipo_ubic='place')
+                                                ubicación=gf(Fm.ubic_LstsLeng_bajo), tipo_ubic='place')
 
         símismo.establecer_cols()
 
-        cj_izq.place(**Fm.ubic_CjIzqLeng)
-        lín_vert_1.place(**Fm.ubic_LínVert1)
+        cj_izq.place(**gf(Fm.ubic_CjIzqLeng))
+        lín_vert_1.place(**gf(Fm.ubic_LínVert1))
 
-        cj_med.place(**Fm.ubic_CjMedLeng)
-        lín_vert_2.place(**Fm.ubic_LínVert2)
+        cj_med.place(**gf(Fm.ubic_CjMedLeng))
+        lín_vert_2.place(**gf(Fm.ubic_LínVert2))
 
-        cj_añadir.place(**Fm.ubic_CjAñadirLeng)
-        cj_derech.place(**Fm.ubic_CjDerchLeng)
+        cj_añadir.place(**gf(Fm.ubic_CjAñadirLeng))
+        cj_derech.place(**gf(Fm.ubic_CjDerchLeng))
 
-        cj_central.place(**Fm.ubic_CjCentLeng)
-        símismo.place(**Fm.ubic_CjLeng)
+        cj_central.place(**gf(Fm.ubic_CjCentLeng))
+        símismo.place(**gf(Fm.ubic_CjLeng))
 
     def acción_bt_regreso(símismo):
         Anim.quitar(símismo, 'derecha')
@@ -181,7 +182,7 @@ class CajaCentral(tk.Frame):
 
         símismo.bloquear_cajas(list(range(2, len(símismo.CajasEtapas) + 1)))
 
-        símismo.place(**Fm.ubic_CjCent)
+        símismo.place(**gf(Fm.ubic_CjCent))
 
     def bloquear_cajas(símismo, núms_cajas):
         for n in núms_cajas:
@@ -208,37 +209,37 @@ class CajaCabeza(tk.Frame):
         símismo.pariente = pariente
         símismo.logo_cabeza = Art.imagen('LogoCent')
         logo_cabeza = tk.Label(símismo, image=símismo.logo_cabeza, **Fm.formato_LogoCabz)
-        logo_cabeza.place(**Fm.ubic_LogoCabz)
+        logo_cabeza.place(**gf(Fm.ubic_LogoCabz))
 
         cj_bts_archivo = tk.Frame(símismo, **Fm.formato_cajas)
         Bt.BotónImagen(cj_bts_archivo, comanda=símismo.acción_bt_nuevo,
                        img_norm=Art.imagen('BtNuevo_norm'),
                        img_sel=Art.imagen('BtNuevo_sel'),
                        formato=Fm.formato_botones,
-                       ubicación=Fm.ubic_BtNuevo, tipo_ubic='grid')
+                       ubicación=gf(Fm.ubic_BtNuevo), tipo_ubic='grid')
         Bt.BotónImagen(cj_bts_archivo, comanda=símismo.acción_bt_guardar,
                        img_norm=Art.imagen('BtGuardar_norm'),
                        img_sel=Art.imagen('BtGuardar_sel'),
                        formato=Fm.formato_botones,
-                       ubicación=Fm.ubic_BtGuardar, tipo_ubic='grid')
+                       ubicación=gf(Fm.ubic_BtGuardar), tipo_ubic='grid')
         Bt.BotónImagen(cj_bts_archivo, comanda=símismo.acción_bt_guardar_como,
                        img_norm=Art.imagen('BtGuardarComo_norm'),
                        img_sel=Art.imagen('BtGuardarComo_sel'),
                        formato=Fm.formato_botones,
-                       ubicación=Fm.ubic_BtGuardarComo, tipo_ubic='grid')
+                       ubicación=gf(Fm.ubic_BtGuardarComo), tipo_ubic='grid')
         Bt.BotónImagen(cj_bts_archivo, comanda=símismo.acción_bt_abrir,
                        img_norm=Art.imagen('BtAbrir_norm'),
                        img_sel=Art.imagen('BtAbrir_sel'),
                        formato=Fm.formato_botones,
-                       ubicación=Fm.ubic_BtAbrir, tipo_ubic='grid')
-        cj_bts_archivo.place(**Fm.ubic_BtsArchivo)
+                       ubicación=gf(Fm.ubic_BtAbrir), tipo_ubic='grid')
+        cj_bts_archivo.place(**gf(Fm.ubic_BtsArchivo, imprimir=True))
 
         Bt.BotónImagen(símismo, comanda=símismo.acción_bt_leng,
                        img_norm=Art.imagen('BtLeng_norm'),
                        img_sel=Art.imagen('BtLeng_sel'),
                        formato=Fm.formato_botones,
-                       ubicación=Fm.ubic_BtLeng, tipo_ubic='place')
-        símismo.pack(**Fm.ubic_CjCabeza)
+                       ubicación=gf(Fm.ubic_BtLeng), tipo_ubic='place')
+        símismo.pack(**gf(Fm.ubic_CjCabeza))
 
     def acción_bt_nuevo(símismo):
         símismo.apli.Modelo.reinic()
@@ -281,7 +282,7 @@ class CajaIzq(tk.Frame):
         for cj in cajas_etapas:
             símismo.bts.append(Bt.BotónNavIzq(símismo, caja=cj))
 
-        símismo.pack(**Fm.ubic_CjIzq)
+        símismo.pack(**gf(Fm.ubic_CjIzq))
 
 
 class CajaEtp1(CjG.CajaEtapa):

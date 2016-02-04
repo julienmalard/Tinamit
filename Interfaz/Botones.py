@@ -2,6 +2,7 @@ import tkinter as tk
 
 from Interfaz import Arte as Gr
 from Interfaz import Formatos as Fm
+from Interfaz.Formatos import gen_formato as gf
 
 
 class Botón(object):
@@ -41,8 +42,6 @@ class Botón(object):
         símismo.estado = 'Normal'
 
         # Hasta que aprende cómo cargar Python 3.5 en esta compu...
-        if formato is None:
-            formato = {}
         dic_formato = símismo.formato.copy()
         dic_formato.update(símismo.formato_norm)
 
@@ -114,14 +113,14 @@ class BotónNavIzq(object):
 
         cj = tk.Frame(pariente, **Fm.formato_cajas)
         símismo.bt = BotónImagen(pariente=cj, comanda=caja.traer_me, img_norm=img_norm, img_bloq=img_bloq,
-                                 img_sel=img_sel, ubicación=Fm.ubic_BtNavIzq, tipo_ubic='pack',
+                                 img_sel=img_sel, ubicación=gf(Fm.ubic_BtNavIzq), tipo_ubic='pack',
                                  formato=Fm.formato_BtsNavIzq)
 
         símismo.color = Fm.color_bts[str(caja.núm)]
         símismo.lín = tk.Frame(cj, bg=símismo.color, **Fm.formato_lín_bts)
 
-        símismo.lín.pack(**Fm.ubic_LínNavIzq)
-        cj.pack(**Fm.ubic_CjBtNavIzq)
+        símismo.lín.pack(**gf(Fm.ubic_LínNavIzq))
+        cj.pack(**gf(Fm.ubic_CjBtNavIzq))
 
     def desbloquear(símismo):
         símismo.bt.desbloquear()
@@ -138,13 +137,13 @@ class BotónNavEtapa(BotónImagen):
             img_norm = Gr.imagen('BtNavEtp_adel_norm')
             img_bloq = Gr.imagen('BtNavEtp_adel_bloq')
             img_sel = Gr.imagen('BtNavEtp_adel_sel')
-            ubicación = Fm.ubic_BtNavEtp_adel
+            ubicación = gf(Fm.ubic_BtNavEtp_adel)
             comanda = pariente.ir_etp_siguiente
         elif tipo == 'atrás':
             img_norm = Gr.imagen('BtNavEtp_atrs_norm')
             img_bloq = Gr.imagen('BtNavEtp_atrs_bloq')
             img_sel = Gr.imagen('BtNavEtp_atrs_sel')
-            ubicación = Fm.ubic_BtNavEtp_atrs
+            ubicación = gf(Fm.ubic_BtNavEtp_atrs)
             comanda = pariente.ir_etp_anterior
         else:
             raise ValueError
@@ -160,13 +159,13 @@ class BotónNavSub(BotónImagen):
             img_norm = Gr.imagen('BtNavSub_adel_norm')
             img_bloq = Gr.imagen('BtNavSub_adel_bloq')
             img_sel = Gr.imagen('BtNavSub_adel_sel')
-            ubicación = Fm.ubic_BtNavSub_adel
+            ubicación = gf(Fm.ubic_BtNavSub_adel)
             comanda = pariente.ir_sub_siguiente
         elif tipo == 'atrás':
             img_norm = Gr.imagen('BtNavSub_atrs_norm')
             img_bloq = Gr.imagen('BtNavSub_atrs_bloq')
             img_sel = Gr.imagen('BtNavSub_atrs_sel')
-            ubicación = Fm.ubic_BtNavSub_atrs
+            ubicación = gf(Fm.ubic_BtNavSub_atrs)
             comanda = pariente.ir_sub_anterior
         else:
             raise ValueError

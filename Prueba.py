@@ -18,50 +18,59 @@ def verificar_vensim():
     else:
         print('Tienes un problema.', estatus)
 
-dll = ctypes.cdll.LoadLibrary('C:\\Windows\\System32\\vendll32.dll')
-dll.vensim_check_status()
+dll = ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
+print('1')
+verificar_vensim()
 ubicación_modelo = "C:\\Users\\jmalar1\\Documents\\PycharmProjects\\Tinamit\\Prueba dll.vpm"
-try:
-    print(dll.vensim_command(('SPECIAL>LOADMODEL|%s' % ubicación_modelo).encode()) == 1)
-except ValueError:
-    pass
 
-verificar_vensim()
-try:
-    dll.vensim_start_simulation(1, 0, 1)
-except ValueError:
-    pass
+dll.vensim_command('')
+print('2')
 verificar_vensim()
 
-try:
-    dll.vensim_continue_simulation(10)
-except ValueError:
-    pass
-
-verificar_vensim()
-
+dll.vensim_command(('SPECIAL>LOADMODEL|"%s"' % ubicación_modelo).encode())
 intermed = ctypes.create_string_buffer(100)
-try:
-    dll.vensim_get_varnames("*", 0, intermed, 100)
-except ValueError as e:
-    print(e)
-
-print('intermed: ', intermed.raw, ' ')
+dll.vensim_get_varnames(b"*", 0, intermed, 100)
 print([x for x in intermed.raw.decode().split('\x00') if x])
 
-memimed_val = ctypes.create_string_buffer(4)
-print('Memimed: ', memimed_val, struct.unpack('f', memimed_val))
-val = memimed_val
+print('3')
+verificar_vensim()
 
-try:
-    dll.vensim_get_val(b"Efecto", memimed_val)
-except ValueError as e:
-    print(e)
+var = 'FINAL TIME'
+comanda = ('SIMULATE>SETVAL|%s = %i' % (var, 200)).encode()
+dll.vensim_command(comanda)
 
-print('Val: ', memimed_val.raw)
-x = struct.unpack('f', memimed_val)
-x = x[0]
-print('val: ', x)
+intermed_0 = ctypes.create_string_buffer(4)
+dll.vensim_get_val(var.encode(), intermed_0)
+print('val : ', struct.unpack('f', intermed_0)[0])
+
+dll.vensim_start_simulation(1, 0, 1)
+verificar_vensim()
+
+comanda = ('SIMULATE>SETVAL|%s = %i' % (var, 300)).encode()
+dll.vensim_command(comanda)
+dll.vensim_get_val(var.encode(), intermed_0)
+print('val : ', struct.unpack('f', intermed_0)[0])
+
+variable = 'Variable 1'
+inter1 = ctypes.create_string_buffer(4)
+
+dll.vensim_get_val(variable.encode(), inter1)
+
+print('Variable inicial:', struct.unpack('f', inter1)[0])
+
+comanda = ('SIMULATE>SETVAL|%s = %i' % (variable, 200)).encode()
+
+dll.vensim_command(comanda)
+
+inter2 = ctypes.create_string_buffer(4)
+
+dll.vensim_get_val(variable.encode(), inter2)
+print('Variable modificado:', struct.unpack('f', inter2)[0])
+
+dll.vensim_continue_simulation(10)
+dll.vensim_get_val(variable.encode(), inter2)
+
+print('Variable modificado:', struct.unpack('f', inter2)[0])
 
 dll.vensim_finish_simulation()
 

@@ -1,8 +1,11 @@
 import time
 import math as mat
 
+from Interfaz.Formatos import gen_formato as gf
+
 
 def intercambiar(actual, nuevo, dirección):
+    dirección = gf(dirección)
     x_act = actual.winfo_x()
     y_act = actual.winfo_y()
     ancho_act = actual.winfo_width()
@@ -32,6 +35,7 @@ def intercambiar(actual, nuevo, dirección):
 
 
 def sobreponer(actual, nuevo, dirección):
+    dirección = gf(dirección)
     x_act = actual.winfo_x()
     y_act = actual.winfo_y()
     ancho_act = actual.winfo_width()
@@ -61,6 +65,7 @@ def sobreponer(actual, nuevo, dirección):
 
 
 def quitar(actual, dirección):
+    dirección = gf(dirección)
     x_act = actual.winfo_x()
     y_act = actual.winfo_y()
     ancho_act = actual.winfo_width()

@@ -7,6 +7,7 @@ from matplotlib.figure import Figure
 from Interfaz import Arte as Art
 from Interfaz import Botones as Bt
 from Interfaz import Formatos as Fm
+from Interfaz.Formatos import gen_formato as gf
 
 
 class ListaItemas(tk.Frame):
@@ -16,7 +17,7 @@ class ListaItemas(tk.Frame):
         símismo.objetos = {}
         símismo.itemas = []
 
-        ubic_tela = Fm.ubic_TlLstItemas.copy()
+        ubic_tela = gf(Fm.ubic_TlLstItemas.copy())
         if encabezado:
             ubic_tela['y'] = Fm.ubic_EncbzLstItemas['height']
             ubic_tela['height'] = -Fm.ubic_EncbzLstItemas['height']
@@ -26,10 +27,13 @@ class ListaItemas(tk.Frame):
         símismo.BaraDesp = tk.Scrollbar(símismo.Tela, orient="vertical", command=símismo.Tela.yview)
         símismo.Tela.configure(yscrollcommand=símismo.BaraDesp.set)
 
-        símismo.BaraDesp.pack(**Fm.ubic_BaraDesp)
+        símismo.BaraDesp.pack(**gf(Fm.ubic_BaraDesp))
 
-        símismo.Tela.create_window((1, 1), window=símismo.Caja, tags="self.frame", width=símismo.ancho-20,
-                                   **Fm.ubic_CjTl)
+        if Fm.IzqaDerech:
+            x = 0
+        else:
+            x = 20
+        símismo.Tela.create_window(x, 1, window=símismo.Caja, tags="self.frame", width=símismo.ancho-20, **Fm.ubic_CjTl)
 
         símismo.Caja.bind("<Configure>", símismo.ajust_auto)
 
@@ -43,7 +47,7 @@ class ListaItemas(tk.Frame):
 
     def añadir(símismo, itema):
         símismo.itemas.append(itema)
-        itema.pack(**Fm.ubic_CjItemas)
+        itema.pack(**gf(Fm.ubic_CjItemas))
 
     def quitar(símismo, itema):
         símismo.itemas.remove(itema)
@@ -75,9 +79,9 @@ class ListaEditable(ListaItemas):
         for n, col in enumerate(nombres_cols):
             cols.append(tk.Label(cj_encbz, text=col, **Fm.formato_EtiqEncbzLst))
             cols[-1].place(relx=relx[n], x=x[n], width=ajust_ancho[n], relwidth=anchuras[n],
-                           **Fm.ubic_ColsEncbzLst)
+                           **gf(Fm.ubic_ColsEncbzLst))
 
-        cj_encbz.place(**Fm.ubic_EncbzLstItemas)
+        cj_encbz.place(**gf(Fm.ubic_EncbzLstItemas))
 
     def editar(símismo, itema):
         símismo.controles.editar(itema)
@@ -125,11 +129,11 @@ class ItemaEditable(Itema):
         símismo.bt_editar = Bt.BotónImagen(símismo.cj_bts, comanda=símismo.editar, formato=Fm.formato_botones,
                                            img_norm=Art.imagen('BtEditarItema_norm'),
                                            img_sel=Art.imagen('BtEditarItema_sel'),
-                                           ubicación=Fm.ubic_BtsItemas, tipo_ubic='pack')
+                                           ubicación=gf(Fm.ubic_BtsItemas), tipo_ubic='pack')
         símismo.bt_borrar = Bt.BotónImagen(símismo.cj_bts, comanda=símismo.quitar, formato=Fm.formato_botones,
                                            img_norm=Art.imagen('BtBorrarItema_norm'),
                                            img_sel=Art.imagen('BtBorrarItema_sel'),
-                                           ubicación=Fm.ubic_BtsItemas, tipo_ubic='pack')
+                                           ubicación=gf(Fm.ubic_BtsItemas), tipo_ubic='pack')
 
         símismo.bind('<Enter>', lambda event, i=símismo: i.resaltar())
         símismo.bind('<Leave>', lambda event, i=símismo: i.desresaltar())
@@ -137,10 +141,10 @@ class ItemaEditable(Itema):
     def estab_columnas(símismo, anchuras):
         x = [np.sum(anchuras[:n]) for n in range(len(anchuras))]
         for n, col in enumerate(símismo.columnas):
-            col.place(relx=x[n], relwidth=anchuras[n], **Fm.ubic_ColsItemasEdit)
+            col.place(relx=x[n], relwidth=anchuras[n], **gf(Fm.ubic_ColsItemasEdit))
 
-        símismo.cj_cols.pack(**Fm.ubic_CjColsItemas)
-        símismo.cj_bts.pack(**Fm.ubic_CjBtsItemas)
+        símismo.cj_cols.pack(**gf(Fm.ubic_CjColsItemas))
+        símismo.cj_bts.pack(**gf(Fm.ubic_CjBtsItemas))
 
     def editar(símismo):
         símismo.lista.editar(símismo)
@@ -292,12 +296,12 @@ class CampoIngreso(object):
 
         if orden is 'texto':
             if nombre is not None:
-                símismo.Etiq.pack(**Fm.ubic_EtiqIngrNúm)
-            símismo.CampoIngr.pack(**Fm.ubic_CampoIngrEscl)
+                símismo.Etiq.pack(**gf(Fm.ubic_EtiqIngrNúm))
+            símismo.CampoIngr.pack(**gf(Fm.ubic_CampoIngrEscl))
         else:
-            símismo.CampoIngr.pack(**Fm.ubic_CampoIngrEscl)
+            símismo.CampoIngr.pack(**gf(Fm.ubic_CampoIngrEscl))
             if nombre is not None:
-                símismo.Etiq.pack(**Fm.ubic_EtiqIngrNúm)
+                símismo.Etiq.pack(**gf(Fm.ubic_EtiqIngrNúm))
 
         if tipo_ubic == 'pack':
             cj.pack(**ubicación)
@@ -410,7 +414,7 @@ class Menú(object):
 
         if nombre is not None:
             símismo.Etiq = tk.Label(cj, text=nombre, **Fm.formato_EtiqCtrl)
-            símismo.Etiq.pack(**Fm.ubic_EtiqMenú)
+            símismo.Etiq.pack(**gf(Fm.ubic_EtiqMenú))
 
         símismo.MenúOpciones = tk.OptionMenu(cj, símismo.var, '')
         símismo.MenúOpciones.config(takefocus=True)
@@ -420,7 +424,7 @@ class Menú(object):
         símismo.MenúOpciones.config(width=ancho, **formato_bt)
         símismo.MenúOpciones['menu'].config(**formato_mn)
 
-        símismo.MenúOpciones.pack(**Fm.ubic_Menú)
+        símismo.MenúOpciones.pack(**gf(Fm.ubic_Menú))
 
         if tipo_ubic == 'pack':
             cj.pack(**ubicación)
@@ -509,13 +513,13 @@ class Escala(object):
         símismo.escl = CosoEscala(símismo, límites, val_inic=valor_inicial, prec=prec)
         etiq_fin = tk.Label(símismo.cj, text=límites[1], **Fm.formato_EtiqNúmEscl)
 
-        símismo.etiq.pack(**Fm.ubic_EtiqEscl)
-        etiq_inic.pack(**Fm.ubic_EtiqNúmEscl)
-        símismo.escl.pack(**Fm.ubic_Escl)
-        etiq_fin.pack(**Fm.ubic_EtiqNúmEscl)
+        símismo.etiq.pack(**gf(Fm.ubic_EtiqEscl))
+        etiq_inic.pack(**gf(Fm.ubic_EtiqNúmEscl))
+        símismo.escl.pack(**gf(Fm.ubic_Escl))
+        etiq_fin.pack(**gf(Fm.ubic_EtiqNúmEscl))
 
         símismo.ingr = IngrNúm(símismo.cj, nombre=None, límites=límites, val_inic=valor_inicial, prec=prec,
-                               ubicación=Fm.ubic_CampoIngrEscl, tipo_ubic='pack',
+                               ubicación=gf(Fm.ubic_CampoIngrEscl), tipo_ubic='pack',
                                comanda=símismo.cambio_ingr)
 
         if tipo_ubic == 'pack':
