@@ -232,7 +232,7 @@ class CajaCabeza(tk.Frame):
                        img_sel=Art.imagen('BtAbrir_sel'),
                        formato=Fm.formato_botones,
                        ubicación=gf(Fm.ubic_BtAbrir), tipo_ubic='grid')
-        cj_bts_archivo.place(**gf(Fm.ubic_BtsArchivo, imprimir=True))
+        cj_bts_archivo.place(**gf(Fm.ubic_BtsArchivo))
 
         Bt.BotónImagen(símismo, comanda=símismo.acción_bt_leng,
                        img_norm=Art.imagen('BtLeng_norm'),

@@ -59,9 +59,9 @@ class Conectado(object):
 
     def estab_bf(símismo, bf):
         try:
+            símismo.receta['bf'] = bf
             símismo.bf = EnvolturaBF(ubicación_modelo=símismo.receta['bf'])
             símismo.vars_bf = símismo.bf.vars
-            símismo.receta['bf'] = bf
         except (FileNotFoundError, AssertionError):
             símismo.bf = None
             símismo.vars_bf = []

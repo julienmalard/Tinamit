@@ -9,6 +9,7 @@ class EnvolturaBF(object):
         # Cargar el modelo biofísico (debe ser un modelo Python)
         directorio_modelo, nombre_modelo = os.path.split(ubicación_modelo)
         sys.path.append(directorio_modelo)
+
         módulo = importar_mod(os.path.splitext(nombre_modelo)[0])
         assert hasattr(módulo, 'Modelo')
         símismo.modelo = módulo.Modelo()

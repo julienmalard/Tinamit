@@ -1,8 +1,10 @@
 import tkinter as tk
 
-import numpy as np
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
+try:
+    from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+    from matplotlib.figure import Figure
+except ImportError:
+    pass
 
 from Interfaz import Arte as Art
 from Interfaz import Botones as Bt
@@ -73,7 +75,7 @@ class ListaEditable(ListaItemas):
 
         ancho_bts = Fm.ancho_cj_bts_itemas
         x = [-ancho_bts*n/len(anchuras) for n in range(len(anchuras))]
-        relx = [np.sum(anchuras[:n]) for n in range(len(anchuras))]
+        relx = [sum(anchuras[:n]) for n in range(len(anchuras))]
         ajust_ancho = [0] * (len(anchuras)-1) + [ancho_bts]
         cols = []
         for n, col in enumerate(nombres_cols):
@@ -139,7 +141,7 @@ class ItemaEditable(Itema):
         símismo.bind('<Leave>', lambda event, i=símismo: i.desresaltar())
 
     def estab_columnas(símismo, anchuras):
-        x = [np.sum(anchuras[:n]) for n in range(len(anchuras))]
+        x = [sum(anchuras[:n]) for n in range(len(anchuras))]
         for n, col in enumerate(símismo.columnas):
             ubic = dict(relx=x[n], **Fm.ubic_ColsItemasEdit)
             col.place(relwidth=anchuras[n], **gf(ubic))

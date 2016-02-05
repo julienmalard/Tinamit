@@ -11,7 +11,6 @@ class Modelo(object):
 
     def incr(símismo, paso):
         símismo.variables['var1']['var'] += random.random()*símismo.variables['var2']['var'] * paso
-         += random.random()*2 * paso
 
     def actualizar(símismo, var, valor):
-        pass
+        símismo.variables[var] = valor

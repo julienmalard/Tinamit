@@ -11,7 +11,7 @@ leng = dic['Actual']
 IzqaDerech = dic['Lenguas'][leng]['IzqaDerech']
 
 
-def gen_formato(formato, imprimir=False):
+def gen_formato(formato):
     if IzqaDerech:
         return formato
     else:
@@ -47,8 +47,6 @@ def gen_formato(formato, imprimir=False):
                     elif v == inver[1]:
                         formato[ll] = inver[0]
 
-        if imprimir:
-            print(formato)
         return formato
 
 

@@ -257,7 +257,7 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
 
         cj_paso = tk.Frame(cj_ctrls_tiempo, **Fm.formato_cajas)
         símismo.IngrPaso = CtrG.IngrNúm(cj_paso, nombre=apli.Trads['Paso'],
-                                        límites=(1, None), prec='ent',
+                                        límites=(1, None), prec='ent', val_inic=1,
                                         ubicación=gf(Fm.ubic_CtrlsUnidTiempo), tipo_ubic='pack')
         cj_paso.pack(**gf(Fm.ubic_CtrlsTiempo))
 
