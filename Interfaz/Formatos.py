@@ -311,6 +311,8 @@ ubic_CjBajoConex = dict(relx=0, rely=0, x=10, y=10, relwidth=1, relheight=.8, wi
 
 ubic_CjCtrlsConectar = dict(relx=0.5, rely=0, y=200, relwidth=1, width=-20, height=150, anchor=tk.N)
 ancho_MnVars = 10
+formato_EtiqsUnid = dict(font=(fuente, 13, 'italic'), fg='#d9b38c', bg=col_fondo)
+ubic_EtiqsUnid = dict(side='top', anchor=tk.E)
 ubic_CjsCtrlsConectar = dict(side='left', padx=20, pady=20, expand=True, anchor=tk.N)
 ubic_CjMedCtrlsConectar = dict(side='left', padx=20, pady=30, expand=True, anchor=tk.N)
 ubic_CtrlsConectar = dict(side='top')
@@ -319,6 +321,7 @@ ubic_CjBtsConectar = dict(relx=0.5, rely=0, y=400, width=400, anchor=tk.N)
 
 
 # Caja subetapa 3.1
+formato_etiqs_ctrls_tiempo = dict(font=(fuente, '13'), fg='#000000', bg=col_fondo)
 ubic_CjCtrlsTiempo = dict(relx=0.5, rely=0.2, width=600, anchor=tk.CENTER)
 ubic_CtrlsUnidTiempo = dict(side='left', padx=5)
 ubic_CtrlsTiempo = dict(side='top', pady=10)

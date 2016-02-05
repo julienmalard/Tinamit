@@ -12,7 +12,7 @@ class Conectado(object):
         símismo.receta = {'mds': '', 'bf': '', 'conexiones': [], 'ref_tiempo_mds': True, 'conv_unid_tiempo': 1}
 
         símismo.mds = None
-        símismo.vars_mds = {}
+        símismo.vars_mds = []
         símismo.bf = None
         símismo.vars_bf = []
         símismo.conexiones = []
@@ -48,7 +48,8 @@ class Conectado(object):
             ext = os.path.splitext(mds)[1]
             programa_mds = dic_programas_mds[ext]
             símismo.mds = EnvolturaMDS(ubicación_modelo=símismo.receta['mds'], programa_mds=programa_mds)
-            símismo.vars_mds = símismo.mds.sacar_vars()
+            símismo.mds.sacar_vars()
+            símismo.vars_mds = símismo.mds.vars
             símismo.receta['mds'] = mds
         except (FileNotFoundError, KeyError, AssertionError):
             símismo.mds = None
@@ -59,7 +60,7 @@ class Conectado(object):
     def estab_bf(símismo, bf):
         try:
             símismo.bf = EnvolturaBF(ubicación_modelo=símismo.receta['bf'])
-            símismo.vars_bf = símismo.bf.sacar_vars()
+            símismo.vars_bf = símismo.bf.vars
             símismo.receta['bf'] = bf
         except (FileNotFoundError, AssertionError):
             símismo.bf = None

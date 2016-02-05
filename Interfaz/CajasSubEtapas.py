@@ -105,15 +105,28 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
         cj_izq = tk.Frame(cj_ctrls, **Fm.formato_cajas)
         símismo.MnVarsMDS = CtrG.Menú(cj_izq, nombre=apli.Trads['MDS'], opciones='', ancho=Fm.ancho_MnVars,
                                       ubicación=gf(Fm.ubic_CtrlsConectar), tipo_ubic='pack')
+        símismo.EtiqUnidMDS = tk.Label(cj_izq, text='', **Fm.formato_EtiqsUnid)
+        símismo.EtiqUnidMDS.pack(**gf(Fm.ubic_EtiqsUnid))
+
         cj_med = tk.Frame(cj_ctrls, **Fm.formato_cajas)
-        bt_dir = Bt.BotónAltern(cj_med, formato=Fm.formato_botones,
-                                img_1=Art.imagen('BtConecciónIzqDer'), img_2=Art.imagen('BtConecciónDerIzq'),
-                                ubicación=gf(Fm.ubic_CtrlsConectar), tipo_ubic='pack')
+        if Fm.IzqaDerech:
+            img_1 = Art.imagen('BtConecciónIzqDer')
+            img_2 = Art.imagen('BtConecciónDerIzq')
+        else:
+            img_1 = Art.imagen('BtConecciónDerIzq')
+            img_2 = Art.imagen('BtConecciónIzqDer')
+
+        símismo.BtMDSFuente = Bt.BotónAltern(cj_med, formato=Fm.formato_botones,
+                                             comanda_segundaria=símismo.actualizar_menús,
+                                             img_1=img_1, img_2=img_2,
+                                             ubicación=gf(Fm.ubic_CtrlsConectar), tipo_ubic='pack')
         símismo.factor_conv = CtrG.IngrNúm(cj_med, límites=(0, None), val_inic=1, prec='dec', nombre=apli.Trads['X'],
                                            ubicación=gf(Fm.ubic_CtrlsConectar), tipo_ubic='pack')
         cj_derech = tk.Frame(cj_ctrls, **Fm.formato_cajas)
         símismo.MnVarsBf = CtrG.Menú(cj_derech, nombre=apli.Trads['Biofísico'], opciones='', ancho=Fm.ancho_MnVars,
                                      ubicación=gf(Fm.ubic_CtrlsConectar), tipo_ubic='pack')
+        símismo.EtiqUnidBf = tk.Label(cj_derech, text='', **Fm.formato_EtiqsUnid)
+        símismo.EtiqUnidBf.pack(**gf(Fm.ubic_EtiqsUnid))
 
         cj_bts = tk.Frame(cj_bajo, **Fm.formato_cajas)
         bt_guardar = Bt.BotónTexto(cj_bts, texto=apli.Trads['Guardar'],
@@ -133,16 +146,17 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
         cj_med.pack(**gf(Fm.ubic_CjMedCtrlsConectar))
         cj_derech.pack(**gf(Fm.ubic_CjsCtrlsConectar))
 
-        dic_controles = {'var_mds': símismo.MnVarsMDS, 'mds_fuente': bt_dir, 'conv': símismo.factor_conv,
-                         'var_bf': símismo.MnVarsBf}
+        dic_controles = {'var_mds': símismo.MnVarsMDS, 'mds_fuente': símismo.BtMDSFuente,
+                         'conv': símismo.factor_conv, 'var_bf': símismo.MnVarsBf}
 
         símismo.lista = Ctrl.ListaConexiónes(símismo, apli, ubicación=gf(Fm.ubic_CjLstConecciones), tipo_ubic='place')
 
         símismo.grupo_controles = Ctrl.GrpCtrlsConex(
-                pariente=símismo,
-                apli=apli, controles=dic_controles,
-                lista=símismo.lista,
-                bt_guardar=bt_guardar, bt_borrar=bt_borrar
+            pariente=símismo,
+            apli=apli, controles=dic_controles,
+            lista=símismo.lista,
+            bt_guardar=bt_guardar, bt_borrar=bt_borrar,
+            comanda=símismo.actualizar_unidades
         )
 
         cj_ctrls.place(**gf(Fm.ubic_CjCtrlsConectar))
@@ -150,29 +164,65 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
         cj_bajo.place(**gf(Fm.ubic_CjBajoConex))
 
     def acción_desbloquear(símismo):
-        símismo.Modelo.actualizar_conexiones()
-
-        vars_mds = símismo.Modelo.vars_mds
+        vars_mds = símismo.Modelo.mds.vars
         vars_bf = símismo.Modelo.vars_bf
-
         símismo.MnVarsMDS.refrescar(opciones=vars_mds)
         símismo.MnVarsBf.refrescar(opciones=vars_bf)
+
+        símismo.Modelo.actualizar_conexiones()
 
         for conex in símismo.Modelo.receta['conexiones']:
             Ctrl.ItemaConexión(grupo_control=símismo.grupo_controles, lista_itemas=símismo.lista,
                                receta=conex, creando_manual=False)
 
+        símismo.actualizar_menús()
         símismo.verificar_completo()
 
+    def actualizar_menús(símismo):
+        vars_mds = símismo.Modelo.mds.vars
+        vars_mds_editables = símismo.Modelo.mds.vars_editables
+        vars_bf = símismo.Modelo.vars_bf
+
+        for var in vars_mds:
+            símismo.MnVarsMDS.reinstaurar(var)
+        for var in vars_bf:
+            símismo.MnVarsBf.reinstaurar(var)
+
+        for conex in símismo.Modelo.receta['conexiones']:
+            símismo.MnVarsMDS.excluir(conex['var_mds'])
+            símismo.MnVarsBf.excluir(conex['var_bf'])
+
+        if símismo.BtMDSFuente.val:
+            opciones_mds = vars_mds
+        else:
+            opciones_mds = vars_mds_editables
+
+        excluir_mds = [x for x in vars_mds if x not in opciones_mds]
+
+        for var in excluir_mds:
+            símismo.MnVarsMDS.excluir(var)
+            if var == símismo.MnVarsMDS.val:
+                símismo.MnVarsMDS.poner('')
+
+    def actualizar_unidades(símismo):
+        var = símismo.MnVarsMDS.val
+        if var is not None and var != '':
+            símismo.EtiqUnidMDS.config(text=símismo.Modelo.mds.unidades[var])
+        else:
+            símismo.EtiqUnidMDS.config(text='')
+        var = símismo.MnVarsBf.val
+        if var is not None and var != '':
+            símismo.EtiqUnidBf.config(text=símismo.Modelo.bf.unidades[var])
+        else:
+            símismo.EtiqUnidBf.config(text='')
+
     def añadir_conexión(símismo, conexión):
-        símismo.MnVarsMDS.excluir(conexión['var_mds'])
-        símismo.MnVarsBf.excluir(conexión['var_bf'])
         símismo.Modelo.conectar(conexión)
+        símismo.actualizar_menús()
 
     def quitar_conexión(símismo, conexión):
-        símismo.MnVarsMDS.reinstaurar(conexión['var_mds'])
-        símismo.MnVarsBf.reinstaurar(conexión['var_bf'])
         símismo.Modelo.desconectar(conexión)
+        símismo.actualizar_menús()
 
     def verificar_completo(símismo):
         if len(símismo.Modelo.receta['conexiones']):
@@ -192,24 +242,30 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
         cj_ctrls_tiempo = tk.Frame(símismo, **Fm.formato_cajas)
 
         cj_unidades_tiempo = tk.Frame(cj_ctrls_tiempo, **Fm.formato_cajas)
-        etiq_1_tiempo_ref = tk.Label(cj_unidades_tiempo, text='1', **Fm.formato_EtiqCtrl)
+        etiq_1_tiempo_ref = tk.Label(cj_unidades_tiempo, text='1', **Fm.formato_etiqs_ctrls_tiempo)
         etiq_1_tiempo_ref.pack(**gf(Fm.ubic_CtrlsUnidTiempo))
         símismo.MnTiempoRef = CtrG.Menú(cj_unidades_tiempo, opciones=[], ancho=7,
                                         comanda=símismo.acción_cambió_ref_unid,
                                         ubicación=gf(Fm.ubic_CtrlsUnidTiempo), tipo_ubic='pack')
         símismo.IngrConvUnidTiempo = CtrG.IngrNúm(cj_unidades_tiempo, nombre='=',
-                                                  límites=(0, None), prec='ent',
+                                                  límites=(1, None), prec='ent',
                                                   comanda=símismo.acción_cambió_conversión,
                                                   ubicación=gf(Fm.ubic_CtrlsUnidTiempo), tipo_ubic='pack')
-        símismo.EtiqUnidTiempoNoRef = tk.Label(cj_unidades_tiempo, text='Prueba', **Fm.formato_EtiqCtrl)
+        símismo.EtiqUnidTiempoNoRef = tk.Label(cj_unidades_tiempo, **Fm.formato_etiqs_ctrls_tiempo)
         símismo.EtiqUnidTiempoNoRef.pack(**gf(Fm.ubic_CtrlsUnidTiempo))
         cj_unidades_tiempo.pack(**gf(Fm.ubic_CtrlsTiempo))
+
+        cj_paso = tk.Frame(cj_ctrls_tiempo, **Fm.formato_cajas)
+        símismo.IngrPaso = CtrG.IngrNúm(cj_paso, nombre=apli.Trads['Paso'],
+                                        límites=(1, None), prec='ent',
+                                        ubicación=gf(Fm.ubic_CtrlsUnidTiempo), tipo_ubic='pack')
+        cj_paso.pack(**gf(Fm.ubic_CtrlsTiempo))
 
         cj_tiempo_final = tk.Frame(cj_ctrls_tiempo, **Fm.formato_cajas)
         símismo.IngrTempFinal = CtrG.IngrNúm(cj_tiempo_final, nombre=apli.Trads['TiempoFinal'],
                                              límites=(0, None), lím_incl=False, prec='ent', val_inic=100,
                                              ubicación=gf(Fm.ubic_CtrlsUnidTiempo), tipo_ubic='pack')
-        símismo.EtiqUnidTiempoFinal = tk.Label(cj_tiempo_final, **Fm.formato_EtiqCtrl)
+        símismo.EtiqUnidTiempoFinal = tk.Label(cj_tiempo_final, **Fm.formato_etiqs_ctrls_tiempo)
         símismo.EtiqUnidTiempoFinal.pack(**gf(Fm.ubic_CtrlsTiempo))
         cj_tiempo_final.pack(**gf(Fm.ubic_CtrlsTiempo))
 
@@ -241,7 +297,6 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
     def acción_cambió_ref_unid(símismo, val):
         unidades_tiempo_mds = símismo.Modelo.mds.unidades_tiempo
         unidades_tiempo_bf = símismo.Modelo.bf.unidades_tiempo
-        print(unidades_tiempo_mds, unidades_tiempo_bf)
 
         if val == unidades_tiempo_mds:
             símismo.Modelo.receta['ref_tiempo_mds'] = True
@@ -257,9 +312,10 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
 
     def acción_simular(símismo):
         símismo.CjSimulando.pack(**gf(Fm.ubic_CjSimulando))
+        símismo.apli.update()
         símismo.BtSimul.bloquear()
 
-        símismo.Modelo.simular(tiempo_final=símismo.IngrTempFinal.val)
+        símismo.Modelo.simular(paso=símismo.IngrPaso.val, tiempo_final=símismo.IngrTempFinal.val)
 
         símismo.BtSimul.desbloquear()
         símismo.CjSimulando.pack_forget()

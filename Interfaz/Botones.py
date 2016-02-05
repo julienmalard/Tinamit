@@ -100,7 +100,7 @@ class BotónTexto(Botón):
 class BotónImagen(Botón):
     def __init__(símismo, pariente, comanda, formato, img_norm, img_sel, img_bloq=None,
                  ubicación=None, tipo_ubic=None):
-        super().__init__(pariente, comanda, formato=formato, img_norm=img_norm,
+        super().__init__(pariente, comanda=comanda, formato=formato, img_norm=img_norm,
                          img_sel=img_sel, img_bloq=img_bloq,
                          ubicación=ubicación, tipo_ubic=tipo_ubic)
 
@@ -176,22 +176,21 @@ class BotónNavSub(BotónImagen):
 
 
 class BotónAltern(BotónImagen):
-    def __init__(símismo, pariente, formato, img_1, img_2, img_bloq=None, comanda=None,
+    def __init__(símismo, pariente, formato, img_1, img_2, img_bloq=None, comanda_segundaria=None,
                  ubicación=None, tipo_ubic=None):
         super().__init__(pariente, comanda=símismo.acción, formato=formato, img_norm=img_1,
                          img_sel=img_2, img_bloq=img_bloq,
                          ubicación=ubicación, tipo_ubic=tipo_ubic)
         símismo.img_1 = img_1
         símismo.img_2 = img_2
-        símismo.comanda = comanda
+        símismo.comanda_segundaria = comanda_segundaria
 
         símismo.val = True
 
     def acción(símismo):
         símismo.poner(not símismo.val)
-
-        if símismo.comanda is not None:
-            símismo.comanda()
+        if símismo.comanda_segundaria is not None:
+            símismo.comanda_segundaria()
 
     def borrar(símismo):
         símismo.poner(True)

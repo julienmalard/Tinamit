@@ -5,6 +5,7 @@ import os
 
 class EnvolturaBF(object):
     def __init__(símismo, ubicación_modelo):
+
         # Cargar el modelo biofísico (debe ser un modelo Python)
         directorio_modelo, nombre_modelo = os.path.split(ubicación_modelo)
         sys.path.append(directorio_modelo)
@@ -13,18 +14,23 @@ class EnvolturaBF(object):
         símismo.modelo = módulo.Modelo()
 
         # Verificar que el modelo cargado tiene todas las propiedades necesarias
-        for a in ['ejec', 'incr', 'variables', 'actualizar']:
+        for a in ['unidades_tiempo', 'ejec', 'incr', 'variables', 'actualizar']:
             assert hasattr(símismo.modelo, a)
 
-        símismo.vars = símismo.sacar_vars()
+        símismo.vars = []
+        símismo.unidades = {}
         símismo.conex_entrando = {}
         símismo.vars_saliendo = []
+
+        símismo.sacar_vars()
         símismo.unidades_tiempo = símismo.modelo.unidades_tiempo
 
     def sacar_vars(símismo):
         variables = list(símismo.modelo.variables.keys())
 
-        return variables
+        símismo.vars = variables
+        for var in símismo.modelo.variables:
+            símismo.unidades[var] = símismo.modelo.variables[var]['unidades']
 
     def iniciar_modelo(símismo):
         if hasattr(símismo.modelo, 'ejec'):

@@ -246,9 +246,9 @@ class CajaAvisoBorrar(tk.Frame):
 
 # Subcaja 2.1
 class GrpCtrlsConex(CtrG.GrupoControles):
-    def __init__(símismo, pariente, apli, controles, lista, bt_guardar, bt_borrar):
+    def __init__(símismo, pariente, apli, controles, lista, bt_guardar, bt_borrar, comanda):
         super().__init__(controles, constructor_itema=ItemaConexión, lista=lista,
-                         bt_guardar=bt_guardar, bt_borrar=bt_borrar)
+                         bt_guardar=bt_guardar, bt_borrar=bt_borrar, comanda=comanda)
         símismo.apli = apli
         símismo.pariente = pariente
 
@@ -328,12 +328,15 @@ class ItemaConexión(CtrG.ItemaEditable):
                 símismo.etiq_izqflecha.config(image=símismo.flecha['cola_izq'])
                 símismo.etiq_derflecha.config(image=símismo.flecha['cbz_der'])
             else:
+                símismo.etiq_izqflecha.config(image=símismo.flecha['cola_der'])
+                símismo.etiq_derflecha.config(image=símismo.flecha['cbz_izq'])
+        else:
+            if Fm.IzqaDerech:
                 símismo.etiq_izqflecha.config(image=símismo.flecha['cbz_izq'])
                 símismo.etiq_derflecha.config(image=símismo.flecha['cola_der'])
-        else:
-
-            símismo.etiq_izqflecha.config(image=símismo.flecha['cbz_izq'])
-            símismo.etiq_derflecha.config(image=símismo.flecha['cola_der'])
+            else:
+                símismo.etiq_izqflecha.config(image=símismo.flecha['cbz_der'])
+                símismo.etiq_derflecha.config(image=símismo.flecha['cola_izq'])
 
     def resaltar(símismo):
         for etiq in símismo.etiquetas:

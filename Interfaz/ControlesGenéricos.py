@@ -77,9 +77,9 @@ class ListaEditable(ListaItemas):
         ajust_ancho = [0] * (len(anchuras)-1) + [ancho_bts]
         cols = []
         for n, col in enumerate(nombres_cols):
-            cols.append(tk.Label(cj_encbz, text=col, **Fm.formato_EtiqEncbzLst))
-            cols[-1].place(relx=relx[n], x=x[n], width=ajust_ancho[n], relwidth=anchuras[n],
-                           **gf(Fm.ubic_ColsEncbzLst))
+            ubic = dict(relx=relx[n], x=x[n], **Fm.ubic_ColsEncbzLst)
+            cols.append(tk.Label(cj_encbz, text=col, **gf(Fm.formato_EtiqEncbzLst)))
+            cols[-1].place(width=ajust_ancho[n], relwidth=anchuras[n], **gf(ubic))
 
         cj_encbz.place(**gf(Fm.ubic_EncbzLstItemas))
 
@@ -141,7 +141,8 @@ class ItemaEditable(Itema):
     def estab_columnas(símismo, anchuras):
         x = [np.sum(anchuras[:n]) for n in range(len(anchuras))]
         for n, col in enumerate(símismo.columnas):
-            col.place(relx=x[n], relwidth=anchuras[n], **gf(Fm.ubic_ColsItemasEdit))
+            ubic = dict(relx=x[n], **Fm.ubic_ColsItemasEdit)
+            col.place(relwidth=anchuras[n], **gf(ubic))
 
         símismo.cj_cols.pack(**gf(Fm.ubic_CjColsItemas))
         símismo.cj_bts.pack(**gf(Fm.ubic_CjBtsItemas))
@@ -161,7 +162,7 @@ class ItemaEditable(Itema):
 
 class GrupoControles(object):
     def __init__(símismo, controles, constructor_itema=None, itema=None, gráfico=None, lista=None,
-                 bt_guardar=None, bt_borrar=None):
+                 bt_guardar=None, bt_borrar=None, comanda=None):
         símismo.controles = controles
         símismo.constructor_itema = constructor_itema
         símismo.itema = itema
@@ -169,6 +170,7 @@ class GrupoControles(object):
         símismo.lista = lista
         símismo.bt_guardar = bt_guardar
         símismo.bt_borrar = bt_borrar
+        símismo.comanda = comanda
         símismo.objeto = None
         símismo.receta = {}
 
@@ -204,6 +206,9 @@ class GrupoControles(object):
             if símismo.bt_guardar is not None:
                 símismo.bt_guardar.bloquear()
 
+        if símismo.comanda is not None:
+            símismo.comanda()
+
     def guardar(símismo, borrar=True):
         if símismo.itema is not None:
             símismo.itema.actualizar()
@@ -227,6 +232,9 @@ class GrupoControles(object):
             símismo.bt_guardar.bloquear()
         if símismo.bt_borrar is not None:
             símismo.bt_borrar.bloquear()
+
+        if símismo.comanda is not None:
+            símismo.comanda()
 
     def editar(símismo, itema):
         símismo.borrar()
@@ -456,15 +464,14 @@ class Menú(object):
         texto_campo = símismo.var.get()
         nueva_val = [ll for ll, v in símismo.conv.items() if v == texto_campo][0]
 
-        if nueva_val == '':
-            símismo.val = None
-            return
-
         if nueva_val != símismo.val:
-            for menú in símismo.exclusivos:
-                menú.excluir(nueva_val)
-                if símismo.val is not None:
-                    menú.reinstaurar(símismo.val)
+            if nueva_val == '':
+                nueva_val = None
+            else:
+                for menú in símismo.exclusivos:
+                    menú.excluir(nueva_val)
+                    if símismo.val is not None:
+                        menú.reinstaurar(símismo.val)
 
             símismo.val = nueva_val
             if símismo.comanda is not None:
