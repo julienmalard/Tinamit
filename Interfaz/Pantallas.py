@@ -2,8 +2,6 @@ import tkinter as tk
 from Interfaz import Cajas as Cjs, Botones as Bts, Formatos as Fms
 
 
-
-
 class PantallaCentral(object):
     def __init__(símismo, apli, imgs):
         # La caja principal que contiene todo visible en esta pantalla
