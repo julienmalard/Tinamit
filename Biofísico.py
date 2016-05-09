@@ -58,3 +58,32 @@ class EnvolturaBF(object):
             conv = conex['conv']
             valor = valores[var_entr] * conv
             símismo.modelo.actualizar(var_propio, valor)
+
+
+class ClaseModeloBF():
+    def __init__(símismo):
+
+        # Ejemplo de formato correcto para símismo.variables:
+        # {'var1':
+        #         {'var': 3,
+        #          'unidades': 'kg/ha'},
+        #  'var2':
+        #         {'var': 2,
+        #          'unidades': 'cm/día'}
+        # }
+        símismo.variables = NotImplemented
+        símismo.unidades_tiempo = NotImplemented
+
+    def ejec(símismo):
+        raise NotImplementedError
+
+    def incr(símismo, paso):
+        """
+        Esta función tiene que poner el diccionario símismo.variables a fecha.
+        :param paso:
+        :return:
+        """
+        raise NotImplementedError
+
+    def actualizar(símismo, var, valor):
+        símismo.variables[var] = valor
