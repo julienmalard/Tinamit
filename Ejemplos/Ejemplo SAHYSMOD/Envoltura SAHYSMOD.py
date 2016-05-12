@@ -17,9 +17,9 @@ class Modelo(ClaseModeloBF):
                                                    'unidades': 'm'
                                                    },
 
-                             'Groundwater Salinity': {'var': 0,
-                                                      'unidades': 'dS/m'
-                                                      },
+                             'Soil Salinity': {'var': 0,
+                                               'unidades': 'dS/m'
+                                               },
 
                              'Groundwater Extraction': {'var': 0,
                                                         'unidades': 'm/season'
@@ -49,6 +49,7 @@ class Modelo(ClaseModeloBF):
 
     def incr(símismo, paso):
         # Note: this subclass can only be used with a coupling time step of 0.5 years
+        assert paso == 0.5
 
         s = símismo.season
 
@@ -82,7 +83,7 @@ class Modelo(ClaseModeloBF):
 
             # Set the variables dictionary to the appropriate season data
             símismo.variables['Groundwater Depth']['var'] = símismo.interal_data['Groundwater Depth'][s]
-            símismo.variables['Groundwater Salinity']['var'] = símismo.interal_data['Groundwater Salinity'][s]
+            símismo.variables['Soil Salinity']['var'] = símismo.interal_data['Soil Salinity'][s]
 
             # Increment/reset the season
             s += 1
