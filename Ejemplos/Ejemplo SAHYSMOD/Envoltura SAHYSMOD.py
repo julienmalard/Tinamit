@@ -31,7 +31,7 @@ class Modelo(ClaseModeloBF):
         # These attributes are specific to the SAHYSMOD wrapper
         current_dir = os.path.dirname(os.path.realpath(__file__))
         símismo.output = os.path.join(current_dir, 'SAHYSMOD.out')
-        símismo.input = os.path.join(current_dir, 'SAHYSMOD.inp')
+        símismo.input = os.path.join(current_dir, 'TEMPLATE.inp')
 
         # This class will simulate on a seasonal time basis, but the SAHYSMOD executable must run for two half-years
         # at the same time. Therefore, we create an internal diccionario to store variable data for both half-years.
@@ -61,7 +61,7 @@ class Modelo(ClaseModeloBF):
                             GwWS2=símismo.interal_data['Groundwater Extraction'][1])
 
             # Create the appropriate input file:
-            símismo.write_inp(file_path=símismo.input, dic_data=dic_data)
+            símismo.write_inp(file_path=símismo.input, output_file=símismo.output, dic_data=dic_data)
 
             # Prepare the command
             args = dict(SAHYSMOD=SAHYSMOD, input=símismo.input, output=símismo.output)
@@ -91,7 +91,7 @@ class Modelo(ClaseModeloBF):
 
     # Some functions specific to the SAHYSMOD-specific wrapper
     @staticmethod
-    def write_inp(file_path, dic_data):
+    def write_inp(file_path, output_file, dic_data):
 
         # Read the template CLI file
         with open(file_path) as d:
@@ -102,7 +102,7 @@ class Modelo(ClaseModeloBF):
             template[n] = line.format(**dic_data)
 
         # And save the input file
-        with open(file_path, 'w') as d:
+        with open(output_file, 'w') as d:
             d.write(''.join(template))
 
     @staticmethod
@@ -134,20 +134,26 @@ class Modelo(ClaseModeloBF):
                     l = d.readline()
 
                 # Copy all of the lines until we get to the end of the season
+                l = d.readline()
                 while '#' not in l:
                     season_output.append(l)
                     l = d.readline()
 
                 # Search for the wariables we want:
-                    for var in dic_data:
-                        for l in season_output:
-                            l += ' '
-                            m = re.search('%s += +(.*) ' % var, l)
+                for var in dic_data:
+
+                    for line in season_output:
+                        print(1, var, line)
+                        line += ' '
+                        m = re.search('%s += +([^ ]*)' % var, line)
+                        if m is not None:
 
                             try:
                                 val = float(m.group(1))
                             except ValueError:
-                                raise ValueError('The variable "%s" was not found in the SAHYSMOD output.' % var)
+                                print(m.group(0))
+                                print(m.group(1))
+                                raise ValueError('The variable "%s" was not read from the SAHYSMOD output.' % var)
 
                             dic_data[var][season] = val
 
