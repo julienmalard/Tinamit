@@ -48,8 +48,9 @@ class Modelo(ClaseModeloBF):
         pass  # No prior setup necessary
 
     def incr(símismo, paso):
-        # Note: this subclass can only be used with a coupling time step of 0.5 years
-        assert paso == 0.5
+        # Note: this subclass can only be used with a coupling time step of 1 season, or of multiples of
+        # 1 year (two seasons).
+        assert (paso == 1) or (int(paso/2) == paso/2)
 
         s = símismo.season
 
