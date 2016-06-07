@@ -38,7 +38,7 @@ class Conectado(object):
         if 'conexiones' in receta.keys():
             for conex in receta['conexiones'].copy():
                 try:
-                    símismo.conectar(conex)
+                    símismo._conectar(conex)
                 except ValueError:
                     símismo.receta['conexiones'].remove(conex)
 
@@ -68,7 +68,24 @@ class Conectado(object):
             símismo.receta['bf'] = None
             raise ConnectionError
 
-    def conectar(símismo, conexión):
+    def conectar(símismo, var_mds, var_bf, mds_fuente, conv=1):
+        """
+
+        :param var_mds:
+        :type var_mds: str
+        :param var_bf:
+        :type var_bf: str
+        :param mds_fuente:
+        :type mds_fuente: bool
+        :param conv:
+        :type conv: float
+
+        """
+        dic = {"var_mds": var_mds, "mds_fuente": mds_fuente, "conv": conv, "var_bf": var_bf},
+
+        símismo._conectar(dic)
+
+    def _conectar(símismo, conexión):
         if conexión not in símismo.receta['conexiones']:
             símismo.receta['conexiones'].append(conexión)
 

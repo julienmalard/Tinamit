@@ -217,7 +217,7 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
             símismo.EtiqUnidBf.config(text='')
 
     def añadir_conexión(símismo, conexión):
-        símismo.Modelo.conectar(conexión)
+        símismo.Modelo._conectar(conexión)
         símismo.actualizar_menús()
 
     def quitar_conexión(símismo, conexión):

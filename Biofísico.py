@@ -13,6 +13,7 @@ class EnvolturaBF(object):
         módulo = importar_mod(os.path.splitext(nombre_modelo)[0])
         assert hasattr(módulo, 'Modelo')
         símismo.modelo = módulo.Modelo()
+        assert isinstance(símismo.modelo, ClaseModeloBF)
 
         # Verificar que el modelo cargado tiene todas las propiedades necesarias
         for a in ['unidades_tiempo', 'ejec', 'incr', 'variables', 'actualizar']:
@@ -22,6 +23,9 @@ class EnvolturaBF(object):
         símismo.unidades = {}
         símismo.conex_entrando = {}
         símismo.vars_saliendo = []
+
+        símismo.modelo.vars_ingr = símismo.conex_entrando
+        símismo.modelo.vars_egr = símismo.vars_saliendo
 
         símismo.sacar_vars()
         símismo.unidades_tiempo = símismo.modelo.unidades_tiempo
@@ -60,7 +64,7 @@ class EnvolturaBF(object):
             símismo.modelo.actualizar(var_propio, valor)
 
 
-class ClaseModeloBF():
+class ClaseModeloBF:
     def __init__(símismo):
 
         # Ejemplo de formato correcto para símismo.variables:
@@ -71,8 +75,12 @@ class ClaseModeloBF():
         #         {'var': 2,
         #          'unidades': 'cm/día'}
         # }
+
         símismo.variables = NotImplemented
         símismo.unidades_tiempo = NotImplemented
+
+        símismo.vars_ingr = {}
+        símismo.vars_egr = []
 
     def ejec(símismo):
         raise NotImplementedError
