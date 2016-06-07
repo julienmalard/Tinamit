@@ -83,17 +83,14 @@ class Modelo(ClaseModeloBF):
                 for var in vars_SAHYSMOD:
                     símismo.interal_data[var] = dict_read_out[vars_SAHYSMOD[var]['code']]
 
-                # Increment the season
-                s = 1
+            # Set the variables dictionary to the appropriate season data
+            for var, dict_var in símismo.variables.items():
+                if var in símismo.vars_egr:
+                    símismo.variables[var]['var'] = símismo.interal_data[var][s]
 
-                # Set the variables dictionary to the appropriate season data
-                for var, dict_var in símismo.variables.items():
-                    if var in símismo.vars_egr:
-                        símismo.variables[var]['var'] = símismo.interal_data[var][s]
-
-                # Increment/reset the season
-                s += 1
-                s %= 2  # 2 seasons equals season 0 of the next year
+            # Increment/reset the season
+            s += 1
+            s %= 2  # 2 seasons equals season 0 of the next year
 
         # Save the season for the next time.
         símismo.season = s
@@ -191,62 +188,62 @@ class Modelo(ClaseModeloBF):
 
         return dic_input_vals
 
-vars_SAHYSMOD = {'var1': {'code': 'It', 'unidades': ''},
-                 'var1': {'code': 'Is', 'unidades': ''},
-                 'var1': {'code': 'IaA', 'unidades': ''},
-                 'var1': {'code': 'IaB', 'unidades': ''},
-                 'var1': {'code': 'FfA', 'unidades': ''},
-                 'var1': {'code': 'FfB', 'unidades': ''},
-                 'var1': {'code': 'FfT', 'unidades': ''},
-                 'var1': {'code': 'Io', 'unidades': ''},
-                 'var1': {'code': 'JsA', 'unidades': ''},
-                 'var1': {'code': 'JsB', 'unidades': ''},
-                 'var1': {'code': 'EaU', 'unidades': ''},
-                 'var1': {'code': 'LrA', 'unidades': ''},
-                 'var1': {'code': 'LrB', 'unidades': ''},
-                 'var1': {'code': 'LrU', 'unidades': ''},
-                 'var1': {'code': 'LrT', 'unidades': ''},
-                 'var1': {'code': 'RrA', 'unidades': ''},
-                 'var1': {'code': 'RrB', 'unidades': ''},
-                 'var1': {'code': 'RrU', 'unidades': ''},
-                 'var1': {'code': 'RrT', 'unidades': ''},
-                 'var1': {'code': 'Gti', 'unidades': ''},
-                 'var1': {'code': 'Gto', 'unidades': ''},
-                 'var1': {'code': 'Qv', 'unidades': ''},
-                 'var1': {'code': 'Gqi', 'unidades': ''},
-                 'var1': {'code': 'Gqo', 'unidades': ''},
-                 'var1': {'code': 'Gaq', 'unidades': ''},
-                 'var1': {'code': 'Gnt', 'unidades': ''},
-                 'var1': {'code': 'Gd', 'unidades': ''},
-                 'var1': {'code': 'Ga', 'unidades': ''},
-                 'var1': {'code': 'Gb', 'unidades': ''},
-                 'var1': {'code': 'Gw', 'unidades': ''},
-                 'var1': {'code': 'Dw', 'unidades': ''},
-                 'var1': {'code': 'Hw', 'unidades': ''},
-                 'var1': {'code': 'Hq', 'unidades': ''},
-                 'var1': {'code': 'Sto', 'unidades': ''},
-                 'var1': {'code': 'Zs', 'unidades': ''},
-                 'var1': {'code': 'A', 'unidades': ''},
-                 'var1': {'code': 'B', 'unidades': ''},
-                 'var1': {'code': 'U', 'unidades': ''},
-                 'var1': {'code': 'Uc', 'unidades': ''},
-                 'var1': {'code': 'Kr', 'unidades': ''},
-                 'var1': {'code': 'CrA', 'unidades': ''},
-                 'var1': {'code': 'CrB', 'unidades': ''},
-                 'var1': {'code': 'CrU', 'unidades': ''},
-                 'var1': {'code': 'Cr4', 'unidades': ''},
-                 'var1': {'code': 'C1*', 'unidades': ''},
-                 'var1': {'code': 'C2*', 'unidades': ''},
-                 'var1': {'code': 'C3*', 'unidades': ''},
-                 'var1': {'code': 'Cxf', 'unidades': ''},
-                 'var1': {'code': 'Cxa', 'unidades': ''},
-                 'var1': {'code': 'Cxb', 'unidades': ''},
-                 'var1': {'code': 'Cqf', 'unidades': ''},
-                 'var1': {'code': 'Cti', 'unidades': ''},
-                 'var1': {'code': 'Cqi', 'unidades': ''},
-                 'var1': {'code': 'Ci', 'unidades': ''},
-                 'var1': {'code': 'Cd', 'unidades': ''},
-                 'var1': {'code': 'Cw', 'unidades': ''}
+vars_SAHYSMOD = {'Total irrigation': {'code': 'It', 'unidades': 'm3/season/m2'},
+                 'Canal irrigation': {'code': 'Is', 'unidades': 'm3/season/m2'},
+                 'Crop A field irrigation': {'code': 'IaA', 'unidades': 'm3/season/m2'},
+                 'Crop B field irrigation': {'code': 'IaB', 'unidades': 'm3/season/m2'},
+                 'Irrigation efficiency crop A': {'code': 'FfA', 'unidades': 'Dmnl'},
+                 'Irrigation efficiency crop B': {'code': 'FfB', 'unidades': 'Dmnl'},
+                 'Total irrigation efficiency': {'code': 'FfT', 'unidades': 'Dmnl'},
+                 'Water leaving by canal': {'code': 'Io', 'unidades': 'm3/season/m2'},
+                 'Irrigation sufficiency crop A': {'code': 'JsA', 'unidades': 'Dmnl'},
+                 'Irrigation sufficiency crop B': {'code': 'JsB', 'unidades': 'Dmnl'},
+                 'Actual evapotranspiration nonirrigated': {'code': 'EaU', 'unidades': 'm3/season/m2'},
+                 'Root zone percolation crop A': {'code': 'LrA', 'unidades': 'm3/season/m2'},
+                 'Root zone percolation crop B': {'code': 'LrB', 'unidades': 'm3/season/m2'},
+                 'Root zone percolation nonirrigated': {'code': 'LrU', 'unidades': 'm3/season/m2'},
+                 'Total root zone percolation': {'code': 'LrT', 'unidades': 'm3/season/m2'},
+                 'Capillary rise crop A': {'code': 'RrA', 'unidades': 'm3/season/m2'},
+                 'Capillary rise crop B': {'code': 'RrB', 'unidades': 'm3/season/m2'},
+                 'Capillary rise unirrigated': {'code': 'RrU', 'unidades': 'm3/season/m2'},
+                 'Total capillary rise': {'code': 'RrT', 'unidades': 'm3/season/m2'},
+                 'Trans zone horizontal incoming groundwater': {'code': 'Gti', 'unidades': 'm3/season/m2'},
+                 'Trans zone horizontal outgoing groundwater': {'code': 'Gto', 'unidades': 'm3/season/m2'},
+                 'Net vertical water table recharge': {'code': 'Qv', 'unidades': 'm'},
+                 'Aquifer horizontal incoming groundwater': {'code': 'Gqi', 'unidades': '(m3/season/m2'},
+                 'Aquifer horizontal outgoing groundwater': {'code': 'Gqo', 'unidades': '(m3/season/m2'},
+                 'Net aquifer horizontal flow': {'code': 'Gaq', 'unidades': 'm3/season/m2'},
+                 'Net horizontal groundwater flow': {'code': 'Gnt', 'unidades': 'm3/season/m2'},
+                 'Total subsurface drainage': {'code': 'Gd', 'unidades': 'm3/season/m2'},
+                 'Subsurface drainage above drains': {'code': 'Ga', 'unidades': 'm3/season/m2'},
+                 'Subsurface drainage below drains': {'code': 'Gb', 'unidades': 'm3/season/m2'},
+                 'Groundwater extraction': {'code': 'Gw', 'unidades': 'm3/season/m2'},
+                 'Groundwater depth': {'code': 'Dw', 'unidades': 'm'},
+                 'Water table elevation': {'code': 'Hw', 'unidades': 'm'},
+                 'Subsoil hydraulic head': {'code': 'Hq', 'unidades': 'm'},
+                 'Water table storage': {'code': 'Sto', 'unidades': 'm'},
+                 'Surface water salt': {'code': 'Zs', 'unidades': 'm*dS/m'},
+                 'Seasonal fraction area crop A': {'code': 'A', 'unidades': 'Dmnl'},
+                 'Seasonal fraction area crop B': {'code': 'B', 'unidades': 'Dmnl'},
+                 'Seasonal fraction area nonirrigated': {'code': 'U', 'unidades': 'Dmnl'},
+                 'Fraction permanently unirrigated': {'code': 'Uc', 'unidades': 'Dmnl'},
+                 'Land use key': {'code': 'Kr', 'unidades': 'Dmnl'},
+                 'Root zone salinity crop A': {'code': 'CrA', 'unidades': 'dS / m'},
+                 'Root zone salinity crop B': {'code': 'CrB', 'unidades': 'dS / m'},
+                 'Root zone salinity unirrigated': {'code': 'CrU', 'unidades': 'dS / m'},
+                 'Fully rotated land irrigated root zone salinity': {'code': 'Cr4', 'unidades': 'dS / m'},
+                 'Key 1 non-permanently irrigated root zone salinity': {'code': 'C1*', 'unidades': 'dS / m'},
+                 'Key 2 non-permanently irrigated root zone salinity': {'code': 'C2*', 'unidades': 'dS / m'},
+                 'Key 3 non-permanently irrigated root zone salinity': {'code': 'C3*', 'unidades': 'dS / m'},
+                 'Transition zone salinity': {'code': 'Cxf', 'unidades': 'dS / m'},
+                 'Transition zone above-drain salinity': {'code': 'Cxa', 'unidades': 'dS / m'},
+                 'Transition zone below-drain salinity': {'code': 'Cxb', 'unidades': 'dS / m'},
+                 'Soil salinity': {'code': 'Cqf', 'unidades': 'dS / m'},
+                 'Transition zone incoming salinity': {'code': 'Cti', 'unidades': 'dS / m'},
+                 'Aquifer salinity': {'code': 'Cqi', 'unidades': 'dS / m'},
+                 'Irrigation water salinity': {'code': 'Ci', 'unidades': 'dS / m'},
+                 'Drainage salinity': {'code': 'Cd', 'unidades': 'ds / m'},
+                 'Well water salinity': {'code': 'Cw', 'unidades': 'dS / m'}
                  }
 
 dict_read_out = dict([(x['code'], [None, None]) for x in vars_SAHYSMOD.values()])
