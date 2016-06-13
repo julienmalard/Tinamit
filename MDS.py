@@ -62,13 +62,13 @@ class EnvolturaMDS(object):
             editables = [x for x in mem_inter.raw.decode().split('\x00') if x]
 
             # Sacar las unidades de los variables
-            def sacar_unid(var):
-                mem_inter = ctypes.create_string_buffer(50)
-                resultado = símismo.dll.vensim_get_varattrib(var.encode(), 1, mem_inter, 50)
-                if resultado <= 0:
-                    raise OSError('Error con VENSIM.')
+            def sacar_unid(variable):
+                mem = ctypes.create_string_buffer(50)
+                res = símismo.dll.vensim_get_varattrib(variable.encode(), 1, mem, 50)
+                if res <= 0:
+                    raise ChildProcessError('Error con VENSIM.')
 
-                return mem_inter.raw.decode().split('\x00')[0]
+                return mem.raw.decode().split('\x00')[0]
 
             unidades = {}
             for var in variables:
@@ -93,16 +93,21 @@ class EnvolturaMDS(object):
 
         return unidades
 
-    def iniciar_modelo(símismo, tiempo_final):
-        if símismo.programa == 'vensim':
+    def iniciar_modelo(símismo, tiempo_final, nombre=None):
+
+        if nombre is None:
             nombre = 'Corrida Tinamit'
+
+        if símismo.programa == 'vensim':
             símismo.dll.vensim_command(("SIMULATE>RUNNAME|%s" % nombre).encode())
 
             if tiempo_final is not None:
                 símismo.dll.vensim_command(('SIMULATE>SETVAL|%s = %f' % ('FINAL TIME', tiempo_final)).encode())
 
             resultado = símismo.dll.vensim_command(b"MENU>GAME")
+
             todobien = (resultado == 1)
+
         else:
             raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
 

@@ -451,9 +451,9 @@
         "X": "X"
       }
     },
-    "Tz'utujil": {
+    "Q'anjob'al": {
       "Estado": 0.0,
-      "IzqaDerech": "Normal",
+      "IzqaDerech": true,
       "Trads": {
         "AnálisisIncert": "",
         "ArchivoTinamit": "",
@@ -494,6 +494,51 @@
         "VariableBiofísico": "",
         "VariableMDS": "",
         "X": ""
+      }
+    },
+    "Tz'utujil": {
+      "Estado": 0.6153846153846154,
+      "IzqaDerech": "Normal",
+      "Trads": {
+        "AnálisisIncert": "",
+        "ArchivoTinamit": "Wuj tinamit",
+        "AvisoBorrarLeng": "Nawjoa' na tur ja tzij ",
+        "AvisoReinic": "Tmja'a chik jmej tinamit rxin naksaj chik jun chik tizij.",
+        "Ayuda": "Yat tox",
+        "Biofísico": "",
+        "Borrar": "Natur",
+        "Cargar": "",
+        "CargarMDS": "MDS",
+        "CargarModeloBf": "",
+        "CargarModeloConectado": "",
+        "CargarModelos": "",
+        "ConectarVariables": "",
+        "Empezar": "Namaj rij",
+        "EnTrabajo": "Ntajin nsmaja' ",
+        "Entendido": "uta k'ara' xq'axa pwa´",
+        "ErrorCargarBf": "mxkuinta xnoj rxin yatsmaja ",
+        "ErrorCargarMDS": "mxkuinta xnoj rxin yatsmaja",
+        "ErrorCreandoMod": "mxkuinta xwerqansaj rkulik ri ",
+        "Guardar": "tiyka´",
+        "Listas": "Atz chik rxin naksaj",
+        "MDS": "MDS",
+        "ModeloBiofísico": "",
+        "ModeloCargado": "",
+        "ModelosPython": "",
+        "ModelospublicadosVENSIM": " je rbanika k´tun chic VENSIM",
+        "No": "Majon ",
+        "NoGuardar": "Na yikta",
+        "OpsLengs": "Nikajchik tzojbal ",
+        "ParaHacer": "rxin nabana",
+        "Paso": "rkjola ramaj ",
+        "Simulando": "ntajina  nutij rij nukut qtzitzij ",
+        "Simular": "",
+        "Sí": "kara' ",
+        "TiempoFinal": "k'isbal ramaj",
+        "Traducciones": "Q'axbal tzij.",
+        "VariableBiofísico": "",
+        "VariableMDS": "",
+        "X": "X"
       }
     },
     "اردو": {

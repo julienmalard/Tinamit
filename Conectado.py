@@ -44,13 +44,14 @@ class Conectado(object):
 
     def estab_mds(símismo, mds):
         try:
+            símismo.receta['mds'] = mds
             dic_programas_mds = {'.vpm': 'vensim'}
             ext = os.path.splitext(mds)[1]
             programa_mds = dic_programas_mds[ext]
             símismo.mds = EnvolturaMDS(ubicación_modelo=símismo.receta['mds'], programa_mds=programa_mds)
-            símismo.mds.sacar_vars()
             símismo.vars_mds = símismo.mds.vars
-            símismo.receta['mds'] = mds
+            símismo.actualizar_conexiones()
+
         except (FileNotFoundError, KeyError, AssertionError):
             símismo.mds = None
             símismo.vars_mds = []
@@ -62,11 +63,13 @@ class Conectado(object):
             símismo.receta['bf'] = bf
             símismo.bf = EnvolturaBF(ubicación_modelo=símismo.receta['bf'])
             símismo.vars_bf = símismo.bf.vars
+            símismo.actualizar_conexiones()
+
         except (FileNotFoundError, AssertionError):
             símismo.bf = None
             símismo.vars_bf = []
             símismo.receta['bf'] = None
-            raise ConnectionError
+            raise ConnectionError('Hay un error con el modelo biofísico.')
 
     def conectar(símismo, var_mds, var_bf, mds_fuente, conv=1):
         """
@@ -81,7 +84,7 @@ class Conectado(object):
         :type conv: float
 
         """
-        dic = {"var_mds": var_mds, "mds_fuente": mds_fuente, "conv": conv, "var_bf": var_bf},
+        dic = {"var_mds": var_mds, "mds_fuente": mds_fuente, "conv": conv, "var_bf": var_bf}
 
         símismo._conectar(dic)
 
@@ -92,7 +95,7 @@ class Conectado(object):
         var_mds = conexión['var_mds']
         var_bf = conexión['var_bf']
         if var_mds not in símismo.vars_mds or var_bf not in símismo.vars_bf:
-            raise ValueError
+            raise ValueError('Error en nombre de variables para conectar.')
 
         mds_fuente = conexión['mds_fuente']
         conv = conexión['conv']
@@ -107,8 +110,8 @@ class Conectado(object):
     def desconectar(símismo, conexión):
         símismo.receta['conexiones'].remove(conexión)
 
-    def simular(símismo, tiempo_final, paso=1):
-        símismo.mds.iniciar_modelo(tiempo_final)
+    def simular(símismo, tiempo_final, paso=1, nombre_simul=None):
+        símismo.mds.iniciar_modelo(tiempo_final, nombre_simul)
         símismo.bf.iniciar_modelo()
 
         tiempo = 0

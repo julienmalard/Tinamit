@@ -8,7 +8,7 @@ from Biofísico import ClaseModeloBF
 SAHYSMOD = ''
 
 # Path to the SAHYSMOD input file with the initial data. Change as needed on your computer.
-inicial_data = ''
+initial_data = ''
 
 
 class Modelo(ClaseModeloBF):
@@ -173,7 +173,7 @@ class Modelo(ClaseModeloBF):
     def gen_input_vals(símismo):
         dic_input_vals = {}
 
-        with open(inicial_data, 'r') as d:
+        with open(initial_data, 'r') as d:
             inp = d.readlines()
 
         with open(símismo.input) as d:

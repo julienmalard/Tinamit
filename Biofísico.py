@@ -94,4 +94,4 @@ class ClaseModeloBF:
         raise NotImplementedError
 
     def actualizar(símismo, var, valor):
-        símismo.variables[var] = valor
+        símismo.variables[var]['var'] = valor
