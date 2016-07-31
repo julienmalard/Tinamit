@@ -182,14 +182,14 @@
       }
     },
     "Italiano": {
-      "Estado": 0.02564102564102564,
+      "Estado": 0.07692307692307693,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
-        "ArchivoTinamit": "",
+        "ArchivoTinamit": "Documento Tinamit",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
-        "Ayuda": "",
+        "Ayuda": "Auita",
         "Biofísico": "",
         "Borrar": "",
         "Cargar": "",
@@ -497,7 +497,7 @@
       }
     },
     "Tz'utujil": {
-      "Estado": 0.6153846153846154,
+      "Estado": 0.6666666666666666,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",

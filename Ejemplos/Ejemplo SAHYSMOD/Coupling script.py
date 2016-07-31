@@ -8,7 +8,7 @@ modelo = Conectado()
 modelo.estab_mds("C:\\Users\\you\\YourDocuments\\Azhar's model.vpm")
 
 modelo.estab_bf('C:\\Users\\jmalar1\\Documents\\PycharmProjects\\Tinamit\\Ejemplos\\'
-                'Ejemplo SAHYSMOD\\Envoltura_SAHYSMOD.py')
+                'Ejemplo SAHYSMOD\\SAHYSMOD_wrapper.py')
 
 # Couple models(Change variable names as needed)
 modelo.conectar(var_mds="Groundwater Table", mds_fuente=False, var_bf="Groundwater depth")

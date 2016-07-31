@@ -45,8 +45,8 @@ class Modelo(ClaseModeloBF):
         #  'code var 2': [season1value, season2value, ...],
         #  ...
         #  }
-        self.interal_data = dict([(var, None) for var in self.variables
-                                  if '#' in vars_SAHYSMOD[var]['code']])
+        self.internal_data = dict([(var, []) for var in self.variables
+                                   if '#' in vars_SAHYSMOD[var]['code']])
         
         # Create some useful model attributes
         self.n_seasons = None  # Number of seasons per year
@@ -56,7 +56,7 @@ class Modelo(ClaseModeloBF):
 
         current_dir = os.path.dirname(os.path.realpath(__file__))
         self.output = os.path.join(current_dir, 'SAHYSMOD.out')
-        self.input = initial_data
+        self.input = os.path.join(current_dir, 'SAHYSMOD.inp')
         self.input_templ = os.path.join(current_dir, 'TEMPLATE.inp')
 
         # Prepare the command to the SAHYSMOD executable
@@ -77,7 +77,7 @@ class Modelo(ClaseModeloBF):
 
         m = self.month
         s = self.season
-        y = 0
+        y = 1  # The number of years to simulate.
 
         m += paso
 
@@ -96,13 +96,13 @@ class Modelo(ClaseModeloBF):
         # If this is the first month of the season, we change the variables dictionary values accordingly
         if m == 0:
             # Set the internal diccionary of values to this season's values
-            for c in self.interal_data:
+            for c in self.internal_data:
                 # For every variable in the internal data dictionary (i.e., all variables that vary by season)
 
                 var = codes_to_vars[c]  # Get the corresponding verbose variable name
 
                 # Set the variables dictionary value to this season's value
-                self.variables[var]['var'] = self.interal_data[c][s]
+                self.variables[var]['var'] = self.internal_data[c][s]
 
         # If this is the first season of the year, we also run a SAHYSMOD simulation
         if s == 0:
@@ -119,7 +119,7 @@ class Modelo(ClaseModeloBF):
         # Save incoming coupled variables to the internal data
         for var in self.variables:
             if var in self.vars_ingr:
-                self.interal_data[var][s] = self.variables[var]
+                self.internal_data[var][s] = self.variables[var]
 
     # Some internal functions specific to this SAHYSMOD wrapper
     def _write_inp(self, n_year):
@@ -133,13 +133,13 @@ class Modelo(ClaseModeloBF):
         """
 
         # Generate the dictionary of current variable values
-        dic_data = dict([(vars_SAHYSMOD[k]['code'], v['var']) for (k, v) in self.variables])
-        dic_data.update(self.interal_data)
+        dic_data = dict([(vars_SAHYSMOD[k]['code'], v['var']) for (k, v) in self.variables.items()])
+        dic_data.update(dict([(vars_SAHYSMOD[k]['code'], v) for (k, v) in self.internal_data.items()]))
 
         # Add basic data
         dic_data['n_years'] = n_year
         dic_data['n_seasons'] = self.n_seasons
-        dic_data['months_per_season'] = '    '.join(self.len_seasons)
+        dic_data['months_per_season'] = '    '.join([str(x) for x in self.len_seasons])
 
         # Read the template CLI file
         with open(self.input_templ) as d:
@@ -148,19 +148,25 @@ class Modelo(ClaseModeloBF):
         # Fill in our data
         input_file = []
         for n, line in enumerate(template):
+
+            m = re.search(r'{([^}:]*)(:*.*?)}', line)
+            if m is None:
+                input_file.append(line)
+                continue
+
             if '#' not in line:
                 # If this is not a seasonal variable, simply add the line to the end of the input file
-                input_file[n] = line.format(**dic_data)
+                input_file.append(line.format(**dic_data))
 
             else:
                 # For every season, add the appropriate value of the variable
                 for s in range(self.n_seasons):
-                    line_s = line.replace('#', '[%i]' % s)
-                    input_file[n+s] = line_s.format(**dic_data)
+                    line_s = line.replace('#', '#[%i]' % s)
+                    input_file.append(line_s.format(**dic_data))
 
         # And save the input file
         with open(self.input, 'w') as d:
-            d.write(''.join(template))
+            d.write(''.join(input_file))
 
     def _read_out(self, n_year):
         """
@@ -172,7 +178,7 @@ class Modelo(ClaseModeloBF):
         """
 
         # A dictionary to hold the output values
-        dic_data = dict([(k, []) for k in SAHYSMOD_output_vars])
+        dic_data = dict([(k, [None]*self.n_seasons) for k in SAHYSMOD_output_vars])
 
         with open(self.output, 'r') as d:
 
@@ -197,19 +203,23 @@ class Modelo(ClaseModeloBF):
 
                 # Search for the wariables we want:
                 for var in SAHYSMOD_output_vars:
+                    var_out = var.replace('#', '')
 
                     for line in season_output:
 
                         line += ' '
-                        m = re.search('%s += +([^ ]*)' % var.replace('#', ''), line)
-                        if m is not None:
-                            if m == '-':
-                                val = None
+                        m = re.search('%s += +([^ ]*)' % var_out, line)
+
+                        if m:
+                            val = m.groups()[0]
+                            if val == '-':
+                                val = -1
                             else:
                                 try:
-                                    val = float(m.group(1))
+                                    val = float(val)
                                 except ValueError:
-                                    raise ValueError('The variable "%s" was not read from the SAHYSMOD output.' % var)
+                                    raise ValueError('The variable "%s" was not read from the SAHYSMOD output.'
+                                                     % var_out)
 
                             dic_data[var][season] = val
 
@@ -217,13 +227,13 @@ class Modelo(ClaseModeloBF):
                             break
 
         # Save current season values
-        for var, dic in self.variables.items():
-            code = vars_SAHYSMOD['code']
-            dic['var'] = dic_data[code][0]
+        for code, dic in dic_data.items():
+            var = codes_to_vars[code]
+            self.variables[var]['var'] = dic_data[code][0]
 
-        # Save other season values
-        for c in self.interal_data:
-            self.interal_data[c] = dic_data[c]
+            # Save other season values
+            if var in self.internal_data:
+                self.internal_data[var] = dic_data[code]
 
     def _read_input_vals(self):
         """
@@ -237,7 +247,7 @@ class Modelo(ClaseModeloBF):
             inp = d.readlines()
         
         # Read the standard SAHYSMOD input template
-        with open(self.input) as d:
+        with open(self.input_templ) as d:
             template = d.readlines()
         
         # Save the number of seasons and length of each season
@@ -253,33 +263,43 @@ class Modelo(ClaseModeloBF):
         
         # For every line in the template, extract the corresponding input file data
         for n_t, l in enumerate(template):
-            
+
             # Search for a variable key in the template line
-            m = re.search(r'{(.*)(:*.*)}', l)
+            m = re.search(r'{([^}:]*)(:*.*?)}', l)
             
             if m:
                 # If we've found a key match, save the key (code) and verbose variable name.
                 code = m.groups()[0]
-                var = codes_to_vars[code]
-                
+
+                try:
+                    var = codes_to_vars[code]
+                except KeyError:
+                    n_i += 1  # Increment the input file line number
+                    continue
+
                 if code not in SAHYSMOD_input_vars:
                     # If this variable key does not exist in the SAHYSMOD input variable list, move on to the next line.
+                    n_i += 1  # Increment the input file line number
                     continue
                 
                 if '#' not in code:
-                    # If this variable has one value per year, save it in the variable dictionario
+                    # If this variable has one value per year, save it in the variable dictionary
                     self.variables[var]['var'] = float(inp[n_i])
                     n_i += 1  # Increment the input file line number
-                    
+
                 else:
                     # If this variable has separate values for each season, save the first season's value in the 
                     # variable dictionary...
+
                     self.variables[var]['var'] = float(inp[n_i])
                     
                     # ... and save all the seasons' values in the internal data diccionary, for future reference.
                     for s in range(self.n_seasons):
-                        self.interal_data[var][s] = float(inp[n_i])
-                        n_i += 1  # Increment the input file line number
+                        self.internal_data[var].append(float(inp[n_i]))
+                        n_i += 1
+
+            else:
+                n_i += 1
 
 
 # A dictionary of SAHYSMOD variables. See the SAHYSMOD documentation for more details.
@@ -380,11 +400,11 @@ vars_SAHYSMOD = {'Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp': Tru
                  'Total subsurface drainage': {'code': 'Gd', 'units': 'm3/season/m2',
                                                'inp': False, 'out': True},
                  'Subsurface drainage above drains': {'code': 'Ga', 'units': 'm3/season/m2',
-                                                      'inp': False, 'out': True},
+                                                      'inp': True, 'out': True},
                  'Subsurface drainage below drains': {'code': 'Gb', 'units': 'm3/season/m2',
-                                                      'inp': False, 'out': True},
+                                                      'inp': True, 'out': True},
                  'Groundwater depth': {'code': 'Dw', 'units': 'm', 'inp': False, 'out': True},
-                 'Water table elevation': {'code': 'Hw#', 'units': 'm', 'inp': True, 'out': True},
+                 'Water table elevation': {'code': 'Hw', 'units': 'm', 'inp': True, 'out': True},
                  'Subsoil hydraulic head': {'code': 'Hq', 'units': 'm', 'inp': False, 'out': True},
                  'Water table storage': {'code': 'Sto', 'units': 'm', 'inp': False, 'out': True},
                  'Surface water salt': {'code': 'Zs', 'units': 'm*dS/m', 'inp': False, 'out': True},
@@ -425,7 +445,6 @@ SAHYSMOD_output_vars = [v['code'] for v in vars_SAHYSMOD.values() if v['out']]
 
 if __name__ == '__main__':
     modelo = Modelo()
-    print(modelo.interal_data)
-    print(modelo.output)
+    print(modelo.internal_data)
     print(modelo.variables)
     modelo.incr(paso=1)

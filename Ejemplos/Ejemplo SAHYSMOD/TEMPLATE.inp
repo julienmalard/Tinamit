@@ -4,7 +4,7 @@ Internal nodes are surrounded by polygonal boundary nodes
     {months_per_season}
 5 1 4   1
 4 
-{Scale} 1 1
+10000 1 1
 1  
 2  3  4  5  
 10.00  
@@ -12,12 +12,12 @@ Internal nodes are surrounded by polygonal boundary nodes
 25.00  
 25.00  15.00  35.00  25.00  
 {BL:.2f}
-{BL:.2f}  {BL:.2f}  {BL:.2f}  {BL:.2f}
+0.00  0.00  0.00  0.00
 1  
 2  2  2  2  
-{SL:.2f}
-{Dr:.2f}
-{Dx:.2f}
+{SL:.3f}
+{Dr:.3f}
+{Dx:.3f}
 {Ksc}
 1   4  29.000  -1.000   5  37.490  -1.000   3  50.000  -1.000   2  29.000  -1.000
    -1.00
@@ -57,7 +57,7 @@ Internal nodes are surrounded by polygonal boundary nodes
 {A#:.3f}
 {B#:.3f}
 {KcA#}
-{KcA#}
+{KcB#}
 {Gu#}
 {Fw#:.3f}
 {Gw#:.3f}
