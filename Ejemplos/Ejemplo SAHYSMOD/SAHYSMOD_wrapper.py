@@ -202,8 +202,8 @@ class Modelo(ClaseModeloBF):
                     l = d.readline()
 
                 # Search for the wariables we want:
-                for var in SAHYSMOD_output_vars:
-                    var_out = var.replace('#', '')
+                for cod in SAHYSMOD_output_vars:
+                    var_out = cod.replace('#', '')
 
                     for line in season_output:
 
@@ -221,7 +221,7 @@ class Modelo(ClaseModeloBF):
                                     raise ValueError('The variable "%s" was not read from the SAHYSMOD output.'
                                                      % var_out)
 
-                            dic_data[var][season] = val
+                            dic_data[cod][season] = val
 
                             # If we've found the variable, stop looking for it.
                             break
@@ -234,6 +234,11 @@ class Modelo(ClaseModeloBF):
             # Save other season values
             if var in self.internal_data:
                 self.internal_data[var] = dic_data[code]
+
+        # Ajust for soil salinity of different crops
+        for cr in ['CrA', 'CrB', 'CrU']:
+            self.variables[codes_to_vars[cr]]['var'] = dic_data['Cqf'][0]
+            self.internal_data[codes_to_vars[cr]] = dic_data['Cqf']
 
     def _read_input_vals(self):
         """
