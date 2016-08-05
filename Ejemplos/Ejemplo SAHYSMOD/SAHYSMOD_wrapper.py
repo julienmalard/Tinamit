@@ -3,6 +3,7 @@ import re
 from subprocess import run
 
 from Biofísico import ClaseModeloBF
+import numpy as np
 
 """
 How to use this SAHYSMOD wrapper for Tinamit:
@@ -178,7 +179,7 @@ class Modelo(ClaseModeloBF):
         """
 
         # A dictionary to hold the output values
-        dic_data = dict([(k, [None]*self.n_seasons) for k in SAHYSMOD_output_vars])
+        dic_data = dict([(k, -np.ones(self.n_seasons)) for k in SAHYSMOD_output_vars])
 
         with open(self.output, 'r') as d:
 
@@ -236,9 +237,22 @@ class Modelo(ClaseModeloBF):
                 self.internal_data[var] = dic_data[code]
 
         # Ajust for soil salinity of different crops
+        kr = self.variables[codes_to_vars['Kr']]
+        if kr == 0:
+            u = 1 - dic_data['B'] - dic_data['A']
+            soil_sal = dic_data['A'] * dic_data['CrA'] + dic_data['B'] * dic_data['CrB'] + u * dic_data['CrU']
+        elif kr == 1:
+            u = 1 - dic_data['B'] - dic_data['A']
+            soil_sal = dic_data['CrU'] * u + dic_data['C1*'] * (1-u)
+        elif kr == 2:
+            soil_sal = dic_data['CrA'] * dic_data['A'] + dic_data['C2*'] * (1 - dic_data['A'])
+        elif kr == 3:
+            soil_sal = dic_data['CrB'] * dic_data['B'] + dic_data['C3*'] * (1 - dic_data['B'])
+        elif kr == 4:
+            soil_sal = dic_data['C4']
         for cr in ['CrA', 'CrB', 'CrU']:
-            self.variables[codes_to_vars[cr]]['var'] = dic_data['Cqf'][0]
-            self.internal_data[codes_to_vars[cr]] = dic_data['Cqf']
+            self.variables[codes_to_vars[cr]]['var'] = soil_sal[0]
+            self.internal_data[codes_to_vars[cr]] = soil_sal
 
     def _read_input_vals(self):
         """
