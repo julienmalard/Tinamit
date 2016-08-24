@@ -18,7 +18,7 @@ How to use this SAHYSMOD wrapper for Tinamit:
 """
 
 # Path to SAHYSMOD executable. Change as needed on your computer.
-SAHYSMOD = ''
+SAHYSMOD = 'C:\Users\gis_lab\Documents\Azhar_Files\Vensim DSS\SahysMod\SahysMod.exe'
 
 # Path to the SAHYSMOD input file with the initial data. Change as needed on your computer.
 initial_data = 'C:\\Users\\iarna\\PyCharmProjects\\Tinamit\\Ejemplos\\Ejemplo SAHYSMOD\\INPUT_EXAMPLE.inp'
