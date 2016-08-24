@@ -18,10 +18,10 @@ How to use this SAHYSMOD wrapper for Tinamit:
 """
 
 # Path to SAHYSMOD executable. Change as needed on your computer.
-SAHYSMOD = 'C:\Users\gis_lab\Documents\Azhar_Files\Vensim DSS\SahysMod\SahysMod.exe'
+SAHYSMOD = 'C:\\Users\\gis_lab\\Documents\\Azhar_Files\\PaperV\\model_linking\\sahysmod_console\\SahysModConsole.exe'
 
 # Path to the SAHYSMOD input file with the initial data. Change as needed on your computer.
-initial_data = 'C:\\Users\\iarna\\PyCharmProjects\\Tinamit\\Ejemplos\\Ejemplo SAHYSMOD\\INPUT_EXAMPLE.inp'
+initial_data = 'C:\\Users\\gis_lab\\PyCharmProjects\\Tinamit\\Ejemplos\\Ejemplo_SAHYSMOD\\INPUT_EXAMPLE.inp'
 
 
 class Modelo(ClaseModeloBF):
@@ -73,20 +73,20 @@ class Modelo(ClaseModeloBF):
     def incr(self, paso):
 
         # Note: this subclass can only be used with a coupling time step multiple of 1 month.
-        if not (int(paso) == paso):
+        if int(paso) != paso:
             raise ValueError('Time step ("paso") must be a whole number.')
 
         m = self.month
         s = self.season
         y = 1  # The number of years to simulate.
 
-        m += paso
+        m += int(paso)
 
-        while m >= self.len_seasons[s]:
-            m %= self.len_seasons[s]
+        while m >= self.len_seasons[self.season] - 1:
+            m %= int(self.len_seasons[s] - 1)
             s += 1
 
-        if s >= self.n_seasons:
+        if s >= self.n_seasons:  # s starts counting at 0 (Python convention)
             y += s // self.n_seasons
             s %= self.n_seasons
 
@@ -97,25 +97,26 @@ class Modelo(ClaseModeloBF):
         # If this is the first month of the season, we change the variables dictionary values accordingly
         if m == 0:
             # Set the internal diccionary of values to this season's values
-            for c in self.internal_data:
+            for var in self.internal_data:
                 # For every variable in the internal data dictionary (i.e., all variables that vary by season)
 
-                var = codes_to_vars[c]  # Get the corresponding verbose variable name
-
                 # Set the variables dictionary value to this season's value
-                self.variables[var]['var'] = self.internal_data[c][s]
+                try:
+                    self.variables[var]['var'] = self.internal_data[var][s]
+                except IndexError:
+                    pass
 
-        # If this is the first season of the year, we also run a SAHYSMOD simulation
-        if s == 0:
+            # If this is also the first season of the year, we also run a SAHYSMOD simulation
+            if s == 0:
 
-            # Create the appropriate input file:
-            self._write_inp(n_year=y)
+                # Create the appropriate input file:
+                self._write_inp(n_year=y)
 
-            # Run the command prompt command
-            run(self.command)
+                # Run the command prompt command
+                run(self.command)
 
-            # Read the output
-            self._read_out(n_year=y)
+                # Read the output
+                self._read_out(n_year=y)
 
         # Save incoming coupled variables to the internal data
         for var in self.variables:
@@ -141,6 +142,11 @@ class Modelo(ClaseModeloBF):
         dic_data['n_years'] = n_year
         dic_data['n_seasons'] = self.n_seasons
         dic_data['months_per_season'] = '    '.join([str(x) for x in self.len_seasons])
+
+        # Make sure we have no missing areas
+        for k in ["A#", "B#"]:
+            vec = dic_data[k]
+            vec[vec == -1] = 0
 
         # Read the template CLI file
         with open(self.input_templ) as d:
@@ -209,7 +215,7 @@ class Modelo(ClaseModeloBF):
                     for line in season_output:
 
                         line += ' '
-                        m = re.search('%s += +([^ ]*)' % var_out, line)
+                        m = re.search(' %s += +([^ ]*)' % var_out, line)
 
                         if m:
                             val = m.groups()[0]
@@ -237,22 +243,21 @@ class Modelo(ClaseModeloBF):
                 self.internal_data[var] = dic_data[code]
 
         # Ajust for soil salinity of different crops
-        kr = self.variables[codes_to_vars['Kr']]
+        kr = self.variables[codes_to_vars['Kr']]['var']
         if kr == 0:
-            u = 1 - dic_data['B'] - dic_data['A']
-            soil_sal = dic_data['A'] * dic_data['CrA'] + dic_data['B'] * dic_data['CrB'] + u * dic_data['CrU']
+            u = 1 - dic_data['B#'] - dic_data['A#']
+            soil_sal = dic_data['A#'][-1] * dic_data['CrA'] + dic_data['B#'][-1] * dic_data['CrB'] + u * dic_data['CrU']
         elif kr == 1:
-            u = 1 - dic_data['B'] - dic_data['A']
+            u = 1 - dic_data['B#'][-1] - dic_data['A#'][-1]
             soil_sal = dic_data['CrU'] * u + dic_data['C1*'] * (1-u)
         elif kr == 2:
-            soil_sal = dic_data['CrA'] * dic_data['A'] + dic_data['C2*'] * (1 - dic_data['A'])
+            soil_sal = dic_data['CrA'] * dic_data['A#'][-1] + dic_data['C2*'] * (1 - dic_data['A#'][-1])
         elif kr == 3:
-            soil_sal = dic_data['CrB'] * dic_data['B'] + dic_data['C3*'] * (1 - dic_data['B'])
+            soil_sal = dic_data['CrB'] * dic_data['B#'][-1] + dic_data['C3*'] * (1 - dic_data['B#'][-1])
         elif kr == 4:
             soil_sal = dic_data['C4']
         for cr in ['CrA', 'CrB', 'CrU']:
             self.variables[codes_to_vars[cr]]['var'] = soil_sal[0]
-            self.internal_data[codes_to_vars[cr]] = soil_sal
 
     def _read_input_vals(self):
         """
@@ -445,7 +450,8 @@ vars_SAHYSMOD = {'Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp': Tru
                  'Transition zone salinity': {'code': 'Cxf', 'units': 'dS / m', 'inp': True, 'out': True},
                  'Transition zone above-drain salinity': {'code': 'Cxa', 'units': 'dS / m', 'inp': True, 'out': True},
                  'Transition zone below-drain salinity': {'code': 'Cxb', 'units': 'dS / m', 'inp': True, 'out': True},
-                 'Soil salinity': {'code': 'Cqf', 'units': 'dS / m', 'inp': True, 'out': True},
+                 'Soil salinity': {'code': ''
+                                           '--', 'units': 'dS / m', 'inp': True, 'out': True},
                  'Transition zone incoming salinity': {'code': 'Cti', 'units': 'dS / m', 'inp': False, 'out': True},
                  'Aquifer salinity': {'code': 'Cqi', 'units': 'dS / m', 'inp': True, 'out': True},
                  'Irrigation water salinity': {'code': 'Ci#', 'units': 'dS / m', 'inp': True, 'out': True},

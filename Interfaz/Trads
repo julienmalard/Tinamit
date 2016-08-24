@@ -1,5 +1,5 @@
 {
-  "Actual": "Español",
+  "Actual": "اردو",
   "Lenguas": {
     "Bahasa Indonesia": {
       "Estado": 0.0,
@@ -545,7 +545,7 @@
       "Estado": 1.0,
       "IzqaDerech": false,
       "Trads": {
-        "AnálisisIncert": "اشتباہ",
+        "AnálisisIncert": "غیر یقینی",
         "ArchivoTinamit": "سنچکا کی تنامیت",
         "AvisoBorrarLeng": "کیا سچ میں آپ s% زبان ہٹانے چاہتے ہیں؟",
         "AvisoReinic": "دوبارہ کو تنامیت لئے کے بدلنے کو زبان .ہے پڑتا کرنے شرو",

@@ -38,16 +38,10 @@ class EnvolturaBF(object):
             símismo.unidades[var] = símismo.modelo.variables[var]['unidades']
 
     def iniciar_modelo(símismo):
-        if hasattr(símismo.modelo, 'ejec'):
-            símismo.modelo.ejec()
-        else:
-            raise ConnectionError('El modelo biofísico no tiene un método "ejec()".')
+        símismo.modelo.ejec()
 
     def incrementar(símismo, paso):
-        if hasattr(símismo.modelo, 'incr'):
-            símismo.modelo.incr(paso)
-        else:
-            raise ConnectionError('El modelo biofísico no tiene un método "incr()".')
+        símismo.modelo.incr(paso)
 
     def leer_vals(símismo):
         egresos = {}

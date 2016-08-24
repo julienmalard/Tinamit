@@ -18,7 +18,7 @@ Internal nodes are surrounded by polygonal boundary nodes
 {SL:.3f}
 {Dr:.3f}
 {Dx:.3f}
-{Ksc}
+{Ksc:.0f}
 1   4  29.000  -1.000   5  37.490  -1.000   3  50.000  -1.000   2  29.000  -1.000
    -1.00
    -1.0000
@@ -35,9 +35,9 @@ Internal nodes are surrounded by polygonal boundary nodes
 {FsA#:.3f}
 {FsB#:.3f}
 {FsU#:.3f}
-{Kd}
-{Kf}
-{Kr}
+{Kd:.0f}
+{Kf:.0f}
+{Kr:.0f}
 1  
 {Dd:.3f}
 {Ga:.3f}
