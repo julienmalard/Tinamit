@@ -256,6 +256,9 @@ class Modelo(ClaseModeloBF):
             soil_sal = dic_data['CrB'] * dic_data['B#'][-1] + dic_data['C3*'] * (1 - dic_data['B#'][-1])
         elif kr == 4:
             soil_sal = dic_data['C4']
+        else:
+            raise ValueError
+
         for cr in ['CrA', 'CrB', 'CrU']:
             self.variables[codes_to_vars[cr]]['var'] = soil_sal[0]
 
