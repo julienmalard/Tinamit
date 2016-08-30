@@ -21,7 +21,8 @@ How to use this SAHYSMOD wrapper for Tinamit:
 SAHYSMOD = 'C:\\Users\\gis_lab\\Documents\\Azhar_Files\\PaperV\\model_linking\\sahysmod_console\\SahysModConsole.exe'
 
 # Path to the SAHYSMOD input file with the initial data. Change as needed on your computer.
-initial_data = 'C:\\Users\\gis_lab\\PyCharmProjects\\Tinamit\\Ejemplos\\Ejemplo_SAHYSMOD\\INPUT_EXAMPLE.inp'
+directorio = os.path.dirname(__file__)
+initial_data = os.path.join(directorio, 'INPUT_EXAMPLE.inp')
 
 
 class Modelo(ClaseModeloBF):
@@ -78,7 +79,7 @@ class Modelo(ClaseModeloBF):
 
         m = self.month
         s = self.season
-        y = 1  # The number of years to simulate.
+        y = 0  # The number of years to simulate.
 
         m += int(paso)
 
