@@ -18,7 +18,7 @@ How to use this SAHYSMOD wrapper for Tinamit:
 """
 
 # Path to SAHYSMOD executable. Change as needed on your computer.
-SAHYSMOD = 'C:\\Users\\gis_lab\\Documents\\Azhar_Files\\PaperV\\model_linking\\sahysmod_console\\SahysModConsole.exe'
+SAHYSMOD = 'C:\\SahysMod\\julien\\SahysModConsole.exe'
 
 # Path to the SAHYSMOD input file with the initial data. Change as needed on your computer.
 directorio = os.path.dirname(__file__)
@@ -47,7 +47,7 @@ class Modelo(ClaseModeloBF):
         #  'code var 2': [season1value, season2value, ...],
         #  ...
         #  }
-        self.internal_data = dict([(var, []) for var in self.variables
+        self.internal_data = dict([(var, np.array([])) for var in self.variables
                                    if '#' in vars_SAHYSMOD[var]['code']])
         
         # Create some useful model attributes
@@ -83,8 +83,8 @@ class Modelo(ClaseModeloBF):
 
         m += int(paso)
 
-        while m >= self.len_seasons[self.season] - 1:
-            m %= int(self.len_seasons[s] - 1)
+        while m >= self.len_seasons[self.season]:
+            m %= int(self.len_seasons[s])
             s += 1
 
         if s >= self.n_seasons:  # s starts counting at 0 (Python convention)
@@ -211,7 +211,7 @@ class Modelo(ClaseModeloBF):
 
                 # Search for the wariables we want:
                 for cod in SAHYSMOD_output_vars:
-                    var_out = cod.replace('#', '')
+                    var_out = cod.replace('#', '').replace('*', '\*')
 
                     for line in season_output:
 
@@ -241,27 +241,27 @@ class Modelo(ClaseModeloBF):
 
             # Save other season values
             if var in self.internal_data:
-                self.internal_data[var] = dic_data[code]
+                np.copyto(self.internal_data[var], dic_data[code])
 
         # Ajust for soil salinity of different crops
         kr = self.variables[codes_to_vars['Kr']]['var']
         if kr == 0:
             u = 1 - dic_data['B#'] - dic_data['A#']
-            soil_sal = dic_data['A#'][-1] * dic_data['CrA'] + dic_data['B#'][-1] * dic_data['CrB'] + u * dic_data['CrU']
+            soil_sal = dic_data['A#'] * dic_data['CrA'] + dic_data['B#'] * dic_data['CrB'] + u * dic_data['CrU']
         elif kr == 1:
-            u = 1 - dic_data['B#'][-1] - dic_data['A#'][-1]
+            u = 1 - dic_data['B#'] - dic_data['A#']
             soil_sal = dic_data['CrU'] * u + dic_data['C1*'] * (1-u)
         elif kr == 2:
-            soil_sal = dic_data['CrA'] * dic_data['A#'][-1] + dic_data['C2*'] * (1 - dic_data['A#'][-1])
+            soil_sal = dic_data['CrA'] * dic_data['A#'] + dic_data['C2*'] * (1 - dic_data['A#'])
         elif kr == 3:
-            soil_sal = dic_data['CrB'] * dic_data['B#'][-1] + dic_data['C3*'] * (1 - dic_data['B#'][-1])
+            soil_sal = dic_data['CrB'] * dic_data['B#'] + dic_data['C3*'] * (1 - dic_data['B#'])
         elif kr == 4:
             soil_sal = dic_data['C4']
         else:
             raise ValueError
 
         for cr in ['CrA', 'CrB', 'CrU']:
-            self.variables[codes_to_vars[cr]]['var'] = soil_sal[0]
+            self.variables[codes_to_vars[cr]]['var'] = soil_sal[-1]
 
     def _read_input_vals(self):
         """
@@ -322,8 +322,9 @@ class Modelo(ClaseModeloBF):
                     self.variables[var]['var'] = float(inp[n_i])
                     
                     # ... and save all the seasons' values in the internal data diccionary, for future reference.
+                    self.internal_data[var] = np.empty(self.n_seasons)
                     for s in range(self.n_seasons):
-                        self.internal_data[var].append(float(inp[n_i]))
+                        self.internal_data[var][s] = float(inp[n_i])
                         n_i += 1
 
             else:
