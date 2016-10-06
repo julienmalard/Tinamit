@@ -315,10 +315,16 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
         símismo.apli.update()
         símismo.BtSimul.bloquear()
 
-        símismo.Modelo.simular(paso=símismo.IngrPaso.val, tiempo_final=símismo.IngrTempFinal.val)
+        def func_simular():
+            símismo.Modelo.simular(paso=símismo.IngrPaso.val, tiempo_final=símismo.IngrTempFinal.val)
+            símismo.BtSimul.desbloquear()
+            símismo.CjSimulando.pack_forget()
 
-        símismo.BtSimul.desbloquear()
-        símismo.CjSimulando.pack_forget()
+        import threading
+
+        t = threading.Thread(name='simulación', target=func_simular)
+        t.setDaemon(True)
+        t.start()
 
 
 class CajaSubEtp41(CjG.CajaSubEtapa):
