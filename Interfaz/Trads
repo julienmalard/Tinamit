@@ -46,7 +46,7 @@
         "X": ""
       }
     },
-    "Bahasa Malasia": {
+    "Bahasa Melayu": {
       "Estado": 0.0,
       "IzqaDerech": true,
       "Trads": {
@@ -108,6 +108,7 @@
         "CargarModeloConectado": "Cargar un modelo ya conectado",
         "CargarModelos": "Cargar Modelos",
         "ConectarVariables": "Conexiones",
+        "Corrida": "Corrida:",
         "Empezar": "Empezar",
         "EnTrabajo": "En trabajo",
         "Entendido": "Entendido",
@@ -452,6 +453,51 @@
       }
     },
     "Q'anjob'al": {
+      "Estado": 0.0,
+      "IzqaDerech": true,
+      "Trads": {
+        "AnálisisIncert": "",
+        "ArchivoTinamit": "",
+        "AvisoBorrarLeng": "",
+        "AvisoReinic": "",
+        "Ayuda": "",
+        "Biofísico": "",
+        "Borrar": "",
+        "Cargar": "",
+        "CargarMDS": "",
+        "CargarModeloBf": "",
+        "CargarModeloConectado": "",
+        "CargarModelos": "",
+        "ConectarVariables": "",
+        "Empezar": "",
+        "EnTrabajo": "",
+        "Entendido": "",
+        "ErrorCargarBf": "",
+        "ErrorCargarMDS": "",
+        "ErrorCreandoMod": "",
+        "Guardar": "",
+        "Listas": "",
+        "MDS": "",
+        "ModeloBiofísico": "",
+        "ModeloCargado": "",
+        "ModelosPython": "",
+        "ModelospublicadosVENSIM": "",
+        "No": "",
+        "NoGuardar": "",
+        "OpsLengs": "",
+        "ParaHacer": "",
+        "Paso": "",
+        "Simulando": "",
+        "Simular": "",
+        "Sí": "",
+        "TiempoFinal": "",
+        "Traducciones": "",
+        "VariableBiofísico": "",
+        "VariableMDS": "",
+        "X": ""
+      }
+    },
+    "Tiếng Việt": {
       "Estado": 0.0,
       "IzqaDerech": true,
       "Trads": {

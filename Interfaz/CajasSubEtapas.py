@@ -269,6 +269,11 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
         símismo.EtiqUnidTiempoFinal.pack(**gf(Fm.ubic_CtrlsTiempo))
         cj_tiempo_final.pack(**gf(Fm.ubic_CtrlsTiempo))
 
+        cj_corrida = tk.Frame(símismo, **Fm.formato_cajas)
+        símismo.IngrCorrida = CtrG.IngrTexto(cj_corrida, nombre=apli.Trads['Corrida'],
+                                             ubicación=gf(Fm.ubic_CtrlsUnidTiempo), tipo_ubic='pack')
+        cj_corrida.place(**gf(Fm.ubic_cj_corrida))
+
         cj_bt_simul = tk.Frame(símismo, **Fm.formato_cajas)
         símismo.BtSimul = Bt.BotónTexto(cj_bt_simul, texto=apli.Trads['Simular'], comanda=símismo.acción_simular,
                                         formato_norm=Fm.formato_bt_simular,
@@ -316,7 +321,12 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
         símismo.BtSimul.bloquear()
 
         def func_simular():
-            símismo.Modelo.simular(paso=símismo.IngrPaso.val, tiempo_final=símismo.IngrTempFinal.val)
+            nombre = símismo.IngrCorrida.val
+            if nombre == '':
+                nombre = None
+
+            símismo.Modelo.simular(paso=símismo.IngrPaso.val, tiempo_final=símismo.IngrTempFinal.val,
+                                   nombre_simul=nombre)
             símismo.BtSimul.desbloquear()
             símismo.CjSimulando.pack_forget()
 

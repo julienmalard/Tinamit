@@ -1,5 +1,6 @@
 import os
 import json
+import threading
 
 from MDS import EnvolturaMDS
 from Biofísico import EnvolturaBF
@@ -111,7 +112,7 @@ class Conectado(object):
         símismo.receta['conexiones'].remove(conexión)
 
     def simular(símismo, tiempo_final, paso=1, nombre_simul=None):
-        símismo.mds.iniciar_modelo(tiempo_final, nombre_simul)
+        símismo.mds.iniciar_modelo(tiempo_final, nombre=nombre_simul)
         símismo.bf.iniciar_modelo()
 
         tiempo = 0
@@ -125,12 +126,25 @@ class Conectado(object):
         símismo.mds.terminar_simul()
 
     def incrementar(símismo, paso=1):
+
         if símismo.ref_tiempo_mds:
-            símismo.mds.incrementar(paso)
-            símismo.bf.incrementar(paso*símismo.receta['conv_unid_tiempo'])
+            args_mds = paso
+            args_bf = paso*símismo.receta['conv_unid_tiempo']
         else:
-            símismo.mds.incrementar(paso*símismo.receta['conv_unid_tiempo'])
-            símismo.bf.incrementar(paso)
+            args_mds = paso*símismo.receta['conv_unid_tiempo']
+            args_bf = paso
+
+        # Un hilo para cada modelo
+        hilo_mds = threading.Thread(name='hilo MDS', target=símismo.mds.incrementar, args=(args_mds,))
+        hilo_bf = threading.Thread(name='hilo BF', target=símismo.bf.incrementar, args=(args_bf,))
+
+        # Empezar los dos hilos al mismo tiempo
+        hilo_mds.start()
+        hilo_bf.start()
+
+        # Esperar que los dos hilos hayan terminado
+        hilo_mds.join()
+        hilo_bf.join()
 
     def cargar(símismo, archivo_receta=None):
         símismo.reinic()
