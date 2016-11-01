@@ -37,9 +37,9 @@ class Modelo(ClaseModeloBF):
                                for (name, dic) in vars_SAHYSMOD.items()])
 
         self.unidades_tiempo = 'Months'
-        
+
         # The following attributes are specific to the SAHYSMOD wrapper
-        
+
         # This class will simulate on a seasonal time basis, but the SAHYSMOD executable must run for a full year
         # at the same time. Therefore, we create an internal dictionary to store variable data for all seasons in a
         # year.
@@ -49,7 +49,7 @@ class Modelo(ClaseModeloBF):
         #  }
         self.internal_data = dict([(var, np.array([])) for var in self.variables
                                    if '#' in vars_SAHYSMOD[var]['code']])
-        
+
         # Create some useful model attributes
         self.n_seasons = None  # Number of seasons per year
         self.len_seasons = []  # A list to store the length of each season, in months
@@ -269,32 +269,32 @@ class Modelo(ClaseModeloBF):
           relavant information to this model class's internal variables.
          
         """
-        
+
         # Read the input file
         with open(initial_data, 'r') as d:
             inp = d.readlines()
-        
+
         # Read the standard SAHYSMOD input template
         with open(self.input_templ) as d:
             template = d.readlines()
-        
+
         # Save the number of seasons and length of each season
         self.n_seasons = int(inp[2].split()[1])
         self.len_seasons = [float(x) for x in inp[3].split()]
-        
+
         # Make sure the number of season lengths equals the number of seasons.
         if self.n_seasons != len(self.len_seasons):
             raise ValueError('Error in the SAHYSMOD input file: the number of season lengths specified is not equal'
                              'to the number of seasons (lines 3 and 4).')
-        
+
         n_i = 0  # To keep track of the line of the input file we are on
-        
+
         # For every line in the template, extract the corresponding input file data
         for n_t, l in enumerate(template):
 
             # Search for a variable key in the template line
             m = re.search(r'{([^}:]*)(:*.*?)}', l)
-            
+
             if m:
                 # If we've found a key match, save the key (code) and verbose variable name.
                 code = m.groups()[0]
@@ -309,7 +309,7 @@ class Modelo(ClaseModeloBF):
                     # If this variable key does not exist in the SAHYSMOD input variable list, move on to the next line.
                     n_i += 1  # Increment the input file line number
                     continue
-                
+
                 if '#' not in code:
                     # If this variable has one value per year, save it in the variable dictionary
                     self.variables[var]['var'] = float(inp[n_i])
@@ -320,7 +320,7 @@ class Modelo(ClaseModeloBF):
                     # variable dictionary...
 
                     self.variables[var]['var'] = float(inp[n_i])
-                    
+
                     # ... and save all the seasons' values in the internal data diccionary, for future reference.
                     self.internal_data[var] = np.empty(self.n_seasons)
                     for s in range(self.n_seasons):
@@ -351,10 +351,10 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'FsA - Water storage efficiency crop A': {'code': 'FsA#', 'units': 'Dmnl', 'inp': True, 'out': False},
                  'FsB - Water storage efficiency crop B': {'code': 'FsB#', 'units': 'Dmnl', 'inp': True, 'out': False},
                  'FsU - Water storage efficiency non-irrigated': {'code': 'FsU#', 'units': 'Dmnl',
-                                                            'inp': True, 'out': False},
+                                                                  'inp': True, 'out': False},
                  'Fw - Fraction well water to irrigation': {'code': 'Fw#', 'units': 'Dmnl', 'inp': True, 'out': False},
                  'Gu - Subsurface drainage for irrigation': {'code': 'Gu#', 'units': 'm3/season/m2',
-                                                        'inp': True, 'out': False},
+                                                             'inp': True, 'out': False},
                  'Gw - Groundwater extraction': {'code': 'Gw#', 'units': 'm3/season/m2', 'inp': True, 'out': True},
                  'Hp - Initial water level semi-confined': {'code': 'Hp', 'units': 'm', 'inp': True, 'out': False},
                  'IaA - Crop A field irrigation': {'code': 'IaA#', 'units': 'm3/season/m2', 'inp': True, 'out': True},
@@ -368,7 +368,7 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'Ktop - Semi-confined aquifer?': {'code': 'Ksc', 'units': 'Dmnl', 'inp': True, 'out': False},
                  'Kr - Land use key': {'code': 'Kr', 'units': 'Dmnl', 'inp': True, 'out': True},
                  'Kvert - Vertical hydraulic conductivity semi-confined': {'code': 'Kvert', 'units': 'm/day',
-                                                                   'inp': True, 'out': False},
+                                                                           'inp': True, 'out': False},
                  'Lc - Canal percolation': {'code': 'Lc#', 'units': 'm3/season/m2', 'inp': True, 'out': False},
                  'Peq - Aquifer effective porosity': {'code': 'Peq', 'units': 'm/m', 'inp': True, 'out': False},
                  'Per - Root zone effective porosity': {'code': 'Per', 'units': 'm/m', 'inp': True, 'out': False},
@@ -378,19 +378,19 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'Ptr - Root zone total pore space': {'code': 'Ptr', 'units': 'm/m', 'inp': True, 'out': False},
                  'Ptx - Transition zone total pore space': {'code': 'Ptx', 'units': 'm/m', 'inp': True, 'out': False},
                  'QH1 - Drain discharge to water table height ratio': {'code': 'QH1#', 'units': 'm/day/m',
-                                                                 'inp': True, 'out': False},
+                                                                       'inp': True, 'out': False},
                  'QH2 - Drain discharge to sq. water table height ratio': {'code': 'QH2#', 'units': 'm/day/m2',
-                                                                     'inp': True, 'out': False},
+                                                                           'inp': True, 'out': False},
                  'Qinf - Aquifer inflow': {'code': 'Qinf', 'units': 'm3/season/m2', 'inp': True, 'out': False},
                  'Qout - Aquifer outflow': {'code': 'Qout', 'units': 'm3/season/m2', 'inp': True, 'out': False},
                  'Scale': {'code': 'Scale', 'units': 'Dmnl', 'inp': True, 'out': False},
                  'SL - Soil surface level': {'code': 'SL', 'units': 'm', 'inp': True, 'out': False},
                  'SiU - Surface inflow to non-irrigated': {'code': 'SiU#', 'units': 'm3/season/m2',
-                                                     'inp': True, 'out': False},
+                                                           'inp': True, 'out': False},
                  'SdA - Surface outflow crop A': {'code': 'SdA#', 'units': 'm3/season/m2', 'inp': True, 'out': False},
                  'SdB - Surface outflow crop B': {'code': 'SdB#', 'units': 'm3/season/m2', 'inp': True, 'out': False},
                  'SoU - Surface outflow non-irrigated': {'code': 'SoU#', 'units': 'm3/season/m2',
-                                                   'inp': True, 'out': False},
+                                                         'inp': True, 'out': False},
                  'Ts - Season duration': {'code': 'Ts#', 'units': 'months', 'inp': True, 'out': False},
 
                  'It - Total irrigation': {'code': 'It', 'units': 'm3/season/m2', 'inp': False, 'out': True},
@@ -403,35 +403,37 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'JsA - Irrigation sufficiency crop A': {'code': 'JsA', 'units': 'Dmnl', 'inp': False, 'out': True},
                  'JsB - Irrigation sufficiency crop B': {'code': 'JsB', 'units': 'Dmnl', 'inp': False, 'out': True},
                  'EaU - Actual evapotranspiration nonirrigated': {'code': 'EaU', 'units': 'm3/season/m2',
-                                                            'inp': False, 'out': True},
-                 'LrA - Root zone percolation crop A': {'code': 'LrA', 'units': 'm3/season/m2', 'inp': False, 'out': True},
-                 'LrB - Root zone percolation crop B': {'code': 'LrB', 'units': 'm3/season/m2', 'inp': False, 'out': True},
-                 'LrU - Root zone percolation nonirrigated': {'code': 'LrU', 'units': 'm3/season/m2',
+                                                                  'inp': False, 'out': True},
+                 'LrA - Root zone percolation crop A': {'code': 'LrA', 'units': 'm3/season/m2',
                                                         'inp': False, 'out': True},
+                 'LrB - Root zone percolation crop B': {'code': 'LrB', 'units': 'm3/season/m2',
+                                                        'inp': False, 'out': True},
+                 'LrU - Root zone percolation nonirrigated': {'code': 'LrU', 'units': 'm3/season/m2',
+                                                              'inp': False, 'out': True},
                  'LrT - Total root zone percolation': {'code': 'LrT', 'units': 'm3/season/m2', 'inp': False, 'out': True},
                  'RrA - Capillary rise crop A': {'code': 'RrA', 'units': 'm3/season/m2', 'inp': False, 'out': True},
                  'RrB - Capillary rise crop B': {'code': 'RrB', 'units': 'm3/season/m2', 'inp': False, 'out': True},
                  'RrU - Capillary rise non-irrigated': {'code': 'RrU', 'units': 'm3/season/m2', 'inp': False, 'out': True},
                  'RrT - Total capillary rise': {'code': 'RrT', 'units': 'm3/season/m2', 'inp': False, 'out': True},
                  'Gti - Trans zone horizontal incoming groundwater': {'code': 'Gti', 'units': 'm3/season/m2',
-                                                                'inp': False, 'out': True},
+                                                                      'inp': False, 'out': True},
                  'Gto - Trans zone horizontal outgoing groundwater': {'code': 'Gto', 'units': 'm3/season/m2',
-                                                                'inp': False, 'out': True},
+                                                                      'inp': False, 'out': True},
                  'Qv - Net vertical water table recharge': {'code': 'Qv', 'units': 'm', 'inp': False, 'out': True},
                  'Gqi - Aquifer horizontal incoming groundwater': {'code': 'Gqi', 'units': 'm3/season/m2',
-                                                             'inp': False, 'out': True},
+                                                                   'inp': False, 'out': True},
                  'Gqo - Aquifer horizontal outgoing groundwater': {'code': 'Gqo', 'units': 'm3/season/m2',
-                                                             'inp': False, 'out': True},
+                                                                   'inp': False, 'out': True},
                  'Gaq - Net aquifer horizontal flow': {'code': 'Gaq', 'units': 'm3/season/m2',
-                                                 'inp': False, 'out': True},
+                                                       'inp': False, 'out': True},
                  'Gnt - Net horizontal groundwater flow': {'code': 'Gnt', 'units': 'm3/season/m2',
-                                                     'inp': False, 'out': True},
+                                                           'inp': False, 'out': True},
                  'Gd - Total subsurface drainage': {'code': 'Gd', 'units': 'm3/season/m2',
-                                               'inp': False, 'out': True},
+                                                    'inp': False, 'out': True},
                  'Ga - Subsurface drainage above drains': {'code': 'Ga', 'units': 'm3/season/m2',
-                                                      'inp': True, 'out': True},
+                                                           'inp': True, 'out': True},
                  'Gb - Subsurface drainage below drains': {'code': 'Gb', 'units': 'm3/season/m2',
-                                                      'inp': True, 'out': True},
+                                                           'inp': True, 'out': True},
                  'Dw - Groundwater depth': {'code': 'Dw', 'units': 'm', 'inp': False, 'out': True},
                  'Hw - Water table elevation': {'code': 'Hw', 'units': 'm', 'inp': True, 'out': True},
                  'Hq - Subsoil hydraulic head': {'code': 'Hq', 'units': 'm', 'inp': False, 'out': True},
@@ -445,13 +447,13 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'CrB - Root zone salinity crop B': {'code': 'CrB', 'units': 'dS / m', 'inp': True, 'out': True},
                  'CrU - Root zone salinity non-irrigated': {'code': 'CrU', 'units': 'dS / m', 'inp': True, 'out': True},
                  'Cr4 - Fully rotated land irrigated root zone salinity': {'code': 'Cr4', 'units': 'dS / m',
-                                                                     'inp': False, 'out': True},
+                                                                           'inp': False, 'out': True},
                  'C1 - Key 1 non-permanently irrigated root zone salinity': {'code': 'C1*', 'units': 'dS / m',
-                                                                        'inp': False, 'out': True},
+                                                                             'inp': False, 'out': True},
                  'C2 - Key 2 non-permanently irrigated root zone salinity': {'code': 'C2*', 'units': 'dS / m',
-                                                                        'inp': False, 'out': True},
+                                                                             'inp': False, 'out': True},
                  'C3 - Key 3 non-permanently irrigated root zone salinity': {'code': 'C3*', 'units': 'dS / m',
-                                                                        'inp': False, 'out': True},
+                                                                             'inp': False, 'out': True},
                  'Cxf - Transition zone salinity': {'code': 'Cxf', 'units': 'dS / m', 'inp': True, 'out': True},
                  'Cxa - Transition zone above-drain salinity': {'code': 'Cxa', 'units': 'dS / m', 'inp': True, 'out': True},
                  'Cxb - Transition zone below-drain salinity': {'code': 'Cxb', 'units': 'dS / m', 'inp': True, 'out': True},
@@ -460,7 +462,6 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'Cqi - Aquifer salinity': {'code': 'Cqi', 'units': 'dS / m', 'inp': True, 'out': True},
                  'Ci - Irrigation water salinity': {'code': 'Ci#', 'units': 'dS / m', 'inp': True, 'out': True},
                  'Cd - Drainage salinity': {'code': 'Cd', 'units': 'ds / m', 'inp': False, 'out': True},
-                 'Cw - Well water salinity': {'code': 'Cw', 'units': 'dS / m', 'inp': False, 'out': True}
                  }
 
 # A dictionary to get the variable name from its SAHYSMOD code.
