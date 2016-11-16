@@ -448,7 +448,8 @@ class Menú(object):
         if símismo not in otro_menú.exclusivos:
             otro_menú.estab_exclusivo(símismo)
 
-    def refrescar(símismo, opciones, texto_opciones=None):
+    def refrescar(símismo, opciones, texto_opciones=None, alfabetizar=True):
+
         símismo.opciones = opciones
         if texto_opciones is None:
             texto_opciones = opciones
@@ -456,7 +457,13 @@ class Menú(object):
         símismo.MenúOpciones['menu'].delete(0, 'end')
 
         símismo.conv = {'': ''}
-        for op, tx in zip(opciones, texto_opciones):
+
+        if alfabetizar:
+            lista = sorted(zip(texto_opciones, opciones))
+        else:
+            lista = zip(texto_opciones, opciones)
+
+        for tx, op in lista:
             símismo.conv[op] = tx
             símismo.MenúOpciones['menu'].add_command(label=tx, command=tk._setit(símismo.var, tx))
 

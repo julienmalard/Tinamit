@@ -122,7 +122,7 @@ class Modelo(ClaseModeloBF):
         # Save incoming coupled variables to the internal data
         for var in self.variables:
             if var in self.vars_ingr:
-                self.internal_data[var][s] = self.variables[var]
+                self.internal_data[var][s] = self.variables[var]['var']
 
     # Some internal functions specific to this SAHYSMOD wrapper
     def _write_inp(self, n_year):
@@ -170,7 +170,11 @@ class Modelo(ClaseModeloBF):
                 # For every season, add the appropriate value of the variable
                 for s in range(self.n_seasons):
                     line_s = line.replace('#', '#[%i]' % s)
-                    input_file.append(line_s.format(**dic_data))
+                    try:
+                        input_file.append(line_s.format(**dic_data))
+                    except IndexError as e:
+                        print(e)
+                        pass
 
         # And save the input file
         with open(self.input, 'w') as d:
@@ -334,10 +338,10 @@ class Modelo(ClaseModeloBF):
 # A dictionary of SAHYSMOD variables. See the SAHYSMOD documentation for more details.
 vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp': True, 'out': False},
                  'BL - Aquifer bottom level': {'code': 'BL', 'units': 'm', 'inp': True, 'out': False},
-                 'Ci - Incoming canal salinity': {'code': 'Ci#', 'units': 'dS/m', 'inp': True, 'out': False},
-                 'Cinf - Aquifer inflow salinity': {'code': 'Cinf', 'units': 'dS/m', 'inp': True, 'out': False},
+                 'Ci - Incoming canal salinity': {'code': 'Ci#', 'units': 'dS/m', 'inp': True, 'out': True},
+                 'Cinf - Aquifer inflow salinity': {'code': 'Cin', 'units': 'dS/m', 'inp': True, 'out': False},
                  'Dt - Aquifer thickness': {'code': 'Dt', 'units': 'm', 'inp': True, 'out': False},
-                 'Dc - Capillary rise critical depth': {'code': 'Dc', 'units': 'm', 'inp': True, 'out': False},
+                 'Dc - Capillary rise critical depth': {'code': 'Dcr', 'units': 'm', 'inp': True, 'out': False},
                  'Dd - Subsurface drain depth': {'code': 'Dd', 'units': 'm', 'inp': True, 'out': False},
                  'Dr - Root zone thickness': {'code': 'Dr', 'units': 'm', 'inp': True, 'out': False},
                  'Dx - Transition zone thickness': {'code': 'Dx', 'units': 'm', 'inp': True, 'out': False},
@@ -356,7 +360,7 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'Gu - Subsurface drainage for irrigation': {'code': 'Gu#', 'units': 'm3/season/m2',
                                                              'inp': True, 'out': False},
                  'Gw - Groundwater extraction': {'code': 'Gw#', 'units': 'm3/season/m2', 'inp': True, 'out': True},
-                 'Hp - Initial water level semi-confined': {'code': 'Hp', 'units': 'm', 'inp': True, 'out': False},
+                 'Hp - Initial water level semi-confined': {'code': 'Hc', 'units': 'm', 'inp': True, 'out': False},
                  'IaA - Crop A field irrigation': {'code': 'IaA#', 'units': 'm3/season/m2', 'inp': True, 'out': True},
                  'IaB - Crop B field irrigation': {'code': 'IaB#', 'units': 'm3/season/m2', 'inp': True, 'out': True},
                  'Rice A - Crop A paddy?': {'code': 'KcA#', 'units': 'Dmnl', 'inp': True, 'out': False},
@@ -387,8 +391,8 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'SL - Soil surface level': {'code': 'SL', 'units': 'm', 'inp': True, 'out': False},
                  'SiU - Surface inflow to non-irrigated': {'code': 'SiU#', 'units': 'm3/season/m2',
                                                            'inp': True, 'out': False},
-                 'SdA - Surface outflow crop A': {'code': 'SdA#', 'units': 'm3/season/m2', 'inp': True, 'out': False},
-                 'SdB - Surface outflow crop B': {'code': 'SdB#', 'units': 'm3/season/m2', 'inp': True, 'out': False},
+                 'SdA - Surface outflow crop A': {'code': 'SoA#', 'units': 'm3/season/m2', 'inp': True, 'out': False},
+                 'SdB - Surface outflow crop B': {'code': 'SoB#', 'units': 'm3/season/m2', 'inp': True, 'out': False},
                  'SoU - Surface outflow non-irrigated': {'code': 'SoU#', 'units': 'm3/season/m2',
                                                          'inp': True, 'out': False},
                  'Ts - Season duration': {'code': 'Ts#', 'units': 'months', 'inp': True, 'out': False},
@@ -460,7 +464,6 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'SS - Soil salinity': {'code': 'SS', 'units': 'dS / m', 'inp': True, 'out': True},
                  'Cti - Transition zone incoming salinity': {'code': 'Cti', 'units': 'dS / m', 'inp': False, 'out': True},
                  'Cqi - Aquifer salinity': {'code': 'Cqi', 'units': 'dS / m', 'inp': True, 'out': True},
-                 'Ci - Irrigation water salinity': {'code': 'Ci#', 'units': 'dS / m', 'inp': True, 'out': True},
                  'Cd - Drainage salinity': {'code': 'Cd', 'units': 'ds / m', 'inp': False, 'out': True},
                  }
 
