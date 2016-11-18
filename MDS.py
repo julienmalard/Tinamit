@@ -1,6 +1,8 @@
 import ctypes
 import struct
 
+from warnings import warn as avisar
+
 
 class EnvolturaMDS(object):
     def __init__(símismo, programa_mds, ubicación_modelo):
@@ -102,7 +104,7 @@ class EnvolturaMDS(object):
             símismo.dll.vensim_command(("SIMULATE>RUNNAME|%s" % nombre).encode())
 
             if tiempo_final is not None:
-                símismo.dll.vensim_command(('SIMULATE>SETVAL|%s = %f' % ('FINAL TIME', tiempo_final)).encode())
+                símismo.dll.vensim_command(('SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', tiempo_final)).encode())
 
             resultado = símismo.dll.vensim_command(b"MENU>GAME")
 
@@ -153,8 +155,12 @@ class EnvolturaMDS(object):
             for var_propio, conex in símismo.conex_entrando.items():
                 var_entr = conex['var']
                 conv = conex['conv']
-                valor = valores[var_entr] * conv
-                resultado = símismo.dll.vensim_command(('SIMULATE>SETVAL|%s = %f' % (var_propio, valor)).encode())
+                if valores[var_entr] is not None:
+                    valor = valores[var_entr] * conv
+                    resultado = símismo.dll.vensim_command(('SIMULATE>SETVAL|%s = %f' % (var_propio, valor)).encode())
+                else:
+                    avisar('No encontramos valores iniciales para %s.' % var_entr)
+                    resultado = 1
 
                 if resultado != 1:
                     todobien = False

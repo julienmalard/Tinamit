@@ -1,5 +1,5 @@
 {
-  "Actual": "Español",
+  "Actual": "اردو",
   "Lenguas": {
     "Bahasa Indonesia": {
       "Estado": 0.0,
@@ -47,6 +47,51 @@
       }
     },
     "Bahasa Melayu": {
+      "Estado": 0.0,
+      "IzqaDerech": true,
+      "Trads": {
+        "AnálisisIncert": "",
+        "ArchivoTinamit": "",
+        "AvisoBorrarLeng": "",
+        "AvisoReinic": "",
+        "Ayuda": "",
+        "Biofísico": "",
+        "Borrar": "",
+        "Cargar": "",
+        "CargarMDS": "",
+        "CargarModeloBf": "",
+        "CargarModeloConectado": "",
+        "CargarModelos": "",
+        "ConectarVariables": "",
+        "Empezar": "",
+        "EnTrabajo": "",
+        "Entendido": "",
+        "ErrorCargarBf": "",
+        "ErrorCargarMDS": "",
+        "ErrorCreandoMod": "",
+        "Guardar": "",
+        "Listas": "",
+        "MDS": "",
+        "ModeloBiofísico": "",
+        "ModeloCargado": "",
+        "ModelosPython": "",
+        "ModelospublicadosVENSIM": "",
+        "No": "",
+        "NoGuardar": "",
+        "OpsLengs": "",
+        "ParaHacer": "",
+        "Paso": "",
+        "Simulando": "",
+        "Simular": "",
+        "Sí": "",
+        "TiempoFinal": "",
+        "Traducciones": "",
+        "VariableBiofísico": "",
+        "VariableMDS": "",
+        "X": ""
+      }
+    },
+    "English": {
       "Estado": 0.0,
       "IzqaDerech": true,
       "Trads": {
