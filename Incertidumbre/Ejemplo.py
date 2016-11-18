@@ -1,4 +1,6 @@
 from Incertidumbre.Modelo import mds
+from Incertidumbre.Controles import Control
+from Incertidumbre.Datos import DatosIndividuales, Geografía
 
 modelo = mds(archivo_mds='')  # MDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
 print(modelo.vars)
@@ -9,7 +11,7 @@ print(modelo.niveles)
 print(modelo.constantes)
 modelo.vacíos()
 
-datos_ind = DatosIndividuales(fuente='', año=2011)
+datos_ind = DatosIndividuales(archivo_csv='', año=2011)
 
 # datos_ind = DatosIndividuales(fuente='')
 # datos_ind.estab_tiempo(col='año')
@@ -20,7 +22,7 @@ geog = Geografía(escalas={'país': 'ubicación.csv',
                  orden=['país', 'departamiento', 'municipio'])
 
 datos_ind.estab_geog(estruct={país: 'País', departamiento: 'Dept', municipio: 'Muni'},
-                     código='cod')
+                     col_código='cod')
 datos_ind.datos_irreg(var='')
 datos_ind.limpiar(var='', rango_val=())  # Hace cambios al csv
 datos_ind.limpiar(var='', rango_percen=(0, 0.90))
@@ -56,7 +58,7 @@ bd.guardar(archivo='')
 bd.cargar(fuente='')
 bd.cambiar_datos(nombre_datos, nueva_ubic)
 
-control = control(bd=bd, modelo=modelo)
+control = Control(bd=bd, modelo=modelo)
 
 control.conectar_vars(datos=datos_ind, var_bd='', var_modelo='', transformación='promedio')
 control.conectar_vars(datos=datos_ind, var_bd='', var_modelo='', transformación='máximo')
