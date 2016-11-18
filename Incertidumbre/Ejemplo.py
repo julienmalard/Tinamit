@@ -1,6 +1,6 @@
 from Incertidumbre.Modelo import mds
 from Incertidumbre.Controles import Control
-from Incertidumbre.Datos import DatosIndividuales, Geografía
+from Incertidumbre.Datos import DatosIndividuales, DatosRegión, Geografía, BaseDeDatos
 
 modelo = mds(archivo_mds='')  # MDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
 print(modelo.vars)
@@ -24,14 +24,13 @@ geog = Geografía(escalas={'país': 'ubicación.csv',
 datos_ind.estab_geog(estruct={país: 'País', departamiento: 'Dept', municipio: 'Muni'},
                      col_código='cod')
 datos_ind.datos_irreg(var='')
-datos_ind.limpiar(var='', rango_val=())  # Hace cambios al csv
-datos_ind.limpiar(var='', rango_percen=(0, 0.90))
+datos_ind.limpiar(var='', rango=(), tipo='valor')  # Hace cambios al csv
+datos_ind.limpiar(var='', rango=(0, 0.90))
 
-datos_ind.guardar()
-datos_ind.cargar()
 datos_ind.guardar_datos()  # Guarda el csv
 
-datos_muni = DatosRegión(fuente='')
+datos_muni = DatosRegión(archivo_csv='')
+datos_ind.estab_año(col='año')
 
 bd = BaseDeDatos(datos=[datos_ind, datos_muni], geog=geog)
 

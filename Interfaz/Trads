@@ -1,5 +1,5 @@
 {
-  "Actual": "اردو",
+  "Actual": "Español",
   "Lenguas": {
     "Bahasa Indonesia": {
       "Estado": 0.0,
@@ -18,6 +18,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "",
+        "Corrida": "",
         "Empezar": "",
         "EnTrabajo": "",
         "Entendido": "",
@@ -63,6 +64,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "",
+        "Corrida": "",
         "Empezar": "",
         "EnTrabajo": "",
         "Entendido": "",
@@ -108,6 +110,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "",
+        "Corrida": "",
         "Empezar": "",
         "EnTrabajo": "",
         "Entendido": "",
@@ -183,7 +186,7 @@
       }
     },
     "Français": {
-      "Estado": 1.0,
+      "Estado": 0.975,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "Incertitude",
@@ -199,6 +202,7 @@
         "CargarModeloConectado": "Charger un modèle déjà connecté",
         "CargarModelos": "Charger les modèles",
         "ConectarVariables": "Connexions",
+        "Corrida": "",
         "Empezar": "Commencer",
         "EnTrabajo": "En progrès",
         "Entendido": "Compris",
@@ -228,7 +232,7 @@
       }
     },
     "Italiano": {
-      "Estado": 0.07692307692307693,
+      "Estado": 0.075,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -244,6 +248,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "",
+        "Corrida": "",
         "Empezar": "Cominciare",
         "EnTrabajo": "",
         "Entendido": "",
@@ -289,6 +294,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "",
+        "Corrida": "",
         "Empezar": "",
         "EnTrabajo": "",
         "Entendido": "",
@@ -318,7 +324,7 @@
       }
     },
     "K'iche'": {
-      "Estado": 0.02564102564102564,
+      "Estado": 0.025,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -334,6 +340,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "",
+        "Corrida": "",
         "Empezar": "",
         "EnTrabajo": "",
         "Entendido": "",
@@ -363,7 +370,7 @@
       }
     },
     "Kaqchikel": {
-      "Estado": 0.3333333333333333,
+      "Estado": 0.325,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -379,6 +386,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "",
+        "Corrida": "",
         "Empezar": "Tiqachöp",
         "EnTrabajo": "Man xek'is ta chïk",
         "Entendido": "Xqax chnuqwäch",
@@ -408,7 +416,7 @@
       }
     },
     "Kiswahili": {
-      "Estado": 0.38461538461538464,
+      "Estado": 0.375,
       "IzqaDerech": true,
       "Trads": {
         "AnálisisIncert": "",
@@ -424,6 +432,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "Uhusiano",
+        "Corrida": "",
         "Empezar": "Kuanza",
         "EnTrabajo": "",
         "Entendido": "Nimeelewa",
@@ -453,7 +462,7 @@
       }
     },
     "Português": {
-      "Estado": 0.1282051282051282,
+      "Estado": 0.125,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -469,6 +478,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "",
+        "Corrida": "",
         "Empezar": "",
         "EnTrabajo": "",
         "Entendido": "",
@@ -514,6 +524,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "",
+        "Corrida": "",
         "Empezar": "",
         "EnTrabajo": "",
         "Entendido": "",
@@ -559,6 +570,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "",
+        "Corrida": "",
         "Empezar": "",
         "EnTrabajo": "",
         "Entendido": "",
@@ -588,7 +600,7 @@
       }
     },
     "Tz'utujil": {
-      "Estado": 0.6666666666666666,
+      "Estado": 0.65,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -604,6 +616,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "",
+        "Corrida": "",
         "Empezar": "Namaj rij",
         "EnTrabajo": "Ntajin nsmaja' ",
         "Entendido": "uta k'ara' xq'axa pwa´",
@@ -633,7 +646,7 @@
       }
     },
     "اردو": {
-      "Estado": 1.0,
+      "Estado": 0.975,
       "IzqaDerech": false,
       "Trads": {
         "AnálisisIncert": "غیر یقینی",
@@ -649,6 +662,7 @@
         "CargarModeloConectado": "تنامیت کا ماڈل ڈھونڈنا",
         "CargarModelos": "دھندھنا ماڈل",
         "ConectarVariables": "رشتے",
+        "Corrida": "",
         "Empezar": "کرنا‏ شرو",
         "EnTrabajo": "نہیں تیار",
         "Entendido": "گیا سمجھ",
@@ -694,6 +708,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "",
+        "Corrida": "",
         "Empezar": "",
         "EnTrabajo": "",
         "Entendido": "",
@@ -723,7 +738,7 @@
       }
     },
     "हिंदी": {
-      "Estado": 0.38461538461538464,
+      "Estado": 0.375,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "अनिश्चितता",
@@ -739,6 +754,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "संबंधें",
+        "Corrida": "",
         "Empezar": "शुरू करें",
         "EnTrabajo": "",
         "Entendido": "समझ गया",
@@ -784,6 +800,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "",
+        "Corrida": "",
         "Empezar": "",
         "EnTrabajo": "",
         "Entendido": "",
@@ -813,7 +830,7 @@
       }
     },
     "ગુજરાતી": {
-      "Estado": 0.23076923076923078,
+      "Estado": 0.225,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -829,6 +846,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "સંબંધો",
+        "Corrida": "",
         "Empezar": "શુરુ કરો",
         "EnTrabajo": "",
         "Entendido": "સમઝી લિધું",
@@ -858,7 +876,7 @@
       }
     },
     "தமிழ்": {
-      "Estado": 0.3076923076923077,
+      "Estado": 0.3,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -874,6 +892,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "தொடர்ப்புகள்",
+        "Corrida": "",
         "Empezar": "ஆரம்பு",
         "EnTrabajo": "",
         "Entendido": "புரியது",
@@ -919,6 +938,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "",
+        "Corrida": "",
         "Empezar": "",
         "EnTrabajo": "",
         "Entendido": "",
@@ -964,6 +984,7 @@
         "CargarModeloConectado": "",
         "CargarModelos": "",
         "ConectarVariables": "",
+        "Corrida": "",
         "Empezar": "",
         "EnTrabajo": "",
         "Entendido": "",
