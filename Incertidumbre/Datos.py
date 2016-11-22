@@ -2,30 +2,53 @@ import csv
 import io
 import json
 import numpy as np
+import matplotlib.pyplot as dib
 
 class Geografía(object):
-    def __init__(símismo, escalas, orden):
+    def __init__(símismo, archivo, orden, col_cód):
+
         símismo.orden = orden
 
-        símismo.árbol = {*[(x, {}) for x in escalas]}
+        símismo.árbol = {}
 
-        for n, escala in enumerate(orden):
-            códs, noms, pars = leer(escalas[escala], cols=['código', 'lugar', 'pariente'], encabezadas=True)
+        símismo.leer_archivo(archivo=archivo, orden=orden, col_cód=col_cód)
 
-            árbol = símismo.árbol[escala]
+    def leer_archivo(símismo, archivo, orden, col_cód):
 
-            for m, nom in enumerate(noms):
-                árbol[m] = cód
+        símismo.árbol = dict(*[(x, {}) for x in orden])
+
+        with open(archivo, newline='') as d:
+
+            l = csv.reader(d)  # El lector de csv
+
+            # Guardar la primera fila como nombres de columnas
+            cols = next(l)
+
+            n_cols = [cols.index(x) for x in orden]
+
+            n_col_cód = cols.index(col_cód)
+
+            # Para cada fila que sigue en el csv...
+            for f in l:
+                dic = símismo.árbol
+                for i, n in enumerate(n_cols):
+                    if i == len(n_cols) - 1:
+                        dic[f[n]] = f[n_col_cód]
+                    elif f[n] not in dic:
+                        dic[f[n]] = {}
+                        dic = dic[f[n]]
 
 
 class Datos(object):
-    def __init__(símismo, archivo_csv, año=None):
+    def __init__(símismo, archivo_csv, año=None, cód_lugar=None, col_año=None, col_cód_lugar=None):
         """
 
         :param archivo_csv:
         :type archivo_csv: str
         :param año:
         :type año: int | float
+        :param cód_lugar:
+        :type cód_lugar: str
 
         """
 
@@ -33,6 +56,7 @@ class Datos(object):
 
         símismo.datos = {}
         símismo.años = np.array([])
+        símismo.lugares = []
 
         símismo.vars = []
         símismo.n_obs = None
@@ -42,6 +66,13 @@ class Datos(object):
         if año is not None:
             símismo.años = np.empty(símismo.n_obs)
             símismo.años[:] = año
+        elif col_año is not None:
+            símismo.estab_año(col=col_año)
+
+        if cód_lugar is not None:
+            símismo.lugares = [cód_lugar] * símismo.n_obs
+        elif col_cód_lugar is not None:
+            símismo.estab_lugar(col=col_cód_lugar)
 
     def cargar_bd(símismo, archivo=None):
         """
@@ -123,6 +154,66 @@ class Datos(object):
         símismo._cargar_datos(var=col)
         símismo.años = símismo.datos[col]
 
+    def estab_lugar(símismo, col):
+
+        símismo._cargar_datos(var=col)
+        símismo.lugares = símismo.datos[col]
+
+    def buscar_datos(símismo, l_vars, años=None, cód_lugar=None, ):
+        """
+
+        :param l_vars:
+        :type l_vars: list
+
+        :param años:
+        :type años: list
+
+        :param cód_lugar:
+        :type cód_lugar: list
+
+        :return:
+        :rtype: dict
+
+        """
+
+        # Si no se especificó lugar, tomar todos los lugares disponibles
+        if cód_lugar is None:
+            cód_lugar = set(símismo.lugares)
+
+        if años is None:
+            años = (-np.inf, np.inf)
+
+        if años[0] is None:
+            años = (-np.inf, años[1])
+        if años[1] is None:
+            años = (años[0], np.inf)
+
+        if type(l_vars) is not list:
+            l_vars = [l_vars]
+
+        for var in l_vars:
+            if símismo.datos[var] is None:
+                símismo._cargar_datos(var)
+
+        dic = {}
+
+        for l in cód_lugar:
+            dic[l] = {}
+
+            disp = [np.where((símismo.lugares == l) & (símismo.años >= años[0]) & (símismo.años <= años[1])
+                             & (símismo.datos[v] != np.nan))
+                    for v in l_vars]
+            índ = np.all(disp, axis=0)
+
+            for var in l_vars:
+                if var not in dic:
+                    dic[var] = {}
+
+                dic[var][l]['datos'] = símismo.datos[var][índ]
+                dic[var][l]['años'] = símismo.años[índ]
+
+        return dic
+
     def _cargar_datos(símismo, var):
         """
 
@@ -161,7 +252,8 @@ class Datos(object):
         """
 
         for var in símismo.vars:
-            símismo._cargar_datos(var)
+            if símismo.datos[var] is None:
+                símismo._cargar_datos(var)
 
         with open(símismo.archivo_bd, 'w', newline='') as d:
             e = csv.writer(d)
@@ -172,7 +264,7 @@ class Datos(object):
 
 class DatosIndividuales(Datos):
 
-    def __init__(símismo, archivo_csv, año=None):
+    def __init__(símismo, archivo_csv, año=None, cód_lugar=None, col_año=None, col_cód_lugar=None):
         """
 
         :param archivo_csv:
@@ -182,7 +274,8 @@ class DatosIndividuales(Datos):
 
         """
 
-        super().__init__(archivo_csv=archivo_csv, año=año)
+        super().__init__(archivo_csv=archivo_csv, año=año, cód_lugar=cód_lugar,
+                         col_año=col_año, col_cód_lugar=col_cód_lugar)
 
 
 class DatosRegión(Datos):
@@ -192,12 +285,112 @@ class DatosRegión(Datos):
 class BaseDeDatos(object):
 
     def __init__(símismo, datos, geog, fuente=None):
+        """
+
+        :param datos:
+        :type datos: list | Datos
+        :param geog:
+        :type geog: Geografía
+        :param fuente:
+        :type fuente: str
+        """
+
         símismo.datos = datos
         símismo.geog = geog
 
         símismo.receta = {}
 
         símismo.fuente = fuente
+
+    def renombrar_var(símismo, var, nuevo_nombre, datos=None):
+
+        if datos is None:
+            datos = símismo.datos
+
+        if type(datos) is not list:
+            datos = [datos]
+
+        for d in datos:
+            d.vars[d.vars.index(var)] = nuevo_nombre
+            d.datos[nuevo_nombre] = d.datos[var]
+            d.datos.pop(var)
+
+    def graficar(símismo, var, años=None, cód_lugar=None, lugar=None, datos=None):
+
+        dic_datos = símismo.pedir_datos(l_vars=[var], años=años, cód_lugar=cód_lugar, lugar=lugar, datos=datos)[var]
+
+        n_años =
+
+        if n_años > 1:
+            for l in dic_datos:
+                pass
+                # para hacer: dibujar gráfico
+
+    def estimar(símismo, var, escala, años=None, lugar=None, cód_lugar=None):
+
+
+    def comparar(símismo, var_x, var_y, escala, años=None, cód_lugar=None, lugar=None, datos=None):
+
+        d_datos = símismo.pedir_datos(l_vars=[var_x, var_y], años=años, cód_lugar=cód_lugar, lugar=lugar, datos=datos)
+
+        d_datos_x = d_datos[var_x]
+        d_datos_y = d_datos[var_y]
+
+        datos_x = np.array([])
+        datos_y = np.array([])
+
+        for l in d_datos_x:
+            datos_x = np.concatenate(datos_x, d_datos_x[l]['datos'])
+            datos_y = np.concatenate(datos_y, d_datos_y[l]['datos'])
+
+        dib.plot(datos_x, datos_y)
+
+    def pedir_datos(símismo, l_vars, escala='individual', años=None, cód_lugar=None, lugar=None, datos=None):
+
+        if escala not in
+
+        if cód_lugar is not None and lugar is not None:
+            raise ValueError('No se puede especificar y un código de lugar, y el lugar. Hay que usar o el uno,'
+                             'o el otro para identificar el lugar.')
+
+        # Convertir una ubicación de lugar (lista) a código de lugar
+        if lugar is not None:
+            dic = símismo.geog.árbol
+            dif = len(símismo.geog.órden) - len(lugar)
+            lugar += [''] * dif
+
+            for l in lugar:
+                dic = dic[l]
+
+            cód_lugar = dic
+
+        if type(cód_lugar) is not list:
+            cód_lugar = [cód_lugar]
+
+        if datos is None:
+            datos = símismo.datos
+
+        if type(datos) is not list:
+            datos = [datos]
+
+        # Agrega d2 a d1, y, para matrices numpy, las concatena.
+        def combinar_dics(d1, d2):
+            for ll, v in d2.items():
+                if ll not in d1:
+                    d1[ll] = v
+                elif type(v) is dict:
+                    combinar_dics(d1=d1[ll], d2=v)
+                elif type(v) is np.ndarray():
+                    d1[ll].concatenate(v)
+                else:
+                    raise TypeError
+
+        dic = {}
+
+        for d in datos:
+            combinar_dics(dic, d.buscar_datos(l_vars=l_vars, años=años, cód_lugar=cód_lugar))
+
+        return dic
 
     def guardar(símismo, archivo=None):
 
