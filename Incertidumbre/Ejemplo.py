@@ -97,6 +97,6 @@ control.cargar(fuente='')
 
 otro_modelo = mds(fuente='')
 control.estab_modelo(otro_modelo)
-control.calibrar_eqs(cód_lugar=0113)  # Calibrar todas las equationes y constantes anteriormente calibradas
+control.calibrar_eqs(cód_lugar='0113')  # Calibrar todas las equationes y constantes anteriormente calibradas
 
 control.guardar(archivo='otro archivo')

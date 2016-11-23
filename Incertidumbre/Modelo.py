@@ -6,7 +6,13 @@ import ctypes
 
 class ModeloMDS(object):
 
+    tipo = NotImplemented
+
     regex_var = NotImplemented
+    regex_fun = NotImplemented
+    regex_op = NotImplemented
+    regex_núm = r'\d+(\.[\d]*)?'
+
     lím_línea = NotImplemented
 
     def __init__(símismo, archivo_mds):
@@ -56,6 +62,88 @@ class ModeloMDS(object):
         with open(símismo.archivo_mds) as d:
             símismo._leer_doc_modelo(d)
 
+    def naturalizar_ec(símismo, ec):
+
+        mensaje_error = 'La ecuación siguiente no se puede convertir a una ecuación Tinamit: \n%s' % ec
+
+        regex_núm = símismo.regex_núm
+        regex_fun = símismo.regex_fun
+        regex_op = símismo.regex_op
+        regex_var = símismo.regex_var
+
+        ec_nat = ''
+
+        l_regex = [regex_núm, regex_fun, regex_op, regex_var]
+
+        while len(ec):
+            for n, regex in enumerate(l_regex):
+                res = re.match(regex, ec)
+                if res:
+                    texto = res.group(0)
+                    ec = ec[res.span()[1]:]
+
+                    if regex == regex_núm:
+                        ec_nat += texto
+                    elif regex == regex_op:
+                        try:
+                            ec_nat += dic_ops_inv[símismo.tipo][texto]
+                        except KeyError:
+                            raise ValueError(mensaje_error)
+                    elif regex == regex_fun:
+                        try:
+                            ec_nat += dic_funs_inv[símismo.tipo][texto]
+                        except KeyError:
+                            raise ValueError(mensaje_error)
+                    elif regex == regex_var:
+                        ec_nat += texto
+
+                    break
+
+                else:
+                    if n == len(l_regex):
+                        raise ValueError(mensaje_error)
+
+    def exportar_ec(símismo, ec):
+
+        mensaje_error = 'La ecuación siguiente no se puede exportar: \n%s' % ec
+
+        regex_núm = símismo.regex_núm
+        regex_fun = símismo.regex_fun
+        regex_op = símismo.regex_op
+        regex_var = símismo.regex_var
+
+        ex_exp = ''
+
+        l_regex = [regex_núm, regex_fun, regex_op, regex_var]
+
+        while len(ec):
+            for n, regex in enumerate(l_regex):
+                res = re.match(regex, ec)
+                if res:
+                    texto = res.group(0)
+                    ec = ec[res.span()[1]:]
+
+                    if regex == regex_núm:
+                        ex_exp += texto
+                    elif regex == regex_op:
+                        try:
+                            ex_exp += dic_ops[texto]['VENSIM']
+                        except KeyError:
+                            raise ValueError(mensaje_error)
+                    elif regex == regex_fun:
+                        try:
+                            ex_exp += dic_funs[texto]['VENSIM']
+                        except KeyError:
+                            raise ValueError(mensaje_error)
+                    elif regex == regex_var:
+                        ex_exp += texto
+
+                    break
+
+                else:
+                    if n == len(l_regex):
+                        raise ValueError(mensaje_error)
+
     def correr(símismo, nombre_corrida):
         raise NotImplementedError
 
@@ -83,31 +171,35 @@ class ModeloMDS(object):
 
 class ModeloVENSIM(ModeloMDS):
 
+    tipo = 'VENSIM'
     lím_línea = 80
 
     # l = ['abd = 1', 'abc d = 1', 'abc_d = 1', '"ab3 *" = 1', '"-1\"f" = 1', 'a', 'é = A FUNCTION OF ()',
     #      'வணக்கம்', 'a3b', '"5a"']
-    regex_var = r'[^\W\d]+[\w\d_ ்]*(?=$|[\w\d_ ])[\w\d_்]*(?![\w\d_ ]*\()|".*"'
+    regex_var = r'(?<= *)[^\W\d]+[\w\d_ ்]*(?=$|[\w\d_ ])[\w\d_்]*(?![\w\d_ ]*\()|".*"'
     # for i in l:
     #     print(re.findall(regex_var, i))
 
+    regex_fun = r'(?<= *)[^\W\d]+[\w\d_ ்]*\('
+    regex_op = r'(?<= *)[\^\*\-\+/\(\)]'
+
     def __init__(símismo, archivo_mds):
-        símismo.dll = None
+        símismo.vpm = None
         super().__init__(archivo_mds=archivo_mds)
 
     def correr(símismo, nombre_corrida):
-        raise NotImplementedError
+        if símismo.vpm is None:
+            símismo.publicar_vpm()
+
+        símismo.vpm.correr(nombre_corrida)
 
     def correr_incert(símismo, nombre_corrida):
-        raise NotImplementedError
+        if símismo.vpm is None:
+            símismo.publicar_vpm()
+
+        símismo.vpm.correr_incert(nombre_corrida)
 
     def _leer_doc_modelo(símismo, d):
-
-        try:
-            símismo.dll = ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
-            símismo.dll.vensim_command(('SPECIAL>LOADMODEL|%s' % símismo.archivo_mds).encode())
-        except OSError:
-            pass
 
         símismo.vars.clear()
 
@@ -117,7 +209,7 @@ class ModeloVENSIM(ModeloMDS):
 
         n += 1
         l = d[n]
-        while re.search(r'', l) is None:
+        while re.search(r'^\*+$', l) is None:
 
             while l != '\t|':
                 l_texto_temp.append(l)
@@ -140,40 +232,18 @@ class ModeloVENSIM(ModeloMDS):
         símismo.constantes.clear()
         símismo.niveles.clear()
 
-        if símismo.dll is not None:
-            tamaño_mem = 10
+        símismo.niveles += [x for x in símismo.vars if re.match(r'INTEG *\(', símismo.vars[x]['ec']) is not None]
 
-            for var in símismo.vars:
-                mem_inter = ctypes.create_string_buffer(tamaño_mem)
-                símismo.dll.vensim_get_varattrib(var.encode(), 14, mem_inter, tamaño_mem)
-                tipo_var = mem_inter.raw.decode()
-                if tipo_var == 'Auxiliary':
-                    símismo.auxiliares.append(var)
-                elif tipo_var == 'Constant':
-                    símismo.constantes.append(var)
-                elif tipo_var == 'Level':
-                    símismo.niveles.append(var)
-                else:
-                    pass
+        for niv in símismo.niveles:
+            for flujo in símismo.vars[niv]['parientes']:
+                if flujo not in símismo.flujos:
+                    símismo.flujos.append(flujo)
 
-            for var in símismo.constantes:
-                for hijo in símismo.vars[var]['hijos']:
-                    if hijo in símismo.niveles:
-                        símismo.flujos.append(var)
-                        símismo.constantes.remove(var)
-        else:
-            símismo.niveles += [x for x in símismo.vars if re.match(r'INTEG *\(', símismo.vars[x]['ec']) is not None]
-
-            for niv in símismo.niveles:
-                for flujo in símismo.vars[niv]['parientes']:
-                    if flujo not in símismo.flujos:
-                        símismo.flujos.append(flujo)
-
-            símismo.auxiliares += [x for x, d in símismo.vars.items()
-                                   if x not in símismo.niveles and x not in símismo.flujos
-                                   and len(d['parientes'])]
-            símismo.constantes += [x for x in símismo.vars if x not in símismo.niveles and x not in símismo.flujos
-                                   and x not in símismo.auxiliares]
+        símismo.auxiliares += [x for x, d in símismo.vars.items()
+                               if x not in símismo.niveles and x not in símismo.flujos
+                               and len(d['parientes'])]
+        símismo.constantes += [x for x in símismo.vars if x not in símismo.niveles and x not in símismo.flujos
+                               and x not in símismo.auxiliares]
 
     def _gen_doc_modelo(símismo):
         dic_doc = símismo.dic_doc
@@ -234,6 +304,24 @@ class ModeloVENSIM(ModeloMDS):
 
         return nombre, dic_var
 
+    def publicar_vpm(símismo):
+
+        try:
+            dll = ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
+        except OSError:
+            raise OSError('Esta computadora no cuenta con el DLL de VENSIM DSS.')
+
+        comanda_vensim(dll.vensim_command, 'SPECIAL>LOADMODEL|%s' % símismo.archivo_mds)
+        símismo.guardar_mds()
+
+        archivo_vpm = os.path.join(os.path.split(símismo.archivo_mds)[0], 'Tinamit.vpm')
+
+        archivo_frm = os.path.join(os.path.split(os.path.dirname(__file__))[0], 'VENSIM.frm')
+
+        comanda_vensim(dll.vensim_command, ('FILE>PUBLISH|%s' % archivo_frm))
+
+        símismo.vpm = ModeloVENSIMvpm(archivo_mds=archivo_vpm)
+
     def escribir_var(símismo, var):
         """
 
@@ -262,8 +350,17 @@ class ModeloVENSIMvpm(ModeloMDS):
     def __init__(símismo, archivo_mds):
         super().__init__(archivo_mds=archivo_mds)
 
+        try:
+            símismo.dll = ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
+
+        except OSError:
+            raise OSError('Esta computadora no cuenta con el DLL de VENSIM DSS.')
+
+        comanda_vensim(símismo.dll.vensim_command, 'SPECIAL>LOADMODEL|%s' % archivo_mds)
+
     def correr(símismo, nombre_corrida):
-        raise NotImplementedError
+        comanda_vensim(símismo.dll.vensim_command, 'SIMULATE>RUNNAME|%s' % nombre_corrida)
+        comanda_vensim(símismo.dll.vensim_command, 'MENU>RUN')
 
     def correr_incert(símismo, nombre_corrida):
         raise NotImplementedError
@@ -272,10 +369,47 @@ class ModeloVENSIMvpm(ModeloMDS):
         raise NotImplementedError
 
     def _leer_doc_modelo(símismo, doc):
-        raise NotImplementedError
+
+        tamaño_mem = 10
+
+        for var in símismo.vars:
+
+            mem_inter = ctypes.create_string_buffer(tamaño_mem)
+            comanda_vensim(símismo.dll.vensim_get_varattrib, [var, 14, mem_inter, tamaño_mem])
+            tipo_var = mem_inter.raw.decode()
+
+            if tipo_var == 'Auxiliary':
+                símismo.auxiliares.append(var)
+            elif tipo_var == 'Constant':
+                símismo.constantes.append(var)
+            elif tipo_var == 'Level':
+                símismo.niveles.append(var)
+            else:
+                pass
+
+        for var in símismo.constantes:
+            for hijo in símismo.vars[var]['hijos']:
+                if hijo in símismo.niveles:
+                    símismo.flujos.append(var)
+                    símismo.constantes.remove(var)
 
     def _leer_var(símismo, texto):
         raise NotImplementedError
+
+
+def comanda_vensim(función, args):
+
+    if type(args) is not list:
+        args = [args]
+
+    for n, a in enumerate(args):
+        if type(a) is str:
+            args[n] = a.encode()
+
+    resultado = función(*args)
+
+    if resultado != 1:
+        raise OSError('Error con la comanda')
 
 
 def mds(archivo_mds):
@@ -363,3 +497,43 @@ def sacar_variables(texto, regex, n=None):
         return b
     else:
         return b[:n]
+
+
+dic_funs = {
+    'min(': {'VENSIM': 'MIN('},
+    'max(': {'VENSIM': 'MAX('},
+    'abs(': {'VENSIM': 'ABS('},
+    'math.exp(': {'VENSIM': 'EXP('},
+    'int(': {'VENSIM': 'INTEGER('},
+    'math.log(': {'VENSIM': 'LN('},
+    'math.sin(': {'VENSIM': 'SIN('},
+    'math.cos(': {'VENSIM': 'COS('},
+    'math.tan(': {'VENSIM': 'TAN('},
+    'math.asin(': {'VENSIM': 'ARCSIN('},
+    'math.acos(': {'VENSIM': 'ARCCOS('},
+    'math.atan(': {'VENSIM': 'ARCTAN('},
+    'math.log10(': {'VENSIM': 'LOG('},
+
+}
+
+
+dic_ops = {
+    '+': {'VENSIM': '+'},
+    '-': {'VENSIM': '-'},
+    '*': {'VENSIM': '*'},
+    '/': {'VENSIM': '/'}
+}
+
+dic_funs_inv = {}
+for fun, d_fun in dic_funs.items():
+    for tipo, v in d_fun.items():
+        if tipo not in dic_funs_inv:
+            dic_funs_inv[tipo] = {}
+        dic_funs_inv[tipo][v] = fun
+
+dic_ops_inv = {}
+for op, d_op in dic_ops.items():
+    for tipo, v in d_op.items():
+        if tipo not in dic_ops_inv:
+            dic_ops_inv[tipo] = {}
+        dic_ops_inv[tipo][v] = op
