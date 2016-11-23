@@ -11,6 +11,8 @@ class Geografía(object):
 
         símismo.árbol = {}
 
+        símismo.árbol_inv = {}
+
         símismo.leer_archivo(archivo=archivo, orden=orden, col_cód=col_cód)
 
     def leer_archivo(símismo, archivo, orden, col_cód):
@@ -24,16 +26,19 @@ class Geografía(object):
             # Guardar la primera fila como nombres de columnas
             cols = next(l)
 
-            n_cols = [cols.index(x) for x in orden]
+            i_cols = [cols.index(x) for x in orden]
 
-            n_col_cód = cols.index(col_cód)
+            in_col_cód = cols.index(col_cód)
 
             # Para cada fila que sigue en el csv...
             for f in l:
                 dic = símismo.árbol
-                for i, n in enumerate(n_cols):
-                    if i == len(n_cols) - 1:
-                        dic[f[n]] = f[n_col_cód]
+                for i, n in enumerate(i_cols):
+
+                    if i == len(i_cols) - 1:
+                        dic[f[n]] = f[in_col_cód]
+                        símismo.árbol_inv[f[in_col_cód]] = {*[(orden[k], f[j]) for k, j in enumerate(i_cols)]}
+
                     elif f[n] not in dic:
                         dic[f[n]] = {}
                         dic = dic[f[n]]
@@ -166,7 +171,7 @@ class Datos(object):
         :type l_vars: list
 
         :param años:
-        :type años: list
+        :type años: tuple
 
         :param cód_lugar:
         :type cód_lugar: list
@@ -295,6 +300,9 @@ class BaseDeDatos(object):
         :type fuente: str
         """
 
+        if type(datos) is Datos:
+            datos = [datos]
+
         símismo.datos = datos
         símismo.geog = geog
 
@@ -331,7 +339,8 @@ class BaseDeDatos(object):
 
     def comparar(símismo, var_x, var_y, escala, años=None, cód_lugar=None, lugar=None, datos=None):
 
-        d_datos = símismo.pedir_datos(l_vars=[var_x, var_y], años=años, cód_lugar=cód_lugar, lugar=lugar, datos=datos)
+        d_datos = símismo.pedir_datos(l_vars=[var_x, var_y], escala=escala, años=años, cód_lugar=cód_lugar,
+                                      lugar=lugar, datos=datos)
 
         d_datos_x = d_datos[var_x]
         d_datos_y = d_datos[var_y]
@@ -346,8 +355,33 @@ class BaseDeDatos(object):
         dib.plot(datos_x, datos_y)
 
     def pedir_datos(símismo, l_vars, escala='individual', años=None, cód_lugar=None, lugar=None, datos=None):
+        """
 
-        if escala not in
+        :param l_vars:
+        :type l_vars: list
+
+        :param escala:
+        :type escala: str
+
+        :param años:
+        :type años: tuple
+
+        :param cód_lugar:
+        :type cód_lugar: str
+
+        :param lugar:
+        :type lugar: list
+
+        :param datos:
+        :type datos: list
+
+        :return:
+        :rtype: dict
+
+        """
+
+        if escala not in (símismo.geog.órden + ['individual']):
+            raise ValueError
 
         if cód_lugar is not None and lugar is not None:
             raise ValueError('No se puede especificar y un código de lugar, y el lugar. Hay que usar o el uno,'
@@ -385,10 +419,34 @@ class BaseDeDatos(object):
                 else:
                     raise TypeError
 
+        def lugares_en(cód_lugar, árbol, árbol_inv, orden):
+            try:
+                nivel = orden(min([orden.index(ll) for ll, v in árbol_inv[cód_lugar] if v == '']))
+            except ValueError:
+                nivel = orden[-1]
+
+            ubic = []  #
+
+            dic = árbol
+            for u in ubic:
+                dic = dic[u]
+
+            faltan = orden[orden.index(nivel):]
+            for f in faltan:
+
+
+            return l_cód_lugares
+
+        if escala == 'individual':
+            lugares = lugares_en(cód_lugar, símismo.geog.árbol, símismo.geog.árbol_inv, símismo.geog.orden)
+        else:
+            lugares =
+
         dic = {}
 
-        for d in datos:
-            combinar_dics(dic, d.buscar_datos(l_vars=l_vars, años=años, cód_lugar=cód_lugar))
+        for c_l in lugares:
+            for d in datos:
+                combinar_dics(dic, d.buscar_datos(l_vars=l_vars, años=años, cód_lugar=cód_lugar))
 
         return dic
 

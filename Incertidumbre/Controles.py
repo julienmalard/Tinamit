@@ -1,8 +1,11 @@
 import io
 import json
+import numpy as np
 
+from scipy.optimize import minimize
 from Incertidumbre.Datos import BaseDeDatos
 from Incertidumbre.Modelo import ModeloMDS
+
 
 
 class Control(object):
@@ -34,13 +37,68 @@ class Control(object):
         símismo.receta['conexiones'][var_modelo] = {'var_bd': var_bd, 'datos': datos}
 
     def comparar(símismo, var_mod_x, var_mod_y, escala):
-        símismo.bd.comparar(var_x=var_mod_x, var_y=var_mod_y, escala=escala)
+        var_bd_x = símismo.receta['conexiones'][var_mod_x]
+        var_bd_y = símismo.receta['conexiones'][var_mod_y]
+
+        símismo.bd.comparar(var_x=var_bd_x, var_y=var_bd_y, escala=escala)
 
     def estimar(símismo, constante, escala, años=None, lugar=None, cód_lugar=None):
-        if constante not in símismo.receta['conexiones']:
+
+        try:
+            var_bd = símismo.receta['conexiones'][constante]
+        except KeyError:
             raise ValueError('No hay datos vinculados con este variable (%s).' % constante)
 
-        datos = símismo.bd.estimar(var=constante, escala=escala, años=años, lugar=lugar, cód_lugar=cód_lugar)
+        return símismo.bd.estimar(var=var_bd, escala=escala, años=años, lugar=lugar, cód_lugar=cód_lugar)
+
+    def importar_ec(símismo, var, ec_desparám):
+
+        try:
+            ec_nat = naturalizar(ec_desparám)
+        except ValueError:
+            raise ValueError('')
+
+        dic = símismo.receta['ecs'][var] = {}
+        dic['ec_desparám'] = ec_desparám
+        dic['ec_nativa'] = ec_nat
+        dic['paráms'] = None
+        dic['lím_paráms'] = None
+
+    def calibrar_ec(símismo, var, escala, años=None, lugar=None, cód_lugar=None, datos=None, ec_desparám=None):
+
+        if ec_desparám is None:
+            try:
+                ec_desparám = símismo.receta['ecs'][var]['ec_desparám']
+            except KeyError:
+                raise ValueError('Hay que especificar una ecuación desparametrizada la primera vez que se calibra'
+                                 'la ecuación de un variable.')
+        else:
+            símismo.importar_ec(var, ec_desparám)
+
+        dic_datos = símismo.bd.pedir_datos(l_vars=[var], escala=escala, años=años,
+                                           cód_lugar=cód_lugar, lugar=lugar, datos=datos)
+
+        ec_nativa = símismo.receta['ecs'][var]['ec_nativa']
+
+
+
+        ec_con_vars = resaltar_vars(ec_nativa)
+
+        var_dep = dic_datos[var]
+
+        def función(paráms):
+
+            ec = ec_con_vars.format(paráms)
+
+            pred = eval(ec)
+
+            return error_cuad(pred=pred, obs=var_dep)
+
+        iniciales =
+
+        calibrados = minimize(fun=función, x0=iniciales)
+
+        símismo.receta['ecs'][var]['párams'] = calibrados
 
 
 
@@ -49,6 +107,15 @@ class Control(object):
 
     def calibrados(símismo):
         return [x for x in símismo.receta['conexiones']]
+
+    def escribir_modelo(símismo, archivo):
+        símismo.modelo.guardar_mds(archivo=archivo)
+
+    def correr(símismo, nombre_corrida):
+        símismo.modelo.correr(nombre_corrida=nombre_corrida)
+
+    def analizar_incert(símismo, nombre_corrida):
+        símismo.modelo.correr_incert(nombre_corrida=nombre_corrida)
 
     def guardar(símismo, archivo=None):
 
@@ -69,3 +136,7 @@ class Control(object):
         símismo.receta.update(nuevo_dic)
 
         símismo.fuente = fuente
+
+
+def error_cuad(pred, obs):
+    return np.sum(np.square(np.subtract(pred, obs)))

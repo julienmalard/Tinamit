@@ -64,8 +64,8 @@ control.estimar(constante='Desnutrición')  # Mal ejemplo
 control.estimar(constante='Rendimiento potencial', manera='inversa')  # Estima por aproximación
 control.estimados()
 
-control.calibrar_eq(var='Sueldo', relación='logística', cód_lugar=0112, años=None)
-control.calibrar_eq(var='Sueldo', cod_lugar=0113, años=None)  # Toma la relación existente
+control.calibrar_ec(var='Sueldo', relación='logística', cód_lugar='0112', años=None)
+control.calibrar_ec(var='Sueldo', cód_lugar='0113', años=None)  # Toma la relación existente
 control.calibrados()
 
 var = control.detalles_var(var='')  # Llama Modelo.var()
@@ -88,7 +88,7 @@ control.correr(nombre_corrida='')
 control.analizar_incert(nombre='', manera='Natural')  # Utilizando la función de incertidumbre del programa de MDS
 control.visualizar_corrida(var='')
 
-control.validar_MDS(año_inic=None, cód_lugar=[0112], n_reps=100)  # Genera los análises de Barlas, gráficos, etc.
+control.validar_MDS(año_inic=None, cód_lugar=['0112'], n_reps=100)  # Genera los análises de Barlas, gráficos, etc.
 control.validar_conectado(conectado=ObjDeModeloConectado)
 
 control.guardar(archivo='')

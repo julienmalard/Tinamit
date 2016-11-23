@@ -56,6 +56,12 @@ class ModeloMDS(object):
         with open(símismo.archivo_mds) as d:
             símismo._leer_doc_modelo(d)
 
+    def correr(símismo, nombre_corrida):
+        raise NotImplementedError
+
+    def correr_incert(símismo, nombre_corrida):
+        raise NotImplementedError
+
     def _gen_doc_modelo(símismo):
         raise NotImplementedError
 
@@ -88,6 +94,12 @@ class ModeloVENSIM(ModeloMDS):
     def __init__(símismo, archivo_mds):
         símismo.dll = None
         super().__init__(archivo_mds=archivo_mds)
+
+    def correr(símismo, nombre_corrida):
+        raise NotImplementedError
+
+    def correr_incert(símismo, nombre_corrida):
+        raise NotImplementedError
 
     def _leer_doc_modelo(símismo, d):
 
@@ -245,6 +257,27 @@ class ModeloVENSIM(ModeloMDS):
         return texto
 
 
+class ModeloVENSIMvpm(ModeloMDS):
+
+    def __init__(símismo, archivo_mds):
+        super().__init__(archivo_mds=archivo_mds)
+
+    def correr(símismo, nombre_corrida):
+        raise NotImplementedError
+
+    def correr_incert(símismo, nombre_corrida):
+        raise NotImplementedError
+
+    def _gen_doc_modelo(símismo):
+        raise NotImplementedError
+
+    def _leer_doc_modelo(símismo, doc):
+        raise NotImplementedError
+
+    def _leer_var(símismo, texto):
+        raise NotImplementedError
+
+
 def mds(archivo_mds):
     """
 
@@ -259,6 +292,8 @@ def mds(archivo_mds):
 
     if ext == '.mdl':
         modelo = ModeloVENSIM(archivo_mds=archivo_mds)
+    elif ext == '.vpm':
+        modelo = ModeloVENSIMvpm(archivo_mds=archivo_mds)
     else:
         raise NotImplementedError('No se han implementado modelos de tipo %s' % ext)
 
