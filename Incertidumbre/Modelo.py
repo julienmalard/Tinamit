@@ -144,6 +144,12 @@ class ModeloMDS(object):
                     if n == len(l_regex):
                         raise ValueError(mensaje_error)
 
+    def parientes(símismo, var):
+        return símismo.vars[var]['parientes']
+
+    def hijos(símismo, var):
+        return símismo.vars[var]['hijos']
+
     def correr(símismo, nombre_corrida):
         raise NotImplementedError
 

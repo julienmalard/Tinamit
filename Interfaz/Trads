@@ -48,14 +48,14 @@
       }
     },
     "Bahasa Melayu": {
-      "Estado": 0.0,
+      "Estado": 0.05,
       "IzqaDerech": true,
       "Trads": {
         "AnálisisIncert": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
-        "Ayuda": "",
+        "Ayuda": "Tolong",
         "Biofísico": "",
         "Borrar": "",
         "Cargar": "",
@@ -72,7 +72,7 @@
         "ErrorCargarMDS": "",
         "ErrorCreandoMod": "",
         "Guardar": "",
-        "Listas": "",
+        "Listas": "Sudah siap!",
         "MDS": "",
         "ModeloBiofísico": "",
         "ModeloCargado": "",
@@ -186,7 +186,7 @@
       }
     },
     "Français": {
-      "Estado": 0.975,
+      "Estado": 1.0,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "Incertitude",
@@ -202,7 +202,7 @@
         "CargarModeloConectado": "Charger un modèle déjà connecté",
         "CargarModelos": "Charger les modèles",
         "ConectarVariables": "Connexions",
-        "Corrida": "",
+        "Corrida": "Simulation :",
         "Empezar": "Commencer",
         "EnTrabajo": "En progrès",
         "Entendido": "Compris",

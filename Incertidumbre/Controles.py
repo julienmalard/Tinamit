@@ -37,7 +37,7 @@ class Control(object):
     def conectar_vars(símismo, datos, var_bd, var_modelo, transformación):
         símismo.receta['conexiones'][var_modelo] = {'var_bd': var_bd, 'datos': datos}
 
-    def comparar(símismo, var_mod_x, var_mod_y, escala):
+    def comparar(símismo, var_mod_x, var_mod_y, escala='individual'):
         var_bd_x = símismo.receta['conexiones'][var_mod_x]
         var_bd_y = símismo.receta['conexiones'][var_mod_y]
 
@@ -52,9 +52,12 @@ class Control(object):
 
         est = símismo.bd.estimar(var=var_bd, escala=escala, años=años, lugar=lugar, cód_lugar=cód_lugar)
 
-        dic = símismo.receta['constantes'][constante] = {}
-        dic['distr'] = est['distr']
-        dic['máx'] = est['máx']
+        símismo.receta['constantes'][constante] = {'distr': est['distr'],
+                                                   'máx': est['máx'],
+                                                   'escala': escala,
+                                                   'años': años,
+                                                   'lugar': lugar,
+                                                   'cód_lugar': cód_lugar}
 
         símismo.modelo.vars['ec'] = est['máx']
 
@@ -72,8 +75,29 @@ class Control(object):
         dic['paráms'] = None
         dic['líms_paráms'] = None
 
-    def calibrar_ec(símismo, var, escala, años=None, lugar=None, cód_lugar=None, datos=None, ec_desparám=None,
-                    límites=None):
+    def calibrar_ec(símismo, var, escala, relación, años=None, lugar=None, cód_lugar=None, datos=None):
+
+        parientes = símismo.modelo.parientes(var)
+
+        if relación == 'linear':
+            ec = ' '.join(['%s*p[%i]' % (x, n) for n, x in enumerate(parientes)])
+            líms = [(-np.inf, np.inf)] * len(parientes)
+
+        elif relación == 'exponencial':
+            ec = ' '.join(['%s**p[%i]' % (x, n) for n, x in enumerate(parientes)])
+            líms = [(-np.inf, np.inf)] * len(parientes)
+
+        elif relación == 'logística':
+            raise NotImplementedError
+
+        else:
+            raise ValueError('Tipo de relación %s no reconocida.' % relación)
+
+        símismo._calibrar(var, escala, años=años, lugar=lugar, cód_lugar=cód_lugar, datos=datos,
+                          ec_desparám=ec, líms=líms)
+
+    def _calibrar(símismo, var, escala, años=None, lugar=None, cód_lugar=None, datos=None, ec_desparám=None,
+                  líms=None):
         """
 
         :param var:
@@ -90,8 +114,8 @@ class Control(object):
         :type datos:
         :param ec_desparám:
         :type ec_desparám:
-        :param límites:
-        :type límites: (float | int, float | int)
+        :param líms:
+        :type líms: list
         :return:
         :rtype:
 
@@ -108,12 +132,15 @@ class Control(object):
             símismo.importar_ec(var, ec_desparám)
             ec_nativa = símismo.receta['ecs'][var]['ec_nativa']
 
-        if límites is None:
-            límites = símismo.receta['ecs'][var]['líms_paráms']
+        if líms is None:
+            líms = símismo.receta['ecs'][var]['líms_paráms']
         else:
-            símismo.receta['ecs'][var]['líms_paráms'] = límites
+            símismo.receta['ecs'][var]['líms_paráms'] = líms
 
-        dic_datos = símismo.bd.pedir_datos(l_vars=[var], escala=escala, años=años,
+        l_vars = símismo.modelo.parientes(var)
+        l_vars.append(var)
+
+        dic_datos = símismo.bd.pedir_datos(l_vars=l_vars, escala=escala, años=años,
                                            cód_lugar=cód_lugar, lugar=lugar, datos=datos)
 
         parientes = símismo.modelo.vars[var]['parientes']
@@ -133,16 +160,21 @@ class Control(object):
 
             pred = eval(ec)
 
-            return error_cuad(pred=pred, obs=var_dep)
+            return resid_cuad(pred=pred, obs=var_dep)
 
-        if límites:
-            iniciales = np.array([(x[0] + x[1])/2 for x in límites])
+        if líms:
+            iniciales = np.array([(x[0] + x[1]) / 2 for x in líms])
         else:
             iniciales = np.zeros(len(n_paráms))
 
-        calibrados = minimize(fun=función, x0=iniciales, bounds=límites)
+        calibrados = minimize(fun=función, x0=iniciales, bounds=líms)
 
-        símismo.receta['ecs'][var]['párams'] = calibrados
+        dic_ec = símismo.receta['ecs'][var]
+        dic_ec['párams'] = calibrados
+        dic_ec['escala'] = escala
+        dic_ec['años'] = años
+        dic_ec['lugar'] = lugar
+        dic_ec['cód_lugar'] = cód_lugar
 
         símismo.modelo.vars[var]['ec'] = ec_desparám.format(p=calibrados)
 
@@ -156,10 +188,50 @@ class Control(object):
         símismo.modelo.guardar_mds(archivo=archivo)
 
     def correr(símismo, nombre_corrida):
+
         símismo.modelo.correr(nombre_corrida=nombre_corrida)
 
-    def analizar_incert(símismo, nombre_corrida):
-        símismo.modelo.correr_incert(nombre_corrida=nombre_corrida)
+    def analizar_incert(símismo, nombre_corrida, manera, n_reps=100):
+
+        if manera == 'natural':
+
+            símismo.modelo.correr_incert(nombre_corrida=nombre_corrida, n_reps=n_reps)
+        elif manera == 'manual':
+
+            for _ in range(n_reps):
+                símismo.modelo.correr(nombre_corrida=nombre_corrida)
+
+    def recalibrar_ecs(símismo, cód_lugar):
+
+        for var, dic in símismo.receta['constantes'].items():
+
+            dic['cód_lugar'] = cód_lugar
+
+            años = dic['años']
+            escala = dic['escala']
+            lugar = dic['lugar']
+
+            if lugar == '':
+                lugar = None
+            if cód_lugar == '':
+                cód_lugar = None
+
+            símismo.estimar(var, escala=escala, años=años, lugar=lugar, cód_lugar=cód_lugar)
+
+        for var, dic in símismo.receta['ecs'].items():
+
+            dic['cód_lugar'] = cód_lugar
+
+            años = dic['años']
+            escala = dic['escala']
+            lugar = dic['lugar']
+
+            if lugar == '':
+                lugar = None
+            if cód_lugar == '':
+                cód_lugar = None
+
+            símismo._calibrar(var, escala=escala, años=años, lugar=lugar, cód_lugar=cód_lugar)
 
     def guardar(símismo, archivo=None):
 
@@ -182,5 +254,5 @@ class Control(object):
         símismo.fuente = fuente
 
 
-def error_cuad(pred, obs):
+def resid_cuad(pred, obs):
     return np.sum(np.square(np.subtract(pred, obs)))

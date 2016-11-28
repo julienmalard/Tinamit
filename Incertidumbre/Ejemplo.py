@@ -59,8 +59,8 @@ control = Control(bd=bd, modelo=modelo, fuente='')
 control.conectar_vars(datos=datos_ind, var_bd='', var_modelo='', transformación='promedio')
 control.conectar_vars(datos=datos_ind, var_bd='', var_modelo='', transformación='máximo')
 
-control.comparar(var_mod_x='', var_mod_y='')  # llama BasedeDatos.comparar()
-control.estimar(constante='Desnutrición')  # Mal ejemplo
+control.comparar(var_mod_x='', var_mod_y='', escala='individual')  # llama BasedeDatos.comparar()
+control.estimar(constante='Desnutrición', escala='individual')  # Mal ejemplo
 control.estimar(constante='Rendimiento potencial', manera='inversa')  # Estima por aproximación
 control.estimados()
 
@@ -69,14 +69,14 @@ control.calibrar_ec(var='Sueldo', cód_lugar='0113', años=None)  # Toma la rela
 control.calibrados()
 
 var = control.detalles_var(var='')  # Llama Modelo.var()
-var.parientes
-var.hijos
+modelo.parientes(var='')
+modelo.hijos(var='')
 eq_var = var.eq
 eq = control.eq(var='Sueldo')
 eq_var is eq
 eq.paráms()  # Dic de parám, distribución y valor
-control.calibrar_parám_eq(var='', paráms=[''], años=None, cód_lugar=0112)
-control.graficar_eq(var='', var_y=None, var_z=None, datos=None, años=None)  # Grafica los datos (bd.relación) y la línea, con incertdumbre, de la ecuación calibrada
+control.calibrar_ec(var='', años=None, escala='Municipio', cód_lugar='0112')
+control.graficar_ec(var='', var_y=None, var_z=None, datos=None, años=None)  # Grafica los datos (bd.relación) y la línea, con incertdumbre, de la ecuación calibrada
 
 
 control.guardar_incert_paráms(archivo='')  # Dic. de var, parám, y distribución
@@ -85,7 +85,7 @@ control.gen_doc_incert(fuente='')  # Formato de especicificaciones de corridas d
 
 control.escribir_modelo(archivo='')
 control.correr(nombre_corrida='')
-control.analizar_incert(nombre='', manera='Natural')  # Utilizando la función de incertidumbre del programa de MDS
+control.analizar_incert(nombre_corrida='', manera='natural')  # Utilizando la función de incertidumbre del programa de MDS
 control.visualizar_corrida(var='')
 
 control.validar_MDS(año_inic=None, cód_lugar=['0112'], n_reps=100)  # Genera los análises de Barlas, gráficos, etc.
@@ -95,8 +95,8 @@ control.guardar(archivo='')
 control.cargar(fuente='')
 
 
-otro_modelo = mds(fuente='')
+otro_modelo = mds(archivo_mds='')
 control.estab_modelo(otro_modelo)
-control.calibrar_eqs(cód_lugar='0113')  # Calibrar todas las equationes y constantes anteriormente calibradas
+control.recalibrar_ecs(cód_lugar='0113')  # Calibrar todas las equationes y constantes anteriormente calibradas
 
 control.guardar(archivo='otro archivo')
