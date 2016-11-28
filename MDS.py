@@ -130,54 +130,50 @@ class EnvolturaMDS(object):
         egresos = {}
 
         if símismo.programa == 'vensim':
-            todobien = True
 
             for var in símismo.vars_saliendo:
                 mem_inter = ctypes.create_string_buffer(4)
-                resultado = símismo.dll.vensim_get_val(var.encode(), mem_inter)
+
+                símismo.comanda_vensim(símismo.dll.vensim_get_val, [var.encode(), mem_inter],
+                                       mensaje_error='Error en comanda %s para actualizar_var.' % símismo.programa)
 
                 val = struct.unpack('f', mem_inter)[0]
                 egresos[var] = val
 
-                if resultado != 1:
-                    todobien = False
-
         else:
             raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
-        if not todobien:
-            raise ConnectionError('Error en comanda %s para actualizar_var.' % símismo.programa)
+
         return egresos
 
     def actualizar_vars(símismo, valores):
         if símismo.programa == 'vensim':
-            todobien = True
 
             for var_propio, conex in símismo.conex_entrando.items():
                 var_entr = conex['var']
                 conv = conex['conv']
                 if valores[var_entr] is not None:
                     valor = valores[var_entr] * conv
-                    resultado = símismo.dll.vensim_command(('SIMULATE>SETVAL|%s = %f' % (var_propio, valor)).encode())
+                    símismo.comanda_vensim(símismo.dll.vensim_command,
+                                           ('SIMULATE>SETVAL|%s = %f' % (var_propio, valor)).encode(),
+                                           mensaje_error=('Error en comanda %s para actualizar_var.' %
+                                                          símismo.programa))
                 else:
                     avisar('No encontramos valores iniciales para %s.' % var_entr)
-                    resultado = 1
-
-                if resultado != 1:
-                    todobien = False
 
         else:
             raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
-
-        if not todobien:
-            raise ConnectionError('Error en comanda %s para actualizar_var.' % símismo.programa)
 
     def terminar_simul(símismo):
         if símismo.programa == 'vensim':
-            funcionó = (símismo.dll.vensim_command(b"GAME>ENDGAME") == 1)
+            símismo.comanda_vensim(símismo.dll.vensim_command, b"GAME>ENDGAME",
+                                   mensaje_error='Error en comanda %s para terminar la simulación.' % símismo.programa)
         else:
             raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
-        if not funcionó:
-            raise ConnectionError('Error en comanda %s para terminar la simulación.' % símismo.programa)
+
+    def cambiar_var(símismo, var, val):
+
+        símismo.comanda_vensim(símismo.dll.vensim_command, ('SIMULATE>SETVAL|%s = %f' % (var, val)).encode(),
+                               mensaje_error='Error en cambiar el variable %s.' % var)
 
     def verificar_vensim(símismo):
         """
@@ -194,3 +190,12 @@ class EnvolturaMDS(object):
         """
         estatus = int(símismo.dll.vensim_check_status())
         return estatus
+
+    @staticmethod
+    def comanda_vensim(comanda, args, mensaje_error):
+        if type(args) is not list:
+            args = [args]
+        resultado = comanda(*args)
+
+        if resultado != 1:
+            raise OSError(mensaje_error)
