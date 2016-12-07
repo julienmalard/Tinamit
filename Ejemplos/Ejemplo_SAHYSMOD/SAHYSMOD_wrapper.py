@@ -260,7 +260,7 @@ class Modelo(ClaseModeloBF):
         elif kr == 3:
             soil_sal = dic_data['CrB'] * dic_data['B#'] + dic_data['C3*'] * (1 - dic_data['B#'])
         elif kr == 4:
-            soil_sal = dic_data['C4']
+            soil_sal = dic_data['Cr4']
         else:
             raise ValueError
 
