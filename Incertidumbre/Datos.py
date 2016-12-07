@@ -1,8 +1,11 @@
 import csv
 import io
 import json
-import numpy as np
+import math as mat
+
 import matplotlib.pyplot as dib
+import numpy as np
+
 
 class Geografía(object):
     def __init__(símismo, archivo, orden, col_cód):
@@ -13,7 +16,31 @@ class Geografía(object):
 
         símismo.árbol_inv = {}
 
+        símismo.cód_a_lugar = {}
+
         símismo.leer_archivo(archivo=archivo, orden=orden, col_cód=col_cód)
+
+    def lugares_en(símismo, cód_lugar, escala=None):
+        """
+
+        :param cód_lugar:
+        :type cód_lugar:
+        :param escala:
+        :type escala:
+        :return:
+        :rtype: str
+        """
+
+        d_lugar = símismo.cód_a_lugar[cód_lugar]
+        escala_lugar = d_lugar['escala']
+
+        if escala is None:
+            l_códs = [x for x, d in símismo.árbol_inv.items() if d[escala_lugar] == cód_lugar]
+        else:
+            l_códs = [x for x, d in símismo.árbol_inv.items()
+                      if d[escala_lugar] == cód_lugar and símismo.cód_a_lugar[x]['escala'] == escala]
+
+        return l_códs
 
     def leer_archivo(símismo, archivo, orden, col_cód):
 
@@ -33,15 +60,23 @@ class Geografía(object):
             # Para cada fila que sigue en el csv...
             for f in l:
                 dic = símismo.árbol
+                cód = f[in_col_cód]
+
                 for i, n in enumerate(i_cols):
 
                     if i == len(i_cols) - 1:
-                        dic[f[n]] = f[in_col_cód]
-                        símismo.árbol_inv[f[in_col_cód]] = {*[(orden[k], f[j]) for k, j in enumerate(i_cols)]}
+                        dic[f[n]] = cód
 
                     elif f[n] not in dic:
                         dic[f[n]] = {}
                         dic = dic[f[n]]
+
+                símismo.árbol_inv[cód] = {*[(orden[k], f[j]) for k, j in enumerate(i_cols)]}
+
+                escala = orden[max([n for n, i in enumerate(i_cols) if f[i] != ''])]
+                nombre = f[cols.index[orden[-1]]]
+                símismo.cód_a_lugar[cód] = {'escala': escala,
+                                            'nombre': nombre}
 
 
 class Datos(object):
@@ -293,7 +328,7 @@ class BaseDeDatos(object):
         """
 
         :param datos:
-        :type datos: list | Datos
+        :type datos: list
         :param geog:
         :type geog: Geografía
         :param fuente:
@@ -323,34 +358,57 @@ class BaseDeDatos(object):
             d.datos[nuevo_nombre] = d.datos[var]
             d.datos.pop(var)
 
-    def graficar(símismo, var, años=None, cód_lugar=None, lugar=None, datos=None):
+    def graficar(símismo, var, escala='individual', años=None, cód_lugar=None, lugar=None, datos=None):
 
-        dic_datos = símismo.pedir_datos(l_vars=[var], años=años, cód_lugar=cód_lugar, lugar=lugar, datos=datos)[var]
+        dic_datos = símismo.pedir_datos(l_vars=[var], escala=escala, años=años,
+                                        cód_lugar=cód_lugar, lugar=lugar, datos=datos)
 
-        n_años =
+        # El número máximo de años que tenga un lugar
+        n_años = max([len(x['años']) for x in dic_datos.values()])
 
         if n_años > 1:
             for l in dic_datos:
-                pass
-                # para hacer: dibujar gráfico
+                x = dic_datos[l]['años']
+                y = dic_datos[l][var]
 
-    def estimar(símismo, var, escala, años=None, lugar=None, cód_lugar=None):
+                q95, q75, q25, q05 = np.percentile(datos, [95, 75, 25, 5])
 
+                dib.plot(x, y, color='green')
+                dib.fill_between(x, q05, q25, facecolor='green', alpha=0.2)
+                dib.fill_between(x, q75, q95, facecolor='green', alpha=0.2)
+                dib.fill_between(x, q25, q75, facecolor='green', alpha=0.5)
+
+            dib.show()
+        else:
+            datos_gráf_caja = [x['vars'][var] for x in dic_datos.values()]
+
+            dib.boxplot(datos_gráf_caja)
+            dib.xticks(range(1, len(dic_datos) + 1), [l for l in dic_datos])
+
+            dib.show()
+
+    def estimar(símismo, var, escala, años=None, lugar=None, cód_lugar=None, datos=None):
+
+        datos = símismo.pedir_datos(l_vars=[var], escala=escala, años=años,
+                                    cód_lugar=cód_lugar, lugar=lugar, datos=datos)
+
+        promedio = np.nanmean(datos)
+        error_estándar = np.nanstd(datos) / mat.sqrt(np.sum(np.isnan(datos)))
+
+        return {'distr': 'Normal~([0], [1])'.format(promedio, error_estándar),
+                'máx': promedio}
 
     def comparar(símismo, var_x, var_y, escala, años=None, cód_lugar=None, lugar=None, datos=None):
 
         d_datos = símismo.pedir_datos(l_vars=[var_x, var_y], escala=escala, años=años, cód_lugar=cód_lugar,
                                       lugar=lugar, datos=datos)
 
-        d_datos_x = d_datos[var_x]
-        d_datos_y = d_datos[var_y]
-
         datos_x = np.array([])
         datos_y = np.array([])
 
-        for l in d_datos_x:
-            datos_x = np.concatenate(datos_x, d_datos_x[l]['datos'])
-            datos_y = np.concatenate(datos_y, d_datos_y[l]['datos'])
+        for l in d_datos:
+            datos_x = np.concatenate(datos_x, d_datos[l][var_x]['datos'])
+            datos_y = np.concatenate(datos_y, d_datos[l][var_y]['datos'])
 
         dib.plot(datos_x, datos_y)
 
@@ -407,48 +465,56 @@ class BaseDeDatos(object):
         if type(datos) is not list:
             datos = [datos]
 
-        # Agrega d2 a d1, y, para matrices numpy, las concatena.
-        def combinar_dics(d1, d2):
-            for ll, v in d2.items():
-                if ll not in d1:
-                    d1[ll] = v
-                elif type(v) is dict:
-                    combinar_dics(d1=d1[ll], d2=v)
-                elif type(v) is np.ndarray():
-                    d1[ll].concatenate(v)
-                else:
-                    raise TypeError
-
-        def lugares_en(cód_lugar, árbol, árbol_inv, orden):
-            try:
-                nivel = orden(min([orden.index(ll) for ll, v in árbol_inv[cód_lugar] if v == '']))
-            except ValueError:
-                nivel = orden[-1]
-
-            ubic = []  #
-
-            dic = árbol
-            for u in ubic:
-                dic = dic[u]
-
-            faltan = orden[orden.index(nivel):]
-            for f in faltan:
-
-
-            return l_cód_lugares
-
         if escala == 'individual':
-            lugares = lugares_en(cód_lugar, símismo.geog.árbol, símismo.geog.árbol_inv, símismo.geog.orden)
+            lugares = símismo.geog.lugares_en(cód_lugar=cód_lugar, escala=None)
         else:
-            lugares =
+            lugares = símismo.geog.lugares_en(cód_lugar=cód_lugar, escala=escala)
 
         dic = {}
 
         for c_l in lugares:
+            dic_ind = {}
             for d in datos:
-                combinar_dics(dic, d.buscar_datos(l_vars=l_vars, años=años, cód_lugar=cód_lugar))
+                if type(d) is DatosIndividuales:
+                    símismo.combinar_dics(dic_ind, d.buscar_datos(l_vars=l_vars, años=años, cód_lugar=c_l))
+                else:
+                    if escala == 'individual':
+                        # Si la escala es individual, no podemos hacer nada con datos regionales
+                        pass
+                    else:
+                        símismo.combinar_dics(dic, d.buscar_datos(l_vars=l_vars, años=años, cód_lugar=cód_lugar))
+
+            if escala == 'individual':
+                símismo.combinar_dics(dic, dic_ind)
+            else:
+                símismo.combinar_dics(dic, símismo.combinar_por_año(dic_ind))
 
         return dic
+
+    def combinar_dics(símismo, d1, d2):
+        # Agrega d2 a d1, y, para matrices numpy, las concatena.
+        for ll, v in d2.items():
+            if ll not in d1:
+                d1[ll] = v
+            elif type(v) is dict:
+                símismo.combinar_dics(d1=d1[ll], d2=v)
+            elif type(v) is np.ndarray():
+                d1[ll].concatenate(v)
+            else:
+                raise TypeError
+
+    @staticmethod
+    def combinar_por_año(d):
+        # Combina todos los datos del mismo año (tomando el promedio.
+        for l in d:
+            for v in d[l]:
+                datos = d[l][v]['datos']
+                años = d[l][v]['años']
+
+                años_únicos = np.unique(d[l][v]['años']).sort()
+                datos_prom = np.array([np.nanmean(datos[np.where(años == x)]) for x in años_únicos])
+                d[l][v] = {'datos': datos_prom, 'años': años_únicos}
+        return d
 
     def guardar(símismo, archivo=None):
 
