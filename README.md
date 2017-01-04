@@ -1,4 +1,5 @@
-# Tinamit
+![LogoMuyBonito](tinamit/Interfaz/Imágenes/LogoCent.png)
+# Tinamit 
 Programa para conectar modelos socioeconómicos (dinámicas de los sistemas) con modelos biofísicos.
 
 Tinamit permite la conexión rápida, flexible y reproducible de modelos para 
