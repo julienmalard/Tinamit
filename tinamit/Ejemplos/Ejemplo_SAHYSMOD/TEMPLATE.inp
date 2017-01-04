@@ -1,0 +1,80 @@
+NO TITLE WAS GIVEN. Network map was made under guided input
+Internal nodes are surrounded by polygonal boundary nodes
+{n_years} {n_seasons} 0  99
+    {months_per_season}
+5 1 4   1
+4 
+10000 1 1
+1  
+2  3  4  5  
+10.00  
+5.00  10.00  10.00  15.00  
+25.00  
+25.00  15.00  35.00  25.00  
+{BL:.2f}
+0.00  0.00  0.00  0.00
+1  
+2  2  2  2  
+{SL:.3f}
+{Dr:.3f}
+{Dx:.3f}
+{Ksc:.0f}
+1   4  29.000  -1.000   5  37.490  -1.000   3  50.000  -1.000   2  29.000  -1.000
+   -1.00
+   -1.0000
+{Ptr:.3f}
+{Ptx:.3f}
+{Ptq:.3f}
+{Per:.3f}
+{Pex:.3f}
+{Peq:.3f}
+{Psq:.3f}
+{Flr:.3f}
+{Flx:.3f}
+{Flq:.3f}
+{FsA#:.3f}
+{FsB#:.3f}
+{FsU#:.3f}
+{Kd:.0f}
+{Kf:.0f}
+{Kr:.0f}
+1  
+{Dd:.3f}
+{Ga:.3f}
+{Gb:.3f}
+{Pp#:.3f}
+{EpA#:.3f}
+{EpB#:.3f}
+{EpU#:.3f}
+{Lc#:.3f}
+{Ci#:.3f}
+{IaA#:.3f}
+{IaB#:.3f}
+{SiU#:.3f}
+{SoU#:.3f}
+{SoA#:.3f}
+{SoB#:.3f}
+{A#:.3f}
+{B#:.3f}
+{KcA#:.3f}
+{KcB#:.3f}
+{Gu#:.0f}
+{Fw#:.3f}
+{Gw#:.3f}
+{Frd#:.0f}
+{Hw:.3f}
+{Dcr:.3f}
+{Hc:.3f}
+{CrA:.3f}
+{CrB:.3f}
+{CrU:.3f}
+{Cxa:.3f}
+{Cxb:.3f}
+{Cxf:.3f}
+{Cqi:.3f}
+{Qinf:.3f}
+{Cin:.3f}
+{Qout:.3f}
+2.000  2.000  2.000  2.000  
+139.700  139.700  139.700  139.700
+139.700  139.700  139.700  139.700
