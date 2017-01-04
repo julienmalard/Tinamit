@@ -1,5 +1,5 @@
-from Modelo import Modelo
-from NuevoMDS import generar_mds
+from .Modelo import Modelo
+from .NuevoMDS import generar_mds
 
 from tinamit.NuevoBF import EnvolturaBF
 
@@ -14,6 +14,8 @@ class SuperConectado(Modelo):
 
         """
         símismo.modelos = {}
+
+        símismo.conexiones = []
 
         super().__init__(nombre="SuperConectado")
 
@@ -66,6 +68,71 @@ class SuperConectado(Modelo):
         for mod in símismo.modelos.values():
             mod.iniciar_modelo()
 
+    def cerrar_modelo(símismo):
+        """
+
+        """
+
+        for mod in símismo.modelos:
+            mod.cerrar_modelo()
+
+    def conectar_vars(símismo, dic_vars, modelo_fuente, conv=1):
+        """
+
+        :param dic_vars:
+        :type dic_vars:
+        :param modelo_fuente:
+        :type modelo_fuente:
+        :param conv:
+        :type conv:
+
+        """
+
+        l_modelos = list(símismo.modelos)
+
+        for mod in dic_vars:
+            if mod not in símismo.modelos:
+                raise ValueError('Nombre de modelo "{}" erróneo.'.format(mod))
+
+        try:
+            índ_mod_fuente = l_modelos.index(modelo_fuente)
+            modelo_recip = l_modelos[(índ_mod_fuente+1) % 2]
+        except ValueError:
+            raise ValueError('Nombre de modelo "{}" erróneo.'.format(modelo_fuente))
+
+        var_fuente = dic_vars[modelo_fuente]
+        var_recip = dic_vars[modelo_recip]
+
+        dic_conex = {'modelo_fuente': modelo_fuente,
+                     'vars': {modelo_recip: var_recip,
+                              modelo_fuente: var_fuente
+                              },
+                     'conv': conv
+                     }
+
+        símismo.conexiones.append(dic_conex)
+
+        símismo.modelos[modelo_fuente].vars_egreso.append(var_fuente)
+        símismo.modelos[modelo_recip].vars_ingreso.append(var_recip)
+
+
+        if isinstance(mod, SuperConectado):
+            mod
+
+    def desconectar_vars(símismo, var, modelo_fuente):
+        """
+
+        :param var:
+        :type var:
+        :param modelo_fuente:
+        :type modelo_fuente:
+
+        """
+
+        for n, conex in enumerate(símismo.conexiones):
+            if conex['modelo_fuente'] == modelo_fuente and conex['vars'][modelo_fuente] == var:
+                símismo.conexiones.pop(n)
+
 
 class Conectado(SuperConectado):
     """
@@ -105,3 +172,14 @@ class Conectado(SuperConectado):
         símismo.estab_modelo(modelo=modelo_bf)
 
         símismo.bf = modelo_bf
+
+    def conectar(símismo, var_mds, var_bf, mds_fuente, conv=1):
+
+        dic_vars = {'mds': var_mds, 'bf': var_bf}
+
+        if mds_fuente:
+            fuente = 'mds'
+        else:
+            fuente = 'bf'
+
+        símismo.conectar_vars(dic_vars=dic_vars, modelo_fuente=fuente, conv=conv)
