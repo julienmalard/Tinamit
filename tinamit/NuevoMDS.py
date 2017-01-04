@@ -14,7 +14,13 @@ class ModeloMDS(Modelo):
         """
 
         """
+
+        símismo.inic_vars()
+
         super().__init__(nombre='mds')
+
+    def inic_vars(símismo):
+        raise NotImplementedError
 
     def cambiar_vals(símismo, valores):
         raise NotImplementedError
@@ -61,7 +67,7 @@ class ModeloVENSIM(ModeloMDS):
 
         super().__init__()
 
-    def obt_vars(símismo):
+    def inic_vars(símismo):
         """
 
         """
@@ -119,9 +125,13 @@ class ModeloVENSIM(ModeloMDS):
                 constantes.append(var)
 
         for var in variables:
-            dic_var = {}
 
-            símismo.variables[var] = (dic_var)
+            dic_var = {'val': None,
+                       'unidades': unidades[var],
+                       'ingreso': var in editables,
+                       'egreso': var not in constantes}
+
+            símismo.variables[var] = dic_var
 
     def iniciar_modelo(símismo, nombre_corrida, tiempo_final):
         """
@@ -176,7 +186,7 @@ class ModeloVENSIM(ModeloMDS):
 
         """
 
-        for var in símismo.vars_egreso:
+        for var in símismo.vars_saliendo:
 
             mem_inter = ctypes.create_string_buffer(4)
 

@@ -22,13 +22,21 @@ class Modelo(object):
         símismo.variables = {}
 
         #
-        símismo.vars_egreso = []
-        símismo.vars_ingreso = []
+        símismo.vars_saliendo = []
+        símismo.vars_entrando = []
 
-    def obt_vars(símismo):
+    def inic_vars(símismo):
         raise NotImplementedError
 
-    def iniciar_modelo(símismo, **kwargs):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+        """
+
+        :param tiempo_final:
+        :type tiempo_final:
+        :param nombre_corrida:
+        :type nombre_corrida:
+        """
+
         raise NotImplementedError
 
     def incrementar(símismo, paso):

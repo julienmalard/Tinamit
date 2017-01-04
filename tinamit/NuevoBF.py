@@ -41,16 +41,28 @@ class EnvolturaBF(Modelo):
     def leer_vals(símismo):
         pass
 
-    def iniciar_modelo(símismo):
+    def iniciar_modelo(símismo, **kwargs):
         pass
 
 
 class ClaseModeloBF(object):
+    """
+
+    """
+
     def __init__(símismo):
+        """
+
+        """
         pass
 
     def cambiar_vals(símismo, valores):
-        pass
+        """
+
+        :param valores:
+        :type valores:
+        """
+        raise NotImplementedError
 
     def incrementar(símismo, paso):
         """
@@ -62,7 +74,10 @@ class ClaseModeloBF(object):
         raise NotImplementedError
 
     def leer_vals(símismo):
-        pass
+        """
+
+        """
+        raise NotImplementedError
 
     def iniciar_modelo(símismo):
         """

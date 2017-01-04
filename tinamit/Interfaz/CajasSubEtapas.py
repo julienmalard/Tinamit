@@ -327,7 +327,7 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
                 nombre = None
 
             símismo.Modelo.simular(paso=símismo.IngrPaso.val, tiempo_final=símismo.IngrTempFinal.val,
-                                   nombre_simul=nombre)
+                                   nombre_corrida=nombre)
             símismo.BtSimul.desbloquear()
             símismo.CjSimulando.pack_forget()
 

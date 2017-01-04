@@ -1,3 +1,5 @@
+import threading
+from warnings import warn as avisar
 from .Modelo import Modelo
 from .NuevoMDS import generar_mds
 
@@ -9,15 +11,19 @@ class SuperConectado(Modelo):
 
     """
 
-    def __init__(símismo):
+    def __init__(símismo, nombre="SuperConectado"):
         """
 
+        :param nombre:
+        :type nombre: str
+
         """
+
         símismo.modelos = {}
 
         símismo.conexiones = []
 
-        super().__init__(nombre="SuperConectado")
+        super().__init__(nombre=nombre)
 
     def estab_modelo(símismo, modelo):
         """
@@ -27,9 +33,20 @@ class SuperConectado(Modelo):
 
         """
 
+        if modelo.nombre in símismo.modelos:
+            avisar('El modelo {} ya existe. El nuevo modelo reemplazará el modelo anterior.'.format(modelo.nombre))
+
         símismo.modelos[modelo.nombre] = modelo
 
         símismo.variables[modelo.nombre] = modelo.variables
+
+    def inic_vars(símismo):
+        """
+
+        """
+
+        for nombre_mod, mod in símismo.modelos.items():
+            símismo.variables[nombre_mod] = mod.inic_vars()
 
     def cambiar_vals(símismo, valores):
         """
@@ -42,6 +59,27 @@ class SuperConectado(Modelo):
         for nombre_mod, vals in valores.items():
             símismo.modelos[nombre_mod].cambiar_vals(valores=vals)
 
+    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamit'):
+        """
+
+        :param tiempo_final:
+        :type tiempo_final: int
+        :param paso:
+        :type paso: int
+        :param nombre_corrida:
+        :type nombre_corrida: str
+
+        """
+
+        for mod in símismo.modelos.values():
+            mod.iniciar_modelo(símismo=tiempo_final, nombre_corrida=nombre_corrida)
+
+        for i in range(tiempo_final+1):
+            símismo.incrementar(paso)
+
+        for mod in símismo.modelos.values():
+            mod.cerrar_modelo()
+
     def incrementar(símismo, paso):
         """
 
@@ -50,8 +88,38 @@ class SuperConectado(Modelo):
 
         """
 
-        for mod in símismo.modelos.values():
-            mod.incrementar(paso=paso)
+        if :
+            args_mds = paso
+            args_bf = paso*símismo.receta['conv_unid_tiempo']
+        else:
+            args_mds = paso*símismo.receta['conv_unid_tiempo']
+            args_bf = paso
+
+        dic_paso =
+
+        # Un hilo para cada modelo
+        l_hilo = [threading.Thread(name='hilo_%s' % nombre,
+                                  target=mod.incrementar, args=(dic_paso[nombre],))
+                  for nombre, mod in símismo.modelos.items()]
+
+        # Empezar los dos hilos al mismo tiempo
+        for hilo in l_hilo:
+            hilo.start()
+
+        # Esperar que los dos hilos hayan terminado
+        for hilo in l_hilo:
+            hilo.join()
+
+        # Intercambiar variables
+        l_mods = [m for m in símismo.modelos.values()]
+
+        vars_egr = [dict([(v, m.variables[v]['val']) for v in m.vars_saliendo]) for m in l_mods]
+
+        for mod in l_mods:
+            mod.cambiar_vals()
+
+        for n, mod in enumerate(l_mods):
+            mod.cambiar_vals(valores=vars_egr[(n+1)%2])
 
     def leer_vals(símismo):
         """
@@ -60,7 +128,7 @@ class SuperConectado(Modelo):
         for mod in símismo.modelos.values():
             mod.leer_vals()
 
-    def iniciar_modelo(símismo):
+    def iniciar_modelo(símismo, **kwargs):
         """
 
         """
@@ -90,9 +158,15 @@ class SuperConectado(Modelo):
 
         l_modelos = list(símismo.modelos)
 
-        for mod in dic_vars:
-            if mod not in símismo.modelos:
-                raise ValueError('Nombre de modelo "{}" erróneo.'.format(mod))
+        for nombre_mod in dic_vars:
+            if nombre_mod not in símismo.modelos:
+                raise ValueError('Nombre de modelo "{}" erróneo.'.format(nombre_mod))
+
+            mod = símismo.modelos[nombre_mod]
+            var = dic_vars[nombre_mod]
+            if var in mod.vars_saliendo or var in mod.vars_entrando:
+                raise ValueError('El variable "{}" del modelo "{}" ya está conectado. '
+                                 'Desconéctalo primero con .desconectar_vars().'.format(var, nombre_mod))
 
         try:
             índ_mod_fuente = l_modelos.index(modelo_fuente)
@@ -114,10 +188,6 @@ class SuperConectado(Modelo):
 
         símismo.modelos[modelo_fuente].vars_egreso.append(var_fuente)
         símismo.modelos[modelo_recip].vars_ingreso.append(var_recip)
-
-
-        if isinstance(mod, SuperConectado):
-            mod
 
     def desconectar_vars(símismo, var, modelo_fuente):
         """
