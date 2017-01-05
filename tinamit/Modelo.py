@@ -26,7 +26,7 @@ class Modelo(object):
         símismo.vars_saliendo = []
         símismo.vars_entrando = []
 
-        símismo.unidad_tiempo = símismo.obt_unidades_tiempo()
+        símismo.unidad_tiempo = símismo.obt_unidad_tiempo()
 
     def inic_vars(símismo):
         """
@@ -34,7 +34,7 @@ class Modelo(object):
         """
         raise NotImplementedError
 
-    def obt_unidades_tiempo(símismo):
+    def obt_unidad_tiempo(símismo):
         """
 
         :return:

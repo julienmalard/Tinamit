@@ -2,6 +2,7 @@ import threading
 from warnings import warn as avisar
 from .Modelo import Modelo
 from .NuevoMDS import generar_mds
+from .Unidades.Unidades import convertir
 
 from tinamit.NuevoBF import EnvolturaBF
 
@@ -22,6 +23,8 @@ class SuperConectado(Modelo):
         símismo.modelos = {}
 
         símismo.conexiones = []
+
+        símismo.conv_tiempo = {}
 
         super().__init__(nombre=nombre)
 
@@ -50,6 +53,40 @@ class SuperConectado(Modelo):
         for nombre_mod, mod in símismo.modelos.items():
             símismo.variables[nombre_mod] = mod.inic_vars()
 
+    def obt_unidad_tiempo(símismo):
+        l_mods = list(símismo.modelos)
+
+        unid_mod_1 = l_mods[0].unidad_tiempo
+        unid_mod_2 = l_mods[1].unidad_tiempo
+
+        if unid_mod_1 == unid_mod_2:
+
+            símismo.conv_tiempo = {l_mods[0]: 1, l_mods[1]: 1}
+
+            return unid_mod_1
+
+        else:
+            try:
+                factor_conv = convertir(de=unid_mod_1, a=unid_mod_2)
+            except ValueError:
+                raise ValueError('Las unidades de tiempo de los dos modelos ({} y {}) son incompatibles en Tinamit. Si'
+                                 'te parece irrazonable, puedes quejarte a nosotros.'.format(unid_mod_1, unid_mod_2))
+
+            if factor_conv > 1:
+                símismo.conv_tiempo = {l_mods[0]: 1, l_mods[1]: factor_conv}
+                return unid_mod_1
+
+            else:
+                factor_conv = 1 / factor_conv
+                if int(factor_conv) != factor_conv:
+                    factor_conv = int(factor_conv)
+
+                    avisar('Las unidades de tiempo de los dos modelos ({} y {}) no tienen denominator común.'
+                           'Se aproximará la conversión.'.format(unid_mod_1, unid_mod_2))
+
+                símismo.conv_tiempo = {l_mods[1]: 1, l_mods[0]: factor_conv}
+                return unid_mod_2
+
     def cambiar_vals(símismo, valores):
         """
 
@@ -76,7 +113,7 @@ class SuperConectado(Modelo):
         for mod in símismo.modelos.values():
             mod.iniciar_modelo(símismo=tiempo_final, nombre_corrida=nombre_corrida)
 
-        for i in range(tiempo_final+1):
+        for i in range(tiempo_final + 1):
             símismo.incrementar(paso)
 
         for mod in símismo.modelos.values():
@@ -90,18 +127,9 @@ class SuperConectado(Modelo):
 
         """
 
-        if :
-            args_mds = paso
-            args_bf = paso*símismo.receta['conv_unid_tiempo']
-        else:
-            args_mds = paso*símismo.receta['conv_unid_tiempo']
-            args_bf = paso
-
-        dic_paso =
-
         # Un hilo para cada modelo
         l_hilo = [threading.Thread(name='hilo_%s' % nombre,
-                                  target=mod.incrementar, args=(dic_paso[nombre],))
+                                   target=mod.incrementar, args=(símismo.conv_tiempo[nombre] * paso,))
                   for nombre, mod in símismo.modelos.items()]
 
         # Empezar los dos hilos al mismo tiempo
@@ -121,7 +149,7 @@ class SuperConectado(Modelo):
             mod.cambiar_vals()
 
         for n, mod in enumerate(l_mods):
-            mod.cambiar_vals(valores=vars_egr[(n+1)%2])
+            mod.cambiar_vals(valores=vars_egr[(n + 1) % 2])
 
     def leer_vals(símismo):
         """
@@ -172,7 +200,7 @@ class SuperConectado(Modelo):
 
         try:
             índ_mod_fuente = l_modelos.index(modelo_fuente)
-            modelo_recip = l_modelos[(índ_mod_fuente+1) % 2]
+            modelo_recip = l_modelos[(índ_mod_fuente + 1) % 2]
         except ValueError:
             raise ValueError('Nombre de modelo "{}" erróneo.'.format(modelo_fuente))
 
@@ -210,6 +238,7 @@ class Conectado(SuperConectado):
     """
 
     """
+
     def __init__(símismo):
 
         símismo.mds = None

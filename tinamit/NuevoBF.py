@@ -34,10 +34,10 @@ class EnvolturaBF(Modelo):
 
         super().__init__(nombre='bf')
 
-    def cerrar_modelo(símismo):
-        pass
+        símismo.vars_entrando = símismo.modelo.vars_entrando
+        símismo.vars_saliendo = símismo.modelo.vars_saliendo
 
-    def obt_unidades_tiempo(símismo):
+    def obt_unidad_tiempo(símismo):
         """
 
         :return:
@@ -45,15 +45,15 @@ class EnvolturaBF(Modelo):
 
         """
 
-        return símismo.modelo.obt_unidades_tiempo()
+        return símismo.modelo.unidad_tiempo
 
     def inic_vars(símismo):
         """
 
         """
-        símismo.modelo.inic_vars()
+        símismo.modelo.variables = símismo.variables
 
-        símismo.variables = símismo.modelo.variables
+        símismo.modelo.inic_vars()
 
     def cambiar_vals(símismo, valores):
         """
@@ -72,14 +72,14 @@ class EnvolturaBF(Modelo):
         :type paso:
 
         """
+
         símismo.modelo.incrementar(paso=paso)
 
     def leer_vals(símismo):
         """
 
         """
-
-        pass
+        símismo.modelo.leer_vals()
 
     def iniciar_modelo(símismo, **kwargs):
         """
@@ -88,7 +88,15 @@ class EnvolturaBF(Modelo):
         :type kwargs:
 
         """
+
         símismo.modelo.iniciar_modelo(**kwargs)
+
+    def cerrar_modelo(símismo):
+        """
+
+        """
+
+        símismo.modelo.cerrar_modelo()
 
 
 class ClaseModeloBF(Modelo):
@@ -100,7 +108,7 @@ class ClaseModeloBF(Modelo):
         """
 
         """
-        pass
+        super().__init__(nombre='modelo_BF')
 
     def cambiar_vals(símismo, valores):
         """
@@ -125,10 +133,13 @@ class ClaseModeloBF(Modelo):
         """
         raise NotImplementedError
 
-    def iniciar_modelo(símismo):
+    def iniciar_modelo(símismo, **kwargs):
         """
 
+        :param kwargs:
+        :type kwargs:
         """
+
         raise NotImplementedError
 
     def cerrar_modelo(símismo):
@@ -137,7 +148,7 @@ class ClaseModeloBF(Modelo):
         """
         raise NotImplementedError
 
-    def obt_unidades_tiempo(símismo):
+    def obt_unidad_tiempo(símismo):
         """
 
         :return:
@@ -147,6 +158,17 @@ class ClaseModeloBF(Modelo):
 
     def inic_vars(símismo):
         """
+
+        MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe para símismo.variables, no crear un
+        diccionario nuevo.
+        Por ejemplo, NO HAGAS:
+          símismo.variables = {var1: {...}, var2: {...}, ...}
+        sino:
+          símismo.variables[var1] = {...}
+          símismo.variables[var2] = {...}
+
+        Al no hacer esto, romperás la conección entre los diccionarios de variables de ClaseModeloBF y EnvolturaBF,
+        lo cual impedirá después la conexión de estos variables con el modelo DS.
 
         """
         raise NotImplementedError

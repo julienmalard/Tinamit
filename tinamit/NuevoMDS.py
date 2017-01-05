@@ -20,7 +20,7 @@ class ModeloMDS(Modelo):
     def inic_vars(símismo):
         raise NotImplementedError
 
-    def obt_unidades_tiempo(símismo):
+    def obt_unidad_tiempo(símismo):
         """
 
         :return:
@@ -139,7 +139,7 @@ class ModeloVENSIM(ModeloMDS):
 
             símismo.variables[var] = dic_var
 
-    def obt_unidades_tiempo(símismo):
+    def obt_unidad_tiempo(símismo):
         """
 
         :return:
