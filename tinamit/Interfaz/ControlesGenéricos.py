@@ -6,10 +6,10 @@ try:
 except ImportError:
     pass
 
-from Interfaz import Arte as Art
-from tinamit.Interfaz import Botones as Bt
-from Interfaz import Formatos as Fm
-from tinamit.Interfaz.Formatos import gen_formato as gf
+from . import Arte as Art
+from . import Botones as Bt
+from . import Formatos as Fm
+from .Formatos import gen_formato as gf
 
 
 class ListaItemas(tk.Frame):

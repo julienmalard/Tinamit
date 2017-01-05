@@ -1,6 +1,6 @@
+import os
 import sys
 from importlib import import_module as importar_mod
-import os
 
 
 class EnvolturaBF(object):

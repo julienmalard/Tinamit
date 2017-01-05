@@ -2,14 +2,14 @@
   "Actual": "Español",
   "Lenguas": {
     "Bahasa Indonesia": {
-      "Estado": 0.0,
+      "Estado": 0.025,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
-        "Ayuda": "",
+        "Ayuda": "Tolongkah!",
         "Biofísico": "",
         "Borrar": "",
         "Cargar": "",
@@ -646,7 +646,7 @@
       }
     },
     "اردو": {
-      "Estado": 0.975,
+      "Estado": 1.0,
       "IzqaDerech": false,
       "Trads": {
         "AnálisisIncert": "غیر یقینی",
@@ -662,7 +662,7 @@
         "CargarModeloConectado": "تنامیت کا ماڈل ڈھونڈنا",
         "CargarModelos": "دھندھنا ماڈل",
         "ConectarVariables": "رشتے",
-        "Corrida": "",
+        "Corrida": "نام",
         "Empezar": "کرنا‏ شرو",
         "EnTrabajo": "نہیں تیار",
         "Entendido": "گیا سمجھ",

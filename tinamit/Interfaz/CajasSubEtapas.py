@@ -2,14 +2,13 @@ import os
 import tkinter as tk
 from tkinter import filedialog as diálogo
 
-from Interfaz.Formatos import gen_formato as gf
-
-from Interfaz import Arte as Art
-from Interfaz import Botones as Bt
-from Interfaz import CajasGenéricas as CjG
-from Interfaz import ControlesGenéricos as CtrG
-from Interfaz import Formatos as Fm
-from tinamit.Interfaz import Controles as Ctrl
+from . import Arte as Art
+from . import Botones as Bt
+from . import CajasGenéricas as CjG
+from . import Controles as Ctrl
+from . import ControlesGenéricos as CtrG
+from . import Formatos as Fm
+from .Formatos import gen_formato as gf
 
 
 class CajaSubEtp11(CjG.CajaSubEtapa):
@@ -17,7 +16,6 @@ class CajaSubEtp11(CjG.CajaSubEtapa):
         super().__init__(pariente, nombre=None, núm=1, total=total)
         símismo.apli = apli
         símismo.Modelo = apli.Modelo
-        símismo.receta = símismo.Modelo.receta
 
         caja_mds = tk.Frame(símismo, **Fm.formato_cajas)
         caja_bf = tk.Frame(símismo, **Fm.formato_cajas)
@@ -49,18 +47,18 @@ class CajaSubEtp11(CjG.CajaSubEtapa):
 
     def buscar_mds(símismo):
         apli = símismo.apli
-        nombre_archivo_mds = diálogo.askopenfilename(filetypes=[(apli.Trads['ModelospublicadosVENSIM'], '*.vpm')],
+        archivo_mds = diálogo.askopenfilename(filetypes=[(apli.Trads['ModelospublicadosVENSIM'], '*.vpm')],
                                                      title=apli.Trads['CargarMDS'])
-        if nombre_archivo_mds:
-            rec = símismo.receta
-            rec['mds'] = nombre_archivo_mds
+        if archivo_mds:
+            rec = símismo.apli.receta
+            rec['mds'] = archivo_mds
 
             try:
-                símismo.Modelo.actualizar()
-                símismo.EtiqMDSCargado.config(text=apli.Trads['ModeloCargado'] % os.path.basename(nombre_archivo_mds))
+                símismo.Modelo.estab_mds(archivo_mds)
+                símismo.EtiqMDSCargado.config(text=apli.Trads['ModeloCargado'] % os.path.basename(archivo_mds))
                 símismo.EtiqMDSCargado.pack(**gf(Fm.ubic_EtiqCargarMod))
                 símismo.EtiqErrCargarMDS.pack_forget()
-            except ConnectionError:
+            except (OSError, FileNotFoundError, ValueError):
                 símismo.EtiqMDSCargado.pack_forget()
                 símismo.EtiqErrCargarMDS.pack(**gf(Fm.ubic_EtiqCargarMod))
 
@@ -71,22 +69,21 @@ class CajaSubEtp11(CjG.CajaSubEtapa):
         nombre_archivo_bf = diálogo.askopenfilename(filetypes=[(apli.Trads['ModelosPython'], '*.py')],
                                                     title=apli.Trads['CargarModeloBf'])
         if nombre_archivo_bf:
-            rec = símismo.receta
+            rec = símismo.apli.receta
             rec['bf'] = nombre_archivo_bf
 
             try:
-                símismo.Modelo.actualizar()
+                símismo.Modelo.estab_bf(nombre_archivo_bf)
                 símismo.EtiqBfCargado.config(text=apli.Trads['ModeloCargado'] % os.path.basename(nombre_archivo_bf))
                 símismo.EtiqBfCargado.pack(**gf(Fm.ubic_EtiqCargarMod))
                 símismo.EtiqErrCargarBf.pack_forget()
-            except ConnectionError:
+            except (AttributeError, FileNotFoundError):
                 símismo.EtiqBfCargado.pack_forget()
                 símismo.EtiqErrCargarBf.pack(**gf(Fm.ubic_EtiqCargarMod))
 
         símismo.verificar_completo()
 
     def verificar_completo(símismo):
-        símismo.Modelo.actualizar()
 
         if símismo.Modelo.mds is not None and símismo.Modelo.bf is not None:
             símismo.pariente.desbloquear_cajas([2])
@@ -172,7 +169,7 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
 
         símismo.Modelo.actualizar_conexiones()
 
-        for conex in símismo.Modelo.receta['conexiones']:
+        for conex in símismo.Modelo.apli.receta['conexiones']:
             Ctrl.ItemaConexión(grupo_control=símismo.grupo_controles, lista_itemas=símismo.lista,
                                receta=conex, creando_manual=False)
 

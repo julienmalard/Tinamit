@@ -81,4 +81,4 @@ class Modelo(object):
         """
 
         """
-        raise  NotImplementedError
+        raise NotImplementedError

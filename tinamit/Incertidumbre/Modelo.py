@@ -1,7 +1,7 @@
+import ctypes
 import io
 import os
 import re
-import ctypes
 
 
 class ModeloMDS(object):

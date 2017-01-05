@@ -1,5 +1,5 @@
-import tkinter as tk
 import os
+import tkinter as tk
 
 
 def imagen(nombre):

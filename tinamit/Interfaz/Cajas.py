@@ -1,13 +1,14 @@
+import os
 import tkinter as tk
 from tkinter import filedialog as diálogo
 
-from Interfaz.Formatos import gen_formato as gf
-
-from Interfaz import CajasGenéricas as CjG
-from Interfaz import CajasSubEtapas as CjSE
-from Interfaz import ControlesGenéricos as CtrG
-from Interfaz import Formatos as Fm, Botones as Bt, Arte as Art, Animaciones as Anim
-from tinamit.Interfaz import Controles as Ctrl
+from tinamit.definiciones import dir_raíz
+from . import CajasGenéricas as CjG
+from . import CajasSubEtapas as CjSE
+from . import Controles as Ctrl
+from . import ControlesGenéricos as CtrG
+from . import Formatos as Fm, Botones as Bt, Arte as Art, Animaciones as Anim
+from .Formatos import gen_formato as gf
 
 
 class CajaInic(tk.Frame):
@@ -35,8 +36,9 @@ class CajaInic(tk.Frame):
         Anim.quitar(símismo, 'arriba')
         símismo.destroy()
 
-    def acción_bt_ayuda(símismo):
-        pass
+    @staticmethod
+    def acción_bt_ayuda():
+        os.startfile(os.path.join(dir_raíz, 'Documentación.pdf'))
 
 
 class CajaLeng(tk.Frame):

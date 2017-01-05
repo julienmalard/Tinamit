@@ -1,27 +1,49 @@
 {
-  "tiempo": {
-    "año": {
-      "mes": 12,
-      "día": 365
+  "conv": {
+    "tiempo": {
+      "año": {
+        "mes": 12,
+        "día": 365
+      },
+      "mes": {
+        "día": 30
+      },
+      "día": {
+        "hora": 24
+      },
+      "hora": {
+        "minuto": 60
+      },
+      "minuto": {
+        "segundo": 60
+      }
     },
-    "mes": {
-      "día": 30
-    },
-    "día": {
-      "hora": 24
-    },
-    "hora": {
-      "minuto": 60
-    },
-    "minuto": {
-      "segundo": 60
+    "distancia": {
+      "m": {
+        "km": 0.001,
+        "cm": 100,
+        "mm": 1000
+      }
     }
   },
-  "distancia": {
-    "m": {
-      "km": 0.001,
-      "cm": 100,
-      "mm": 1000
+
+  "equiv": {
+    "español": {
+      "tiempo": {
+      "m": ["metro", "metros"]
+      }
+    },
+    "français":{
+      "tiempo": {
+        "m": ["mètre", "mètres"]
+      }
+    },
+    "English":{
+      "tiempo": {
+        "m": ["metre", "metres", "meter", "meters"]
+      }
     }
+
   }
+
 }

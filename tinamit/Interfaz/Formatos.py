@@ -1,7 +1,6 @@
-import tkinter as tk
-import os
 import json
-
+import os
+import tkinter as tk
 
 # Una función para modificar los formatos según la dirección del texto de la lengua
 direc = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Trads')

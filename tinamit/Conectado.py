@@ -2,9 +2,8 @@ import json
 import os
 import threading
 
-from Biofísico import EnvolturaBF
-
-from tinamit.MDS import EnvolturaMDS
+from .NuevoBF import EnvolturaBF
+from .NuevoMDS import EnvolturaMDS
 
 
 class Conectado(object):

@@ -1,11 +1,11 @@
 import tkinter as tk
 
-from Interfaz.Formatos import gen_formato as gf
+from .Formatos import gen_formato as gf
 
-from Interfaz import Arte as Art
-from Interfaz import ControlesGenéricos as CtrG
-from Interfaz import Formatos as Fm
-from tinamit.Interfaz import Botones as Bt
+from . import Arte as Art
+from . import ControlesGenéricos as CtrG
+from . import Formatos as Fm
+from . import Botones as Bt
 
 
 # Caja lenguas

@@ -1,10 +1,10 @@
 import threading
 from warnings import warn as avisar
+
+from tinamit.NuevoBF import EnvolturaBF
 from .Modelo import Modelo
 from .NuevoMDS import generar_mds
 from .Unidades.Unidades import convertir
-
-from tinamit.NuevoBF import EnvolturaBF
 
 
 class SuperConectado(Modelo):
@@ -54,6 +54,16 @@ class SuperConectado(Modelo):
             símismo.variables[nombre_mod] = mod.inic_vars()
 
     def obt_unidad_tiempo(símismo):
+        """
+
+        :return:
+        :rtype: str
+
+        """
+
+        if not len(símismo.modelos):
+            return None
+
         l_mods = list(símismo.modelos)
 
         unid_mod_1 = l_mods[0].unidad_tiempo
@@ -66,11 +76,7 @@ class SuperConectado(Modelo):
             return unid_mod_1
 
         else:
-            try:
-                factor_conv = convertir(de=unid_mod_1, a=unid_mod_2)
-            except ValueError:
-                raise ValueError('Las unidades de tiempo de los dos modelos ({} y {}) son incompatibles en Tinamit. Si'
-                                 'te parece irrazonable, puedes quejarte a nosotros.'.format(unid_mod_1, unid_mod_2))
+            factor_conv = convertir(de=unid_mod_1, a=unid_mod_2)
 
             if factor_conv > 1:
                 símismo.conv_tiempo = {l_mods[0]: 1, l_mods[1]: factor_conv}

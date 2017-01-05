@@ -1,8 +1,8 @@
 import tkinter as tk
 
-from Interfaz import Arte as Gr
-from tinamit.Interfaz import Formatos as Fm
-from tinamit.Interfaz.Formatos import gen_formato as gf
+from . import Arte as Gr
+from . import Formatos as Fm
+from .Formatos import gen_formato as gf
 
 
 class Botón(object):

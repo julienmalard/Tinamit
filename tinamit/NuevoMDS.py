@@ -1,11 +1,11 @@
+import ctypes
 import os
 import struct
-import ctypes
 
-from .Modelo import Modelo
+from tinamit.Modelo import Modelo
 
 
-class ModeloMDS(Modelo):
+class EnvolturaMDS(Modelo):
     """
 
     """
@@ -55,7 +55,7 @@ class ModeloMDS(Modelo):
         raise NotImplementedError
 
 
-class ModeloVENSIM(ModeloMDS):
+class ModeloVENSIM(EnvolturaMDS):
     """
 
     """
@@ -69,7 +69,8 @@ class ModeloVENSIM(ModeloMDS):
                                mensaje_error='Eroor cargando el modelo de VENSIM.')
 
         símismo.comanda_vensim(func=dll.vensim_be_quiet, args=[2],
-                               mensaje_error='Error en la comanda "vensim_be_quiet".')
+                               mensaje_error='Error en la comanda "vensim_be_quiet".',
+                               val_error=-1)
 
         super().__init__()
 
@@ -81,14 +82,14 @@ class ModeloVENSIM(ModeloMDS):
         mem = ctypes.create_string_buffer(0)
 
         tamaño_nec = símismo.comanda_vensim(func=símismo.dll.vensim_get_varnames,
-                                            args=('*', 0, mem, 0),
+                                            args=['*', 0, mem, 0],
                                             mensaje_error='Error obteniendo eñ tamaño de los variables VENSIM.',
                                             val_error=-1, devolver=True
                                             )
         mem = ctypes.create_string_buffer(tamaño_nec)
 
         símismo.comanda_vensim(func=símismo.dll.vensim_get_varnames,
-                               args=('*', 0, mem, tamaño_nec),
+                               args=['*', 0, mem, tamaño_nec],
                                mensaje_error='Error obteniendo los nombres de los variables de VENSIM.',
                                val_error=-1
                                )
@@ -101,7 +102,7 @@ class ModeloVENSIM(ModeloMDS):
         # Sacar variables editables
         mem = ctypes.create_string_buffer(tamaño_nec)
         símismo.comanda_vensim(func=símismo.dll.vensim_get_varnames,
-                               args=('*', 12, mem, tamaño_nec),
+                               args=['*', 12, mem, tamaño_nec],
                                mensaje_error='Error obteniendo los nombres de los variables editables ("Gaming") de '
                                              'VENSIM.',
                                val_error=-1
@@ -115,15 +116,17 @@ class ModeloVENSIM(ModeloMDS):
         for var in variables:
             mem = ctypes.create_string_buffer(50)
             símismo.comanda_vensim(func=símismo.dll.vensim_get_varattrib,
-                                   args=(var, 1, mem, 50),
-                                   mensaje_error='Error obteniendo las unidades del variable {} en VENSIM'.format(var)
+                                   args=[var, 1, mem, 50],
+                                   mensaje_error='Error obteniendo las unidades del variable {} en VENSIM'.format(var),
+                                   val_error=-1
                                    )
             unidades[var] = mem.raw.decode().split('\x00')[0]
 
             mem = ctypes.create_string_buffer(50)
             símismo.comanda_vensim(func=símismo.dll.vensim_get_varattrib,
                                    args=[var, 14, mem, 50],
-                                   mensaje_error='Error obteniendo la clase del variable {} en VENSIM'.format(var))
+                                   mensaje_error='Error obteniendo la clase del variable {} en VENSIM'.format(var),
+                                   val_error=-1)
 
             tipo_var = mem.raw.decode()
 
@@ -151,7 +154,8 @@ class ModeloVENSIM(ModeloMDS):
 
         símismo.comanda_vensim(func=símismo.dll.vensim_get_varattrib,
                                args=['TIME STEP', 1, mem_inter, 50],
-                               mensaje_error='Error obteniendo las unidades de tiempo de VENSIM.')
+                               mensaje_error='Error obteniendo las unidades de tiempo de VENSIM.',
+                               val_error=-1)
 
         unidades = mem_inter.raw.decode().split('\x00')[0]
 
@@ -304,7 +308,7 @@ def generar_mds(archivo):
     :type archivo: str
 
     :return:
-    :rtype: ModeloMDS
+    :rtype: EnvolturaMDS
 
     """
 
