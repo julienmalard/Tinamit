@@ -283,6 +283,7 @@ class ListaConexiónes(CtrG.ListaEditable):
         super().quitar(itema)
         símismo.pariente.verificar_completo()
 
+
 class ItemaConexión(CtrG.ItemaEditable):
     def __init__(símismo, grupo_control, lista_itemas, receta=None, creando_manual=True):
         símismo.pariente = grupo_control.pariente
@@ -318,11 +319,11 @@ class ItemaConexión(CtrG.ItemaEditable):
         símismo.actualizar()
 
     def actualizar(símismo):
-        símismo.etiq_varMDS.config(text=símismo.receta['var_mds'])
+        símismo.etiq_varMDS.config(text=símismo.receta['vars']['mds'])
         símismo.etiq_conversión.config(text='X %s' % símismo.receta['conv'])
-        símismo.etiq_varBf.config(text=símismo.receta['var_bf'])
+        símismo.etiq_varBf.config(text=símismo.receta['vars']['bf'])
 
-        if símismo.receta['mds_fuente'] is True:
+        if símismo.receta['modelo_fuente'] == 'mds':
             if Fm.IzqaDerech:
                 símismo.etiq_izqflecha.config(image=símismo.flecha['cola_izq'])
                 símismo.etiq_derflecha.config(image=símismo.flecha['cbz_der'])

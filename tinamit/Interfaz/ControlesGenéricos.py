@@ -99,10 +99,12 @@ class ListaEditable(ListaItemas):
 
 
 class Itema(tk.Frame):
-    def __init__(símismo, lista_itemas, objeto=None):
+    def __init__(símismo, lista_itemas, objeto=None, creando_manual=True):
         super().__init__(lista_itemas.Caja, **Fm.formato_cajas)
         símismo.objeto = objeto
         símismo.lista = lista_itemas
+
+        símismo.creando_manual = creando_manual
 
         símismo.añadir()
 
@@ -119,7 +121,7 @@ class ItemaEditable(Itema):
         if creando_manual:
             símismo.receta = grupo_control.receta
 
-        super().__init__(lista_itemas, grupo_control.objeto)
+        super().__init__(lista_itemas, grupo_control.objeto, creando_manual=creando_manual)
 
         símismo.lista_itemas = lista_itemas
         símismo.columnas = []

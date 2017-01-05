@@ -265,11 +265,14 @@ class CajaCabeza(tk.Frame):
 
     def acción_bt_abrir(símismo):
         apli = símismo.apli
-        archivo = diálogo.askopenfile(filetypes=[(apli.Trads['ArchivoTinamit'], '*.tin')],
-                                      title=apli.Trads['CargarModeloConectado'])
+        archivo = diálogo.askopenfilename(filetypes=[(apli.Trads['ArchivoTinamit'], '*.tin')],
+                                          title=apli.Trads['CargarModeloConectado'])
+
         if archivo:
 
-            receta = json.load(archivo)
+            símismo.apli.ubic_archivo = archivo
+            with open(archivo, 'r', encoding='utf8') as d:
+                receta = json.load(d)
 
             if 'conv_tiempo' not in receta.keys() or 'conexiones' not in receta.keys():
                 Ctrl.CajaAviso(apli=símismo.apli, texto=apli.Trads['ArchivoCorrupto'])
@@ -289,7 +292,7 @@ class CajaCabeza(tk.Frame):
 
             l_mod = list(modelo.modelos)
 
-            for conex in receta.conexiones:
+            for conex in receta['conexiones']:
                 mod_fuente = conex['modelo_fuente']
 
                 mod_recip = l_mod[(l_mod.index(mod_fuente) + 1) % 2]
@@ -306,7 +309,11 @@ class CajaCabeza(tk.Frame):
                     modelo.estab_conv_tiempo(mod_base=l_mod[1],
                                              conv=receta['conv_tiempo'][l_mod[0]])
 
+            receta['conexiones'] = modelo.conexiones
+            receta['conv_tiempo'] = modelo.conv_tiempo
+
             símismo.pariente.ContCjEtapas.ir_a_caja(1)
+            símismo.pariente.bloquear_cajas([2, 3, 4])
             símismo.pariente.desbloquear_cajas([1])
 
     def acción_bt_guardar_como(símismo):

@@ -65,6 +65,10 @@ class ModeloVENSIM(EnvolturaMDS):
         símismo.dll = dll = ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
 
         símismo.comanda_vensim(func=dll.vensim_command,
+                               args=[''],
+                               mensaje_error='Error iniciando VENSIM.')
+
+        símismo.comanda_vensim(func=dll.vensim_command,
                                args='SPECIAL>LOADMODEL|%s' % archivo,
                                mensaje_error='Eroor cargando el modelo de VENSIM.')
 
