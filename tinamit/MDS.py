@@ -1,183 +1,245 @@
 import ctypes
+import os
 import struct
 
-from warnings import warn as avisar
+from tinamit.Modelo import Modelo
 
 
-class EnvolturaMDS(object):
-    def __init__(símismo, programa_mds, ubicación_modelo):
-        símismo.programa = programa_mds.lower()
-        símismo.dll = símismo.cargar_mds(símismo.programa, ubicación_modelo)
-        símismo.vars_editables = []
-        símismo.vars = []
-        símismo.unidades = {}
-        símismo.conex_entrando = {}
-        símismo.vars_saliendo = []
+class EnvolturaMDS(Modelo):
+    """
 
-        símismo.sacar_vars()
+    """
 
-        símismo.unidades_tiempo = símismo.sacar_unidades_tiempo()
+    def __init__(símismo):
+        """
 
-    @staticmethod
-    def cargar_mds(programa, ubic_modelo):
-        if programa == 'vensim':
-            dll = ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
-            resultado = dll.vensim_command(('SPECIAL>LOADMODEL|%s' % ubic_modelo).encode())
-            dll.vensim_be_quiet(2)
+        """
 
-            todobien = (resultado == 1 and int(dll.vensim_check_status()) == 0)
-        else:
-            raise NotImplementedError('No se ha escrito una interfaz para este tipo de programa MDS. '
-                                      'Quejarse al programador.')
+        super().__init__(nombre='mds')
 
-        if todobien:
-            return dll
-        else:
-            raise FileNotFoundError('No se pudo cargar el modelo ')
+    def inic_vars(símismo):
+        raise NotImplementedError
 
-    def sacar_vars(símismo):
-        if símismo.programa == 'vensim':
-            tamaño_mem = 1000
-            mem_inter = ctypes.create_string_buffer(tamaño_mem)
-            resultado = símismo.dll.vensim_get_varnames('*', 0, mem_inter, tamaño_mem)
-            if resultado <= 0:
-                raise OSError('Error con VENSIM.')
+    def obt_unidad_tiempo(símismo):
+        """
 
-            while resultado > tamaño_mem:
-                tamaño_mem += 1000
-                mem_inter = ctypes.create_string_buffer(tamaño_mem)
-                resultado = símismo.dll.vensim_get_varnames(b'*', 0, mem_inter, tamaño_mem)
-                if resultado < 0:
-                    raise ChildProcessError('Error con VENSIM.')
+        :return:
+        :rtype: str
+        """
+        raise NotImplementedError
 
-            variables = [x for x in mem_inter.raw.decode().split('\x00') if x]
-            for i in ['FINAL TIME', 'TIME STEP', 'INITIAL TIME', 'SAVEPER', 'Time']:
-                if i in variables:
-                    variables.remove(i)
+    def cambiar_vals_modelo(símismo, valores):
+        raise NotImplementedError
 
-            # Sacar variables editables
-            mem_inter = ctypes.create_string_buffer(tamaño_mem)
-            resultado = símismo.dll.vensim_get_varnames(b'*', 12, mem_inter, tamaño_mem)
-            if resultado < 0:
-                raise ChildProcessError('Error con VENSIM.')
+    def incrementar(símismo, paso):
+        raise NotImplementedError
 
-            editables = [x for x in mem_inter.raw.decode().split('\x00') if x]
+    def leer_vals(símismo):
+        raise NotImplementedError
 
-            # Sacar las unidades de los variables
-            def sacar_unid(variable):
-                mem = ctypes.create_string_buffer(50)
-                res = símismo.dll.vensim_get_varattrib(variable.encode(), 1, mem, 50)
-                if res <= 0:
-                    raise ChildProcessError('Error con VENSIM.')
+    def iniciar_modelo(símismo, nombre_corrida, tiempo_final):
+        """
 
-                return mem.raw.decode().split('\x00')[0]
+        :param nombre_corrida:
+        :type nombre_corrida:
+        :param tiempo_final:
+        :type tiempo_final:
 
-            unidades = {}
-            for var in variables:
-                unidades[var] = sacar_unid(var)
+        """
+        raise NotImplementedError
 
-        else:
-            raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
+    def cerrar_modelo(símismo):
+        """
 
-        símismo.vars = variables
-        símismo.vars_editables = editables
-        símismo.unidades = unidades
+        """
+        raise NotImplementedError
 
-    def sacar_unidades_tiempo(símismo):
-        if símismo.programa == 'vensim':
-            mem_inter = ctypes.create_string_buffer(50)
-            resultado = símismo.dll.vensim_get_varattrib(b'TIME STEP', 1, mem_inter, 50)
-            if resultado < 0:
-                raise OSError('Error con VENSIM.')
-            unidades = mem_inter.raw.decode().split('\x00')[0]
-        else:
-            raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
+
+class ModeloVENSIM(EnvolturaMDS):
+    """
+
+    """
+
+    def __init__(símismo, archivo):
+
+        símismo.dll = dll = ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
+
+        símismo.comanda_vensim(func=dll.vensim_command,
+                               args='SPECIAL>LOADMODEL|%s' % archivo,
+                               mensaje_error='Eroor cargando el modelo de VENSIM.')
+
+        símismo.comanda_vensim(func=dll.vensim_be_quiet, args=[2],
+                               mensaje_error='Error en la comanda "vensim_be_quiet".',
+                               val_error=-1)
+
+        super().__init__()
+
+    def inic_vars(símismo):
+        """
+
+        """
+
+        mem = ctypes.create_string_buffer(0)
+
+        tamaño_nec = símismo.comanda_vensim(func=símismo.dll.vensim_get_varnames,
+                                            args=['*', 0, mem, 0],
+                                            mensaje_error='Error obteniendo eñ tamaño de los variables VENSIM.',
+                                            val_error=-1, devolver=True
+                                            )
+        mem = ctypes.create_string_buffer(tamaño_nec)
+
+        símismo.comanda_vensim(func=símismo.dll.vensim_get_varnames,
+                               args=['*', 0, mem, tamaño_nec],
+                               mensaje_error='Error obteniendo los nombres de los variables de VENSIM.',
+                               val_error=-1
+                               )
+
+        variables = [x for x in mem.raw.decode().split('\x00') if x]
+        for i in ['FINAL TIME', 'TIME STEP', 'INITIAL TIME', 'SAVEPER', 'Time']:
+            if i in variables:
+                variables.remove(i)
+
+        # Sacar variables editables
+        mem = ctypes.create_string_buffer(tamaño_nec)
+        símismo.comanda_vensim(func=símismo.dll.vensim_get_varnames,
+                               args=['*', 12, mem, tamaño_nec],
+                               mensaje_error='Error obteniendo los nombres de los variables editables ("Gaming") de '
+                                             'VENSIM.',
+                               val_error=-1
+                               )
+
+        editables = [x for x in mem.raw.decode().split('\x00') if x]
+
+        # Sacar las unidades de los variables, e identificar los variables constantes
+        unidades = {}
+        constantes = []
+        for var in variables:
+            mem = ctypes.create_string_buffer(50)
+            símismo.comanda_vensim(func=símismo.dll.vensim_get_varattrib,
+                                   args=[var, 1, mem, 50],
+                                   mensaje_error='Error obteniendo las unidades del variable {} en VENSIM'.format(var),
+                                   val_error=-1
+                                   )
+            unidades[var] = mem.raw.decode().split('\x00')[0]
+
+            mem = ctypes.create_string_buffer(50)
+            símismo.comanda_vensim(func=símismo.dll.vensim_get_varattrib,
+                                   args=[var, 14, mem, 50],
+                                   mensaje_error='Error obteniendo la clase del variable {} en VENSIM'.format(var),
+                                   val_error=-1)
+
+            tipo_var = mem.raw.decode()
+
+            if tipo_var == 'Constant':
+                constantes.append(var)
+
+        for var in variables:
+
+            dic_var = {'val': None,
+                       'unidades': unidades[var],
+                       'ingreso': var in editables,
+                       'egreso': var not in constantes}
+
+            símismo.variables[var] = dic_var
+
+    def obt_unidad_tiempo(símismo):
+        """
+
+        :return:
+        :rtype: str
+
+        """
+
+        mem_inter = ctypes.create_string_buffer(50)
+
+        símismo.comanda_vensim(func=símismo.dll.vensim_get_varattrib,
+                               args=['TIME STEP', 1, mem_inter, 50],
+                               mensaje_error='Error obteniendo las unidades de tiempo de VENSIM.',
+                               val_error=-1)
+
+        unidades = mem_inter.raw.decode().split('\x00')[0]
 
         return unidades
 
-    def iniciar_modelo(símismo, tiempo_final, nombre=None):
+    def iniciar_modelo(símismo, nombre_corrida, tiempo_final):
+        """
 
-        if nombre is None:
-            nombre = 'Corrida Tinamit'
+        """
 
-        if símismo.programa == 'vensim':
-            símismo.dll.vensim_command(("SIMULATE>RUNNAME|%s" % nombre).encode())
+        if nombre_corrida is None:
+            nombre_corrida = 'Corrida Tinamit'
 
-            if tiempo_final is not None:
-                símismo.dll.vensim_command(('SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', tiempo_final)).encode())
+        símismo.comanda_vensim(func=símismo.dll.vensim_command,
+                               args="SIMULATE>RUNNAME|%s" % nombre_corrida,
+                               mensaje_error='Error iniciando la corrida VENSIM.')
 
-            resultado = símismo.dll.vensim_command(b"MENU>GAME")
+        símismo.comanda_vensim(func=símismo.dll.vensim_command,
+                               args='SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', tiempo_final),
+                               mensaje_error='Error estableciendo el tiempo final para VENSIM.')
 
-            todobien = (resultado == 1)
+        símismo.comanda_vensim(func=símismo.dll.vensim_command,
+                               args="MENU>GAME",
+                               mensaje_error='Error inicializando el juego VENSIM.')
 
-        else:
-            raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
+    def cambiar_vals_modelo(símismo, valores):
+        """
 
-        if not todobien:
-            raise OSError('Error en comanda a %s para iniciar_modelo.' % símismo.programa)
+        :param valores:
+        :type valores: dict
+
+        """
+
+        for var, val in valores.items():
+            símismo.comanda_vensim(func=símismo.dll.vensim_command,
+                                   args='SIMULATE>SETVAL|%s = %f' % (var, val),
+                                   mensaje_error='Error cambiando el variable %s.' % var)
 
     def incrementar(símismo, paso):
-        if símismo.programa == 'vensim':
-            símismo.dll.vensim_command(("GAME>GAMEINTERVAL|%i" % paso).encode())
-            resultado = símismo.dll.vensim_command(b"GAME>GAMEON")
-            funcionó = (resultado == 1)
-        else:
-            raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
+        """
 
-        return funcionó
+        :param paso:
+        :type paso:
+
+        """
+
+        símismo.comanda_vensim(func=símismo.dll.vensim_command,
+                               args="GAME>GAMEINTERVAL|%i" % paso,
+                               mensaje_error='Error estableciendo el paso de VENSIM.')
+
+        símismo.comanda_vensim(func=símismo.dll.vensim_command,
+                               args="GAME>GAMEON", mensaje_error='Error para incrementar VENSIM.')
 
     def leer_vals(símismo):
-        egresos = {}
+        """
 
-        if símismo.programa == 'vensim':
+        """
 
-            for var in símismo.vars_saliendo:
-                mem_inter = ctypes.create_string_buffer(4)
+        for var in símismo.vars_saliendo:
 
-                símismo.comanda_vensim(símismo.dll.vensim_get_val, [var.encode(), mem_inter],
-                                       mensaje_error='Error en comanda %s para actualizar_var.' % símismo.programa)
+            mem_inter = ctypes.create_string_buffer(4)
 
-                val = struct.unpack('f', mem_inter)[0]
-                egresos[var] = val
+            símismo.comanda_vensim(func=símismo.dll.vensim_get_val,
+                                   args=[var.encode(), mem_inter],
+                                   mensaje_error='Error con VENSIM para leer variables.')
 
-        else:
-            raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
+            val = struct.unpack('f', mem_inter)[0]
 
-        return egresos
+            símismo.variables[var]['val'] = val
 
-    def actualizar_vars(símismo, valores):
-        if símismo.programa == 'vensim':
+    def cerrar_modelo(símismo):
+        """
 
-            for var_propio, conex in símismo.conex_entrando.items():
-                var_entr = conex['var']
-                conv = conex['conv']
-                if valores[var_entr] is not None:
-                    valor = valores[var_entr] * conv
-                    símismo.comanda_vensim(símismo.dll.vensim_command,
-                                           ('SIMULATE>SETVAL|%s = %f' % (var_propio, valor)).encode(),
-                                           mensaje_error=('Error en comanda %s para actualizar_var.' %
-                                                          símismo.programa))
-                else:
-                    avisar('No encontramos valores iniciales para %s.' % var_entr)
+        """
 
-        else:
-            raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
-
-    def terminar_simul(símismo):
-        if símismo.programa == 'vensim':
-            símismo.comanda_vensim(símismo.dll.vensim_command, b"GAME>ENDGAME",
-                                   mensaje_error='Error en comanda %s para terminar la simulación.' % símismo.programa)
-        else:
-            raise NotImplementedError('Falta implementar el programa de MDS %s.' % símismo.programa)
-
-    def cambiar_var(símismo, var, val):
-
-        símismo.comanda_vensim(símismo.dll.vensim_command, ('SIMULATE>SETVAL|%s = %f' % (var, val)).encode(),
-                               mensaje_error='Error en cambiar el variable %s.' % var)
+        símismo.comanda_vensim(func=símismo.dll.vensim_command,
+                               args="GAME>ENDGAME",
+                               mensaje_error='Error para terminar la simulación VENSIM.')
 
     def verificar_vensim(símismo):
         """
-        Esta función regresa el estatus de Vensim.
+        Esta función regresa el estatus de Vensim. Es particularmente útil para desboguear (no tiene uso en las
+          otras funciones de esta clase, y se incluye como ayuda a la programadora.)
+
         :return: estatus número integral de código de estatus
         0 = Vensim está listo
         1 = Vensim está en una simulación activa
@@ -188,14 +250,72 @@ class EnvolturaMDS(object):
         6 = Memoria no libre. Llamar vensim_command() debería de arreglarlo.
         16 += ver documentación de VENSIM para vensim_check_status() en la sección de DLL (Suplemento DSS)
         """
-        estatus = int(símismo.dll.vensim_check_status())
-        return estatus
+
+        estatus = símismo.comanda_vensim(func=símismo.dll.vensim_check_status,
+                                         args=[],
+                                         mensaje_error='Error verificando el estatus de VENSIM. De verdad, la cosa'
+                                                       'te va muy mal.',
+                                         val_error=-1, devolver=True)
+        return int(estatus)
 
     @staticmethod
-    def comanda_vensim(comanda, args, mensaje_error):
+    def comanda_vensim(func, args, mensaje_error=None, val_error=None, devolver=False):
+        """
+
+        :param func:
+        :type func: function
+        :param args:
+        :type args: list | tuple | str
+        :param mensaje_error:
+        :type mensaje_error: str
+        :param val_error:
+        :type val_error: int
+        :param devolver:
+        :type devolver: bool
+
+        """
+
         if type(args) is not list:
             args = [args]
-        resultado = comanda(*args)
 
-        if resultado != 1:
+        for n, a in enumerate(args):
+            if type(a) is str:
+                args[n] = a.encode()
+
+        resultado = func(*args)
+
+        if val_error is None:
+            error = (resultado != 1)
+        else:
+            error = (resultado == val_error)
+
+        if error:
+            if mensaje_error is None:
+                mensaje_error = 'Error con la comanda VENSIM.'
+
+            mensaje_error += ' Código de error {}.'.format(resultado)
+
             raise OSError(mensaje_error)
+
+        if devolver:
+            return resultado
+
+
+def generar_mds(archivo):
+    """
+
+    :param archivo:
+    :type archivo: str
+
+    :return:
+    :rtype: EnvolturaMDS
+
+    """
+
+    ext = os.path.splitext(archivo)[1]
+
+    if ext == '.vpm':
+        return ModeloVENSIM(archivo)
+    else:
+        raise ValueError('El tipo de modelo {} no se acepta como modelo DS en Tinamit, al momento. Si piensas'
+                         'que podrías contribuir aquí, ¡contáctenos!'.format(ext))

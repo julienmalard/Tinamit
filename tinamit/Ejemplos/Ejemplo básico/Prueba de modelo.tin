@@ -1,1 +1,9 @@
-{"bf": "C:/Users/jmalar1/Documents/PycharmProjects/Tinamit/Ejemplos/Ejemplo b\u00e1sico/Prueba bf.py", "ref_tiempo_mds": true, "conv_unid_tiempo": 1, "mds": "C:/Users/jmalar1/Documents/PycharmProjects/Tinamit/Ejemplos/Ejemplo b\u00e1sico/Prueba dll.vpm", "conexiones": [{"mds_fuente": true, "conv": 1, "var_mds": "Lluvia", "var_bf": "var1"}]}
+{
+  "bf": "C:/Users/jmalar1/Documents/PycharmProjects/Tinamit/tinamit/Ejemplos/Ejemplo básico/Prueba bf.py",
+  "conexiones": [],
+  "conv_tiempo": {
+    "bf": 1,
+    "mds": 1.0
+  },
+  "mds": "C:/Users/jmalar1/Documents/PycharmProjects/Tinamit/tinamit/Ejemplos/Ejemplo básico/Prueba dll.vpm"
+}

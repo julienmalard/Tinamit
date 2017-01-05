@@ -15,7 +15,7 @@ class CajaSubEtp11(CjG.CajaSubEtapa):
     def __init__(símismo, pariente, apli, total):
         super().__init__(pariente, nombre=None, núm=1, total=total)
         símismo.apli = apli
-        símismo.Modelo = apli.Modelo
+        símismo.apli.Modelo = apli.Modelo
 
         caja_mds = tk.Frame(símismo, **Fm.formato_cajas)
         caja_bf = tk.Frame(símismo, **Fm.formato_cajas)
@@ -38,23 +38,32 @@ class CajaSubEtp11(CjG.CajaSubEtapa):
         caja_bf.place(**gf(Fm.ubic_caja_cargar_bf))
 
     def acción_desbloquear(símismo):
+        apli = símismo.apli
+
         símismo.EtiqErrCargarBf.pack_forget()
         símismo.EtiqErrCargarMDS.pack_forget()
         símismo.EtiqMDSCargado.pack_forget()
         símismo.EtiqBfCargado.pack_forget()
+
+        if símismo.apli.Modelo.mds is not None:
+            símismo.EtiqMDSCargado.config(text=apli.Trads['ModeloCargado'] % símismo.apli.Modelo.mds.nombre)
+            símismo.EtiqMDSCargado.pack(**gf(Fm.ubic_EtiqCargarMod))
+
+        if símismo.apli.Modelo.bf is not None:
+            símismo.EtiqBfCargado.config(text=apli.Trads['ModeloCargado'] % símismo.apli.Modelo.bf.nombre)
+            símismo.EtiqBfCargado.pack(**gf(Fm.ubic_EtiqCargarMod))
 
         símismo.verificar_completo()
 
     def buscar_mds(símismo):
         apli = símismo.apli
         archivo_mds = diálogo.askopenfilename(filetypes=[(apli.Trads['ModelospublicadosVENSIM'], '*.vpm')],
-                                                     title=apli.Trads['CargarMDS'])
+                                              title=apli.Trads['CargarMDS'])
         if archivo_mds:
-            rec = símismo.apli.receta
-            rec['mds'] = archivo_mds
+            símismo.apli.receta['mds'] = archivo_mds
 
             try:
-                símismo.Modelo.estab_mds(archivo_mds)
+                símismo.apli.Modelo.estab_mds(archivo_mds)
                 símismo.EtiqMDSCargado.config(text=apli.Trads['ModeloCargado'] % os.path.basename(archivo_mds))
                 símismo.EtiqMDSCargado.pack(**gf(Fm.ubic_EtiqCargarMod))
                 símismo.EtiqErrCargarMDS.pack_forget()
@@ -69,11 +78,10 @@ class CajaSubEtp11(CjG.CajaSubEtapa):
         nombre_archivo_bf = diálogo.askopenfilename(filetypes=[(apli.Trads['ModelosPython'], '*.py')],
                                                     title=apli.Trads['CargarModeloBf'])
         if nombre_archivo_bf:
-            rec = símismo.apli.receta
-            rec['bf'] = nombre_archivo_bf
+            símismo.apli.receta['bf'] = nombre_archivo_bf
 
             try:
-                símismo.Modelo.estab_bf(nombre_archivo_bf)
+                símismo.apli.Modelo.estab_bf(nombre_archivo_bf)
                 símismo.EtiqBfCargado.config(text=apli.Trads['ModeloCargado'] % os.path.basename(nombre_archivo_bf))
                 símismo.EtiqBfCargado.pack(**gf(Fm.ubic_EtiqCargarMod))
                 símismo.EtiqErrCargarBf.pack_forget()
@@ -85,7 +93,7 @@ class CajaSubEtp11(CjG.CajaSubEtapa):
 
     def verificar_completo(símismo):
 
-        if símismo.Modelo.mds is not None and símismo.Modelo.bf is not None:
+        if símismo.apli.Modelo.mds is not None and símismo.apli.Modelo.bf is not None:
             símismo.pariente.desbloquear_cajas([2])
         else:
             símismo.pariente.bloquear_cajas([2])
@@ -95,7 +103,7 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
     def __init__(símismo, pariente, apli, total):
         super().__init__(pariente, nombre=None, núm=1, total=total)
         símismo.apli = apli
-        símismo.Modelo = símismo.apli.Modelo
+        símismo.apli.Modelo = símismo.apli.Modelo
 
         cj_bajo = tk.Frame(símismo, **Fm.formato_cajas)
 
@@ -162,8 +170,11 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
         cj_bajo.place(**gf(Fm.ubic_CjBajoConex))
 
     def acción_desbloquear(símismo):
-        vars_mds = sorted(list(símismo.Modelo.mds.variables))
-        vars_bf = sorted(list(símismo.Modelo.bf.variables))
+
+        símismo.lista.borrar()
+
+        vars_mds = sorted(list(símismo.apli.Modelo.mds.variables))
+        vars_bf = sorted(list(símismo.apli.Modelo.bf.variables))
         símismo.MnVarsMDS.refrescar(opciones=vars_mds)
         símismo.MnVarsBf.refrescar(opciones=vars_bf)
 
@@ -175,9 +186,9 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
         símismo.verificar_completo()
 
     def actualizar_menús(símismo):
-        vars_mds = sorted(list(símismo.Modelo.mds.variables))
-        vars_mds_editables = [v for v in vars_mds if símismo.Modelo.mds.variables[v]['ingreso']]
-        vars_bf = sorted(list(símismo.Modelo.bf.variables))
+        vars_mds = sorted(list(símismo.apli.Modelo.mds.variables))
+        vars_mds_editables = [v for v in vars_mds if símismo.apli.Modelo.mds.variables[v]['ingreso']]
+        vars_bf = sorted(list(símismo.apli.Modelo.bf.variables))
 
         for var in vars_mds:
             símismo.MnVarsMDS.reinstaurar(var)
@@ -185,7 +196,6 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
             símismo.MnVarsBf.reinstaurar(var)
 
         for conex in símismo.apli.receta['conexiones']:
-            print(conex)
             símismo.MnVarsMDS.excluir(conex['vars']['mds'])
             símismo.MnVarsBf.excluir(conex['vars']['bf'])
 
@@ -204,21 +214,21 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
     def actualizar_unidades(símismo):
         var = símismo.MnVarsMDS.val
         if var is not None and var != '':
-            símismo.EtiqUnidMDS.config(text=símismo.Modelo.mds.variables[var]['unidades'])
+            símismo.EtiqUnidMDS.config(text=símismo.apli.Modelo.mds.variables[var]['unidades'])
         else:
             símismo.EtiqUnidMDS.config(text='')
         var = símismo.MnVarsBf.val
         if var is not None and var != '':
-            símismo.EtiqUnidBf.config(text=símismo.Modelo.bf.variables[var]['unidades'])
+            símismo.EtiqUnidBf.config(text=símismo.apli.Modelo.bf.variables[var]['unidades'])
         else:
             símismo.EtiqUnidBf.config(text='')
 
     def añadir_conexión(símismo, conexión):
-        símismo.Modelo.conectar(**conexión)
+        símismo.apli.Modelo.conectar(**conexión)
         símismo.actualizar_menús()
 
     def quitar_conexión(símismo, conexión):
-        símismo.Modelo.desconectar(var_mds=conexión['var_mds'])
+        símismo.apli.Modelo.desconectar(var_mds=conexión['var_mds'])
         símismo.actualizar_menús()
 
     def verificar_completo(símismo):
@@ -234,7 +244,7 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
     def __init__(símismo, pariente, apli, total):
         super().__init__(pariente, nombre=None, núm=1, total=total)
         símismo.apli = apli
-        símismo.Modelo = símismo.apli.Modelo
+        símismo.apli.Modelo = símismo.apli.Modelo
 
         cj_ctrls_tiempo = tk.Frame(símismo, **Fm.formato_cajas)
 
@@ -245,7 +255,7 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
                                         comanda=símismo.acción_cambió_ref_unid,
                                         ubicación=gf(Fm.ubic_CtrlsUnidTiempo), tipo_ubic='pack')
         símismo.IngrConvUnidTiempo = CtrG.IngrNúm(cj_unidad_tiempo, nombre='=',
-                                                  límites=(1, None), prec='ent',
+                                                  límites=(1, None), prec='ent', val_inic=1,
                                                   comanda=símismo.acción_cambió_conversión,
                                                   ubicación=gf(Fm.ubic_CtrlsUnidTiempo), tipo_ubic='pack')
         símismo.EtiqUnidTiempoNoRef = tk.Label(cj_unidad_tiempo, **Fm.formato_etiqs_ctrls_tiempo)
@@ -285,32 +295,49 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
         cj_bt_simul.place(**gf(Fm.ubic_cj_bt_simular))
 
     def acción_desbloquear(símismo):
-        unidad_tiempo_mds = símismo.Modelo.mds.unidad_tiempo
-        unidad_tiempo_bf = símismo.Modelo.bf.unidad_tiempo
+        unidad_tiempo_mds = símismo.apli.Modelo.mds.unidad_tiempo
+        unidad_tiempo_bf = símismo.apli.Modelo.bf.unidad_tiempo
         símismo.MnTiempoRef.refrescar(opciones=[unidad_tiempo_mds, unidad_tiempo_bf])
-        if símismo.Modelo.receta['ref_tiempo_mds']:
+        if not len(símismo.apli.Modelo.conv_tiempo):
+            símismo.apli.Modelo.estab_conv_tiempo(mod_base='mds', conv=1)
+
+        if símismo.apli.Modelo.conv_tiempo['mds'] == 1:
             símismo.MnTiempoRef.poner(unidad_tiempo_mds)
+            conv = símismo.apli.Modelo.conv_tiempo['bf']
         else:
             símismo.MnTiempoRef.poner(unidad_tiempo_bf)
-        símismo.IngrConvUnidTiempo.poner(símismo.Modelo.receta['conv_unid_tiempo'])
+            conv = símismo.apli.Modelo.conv_tiempo['mds']
+        símismo.IngrConvUnidTiempo.poner(conv)
 
         símismo.verificar_completo()
 
     def acción_cambió_ref_unid(símismo, val):
-        unidad_tiempo_mds = símismo.Modelo.mds.unidad_tiempo
-        unidad_tiempo_bf = símismo.Modelo.bf.unidad_tiempo
+        unidad_tiempo_mds = símismo.apli.Modelo.mds.unidad_tiempo
+        unidad_tiempo_bf = símismo.apli.Modelo.bf.unidad_tiempo
+
+        val_conv = símismo.IngrConvUnidTiempo.val
 
         if val == unidad_tiempo_mds:
-            símismo.Modelo.receta['ref_tiempo_mds'] = True
+            símismo.apli.Modelo.conv_tiempo['mds'] = 1
+            símismo.apli.Modelo.conv_tiempo['bf'] = val_conv
             símismo.EtiqUnidTiempoFinal.config(text=unidad_tiempo_mds)
             símismo.EtiqUnidTiempoNoRef.config(text=unidad_tiempo_bf)
         else:
-            símismo.Modelo.receta['ref_tiempo_mds'] = False
+            símismo.apli.Modelo.conv_tiempo['mds'] = val_conv
+            símismo.apli.Modelo.conv_tiempo['bf'] = 1
             símismo.EtiqUnidTiempoFinal.config(text=unidad_tiempo_bf)
             símismo.EtiqUnidTiempoNoRef.config(text=unidad_tiempo_mds)
 
     def acción_cambió_conversión(símismo, val):
-        símismo.Modelo.receta['conv_unid_tiempo'] = val
+
+        unidad_tiempo_mds = símismo.apli.Modelo.mds.unidad_tiempo
+
+        mod_tiempo_ref = símismo.MnTiempoRef.val
+
+        if mod_tiempo_ref == unidad_tiempo_mds:
+            símismo.apli.Modelo.conv_tiempo['bf'] = val
+        else:
+            símismo.apli.Modelo.conv_tiempo['mds'] = val
 
     def acción_simular(símismo):
         símismo.CjSimulando.pack(**gf(Fm.ubic_CjSimulando))
@@ -322,8 +349,8 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
             if nombre == '':
                 nombre = None
 
-            símismo.Modelo.simular(paso=símismo.IngrPaso.val, tiempo_final=símismo.IngrTempFinal.val,
-                                   nombre_corrida=nombre)
+            símismo.apli.Modelo.simular(paso=símismo.IngrPaso.val, tiempo_final=símismo.IngrTempFinal.val,
+                                        nombre_corrida=nombre)
             símismo.BtSimul.desbloquear()
             símismo.CjSimulando.pack_forget()
 
@@ -338,7 +365,7 @@ class CajaSubEtp41(CjG.CajaSubEtapa):
     def __init__(símismo, pariente, apli, total):
         super().__init__(pariente, nombre=None, núm=1, total=total)
         símismo.apli = apli
-        símismo.Modelo = símismo.apli.Modelo
+        símismo.apli.Modelo = símismo.apli.Modelo
 
     def acción_desbloquear(símismo):
         pass

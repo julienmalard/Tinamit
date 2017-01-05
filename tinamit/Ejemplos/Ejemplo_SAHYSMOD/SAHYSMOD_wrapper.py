@@ -4,7 +4,7 @@ from subprocess import run
 
 import numpy as np
 
-from tinamit.Biofísico import ClaseModeloBF
+from tinamit.BF import ClaseModeloBF
 
 """
 How to use this SAHYSMOD wrapper for Tinamit:

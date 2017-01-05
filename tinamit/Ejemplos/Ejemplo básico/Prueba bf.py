@@ -1,6 +1,6 @@
 import random
 
-from tinamit.NuevoBF import ClaseModeloBF
+from tinamit.BF import ClaseModeloBF
 
 
 class Modelo(ClaseModeloBF):
@@ -10,7 +10,7 @@ class Modelo(ClaseModeloBF):
 
     def incrementar(símismo, paso):
 
-        símismo.variables['var1']['var'] = random.random() * 10 * símismo.variables['var2']['var'] * paso
+        símismo.variables['var1']['val'] = random.random() * 10 * símismo.variables['var2']['val'] * paso
 
     def leer_vals(símismo):
         pass
@@ -19,12 +19,12 @@ class Modelo(ClaseModeloBF):
         pass
 
     def inic_vars(símismo):
-        símismo.variables['var1'] = {'va1': 5,
+        símismo.variables['var1'] = {'val': 5,
                                      'unidades': 'kg/ha',
                                      'ingreso': False,
                                      'egreso': True,
                                      }
-        símismo.variables['var2'] = {'va1': 2,
+        símismo.variables['var2'] = {'val': 2,
                                      'unidades': 'cm/día',
                                      'ingreso': True,
                                      'egreso': False,

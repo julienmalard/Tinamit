@@ -143,6 +143,7 @@
       "Estado": 1.0,
       "IzqaDerech": true,
       "Trads": {
+        "ArchivoCorrupto": "El archivo Tinamit está corrupto y no se puede cargar. ¡Discuple!",
         "AnálisisIncert": "Incertidumbre",
         "ArchivoTinamit": "Archivo Tinamit",
         "AvisoBorrarLeng": "¿Realmente quieres borrar la lengua %s?",

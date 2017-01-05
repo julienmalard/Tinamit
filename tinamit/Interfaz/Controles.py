@@ -1,11 +1,10 @@
 import tkinter as tk
 
-from .Formatos import gen_formato as gf
-
 from . import Arte as Art
+from . import Botones as Bt
 from . import ControlesGenéricos as CtrG
 from . import Formatos as Fm
-from . import Botones as Bt
+from .Formatos import gen_formato as gf
 
 
 # Caja lenguas
@@ -198,7 +197,7 @@ class ItemaEditTrad(CtrG.Itema):
         return símismo.campo_texto.get('1.0', 'end').replace('\n', '')
 
 
-class CajaAvisoReinic(tk.Frame):
+class CajaAviso(tk.Frame):
     def __init__(símismo, apli, texto):
         super().__init__(**Fm.formato_CajaAvisoReinic)
 
@@ -283,7 +282,6 @@ class ListaConexiónes(CtrG.ListaEditable):
     def quitar(símismo, itema):
         super().quitar(itema)
         símismo.pariente.verificar_completo()
-
 
 class ItemaConexión(CtrG.ItemaEditable):
     def __init__(símismo, grupo_control, lista_itemas, receta=None, creando_manual=True):

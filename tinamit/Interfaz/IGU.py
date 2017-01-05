@@ -1,9 +1,9 @@
 import tkinter as tk
 
-from tinamit.NuveoConectado import Conectado
 from tinamit.Interfaz import Cajas as Cj
 from tinamit.Interfaz import Formatos as Fm
 from tinamit.Interfaz import Traducciones as Trad
+from tinamit.Conectado import Conectado
 
 
 class Apli(tk.Frame):
@@ -19,7 +19,9 @@ class Apli(tk.Frame):
 
         símismo.DicLeng = Trad.Diccionario()
         símismo.Trads = símismo.DicLeng.trads_act
-        símismo.receta = {'conexiones': símismo.Modelo.conexiones}
+        símismo.receta = {'conexiones': símismo.Modelo.conexiones,
+                          'conv_tiempo': símismo.Modelo.conv_tiempo}
+        símismo.ubic_archivo = None
 
         símismo.CajaInic = Cj.CajaInic(símismo)
         símismo.CajaCentral = Cj.CajaCentral(símismo)

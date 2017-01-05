@@ -1,7 +1,10 @@
+import io
+import json
 import os
 import tkinter as tk
 from tkinter import filedialog as diálogo
 
+from tinamit.Conectado import Conectado
 from tinamit.definiciones import dir_raíz
 from . import CajasGenéricas as CjG
 from . import CajasSubEtapas as CjSE
@@ -139,7 +142,7 @@ class CajaLeng(tk.Frame):
                 texto = símismo.DicLeng.lenguas[nombre]['Trads']['AvisoReinic']
             else:
                 texto = símismo.DicLeng.lenguas[símismo.DicLeng.estándar]['Trads']['AvisoReinic']
-            Ctrl.CajaAvisoReinic(texto=texto, apli=símismo.apli)
+            Ctrl.CajaAviso(texto=texto, apli=símismo.apli)
             símismo.DicLeng.dic['Actual'] = nombre
             símismo.DicLeng.guardar()
             símismo.refrescar()
@@ -245,33 +248,78 @@ class CajaCabeza(tk.Frame):
         símismo.pack(**gf(Fm.ubic_CjCabeza))
 
     def acción_bt_nuevo(símismo):
-        símismo.apli.Modelo.reinic()
+        símismo.apli.Modelo = Conectado()
+
+        símismo.apli.receta = {'conexiones': símismo.apli.Modelo.conexiones,
+                               'conv_tiempo': símismo.apli.Modelo.conv_tiempo}
+
         símismo.pariente.ContCjEtapas.ir_a_caja(1)
         símismo.pariente.desbloquear_cajas([1])
         símismo.pariente.bloquear_cajas([2, 3, 4])
 
     def acción_bt_guardar(símismo):
-        if símismo.apli.Modelo.archivo_receta is not None:
-            símismo.apli.Modelo.guardar()
+        if símismo.apli.ubic_archivo is not None:
+            símismo.guardar()
         else:
             símismo.acción_bt_guardar_como()
 
     def acción_bt_abrir(símismo):
         apli = símismo.apli
-        nombre_archivo_con = diálogo.askopenfile(filetypes=[(apli.Trads['ArchivoTinamit'], '*.tin')],
-                                                 title=apli.Trads['CargarModeloConectado'])
-        if nombre_archivo_con:
-            símismo.apli.Modelo.cargar(nombre_archivo_con)
+        archivo = diálogo.askopenfile(filetypes=[(apli.Trads['ArchivoTinamit'], '*.tin')],
+                                      title=apli.Trads['CargarModeloConectado'])
+        if archivo:
+
+            receta = json.load(archivo)
+
+            if 'conv_tiempo' not in receta.keys() or 'conexiones' not in receta.keys():
+                Ctrl.CajaAviso(apli=símismo.apli, texto=apli.Trads['ArchivoCorrupto'])
+
+            símismo.apli.Modelo = modelo = Conectado()
+            símismo.apli.receta = receta
+
+            try:
+                modelo.estab_mds(receta['mds'])
+            except KeyError:
+                pass
+
+            try:
+                modelo.estab_bf(receta['bf'])
+            except KeyError:
+                pass
+
+            l_mod = list(modelo.modelos)
+
+            for conex in receta.conexiones:
+                mod_fuente = conex['modelo_fuente']
+
+                mod_recip = l_mod[(l_mod.index(mod_fuente) + 1) % 2]
+
+                modelo.conectar_vars(dic_vars={mod_fuente: conex['vars'][mod_fuente],
+                                               mod_recip: conex['vars'][mod_recip]},
+                                     modelo_fuente=mod_fuente, conv=conex['conv'])
+
+            if len(receta['conv_tiempo']):
+                if receta['conv_tiempo'][l_mod[0]] == 1:
+                    modelo.estab_conv_tiempo(mod_base=l_mod[0],
+                                             conv=receta['conv_tiempo'][l_mod[1]])
+                else:
+                    modelo.estab_conv_tiempo(mod_base=l_mod[1],
+                                             conv=receta['conv_tiempo'][l_mod[0]])
+
             símismo.pariente.ContCjEtapas.ir_a_caja(1)
             símismo.pariente.desbloquear_cajas([1])
 
     def acción_bt_guardar_como(símismo):
         apli = símismo.apli
-        nombre_archivo_con = diálogo.asksaveasfilename(defaultextension='.tin',
-                                                       filetypes=[(apli.Trads['ArchivoTinamit'], '*.tin')],
-                                                       title=apli.Trads['CargarModeloConectado'])
-        símismo.apli.Modelo.archivo_receta = nombre_archivo_con
-        símismo.apli.Modelo.guardar()
+        archivo = diálogo.asksaveasfilename(defaultextension='.tin',
+                                            filetypes=[(apli.Trads['ArchivoTinamit'], '*.tin')],
+                                            title=apli.Trads['CargarModeloConectado'])
+        símismo.apli.ubic_archivo = archivo
+        símismo.guardar()
+
+    def guardar(símismo):
+        with io.open(símismo.apli.ubic_archivo, 'w', encoding='utf8') as d:
+            json.dump(símismo.apli.receta, d, ensure_ascii=False, sort_keys=True, indent=2)
 
     def acción_bt_leng(símismo):
         Anim.sobreponer(símismo.apli.CajaCentral, símismo.apli.CajaLenguas, 'izquierda')

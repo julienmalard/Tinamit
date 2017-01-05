@@ -30,16 +30,25 @@
   "equiv": {
     "español": {
       "tiempo": {
+        "mes": ["meses"]
+      },
+      "distancia": {
       "m": ["metro", "metros"]
       }
     },
     "français":{
       "tiempo": {
+        "mes": ["mois"]
+      },
+      "distancia": {
         "m": ["mètre", "mètres"]
       }
     },
     "English":{
       "tiempo": {
+        "mes": ["month", "months"]
+      },
+      "distancia": {
         "m": ["metre", "metres", "meter", "meters"]
       }
     }

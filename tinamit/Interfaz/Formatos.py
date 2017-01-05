@@ -3,7 +3,7 @@ import os
 import tkinter as tk
 
 # Una función para modificar los formatos según la dirección del texto de la lengua
-direc = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Trads')
+direc = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Trads.json')
 with open(direc, encoding='utf8') as d:
     dic = json.load(d)
 leng = dic['Actual']

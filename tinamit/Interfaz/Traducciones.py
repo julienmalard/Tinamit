@@ -5,7 +5,7 @@ import os
 
 class Diccionario(object):
     def __init__(símismo):
-        símismo.direc = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Trads')
+        símismo.direc = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Trads.json')
         with open(símismo.direc, encoding='utf8') as d:
             símismo.dic = json.load(d)
 
