@@ -15,17 +15,31 @@ class Modelo(object):
         # El nombre del modelo (sirve como una referencia a este modelo en el modelo conectado).
         símismo.nombre = nombre
 
-        # El diccionario de variables necesita la forma siguiente. Se llena con la función símismo.obt_vars().
+        # El diccionario de variables necesita la forma siguiente. Se llena con la función símismo.inic_vars().
         # {var1: {'val': 13, 'unidades': cm, 'ingreso': True, 'egreso': True},
         #  var2: {...},
         #  ...}
         símismo.variables = {}
+        símismo.inic_vars()
 
-        #
+        # Listas de los nombres de los variables que sirven de conexión con otro modelo.
         símismo.vars_saliendo = []
         símismo.vars_entrando = []
 
+        símismo.unidad_tiempo = símismo.obt_unidades_tiempo()
+
     def inic_vars(símismo):
+        """
+
+        """
+        raise NotImplementedError
+
+    def obt_unidades_tiempo(símismo):
+        """
+
+        :return:
+        :rtype: str
+        """
         raise NotImplementedError
 
     def iniciar_modelo(símismo, tiempo_final, nombre_corrida):

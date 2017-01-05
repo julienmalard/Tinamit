@@ -15,11 +15,17 @@ class ModeloMDS(Modelo):
 
         """
 
-        símismo.inic_vars()
-
         super().__init__(nombre='mds')
 
     def inic_vars(símismo):
+        raise NotImplementedError
+
+    def obt_unidades_tiempo(símismo):
+        """
+
+        :return:
+        :rtype: str
+        """
         raise NotImplementedError
 
     def cambiar_vals(símismo, valores):
@@ -133,6 +139,24 @@ class ModeloVENSIM(ModeloMDS):
 
             símismo.variables[var] = dic_var
 
+    def obt_unidades_tiempo(símismo):
+        """
+
+        :return:
+        :rtype: str
+
+        """
+
+        mem_inter = ctypes.create_string_buffer(50)
+
+        símismo.comanda_vensim(func=símismo.dll.vensim_get_varattrib,
+                               args=['TIME STEP', 1, mem_inter, 50],
+                               mensaje_error='Error obteniendo las unidades de tiempo de VENSIM.')
+
+        unidades = mem_inter.raw.decode().split('\x00')[0]
+
+        return unidades
+
     def iniciar_modelo(símismo, nombre_corrida, tiempo_final):
         """
 
@@ -206,6 +230,29 @@ class ModeloVENSIM(ModeloMDS):
         símismo.comanda_vensim(func=símismo.dll.vensim_command,
                                args="GAME>ENDGAME",
                                mensaje_error='Error para terminar la simulación VENSIM.')
+
+    def verificar_vensim(símismo):
+        """
+        Esta función regresa el estatus de Vensim. Es particularmente útil para desboguear (no tiene uso en las
+          otras funciones de esta clase, y se incluye como ayuda a la programadora.)
+
+        :return: estatus número integral de código de estatus
+        0 = Vensim está listo
+        1 = Vensim está en una simulación activa
+        2 = Vensim está en una simulación, pero no está respondiendo
+        3 = Malas noticias
+        4 = Error de memoria
+        5 = Vensim está en modo de juego
+        6 = Memoria no libre. Llamar vensim_command() debería de arreglarlo.
+        16 += ver documentación de VENSIM para vensim_check_status() en la sección de DLL (Suplemento DSS)
+        """
+
+        estatus = símismo.comanda_vensim(func=símismo.dll.vensim_check_status,
+                                         args=[],
+                                         mensaje_error='Error verificando el estatus de VENSIM. De verdad, la cosa'
+                                                       'te va muy mal.',
+                                         val_error=-1, devolver=True)
+        return int(estatus)
 
     @staticmethod
     def comanda_vensim(func, args, mensaje_error=None, val_error=None, devolver=False):

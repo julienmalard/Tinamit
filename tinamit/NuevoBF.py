@@ -14,7 +14,8 @@ class EnvolturaBF(Modelo):
         """
 
         :param archivo:
-        :type archivo:
+        :type archivo: str
+
         """
 
         dir_mod, nombre_mod = os.path.split(archivo)
@@ -26,26 +27,71 @@ class EnvolturaBF(Modelo):
             símismo.modelo = módulo.Modelo()
         except AttributeError:
             raise AttributeError('El archivo especificado ({}) no contiene una clase llamada Modelo.'.format(archivo))
+
         if not isinstance(símismo.modelo, ClaseModeloBF):
             raise AttributeError('El archivo especificado ({}) contiene una clase llamada Modelo, pero'
                                  'esta clase no es una subclase de ClaseModeloBF.'.format(archivo))
 
         super().__init__(nombre='bf')
 
-    def cambiar_vals(símismo, valores):
+    def cerrar_modelo(símismo):
         pass
+
+    def obt_unidades_tiempo(símismo):
+        """
+
+        :return:
+        :rtype: str
+
+        """
+
+        return símismo.modelo.obt_unidades_tiempo()
+
+    def inic_vars(símismo):
+        """
+
+        """
+        símismo.modelo.inic_vars()
+
+        símismo.variables = símismo.modelo.variables
+
+    def cambiar_vals(símismo, valores):
+        """
+
+        :param valores:
+        :type valores:
+
+        """
+
+        símismo.modelo.cambiar_vals(valores=valores)
 
     def incrementar(símismo, paso):
-        pass
+        """
+
+        :param paso:
+        :type paso:
+
+        """
+        símismo.modelo.incrementar(paso=paso)
 
     def leer_vals(símismo):
+        """
+
+        """
+
         pass
 
     def iniciar_modelo(símismo, **kwargs):
-        pass
+        """
+
+        :param kwargs:
+        :type kwargs:
+
+        """
+        símismo.modelo.iniciar_modelo(**kwargs)
 
 
-class ClaseModeloBF(object):
+class ClaseModeloBF(Modelo):
     """
 
     """
@@ -80,6 +126,26 @@ class ClaseModeloBF(object):
         raise NotImplementedError
 
     def iniciar_modelo(símismo):
+        """
+
+        """
+        raise NotImplementedError
+
+    def cerrar_modelo(símismo):
+        """
+
+        """
+        raise NotImplementedError
+
+    def obt_unidades_tiempo(símismo):
+        """
+
+        :return:
+        :rtype: str
+        """
+        raise NotImplementedError
+
+    def inic_vars(símismo):
         """
 
         """

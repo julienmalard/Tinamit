@@ -38,7 +38,9 @@ class SuperConectado(Modelo):
 
         símismo.modelos[modelo.nombre] = modelo
 
-        símismo.variables[modelo.nombre] = modelo.variables
+        for var in modelo.variables:
+            nombre_var = '{mod}_{var}'.format(var=var, mod=modelo.nombre)
+            símismo.variables[nombre_var] = modelo.variables[var]
 
     def inic_vars(símismo):
         """
