@@ -28,7 +28,7 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def cambiar_vals(símismo, valores):
+    def cambiar_vals_modelo(símismo, valores):
         raise NotImplementedError
 
     def incrementar(símismo, paso):
@@ -181,7 +181,7 @@ class ModeloVENSIM(EnvolturaMDS):
                                args="MENU>GAME",
                                mensaje_error='Error inicializando el juego VENSIM.')
 
-    def cambiar_vals(símismo, valores):
+    def cambiar_vals_modelo(símismo, valores):
         """
 
         :param valores:

@@ -75,6 +75,19 @@ class Modelo(object):
         :type valores: dict
 
         """
+
+        for var in valores:
+            símismo.variables[var]['val'] = valores[var]
+
+        símismo.cambiar_vals_modelo(valores=valores)
+
+    def cambiar_vals_modelo(símismo, valores):
+        """
+
+        :param valores:
+        :type valores: dict
+
+        """
         raise NotImplementedError
 
     def cerrar_modelo(símismo):

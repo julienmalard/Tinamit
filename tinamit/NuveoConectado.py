@@ -93,7 +93,7 @@ class SuperConectado(Modelo):
                 símismo.conv_tiempo = {l_mods[1]: 1, l_mods[0]: factor_conv}
                 return unid_mod_2
 
-    def cambiar_vals(símismo, valores):
+    def cambiar_vals_modelo(símismo, valores):
         """
 
         :param valores:
@@ -150,9 +150,6 @@ class SuperConectado(Modelo):
         l_mods = [m for m in símismo.modelos.values()]
 
         vars_egr = [dict([(v, m.variables[v]['val']) for v in m.vars_saliendo]) for m in l_mods]
-
-        for mod in l_mods:
-            mod.cambiar_vals()
 
         for n, mod in enumerate(l_mods):
             mod.cambiar_vals(valores=vars_egr[(n + 1) % 2])
@@ -222,8 +219,8 @@ class SuperConectado(Modelo):
 
         símismo.conexiones.append(dic_conex)
 
-        símismo.modelos[modelo_fuente].vars_egreso.append(var_fuente)
-        símismo.modelos[modelo_recip].vars_ingreso.append(var_recip)
+        símismo.modelos[modelo_fuente].vars_saliendo.append(var_fuente)
+        símismo.modelos[modelo_recip].vars_entrando.append(var_recip)
 
     def desconectar_vars(símismo, var, modelo_fuente):
         """
@@ -281,6 +278,18 @@ class Conectado(SuperConectado):
         símismo.bf = modelo_bf
 
     def conectar(símismo, var_mds, var_bf, mds_fuente, conv=1):
+        """
+
+        :param var_mds:
+        :type var_mds:
+        :param var_bf:
+        :type var_bf:
+        :param mds_fuente:
+        :type mds_fuente:
+        :param conv:
+        :type conv:
+
+        """
 
         dic_vars = {'mds': var_mds, 'bf': var_bf}
 
@@ -290,3 +299,13 @@ class Conectado(SuperConectado):
             fuente = 'bf'
 
         símismo.conectar_vars(dic_vars=dic_vars, modelo_fuente=fuente, conv=conv)
+
+    def desconectar(símismo, var_mds):
+        """
+
+        :param var_mds:
+        :type var_mds:
+
+        """
+
+        símismo.desconectar_vars(var=var_mds, modelo_fuente='mds')

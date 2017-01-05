@@ -15,7 +15,7 @@ class Modelo(ClaseModeloBF):
     def leer_vals(símismo):
         pass
 
-    def cambiar_vals(símismo, valores):
+    def cambiar_vals_modelo(símismo, valores):
         pass
 
     def inic_vars(símismo):

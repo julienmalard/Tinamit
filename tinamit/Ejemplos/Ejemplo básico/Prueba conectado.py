@@ -1,6 +1,6 @@
 import os
 
-from tinamit.Conectado import Conectado
+from tinamit.NuevoConectado import Conectado
 
 
 modelo = Conectado()
