@@ -1,0 +1,58 @@
+{
+  "conv": {
+    "tiempo": {
+      "año": {
+        "mes": 12,
+        "día": 365
+      },
+      "mes": {
+        "día": 30
+      },
+      "día": {
+        "hora": 24
+      },
+      "hora": {
+        "minuto": 60
+      },
+      "minuto": {
+        "segundo": 60
+      }
+    },
+    "distancia": {
+      "m": {
+        "km": 0.001,
+        "cm": 100,
+        "mm": 1000
+      }
+    }
+  },
+
+  "equiv": {
+    "español": {
+      "tiempo": {
+        "mes": ["meses"]
+      },
+      "distancia": {
+      "m": ["metro", "metros"]
+      }
+    },
+    "français":{
+      "tiempo": {
+        "mes": ["mois"]
+      },
+      "distancia": {
+        "m": ["mètre", "mètres"]
+      }
+    },
+    "English":{
+      "tiempo": {
+        "mes": ["month", "months"]
+      },
+      "distancia": {
+        "m": ["metre", "metres", "meter", "meters"]
+      }
+    }
+
+  }
+
+}
