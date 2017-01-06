@@ -1,0 +1,470 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tinamit.Conectado &#8212; documentación de tinamit - 1.2.0</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/translations.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" />
+    <link rel="top" title="documentación de tinamit - 1.2.0" href="../../index.html" />
+    <link rel="up" title="Código de módulo" href="../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             accesskey="I">índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de tinamit - 1.2.0</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Código de módulo</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Código fuente para tinamit.Conectado</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span> <span class="k">as</span> <span class="n">avisar</span>
+
+<span class="kn">from</span> <span class="nn">tinamit.BF</span> <span class="k">import</span> <span class="n">EnvolturaBF</span>
+<span class="kn">from</span> <span class="nn">.Modelo</span> <span class="k">import</span> <span class="n">Modelo</span>
+<span class="kn">from</span> <span class="nn">.MDS</span> <span class="k">import</span> <span class="n">generar_mds</span>
+<span class="kn">from</span> <span class="nn">.Unidades.Unidades</span> <span class="k">import</span> <span class="n">convertir</span>
+
+
+<div class="viewcode-block" id="SuperConectado"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado">[documentos]</a><span class="k">class</span> <span class="nc">SuperConectado</span><span class="p">(</span><span class="n">Modelo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">nombre</span><span class="o">=</span><span class="s2">&quot;SuperConectado&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param nombre:</span>
+<span class="sd">        :type nombre: str</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">conexiones</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">conex_rápida</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">nombre</span><span class="o">=</span><span class="n">nombre</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SuperConectado.estab_modelo"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.estab_modelo">[documentos]</a>    <span class="k">def</span> <span class="nf">estab_modelo</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">modelo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param modelo:</span>
+<span class="sd">        :type modelo: Modelo</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Ya hay dos modelo conectados. Desconecta uno primero o emplea una instancia de&#39;</span>
+                             <span class="s1">&#39;SuperConectado para conectar más que 2 modelos.&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">modelo</span><span class="o">.</span><span class="n">nombre</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">:</span>
+            <span class="n">avisar</span><span class="p">(</span><span class="s1">&#39;El modelo </span><span class="si">{}</span><span class="s1"> ya existe. El nuevo modelo reemplazará el modelo anterior.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modelo</span><span class="o">.</span><span class="n">nombre</span><span class="p">))</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">modelo</span><span class="o">.</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="n">modelo</span>
+
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">modelo</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+            <span class="n">nombre_var</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{mod}</span><span class="s1">_</span><span class="si">{var}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="n">modelo</span><span class="o">.</span><span class="n">nombre</span><span class="p">)</span>
+            <span class="n">símismo</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">nombre_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">modelo</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">var</span><span class="p">]</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">obt_unidad_tiempo</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SuperConectado.inic_vars"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.inic_vars">[documentos]</a>    <span class="k">def</span> <span class="nf">inic_vars</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">nombre_mod</span><span class="p">,</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">símismo</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">nombre_mod</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">inic_vars</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SuperConectado.obt_unidad_tiempo"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.obt_unidad_tiempo">[documentos]</a>    <span class="k">def</span> <span class="nf">obt_unidad_tiempo</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">l_mods</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">)</span>
+
+        <span class="n">unid_mod_1</span> <span class="o">=</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">unidad_tiempo</span>
+        <span class="n">unid_mod_2</span> <span class="o">=</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">unidad_tiempo</span>
+
+        <span class="k">if</span> <span class="n">unid_mod_1</span> <span class="o">==</span> <span class="n">unid_mod_2</span><span class="p">:</span>
+
+            <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="k">return</span> <span class="n">unid_mod_1</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">factor_conv</span> <span class="o">=</span> <span class="n">convertir</span><span class="p">(</span><span class="n">de</span><span class="o">=</span><span class="n">unid_mod_1</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">unid_mod_2</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">avisar</span><span class="p">(</span><span class="s1">&#39;No se pudo inferir la conversión de unidades de tiempo entre </span><span class="si">{}</span><span class="s1"> y </span><span class="si">{}</span><span class="s1">.&#39;</span>
+                       <span class="s1">&#39;Especificarla con la función .estab_conv_tiempo().&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">unid_mod_1</span><span class="p">,</span> <span class="n">unid_mod_2</span><span class="p">))</span>
+                <span class="k">return</span>
+
+            <span class="k">if</span> <span class="n">factor_conv</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">factor_conv</span>
+                <span class="k">return</span> <span class="n">unid_mod_1</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">factor_conv</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">factor_conv</span>
+                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">factor_conv</span><span class="p">)</span> <span class="o">!=</span> <span class="n">factor_conv</span><span class="p">:</span>
+                    <span class="n">factor_conv</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">factor_conv</span><span class="p">)</span>
+
+                    <span class="n">avisar</span><span class="p">(</span><span class="s1">&#39;Las unidades de tiempo de los dos modelos (</span><span class="si">{}</span><span class="s1"> y </span><span class="si">{}</span><span class="s1">) no tienen denominator común.&#39;</span>
+                           <span class="s1">&#39;Se aproximará la conversión.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">unid_mod_1</span><span class="p">,</span> <span class="n">unid_mod_2</span><span class="p">))</span>
+
+                <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">factor_conv</span>
+                <span class="k">return</span> <span class="n">unid_mod_2</span></div>
+
+<div class="viewcode-block" id="SuperConectado.estab_conv_tiempo"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.estab_conv_tiempo">[documentos]</a>    <span class="k">def</span> <span class="nf">estab_conv_tiempo</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">mod_base</span><span class="p">,</span> <span class="n">conv</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param mod_base:</span>
+<span class="sd">        :type mod_base: str</span>
+<span class="sd">        :param conv:</span>
+<span class="sd">        :type conv: int</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">mod_base</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;El modelo &quot;</span><span class="si">{}</span><span class="s1">&quot; no esiste en este modelo conectado.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mod_base</span><span class="p">))</span>
+
+        <span class="n">l_mod</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">)</span>
+        <span class="n">mod_otro</span> <span class="o">=</span> <span class="n">l_mod</span><span class="p">[(</span><span class="n">l_mod</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">mod_base</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">]</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">mod_base</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">mod_otro</span><span class="p">]</span> <span class="o">=</span> <span class="n">conv</span></div>
+
+<div class="viewcode-block" id="SuperConectado.cambiar_vals_modelo"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.cambiar_vals_modelo">[documentos]</a>    <span class="k">def</span> <span class="nf">cambiar_vals_modelo</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">valores</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param valores:</span>
+<span class="sd">        :type valores: dict</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">nombre_mod</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="n">valores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">nombre_mod</span><span class="p">]</span><span class="o">.</span><span class="n">cambiar_vals</span><span class="p">(</span><span class="n">valores</span><span class="o">=</span><span class="n">vals</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SuperConectado.simular"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.simular">[documentos]</a>    <span class="k">def</span> <span class="nf">simular</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">tiempo_final</span><span class="p">,</span> <span class="n">paso</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nombre_corrida</span><span class="o">=</span><span class="s1">&#39;Corrida Tinamit&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param tiempo_final:</span>
+<span class="sd">        :type tiempo_final: int</span>
+<span class="sd">        :param paso:</span>
+<span class="sd">        :type paso: int</span>
+<span class="sd">        :param nombre_corrida:</span>
+<span class="sd">        :type nombre_corrida: str</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Hay que conectar dos modelos antes de empezar una simulación.&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Hay que especificar la conversión de unidades de tiempo con &#39;</span>
+                                 <span class="s1">&#39;.estab_conv_tiempo() antes de correr la simulación.&#39;</span><span class="p">)</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">iniciar_modelo</span><span class="p">(</span><span class="n">tiempo_final</span><span class="o">=</span><span class="n">tiempo_final</span><span class="p">,</span> <span class="n">nombre_corrida</span><span class="o">=</span><span class="s1">&#39;Corrida Tinamit&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tiempo_final</span><span class="p">):</span>
+            <span class="n">símismo</span><span class="o">.</span><span class="n">incrementar</span><span class="p">(</span><span class="n">paso</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">mod</span><span class="o">.</span><span class="n">cerrar_modelo</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SuperConectado.incrementar"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.incrementar">[documentos]</a>    <span class="k">def</span> <span class="nf">incrementar</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">paso</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param paso:</span>
+<span class="sd">        :type paso: int</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Un hilo para cada modelo</span>
+        <span class="n">l_hilo</span> <span class="o">=</span> <span class="p">[</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;hilo_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">nombre</span><span class="p">,</span>
+                                   <span class="n">target</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">incrementar</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">*</span> <span class="n">paso</span><span class="p">,))</span>
+                  <span class="k">for</span> <span class="n">nombre</span><span class="p">,</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+
+        <span class="c1"># Empezar los dos hilos al mismo tiempo</span>
+        <span class="k">for</span> <span class="n">hilo</span> <span class="ow">in</span> <span class="n">l_hilo</span><span class="p">:</span>
+            <span class="n">hilo</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="c1"># Esperar que los dos hilos hayan terminado</span>
+        <span class="k">for</span> <span class="n">hilo</span> <span class="ow">in</span> <span class="n">l_hilo</span><span class="p">:</span>
+            <span class="n">hilo</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+        <span class="c1"># Intercambiar variables</span>
+        <span class="n">l_mods</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+
+        <span class="n">vars_egr</span> <span class="o">=</span> <span class="p">[</span><span class="nb">dict</span><span class="p">([(</span><span class="n">símismo</span><span class="o">.</span><span class="n">conex_rápida</span><span class="p">[</span><span class="n">nombre</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s1">&#39;var&#39;</span><span class="p">],</span>
+                           <span class="n">m</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="s1">&#39;val&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">símismo</span><span class="o">.</span><span class="n">conex_rápida</span><span class="p">[</span><span class="n">nombre</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s1">&#39;conv&#39;</span><span class="p">])</span>
+                          <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">vars_saliendo</span><span class="p">])</span> <span class="k">for</span> <span class="n">nombre</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">l_mods</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">tup</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">l_mods</span><span class="p">):</span>
+            <span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cambiar_vals</span><span class="p">(</span><span class="n">valores</span><span class="o">=</span><span class="n">vars_egr</span><span class="p">[(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="SuperConectado.leer_vals"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.leer_vals">[documentos]</a>    <span class="k">def</span> <span class="nf">leer_vals</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">mod</span><span class="o">.</span><span class="n">leer_vals</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SuperConectado.iniciar_modelo"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.iniciar_modelo">[documentos]</a>    <span class="k">def</span> <span class="nf">iniciar_modelo</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">conex_rápida</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">conex</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">conexiones</span><span class="p">:</span>
+
+            <span class="n">l_mod</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">)</span>
+            <span class="n">mod_fuente</span> <span class="o">=</span> <span class="n">conex</span><span class="p">[</span><span class="s1">&#39;modelo_fuente&#39;</span><span class="p">]</span>
+            <span class="n">mod_recip</span> <span class="o">=</span> <span class="n">l_mod</span><span class="p">[(</span><span class="n">l_mod</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">mod_fuente</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">]</span>
+
+            <span class="n">var_fuente</span> <span class="o">=</span> <span class="n">conex</span><span class="p">[</span><span class="s1">&#39;vars&#39;</span><span class="p">][</span><span class="n">mod_fuente</span><span class="p">]</span>
+            <span class="n">var_recip</span> <span class="o">=</span> <span class="n">conex</span><span class="p">[</span><span class="s1">&#39;vars&#39;</span><span class="p">][</span><span class="n">mod_recip</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">mod_fuente</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">conex_rápida</span><span class="p">:</span>
+                <span class="n">símismo</span><span class="o">.</span><span class="n">conex_rápida</span><span class="p">[</span><span class="n">mod_fuente</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="n">símismo</span><span class="o">.</span><span class="n">conex_rápida</span><span class="p">[</span><span class="n">mod_fuente</span><span class="p">][</span><span class="n">var_fuente</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="n">var_recip</span><span class="p">,</span> <span class="s1">&#39;conv&#39;</span><span class="p">:</span> <span class="n">conex</span><span class="p">[</span><span class="s1">&#39;conv&#39;</span><span class="p">]}</span>
+
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">mod</span><span class="o">.</span><span class="n">iniciar_modelo</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SuperConectado.cerrar_modelo"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.cerrar_modelo">[documentos]</a>    <span class="k">def</span> <span class="nf">cerrar_modelo</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">:</span>
+            <span class="n">mod</span><span class="o">.</span><span class="n">cerrar_modelo</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SuperConectado.conectar_vars"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.conectar_vars">[documentos]</a>    <span class="k">def</span> <span class="nf">conectar_vars</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">dic_vars</span><span class="p">,</span> <span class="n">modelo_fuente</span><span class="p">,</span> <span class="n">conv</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param dic_vars:</span>
+<span class="sd">        :type dic_vars: dict</span>
+<span class="sd">        :param modelo_fuente:</span>
+<span class="sd">        :type modelo_fuente: str</span>
+<span class="sd">        :param conv:</span>
+<span class="sd">        :type conv: float</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">l_modelos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">nombre_mod</span> <span class="ow">in</span> <span class="n">dic_vars</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">nombre_mod</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Nombre de modelo &quot;</span><span class="si">{}</span><span class="s1">&quot; erróneo.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nombre_mod</span><span class="p">))</span>
+
+            <span class="n">mod</span> <span class="o">=</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">nombre_mod</span><span class="p">]</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="n">dic_vars</span><span class="p">[</span><span class="n">nombre_mod</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">mod</span><span class="o">.</span><span class="n">vars_saliendo</span> <span class="ow">or</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">mod</span><span class="o">.</span><span class="n">vars_entrando</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;El variable &quot;</span><span class="si">{}</span><span class="s1">&quot; del modelo &quot;</span><span class="si">{}</span><span class="s1">&quot; ya está conectado. &#39;</span>
+                                 <span class="s1">&#39;Desconéctalo primero con .desconectar_vars().&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">nombre_mod</span><span class="p">))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">índ_mod_fuente</span> <span class="o">=</span> <span class="n">l_modelos</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">modelo_fuente</span><span class="p">)</span>
+            <span class="n">modelo_recip</span> <span class="o">=</span> <span class="n">l_modelos</span><span class="p">[(</span><span class="n">índ_mod_fuente</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Nombre de modelo &quot;</span><span class="si">{}</span><span class="s1">&quot; erróneo.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modelo_fuente</span><span class="p">))</span>
+
+        <span class="n">var_fuente</span> <span class="o">=</span> <span class="n">dic_vars</span><span class="p">[</span><span class="n">modelo_fuente</span><span class="p">]</span>
+        <span class="n">var_recip</span> <span class="o">=</span> <span class="n">dic_vars</span><span class="p">[</span><span class="n">modelo_recip</span><span class="p">]</span>
+
+        <span class="n">dic_conex</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;modelo_fuente&#39;</span><span class="p">:</span> <span class="n">modelo_fuente</span><span class="p">,</span>
+                     <span class="s1">&#39;vars&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">modelo_recip</span><span class="p">:</span> <span class="n">var_recip</span><span class="p">,</span>
+                              <span class="n">modelo_fuente</span><span class="p">:</span> <span class="n">var_fuente</span>
+                              <span class="p">},</span>
+                     <span class="s1">&#39;conv&#39;</span><span class="p">:</span> <span class="n">conv</span>
+                     <span class="p">}</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">conexiones</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dic_conex</span><span class="p">)</span>
+
+        <span class="c1"># Para hacer: el siguiente debe ser recursivo.</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">modelo_fuente</span><span class="p">]</span><span class="o">.</span><span class="n">vars_saliendo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var_fuente</span><span class="p">)</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">modelo_recip</span><span class="p">]</span><span class="o">.</span><span class="n">vars_entrando</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var_recip</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SuperConectado.desconectar_vars"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.desconectar_vars">[documentos]</a>    <span class="k">def</span> <span class="nf">desconectar_vars</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">modelo_fuente</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param var:</span>
+<span class="sd">        :type var:</span>
+<span class="sd">        :param modelo_fuente:</span>
+<span class="sd">        :type modelo_fuente:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">l_mod</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">conex</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">conexiones</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">conex</span><span class="p">[</span><span class="s1">&#39;modelo_fuente&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">modelo_fuente</span> <span class="ow">and</span> <span class="n">conex</span><span class="p">[</span><span class="s1">&#39;vars&#39;</span><span class="p">][</span><span class="n">modelo_fuente</span><span class="p">]</span> <span class="o">==</span> <span class="n">var</span><span class="p">:</span>
+
+                <span class="n">mod_recip</span> <span class="o">=</span> <span class="n">l_mod</span><span class="p">[(</span><span class="n">l_mod</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">modelo_fuente</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">]</span>
+                <span class="n">var_recipiente</span> <span class="o">=</span> <span class="n">conex</span><span class="p">[</span><span class="s1">&#39;vars&#39;</span><span class="p">][</span><span class="n">mod_recip</span><span class="p">]</span>
+
+                <span class="n">símismo</span><span class="o">.</span><span class="n">conexiones</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+                <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">modelo_fuente</span><span class="p">]</span><span class="o">.</span><span class="n">vars_saliendo</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+                <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">mod_recip</span><span class="p">]</span><span class="o">.</span><span class="n">vars_entrando</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">var_recipiente</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Conectado"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.Conectado">[documentos]</a><span class="k">class</span> <span class="nc">Conectado</span><span class="p">(</span><span class="n">SuperConectado</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">mds</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">bf</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Conectado.estab_mds"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.Conectado.estab_mds">[documentos]</a>    <span class="k">def</span> <span class="nf">estab_mds</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">archivo_mds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param archivo_mds:</span>
+<span class="sd">        :type archivo_mds: str</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">modelo_mds</span> <span class="o">=</span> <span class="n">generar_mds</span><span class="p">(</span><span class="n">archivo</span><span class="o">=</span><span class="n">archivo_mds</span><span class="p">)</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">estab_modelo</span><span class="p">(</span><span class="n">modelo</span><span class="o">=</span><span class="n">modelo_mds</span><span class="p">)</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">mds</span> <span class="o">=</span> <span class="n">modelo_mds</span></div>
+
+<div class="viewcode-block" id="Conectado.estab_bf"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.Conectado.estab_bf">[documentos]</a>    <span class="k">def</span> <span class="nf">estab_bf</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">archivo_bf</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param archivo_bf:</span>
+<span class="sd">        :type archivo_bf: str</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">modelo_bf</span> <span class="o">=</span> <span class="n">EnvolturaBF</span><span class="p">(</span><span class="n">archivo</span><span class="o">=</span><span class="n">archivo_bf</span><span class="p">)</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">estab_modelo</span><span class="p">(</span><span class="n">modelo</span><span class="o">=</span><span class="n">modelo_bf</span><span class="p">)</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">bf</span> <span class="o">=</span> <span class="n">modelo_bf</span></div>
+
+<div class="viewcode-block" id="Conectado.conectar"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.Conectado.conectar">[documentos]</a>    <span class="k">def</span> <span class="nf">conectar</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">var_mds</span><span class="p">,</span> <span class="n">var_bf</span><span class="p">,</span> <span class="n">mds_fuente</span><span class="p">,</span> <span class="n">conv</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param var_mds:</span>
+<span class="sd">        :type var_mds: str</span>
+<span class="sd">        :param var_bf:</span>
+<span class="sd">        :type var_bf: str</span>
+<span class="sd">        :param mds_fuente:</span>
+<span class="sd">        :type mds_fuente: bool</span>
+<span class="sd">        :param conv:</span>
+<span class="sd">        :type conv: float</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">dic_vars</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mds&#39;</span><span class="p">:</span> <span class="n">var_mds</span><span class="p">,</span> <span class="s1">&#39;bf&#39;</span><span class="p">:</span> <span class="n">var_bf</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">mds_fuente</span><span class="p">:</span>
+            <span class="n">fuente</span> <span class="o">=</span> <span class="s1">&#39;mds&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fuente</span> <span class="o">=</span> <span class="s1">&#39;bf&#39;</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">conectar_vars</span><span class="p">(</span><span class="n">dic_vars</span><span class="o">=</span><span class="n">dic_vars</span><span class="p">,</span> <span class="n">modelo_fuente</span><span class="o">=</span><span class="n">fuente</span><span class="p">,</span> <span class="n">conv</span><span class="o">=</span><span class="n">conv</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Conectado.desconectar"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.Conectado.desconectar">[documentos]</a>    <span class="k">def</span> <span class="nf">desconectar</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">var_mds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param var_mds:</span>
+<span class="sd">        :type var_mds:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">símismo</span><span class="o">.</span><span class="n">desconectar_vars</span><span class="p">(</span><span class="n">var</span><span class="o">=</span><span class="n">var_mds</span><span class="p">,</span> <span class="n">modelo_fuente</span><span class="o">=</span><span class="s1">&#39;mds&#39;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Búsqueda rápida</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Ir a" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             >índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de tinamit - 1.2.0</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Código de módulo</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Julien Malard, محمّد اظہر انعام بیگ.
+      Creado con <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.9.
+    </div>
+  </body>
+</html>
