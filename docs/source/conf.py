@@ -60,8 +60,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'tinamit'
-copyright = '2017, Julien Malard, Azhar Muhammad Inam Baig'
-author = 'Julien Malard, Azhar Muhammad Inam Baig'
+copyright = '2017, Julien Malard, محمّد اظہر انعام بیگ'
+author = 'Julien Malard, محمّد اظہر انعام بیگ'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
