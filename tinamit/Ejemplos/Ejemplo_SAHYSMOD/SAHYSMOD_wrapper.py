@@ -27,17 +27,9 @@ initial_data = os.path.join(directorio, 'INPUT_EXAMPLE.inp')
 
 
 class Modelo(ClaseModeloBF):
+
     def __init__(self):
         super().__init__()
-
-        # The following attributes are needed for all ClaseModeloBF subclass implementations. Don't change their names.
-        self.variables = dict([(name, {'var': None,
-                                       'unidades': dic['units']
-                                       }
-                                )
-                               for (name, dic) in vars_SAHYSMOD.items()])
-
-        self.unidades_tiempo = 'Months'
 
         # The following attributes are specific to the SAHYSMOD wrapper
 
@@ -68,11 +60,33 @@ class Modelo(ClaseModeloBF):
 
         # Read input values from .inp file
         self._read_input_vals()
+        
+    def inic_vars(self):
 
-    def ejec(símismo):
+        # DON'T change the names of the dictionary keys here. They are specific to Tinamit's model wrapper class.
+        
+        vars_dic = dict([(name, {'val': None,
+                                 'unidades': dic['units'],
+                                 'ingrso': dic['inp'],
+                                 'egreso': dic['out']}
+                                )
+                               for (name, dic) in vars_SAHYSMOD.items()])
+
+        self.variables.update(vars_dic)
+
+    def iniciar_modelo(self):
         pass  # No prior setup necessary. Including this function is necessary for all ClaseModeloBF subclasses
+    
+    def obt_unidad_tiempo(self):
+        return 'Months'
+    
+    def leer_vals(self):
+        pass   # Already included in .incrementar() 
+    
+    def cambiar_vals_modelo(self, valores):
+        pass  # Already included in .incrementar()
 
-    def incr(self, paso):
+    def incrementar(self, paso):
 
         # Note: this subclass can only be used with a coupling time step multiple of 1 month.
         if int(paso) != paso:
@@ -104,7 +118,7 @@ class Modelo(ClaseModeloBF):
 
                 # Set the variables dictionary value to this season's value
                 try:
-                    self.variables[var]['var'] = self.internal_data[var][s]
+                    self.variables[var]['val'] = self.internal_data[var][s]
                 except IndexError:
                     pass
 
@@ -123,8 +137,11 @@ class Modelo(ClaseModeloBF):
         # Save incoming coupled variables to the internal data
         for var in self.variables:
             if var in self.vars_ingr:
-                self.internal_data[var][s] = self.variables[var]['var']
+                self.internal_data[var][s] = self.variables[var]['val']
 
+    def cerrar_modelo(self):
+        pass  # Ne specific closing actions necessary. 
+    
     # Some internal functions specific to this SAHYSMOD wrapper
     def _write_inp(self, n_year):
         """
@@ -137,7 +154,7 @@ class Modelo(ClaseModeloBF):
         """
 
         # Generate the dictionary of current variable values
-        dic_data = dict([(vars_SAHYSMOD[k]['code'], v['var']) for (k, v) in self.variables.items()])
+        dic_data = dict([(vars_SAHYSMOD[k]['code'], v['val']) for (k, v) in self.variables.items()])
         dic_data.update(dict([(vars_SAHYSMOD[k]['code'], v) for (k, v) in self.internal_data.items()]))
 
         # Add basic data
@@ -242,14 +259,14 @@ class Modelo(ClaseModeloBF):
         # Save current season values
         for code, dic in dic_data.items():
             var = codes_to_vars[code]
-            self.variables[var]['var'] = dic_data[code][0]
+            self.variables[var]['val'] = dic_data[code][0]
 
             # Save other season values
             if var in self.internal_data:
                 np.copyto(self.internal_data[var], dic_data[code])
 
         # Ajust for soil salinity of different crops
-        kr = self.variables[codes_to_vars['Kr']]['var']
+        kr = self.variables[codes_to_vars['Kr']]['val']
         if kr == 0:
             u = 1 - dic_data['B#'] - dic_data['A#']
             soil_sal = dic_data['A#'] * dic_data['CrA'] + dic_data['B#'] * dic_data['CrB'] + u * dic_data['CrU']
@@ -266,7 +283,7 @@ class Modelo(ClaseModeloBF):
             raise ValueError
 
         for cr in ['CrA', 'CrB', 'CrU']:
-            self.variables[codes_to_vars[cr]]['var'] = soil_sal[-1]
+            self.variables[codes_to_vars[cr]]['val'] = soil_sal[-1]
 
     def _read_input_vals(self):
         """
@@ -317,14 +334,14 @@ class Modelo(ClaseModeloBF):
 
                 if '#' not in code:
                     # If this variable has one value per year, save it in the variable dictionary
-                    self.variables[var]['var'] = float(inp[n_i])
+                    self.variables[var]['val'] = float(inp[n_i])
                     n_i += 1  # Increment the input file line number
 
                 else:
                     # If this variable has separate values for each season, save the first season's value in the 
                     # variable dictionary...
 
-                    self.variables[var]['var'] = float(inp[n_i])
+                    self.variables[var]['val'] = float(inp[n_i])
 
                     # ... and save all the seasons' values in the internal data diccionary, for future reference.
                     self.internal_data[var] = np.empty(self.n_seasons)

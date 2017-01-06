@@ -13,7 +13,7 @@
 ######################
 # El directorio de trabajo de setup.py
 build
-# El directorio de sphinx
+# El directorio de construcción de sphinx
 doc/_build
 # Metadatos "Egg"
 *.egg-info
@@ -23,4 +23,6 @@ setup.cfg
 
 # Archivos de VENSIM #
 ######################
-.vdf
+*.vdf
+*.tin
+*/__pycache__/

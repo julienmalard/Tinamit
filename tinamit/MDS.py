@@ -7,17 +7,21 @@ from tinamit.Modelo import Modelo
 
 class EnvolturaMDS(Modelo):
     """
-
+    Esta clase sirve para representar modelo de dinámicas de los sistemas (MDS). Se debe crear una subclase para cada
+    tipo de MDS. Al moment, el único incluido es VENSIM.
     """
 
     def __init__(símismo):
-        """
-
-        """
-
+        # Modelos DS se identifican por el nombre 'mds'.
         super().__init__(nombre='mds')
 
     def inic_vars(símismo):
+        """
+        Este método se deja a las subclases de `Metodo` para implementar.
+
+        Ver :func:`Modelo.inic_vars` para más información.
+        """
+
         raise NotImplementedError
 
     def obt_unidad_tiempo(símismo):
@@ -138,7 +142,6 @@ class ModeloVENSIM(EnvolturaMDS):
                 constantes.append(var)
 
         for var in variables:
-
             dic_var = {'val': None,
                        'unidades': unidades[var],
                        'ingreso': var in editables,
@@ -219,7 +222,6 @@ class ModeloVENSIM(EnvolturaMDS):
         """
 
         for var in símismo.vars_saliendo:
-
             mem_inter = ctypes.create_string_buffer(4)
 
             símismo.comanda_vensim(func=símismo.dll.vensim_get_val,
@@ -229,6 +231,18 @@ class ModeloVENSIM(EnvolturaMDS):
             val = struct.unpack('f', mem_inter)[0]
 
             símismo.variables[var]['val'] = val
+
+    def cambiar_var(símismo, var, val):
+        """
+
+        :param var:
+        :type var:
+        :param val:
+        :type val:
+
+        """
+
+        símismo.cambiar_vals(valores={var: val})
 
     def cerrar_modelo(símismo):
         """
@@ -245,14 +259,16 @@ class ModeloVENSIM(EnvolturaMDS):
           otras funciones de esta clase, y se incluye como ayuda a la programadora.)
 
         :return: estatus número integral de código de estatus
-        0 = Vensim está listo
-        1 = Vensim está en una simulación activa
-        2 = Vensim está en una simulación, pero no está respondiendo
-        3 = Malas noticias
-        4 = Error de memoria
-        5 = Vensim está en modo de juego
-        6 = Memoria no libre. Llamar vensim_command() debería de arreglarlo.
-        16 += ver documentación de VENSIM para vensim_check_status() en la sección de DLL (Suplemento DSS)
+            0 = Vensim está listo
+            1 = Vensim está en una simulación activa
+            2 = Vensim está en una simulación, pero no está respondiendo
+            3 = Malas noticias
+            4 = Error de memoria
+            5 = Vensim está en modo de juego
+            6 = Memoria no libre. Llamar vensim_command() debería de arreglarlo.
+            16 += ver documentación de VENSIM para vensim_check_status() en la sección de DLL (Suplemento DSS)
+        :rtype: int
+
         """
 
         estatus = símismo.comanda_vensim(func=símismo.dll.vensim_check_status,
