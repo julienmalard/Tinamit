@@ -11,8 +11,6 @@
 
 # Archivos de Python #
 ######################
-# El directorio de trabajo de setup.py
-build/doctrees
 # El directorio de construcción de sphinx
 doc/_build
 # Metadatos "Egg"
