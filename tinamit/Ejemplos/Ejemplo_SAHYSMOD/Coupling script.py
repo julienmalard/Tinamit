@@ -42,7 +42,7 @@ def run_model(name, switches):
     modelo.conectar(var_mds='Fw', mds_fuente=True, var_bf='Fw - Fraction well water to irrigation')
 
     # Simulate the coupled model
-    modelo.simular(paso=1, tiempo_final=240, nombre_simul=name)  # time step and final time are in months
+    modelo.simular(paso=1, tiempo_final=240, nombre_corrida=name)  # time step and final time are in months
 
 
 # Run the model for all desired runs

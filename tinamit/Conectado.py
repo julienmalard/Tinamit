@@ -276,6 +276,7 @@ class SuperConectado(Modelo):
 
         símismo.conexiones.append(dic_conex)
 
+        # Para hacer: el siguiente debe ser recursivo.
         símismo.modelos[modelo_fuente].vars_saliendo.append(var_fuente)
         símismo.modelos[modelo_recip].vars_entrando.append(var_recip)
 
@@ -347,13 +348,13 @@ class Conectado(SuperConectado):
         """
 
         :param var_mds:
-        :type var_mds:
+        :type var_mds: str
         :param var_bf:
-        :type var_bf:
+        :type var_bf: str
         :param mds_fuente:
-        :type mds_fuente:
+        :type mds_fuente: bool
         :param conv:
-        :type conv:
+        :type conv: float
 
         """
 
