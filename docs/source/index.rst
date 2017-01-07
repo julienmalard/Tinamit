@@ -15,5 +15,6 @@ Versión: |version|
 
    intro
    instalación
+   uso
    documentación
 
