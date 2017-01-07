@@ -57,11 +57,13 @@ gente normal, no lo sabes, haz lo siguiente:
    sabes, toma este) y en “…x64.exe” si tienes Python de 64 bits. Después, instálalo. Por razones obscuras, SciPy no
    funciona en Windows sin este.
 6. Y por fin, por supuesto, instalar Tinamit sí mismo en la línea de comanda así:
+
      :command:`pip install tinamit`
-   Bueno, si todo esto te parece un poco incómodo, estoy de acuerdo. Hay una nueva lengua de programación llamada 
-   `Julia <http://julialang.org>` que es tan rápida como C y tan intuitiva como Python, y por lo tanto no tiene nada de
-   extensiones ajenas en Fortran o en C. Pero me di cuenta demasiado tarde y ahora no voy a reescribir todo el programa de
-   Tinamit en Julia (después de todo, tengo una tesis que escribir). Lo siento.
+     
+ Bueno, si todo esto te parece un poco incómodo, estoy de acuerdo. Hay una nueva lengua de programación llamada 
+ `Julia <http://julialang.org/>_` que es tan rápida como C y tan intuitiva como Python, y por lo tanto no tiene nada de
+ extensiones ajenas en Fortran o en C. Pero me di cuenta demasiado tarde y ahora no voy a reescribir todo el programa de
+ Tinamit en Julia (después de todo, tengo una tesis que escribir). Lo siento.
 
 Uso con PyCharm
 ^^^^^^^^^^^^^^^
