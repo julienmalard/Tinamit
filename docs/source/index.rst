@@ -14,5 +14,6 @@ Versión: |version|
    :maxdepth: 2
 
    intro
+   instalación
    documentación
 
