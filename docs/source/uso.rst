@@ -127,8 +127,8 @@ quieres conectar un modelo DS con un modelo en SAHYSMOD darás la misma envoltur
 ``modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'envoltura_SAHYSMOD.py'))``
 
 (No te preocupes por lo del ``os.path.split(__file__)[0]``, es simplemente una manera en Python de obtener la dirección en tu 
-computadora del directorio actual. Esto le permite al programa encontrar la envoltura para SAHYSMOD que viene con Tinamit, no 
-importe dónde guardaste el programa Tinamit en tu computadora.)
+computadora del directorio actual. Esto le permite al programa encontrar la envoltura para el modelo biofísico, no 
+importe dónde lo guardará alguién en su computadora)
 
 Conectar Variables
 ^^^^^^^^^^^^^^^^^^
