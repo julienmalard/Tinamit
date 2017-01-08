@@ -1,6 +1,9 @@
 Cómo se emplea Tinamit
 ======================
 
+.. contents:: Contenido
+   :depth: 3
+
 Hay dos maneras de usar Tinamit. Si quieres hacerlo sin código cualquier, el IGU (Interfaz de Usuario Gráfico) es para ti.
 Si prefieres hacerlo con unas pocas líneas de código (lo cual puede acelerar bastante tu trabajo si tienes muchas simulaciones
 diferentes que quieres automatizar), entonces el IPA (Interfaz de Programación de Aplicaciones) es la mejor opción.
@@ -26,8 +29,8 @@ cómo hacer esto.
 
 El IGU
 ------
-Para los que no quieren programar, el IGU ofrece una manera sencilla de acceder (casi) todas las funcionalidades del IPA Tinamit,
-y algunas adicionales.
+Para los que no quieren programar, el IGU ofrece una manera sencilla de acceder (casi) todas las funcionalidades del IPA 
+Tinamit, y algunas adicionales.
 
 Cambiar idiomas
 ^^^^^^^^^^^^^^^
@@ -97,16 +100,22 @@ líneas de código a hacer clic en botones, el IPA es para ti.
 Preparar todo
 ^^^^^^^^^^^^^
 Antes que todo, hay que importar los objetos de Tinamit que vamos a necesitar:
-  ``from Conectado import Conectado``
+
+``from Conectado import Conectado``
+
 Esta línea importa la clase Conectado del módulo Conectado de Tinamit. Increíblemente, es la única cosa que tenemos que importar.
 
 Cargar modelos
 ^^^^^^^^^^^^^^
 Primero, vamos a empezar por crear una instancia de la clase Conectado. Si no sabes lo que es una instancia de una clase, o 
 puedes simplemente copiar el texto abajo, o (mejor) puedes echarle otro vistazo a tu último curso en Python.
-  ``modelo = Conectado()``
+
+``modelo = Conectado()``
+
 ¿Pero cómo especificamos cuáles modelos biofísico y DS querremos? Esto se hace en la línea siguiente:
-  ``modelo.estab_mds("C:\\SahysMod\\julien\\GBSDM_V4.vpm")``
+
+``modelo.estab_mds("C:\\SahysMod\\julien\\GBSDM_V4.vpm")``
+
 estab_mds, como probablemente adivinaste, establece el modelo DS. Le tienes que dar como argumento la ubicación del archivo 
 .vpm de tu modelo DS publicado por VENSIM. En el futuro, si Tinamit puede aceptar modelos de otros programas que VENSIM, podrás 
 poner otros tipos de archivos aquí. (Notar que habrá que cambiar la ubicación aquí según tú computadora.)
@@ -114,7 +123,9 @@ poner otros tipos de archivos aquí. (Notar que habrá que cambiar la ubicación
 Y, para el modelo biofísico, especificamos la ubicación de la envoltura específica para el modelo biofísico que querremos usar. 
 En este caso, vamos a usar SAHYSMOD, un modelo de flujos de agua subterránea y de salinidad. Esto no cambia mucho; cada vez que 
 quieres conectar un modelo DS con un modelo en SAHYSMOD darás la misma envoltura, no importe cuáles variables estás conectando.
-  ``modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'SAHYSMOD_wrapper.py'))``
+
+``modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'envoltura_SAHYSMOD.py'))``
+
 (No te preocupes por lo del ``os.path.split(__file__)[0]``, es simplemente una manera en Python de obtener la dirección en tu 
 computadora del directorio actual. Esto le permite al programa encontrar la envoltura para SAHYSMOD que viene con Tinamit, no 
 importe dónde guardaste el programa Tinamit en tu computadora.)
@@ -125,7 +136,9 @@ Ahora, vamos a conectar los dos modelos por crear enlaces entre los variables de
 necesita 3 cosas: los nombres de los dos variables para conectar y la dirección de la conexión (es dec
 ir, de cuál modelo sacas el valor del variable para ponerlo en el otro modelo). Una simulación verdaderamente dinámica incluirá 
 conexiones en ambas direcciones (del modelo DS al biofísico y viceversa).
-  ``modelo.conectar(var_mds='Soil salinity AS1', mds_fuente=False, var_bf="Cr4 - Fully rotated land irrigated root zone salinity")``
+
+  ``modelo.conectar(var_mds='Salinidad del suelo AS1', mds_fuente=False, var_bf="Cr4 - Salinidad zona de raíz irrigada rotada")``
+  
 ``var_mds`` es el nombre del variable en el modelo DS, y ``var_bf`` es el nombre del variable en el modelo biofísico (tal como 
 especificado en la envoltura). ``mds_fuente`` indica si se lee el valor del variable en el modelo DS para transferirla al modelo biofísico, o si es al revés. En este ejemplo, tomamos el valor de la salinidad del suelo del modelo SAHYSMOD y lo pasamos al modelo DS (VENSIM).
 
@@ -136,7 +149,9 @@ total de 8 variables.
 Simular
 ^^^^^^^
 Ya, por fin, podemos simular el modelo:
-  ``modelo.simular(paso=1, tiempo_final=240, nombre_simul=name)``
+
+  ``modelo.simular(paso=1, tiempo_final=240, nombre_simul='Mi primera simulación Tinamit')``
+  
 ``paso`` indica el intervalo de tiempo al cual se intercambian valores de variables entre los dos modelos. ``tiempo_final`` 
 indica la duración de la simulación, y ``nombre_simul`` es el nombre de la simulación que se dará al archivo con los egresos 
 (resultados) de la simulación.
@@ -157,7 +172,9 @@ Así que no se preocupen, ya incluimos una función en el IPA que les permite ac
 tener que abrir VENSIM y republicar el modelo para cada cambio. Actualmente, puedes emplear esta función para cambiar el valor 
 de cualquier variable en el modelo antes de empezar la simulación, pero es más útil que todo para activar y desactivar 
 políticas. (¡Cuidado! Esta función solamente cambia el valor inicial del variable.)
+
   ``modelo.mds.cambiar_var(var=”política maravillosa”, val=1)``
+  
 ``modelo.mds`` accede al objeto de modelo DS asociado con el modelo conectado, y la función ``.cambiar_var()`` hace exactamente 
 lo que piensas que hace.
 
@@ -167,7 +184,7 @@ Y bueno, allí está. Ya puedes conectar, desconectar, simular y manipular model
 directorio de ejemplos de Tinamit para un ejemplo del uso del IPA en la automatización de corridas para simular, de una vez, 5 
 corridas de un modelo socioeconómico DS con un modelo biofísico de calidad y salinidad de los suelos (SAHYSMOD).
 
-Para las que conocen las funciones ``threading`` de Python, y que piensan que sería una manera brillante de correr las 5 
-simulaciones en paralelo para ahorrar tiempo, no lo hagan. Pensamos lo mismo y cuando lo intentamos sucede que el DLL de VENSIM 
-no puede correr más que un modelo al mismo tiempo y se pone en un gran lío. Si no tienes ni idea de lo que estoy diciendo, 
-perfecto.
+Para las que conocen las funciones :py:mod:``threading`` de Python, y que piensan que sería una manera brillante de correr las 
+5 simulaciones en paralelo para ahorrar tiempo, no lo hagan. Pensamos lo mismo y cuando lo intentamos sucede que el DLL de 
+VENSIM no puede correr más que un modelo al mismo tiempo y se pone en un gran lío. Si no tienes ni idea de lo que estoy 
+diciendo, perfecto.
