@@ -184,7 +184,7 @@ Y bueno, allí está. Ya puedes conectar, desconectar, simular y manipular model
 directorio de ejemplos de Tinamit para un ejemplo del uso del IPA en la automatización de corridas para simular, de una vez, 5 
 corridas de un modelo socioeconómico DS con un modelo biofísico de calidad y salinidad de los suelos (SAHYSMOD).
 
-Para las que conocen las funciones :py:mod:``threading`` de Python, y que piensan que sería una manera brillante de correr las 
+Para las que conocen las funciones :py:mod:`threading` de Python, y que piensan que sería una manera brillante de correr las 
 5 simulaciones en paralelo para ahorrar tiempo, no lo hagan. Pensamos lo mismo y cuando lo intentamos sucede que el DLL de 
 VENSIM no puede correr más que un modelo al mismo tiempo y se pone en un gran lío. Si no tienes ni idea de lo que estoy 
 diciendo, perfecto.
