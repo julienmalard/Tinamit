@@ -42,7 +42,7 @@ puedes agregar un nuevo).
 
 Para cambiar idiomas, hacer clic en el icono del globo terrestre.
 
-.. image:: Cabeza_tinamit_globo.png
+.. image:: Imágenes/Cabeza_tinamit_globo.png
    :scale: 100 %
    :align: center
    :alt: Icono de cambio de idiomas de Tinamit.
@@ -70,7 +70,7 @@ cuanto termines la etapa precedente.
 La primera etapa sería, por supuesto, de cargar los modelos biofísicos y DS con :guilabel:`Cargar MDS` y
 :guilabel:`Cargar modelo biofísico`.
 
-.. image:: Cargar_modelos_tinamit.png
+.. image:: Imágenes/Cargar_modelos_tinamit.png
    :scale: 90 %
    :align: center
    :alt: Cargar modelos en Tinamit.
@@ -80,7 +80,7 @@ Conectar modelos (II)
 Después de eso, vamos a conectar los dos modelos por sus variables comunes. La flecha muestra la dirección de la conexión, y 
 puedes especificar un factor de conversión, si quieres. Hay que hacer clic en :guilabel:`Guardar` cada vez que haces una conexión.
 
-.. image:: Tinamit_conectar_vars.png
+.. image:: Imágenes/Tinamit_conectar_vars.png
    :scale: 90 %
    :align: center
    :alt: Conectar variables en Tinamit.
@@ -89,7 +89,7 @@ Si haces un error, puedes volver a editar una conexión ya hecha por hacer clic 
 con la cruz roja. Nota que el interfaz no te dejará conectar un variable más que una vez al mismo tiempo (eso sería una falla
 lógica en la conexión de los dos modelos).
 
-.. image:: IGU_editar_conexión.png
+.. image:: Imágenes/IGU_editar_conexión.png
    :scale: 90 %
    :align: center
    :alt: Cambiar la conexión de variables en Tinamit.

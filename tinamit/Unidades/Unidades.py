@@ -9,23 +9,24 @@ with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'equiv_unid.
 
 def convertir(de, a,  val=1, clase=None, lengua=None):
     """
+    Esta función convirte un valor de una unidad a otra.
 
-    :param de:
+    :param de: La unidad original.
     :type de: str
 
-    :param a:
+    :param a: La unidad final.
     :type a: str
 
-    :param clase:
+    :param clase: El tipo de unidad ('tiempo', 'distancia', etc.) No es obligatoria.
     :type clase: str
 
-    :param val:
+    :param val: El valor para convertir.
     :type val: float
 
-    :param lengua:
+    :param lengua: La lengua en la cuál se están especificando las unidades.
     :type lengua: str
 
-    :return:
+    :return: El valor convertido.
     :rtype: float
 
     """

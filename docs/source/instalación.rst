@@ -46,7 +46,7 @@ gente normal, no lo sabes, haz lo siguiente:
    Después, pulse “Intro”. Por supuesto, tienes que cambiar la última parte para corresponder a dónde tú guardaste el
    paquete NumPy en tu computador cuando lo descargaste. Ver la imagen para un ejemplo:
   
-.. image:: Ejemplo_instalación_paquetes.png
+.. image:: Imágenes/Ejemplo_instalación_paquetes.png
    :scale: 90 %
    :align: center
    :alt: Ejemplo de la instalación de paquetes de Python precompilados con la línea de comanda de Windows.

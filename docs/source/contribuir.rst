@@ -9,7 +9,7 @@ Traducir
 ¡Siempre querremos traducciones para hacer de Tinamit una herramienta aún más accesible!
 El interfaz de Tinamit tiene funcionalidades para la traducción del interfaz sí mismo (el globo).
 
-.. image:: Cabeza_tinamit_globo.png
+.. image:: Imágenes/Cabeza_tinamit_globo.png
    :scale: 100 %
    :align: center
    :alt: Icono de cambio de idiomas de Tinamit.
