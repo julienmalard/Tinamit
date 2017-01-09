@@ -197,14 +197,20 @@ class SuperConectado(Modelo):
 
     def cambiar_vals_modelo(símismo, valores):
         """
-        Esta función cambia los valores del modelo. Necesita un
+        Esta función cambia los valores del modelo. A través de la función :func:`Conectado.cambiar_vals`, es recursivo.
         :param valores:
         :type valores: dict
 
         """
 
-        for nombre_mod, vals in valores.items():
-            símismo.modelos[nombre_mod].cambiar_vals(valores=vals)
+        # Para cada nombre de variable...
+        for nombre_var, val in valores.items():
+
+            # Primero, vamos a sacar el nombre del variable y el nombre del submodelo.
+            nombre_mod, var = nombre_var.split('_', 1)
+
+            # Ahora, pedimos a los submodelos de hacer los cambios en los modelos externos, si hay.
+            símismo.modelos[nombre_mod].cambiar_vals(valores={var: val})
 
     def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamit'):
         """
