@@ -9,7 +9,7 @@ with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'equiv_unid.
 
 def convertir(de, a,  val=1, clase=None, lengua=None):
     """
-    Esta función convirte un valor de una unidad a otra.
+    Esta función convierte un valor de una unidad a otra.
 
     :param de: La unidad original.
     :type de: str
