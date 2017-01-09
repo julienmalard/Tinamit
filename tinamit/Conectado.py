@@ -35,6 +35,10 @@ class SuperConectado(Modelo):
         símismo.conex_rápida = {}
 
         # Un diccionario con la información de conversiones de unidades de tiempo entre los dos modelos conectados.
+        # Tiene la forma general:
+        # {'nombre_modelo_1': factor_conv,
+        # {'nombre_modelo_2': factor_conv}
+        # Al menos uno de los dos factores siempre será = a 1.
         símismo.conv_tiempo = {}
 
         # Inicializamos el SuperConectado como todos los Modelos.
@@ -70,7 +74,7 @@ class SuperConectado(Modelo):
             símismo.variables[nombre_var] = modelo.variables[var]
 
         # Establecemos las unidades de tiempo del modelo SuperConectado según las unidades de tiempo de sus submodelos.
-        símismo.obt_unidad_tiempo()
+        símismo.unidad_tiempo = símismo.obt_unidad_tiempo()
 
     def inic_vars(símismo):
         """
@@ -80,70 +84,116 @@ class SuperConectado(Modelo):
 
     def obt_unidad_tiempo(símismo):
         """
+        Esta función devolverá las unidades de tiempo del modelo conectado. Dependerá de los submodelos.
+        Si los dos submodelos tienen las mismas unidades, esta será la unidad del modelo conectado también.
+        Si los dos tienen unidades distintas, intentaremos encontrar la conversión entre los dos y después se
+        considerará como unidad de tiempo de base la más grande de los dos. Por ejemplo, si se conecta un modelo
+        con una unidad de tiempo de meses con un modelo de unidad de año, se aplicará una unidad de tiempo de años
+        al modelo conectado.
 
-        :return:
+        Después se actualiza el variable ``símismo.conv_tiempo`` para guardar en memoria la conversión necesaria entre
+        los pasos de los dos submodelos.
+
+        Se emplea el módulo :module:`Unidades.Unidades` para convertir unidades.
+
+        :return: El tiempo de paso del modelo SuperConectado.
         :rtype: str
 
         """
 
+        # Si todavía no se han conectado 2 modelos, no hay nada que hacer.
         if len(símismo.modelos) < 2:
             return None
 
+        # Identificar las unidades de los dos submodelos.
         l_mods = list(símismo.modelos)
 
         unid_mod_1 = símismo.modelos[l_mods[0]].unidad_tiempo
         unid_mod_2 = símismo.modelos[l_mods[1]].unidad_tiempo
 
-        if unid_mod_1 == unid_mod_2:
+        # Una función auxiliar aquí para verificar si el factor de conversión es un nombre entero o no.
+        def verificar_entero(factor):
 
+            if int(factor) != factor:
+                # Si el factor no es un número entero, avisar antes de redondearlo.
+                avisar('Las unidades de tiempo de los dos modelos ({} y {}) no tienen denominator común.'
+                       'Se aproximará la conversión.'.format(unid_mod_1, unid_mod_2))
+
+            # Devolver la mejor aproximación entera
+            return round(factor)
+
+        if unid_mod_1 == unid_mod_2:
+            # Si las unidades son idénticas, ya tenemos nuestra respuesta.
             símismo.conv_tiempo[l_mods[0]] = 1
             símismo.conv_tiempo[l_mods[1]] = 1
 
             return unid_mod_1
 
         else:
+            # Sino, intentemos convertir automáticamente
             try:
                 factor_conv = convertir(de=unid_mod_1, a=unid_mod_2)
+
             except ValueError:
+                # Si no lo logramos, hay un error.
                 avisar('No se pudo inferir la conversión de unidades de tiempo entre {} y {}.'
                        'Especificarla con la función .estab_conv_tiempo().'.format(unid_mod_1, unid_mod_2))
-                return
+                return None
 
             if factor_conv > 1:
+                # Si la unidad de tiempo del primer modelo es más grande que la del otro...
+
+                # Verificar que sea un factor entero
+                factor_conv = verificar_entero(factor_conv)
+
+                # ...y usar esta como unidad de tiempo y guardar el factor de conversión.
                 símismo.conv_tiempo[l_mods[0]] = 1
                 símismo.conv_tiempo[l_mods[1]] = factor_conv
+
                 return unid_mod_1
 
             else:
+                # Si la unidad de tiempo del segundo modelo es la más grande...
+
+                # Tomar el recíproco de la conversión
                 factor_conv = 1 / factor_conv
-                if int(factor_conv) != factor_conv:
-                    factor_conv = int(factor_conv)
 
-                    avisar('Las unidades de tiempo de los dos modelos ({} y {}) no tienen denominator común.'
-                           'Se aproximará la conversión.'.format(unid_mod_1, unid_mod_2))
+                # Verificar que sea un factor entero
+                factor_conv = verificar_entero(factor_conv)
 
+                # ...y usar las unidades del segundo modelo como referencia.
                 símismo.conv_tiempo[l_mods[1]] = 1
                 símismo.conv_tiempo[l_mods[0]] = factor_conv
+
                 return unid_mod_2
 
     def estab_conv_tiempo(símismo, mod_base, conv):
         """
+        Esta función establece la conversión de tiempo entre los dos modelos (útil para unidades que Tinamit
+        no reconoce).
 
-        :param mod_base:
+        :param mod_base: El modelo con la unidad de tiempo mayor.
         :type mod_base: str
-        :param conv:
+
+        :param conv: El factor de conversión con la unidad de tiempo del otro modelo.
         :type conv: int
 
         """
 
+        # Veryficar que el modelo de base es un nombre de modelo válido.
         if mod_base not in símismo.modelos:
-            raise ValueError('El modelo "{}" no esiste en este modelo conectado.'.format(mod_base))
+            raise ValueError('El modelo "{}" no existe en este modelo conectado.'.format(mod_base))
 
+        # Identificar el modelo que no sirve de referencia para la unidad de tiempo
         l_mod = list(símismo.modelos)
         mod_otro = l_mod[(l_mod.index(mod_base)+1) % 2]
 
+        # Establecer las conversiones
         símismo.conv_tiempo[mod_base] = 1
         símismo.conv_tiempo[mod_otro] = conv
+
+        # Y guardar la unidad de tiempo.
+        símismo.unidad_tiempo = símismo.modelos[mod_base].unidad_tiempo
 
     def cambiar_vals_modelo(símismo, valores):
         """
@@ -175,7 +225,7 @@ class SuperConectado(Modelo):
             raise AttributeError('Hay que especificar la conversión de unidades de tiempo con '
                                  '.estab_conv_tiempo() antes de correr la simulación.')
 
-        símismo.iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida='Corrida Tinamit')
+        símismo.iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
 
         for i in range(tiempo_final):
             símismo.incrementar(paso)
@@ -252,7 +302,7 @@ class SuperConectado(Modelo):
         for mod in símismo.modelos:
             mod.cerrar_modelo()
 
-    def conectar_vars(símismo, dic_vars, modelo_fuente, conv=1):
+    def conectar_vars(símismo, dic_vars, modelo_fuente, conv=None):
         """
 
         :param dic_vars:
@@ -284,6 +334,18 @@ class SuperConectado(Modelo):
 
         var_fuente = dic_vars[modelo_fuente]
         var_recip = dic_vars[modelo_recip]
+        unid_fuente = símismo.modelos[modelo_fuente]['vars'][var_fuente]['unidades']
+        unid_recip = símismo.modelos[modelo_recip]['vars'][var_recip]['unidades']
+
+        if conv is None:
+            try:
+                conv = convertir(de=unid_fuente,
+                                 a=unid_recip)
+            except ValueError:
+                avisar('No se pudo identificar una conversión automática para las unidades de los variables'
+                       '"{}" (unidades: {}) y "{}" (unidades: {}). Se está suponiendo un factor de conversión de 1.'
+                       .format(var_fuente, unid_fuente, var_recip, unid_recip))
+                conv = 1
 
         dic_conex = {'modelo_fuente': modelo_fuente,
                      'vars': {modelo_recip: var_recip,

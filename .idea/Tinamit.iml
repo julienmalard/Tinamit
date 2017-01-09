@@ -5,6 +5,7 @@
     <orderEntry type="jdk" jdkName="Python 3.5.1 (C:\Users\jmalar1\AppData\Local\Programs\Python\Python35-32\python.exe)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Marksim" />
+    <orderEntry type="module" module-name="Tikon" />
   </component>
   <component name="TestRunnerService">
     <option name="PROJECT_TEST_RUNNER" value="Unittests" />

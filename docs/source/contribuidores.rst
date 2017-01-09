@@ -18,7 +18,7 @@ SAHYSMOD
 ^^^^^^^^
 SAHYSMOD es un modelo de predicción de salinidad de los suelos.
 
-محمّد اظہر انعام بیگ*
+* محمّد اظہر انعام بیگ
 * Julien Malard
 
 Traductores
