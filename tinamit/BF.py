@@ -102,7 +102,7 @@ class EnvolturaBF(Modelo):
 class ClaseModeloBF(Modelo):
     """
     Se debe desarrollar una subclase de esta clase para cada tipo modelo biofísico que se quiere volver compatible
-     con Tinamit.
+    con Tinamit.
     """
 
     def __init__(símismo):

@@ -1,0 +1,67 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamit 1.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-01-09 13:38-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#: ../../source/BF.rst:2
+msgid "BF (Modelos Biofísicos)"
+msgstr ""
+
+#: of tinamit.BF.ClaseModeloBF:3
+msgid ""
+"Se debe desarrollar una subclase de esta clase para cada tipo modelo "
+"biofísico que se quiere volver compatible"
+msgstr ""
+
+#: of tinamit.BF.ClaseModeloBF:2
+msgid "con Tinamit."
+msgstr ""
+
+#: of tinamit.BF.ClaseModeloBF.inic_vars:1
+msgid ""
+"MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe "
+"para símismo.variables, no crear un diccionario nuevo. Por ejemplo, NO "
+"HAGAS:"
+msgstr ""
+
+#: of tinamit.BF.ClaseModeloBF.inic_vars:4
+msgid "símismo.variables = {var1: {...}, var2: {...}, ...}"
+msgstr ""
+
+#: of tinamit.BF.ClaseModeloBF.inic_vars:7
+msgid "sino:"
+msgstr ""
+
+#: of tinamit.BF.ClaseModeloBF.inic_vars:6
+msgid "símismo.variables[var1] = {...} símismo.variables[var2] = {...}"
+msgstr ""
+
+#: of tinamit.BF.ClaseModeloBF.inic_vars:9
+msgid ""
+"Al no hacer esto, romperás la conección entre los diccionarios de "
+"variables de ClaseModeloBF y EnvolturaBF, lo cual impedirá después la "
+"conexión de estos variables con el modelo DS."
+msgstr ""
+
+#: of tinamit.BF.ClaseModeloBF.leer_vals:1
+msgid ""
+"Esta función debe leer los variables del modelo desde el modelo externo y"
+" copiarlos al diccionario interno de variables. Asegúrese que esté "
+"*actualizando* el diccionario interno, y que no lo esté recreando, lo "
+"cual quebrará las conexiones con el modelo conectado."
+msgstr ""
+

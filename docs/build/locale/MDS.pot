@@ -1,0 +1,46 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamit 1.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-01-09 13:38-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/MDS.rst:2
+msgid "MDS (Modelos de dinámicas de los sistemas)"
+msgstr ""
+
+#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.EnvolturaMDS:1
+msgid "Esta clase sirve para representar modelo de dinámicas de los sistemas (MDS). Se debe crear una subclase para cada tipo de MDS. Al moment, el único incluido es VENSIM."
+msgstr ""
+
+#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.EnvolturaMDS.inic_vars:1
+msgid "Este método se deja a las subclases de `Metodo` para implementar."
+msgstr ""
+
+#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.EnvolturaMDS.inic_vars:3
+msgid "Ver :func:`Modelo.inic_vars` para más información."
+msgstr ""
+
+#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.ModeloVENSIM.verificar_vensim:2
+msgid "Esta función regresa el estatus de Vensim. Es particularmente útil para desboguear (no tiene uso en las"
+msgstr ""
+
+#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.ModeloVENSIM.verificar_vensim:2
+msgid "otras funciones de esta clase, y se incluye como ayuda a la programadora.)"
+msgstr ""
+
+#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.ModeloVENSIM.verificar_vensim:4
+msgid "estatus número integral de código de estatus 0 = Vensim está listo 1 = Vensim está en una simulación activa 2 = Vensim está en una simulación, pero no está respondiendo 3 = Malas noticias 4 = Error de memoria 5 = Vensim está en modo de juego 6 = Memoria no libre. Llamar vensim_command() debería de arreglarlo. 16 += ver documentación de VENSIM para vensim_check_status() en la sección de DLL (Suplemento DSS)"
+msgstr ""
+

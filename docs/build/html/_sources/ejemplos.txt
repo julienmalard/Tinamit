@@ -1,0 +1,16 @@
+Ejemplos
+========
+
+Aquí presentamos unos ejemplos del uso de Tinamit, más allá de lo presentado en la sección :doc:`Uso <uso>`.
+
+El côdigo para este ejemplo se
+
+
+Ejemplo muy básico
+------------------
+También es un ejemplo un poco estúpido. Pero demuestra muy bien cómo funciona Tinamit, y no tienes que instalar
+cualquier modelo biofísico externo para que te funcione, así que empecemos con este.
+
+
+.. literalinclude:: /Ejemplos/Ejemplo básico/Ejemplo conectado.py
+:download:`Descargar código </tinamit/MDS.py>`
