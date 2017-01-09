@@ -197,7 +197,7 @@ class SuperConectado(Modelo):
 
     def cambiar_vals_modelo(símismo, valores):
         """
-
+        Esta función cambia los valores del modelo. Necesita un
         :param valores:
         :type valores: dict
 
