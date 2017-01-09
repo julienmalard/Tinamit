@@ -1,11 +1,12 @@
 {
-  "Actual": "Español",
+  "Actual": "Français",
   "Lenguas": {
     "Bahasa Indonesia": {
-      "Estado": 0.025,
+      "Estado": 0.024390243902439025,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
@@ -48,10 +49,11 @@
       }
     },
     "Bahasa Melayu": {
-      "Estado": 0.05,
+      "Estado": 0.04878048780487805,
       "IzqaDerech": true,
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
@@ -94,10 +96,11 @@
       }
     },
     "English": {
-      "Estado": 0.0,
+      "Estado": 0.024390243902439025,
       "IzqaDerech": true,
       "Trads": {
-        "AnálisisIncert": "",
+        "AnálisisIncert": "Uncertainty",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
@@ -143,8 +146,8 @@
       "Estado": 1.0,
       "IzqaDerech": true,
       "Trads": {
-        "ArchivoCorrupto": "El archivo Tinamit está corrupto y no se puede cargar. ¡Discuple!",
         "AnálisisIncert": "Incertidumbre",
+        "ArchivoCorrupto": "El archivo Tinamit está corrupto y no se puede cargar. ¡Discuple!",
         "ArchivoTinamit": "Archivo Tinamit",
         "AvisoBorrarLeng": "¿Realmente quieres borrar la lengua %s?",
         "AvisoReinic": "Hay que reiniciar Tinamit para aplicar el cambio de idioma.",
@@ -187,10 +190,11 @@
       }
     },
     "Français": {
-      "Estado": 1.0,
+      "Estado": 0.975609756097561,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "Incertitude",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "Document Tinamit",
         "AvisoBorrarLeng": "Vous désirez réelement suprimer la langue %s ?",
         "AvisoReinic": "Vous devez recommencer Tinamit pour terminer le changement de langue.",
@@ -233,10 +237,11 @@
       }
     },
     "Italiano": {
-      "Estado": 0.075,
+      "Estado": 0.07317073170731707,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "Documento Tinamit",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
@@ -283,6 +288,7 @@
       "IzqaDerech": true,
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
@@ -325,10 +331,11 @@
       }
     },
     "K'iche'": {
-      "Estado": 0.025,
+      "Estado": 0.024390243902439025,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
@@ -371,10 +378,11 @@
       }
     },
     "Kaqchikel": {
-      "Estado": 0.325,
+      "Estado": 0.3170731707317073,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "Rajwaxic nachop ri Tinamit jun mul chïk chi natz'u pa ri kaqa' ch'abäl.",
@@ -417,10 +425,11 @@
       }
     },
     "Kiswahili": {
-      "Estado": 0.375,
+      "Estado": 0.36585365853658536,
       "IzqaDerech": true,
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
@@ -463,10 +472,11 @@
       }
     },
     "Português": {
-      "Estado": 0.125,
+      "Estado": 0.12195121951219512,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
@@ -513,6 +523,7 @@
       "IzqaDerech": true,
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
@@ -559,6 +570,7 @@
       "IzqaDerech": true,
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
@@ -601,10 +613,11 @@
       }
     },
     "Tz'utujil": {
-      "Estado": 0.65,
+      "Estado": 0.6341463414634146,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "Wuj tinamit",
         "AvisoBorrarLeng": "Nawjoa' na tur ja tzij ",
         "AvisoReinic": "Tmja'a chik jmej tinamit rxin naksaj chik jun chik tizij.",
@@ -647,10 +660,11 @@
       }
     },
     "اردو": {
-      "Estado": 1.0,
+      "Estado": 0.975609756097561,
       "IzqaDerech": false,
       "Trads": {
-        "AnálisisIncert": "غیر یقینی",
+        "AnálisisIncert": "غیر یقینی صورتحال",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "سنچکا کی تنامیت",
         "AvisoBorrarLeng": "کیا سچ میں آپ s% زبان ہٹانے چاہتے ہیں؟",
         "AvisoReinic": "دوبارہ کو تنامیت لئے کے بدلنے کو زبان .ہے پڑتا کرنے شرو",
@@ -697,6 +711,7 @@
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
@@ -739,10 +754,11 @@
       }
     },
     "हिंदी": {
-      "Estado": 0.375,
+      "Estado": 0.36585365853658536,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "अनिश्चितता",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "भाषा बदलने के लिये तिनामित को दुबारह शुरू करनी है।",
@@ -789,6 +805,7 @@
       "IzqaDerech": true,
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
@@ -831,10 +848,11 @@
       }
     },
     "ગુજરાતી": {
-      "Estado": 0.225,
+      "Estado": 0.21951219512195122,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "ભાષા બદલવા તિનામિતે ફરીથી શુરુ કરવાનું છે.",
@@ -877,10 +895,11 @@
       }
     },
     "தமிழ்": {
-      "Estado": 0.3,
+      "Estado": 0.2926829268292683,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "மொழி மாற்றதற்கு தினாமித்தை மறுப்படியும் ஆரம்ப வேண்டும்.",
@@ -927,6 +946,7 @@
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
@@ -973,6 +993,7 @@
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",

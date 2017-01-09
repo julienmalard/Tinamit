@@ -101,7 +101,7 @@ Preparar todo
 ^^^^^^^^^^^^^
 Antes que todo, hay que importar los objetos de Tinamit que vamos a necesitar:
 
-``from Conectado import Conectado``
+  ``from Conectado import Conectado``
 
 Esta línea importa la clase Conectado del módulo Conectado de Tinamit. Increíblemente, es la única cosa que tenemos que importar.
 
@@ -110,11 +110,11 @@ Cargar modelos
 Primero, vamos a empezar por crear una instancia de la clase Conectado. Si no sabes lo que es una instancia de una clase, o 
 puedes simplemente copiar el texto abajo, o (mejor) puedes echarle otro vistazo a tu último curso en Python.
 
-``modelo = Conectado()``
+  ``modelo = Conectado()``
 
 ¿Pero cómo especificamos cuáles modelos biofísico y DS querremos? Esto se hace en la línea siguiente:
 
-``modelo.estab_mds("C:\\SahysMod\\julien\\GBSDM_V4.vpm")``
+  ``modelo.estab_mds("C:\\SahysMod\\julien\\GBSDM_V4.vpm")``
 
 estab_mds, como probablemente adivinaste, establece el modelo DS. Le tienes que dar como argumento la ubicación del archivo 
 .vpm de tu modelo DS publicado por VENSIM. En el futuro, si Tinamit puede aceptar modelos de otros programas que VENSIM, podrás 
@@ -124,7 +124,7 @@ Y, para el modelo biofísico, especificamos la ubicación de la envoltura espec�
 En este caso, vamos a usar SAHYSMOD, un modelo de flujos de agua subterránea y de salinidad. Esto no cambia mucho; cada vez que 
 quieres conectar un modelo DS con un modelo en SAHYSMOD darás la misma envoltura, no importe cuáles variables estás conectando.
 
-``modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'envoltura_SAHYSMOD.py'))``
+  ``modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'envoltura_SAHYSMOD.py'))``
 
 (No te preocupes por lo del ``os.path.split(__file__)[0]``, es simplemente una manera en Python de obtener la dirección en tu 
 computadora del directorio actual. Esto le permite al programa encontrar la envoltura para el modelo biofísico, no 
