@@ -1,7 +1,7 @@
 import threading
 from warnings import warn as avisar
 
-from tinamit.BF import EnvolturaBF
+from .BF import EnvolturaBF
 from .Modelo import Modelo
 from .MDS import generar_mds
 from .Unidades.Unidades import convertir

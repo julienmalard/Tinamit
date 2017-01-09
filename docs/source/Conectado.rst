@@ -1,5 +1,5 @@
 Conectado
 =========
 
-.. automodule:: tinamit.MDS
+.. automodule:: tinamit.Conectado
    :members:
