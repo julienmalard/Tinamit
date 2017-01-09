@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/translations.js"></script>
-    <link rel="shortcut icon" href="_static/Logo_favicon.png"/>
+    <link rel="shortcut icon" href="_static/Logo_favicon.ico"/>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
     <link rel="top" title="documentación de tinamit - 1.2.0" href="index.html" />
@@ -121,7 +121,7 @@ de trabajar en su idioma. O tal vez quieres practicar un idioma que no has habla
 <p>Mientras que el código de Tinamit sí mismo es en español, el interfaz de Tinamit está disponible en muchos idiomas (y siempre
 puedes agregar un nuevo).</p>
 <p>Para cambiar idiomas, hacer clic en el icono del globo terrestre.</p>
-<a class="reference internal image-reference" href="_images/Cabeza_tinamit_globo.png"><img alt="Icono de cambio de idiomas de Tinamit." class="align-center" src="_images/Cabeza_tinamit_globo.png" style="width: 1095.0px; height: 100.0px;" /></a>
+<a class="reference internal image-reference" href="_images/Cabeza_tinamit_globo1.png"><img alt="Icono de cambio de idiomas de Tinamit." class="align-center" src="_images/Cabeza_tinamit_globo1.png" style="width: 1095.0px; height: 100.0px;" /></a>
 <p>En el centro, tienes las lenguas ya traducidas. Puedes escoger una con la cajita verde a la izquierda, o pulsar en lapicito
 para hacer cambios a la traducción.</p>
 <p>A la izquierda, tienes lenguas en progreso. La barra muestra el estado del progreso de la traducción. Puedes escoger una como
@@ -191,7 +191,7 @@ puedes simplemente copiar el texto abajo, o (mejor) puedes echarle otro vistazo 
 <div><code class="docutils literal"><span class="pre">modelo</span> <span class="pre">=</span> <span class="pre">Conectado()</span></code></div></blockquote>
 <p>¿Pero cómo especificamos cuáles modelos biofísico y DS querremos? Esto se hace en la línea siguiente:</p>
 <blockquote>
-<div><code class="docutils literal"><span class="pre">modelo.estab_mds(&quot;C:\\SahysMod\\julien\\GBSDM_V4.vpm&quot;)</span></code></div></blockquote>
+<div><code class="docutils literal"><span class="pre">modelo.estab_mds(&quot;C:\\Yo\\MisArchivos\\MiModeloVENSIM.vpm&quot;)</span></code></div></blockquote>
 <p>estab_mds, como probablemente adivinaste, establece el modelo DS. Le tienes que dar como argumento la ubicación del archivo
 .vpm de tu modelo DS publicado por VENSIM. En el futuro, si Tinamit puede aceptar modelos de otros programas que VENSIM, podrás
 poner otros tipos de archivos aquí. (Notar que habrá que cambiar la ubicación aquí según tú computadora.)</p>
@@ -199,7 +199,7 @@ poner otros tipos de archivos aquí. (Notar que habrá que cambiar la ubicación
 En este caso, vamos a usar SAHYSMOD, un modelo de flujos de agua subterránea y de salinidad. Esto no cambia mucho; cada vez que
 quieres conectar un modelo DS con un modelo en SAHYSMOD darás la misma envoltura, no importe cuáles variables estás conectando.</p>
 <blockquote>
-<div><code class="docutils literal"><span class="pre">modelo.estab_bf(os.path.join(os.path.split(__file__)[0],</span> <span class="pre">'envoltura_SAHYSMOD.py'))</span></code></div></blockquote>
+<div><code class="docutils literal"><span class="pre">modelo.estab_bf(os.path.join(os.path.split(__file__)[0],</span> <span class="pre">'mi_envoltura.py'))</span></code></div></blockquote>
 <p>(No te preocupes por lo del <code class="docutils literal"><span class="pre">os.path.split(__file__)[0]</span></code>, es simplemente una manera en Python de obtener la dirección en tu
 computadora del directorio actual. Esto le permite al programa encontrar la envoltura para el modelo biofísico, no
 importe dónde lo guardará alguién en su computadora)</p>
@@ -211,7 +211,7 @@ necesita 3 cosas: los nombres de los dos variables para conectar y la dirección
 ir, de cuál modelo sacas el valor del variable para ponerlo en el otro modelo). Una simulación verdaderamente dinámica incluirá
 conexiones en ambas direcciones (del modelo DS al biofísico y viceversa).</p>
 <blockquote>
-<div><code class="docutils literal"><span class="pre">modelo.conectar(var_mds='Salinidad</span> <span class="pre">del</span> <span class="pre">suelo</span> <span class="pre">AS1',</span> <span class="pre">mds_fuente=False,</span> <span class="pre">var_bf=&quot;Cr4</span> <span class="pre">-</span> <span class="pre">Salinidad</span> <span class="pre">zona</span> <span class="pre">de</span> <span class="pre">raíz</span> <span class="pre">irrigada</span> <span class="pre">rotada&quot;)</span></code></div></blockquote>
+<div><code class="docutils literal"><span class="pre">modelo.conectar(var_mds='Salinidad',</span> <span class="pre">mds_fuente=False,</span> <span class="pre">var_bf=&quot;Cr4</span> <span class="pre">-</span> <span class="pre">Salinidad&quot;)</span></code></div></blockquote>
 <p><code class="docutils literal"><span class="pre">var_mds</span></code> es el nombre del variable en el modelo DS, y <code class="docutils literal"><span class="pre">var_bf</span></code> es el nombre del variable en el modelo biofísico (tal como
 especificado en la envoltura). <code class="docutils literal"><span class="pre">mds_fuente</span></code> indica si se lee el valor del variable en el modelo DS para transferirla al
 modelo biofísico, o si es al revés. En este ejemplo, tomamos el valor de la salinidad del suelo del modelo SAHYSMOD y lo pasamos al modelo DS (VENSIM).</p>
@@ -243,7 +243,7 @@ tener que abrir VENSIM y republicar el modelo para cada cambio. Actualmente, pue
 de cualquier variable en el modelo antes de empezar la simulación, pero es más útil que todo para activar y desactivar
 políticas. (¡Cuidado! Esta función solamente cambia el valor inicial del variable.)</p>
 <blockquote>
-<div><code class="docutils literal"><span class="pre">modelo.mds.cambiar_var(var=”política</span> <span class="pre">maravillosa”,</span> <span class="pre">val=1)</span></code></div></blockquote>
+<div><code class="docutils literal"><span class="pre">modelo.mds.cambiar_var(var=”Política</span> <span class="pre">maravillosa”,</span> <span class="pre">val=1)</span></code></div></blockquote>
 <p><code class="docutils literal"><span class="pre">modelo.mds</span></code> accede al objeto de modelo DS asociado con el modelo conectado, y la función <code class="docutils literal"><span class="pre">.cambiar_var()</span></code> hace exactamente
 lo que piensas que hace.</p>
 </div>

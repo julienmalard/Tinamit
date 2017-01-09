@@ -1,10 +1,10 @@
 import threading
 from warnings import warn as avisar
 
-from .BF import EnvolturaBF
-from .Modelo import Modelo
-from .MDS import generar_mds
-from .Unidades.Unidades import convertir
+from tinamit.BF import EnvolturaBF
+from tinamit.Modelo import Modelo
+from tinamit.MDS import generar_mds
+from tinamit.Unidades.Unidades import convertir
 
 
 class SuperConectado(Modelo):

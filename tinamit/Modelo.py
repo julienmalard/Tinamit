@@ -97,10 +97,10 @@ class Modelo(object):
         si necesario, los valores de los variables en el modelo externo.
 
         :param valores: Un diccionario de variables y valores para cambiar, con el formato siguiente:
-        { var1: nuevovalor,
-          var2: nuevovalor,
-          ...
-        }
+            { var1: nuevovalor,
+            var2: nuevovalor,
+            ...
+            }
         :type valores: dict
 
         """
@@ -116,10 +116,10 @@ class Modelo(object):
         de que el cambio se hizo en el modelo externo, si aplica.
 
         :param valores: Un diccionario de variables y valores para cambiar, con el formato siguiente:
-        { var1: nuevovalor,
-          var2: nuevovalor,
-          ...
-        }
+            { var1: nuevovalor,
+              var2: nuevovalor,
+              ...
+            }
         :type valores: dict
 
         """

@@ -9,7 +9,7 @@ Traducir
 ¡Siempre querremos traducciones para hacer de Tinamit una herramienta aún más accesible!
 El interfaz de Tinamit tiene funcionalidades para la traducción del interfaz sí mismo (el globo).
 
-.. image:: Cabeza_tinamit_globo.png
+.. image:: Imágenes/Cabeza_tinamit_globo.png
    :scale: 100 %
    :align: center
    :alt: Icono de cambio de idiomas de Tinamit.
@@ -44,6 +44,7 @@ y después implementar allí las funciones siguientes:
 * :func:`~tinamit.BF.ClaseModeloBF.inic_vars`
 
 Puedes escribir tu envoltura en cualquier archivo (hacia no tiene que ser en el código fuente de Tinamit sí mismo).
+La subclase incluida es este archivo **debe** llamarse ``Modelo``. Si se llama cualquier otra cosa, no funcionará.
 
 Cómo compartir tu nueva envoltura
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/translations.js"></script>
-    <link rel="shortcut icon" href="_static/Logo_favicon.png"/>
+    <link rel="shortcut icon" href="_static/Logo_favicon.ico"/>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
     <link rel="top" title="documentación de tinamit - 1.2.0" href="index.html" />
@@ -63,7 +63,9 @@
 <dl class="class">
 <dt id="tinamit.BF.ClaseModeloBF">
 <em class="property">class </em><code class="descclassname">tinamit.BF.</code><code class="descname">ClaseModeloBF</code><span class="sig-paren">(</span><em>símismo</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/BF.html#ClaseModeloBF"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.BF.ClaseModeloBF" title="Enlazar permanentemente con esta definición">¶</a></dt>
-<dd><dl class="method">
+<dd><p>Se debe desarrollar una subclase de esta clase para cada tipo modelo biofísico que se quiere volver compatible
+con Tinamit.</p>
+<dl class="method">
 <dt id="tinamit.BF.ClaseModeloBF.cambiar_vals_modelo">
 <code class="descname">cambiar_vals_modelo</code><span class="sig-paren">(</span><em>símismo</em>, <em>valores</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/BF.html#ClaseModeloBF.cambiar_vals_modelo"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.BF.ClaseModeloBF.cambiar_vals_modelo" title="Enlazar permanentemente con esta definición">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -127,7 +129,10 @@ lo cual impedirá después la conexión de estos variables con el modelo DS.</p>
 <dl class="method">
 <dt id="tinamit.BF.ClaseModeloBF.leer_vals">
 <code class="descname">leer_vals</code><span class="sig-paren">(</span><em>símismo</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/BF.html#ClaseModeloBF.leer_vals"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.BF.ClaseModeloBF.leer_vals" title="Enlazar permanentemente con esta definición">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Esta función debe leer los variables del modelo desde el modelo externo y copiarlos al diccionario interno
+de variables. Asegúrese que esté <em>actualizando</em> el diccionario interno, y que no lo esté recreando, lo cual
+quebrará las conexiones con el modelo conectado.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="tinamit.BF.ClaseModeloBF.obt_unidad_tiempo">

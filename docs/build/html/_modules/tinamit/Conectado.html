@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/translations.js"></script>
-    <link rel="shortcut icon" href="../../_static/Logo_favicon.png"/>
+    <link rel="shortcut icon" href="../../_static/Logo_favicon.ico"/>
     <link rel="index" title="Índice" href="../../genindex.html" />
     <link rel="search" title="Búsqueda" href="../../search.html" />
     <link rel="top" title="documentación de tinamit - 1.2.0" href="../../index.html" />
@@ -54,7 +54,7 @@
 <span></span><span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span> <span class="k">as</span> <span class="n">avisar</span>
 
-<span class="kn">from</span> <span class="nn">tinamit.BF</span> <span class="k">import</span> <span class="n">EnvolturaBF</span>
+<span class="kn">from</span> <span class="nn">.BF</span> <span class="k">import</span> <span class="n">EnvolturaBF</span>
 <span class="kn">from</span> <span class="nn">.Modelo</span> <span class="k">import</span> <span class="n">Modelo</span>
 <span class="kn">from</span> <span class="nn">.MDS</span> <span class="k">import</span> <span class="n">generar_mds</span>
 <span class="kn">from</span> <span class="nn">.Unidades.Unidades</span> <span class="k">import</span> <span class="n">convertir</span>
@@ -88,6 +88,10 @@
         <span class="n">símismo</span><span class="o">.</span><span class="n">conex_rápida</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c1"># Un diccionario con la información de conversiones de unidades de tiempo entre los dos modelos conectados.</span>
+        <span class="c1"># Tiene la forma general:</span>
+        <span class="c1"># {&#39;nombre_modelo_1&#39;: factor_conv,</span>
+        <span class="c1"># {&#39;nombre_modelo_2&#39;: factor_conv}</span>
+        <span class="c1"># Al menos uno de los dos factores siempre será = a 1.</span>
         <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c1"># Inicializamos el SuperConectado como todos los Modelos.</span>
@@ -123,7 +127,7 @@
             <span class="n">símismo</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">nombre_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">modelo</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">var</span><span class="p">]</span>
 
         <span class="c1"># Establecemos las unidades de tiempo del modelo SuperConectado según las unidades de tiempo de sus submodelos.</span>
-        <span class="n">símismo</span><span class="o">.</span><span class="n">obt_unidad_tiempo</span><span class="p">()</span></div>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">unidad_tiempo</span> <span class="o">=</span> <span class="n">símismo</span><span class="o">.</span><span class="n">obt_unidad_tiempo</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SuperConectado.inic_vars"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.inic_vars">[documentos]</a>    <span class="k">def</span> <span class="nf">inic_vars</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -133,81 +137,135 @@
 
 <div class="viewcode-block" id="SuperConectado.obt_unidad_tiempo"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.obt_unidad_tiempo">[documentos]</a>    <span class="k">def</span> <span class="nf">obt_unidad_tiempo</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Esta función devolverá las unidades de tiempo del modelo conectado. Dependerá de los submodelos.</span>
+<span class="sd">        Si los dos submodelos tienen las mismas unidades, esta será la unidad del modelo conectado también.</span>
+<span class="sd">        Si los dos tienen unidades distintas, intentaremos encontrar la conversión entre los dos y después se</span>
+<span class="sd">        considerará como unidad de tiempo de base la más grande de los dos. Por ejemplo, si se conecta un modelo</span>
+<span class="sd">        con una unidad de tiempo de meses con un modelo de unidad de año, se aplicará una unidad de tiempo de años</span>
+<span class="sd">        al modelo conectado.</span>
 
-<span class="sd">        :return:</span>
+<span class="sd">        Después se actualiza el variable ``símismo.conv_tiempo`` para guardar en memoria la conversión necesaria entre</span>
+<span class="sd">        los pasos de los dos submodelos.</span>
+
+<span class="sd">        Se emplea el módulo :module:`Unidades.Unidades` para convertir unidades.</span>
+
+<span class="sd">        :return: El tiempo de paso del modelo SuperConectado.</span>
 <span class="sd">        :rtype: str</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># Si todavía no se han conectado 2 modelos, no hay nada que hacer.</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
+        <span class="c1"># Identificar las unidades de los dos submodelos.</span>
         <span class="n">l_mods</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">)</span>
 
         <span class="n">unid_mod_1</span> <span class="o">=</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">unidad_tiempo</span>
         <span class="n">unid_mod_2</span> <span class="o">=</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">unidad_tiempo</span>
 
-        <span class="k">if</span> <span class="n">unid_mod_1</span> <span class="o">==</span> <span class="n">unid_mod_2</span><span class="p">:</span>
+        <span class="c1"># Una función auxiliar aquí para verificar si el factor de conversión es un nombre entero o no.</span>
+        <span class="k">def</span> <span class="nf">verificar_entero</span><span class="p">(</span><span class="n">factor</span><span class="p">):</span>
 
+            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span> <span class="o">!=</span> <span class="n">factor</span><span class="p">:</span>
+                <span class="c1"># Si el factor no es un número entero, avisar antes de redondearlo.</span>
+                <span class="n">avisar</span><span class="p">(</span><span class="s1">&#39;Las unidades de tiempo de los dos modelos (</span><span class="si">{}</span><span class="s1"> y </span><span class="si">{}</span><span class="s1">) no tienen denominator común.&#39;</span>
+                       <span class="s1">&#39;Se aproximará la conversión.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">unid_mod_1</span><span class="p">,</span> <span class="n">unid_mod_2</span><span class="p">))</span>
+
+            <span class="c1"># Devolver la mejor aproximación entera</span>
+            <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">unid_mod_1</span> <span class="o">==</span> <span class="n">unid_mod_2</span><span class="p">:</span>
+            <span class="c1"># Si las unidades son idénticas, ya tenemos nuestra respuesta.</span>
             <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
 
             <span class="k">return</span> <span class="n">unid_mod_1</span>
 
         <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Sino, intentemos convertir automáticamente</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">factor_conv</span> <span class="o">=</span> <span class="n">convertir</span><span class="p">(</span><span class="n">de</span><span class="o">=</span><span class="n">unid_mod_1</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">unid_mod_2</span><span class="p">)</span>
+
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="c1"># Si no lo logramos, hay un error.</span>
                 <span class="n">avisar</span><span class="p">(</span><span class="s1">&#39;No se pudo inferir la conversión de unidades de tiempo entre </span><span class="si">{}</span><span class="s1"> y </span><span class="si">{}</span><span class="s1">.&#39;</span>
                        <span class="s1">&#39;Especificarla con la función .estab_conv_tiempo().&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">unid_mod_1</span><span class="p">,</span> <span class="n">unid_mod_2</span><span class="p">))</span>
-                <span class="k">return</span>
+                <span class="k">return</span> <span class="kc">None</span>
 
             <span class="k">if</span> <span class="n">factor_conv</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Si la unidad de tiempo del primer modelo es más grande que la del otro...</span>
+
+                <span class="c1"># Verificar que sea un factor entero</span>
+                <span class="n">factor_conv</span> <span class="o">=</span> <span class="n">verificar_entero</span><span class="p">(</span><span class="n">factor_conv</span><span class="p">)</span>
+
+                <span class="c1"># ...y usar esta como unidad de tiempo y guardar el factor de conversión.</span>
                 <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
                 <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">factor_conv</span>
+
                 <span class="k">return</span> <span class="n">unid_mod_1</span>
 
             <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Si la unidad de tiempo del segundo modelo es la más grande...</span>
+
+                <span class="c1"># Tomar el recíproco de la conversión</span>
                 <span class="n">factor_conv</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">factor_conv</span>
-                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">factor_conv</span><span class="p">)</span> <span class="o">!=</span> <span class="n">factor_conv</span><span class="p">:</span>
-                    <span class="n">factor_conv</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">factor_conv</span><span class="p">)</span>
 
-                    <span class="n">avisar</span><span class="p">(</span><span class="s1">&#39;Las unidades de tiempo de los dos modelos (</span><span class="si">{}</span><span class="s1"> y </span><span class="si">{}</span><span class="s1">) no tienen denominator común.&#39;</span>
-                           <span class="s1">&#39;Se aproximará la conversión.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">unid_mod_1</span><span class="p">,</span> <span class="n">unid_mod_2</span><span class="p">))</span>
+                <span class="c1"># Verificar que sea un factor entero</span>
+                <span class="n">factor_conv</span> <span class="o">=</span> <span class="n">verificar_entero</span><span class="p">(</span><span class="n">factor_conv</span><span class="p">)</span>
 
+                <span class="c1"># ...y usar las unidades del segundo modelo como referencia.</span>
                 <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
                 <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">l_mods</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">factor_conv</span>
+
                 <span class="k">return</span> <span class="n">unid_mod_2</span></div>
 
 <div class="viewcode-block" id="SuperConectado.estab_conv_tiempo"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.estab_conv_tiempo">[documentos]</a>    <span class="k">def</span> <span class="nf">estab_conv_tiempo</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">mod_base</span><span class="p">,</span> <span class="n">conv</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Esta función establece la conversión de tiempo entre los dos modelos (útil para unidades que Tinamit</span>
+<span class="sd">        no reconoce).</span>
 
-<span class="sd">        :param mod_base:</span>
+<span class="sd">        :param mod_base: El modelo con la unidad de tiempo mayor.</span>
 <span class="sd">        :type mod_base: str</span>
-<span class="sd">        :param conv:</span>
+
+<span class="sd">        :param conv: El factor de conversión con la unidad de tiempo del otro modelo.</span>
 <span class="sd">        :type conv: int</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># Veryficar que el modelo de base es un nombre de modelo válido.</span>
         <span class="k">if</span> <span class="n">mod_base</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;El modelo &quot;</span><span class="si">{}</span><span class="s1">&quot; no esiste en este modelo conectado.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mod_base</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;El modelo &quot;</span><span class="si">{}</span><span class="s1">&quot; no existe en este modelo conectado.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mod_base</span><span class="p">))</span>
 
+        <span class="c1"># Identificar el modelo que no sirve de referencia para la unidad de tiempo</span>
         <span class="n">l_mod</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">)</span>
         <span class="n">mod_otro</span> <span class="o">=</span> <span class="n">l_mod</span><span class="p">[(</span><span class="n">l_mod</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">mod_base</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">]</span>
 
+        <span class="c1"># Establecer las conversiones</span>
         <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">mod_base</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">mod_otro</span><span class="p">]</span> <span class="o">=</span> <span class="n">conv</span></div>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span><span class="p">[</span><span class="n">mod_otro</span><span class="p">]</span> <span class="o">=</span> <span class="n">conv</span>
+
+        <span class="c1"># Y guardar la unidad de tiempo.</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">unidad_tiempo</span> <span class="o">=</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">mod_base</span><span class="p">]</span><span class="o">.</span><span class="n">unidad_tiempo</span></div>
 
 <div class="viewcode-block" id="SuperConectado.cambiar_vals_modelo"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.cambiar_vals_modelo">[documentos]</a>    <span class="k">def</span> <span class="nf">cambiar_vals_modelo</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">valores</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Esta función cambia los valores del modelo. A través de la función :func:`Conectado.cambiar_vals`, se vuelve</span>
+<span class="sd">        recursivo.</span>
 
 <span class="sd">        :param valores:</span>
 <span class="sd">        :type valores: dict</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">for</span> <span class="n">nombre_mod</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="n">valores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">nombre_mod</span><span class="p">]</span><span class="o">.</span><span class="n">cambiar_vals</span><span class="p">(</span><span class="n">valores</span><span class="o">=</span><span class="n">vals</span><span class="p">)</span></div>
+        <span class="c1"># Para cada nombre de variable...</span>
+        <span class="k">for</span> <span class="n">nombre_var</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">valores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="c1"># Primero, vamos a sacar el nombre del variable y el nombre del submodelo.</span>
+            <span class="n">nombre_mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="n">nombre_var</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># Ahora, pedimos a los submodelos de hacer los cambios en los modelos externos, si hay.</span>
+            <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">nombre_mod</span><span class="p">]</span><span class="o">.</span><span class="n">cambiar_vals</span><span class="p">(</span><span class="n">valores</span><span class="o">=</span><span class="p">{</span><span class="n">var</span><span class="p">:</span> <span class="n">val</span><span class="p">})</span></div>
 
 <div class="viewcode-block" id="SuperConectado.simular"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.simular">[documentos]</a>    <span class="k">def</span> <span class="nf">simular</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">tiempo_final</span><span class="p">,</span> <span class="n">paso</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nombre_corrida</span><span class="o">=</span><span class="s1">&#39;Corrida Tinamit&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -228,7 +286,7 @@
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Hay que especificar la conversión de unidades de tiempo con &#39;</span>
                                  <span class="s1">&#39;.estab_conv_tiempo() antes de correr la simulación.&#39;</span><span class="p">)</span>
 
-        <span class="n">símismo</span><span class="o">.</span><span class="n">iniciar_modelo</span><span class="p">(</span><span class="n">tiempo_final</span><span class="o">=</span><span class="n">tiempo_final</span><span class="p">,</span> <span class="n">nombre_corrida</span><span class="o">=</span><span class="s1">&#39;Corrida Tinamit&#39;</span><span class="p">)</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">iniciar_modelo</span><span class="p">(</span><span class="n">tiempo_final</span><span class="o">=</span><span class="n">tiempo_final</span><span class="p">,</span> <span class="n">nombre_corrida</span><span class="o">=</span><span class="n">nombre_corrida</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tiempo_final</span><span class="p">):</span>
             <span class="n">símismo</span><span class="o">.</span><span class="n">incrementar</span><span class="p">(</span><span class="n">paso</span><span class="p">)</span>
@@ -305,7 +363,7 @@
         <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">:</span>
             <span class="n">mod</span><span class="o">.</span><span class="n">cerrar_modelo</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SuperConectado.conectar_vars"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.conectar_vars">[documentos]</a>    <span class="k">def</span> <span class="nf">conectar_vars</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">dic_vars</span><span class="p">,</span> <span class="n">modelo_fuente</span><span class="p">,</span> <span class="n">conv</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="SuperConectado.conectar_vars"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.conectar_vars">[documentos]</a>    <span class="k">def</span> <span class="nf">conectar_vars</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">dic_vars</span><span class="p">,</span> <span class="n">modelo_fuente</span><span class="p">,</span> <span class="n">conv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param dic_vars:</span>
@@ -337,6 +395,18 @@
 
         <span class="n">var_fuente</span> <span class="o">=</span> <span class="n">dic_vars</span><span class="p">[</span><span class="n">modelo_fuente</span><span class="p">]</span>
         <span class="n">var_recip</span> <span class="o">=</span> <span class="n">dic_vars</span><span class="p">[</span><span class="n">modelo_recip</span><span class="p">]</span>
+        <span class="n">unid_fuente</span> <span class="o">=</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">modelo_fuente</span><span class="p">][</span><span class="s1">&#39;vars&#39;</span><span class="p">][</span><span class="n">var_fuente</span><span class="p">][</span><span class="s1">&#39;unidades&#39;</span><span class="p">]</span>
+        <span class="n">unid_recip</span> <span class="o">=</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">modelo_recip</span><span class="p">][</span><span class="s1">&#39;vars&#39;</span><span class="p">][</span><span class="n">var_recip</span><span class="p">][</span><span class="s1">&#39;unidades&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">conv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">conv</span> <span class="o">=</span> <span class="n">convertir</span><span class="p">(</span><span class="n">de</span><span class="o">=</span><span class="n">unid_fuente</span><span class="p">,</span>
+                                 <span class="n">a</span><span class="o">=</span><span class="n">unid_recip</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">avisar</span><span class="p">(</span><span class="s1">&#39;No se pudo identificar una conversión automática para las unidades de los variables&#39;</span>
+                       <span class="s1">&#39;&quot;</span><span class="si">{}</span><span class="s1">&quot; (unidades: </span><span class="si">{}</span><span class="s1">) y &quot;</span><span class="si">{}</span><span class="s1">&quot; (unidades: </span><span class="si">{}</span><span class="s1">). Se está suponiendo un factor de conversión de 1.&#39;</span>
+                       <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var_fuente</span><span class="p">,</span> <span class="n">unid_fuente</span><span class="p">,</span> <span class="n">var_recip</span><span class="p">,</span> <span class="n">unid_recip</span><span class="p">))</span>
+                <span class="n">conv</span> <span class="o">=</span> <span class="mi">1</span>
 
         <span class="n">dic_conex</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;modelo_fuente&#39;</span><span class="p">:</span> <span class="n">modelo_fuente</span><span class="p">,</span>
                      <span class="s1">&#39;vars&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">modelo_recip</span><span class="p">:</span> <span class="n">var_recip</span><span class="p">,</span>

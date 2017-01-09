@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/translations.js"></script>
-    <link rel="shortcut icon" href="_static/Logo_favicon.png"/>
+    <link rel="shortcut icon" href="_static/Logo_favicon.ico"/>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
     <link rel="top" title="documentación de tinamit - 1.2.0" href="index.html" />
@@ -59,12 +59,22 @@
   <div class="section" id="ejemplos">
 <h1>Ejemplos<a class="headerlink" href="#ejemplos" title="Enlazar permanentemente con este título">¶</a></h1>
 <p>Aquí presentamos unos ejemplos del uso de Tinamit, más allá de lo presentado en la sección <a class="reference internal" href="uso.html"><span class="doc">Uso</span></a>.</p>
-<p>El côdigo para este ejemplo se</p>
+<p>El código para estos ejemplos también se encuentra en el archivo <code class="file docutils literal"><span class="pre">Ejemplos</span></code> de Tinamit.</p>
 <div class="section" id="ejemplo-muy-basico">
 <h2>Ejemplo muy básico<a class="headerlink" href="#ejemplo-muy-basico" title="Enlazar permanentemente con este título">¶</a></h2>
 <p>También es un ejemplo un poco estúpido. Pero demuestra muy bien cómo funciona Tinamit, y no tienes que instalar
 cualquier modelo biofísico externo para que te funcione, así que empecemos con este.</p>
-<p><code class="xref download docutils literal"><span class="pre">Descargar</span> <span class="pre">código</span></code></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">tinamit.Conectado</span> <span class="k">import</span> <span class="n">Conectado</span>
+
+<span class="n">modelo</span> <span class="o">=</span> <span class="n">Conectado</span><span class="p">()</span>
+<span class="n">directorio</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span>
+<span class="n">modelo</span><span class="o">.</span><span class="n">estab_mds</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directorio</span><span class="p">,</span> <span class="s2">&quot;Prueba dll.vpm&quot;</span><span class="p">))</span>
+<span class="n">modelo</span><span class="o">.</span><span class="n">estab_bf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directorio</span><span class="p">,</span> <span class="s1">&#39;Prueba bf.py&#39;</span><span class="p">))</span>
+<span class="n">modelo</span><span class="o">.</span><span class="n">conectar</span><span class="p">(</span><span class="n">var_mds</span><span class="o">=</span><span class="s1">&#39;Lluvia&#39;</span><span class="p">,</span> <span class="n">var_bf</span><span class="o">=</span><span class="s1">&#39;var1&#39;</span><span class="p">,</span> <span class="n">mds_fuente</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">modelo</span><span class="o">.</span><span class="n">simular</span><span class="p">(</span><span class="n">paso</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tiempo_final</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">nombre_corrida</span><span class="o">=</span><span class="s1">&#39;Corrida_Tinamit&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 

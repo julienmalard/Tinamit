@@ -24,12 +24,12 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/translations.js"></script>
-    <link rel="shortcut icon" href="_static/Logo_favicon.png"/>
+    <link rel="shortcut icon" href="_static/Logo_favicon.ico"/>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
     <link rel="top" title="documentación de tinamit - 1.2.0" href="index.html" />
     <link rel="up" title="Documentación" href="documentación.html" />
-    <link rel="next" title="Contribuir a Tinamit" href="contribuir.html" />
+    <link rel="next" title="Manejo de Unidades" href="Unidades.html" />
     <link rel="prev" title="BF (Modelos Biofísicos)" href="BF.html" /> 
   </head>
   <body role="document">
@@ -43,7 +43,7 @@
           <a href="py-modindex.html" title="Índice de Módulos Python"
              >módulos</a> |</li>
         <li class="right" >
-          <a href="contribuir.html" title="Contribuir a Tinamit"
+          <a href="Unidades.html" title="Manejo de Unidades"
              accesskey="N">siguiente</a> |</li>
         <li class="right" >
           <a href="BF.html" title="BF (Modelos Biofísicos)"
@@ -131,7 +131,9 @@ instancias de sí misma, así permitiendo la conexión de números arbitrarios d
 <dl class="method">
 <dt id="tinamit.Conectado.SuperConectado.cambiar_vals_modelo">
 <code class="descname">cambiar_vals_modelo</code><span class="sig-paren">(</span><em>símismo</em>, <em>valores</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/Conectado.html#SuperConectado.cambiar_vals_modelo"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.Conectado.SuperConectado.cambiar_vals_modelo" title="Enlazar permanentemente con esta definición">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dd><p>Esta función cambia los valores del modelo. A través de la función <code class="xref py py-func docutils literal"><span class="pre">Conectado.cambiar_vals()</span></code>, se vuelve
+recursivo.</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -148,7 +150,7 @@ instancias de sí misma, así permitiendo la conexión de números arbitrarios d
 
 <dl class="method">
 <dt id="tinamit.Conectado.SuperConectado.conectar_vars">
-<code class="descname">conectar_vars</code><span class="sig-paren">(</span><em>símismo</em>, <em>dic_vars</em>, <em>modelo_fuente</em>, <em>conv=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/Conectado.html#SuperConectado.conectar_vars"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.Conectado.SuperConectado.conectar_vars" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<code class="descname">conectar_vars</code><span class="sig-paren">(</span><em>símismo</em>, <em>dic_vars</em>, <em>modelo_fuente</em>, <em>conv=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/Conectado.html#SuperConectado.conectar_vars"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.Conectado.SuperConectado.conectar_vars" title="Enlazar permanentemente con esta definición">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -184,13 +186,15 @@ instancias de sí misma, así permitiendo la conexión de números arbitrarios d
 <dl class="method">
 <dt id="tinamit.Conectado.SuperConectado.estab_conv_tiempo">
 <code class="descname">estab_conv_tiempo</code><span class="sig-paren">(</span><em>símismo</em>, <em>mod_base</em>, <em>conv</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/Conectado.html#SuperConectado.estab_conv_tiempo"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.Conectado.SuperConectado.estab_conv_tiempo" title="Enlazar permanentemente con esta definición">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dd><p>Esta función establece la conversión de tiempo entre los dos modelos (útil para unidades que Tinamit
+no reconoce).</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><ul class="first last simple">
-<li><strong>mod_base</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(en Python versión 2.7)"><em>str</em></a>) &#8211; </li>
-<li><strong>conv</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(en Python versión 2.7)"><em>int</em></a>) &#8211; </li>
+<li><strong>mod_base</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(en Python versión 2.7)"><em>str</em></a>) &#8211; El modelo con la unidad de tiempo mayor.</li>
+<li><strong>conv</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(en Python versión 2.7)"><em>int</em></a>) &#8211; El factor de conversión con la unidad de tiempo del otro modelo.</li>
 </ul>
 </td>
 </tr>
@@ -245,11 +249,20 @@ y simular juntos.</p>
 <dl class="method">
 <dt id="tinamit.Conectado.SuperConectado.obt_unidad_tiempo">
 <code class="descname">obt_unidad_tiempo</code><span class="sig-paren">(</span><em>símismo</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/Conectado.html#SuperConectado.obt_unidad_tiempo"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.Conectado.SuperConectado.obt_unidad_tiempo" title="Enlazar permanentemente con esta definición">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dd><p>Esta función devolverá las unidades de tiempo del modelo conectado. Dependerá de los submodelos.
+Si los dos submodelos tienen las mismas unidades, esta será la unidad del modelo conectado también.
+Si los dos tienen unidades distintas, intentaremos encontrar la conversión entre los dos y después se
+considerará como unidad de tiempo de base la más grande de los dos. Por ejemplo, si se conecta un modelo
+con una unidad de tiempo de meses con un modelo de unidad de año, se aplicará una unidad de tiempo de años
+al modelo conectado.</p>
+<p>Después se actualiza el variable <code class="docutils literal"><span class="pre">símismo.conv_tiempo</span></code> para guardar en memoria la conversión necesaria entre
+los pasos de los dos submodelos.</p>
+<p>Se emplea el módulo <a href="#id1"><span class="problematic" id="id2">:module:`Unidades.Unidades`</span></a> para convertir unidades.</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+<tr class="field-odd field"><th class="field-name">Devuelve:</th><td class="field-body">El tiempo de paso del modelo SuperConectado.</td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Tipo del valor devuelto:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(en Python versión 2.7)">str</a></td>
@@ -293,8 +306,8 @@ y simular juntos.</p>
   <p class="topless"><a href="BF.html"
                         title="capítulo anterior">BF (Modelos Biofísicos)</a></p>
   <h4>Próximo tema</h4>
-  <p class="topless"><a href="contribuir.html"
-                        title="próximo capítulo">Contribuir a Tinamit</a></p>
+  <p class="topless"><a href="Unidades.html"
+                        title="próximo capítulo">Manejo de Unidades</a></p>
   <div role="note" aria-label="source link">
     <h3>Esta página</h3>
     <ul class="this-page-menu">
@@ -326,7 +339,7 @@ y simular juntos.</p>
           <a href="py-modindex.html" title="Índice de Módulos Python"
              >módulos</a> |</li>
         <li class="right" >
-          <a href="contribuir.html" title="Contribuir a Tinamit"
+          <a href="Unidades.html" title="Manejo de Unidades"
              >siguiente</a> |</li>
         <li class="right" >
           <a href="BF.html" title="BF (Modelos Biofísicos)"
