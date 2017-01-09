@@ -5,6 +5,7 @@
 
 Tinamit
 =======
+Versión: |version|
 
 Índice:
 -------
@@ -13,5 +14,10 @@ Tinamit
    :maxdepth: 2
 
    intro
+   instalación
+   uso
+   ejemplos
    documentación
+   contribuir
+   contribuidores
 

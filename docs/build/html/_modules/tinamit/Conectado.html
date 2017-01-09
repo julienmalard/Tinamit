@@ -24,6 +24,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/translations.js"></script>
+    <link rel="shortcut icon" href="../../_static/Logo_favicon.png"/>
     <link rel="index" title="Índice" href="../../genindex.html" />
     <link rel="search" title="Búsqueda" href="../../search.html" />
     <link rel="top" title="documentación de tinamit - 1.2.0" href="../../index.html" />
@@ -39,7 +40,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Índice de Módulos Python"
              >módulos</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de tinamit - 1.2.0</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Tinamit</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Código de módulo</a> &#187;</li> 
       </ul>
     </div>  
@@ -61,56 +62,74 @@
 
 <div class="viewcode-block" id="SuperConectado"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado">[documentos]</a><span class="k">class</span> <span class="nc">SuperConectado</span><span class="p">(</span><span class="n">Modelo</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-
+<span class="sd">    Esta clase representa el más alto nivel posible de modelo conectado. Tiene la función muy útil de poder conectar</span>
+<span class="sd">    instancias de sí misma, así permitiendo la conexión de números arbitrarios de modelos.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">nombre</span><span class="o">=</span><span class="s2">&quot;SuperConectado&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        El nombre automático para este modelo es &quot;SuperConectado&quot;. Si vas a conectar más que un modelo SuperConectado,</span>
+<span class="sd">        asegúrate de darle un nombre distinto al menos a un de ellos.</span>
 
-<span class="sd">        :param nombre:</span>
+<span class="sd">        :param nombre: El nombre del modelo SuperConectado.</span>
 <span class="sd">        :type nombre: str</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># Un diccionario de los modelos que se van a conectar en este modelo. Tiene la forma general</span>
+        <span class="c1"># {&#39;nombre_modelo&#39;: objecto_modelo,</span>
+        <span class="c1">#  &#39;nombre_modelo_2&#39;: objecto_modelo_2}</span>
         <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span> <span class="o">=</span> <span class="p">{}</span>
 
+        <span class="c1"># Una lista de las conexiones entre los modelos.</span>
         <span class="n">símismo</span><span class="o">.</span><span class="n">conexiones</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Un diccionario para aceder rápidamente a las conexiones.</span>
         <span class="n">símismo</span><span class="o">.</span><span class="n">conex_rápida</span> <span class="o">=</span> <span class="p">{}</span>
 
+        <span class="c1"># Un diccionario con la información de conversiones de unidades de tiempo entre los dos modelos conectados.</span>
         <span class="n">símismo</span><span class="o">.</span><span class="n">conv_tiempo</span> <span class="o">=</span> <span class="p">{}</span>
 
+        <span class="c1"># Inicializamos el SuperConectado como todos los Modelos.</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">nombre</span><span class="o">=</span><span class="n">nombre</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SuperConectado.estab_modelo"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.estab_modelo">[documentos]</a>    <span class="k">def</span> <span class="nf">estab_modelo</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">modelo</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Esta función agrega un modelo al SuperConectado. Una vez que dos modelos estén agregados, se pueden conectar</span>
+<span class="sd">        y simular juntos.</span>
 
-<span class="sd">        :param modelo:</span>
+<span class="sd">        :param modelo: El modelo para agregar.</span>
 <span class="sd">        :type modelo: Modelo</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># Si ya hay dos modelos conectados, no podemos conectar un modelo más.</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Ya hay dos modelo conectados. Desconecta uno primero o emplea una instancia de&#39;</span>
                              <span class="s1">&#39;SuperConectado para conectar más que 2 modelos.&#39;</span><span class="p">)</span>
 
+        <span class="c1"># Si ya se conectó otro modelo con el mismo nombre, avisarlo al usuario.</span>
         <span class="k">if</span> <span class="n">modelo</span><span class="o">.</span><span class="n">nombre</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">:</span>
             <span class="n">avisar</span><span class="p">(</span><span class="s1">&#39;El modelo </span><span class="si">{}</span><span class="s1"> ya existe. El nuevo modelo reemplazará el modelo anterior.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modelo</span><span class="o">.</span><span class="n">nombre</span><span class="p">))</span>
 
+        <span class="c1"># Agregar el nuevo modelo al diccionario de modelos.</span>
         <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="p">[</span><span class="n">modelo</span><span class="o">.</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="n">modelo</span>
 
+        <span class="c1"># Ahora, tenemos que agregar los variables del modelo agregado al diccionaro de variables de este modelo</span>
+        <span class="c1"># también. Se prefija el nombre del modelo al nombre de su variable para evitar posibilidades de nombres</span>
+        <span class="c1"># desduplicados.</span>
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">modelo</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
             <span class="n">nombre_var</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{mod}</span><span class="s1">_</span><span class="si">{var}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">mod</span><span class="o">=</span><span class="n">modelo</span><span class="o">.</span><span class="n">nombre</span><span class="p">)</span>
             <span class="n">símismo</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">nombre_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">modelo</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">var</span><span class="p">]</span>
 
+        <span class="c1"># Establecemos las unidades de tiempo del modelo SuperConectado según las unidades de tiempo de sus submodelos.</span>
         <span class="n">símismo</span><span class="o">.</span><span class="n">obt_unidad_tiempo</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SuperConectado.inic_vars"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.inic_vars">[documentos]</a>    <span class="k">def</span> <span class="nf">inic_vars</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-
+<span class="sd">        Esta función no es necesaria, por lo de estab_modelo.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">for</span> <span class="n">nombre_mod</span><span class="p">,</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">modelos</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">símismo</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">nombre_mod</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">inic_vars</span><span class="p">()</span></div>
+        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="SuperConectado.obt_unidad_tiempo"><a class="viewcode-back" href="../../Conectado.html#tinamit.Conectado.SuperConectado.obt_unidad_tiempo">[documentos]</a>    <span class="k">def</span> <span class="nf">obt_unidad_tiempo</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -435,6 +454,9 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/Logo_tinamit.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Búsqueda rápida</h3>
     <form class="search" action="../../search.html" method="get">
@@ -458,7 +480,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Índice de Módulos Python"
              >módulos</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de tinamit - 1.2.0</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Tinamit</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Código de módulo</a> &#187;</li> 
       </ul>
     </div>

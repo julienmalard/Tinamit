@@ -13,7 +13,7 @@ puede conseguir con
 Si no sabes lo que estás haciendo (para Windows)
 ------------------------------------------------
 Esto es para Windows. Es un poco complicado, así que si tienes dificultades no dudes en pedirme ayuda 
-(julien.malard@mail.mcgill.ca) para que te ahorres los dolores de cabeza que yo ya pasé.
+(|correo|) para que te ahorres los dolores de cabeza que yo ya pasé.
 
 Si estás usando Linux, no tengo idea cómo funciona pero me han dicho que es bastante más fácil que para los pobres que 
 todavía seguimos con Windows.

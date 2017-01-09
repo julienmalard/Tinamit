@@ -7,6 +7,9 @@ from tinamit.Conectado import Conectado
 
 
 class Apli(tk.Frame):
+    """
+    Aquí creamos la aplicación centra para el IGU.
+    """
     def __init__(símismo, pariente):
         tk.Frame.__init__(símismo, pariente)
         pariente.title('Tinamit')
@@ -32,10 +35,15 @@ class Apli(tk.Frame):
 
 
 def correr():
+    """
+    Esta función empieza el interfaz.
+    """
+
     raíz = tk.Tk()
     apli = Apli(raíz)
     apli.mainloop()
 
 
+# Si este archivo se ejecuta directamente (y no se importa), empezar el IGU.
 if __name__ == '__main__':
     correr()

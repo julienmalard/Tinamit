@@ -52,6 +52,18 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
+    def cambiar_var(símismo, var, val):
+        """
+
+        :param var:
+        :type var:
+        :param val:
+        :type val:
+
+        """
+
+        símismo.cambiar_vals(valores={var: val})
+
     def cerrar_modelo(símismo):
         """
 
@@ -231,18 +243,6 @@ class ModeloVENSIM(EnvolturaMDS):
             val = struct.unpack('f', mem_inter)[0]
 
             símismo.variables[var]['val'] = val
-
-    def cambiar_var(símismo, var, val):
-        """
-
-        :param var:
-        :type var:
-        :param val:
-        :type val:
-
-        """
-
-        símismo.cambiar_vals(valores={var: val})
 
     def cerrar_modelo(símismo):
         """

@@ -9,56 +9,74 @@ from .Unidades.Unidades import convertir
 
 class SuperConectado(Modelo):
     """
-
+    Esta clase representa el más alto nivel posible de modelo conectado. Tiene la función muy útil de poder conectar
+    instancias de sí misma, así permitiendo la conexión de números arbitrarios de modelos.
     """
 
     def __init__(símismo, nombre="SuperConectado"):
         """
+        El nombre automático para este modelo es "SuperConectado". Si vas a conectar más que un modelo SuperConectado,
+        asegúrate de darle un nombre distinto al menos a un de ellos.
 
-        :param nombre:
+        :param nombre: El nombre del modelo SuperConectado.
         :type nombre: str
 
         """
 
+        # Un diccionario de los modelos que se van a conectar en este modelo. Tiene la forma general
+        # {'nombre_modelo': objecto_modelo,
+        #  'nombre_modelo_2': objecto_modelo_2}
         símismo.modelos = {}
 
+        # Una lista de las conexiones entre los modelos.
         símismo.conexiones = []
+
+        # Un diccionario para aceder rápidamente a las conexiones.
         símismo.conex_rápida = {}
 
+        # Un diccionario con la información de conversiones de unidades de tiempo entre los dos modelos conectados.
         símismo.conv_tiempo = {}
 
+        # Inicializamos el SuperConectado como todos los Modelos.
         super().__init__(nombre=nombre)
 
     def estab_modelo(símismo, modelo):
         """
+        Esta función agrega un modelo al SuperConectado. Una vez que dos modelos estén agregados, se pueden conectar
+        y simular juntos.
 
-        :param modelo:
+        :param modelo: El modelo para agregar.
         :type modelo: Modelo
 
         """
 
+        # Si ya hay dos modelos conectados, no podemos conectar un modelo más.
         if len(símismo.modelos) >= 2:
             raise ValueError('Ya hay dos modelo conectados. Desconecta uno primero o emplea una instancia de'
                              'SuperConectado para conectar más que 2 modelos.')
 
+        # Si ya se conectó otro modelo con el mismo nombre, avisarlo al usuario.
         if modelo.nombre in símismo.modelos:
             avisar('El modelo {} ya existe. El nuevo modelo reemplazará el modelo anterior.'.format(modelo.nombre))
 
+        # Agregar el nuevo modelo al diccionario de modelos.
         símismo.modelos[modelo.nombre] = modelo
 
+        # Ahora, tenemos que agregar los variables del modelo agregado al diccionaro de variables de este modelo
+        # también. Se prefija el nombre del modelo al nombre de su variable para evitar posibilidades de nombres
+        # desduplicados.
         for var in modelo.variables:
             nombre_var = '{mod}_{var}'.format(var=var, mod=modelo.nombre)
             símismo.variables[nombre_var] = modelo.variables[var]
 
+        # Establecemos las unidades de tiempo del modelo SuperConectado según las unidades de tiempo de sus submodelos.
         símismo.obt_unidad_tiempo()
 
     def inic_vars(símismo):
         """
-
+        Esta función no es necesaria, por lo de estab_modelo.
         """
-
-        for nombre_mod, mod in símismo.modelos.items():
-            símismo.variables[nombre_mod] = mod.inic_vars()
+        pass
 
     def obt_unidad_tiempo(símismo):
         """

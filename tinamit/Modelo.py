@@ -16,6 +16,11 @@ class Modelo(object):
 
         """
 
+        # No se puede incluir nombres de modelos con "_" en el nombre (podría corrumpir el manejo de variables en
+        # modelos jerarquizados).
+        if "_" in nombre:
+            raise ValueError('No se pueden emplear nombres de modelos con "_".')
+
         # El nombre del modelo (sirve como una referencia a este modelo en el modelo conectado).
         símismo.nombre = nombre
 
@@ -35,11 +40,10 @@ class Modelo(object):
 
     def inic_vars(símismo):
         """
-        Esta función debe poblar el diccionario de variables del modelo, según la forma siguiente:
-        {var1: {'val': 13, 'unidades': cm, 'ingreso': True, 'egreso': True},
-        var2: {...},
-        ...
-        }
+        Esta función debe poblar el diccionario de variables del modelo, según la forma siguiente::
+            {'var1': {'val': 13, 'unidades': 'cm', 'ingreso': True, 'egreso': True},
+            'var2': {'val': 2, 'unidades': 'cm', 'ingreso': False, 'egreso': True}}
+            }
 
         """
         raise NotImplementedError

@@ -45,6 +45,12 @@ extensions = [
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
+# Substituciones universales
+rst_epilog = """
+.. |correo| replace:: julien.malard@mail.mcgill.ca
+.. |GitHub| replace:: `https://github.com/julienmalard/Tinamit`
+"""
+
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
@@ -152,18 +158,18 @@ else:
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #
-# html_short_title = None
+html_short_title = "Tinamit"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
 #
-# html_logo = None
+html_logo = 'Logo_tinamit.png'
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
 #
-# html_favicon = None
+html_favicon = 'Logo_favicon.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -275,7 +281,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'tinamit.tex', 'tinamit Documentation',
-     'Julien Malard, Azhar Muhammad Inam Baig', 'manual'),
+     u'Julien Malard, محمّد اظہر انعام بیگ', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

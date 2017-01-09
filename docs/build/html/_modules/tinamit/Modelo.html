@@ -24,6 +24,7 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/translations.js"></script>
+    <link rel="shortcut icon" href="../../_static/Logo_favicon.png"/>
     <link rel="index" title="Índice" href="../../genindex.html" />
     <link rel="search" title="Búsqueda" href="../../search.html" />
     <link rel="top" title="documentación de tinamit - 1.2.0" href="../../index.html" />
@@ -39,7 +40,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Índice de Módulos Python"
              >módulos</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de tinamit - 1.2.0</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Tinamit</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Código de módulo</a> &#187;</li> 
       </ul>
     </div>  
@@ -68,6 +69,11 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># No se puede incluir nombres de modelos con &quot;_&quot; en el nombre (podría corrumpir el manejo de variables en</span>
+        <span class="c1"># modelos jerarquizados).</span>
+        <span class="k">if</span> <span class="s2">&quot;_&quot;</span> <span class="ow">in</span> <span class="n">nombre</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No se pueden emplear nombres de modelos con &quot;_&quot;.&#39;</span><span class="p">)</span>
+
         <span class="c1"># El nombre del modelo (sirve como una referencia a este modelo en el modelo conectado).</span>
         <span class="n">símismo</span><span class="o">.</span><span class="n">nombre</span> <span class="o">=</span> <span class="n">nombre</span>
 
@@ -87,11 +93,10 @@
 
 <div class="viewcode-block" id="Modelo.inic_vars"><a class="viewcode-back" href="../../Modelo.html#tinamit.Modelo.Modelo.inic_vars">[documentos]</a>    <span class="k">def</span> <span class="nf">inic_vars</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Esta función debe poblar el diccionario de variables del modelo, según la forma siguiente:</span>
-<span class="sd">        {var1: {&#39;val&#39;: 13, &#39;unidades&#39;: cm, &#39;ingreso&#39;: True, &#39;egreso&#39;: True},</span>
-<span class="sd">        var2: {...},</span>
-<span class="sd">        ...</span>
-<span class="sd">        }</span>
+<span class="sd">        Esta función debe poblar el diccionario de variables del modelo, según la forma siguiente::</span>
+<span class="sd">            {&#39;var1&#39;: {&#39;val&#39;: 13, &#39;unidades&#39;: &#39;cm&#39;, &#39;ingreso&#39;: True, &#39;egreso&#39;: True},</span>
+<span class="sd">            &#39;var2&#39;: {&#39;val&#39;: 2, &#39;unidades&#39;: &#39;cm&#39;, &#39;ingreso&#39;: False, &#39;egreso&#39;: True}}</span>
+<span class="sd">            }</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
@@ -186,6 +191,9 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/Logo_tinamit.png" alt="Logo"/>
+            </a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Búsqueda rápida</h3>
     <form class="search" action="../../search.html" method="get">
@@ -209,7 +217,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Índice de Módulos Python"
              >módulos</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de tinamit - 1.2.0</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Tinamit</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Código de módulo</a> &#187;</li> 
       </ul>
     </div>

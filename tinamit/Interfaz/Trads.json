@@ -1,5 +1,5 @@
 {
-  "Actual": "Français",
+  "Actual": "Español",
   "Lenguas": {
     "Bahasa Indonesia": {
       "Estado": 0.024390243902439025,
@@ -194,7 +194,7 @@
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "Incertitude",
-        "ArchivoCorrupto": "",
+        "ArchivoCorrupto": "Ce document Tinamit (.tin) est corrupu et ne peut être ouvert. Désolé !",
         "ArchivoTinamit": "Document Tinamit",
         "AvisoBorrarLeng": "Vous désirez réelement suprimer la langue %s ?",
         "AvisoReinic": "Vous devez recommencer Tinamit pour terminer le changement de langue.",

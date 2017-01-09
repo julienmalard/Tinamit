@@ -16,5 +16,8 @@ Versión: |version|
    intro
    instalación
    uso
+   ejemplos
    documentación
+   contribuir
+   contribuidores
 

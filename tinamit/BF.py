@@ -108,7 +108,7 @@ class ClaseModeloBF(Modelo):
         """
 
         """
-        super().__init__(nombre='modelo_BF')
+        super().__init__(nombre='modeloBF')
 
     def cambiar_vals_modelo(símismo, valores):
         """

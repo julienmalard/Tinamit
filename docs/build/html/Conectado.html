@@ -24,10 +24,12 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="shortcut icon" href="_static/Logo_favicon.png"/>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
     <link rel="top" title="documentación de tinamit - 1.2.0" href="index.html" />
     <link rel="up" title="Documentación" href="documentación.html" />
+    <link rel="next" title="Contribuir a Tinamit" href="contribuir.html" />
     <link rel="prev" title="BF (Modelos Biofísicos)" href="BF.html" /> 
   </head>
   <body role="document">
@@ -41,9 +43,12 @@
           <a href="py-modindex.html" title="Índice de Módulos Python"
              >módulos</a> |</li>
         <li class="right" >
+          <a href="contribuir.html" title="Contribuir a Tinamit"
+             accesskey="N">siguiente</a> |</li>
+        <li class="right" >
           <a href="BF.html" title="BF (Modelos Biofísicos)"
              accesskey="P">anterior</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">documentación de tinamit - 1.2.0</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Tinamit</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="documentación.html" accesskey="U">Documentación</a> &#187;</li> 
       </ul>
     </div>  
@@ -121,7 +126,9 @@
 <dl class="class">
 <dt id="tinamit.Conectado.SuperConectado">
 <em class="property">class </em><code class="descclassname">tinamit.Conectado.</code><code class="descname">SuperConectado</code><span class="sig-paren">(</span><em>símismo</em>, <em>nombre='SuperConectado'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/Conectado.html#SuperConectado"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.Conectado.SuperConectado" title="Enlazar permanentemente con esta definición">¶</a></dt>
-<dd><dl class="method">
+<dd><p>Esta clase representa el más alto nivel posible de modelo conectado. Tiene la función muy útil de poder conectar
+instancias de sí misma, así permitiendo la conexión de números arbitrarios de modelos.</p>
+<dl class="method">
 <dt id="tinamit.Conectado.SuperConectado.cambiar_vals_modelo">
 <code class="descname">cambiar_vals_modelo</code><span class="sig-paren">(</span><em>símismo</em>, <em>valores</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/Conectado.html#SuperConectado.cambiar_vals_modelo"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.Conectado.SuperConectado.cambiar_vals_modelo" title="Enlazar permanentemente con esta definición">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -194,11 +201,13 @@
 <dl class="method">
 <dt id="tinamit.Conectado.SuperConectado.estab_modelo">
 <code class="descname">estab_modelo</code><span class="sig-paren">(</span><em>símismo</em>, <em>modelo</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/Conectado.html#SuperConectado.estab_modelo"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.Conectado.SuperConectado.estab_modelo" title="Enlazar permanentemente con esta definición">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dd><p>Esta función agrega un modelo al SuperConectado. Una vez que dos modelos estén agregados, se pueden conectar
+y simular juntos.</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>modelo</strong> (<a class="reference internal" href="Modelo.html#tinamit.Modelo.Modelo" title="tinamit.Modelo.Modelo"><em>Modelo</em></a>) &#8211; </td>
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>modelo</strong> (<a class="reference internal" href="Modelo.html#tinamit.Modelo.Modelo" title="tinamit.Modelo.Modelo"><em>Modelo</em></a>) &#8211; El modelo para agregar.</td>
 </tr>
 </tbody>
 </table>
@@ -220,7 +229,8 @@
 <dl class="method">
 <dt id="tinamit.Conectado.SuperConectado.inic_vars">
 <code class="descname">inic_vars</code><span class="sig-paren">(</span><em>símismo</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/Conectado.html#SuperConectado.inic_vars"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.Conectado.SuperConectado.inic_vars" title="Enlazar permanentemente con esta definición">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Esta función no es necesaria, por lo de estab_modelo.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="tinamit.Conectado.SuperConectado.iniciar_modelo">
@@ -276,9 +286,15 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/Logo_tinamit.png" alt="Logo"/>
+            </a></p>
   <h4>Tema anterior</h4>
   <p class="topless"><a href="BF.html"
                         title="capítulo anterior">BF (Modelos Biofísicos)</a></p>
+  <h4>Próximo tema</h4>
+  <p class="topless"><a href="contribuir.html"
+                        title="próximo capítulo">Contribuir a Tinamit</a></p>
   <div role="note" aria-label="source link">
     <h3>Esta página</h3>
     <ul class="this-page-menu">
@@ -310,9 +326,12 @@
           <a href="py-modindex.html" title="Índice de Módulos Python"
              >módulos</a> |</li>
         <li class="right" >
+          <a href="contribuir.html" title="Contribuir a Tinamit"
+             >siguiente</a> |</li>
+        <li class="right" >
           <a href="BF.html" title="BF (Modelos Biofísicos)"
              >anterior</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">documentación de tinamit - 1.2.0</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Tinamit</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="documentación.html" >Documentación</a> &#187;</li> 
       </ul>
     </div>
