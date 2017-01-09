@@ -44,6 +44,7 @@ y después implementar allí las funciones siguientes:
 * :func:`~tinamit.BF.ClaseModeloBF.inic_vars`
 
 Puedes escribir tu envoltura en cualquier archivo (hacia no tiene que ser en el código fuente de Tinamit sí mismo).
+La subclase incluida es este archivo **debe** llamarse ``Modelo``. Si se llama cualquier otra cosa, no funcionará.
 
 Cómo compartir tu nueva envoltura
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

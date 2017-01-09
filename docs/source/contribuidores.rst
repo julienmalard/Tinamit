@@ -28,14 +28,14 @@ Cuando se habrán traducido Tinamit y su documentación, los agradecimientos ir�
 Instituciones afiliadas
 -----------------------
 
-Los autores de Tinamit están afiliados con las instituciones siguientes
+Los autores de Tinamit están afiliados con las instituciones siguientes:
 
 .. image:: Logo_McGill_IGFS.jpg
-   :scale: 100 %
+   :width: 200
    :align: center
    :alt: Logo McGill
 
 .. image:: Logo_IARNA.jpg
-   :scale: 100 %
+   :width: 200
    :align: center
    :alt: Logo McGill

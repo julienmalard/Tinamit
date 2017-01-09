@@ -135,7 +135,7 @@ puedes simplemente copiar el texto abajo, o (mejor) puedes echarle otro vistazo 
 
 ¿Pero cómo especificamos cuáles modelos biofísico y DS querremos? Esto se hace en la línea siguiente:
 
-  ``modelo.estab_mds("C:\\SahysMod\\julien\\GBSDM_V4.vpm")``
+  ``modelo.estab_mds("C:\\Yo\\MisArchivos\\MiModeloVENSIM.vpm")``
 
 estab_mds, como probablemente adivinaste, establece el modelo DS. Le tienes que dar como argumento la ubicación del archivo 
 .vpm de tu modelo DS publicado por VENSIM. En el futuro, si Tinamit puede aceptar modelos de otros programas que VENSIM, podrás 
@@ -145,7 +145,7 @@ Y, para el modelo biofísico, especificamos la ubicación de la envoltura espec�
 En este caso, vamos a usar SAHYSMOD, un modelo de flujos de agua subterránea y de salinidad. Esto no cambia mucho; cada vez que 
 quieres conectar un modelo DS con un modelo en SAHYSMOD darás la misma envoltura, no importe cuáles variables estás conectando.
 
-  ``modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'envoltura_SAHYSMOD.py'))``
+  ``modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'mi_envoltura.py'))``
 
 (No te preocupes por lo del ``os.path.split(__file__)[0]``, es simplemente una manera en Python de obtener la dirección en tu 
 computadora del directorio actual. Esto le permite al programa encontrar la envoltura para el modelo biofísico, no 
@@ -158,7 +158,7 @@ necesita 3 cosas: los nombres de los dos variables para conectar y la dirección
 ir, de cuál modelo sacas el valor del variable para ponerlo en el otro modelo). Una simulación verdaderamente dinámica incluirá 
 conexiones en ambas direcciones (del modelo DS al biofísico y viceversa).
 
-  ``modelo.conectar(var_mds='Salinidad del suelo AS1', mds_fuente=False, var_bf="Cr4 - Salinidad zona de raíz irrigada rotada")``
+  ``modelo.conectar(var_mds='Salinidad', mds_fuente=False, var_bf="Cr4 - Salinidad")``
   
 ``var_mds`` es el nombre del variable en el modelo DS, y ``var_bf`` es el nombre del variable en el modelo biofísico (tal como 
 especificado en la envoltura). ``mds_fuente`` indica si se lee el valor del variable en el modelo DS para transferirla al
@@ -195,7 +195,7 @@ tener que abrir VENSIM y republicar el modelo para cada cambio. Actualmente, pue
 de cualquier variable en el modelo antes de empezar la simulación, pero es más útil que todo para activar y desactivar 
 políticas. (¡Cuidado! Esta función solamente cambia el valor inicial del variable.)
 
-  ``modelo.mds.cambiar_var(var=”política maravillosa”, val=1)``
+  ``modelo.mds.cambiar_var(var=”Política maravillosa”, val=1)``
   
 ``modelo.mds`` accede al objeto de modelo DS asociado con el modelo conectado, y la función ``.cambiar_var()`` hace exactamente 
 lo que piensas que hace.

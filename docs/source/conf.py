@@ -48,7 +48,7 @@ templates_path = ['_templates']
 # Substituciones universales
 rst_epilog = """
 .. |correo| replace:: julien.malard@mail.mcgill.ca
-.. |GitHub| replace:: `https://github.com/julienmalard/Tinamit`
+.. |GitHub| replace:: `<https://github.com/julienmalard/Tinamit>`_
 """
 
 # The suffix(es) of source filenames.
@@ -338,7 +338,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'tinamit', 'tinamit Documentation',
-     author, 'tinamit', 'One line description of project.',
+     author, 'tinamit', 'Conexión indolora de modelos biofísicos y de dinámicas de sistemas.',
      'Miscellaneous'),
 ]
 
