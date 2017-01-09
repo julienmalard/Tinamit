@@ -101,12 +101,13 @@ class EnvolturaBF(Modelo):
 
 class ClaseModeloBF(Modelo):
     """
-
+    Se debe desarrollar una subclase de esta clase para cada tipo modelo biofísico que se quiere volver compatible
+     con Tinamit.
     """
 
     def __init__(símismo):
         """
-
+        Esta función correrá automáticamente con la inclu
         """
         super().__init__(nombre='modeloBF')
 
@@ -129,7 +130,9 @@ class ClaseModeloBF(Modelo):
 
     def leer_vals(símismo):
         """
-
+        Esta función debe leer los variables del modelo desde el modelo externo y copiarlos al diccionario interno
+        de variables. Asegúrese que esté *actualizando* el diccionario interno, y que no lo esté recreando, lo cual
+        quebrará las conexiones con el modelo conectado.
         """
         raise NotImplementedError
 

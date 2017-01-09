@@ -3,7 +3,7 @@ Ejemplos
 
 Aquí presentamos unos ejemplos del uso de Tinamit, más allá de lo presentado en la sección :doc:`Uso <uso>`.
 
-El côdigo para este ejemplo se
+El código para estos ejemplos también se encuentra en el archivo :file:`Ejemplos` de Tinamit.
 
 
 Ejemplo muy básico
