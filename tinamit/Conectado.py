@@ -353,12 +353,7 @@ class SuperConectado(Modelo):
         :param dic_vars: Un diccionario especificando los variables de cada modelo en el formato {mod1: var, mod2: var}.
         :type dic_vars: dict
 
-        :param modelo_fuente: El nombre del modelo fuente.
-        :type modelo_fuente: str
 
-        :param conv: La conversión entre las unidades de ambos modelos. En el caso None, se intentará
-        adivinar la conversión con el módulo tinamit.Unidades.
-        :type conv: float
 
         """
 
@@ -415,7 +410,7 @@ class SuperConectado(Modelo):
         # Agregar el diccionario de conexión a la lista de conexiones.
         símismo.conexiones.append(dic_conex)
 
-        #
+        # Para hacer: el siguiente debe ser recursivo.
         símismo.modelos[modelo_fuente].vars_saliendo.append(var_fuente)
         símismo.modelos[modelo_recip].vars_entrando.append(var_recip)
 
