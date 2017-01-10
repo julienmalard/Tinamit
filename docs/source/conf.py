@@ -48,7 +48,7 @@ templates_path = ['_templates']
 # Substituciones universales
 rst_epilog = """
 .. |correo| replace:: julien.malard@mail.mcgill.ca
-.. |GitHub| replace:: `<https://github.com/julienmalard/Tinamit>`_
+.. |GitHub| replace:: https://github.com/julienmalard/Tinamit
 """
 
 # The suffix(es) of source filenames.
