@@ -12,7 +12,7 @@
 # Archivos de Python #
 ######################
 # El directorio de construcción de sphinx
-doc/_build
+docs/build
 # Metadatos "Egg"
 *.egg-info
 # configuración distutils
