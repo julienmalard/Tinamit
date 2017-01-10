@@ -2,7 +2,7 @@ import ctypes
 import os
 import struct
 
-from tinamit.Modelo import Modelo
+from .Modelo import Modelo
 
 
 class EnvolturaMDS(Modelo):

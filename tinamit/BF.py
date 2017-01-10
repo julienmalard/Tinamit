@@ -58,10 +58,14 @@ class EnvolturaBF(Modelo):
 
     def inic_vars(símismo):
         """
+        Inicializa los variables del modelo biofísico y los conecta al diccionario de variables del modelo.
 
         """
+
+        # Crear el vínculo
         símismo.modelo.variables = símismo.variables
 
+        # Inicializar los variables del modelo externo.
         símismo.modelo.inic_vars()
 
     def cambiar_vals_modelo_interno(símismo, valores):

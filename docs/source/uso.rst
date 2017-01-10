@@ -69,7 +69,7 @@ cuanto termines la etapa precedente.
 La primera etapa sería, por supuesto, de cargar los modelos biofísicos y DS con :guilabel:`Cargar MDS` y
 :guilabel:`Cargar modelo biofísico`.
 
-.. image:: Imágenes/IGU_cargar_modelos.png.png
+.. image:: Imágenes/IGU_cargar_modelos.png
    :align: center
    :alt: Cargar modelos en Tinamit.
 
