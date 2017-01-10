@@ -319,11 +319,21 @@ class ItemaConexión(CtrG.ItemaEditable):
         símismo.actualizar()
 
     def actualizar(símismo):
-        símismo.etiq_varMDS.config(text=símismo.receta['vars']['mds'])
-        símismo.etiq_conversión.config(text='X %s' % símismo.receta['conv'])
-        símismo.etiq_varBf.config(text=símismo.receta['vars']['bf'])
+        try:
+            símismo.etiq_varMDS.config(text=símismo.receta['vars']['mds'])
+            símismo.etiq_varBf.config(text=símismo.receta['vars']['bf'])
+            modelo_fuente = símismo.receta['modelo_fuente']
+        except KeyError:
+            símismo.etiq_varMDS.config(text=símismo.receta['var_mds'])
+            símismo.etiq_varBf.config(text=símismo.receta['var_bf'])
+            if símismo.receta['mds_fuente']:
+                modelo_fuente = 'mds'
+            else:
+                modelo_fuente = 'bf'
 
-        if símismo.receta['modelo_fuente'] == 'mds':
+        símismo.etiq_conversión.config(text='X %s' % símismo.receta['conv'])
+
+        if modelo_fuente == 'mds':
             if Fm.IzqaDerech:
                 símismo.etiq_izqflecha.config(image=símismo.flecha['cola_izq'])
                 símismo.etiq_derflecha.config(image=símismo.flecha['cbz_der'])
