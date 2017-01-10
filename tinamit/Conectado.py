@@ -357,7 +357,7 @@ class SuperConectado(Modelo):
         :type modelo_fuente: str
 
         :param conv: La conversión entre las unidades de ambos modelos. En el caso :keyword:`None`, se intentará
-        adivinar la conversión con el módulo :module:`~tinamit.Unidades`.
+        adivinar la conversión con el módulo :mod:`~tinamit.Unidades`.
         :type conv: float
 
         """
