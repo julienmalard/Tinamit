@@ -94,7 +94,7 @@ class SuperConectado(Modelo):
         Después se actualiza el variable ``símismo.conv_tiempo`` para guardar en memoria la conversión necesaria entre
         los pasos de los dos submodelos.
 
-        Se emplea el módulo :module:`Unidades.Unidades` para convertir unidades.
+        Se emplea el módulo :mod:`Unidades.Unidades` para convertir unidades.
 
         :return: El tiempo de paso del modelo SuperConectado.
         :rtype: str

@@ -32,6 +32,11 @@ El IGU
 Para los que no quieren programar, el IGU ofrece una manera sencilla de acceder (casi) todas las funcionalidades del IPA 
 Tinamit, y algunas adicionales.
 
+Se empieza el interfaz con la función ``correr`` del IGU:
+
+   ``from tinamit.Interfaz.IGU import correr``
+   ``correr()``
+
 Cambiar idiomas
 ^^^^^^^^^^^^^^^
 Bueno, primero, de pronto no hables español. O posiblemente trabajas con gente que no lo habla, y quieres hacerles la cortesía 
