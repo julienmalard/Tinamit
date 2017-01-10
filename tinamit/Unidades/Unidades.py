@@ -1,7 +1,7 @@
 import json
 import os
 
-with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'equiv_unid.json'), 'r', encoding='utf8') as d:
+with open(os.path.join(os.path.dirname(__file__), 'equiv_unid.json'), 'r', encoding='utf8') as d:
     dic_doc = json.load(d)
     dic_conv = dic_doc['conv']
     dic_equiv = dic_doc['equiv']
