@@ -1,5 +1,7 @@
 # Incluir la licencia
-include LICENSE.tx
+include LICENSE.txt
+
+include README.md
 
 # Incluir modelos de dinámicas de los sistemas
 include *.vpm

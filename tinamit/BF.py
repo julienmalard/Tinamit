@@ -7,13 +7,17 @@ from tinamit.Modelo import Modelo
 
 class EnvolturaBF(Modelo):
     """
+    Esta clase ofrece una envoltura para **TODOS** tipos de modelos biofísicos.
 
+    Modelos biofísicos específicos se implementan por crear una subclase de `~tinamit.BF.ClaseModeloBF` específica
+    para ellos.
     """
 
     def __init__(símismo, archivo):
         """
+        Incializar la envoltura.
 
-        :param archivo:
+        :param archivo: El archivo con el
         :type archivo: str
 
         """
