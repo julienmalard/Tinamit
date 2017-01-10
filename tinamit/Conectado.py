@@ -91,10 +91,10 @@ class SuperConectado(Modelo):
         con una unidad de tiempo de meses con un modelo de unidad de año, se aplicará una unidad de tiempo de años
         al modelo conectado.
 
-        Después se actualiza el variable ``símismo.conv_tiempo`` para guardar en memoria la conversión necesaria entre
+        Después se actualiza el variable símismo.conv_tiempo para guardar en memoria la conversión necesaria entre
         los pasos de los dos submodelos.
 
-        Se emplea el módulo `Unidades.Unidades` para convertir unidades.
+        Se emplea el módulo Unidades.Unidades para convertir unidades.
 
         :return: El tiempo de paso del modelo SuperConectado.
         :rtype: str
@@ -197,11 +197,11 @@ class SuperConectado(Modelo):
 
     def cambiar_vals_modelo_interno(símismo, valores):
         """
-        Esta función cambia los valores del modelo. A través de la función :func:`Conectado.cambiar_vals`, se vuelve
+        Esta función cambia los valores del modelo. A través de la función Conectado.cambiar_vals, se vuelve
         recursivo.
 
         :param valores: El diccionario de nombres de variables para cambiar. Hay que prefijar cada nombre de variable
-        con el nombre del submodelo en en cual se ubica (separados con un ``_``), para que Tinamit sepa en cuál
+        con el nombre del submodelo en en cual se ubica (separados con un "_"), para que Tinamit sepa en cuál
         submodelo se ubica cada variable.
         :type valores: dict
 
@@ -252,8 +252,8 @@ class SuperConectado(Modelo):
 
     def incrementar(símismo, paso):
         """
-        Esta función avanza los dos submodelos conectados de intervalo de tiempo ``paso``. Emplea el módulo
-        :py:mod:`threading` para correr los dos submodelos en paralelo, así ahorando tiempo.
+        Esta función avanza los dos submodelos conectados de intervalo de tiempo paso. Emplea el módulo
+        threading para correr los dos submodelos en paralelo, así ahorando tiempo.
 
         :param paso: El intervalo de tiempo.
         :type paso: int
@@ -290,7 +290,7 @@ class SuperConectado(Modelo):
     def leer_vals(símismo):
         """
         Leamos los valores de los variables de los dos submodelos. Por la conexión entre los diccionarios de variables
-        de los submodelos y del ``SuperConectado``, no hay necesidad de actualizar el diccionario del ``SuperConectado``
+        de los submodelos y del SuperConectado, no hay necesidad de actualizar el diccionario del SuperConectado
         sí mismo.
         """
 
@@ -356,8 +356,8 @@ class SuperConectado(Modelo):
         :param modelo_fuente: El nombre del modelo fuente.
         :type modelo_fuente: str
 
-        :param conv: La conversión entre las unidades de ambos modelos. En el caso ```None``, se intentará
-        adivinar la conversión con el módulo `~tinamit.Unidades`.
+        :param conv: La conversión entre las unidades de ambos modelos. En el caso None, se intentará
+        adivinar la conversión con el módulo tinamit.Unidades.
         :type conv: float
 
         """
@@ -468,7 +468,7 @@ class Conectado(SuperConectado):
 
     def __init__(símismo):
         """
-        Inicializar el modelo ``Conectado``.
+        Inicializar el modelo Conectado.
         """
 
         # Referencias rápidas a los submodelos.
@@ -524,7 +524,7 @@ class Conectado(SuperConectado):
         :param var_bf: El nombre del variable correspondiente en el modelo biofísico.
         :type var_bf: str
 
-        :param mds_fuente: Si ``True``, el modelo DS es el modelo fuente para la conexión. Sino, será el modelo
+        :param mds_fuente: Si True, el modelo DS es el modelo fuente para la conexión. Sino, será el modelo
         biofísico.
         :type mds_fuente: bool
 
