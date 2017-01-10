@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='tinamit',
-    version='1.2.0',
+    version='1.2.1rcJULIEN.MALARD',
     packages=find_packages(),
     url='https://github.com/julienmalard/Tinamit',
     license='GNU GPL 3',
@@ -10,5 +10,8 @@ setup(
     author_email='julien.malard@mail.mcgill.ca',
     description='Conexión de modelos socioeconómicos (dinámicas de los sistemas) con modelos biofísicos.',
     requires=['numpy', 'matplotlib', 'scipy'],
-#     include_package_data=True
+    package_data={
+        # Incluir estos documentos de los paquetes:
+        '': ['*.txt', '*.vpm', '*.json', '*.png', '*.jpg'],
+    },
 )

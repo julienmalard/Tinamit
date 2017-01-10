@@ -1,7 +1,7 @@
 Contribuir a Tinamit
 ====================
 
-.. content:: Contenido
+.. contents:: Contenido
    :depth: 3
 
 Traducir
@@ -9,7 +9,7 @@ Traducir
 ¡Siempre querremos traducciones para hacer de Tinamit una herramienta aún más accesible!
 El interfaz de Tinamit tiene funcionalidades para la traducción del interfaz sí mismo (el globo).
 
-.. image:: Imágenes/Cabeza_tinamit_globo.png
+.. image:: Imágenes/IGU_cabeza_globo.png
    :scale: 100 %
    :align: center
    :alt: Icono de cambio de idiomas de Tinamit.
@@ -68,7 +68,7 @@ de comanda, por un dll, o por algo similar):
 2. Empezar una simulación.
 3. Avanzar la simulación de un número de pasos predeterminados.
 4. Leer valores intermediaros de los variables, y cambiar estos valores antes de seguir con el próximo paso de la
-simulación.
+   simulación.
 
 Si puedes hacer esto, ya estás listo. Los cambios de tendrán que efectuar directamente al código fuente de Tinamit
 (al contrario de la adición de una envoltura biofísica), así que recomiento fuertemente que creas una nueva rama de

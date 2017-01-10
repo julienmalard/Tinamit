@@ -19,5 +19,5 @@ Versión: |version|
    ejemplos
    documentación
    contribuir
-   contribuidores
+   agradecimientos
 

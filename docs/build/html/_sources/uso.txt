@@ -1,15 +1,15 @@
 Cómo se emplea Tinamit
 ======================
 
-.. contents:: Contenido
-   :depth: 3
-
 Hay dos maneras de usar Tinamit. Si quieres hacerlo sin código cualquier, el IGU (Interfaz de Usuario Gráfico) es para ti.
 Si prefieres hacerlo con unas pocas líneas de código (lo cual puede acelerar bastante tu trabajo si tienes muchas simulaciones
 diferentes que quieres automatizar), entonces el IPA (Interfaz de Programación de Aplicaciones) es la mejor opción.
 
 Al final, el IGU y el IPA hacen el mismo trabajo (el IGU tiene botones muy lindos para llamar las funciones del IPA de manera
 automática).
+
+.. contents:: Contenido
+   :depth: 3
 
 Preparación pre-uso
 -------------------

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Ejemplos &#8212; documentación de tinamit - 1.2.0</title>
+    <title>Ejemplos &#8212; documentación de tinamit - 1.2.1rc</title>
     
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.2.0',
+        VERSION:     '1.2.1rc',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,8 +27,8 @@
     <link rel="shortcut icon" href="_static/Logo_favicon.ico"/>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="top" title="documentación de tinamit - 1.2.0" href="index.html" />
-    <link rel="next" title="Documentación" href="documentación.html" />
+    <link rel="top" title="documentación de tinamit - 1.2.1rc" href="index.html" />
+    <link rel="next" title="Documentación completa" href="documentación.html" />
     <link rel="prev" title="Cómo se emplea Tinamit" href="uso.html" /> 
   </head>
   <body role="document">
@@ -42,7 +42,7 @@
           <a href="py-modindex.html" title="Índice de Módulos Python"
              >módulos</a> |</li>
         <li class="right" >
-          <a href="documentación.html" title="Documentación"
+          <a href="documentación.html" title="Documentación completa"
              accesskey="N">siguiente</a> |</li>
         <li class="right" >
           <a href="uso.html" title="Cómo se emplea Tinamit"
@@ -71,10 +71,35 @@ cualquier modelo biofísico externo para que te funcione, así que empecemos con
 <span class="n">directorio</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span>
 <span class="n">modelo</span><span class="o">.</span><span class="n">estab_mds</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directorio</span><span class="p">,</span> <span class="s2">&quot;Prueba dll.vpm&quot;</span><span class="p">))</span>
 <span class="n">modelo</span><span class="o">.</span><span class="n">estab_bf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directorio</span><span class="p">,</span> <span class="s1">&#39;Prueba bf.py&#39;</span><span class="p">))</span>
-<span class="n">modelo</span><span class="o">.</span><span class="n">conectar</span><span class="p">(</span><span class="n">var_mds</span><span class="o">=</span><span class="s1">&#39;Lluvia&#39;</span><span class="p">,</span> <span class="n">var_bf</span><span class="o">=</span><span class="s1">&#39;var1&#39;</span><span class="p">,</span> <span class="n">mds_fuente</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">modelo</span><span class="o">.</span><span class="n">conectar</span><span class="p">(</span><span class="n">var_mds</span><span class="o">=</span><span class="s1">&#39;Lluvia&#39;</span><span class="p">,</span> <span class="n">var_bf</span><span class="o">=</span><span class="s1">&#39;Lluvia&#39;</span><span class="p">,</span> <span class="n">mds_fuente</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">modelo</span><span class="o">.</span><span class="n">conectar</span><span class="p">(</span><span class="n">var_mds</span><span class="o">=</span><span class="s1">&#39;Bosques&#39;</span><span class="p">,</span> <span class="n">var_bf</span><span class="o">=</span><span class="s1">&#39;Bosque&#39;</span><span class="p">,</span> <span class="n">mds_fuente</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">modelo</span><span class="o">.</span><span class="n">simular</span><span class="p">(</span><span class="n">paso</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tiempo_final</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">nombre_corrida</span><span class="o">=</span><span class="s1">&#39;Corrida_Tinamit&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Tomémoslo línea por línea. Primero, importamos Tinamit.</p>
+<blockquote>
+<div><code class="docutils literal"><span class="pre">import</span> <span class="pre">os</span></code>
+<code class="docutils literal"><span class="pre">from</span> <span class="pre">tinamit.Conectado</span> <span class="pre">import</span> <span class="pre">Conectado</span></code></div></blockquote>
+<p>Segundo, conectamos los variables biofísicos y de DS:</p>
+<blockquote>
+<div><code class="docutils literal"><span class="pre">directorio</span> <span class="pre">=</span> <span class="pre">os.path.dirname(__file__)</span></code>
+<code class="docutils literal"><span class="pre">modelo.estab_mds(os.path.join(directorio,</span> <span class="pre">&quot;Prueba</span> <span class="pre">dll.vpm&quot;))</span></code>
+<code class="docutils literal"><span class="pre">modelo.estab_bf(os.path.join(directorio,</span> <span class="pre">'Prueba</span> <span class="pre">bf.py'))</span></code></div></blockquote>
+<p>Tenemos unos modelos muy sencillos. El modelo DS determina, dado la lluvia, la cantidad de pesca posible y su impacto
+en la necesidad de explotar recursos del bosque.</p>
+<img alt="Modelo VENSIM." class="align-center" src="_images/Ejemplo_básico_modelo_VENSIM.png" />
+<p>Del otro lado, el &#8220;modelo&#8221; biofísico nos da la precipitación según la cubertura forestal. Vamos a conectar los variables
+necesarios:</p>
+<blockquote>
+<div><code class="docutils literal"><span class="pre">modelo.conectar(var_mds='Lluvia',</span> <span class="pre">var_bf='Lluvia',</span> <span class="pre">mds_fuente=False)</span></code>
+<code class="docutils literal"><span class="pre">modelo.conectar(var_mds='Bosques',</span> <span class="pre">var_bf='Bosque',</span> <span class="pre">mds_fuente=True)</span></code></div></blockquote>
+<p>Y corremos la simulación para 100 meses. ¡Allí está! Ya puedes visualizar los resultados directamente en VENSIM.</p>
+<blockquote>
+<div><code class="docutils literal"><span class="pre">modelo.simular(paso=1,</span> <span class="pre">tiempo_final=100,</span> <span class="pre">nombre_corrida='Corrida_Tinamit')</span></code></div></blockquote>
+</div>
+<div class="section" id="ejemplo-mas-realistico-salinidad-de-suelos">
+<h2>Ejemplo más realístico (salinidad de suelos)<a class="headerlink" href="#ejemplo-mas-realistico-salinidad-de-suelos" title="Enlazar permanentemente con este título">¶</a></h2>
+<p>Para un ejemplo un poco más realístico, ver el ejemplo de SAHYSMOD en el código de Tinamit.</p>
 </div>
 </div>
 
@@ -91,6 +116,7 @@ cualquier modelo biofísico externo para que te funcione, así que empecemos con
   <ul>
 <li><a class="reference internal" href="#">Ejemplos</a><ul>
 <li><a class="reference internal" href="#ejemplo-muy-basico">Ejemplo muy básico</a></li>
+<li><a class="reference internal" href="#ejemplo-mas-realistico-salinidad-de-suelos">Ejemplo más realístico (salinidad de suelos)</a></li>
 </ul>
 </li>
 </ul>
@@ -100,7 +126,7 @@ cualquier modelo biofísico externo para que te funcione, así que empecemos con
                         title="capítulo anterior">Cómo se emplea Tinamit</a></p>
   <h4>Próximo tema</h4>
   <p class="topless"><a href="documentación.html"
-                        title="próximo capítulo">Documentación</a></p>
+                        title="próximo capítulo">Documentación completa</a></p>
   <div role="note" aria-label="source link">
     <h3>Esta página</h3>
     <ul class="this-page-menu">
@@ -132,7 +158,7 @@ cualquier modelo biofísico externo para que te funcione, así que empecemos con
           <a href="py-modindex.html" title="Índice de Módulos Python"
              >módulos</a> |</li>
         <li class="right" >
-          <a href="documentación.html" title="Documentación"
+          <a href="documentación.html" title="Documentación completa"
              >siguiente</a> |</li>
         <li class="right" >
           <a href="uso.html" title="Cómo se emplea Tinamit"

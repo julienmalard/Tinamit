@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>tinamit.MDS &#8212; documentación de tinamit - 1.2.0</title>
+    <title>tinamit.MDS &#8212; documentación de tinamit - 1.2.1rc</title>
     
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.2.0',
+        VERSION:     '1.2.1rc',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -27,7 +27,7 @@
     <link rel="shortcut icon" href="../../_static/Logo_favicon.ico"/>
     <link rel="index" title="Índice" href="../../genindex.html" />
     <link rel="search" title="Búsqueda" href="../../search.html" />
-    <link rel="top" title="documentación de tinamit - 1.2.0" href="../../index.html" />
+    <link rel="top" title="documentación de tinamit - 1.2.1rc" href="../../index.html" />
     <link rel="up" title="Código de módulo" href="../index.html" /> 
   </head>
   <body role="document">
@@ -57,12 +57,465 @@
 
 <span class="kn">from</span> <span class="nn">tinamit.Modelo</span> <span class="k">import</span> <span class="n">Modelo</span>
 
-<div class="viewcode-block" id="ensayo"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.ensayo">[documentos]</a><span class="k">class</span> <span class="nc">ensayo</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Un ensayo</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
 
+<div class="viewcode-block" id="EnvolturaMDS"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.EnvolturaMDS">[documentos]</a><span class="k">class</span> <span class="nc">EnvolturaMDS</span><span class="p">(</span><span class="n">Modelo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Esta clase sirve para representar modelo de dinámicas de los sistemas (MDS). Se debe crear una subclase para cada</span>
+<span class="sd">    tipo de MDS. Al moment, el único incluido es VENSIM.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
+        <span class="c1"># Modelos DS se identifican por el nombre &#39;mds&#39;.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">nombre</span><span class="o">=</span><span class="s1">&#39;mds&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EnvolturaMDS.inic_vars"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.EnvolturaMDS.inic_vars">[documentos]</a>    <span class="k">def</span> <span class="nf">inic_vars</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Este método se deja a las subclases de :class:`~tinamit.MDS.EnvolturaMDS` para implementar.</span>
+
+<span class="sd">        Ver :func:`Modelo.Modelo.inic_vars` para más información.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EnvolturaMDS.obt_unidad_tiempo"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo">[documentos]</a>    <span class="k">def</span> <span class="nf">obt_unidad_tiempo</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cada envoltura de programa DS debe implementar eset metodo para devolver las unidades de tiempo del modelo DS</span>
+<span class="sd">        cargado.</span>
+
+<span class="sd">        :return: Las unidades del modelo DS cargado.</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EnvolturaMDS.cambiar_vals_modelo_interno"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo_interno">[documentos]</a>    <span class="k">def</span> <span class="nf">cambiar_vals_modelo_interno</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">valores</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Este método se deja a las subclases de :class:`~tinamit.MDS.EnvolturaMDS` para implementar.</span>
+
+<span class="sd">        Ver :func:`Modelo.Modelo.cambiar_vals_modelo` para más información.</span>
+
+<span class="sd">        :param valores: El diccionario de valores para cambiar.</span>
+<span class="sd">        :type valores: dict</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EnvolturaMDS.incrementar"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.EnvolturaMDS.incrementar">[documentos]</a>    <span class="k">def</span> <span class="nf">incrementar</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">paso</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Este método se deja a las subclases de :class:`~tinamit.MDS.EnvolturaMDS` para implementar.</span>
+
+<span class="sd">        Debe avanzar la simulación del modelo DS de ``paso`` unidades de tiempo.  Ver</span>
+<span class="sd">        :func:`Modelo.Modelo.incrementar` para más información.</span>
+
+<span class="sd">        :param paso: El paso con cual incrementar el modelo.</span>
+<span class="sd">        :type paso: int</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EnvolturaMDS.leer_vals"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.EnvolturaMDS.leer_vals">[documentos]</a>    <span class="k">def</span> <span class="nf">leer_vals</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Este método se deja a las subclases de :class:`~tinamit.MDS.EnvolturaMDS` para implementar.</span>
+
+<span class="sd">        Debe leer los valores de los variables en el modelo MDS. Si es más fácil, puede simplemente leer los valores</span>
+<span class="sd">        de los variables que están en la lista ``EnvolturaMDS.vars_saliendo`` (los variables del DS que están</span>
+<span class="sd">        conectados con el modelo biofísico).</span>
+
+<span class="sd">        Ver :func:`Modelo.Modelo.leer_vals` para más información.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EnvolturaMDS.iniciar_modelo"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.EnvolturaMDS.iniciar_modelo">[documentos]</a>    <span class="k">def</span> <span class="nf">iniciar_modelo</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">nombre_corrida</span><span class="p">,</span> <span class="n">tiempo_final</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Este método se deja a las subclases de :class:`~tinamit.MDS.EnvolturaMDS` para implementar.</span>
+
+<span class="sd">        Ver :func:`Modelo.Modelo.iniciar_modelo` para más información.</span>
+
+<span class="sd">        :param nombre_corrida: El nombre de la corrida (útil para guardar datos).</span>
+<span class="sd">        :type nombre_corrida: str</span>
+
+<span class="sd">        :param tiempo_final: El tiempo final de la simulación.</span>
+<span class="sd">        :type tiempo_final: int</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="EnvolturaMDS.cambiar_var"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.EnvolturaMDS.cambiar_var">[documentos]</a>    <span class="k">def</span> <span class="nf">cambiar_var</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Est método cambia el valor inicial de un variable (antes de empezar la simulación). Se emplea principalmente</span>
+<span class="sd">        para activar y desactivar políticas.</span>
+
+<span class="sd">        :param var: El nombre del variable para cambiar.</span>
+<span class="sd">        :type var: str</span>
+<span class="sd">        :param val: El nuevo valor del variable.</span>
+<span class="sd">        :type val: float</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Simplemente se emplea la función Modelo.cambiar_vals().</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">cambiar_vals</span><span class="p">(</span><span class="n">valores</span><span class="o">=</span><span class="p">{</span><span class="n">var</span><span class="p">:</span> <span class="n">val</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="EnvolturaMDS.cerrar_modelo"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.EnvolturaMDS.cerrar_modelo">[documentos]</a>    <span class="k">def</span> <span class="nf">cerrar_modelo</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Este método se deja a las subclases de :class:`~tinamit.MDS.EnvolturaMDS` para implementar.</span>
+
+<span class="sd">        Debe llamar acciones necesarias para terminar la simulación y cerrar el modelo DS, si aplican.</span>
+
+<span class="sd">        Ver :func:`Modelo.Modelo.cerrar_modelo` para más información.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<div class="viewcode-block" id="ModeloVENSIM"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.ModeloVENSIM">[documentos]</a><span class="k">class</span> <span class="nc">ModeloVENSIM</span><span class="p">(</span><span class="n">EnvolturaMDS</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Esta es la envoltura para modelos de tipo VENSIM. Puede leer y controlar (casi) cualquier modelo VENSIM para que</span>
+<span class="sd">    se pueda emplear en Tinamit.</span>
+<span class="sd">    Necesitarás la versión DSS de VENSIM para que funcione en Tinamit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">archivo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        La función de inicialización del modelo. Creamos el vínculo con el DLL de VENSIM y cargamos el modelo</span>
+<span class="sd">        especificado.</span>
+
+<span class="sd">        :param archivo: El archivo del modelo que queieres cargar, en formato .vpm.</span>
+<span class="sd">        :type archivo: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Llamar el DLL de VENSIM.</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">dll</span> <span class="o">=</span> <span class="n">dll</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">WinDLL</span><span class="p">(</span><span class="s1">&#39;C:</span><span class="se">\\</span><span class="s1">Windows</span><span class="se">\\</span><span class="s1">System32</span><span class="se">\\</span><span class="s1">vendll32.dll&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Inicializar Vensim</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_command</span><span class="p">,</span>
+                               <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">],</span>
+                               <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error iniciando VENSIM.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Cargar el modelo</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_command</span><span class="p">,</span>
+                               <span class="n">args</span><span class="o">=</span><span class="s1">&#39;SPECIAL&gt;LOADMODEL|</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">archivo</span><span class="p">,</span>
+                               <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Eroor cargando el modelo de VENSIM.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Parámetros estéticos de ejecución.</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_be_quiet</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                               <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error en la comanda &quot;vensim_be_quiet&quot;.&#39;</span><span class="p">,</span>
+                               <span class="n">val_error</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Inicializar ModeloVENSIM como una EnvolturaMDS.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ModeloVENSIM.inic_vars"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.ModeloVENSIM.inic_vars">[documentos]</a>    <span class="k">def</span> <span class="nf">inic_vars</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inicializamos el diccionario de variables del modelo VENSIM.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Primero, verificamos el tamañano de memoria necesario para guardar una lista de los nombres de los variables.</span>
+
+        <span class="n">mem</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># Crear una memoria intermedia</span>
+
+        <span class="c1"># Verificar el tamaño necesario</span>
+        <span class="n">tamaño_nec</span> <span class="o">=</span> <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">símismo</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_get_varnames</span><span class="p">,</span>
+                                            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                                            <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error obteniendo eñ tamaño de los variables VENSIM.&#39;</span><span class="p">,</span>
+                                            <span class="n">val_error</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">devolver</span><span class="o">=</span><span class="kc">True</span>
+                                            <span class="p">)</span>
+
+        <span class="n">mem</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="n">tamaño_nec</span><span class="p">)</span>  <span class="c1"># Una memoria intermedia con el tamaño apropiado</span>
+
+        <span class="c1"># Guardar y decodar los nombres de los variables.</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">símismo</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_get_varnames</span><span class="p">,</span>
+                               <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="n">tamaño_nec</span><span class="p">],</span>
+                               <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error obteniendo los nombres de los variables de VENSIM.&#39;</span><span class="p">,</span>
+                               <span class="n">val_error</span><span class="o">=-</span><span class="mi">1</span>
+                               <span class="p">)</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">mem</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="p">]</span>
+
+        <span class="c1"># Quitar los nombres de variables VENSIM genéricos de la lista.</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;FINAL TIME&#39;</span><span class="p">,</span> <span class="s1">&#39;TIME STEP&#39;</span><span class="p">,</span> <span class="s1">&#39;INITIAL TIME&#39;</span><span class="p">,</span> <span class="s1">&#39;SAVEPER&#39;</span><span class="p">,</span> <span class="s1">&#39;Time&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
+                <span class="n">variables</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="c1"># Sacar los nombres de variables editables únicamente</span>
+        <span class="n">mem</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="n">tamaño_nec</span><span class="p">)</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">símismo</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_get_varnames</span><span class="p">,</span>
+                               <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="n">tamaño_nec</span><span class="p">],</span>
+                               <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error obteniendo los nombres de los variables editables (&quot;Gaming&quot;) de &#39;</span>
+                                             <span class="s1">&#39;VENSIM.&#39;</span><span class="p">,</span>
+                               <span class="n">val_error</span><span class="o">=-</span><span class="mi">1</span>
+                               <span class="p">)</span>
+
+        <span class="n">editables</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">mem</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="p">]</span>
+
+        <span class="c1"># Sacar las unidades de los variables, e identificar los variables constantes</span>
+        <span class="n">unidades</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">constantes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
+            <span class="c1"># Para cada variable...</span>
+
+            <span class="c1"># Sacar sus unidades</span>
+            <span class="n">mem</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+            <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">símismo</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_get_varattrib</span><span class="p">,</span>
+                                   <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">var</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+                                   <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error obteniendo las unidades del variable </span><span class="si">{}</span><span class="s1"> en VENSIM&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var</span><span class="p">),</span>
+                                   <span class="n">val_error</span><span class="o">=-</span><span class="mi">1</span>
+                                   <span class="p">)</span>
+            <span class="c1"># Guardamos las unidades en un diccionario temporario.</span>
+            <span class="n">unidades</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">mem</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># Verificar si el variable es un constante (ingreso)</span>
+            <span class="n">mem</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+            <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">símismo</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_get_varattrib</span><span class="p">,</span>
+                                   <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">var</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+                                   <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error obteniendo la clase del variable </span><span class="si">{}</span><span class="s1"> en VENSIM&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var</span><span class="p">),</span>
+                                   <span class="n">val_error</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">tipo_var</span> <span class="o">=</span> <span class="n">mem</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+            <span class="c1"># Guardamos los variables constantes en una lista.</span>
+            <span class="k">if</span> <span class="n">tipo_var</span> <span class="o">==</span> <span class="s1">&#39;Constant&#39;</span><span class="p">:</span>
+                <span class="n">constantes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+        <span class="c1"># Actualizar el diccionario de variables.</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
+            <span class="c1"># Para cada variable, creamos un diccionario especial, con su valor y unidades. Puede ser un variable</span>
+            <span class="c1"># de ingreso si es de tipo editable (&quot;Gaming&quot;), y puede ser un variable de egreso si no es un valor</span>
+            <span class="c1"># constante.</span>
+            <span class="n">dic_var</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;val&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="s1">&#39;unidades&#39;</span><span class="p">:</span> <span class="n">unidades</span><span class="p">[</span><span class="n">var</span><span class="p">],</span>
+                       <span class="s1">&#39;ingreso&#39;</span><span class="p">:</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">editables</span><span class="p">,</span>
+                       <span class="s1">&#39;egreso&#39;</span><span class="p">:</span> <span class="n">var</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">constantes</span><span class="p">}</span>
+
+            <span class="c1"># Guadar el diccionario del variable en el diccionario general de variables.</span>
+            <span class="n">símismo</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">dic_var</span></div>
+
+<div class="viewcode-block" id="ModeloVENSIM.obt_unidad_tiempo"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.ModeloVENSIM.obt_unidad_tiempo">[documentos]</a>    <span class="k">def</span> <span class="nf">obt_unidad_tiempo</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Aquí, sacamos las unidades de tiempo del modelo VENSIM.</span>
+
+<span class="sd">        :return: Las unidades de tiempo.</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Una memoria intermediaria.</span>
+        <span class="n">mem_inter</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+
+        <span class="c1"># Sacar las unidades del variable &quot;TIME STEP&quot;.</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">símismo</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_get_varattrib</span><span class="p">,</span>
+                               <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;TIME STEP&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mem_inter</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+                               <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error obteniendo las unidades de tiempo de VENSIM.&#39;</span><span class="p">,</span>
+                               <span class="n">val_error</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Decodar</span>
+        <span class="n">unidades</span> <span class="o">=</span> <span class="n">mem_inter</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">unidades</span></div>
+
+<div class="viewcode-block" id="ModeloVENSIM.iniciar_modelo"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.ModeloVENSIM.iniciar_modelo">[documentos]</a>    <span class="k">def</span> <span class="nf">iniciar_modelo</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">tiempo_final</span><span class="p">,</span> <span class="n">nombre_corrida</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Acciones necesarias para iniciar el modelo VENSIM.</span>
+
+<span class="sd">        :param nombre_corrida: El nombre de la corrida del modelo.</span>
+<span class="sd">        :type nombre_corrida: str</span>
+
+<span class="sd">        :param tiempo_final: El tiempo final de la simulación.</span>
+<span class="sd">        :type tiempo_final: int</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Establecer el nombre de la corrida.</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">símismo</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_command</span><span class="p">,</span>
+                               <span class="n">args</span><span class="o">=</span><span class="s2">&quot;SIMULATE&gt;RUNNAME|</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">nombre_corrida</span><span class="p">,</span>
+                               <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error iniciando la corrida VENSIM.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Establecer el tiempo final.</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">símismo</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_command</span><span class="p">,</span>
+                               <span class="n">args</span><span class="o">=</span><span class="s1">&#39;SIMULATE&gt;SETVAL|</span><span class="si">%s</span><span class="s1"> = </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;FINAL TIME&#39;</span><span class="p">,</span> <span class="n">tiempo_final</span><span class="p">),</span>
+                               <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error estableciendo el tiempo final para VENSIM.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Iniciar la simulación en modo juego (&quot;Game&quot;). Esto permitirá la actualización de los valores de los variables</span>
+        <span class="c1"># a través de la simulación.</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">símismo</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_command</span><span class="p">,</span>
+                               <span class="n">args</span><span class="o">=</span><span class="s2">&quot;MENU&gt;GAME&quot;</span><span class="p">,</span>
+                               <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error inicializando el juego VENSIM.&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModeloVENSIM.cambiar_vals_modelo_interno"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.ModeloVENSIM.cambiar_vals_modelo_interno">[documentos]</a>    <span class="k">def</span> <span class="nf">cambiar_vals_modelo_interno</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">valores</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Esta función cambiar los valores de variables en VENSIM. Notar que únicamente los variables identificados como</span>
+<span class="sd">        de tipo &quot;Gaming&quot; en el modelo podrán actualizarse.</span>
+
+<span class="sd">        :param valores: Un diccionario de variables y sus nuevos valores.</span>
+<span class="sd">        :type valores: dict</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">valores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Para cada variable para cambiar...</span>
+
+            <span class="c1"># Actualizar el valor en el modelo VENSIM.</span>
+            <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">símismo</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_command</span><span class="p">,</span>
+                                   <span class="n">args</span><span class="o">=</span><span class="s1">&#39;SIMULATE&gt;SETVAL|</span><span class="si">%s</span><span class="s1"> = </span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">val</span><span class="p">),</span>
+                                   <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error cambiando el variable </span><span class="si">%s</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="n">var</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModeloVENSIM.incrementar"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.ModeloVENSIM.incrementar">[documentos]</a>    <span class="k">def</span> <span class="nf">incrementar</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">paso</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Esta función avanza la simulación VENSIM de ``paso`` pasos.</span>
+
+<span class="sd">        :param paso: El número de pasos para tomar.</span>
+<span class="sd">        :type paso: int</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Establecer el paso.</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">símismo</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_command</span><span class="p">,</span>
+                               <span class="n">args</span><span class="o">=</span><span class="s2">&quot;GAME&gt;GAMEINTERVAL|</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">paso</span><span class="p">,</span>
+                               <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error estableciendo el paso de VENSIM.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Avanzar el modelo.</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">símismo</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_command</span><span class="p">,</span>
+                               <span class="n">args</span><span class="o">=</span><span class="s2">&quot;GAME&gt;GAMEON&quot;</span><span class="p">,</span> <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error para incrementar VENSIM.&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModeloVENSIM.leer_vals"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.ModeloVENSIM.leer_vals">[documentos]</a>    <span class="k">def</span> <span class="nf">leer_vals</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Este método lee los valores intermediaros de los variables del modelo VENSIM. Para ahorar tiempo, únicamente</span>
+<span class="sd">        lee esos variables que están en la lista de ``ModeloVENSIM.vars_saliendo``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">símismo</span><span class="o">.</span><span class="n">vars_saliendo</span><span class="p">:</span>
+            <span class="c1"># Para cada variable que está conectado con el modelo biofísico...</span>
+
+            <span class="c1"># Una memoria</span>
+            <span class="n">mem_inter</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+            <span class="c1"># Leer su valor.</span>
+            <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">símismo</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_get_val</span><span class="p">,</span>
+                                   <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">var</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">mem_inter</span><span class="p">],</span>
+                                   <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error con VENSIM para leer variables.&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Decodar</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="n">mem_inter</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># Guardar en el diccionario interno.</span>
+            <span class="n">símismo</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;val&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span></div>
+
+<div class="viewcode-block" id="ModeloVENSIM.cerrar_modelo"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.ModeloVENSIM.cerrar_modelo">[documentos]</a>    <span class="k">def</span> <span class="nf">cerrar_modelo</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cierre la simulación VENSIM.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Llamar la comanda para terminar la simulación.</span>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">símismo</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_command</span><span class="p">,</span>
+                               <span class="n">args</span><span class="o">=</span><span class="s2">&quot;GAME&gt;ENDGAME&quot;</span><span class="p">,</span>
+                               <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error para terminar la simulación VENSIM.&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModeloVENSIM.verificar_vensim"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.ModeloVENSIM.verificar_vensim">[documentos]</a>    <span class="k">def</span> <span class="nf">verificar_vensim</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Esta función regresa el estatus de Vensim. Es particularmente útil para desboguear (no tiene uso en las</span>
+<span class="sd">        otras funciones de esta clase, y se incluye como ayuda a la programadora.)</span>
+
+<span class="sd">        :return: estatus número integral de código de estatus</span>
+<span class="sd">            | 0 = Vensim está listo</span>
+<span class="sd">            | 1 = Vensim está en una simulación activa</span>
+<span class="sd">            | 2 = Vensim está en una simulación, pero no está respondiendo</span>
+<span class="sd">            | 3 = Malas noticias</span>
+<span class="sd">            | 4 = Error de memoria</span>
+<span class="sd">            | 5 = Vensim está en modo de juego</span>
+<span class="sd">            | 6 = Memoria no libre. Llamar vensim_command() debería de arreglarlo.</span>
+<span class="sd">            | 16 += ver documentación de VENSIM para vensim_check_status() en la sección de DLL (Suplemento DSS)</span>
+<span class="sd">        :rtype: int</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Obtener el estatus.</span>
+        <span class="n">estatus</span> <span class="o">=</span> <span class="n">símismo</span><span class="o">.</span><span class="n">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">símismo</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">vensim_check_status</span><span class="p">,</span>
+                                         <span class="n">args</span><span class="o">=</span><span class="p">[],</span>
+                                         <span class="n">mensaje_error</span><span class="o">=</span><span class="s1">&#39;Error verificando el estatus de VENSIM. De verdad, la cosa&#39;</span>
+                                                       <span class="s1">&#39;te va muy mal.&#39;</span><span class="p">,</span>
+                                         <span class="n">val_error</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">devolver</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">estatus</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ModeloVENSIM.comanda_vensim"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.ModeloVENSIM.comanda_vensim">[documentos]</a>    <span class="k">def</span> <span class="nf">comanda_vensim</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">mensaje_error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">val_error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">devolver</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Esta función sirve para llamar todo tipo de comanda VENSIM.</span>
+
+<span class="sd">        :param func: La función DLL a llamar.</span>
+<span class="sd">        :type func: function</span>
+
+<span class="sd">        :param args: Los argumento a pasar a la función. Si no hay, usar una lista vacía.</span>
+<span class="sd">        :type args: list | str</span>
+
+<span class="sd">        :param mensaje_error: El mensaje de error para mostrar si hay un error en la comanda.</span>
+<span class="sd">        :type mensaje_error: str</span>
+
+<span class="sd">        :param val_error: Un valor de regreso VENSIM que indica un error para esta función. Si se deja ``None``, todos</span>
+<span class="sd">        valores que no son 1 se considerarán como erróneas.</span>
+<span class="sd">        :type val_error: int</span>
+
+<span class="sd">        :param devolver: Si se debe devolver el valor devuelto por VENSIM o no.</span>
+<span class="sd">        :type devolver: bool</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Asegurarse que args es una lista</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">args</span><span class="p">]</span>
+
+        <span class="c1"># Encodar en bytes todos los argumentos de texto.</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="n">args</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+
+        <span class="c1"># Llamar la función VENSIM y guardar el resultado.</span>
+        <span class="n">resultado</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="c1"># Verificar su hubo un error.</span>
+        <span class="k">if</span> <span class="n">val_error</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="n">resultado</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="n">resultado</span> <span class="o">==</span> <span class="n">val_error</span><span class="p">)</span>
+
+        <span class="c1"># Si hubo un error, avisar el usuario.</span>
+        <span class="k">if</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mensaje_error</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mensaje_error</span> <span class="o">=</span> <span class="s1">&#39;Error con la comanda VENSIM.&#39;</span>
+
+            <span class="n">mensaje_error</span> <span class="o">+=</span> <span class="s1">&#39; Código de error </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resultado</span><span class="p">)</span>
+
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">mensaje_error</span><span class="p">)</span>
+
+        <span class="c1"># Devolver el valor devuelto por la función VENSIM, si aplica.</span>
+        <span class="k">if</span> <span class="n">devolver</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">resultado</span></div></div>
+
+
+<div class="viewcode-block" id="generar_mds"><a class="viewcode-back" href="../../MDS.html#tinamit.MDS.generar_mds">[documentos]</a><span class="k">def</span> <span class="nf">generar_mds</span><span class="p">(</span><span class="n">archivo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Esta función genera una instancia de modelo de DS. Identifica el tipo de archivo por su extensión (p. ej., .vpm) y</span>
+<span class="sd">    después genera una instancia de la subclase apropiada de ``~Tinamit.MDS.EnvolturaMDS``.</span>
+
+<span class="sd">    :param archivo: El archivo del modelo DS.</span>
+<span class="sd">    :type archivo: str</span>
+
+<span class="sd">    :return: Un modelo DS.</span>
+<span class="sd">    :rtype: tinamit.MDS.EnvolturaMDS</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Identificar la extensión.</span>
+    <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">archivo</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Crear la instancia de modelo apropiada para la extensión del archivo.</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.vpm&#39;</span><span class="p">:</span>
+        <span class="c1"># Modelos VENSIM</span>
+        <span class="k">return</span> <span class="n">ModeloVENSIM</span><span class="p">(</span><span class="n">archivo</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Agregar otros tipos de modelos DS aquí.</span>
+
+        <span class="c1"># Mensaje para modelos todavía no incluidos en Tinamit.</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;El tipo de modelo &quot;</span><span class="si">{}</span><span class="s1">&quot; no se acepta como modelo DS en Tinamit al momento. Si piensas&#39;</span>
+                         <span class="s1">&#39;que podrías contribuir aquí, ¡contáctenos!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">))</span></div>
 </pre></div>
 
           </div>
