@@ -10,6 +10,7 @@ class Modelo(object):
 
     def __init__(símismo, nombre):
         """
+        La función de inicialización de todos modelos, conectados o no.
 
         :param nombre: El nombre del modelo. Sirve para identificar distintos modelos en un modelo conectado.
         :type nombre: str
@@ -108,9 +109,9 @@ class Modelo(object):
         for var in valores:
             símismo.variables[var]['val'] = valores[var]
 
-        símismo.cambiar_vals_modelo(valores=valores)
+        símismo.cambiar_vals_modelo_interno(valores=valores)
 
-    def cambiar_vals_modelo(símismo, valores):
+    def cambiar_vals_modelo_interno(símismo, valores):
         """
         Esta función debe cambiar el valor de variables en el :class:`Modelo`, incluso tomar acciones para asegurarse
         de que el cambio se hizo en el modelo externo, si aplica.

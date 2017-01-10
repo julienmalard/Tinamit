@@ -83,7 +83,7 @@ class Modelo(ClaseModeloBF):
     def leer_vals(self):
         pass   # Already included in .incrementar() 
     
-    def cambiar_vals_modelo(self, valores):
+    def cambiar_vals_modelo_interno(self, valores):
         pass  # Already included in .incrementar()
 
     def incrementar(self, paso):

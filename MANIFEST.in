@@ -1,0 +1,11 @@
+# Incluir la licencia
+include LICENSE.tx
+
+# Incluir modelos de dinámicas de los sistemas
+include *.vpm
+
+# Archivos json
+include *.json
+
+# Imágenes para el interfaz
+recursive-include Interfaz *.jpg *.jpeg *.png *.gif

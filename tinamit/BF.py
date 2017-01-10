@@ -55,7 +55,7 @@ class EnvolturaBF(Modelo):
 
         símismo.modelo.inic_vars()
 
-    def cambiar_vals_modelo(símismo, valores):
+    def cambiar_vals_modelo_interno(símismo, valores):
         """
 
         :param valores:
@@ -111,7 +111,7 @@ class ClaseModeloBF(Modelo):
         """
         super().__init__(nombre='modeloBF')
 
-    def cambiar_vals_modelo(símismo, valores):
+    def cambiar_vals_modelo_interno(símismo, valores):
         """
 
         :param valores:
