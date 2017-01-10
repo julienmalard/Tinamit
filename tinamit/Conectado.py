@@ -94,7 +94,7 @@ class SuperConectado(Modelo):
         Después se actualiza el variable ``símismo.conv_tiempo`` para guardar en memoria la conversión necesaria entre
         los pasos de los dos submodelos.
 
-        Se emplea el módulo :mod:`Unidades.Unidades` para convertir unidades.
+        Se emplea el módulo `Unidades.Unidades` para convertir unidades.
 
         :return: El tiempo de paso del modelo SuperConectado.
         :rtype: str
@@ -357,7 +357,7 @@ class SuperConectado(Modelo):
         :type modelo_fuente: str
 
         :param conv: La conversión entre las unidades de ambos modelos. En el caso ```None``, se intentará
-        adivinar la conversión con el módulo :mod:`~tinamit.Unidades`.
+        adivinar la conversión con el módulo `~tinamit.Unidades`.
         :type conv: float
 
         """
@@ -524,7 +524,7 @@ class Conectado(SuperConectado):
         :param var_bf: El nombre del variable correspondiente en el modelo biofísico.
         :type var_bf: str
 
-        :param mds_fuente: Si :keyword:`True`, el modelo DS es el modelo fuente para la conexión. Sino, será el modelo
+        :param mds_fuente: Si ``True``, el modelo DS es el modelo fuente para la conexión. Sino, será el modelo
         biofísico.
         :type mds_fuente: bool
 
