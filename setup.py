@@ -10,5 +10,5 @@ setup(
     author_email='julien.malard@mail.mcgill.ca',
     description='Conexión de modelos socioeconómicos (dinámicas de los sistemas) con modelos biofísicos.',
     requires=['numpy', 'matplotlib', 'scipy'],
-    include_package_data=True
+#     include_package_data=True
 )
