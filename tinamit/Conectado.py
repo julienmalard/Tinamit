@@ -273,6 +273,10 @@ class SuperConectado(Modelo):
         for hilo in l_hilo:
             hilo.join()
 
+        # Leer egresos
+        for mod in símismo.modelos.values():
+            mod.leer_vals()
+
         # Intercambiar variables
         l_mods = [m for m in símismo.modelos.items()]  # Una lista de los submodelos.
 
@@ -384,8 +388,8 @@ class SuperConectado(Modelo):
         # Identificar los nombres de los variables fuente y recipiente, tanto como sus unidades.
         var_fuente = dic_vars[modelo_fuente]
         var_recip = dic_vars[modelo_recip]
-        unid_fuente = símismo.modelos[modelo_fuente]['vars'][var_fuente]['unidades']
-        unid_recip = símismo.modelos[modelo_recip]['vars'][var_recip]['unidades']
+        unid_fuente = símismo.modelos[modelo_fuente].variables[var_fuente]['unidades']
+        unid_recip = símismo.modelos[modelo_recip].variables[var_recip]['unidades']
 
         if conv is None:
             # Si no se especificó factor de conversión...

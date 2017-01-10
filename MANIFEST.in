@@ -10,4 +10,6 @@ recursive-include * *.vpm
 recursive-include * *.json
 
 # Imágenes para el interfaz
-recursive-include Interfaz *.jpg *.jpeg *.png *.gif
+recursive-include * *.jpg *.jpeg *.png *.gif
+
+recursive-exclude docs *

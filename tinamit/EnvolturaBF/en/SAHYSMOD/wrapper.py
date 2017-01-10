@@ -6,29 +6,29 @@ import numpy as np
 
 from tinamit.BF import ClaseModeloBF
 
-"""
-How to use this SAHYSMOD wrapper for Tinamit:
-    1. Set the SAHYSMOD path below according to your locale. You must have SAHYSMOD already installed on your computer.
-    2. Create a SAHYSMOD input file set to run for one year according to the initial conditions for your model. As of
-       now, Tinamit (and this wrapper) do not have spatial functionality, so make sure your model has only 1 internal
-       polygon. If you'd like to contribute to adding spatial variability, we'd be forever grateful and will add your 
-       name to the credits. Get in touch! (julien.malard@mail.mcgill.ca)
-    3. Set the initial_data variable path below to the SAHYSMOD input file you just created.
-    4. You're done! Start using Tinamit and use this python file's location as the biophysical model path.
-     
-"""
-
-# Path to SAHYSMOD executable. Change as needed on your computer.
-SAHYSMOD = 'C:\\SahysMod\\julien\\SahysModConsole.exe'
-
-# Path to the SAHYSMOD input file with the initial data. Change as needed on your computer.
-directorio = os.path.dirname(__file__)
-initial_data = os.path.join(directorio, 'INPUT_EXAMPLE.inp')
-
 
 class Modelo(ClaseModeloBF):
+    """
+    This is the wrapper for SAHYSMOD. At the moment, it only works for one polygon (no spatial models).
+    """
 
-    def __init__(self):
+    def __init__(self, sayhsmod_exe, initial_data):
+        """
+        Inicialises the SAHYSMOD wrapper. You must have SAHYSMOD already installed on your computer.
+
+        :param sayhsmod_exe: The path to the SAHYSMOD executable.
+        :type sayhsmod_exe: str
+
+        :param initial_data: The path to the initial data file. Create a SAHYSMOD input file set to run for one year
+        according to the initial conditions for your model. As of now, Tinamit (and this wrapper) do not have spatial
+        functionality, so make sure your model has only 1 internal polygon. If you'd like to contribute to adding
+        spatial variability, we'd be forever grateful and will add your name to the credits. Get in touch!
+        (julien.malard@mail.mcgill.ca)
+        :type initial_data: str
+
+        """
+
+        # Inicialise as the super class.
         super().__init__()
 
         # The following attributes are specific to the SAHYSMOD wrapper
@@ -49,40 +49,45 @@ class Modelo(ClaseModeloBF):
         self.season = 0  # Current season number (Python numeration)
         self.month = 0  # Current month of the season
 
+        # Set the path from which to read input data.
         current_dir = os.path.dirname(os.path.realpath(__file__))
-        self.output = os.path.join(current_dir, 'SAHYSMOD.out')
         self.input = os.path.join(current_dir, 'SAHYSMOD.inp')
         self.input_templ = os.path.join(current_dir, 'TEMPLATE.inp')
 
+        # Set the working directory to write model output.
+        working_dir = os.path.dirname(initial_data)
+        self.output = os.path.join(working_dir, 'SAHYSMOD.out')
+
+        # Remember where the initial data is stored.
+        self.initial_data = initial_data
+
         # Prepare the command to the SAHYSMOD executable
-        args = dict(SAHYSMOD=SAHYSMOD, input=self.input, output=self.output)
+        args = dict(SAHYSMOD=sayhsmod_exe, input=self.input, output=self.output)
         self.command = '{SAHYSMOD} {input} {output}'.format(**args)
+
+    def inic_vars(self):
+
+        # DON'T change the names of the dictionary keys here. Bad things will happen if you do, because they are
+        # specific to Tinamit's model wrapper class.
+        self.variables.clear()
+
+        for name, dic in vars_SAHYSMOD.items():
+            self.variables[name] = {'val': None,
+                                    'unidades': dic['units'],
+                                    'ingreso': dic['inp'],
+                                    'egreso': dic['out']}
+
+    def iniciar_modelo(self, **kwargs):
 
         # Read input values from .inp file
         self._read_input_vals()
-        
-    def inic_vars(self):
 
-        # DON'T change the names of the dictionary keys here. They are specific to Tinamit's model wrapper class.
-        
-        vars_dic = dict([(name, {'val': None,
-                                 'unidades': dic['units'],
-                                 'ingrso': dic['inp'],
-                                 'egreso': dic['out']}
-                                )
-                               for (name, dic) in vars_SAHYSMOD.items()])
-
-        self.variables.update(vars_dic)
-
-    def iniciar_modelo(self):
-        pass  # No prior setup necessary. Including this function is necessary for all ClaseModeloBF subclasses
-    
     def obt_unidad_tiempo(self):
         return 'Months'
-    
+
     def leer_vals(self):
-        pass   # Already included in .incrementar() 
-    
+        pass   # Already included in .incrementar()
+
     def cambiar_vals_modelo_interno(self, valores):
         pass  # Already included in .incrementar()
 
@@ -136,12 +141,12 @@ class Modelo(ClaseModeloBF):
 
         # Save incoming coupled variables to the internal data
         for var in self.variables:
-            if var in self.vars_ingr:
+            if var in self.vars_entrando:
                 self.internal_data[var][s] = self.variables[var]['val']
 
     def cerrar_modelo(self):
-        pass  # Ne specific closing actions necessary. 
-    
+        pass  # Ne specific closing actions necessary.
+
     # Some internal functions specific to this SAHYSMOD wrapper
     def _write_inp(self, n_year):
         """
@@ -272,7 +277,7 @@ class Modelo(ClaseModeloBF):
             soil_sal = dic_data['A#'] * dic_data['CrA'] + dic_data['B#'] * dic_data['CrB'] + u * dic_data['CrU']
         elif kr == 1:
             u = 1 - dic_data['B#'] - dic_data['A#']
-            soil_sal = dic_data['CrU'] * u + dic_data['C1*'] * (1-u)
+            soil_sal = dic_data['CrU'] * u + dic_data['C1*'] * ( 1 -u)
         elif kr == 2:
             soil_sal = dic_data['CrA'] * dic_data['A#'] + dic_data['C2*'] * (1 - dic_data['A#'])
         elif kr == 3:
@@ -282,18 +287,18 @@ class Modelo(ClaseModeloBF):
         else:
             raise ValueError
 
-        for cr in ['CrA', 'CrB', 'CrU']:
+        for cr in ['CrA', 'CrB', 'CrU', 'Cr4']:
             self.variables[codes_to_vars[cr]]['val'] = soil_sal[-1]
 
     def _read_input_vals(self):
         """
-        This function will read the initial values for the model from a SAHYSMOD input (.inp) file and save the 
+        This function will read the initial values for the model from a SAHYSMOD input (.inp) file and save the
           relavant information to this model class's internal variables.
-         
+
         """
 
         # Read the input file
-        with open(initial_data, 'r') as d:
+        with open(self.initial_data, 'r') as d:
             inp = d.readlines()
 
         # Read the standard SAHYSMOD input template
@@ -338,7 +343,7 @@ class Modelo(ClaseModeloBF):
                     n_i += 1  # Increment the input file line number
 
                 else:
-                    # If this variable has separate values for each season, save the first season's value in the 
+                    # If this variable has separate values for each season, save the first season's value in the
                     # variable dictionary...
 
                     self.variables[var]['val'] = float(inp[n_i])
@@ -493,9 +498,3 @@ SAHYSMOD_input_vars = [v['code'] for v in vars_SAHYSMOD.values() if v['inp']]
 
 # A list containing only SAHYSMOD output variable codes
 SAHYSMOD_output_vars = [v['code'] for v in vars_SAHYSMOD.values() if v['out']]
-
-if __name__ == '__main__':
-    modelo = Modelo()
-    print(modelo.internal_data)
-    print(modelo.variables)
-    modelo.incr(paso=1)

@@ -28,9 +28,14 @@ class EnvolturaBF(Modelo):
         módulo = importar_mod(os.path.splitext(nombre_mod)[0])
 
         try:
-            símismo.modelo = módulo.Modelo()
+            modelo = módulo.Modelo
         except AttributeError:
             raise AttributeError('El archivo especificado ({}) no contiene una clase llamada Modelo.'.format(archivo))
+
+        if callable(modelo):
+            símismo.modelo = modelo()
+        else:
+            símismo.modelo = modelo
 
         if not isinstance(símismo.modelo, ClaseModeloBF):
             raise AttributeError('El archivo especificado ({}) contiene una clase llamada Modelo, pero'
