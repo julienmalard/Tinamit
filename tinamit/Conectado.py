@@ -346,79 +346,47 @@ class SuperConectado(Modelo):
         for mod in símismo.modelos.values():
             mod.cerrar_modelo()
 
-    def conectar_vars(símismo, dic_vars, modelo_fuente, conv=None):
+
+
+    def desconectar_vars(símismo, var_fuente, modelo_fuente):
         """
-        Conecta variables entre los submodelos.
+        Esta función desconecta variables.
 
-        :param dic_vars: Un diccionario especificando los variables de cada modelo en el formato {mod1: var, mod2: var}.
-        :type dic_vars: dict
+        :param var_fuente: El variable fuente de la conexión.
+        :type var_fuente: str
 
-        :param modelo_fuente: El nombre del modelo fuente.
+        :param modelo_fuente: El modelo fuente de la conexión.
         :type modelo_fuente: str
 
-        :param conv: La conversión entre las unidades de ambos modelos. En el caso None, se intentará
-        adivinar la conversión con el módulo tinamit.Unidades.
-        :type conv: float
-
         """
 
-        # Una lista de los submodelos.
-        l_mods = list(símismo.modelos)
+        # Una lisat de los submodelos.
+        l_mod = list(símismo.modelos)
 
-        # Asegurarse de que modelos y variables especificados sí existan.
-        for nombre_mod in dic_vars:
-            if nombre_mod not in símismo.modelos:
-                raise ValueError('Nombre de modelo "{}" erróneo.'.format(nombre_mod))
+        # Buscar la conexión correspondiente...
+        for n, conex in enumerate(símismo.conexiones):
+            # Para cada conexión existente...
 
-            mod = símismo.modelos[nombre_mod]
-            var = dic_vars[nombre_mod]
+            if conex['modelo_fuente'] == modelo_fuente and conex['vars'][modelo_fuente] == var_fuente:
+                # Si el modelo y variable fuente corresponden...
 
-            if var not in mod.variables:
-                raise ValueError('El variable "{}" no existe en el modelo "{}".'.format(var, nombre_mod))
+                # Identificar el modelo recipiente.
+                mod_recip = l_mod[(l_mod.index(modelo_fuente) + 1) % 2]
+                var_recipiente = conex['vars'][mod_recip]
 
-            # Y también asegurarse de que el variable no a sido conectado ya.
-            if var in mod.vars_saliendo or var in mod.vars_entrando:
-                raise ValueError('El variable "{}" del modelo "{}" ya está conectado. '
-                                 'Desconéctalo primero con .desconectar_vars().'.format(var, nombre_mod))
+                # Quitar la conexión.
+                símismo.conexiones.pop(n)
 
-        # Identificar el nombre del modelo recipiente también.
-        índ_mod_fuente = l_mods.index(modelo_fuente)
-        modelo_recip = l_mods[(índ_mod_fuente + 1) % 2]
+                # Quitar los variables desconectados de las listas de variables entrando y saliendo de los
+                # submodelos.
+                símismo.modelos[modelo_fuente].vars_saliendo.remove(var_fuente)
+                símismo.modelos[mod_recip].vars_entrando.remove(var_recipiente)
 
-        # Identificar los nombres de los variables fuente y recipiente, tanto como sus unidades.
-        var_fuente = dic_vars[modelo_fuente]
-        var_recip = dic_vars[modelo_recip]
-        unid_fuente = símismo.modelos[modelo_fuente].variables[var_fuente]['unidades']
-        unid_recip = símismo.modelos[modelo_recip].variables[var_recip]['unidades']
+                # Si ya encontramos la conexión, podemos parar aquí.
+                return
 
-        if conv is None:
-            # Si no se especificó factor de conversión...
-
-            try:
-                # Intentar hacer una conversión automática.
-                conv = convertir(de=unid_fuente, a=unid_recip)
-            except ValueError:
-                # Si eso no funcionó, suponer una conversión de 1.
-                avisar('No se pudo identificar una conversión automática para las unidades de los variables'
-                       '"{}" (unidades: {}) y "{}" (unidades: {}). Se está suponiendo un factor de conversión de 1.'
-                       .format(var_fuente, unid_fuente, var_recip, unid_recip))
-                conv = 1
-
-        # Crear el diccionario de conexión.
-        dic_conex = {'modelo_fuente': modelo_fuente,
-                     'vars': {modelo_recip: var_recip,
-                              modelo_fuente: var_fuente
-                              },
-                     'conv': conv
-                     }
-
-        # Agregar el diccionario de conexión a la lista de conexiones.
-        símismo.conexiones.append(dic_conex)
-
-        # Para hacer: el siguiente debe ser recursivo.
-        símismo.modelos[modelo_fuente].vars_saliendo.append(var_fuente)
-        símismo.modelos[modelo_recip].vars_entrando.append(var_recip)
-
+        # Si no encontramos la conexión, hay un error.
+        raise ValueError('La conexión especificada no existe.')
 
 
 class Conectado(SuperConectado):
