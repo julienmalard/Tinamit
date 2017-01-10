@@ -287,6 +287,64 @@ class SuperConectado(Modelo):
         for n, tup in enumerate(l_mods):
             tup[1].cambiar_vals(valores=vars_egr[(n + 1) % 2])
 
+    def leer_vals(símismo):
+        """
+        Leamos los valores de los variables de los dos submodelos. Por la conexión entre los diccionarios de variables
+        de los submodelos y del SuperConectado, no hay necesidad de actualizar el diccionario del SuperConectado
+        sí mismo.
+        """
+
+        for mod in símismo.modelos.values():
+            mod.leer_vals()  # Leer los valores de los variables.
+
+    def iniciar_modelo(símismo, **kwargs):
+        """
+        Inicia el modelo en preparación para una simulación.
+
+        Actualizamos el diccionario de cconexiones rápidas para facilitar el intercambio eventual de valores entre los
+        modelos.
+
+        Se organiza este diccionario por modelo fuente. Tendrá la forma general:
+            { modelo1: {var_fuente: {'var': var_recipiente_del_otro_modelo, 'conv': factor_conversión}, ...}, ...}
+
+        """
+
+        # Borrar lo que podría haber allí desde antes.
+        símismo.conex_rápida.clear()
+
+        # Una lista de los submodelos
+        l_mod = list(símismo.modelos)
+
+        for conex in símismo.conexiones:
+            # Para cada conexión establecida...
+
+            # Identificar el modelo fuente y el modelo recipiente de la conexión.
+            mod_fuente = conex['modelo_fuente']
+            mod_recip = l_mod[(l_mod.index(mod_fuente) + 1) % 2]
+
+            # Identificar el variable fuente y el variable recipiente de la conexión.
+            var_fuente = conex['vars'][mod_fuente]
+            var_recip = conex['vars'][mod_recip]
+
+            # Si el modelo fuente todavía no existe en el diccionario, agregarlo.
+            if mod_fuente not in símismo.conex_rápida:
+                símismo.conex_rápida[mod_fuente] = {}
+
+            # Agregar el diccionario de conexión rápida.
+            símismo.conex_rápida[mod_fuente][var_fuente] = {'var': var_recip, 'conv': conex['conv']}
+
+        # Iniciar los submodelos también.
+        for mod in símismo.modelos.values():
+            mod.iniciar_modelo(**kwargs)
+
+    def cerrar_modelo(símismo):
+        """
+        Termina la simulación.
+        """
+
+        # No hay nada que hacer para el SuperConectado, pero podemos cerrar los submodelos.
+        for mod in símismo.modelos.values():
+            mod.cerrar_modelo()
 
 
 
