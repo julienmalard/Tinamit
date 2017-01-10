@@ -1,15 +1,16 @@
-# Incluir la licencia
+# Incluir la licencia y el README
 include LICENSE.txt
-
-include README.md
+include README.rst
 
 # Incluir modelos de dinámicas de los sistemas
-recursive-include * *.vpm
+include *.vpm
 
 # Archivos json
-recursive-include * *.json
+include *.json
 
 # Imágenes para el interfaz
-recursive-include * *.jpg *.jpeg *.png *.gif
+recursive-include Interfaz *.jpg *.jpeg *.png *.gif
 
-recursive-exclude docs *
+exclude Interfaz/Imágenes/Originales/
+
+exclude docs/

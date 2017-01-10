@@ -1,11 +1,12 @@
 import io
 import json
 import os
+import pkg_resources
 
 
 class Diccionario(object):
     def __init__(símismo):
-        símismo.direc = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Trads.json')
+        símismo.direc = pkg_resources.resource_filename('tinamit.Interfaz', 'Trads.json')
         with open(símismo.direc, encoding='utf8') as d:
             símismo.dic = json.load(d)
 

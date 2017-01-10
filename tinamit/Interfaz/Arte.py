@@ -1,85 +1,85 @@
 import os
 import tkinter as tk
+import pkg_resources
 
 
 def imagen(nombre):
-    archivo = archivos_imgs[nombre]
+    archivo = pkg_resources.resource_filename('tinamit.Interfaz.Imágenes', archivos_imgs[nombre])
     img = tk.PhotoImage(file=archivo)
     return img
 
-raíz_imgs = os.path.join(os.path.split(__file__)[0], 'Imágenes\\')
-archivos_imgs = {'LogoInic': '%sLogoInic.png' % raíz_imgs,
+archivos_imgs = {'LogoInic': 'LogoInic.png',
 
-                 'BtRegrCent_norm': '%sBtRegrCent_norm.png' % raíz_imgs,
-                 'BtRegrCent_sel': '%sBtRegrCent_sel.png' % raíz_imgs,
+                 'BtRegrCent_norm': 'BtRegrCent_norm.png',
+                 'BtRegrCent_sel': 'BtRegrCent_sel.png',
 
-                 'LogoCent': '%sLogoCent.png' % raíz_imgs,
-                 'BtLeng_norm': '%sBtLeng_norm.png' % raíz_imgs,
-                 'BtLeng_sel': '%sBtLeng_sel.png' % raíz_imgs,
-                 'BtNuevo_norm': '%sBtNuevo_norm.png' % raíz_imgs,
-                 'BtNuevo_sel': '%sBtNuevo_sel.png' % raíz_imgs,
-                 'BtGuardar_norm': '%sBtGuardar_norm.png' % raíz_imgs,
-                 'BtGuardar_sel': '%sBtGuardar_sel.png' % raíz_imgs,
-                 'BtGuardarComo_norm': '%sBtGuardarComo_norm.png' % raíz_imgs,
-                 'BtGuardarComo_sel': '%sBtGuardarComo_sel.png' % raíz_imgs,
-                 'BtAbrir_norm': '%sBtAbrir_norm.png' % raíz_imgs,
-                 'BtAbrir_sel': '%sBtAbrir_sel.png' % raíz_imgs,
+                 'LogoCent': 'LogoCent.png',
+                 'BtLeng_norm': 'BtLeng_norm.png',
+                 'BtLeng_sel': 'BtLeng_sel.png',
+                 'BtNuevo_norm': 'BtNuevo_norm.png',
+                 'BtNuevo_sel': 'BtNuevo_sel.png',
+                 'BtGuardar_norm': 'BtGuardar_norm.png',
+                 'BtGuardar_sel': 'BtGuardar_sel.png',
+                 'BtGuardarComo_norm': 'BtGuardarComo_norm.png',
+                 'BtGuardarComo_sel': 'BtGuardarComo_sel.png',
+                 'BtAbrir_norm': 'BtAbrir_norm.png',
+                 'BtAbrir_sel': 'BtAbrir_sel.png',
 
-                 'BtNavIzq_1_norm': '%sBtNavIzq_1_norm.png' % raíz_imgs,
-                 'BtNavIzq_1_bloq': '%sBtNavIzq_1_bloq.png' % raíz_imgs,
-                 'BtNavIzq_1_sel': '%sBtNavIzq_1_sel.png' % raíz_imgs,
-                 'BtNavIzq_2_norm': '%sBtNavIzq_2_norm.png' % raíz_imgs,
-                 'BtNavIzq_2_bloq': '%sBtNavIzq_2_bloq.png' % raíz_imgs,
-                 'BtNavIzq_2_sel': '%sBtNavIzq_2_sel.png' % raíz_imgs,
-                 'BtNavIzq_3_norm': '%sBtNavIzq_3_norm.png' % raíz_imgs,
-                 'BtNavIzq_3_bloq': '%sBtNavIzq_3_bloq.png' % raíz_imgs,
-                 'BtNavIzq_3_sel': '%sBtNavIzq_3_sel.png' % raíz_imgs,
-                 'BtNavIzq_4_norm': '%sBtNavIzq_4_norm.png' % raíz_imgs,
-                 'BtNavIzq_4_bloq': '%sBtNavIzq_4_bloq.png' % raíz_imgs,
-                 'BtNavIzq_4_sel': '%sBtNavIzq_4_sel.png' % raíz_imgs,
+                 'BtNavIzq_1_norm': 'BtNavIzq_1_norm.png',
+                 'BtNavIzq_1_bloq': 'BtNavIzq_1_bloq.png',
+                 'BtNavIzq_1_sel': 'BtNavIzq_1_sel.png',
+                 'BtNavIzq_2_norm': 'BtNavIzq_2_norm.png',
+                 'BtNavIzq_2_bloq': 'BtNavIzq_2_bloq.png',
+                 'BtNavIzq_2_sel': 'BtNavIzq_2_sel.png',
+                 'BtNavIzq_3_norm': 'BtNavIzq_3_norm.png',
+                 'BtNavIzq_3_bloq': 'BtNavIzq_3_bloq.png',
+                 'BtNavIzq_3_sel': 'BtNavIzq_3_sel.png',
+                 'BtNavIzq_4_norm': 'BtNavIzq_4_norm.png',
+                 'BtNavIzq_4_bloq': 'BtNavIzq_4_bloq.png',
+                 'BtNavIzq_4_sel': 'BtNavIzq_4_sel.png',
 
-                 'BtNavEtp_adel_norm': '%sBtNavEtp_adel_norm.png' % raíz_imgs,
-                 'BtNavEtp_adel_bloq': '%sBtNavEtp_adel_bloq.png' % raíz_imgs,
-                 'BtNavEtp_adel_sel': '%sBtNavEtp_adel_sel.png' % raíz_imgs,
-                 'BtNavEtp_atrs_norm': '%sBtNavEtp_atrs_norm.png' % raíz_imgs,
-                 'BtNavEtp_atrs_bloq': '%sBtNavEtp_atrs_bloq.png' % raíz_imgs,
-                 'BtNavEtp_atrs_sel': '%sBtNavEtp_atrs_sel.png' % raíz_imgs,
+                 'BtNavEtp_adel_norm': 'BtNavEtp_adel_norm.png',
+                 'BtNavEtp_adel_bloq': 'BtNavEtp_adel_bloq.png',
+                 'BtNavEtp_adel_sel': 'BtNavEtp_adel_sel.png',
+                 'BtNavEtp_atrs_norm': 'BtNavEtp_atrs_norm.png',
+                 'BtNavEtp_atrs_bloq': 'BtNavEtp_atrs_bloq.png',
+                 'BtNavEtp_atrs_sel': 'BtNavEtp_atrs_sel.png',
 
-                 'BtNavSub_adel_norm': '%sBtNavSub_adel_norm.png' % raíz_imgs,
-                 'BtNavSub_adel_bloq': '%sBtNavSub_adel_bloq.png' % raíz_imgs,
-                 'BtNavSub_adel_sel': '%sBtNavSub_adel_sel.png' % raíz_imgs,
-                 'BtNavSub_atrs_norm': '%sBtNavSub_atrs_norm.png' % raíz_imgs,
-                 'BtNavSub_atrs_bloq': '%sBtNavSub_atrs_bloq.png' % raíz_imgs,
-                 'BtNavSub_atrs_sel': '%sBtNavSub_atrs_sel.png' % raíz_imgs,
+                 'BtNavSub_adel_norm': 'BtNavSub_adel_norm.png',
+                 'BtNavSub_adel_bloq': 'BtNavSub_adel_bloq.png',
+                 'BtNavSub_adel_sel': 'BtNavSub_adel_sel.png',
+                 'BtNavSub_atrs_norm': 'BtNavSub_atrs_norm.png',
+                 'BtNavSub_atrs_bloq': 'BtNavSub_atrs_bloq.png',
+                 'BtNavSub_atrs_sel': 'BtNavSub_atrs_sel.png',
 
 
-                 'BtBorrarItema_norm': '%sBtBorrarItema_norm.png' % raíz_imgs,
-                 'BtBorrarItema_sel': '%sBtBorrarItema_sel.png' % raíz_imgs,
-                 'BtBorrarItema_bloq': '%sBtBorrarItema_bloq.png' % raíz_imgs,
-                 'BtEditarItema_norm': '%sBtEditarItema_norm.png' % raíz_imgs,
-                 'BtEditarItema_sel': '%sBtEditarItema_sel.png' % raíz_imgs,
+                 'BtBorrarItema_norm': 'BtBorrarItema_norm.png',
+                 'BtBorrarItema_sel': 'BtBorrarItema_sel.png',
+                 'BtBorrarItema_bloq': 'BtBorrarItema_bloq.png',
+                 'BtEditarItema_norm': 'BtEditarItema_norm.png',
+                 'BtEditarItema_sel': 'BtEditarItema_sel.png',
 
-                 'BtCasilla_norm': '%sBtCasilla_norm.png' % raíz_imgs,
-                 'BtCasilla_sel': '%sBtCasilla_sel.png' % raíz_imgs,
-                 'BtCasilla_bloq': '%sBtCasilla_bloq.png' % raíz_imgs,
+                 'BtCasilla_norm': 'BtCasilla_norm.png',
+                 'BtCasilla_sel': 'BtCasilla_sel.png',
+                 'BtCasilla_bloq': 'BtCasilla_bloq.png',
 
-                 'BtMarca_norm': '%sBtMarca_norm.png' % raíz_imgs,
-                 'BtMarca_sel': '%sBtMarca_sel.png' % raíz_imgs,
-                 'BtMarca_bloq': '%sBtMarca_bloq.png' % raíz_imgs,
+                 'BtMarca_norm': 'BtMarca_norm.png',
+                 'BtMarca_sel': 'BtMarca_sel.png',
+                 'BtMarca_bloq': 'BtMarca_bloq.png',
 
-                 'BtPlus_norm': '%sBtPlus_norm.png' % raíz_imgs,
-                 'BtPlus_sel': '%sBtPlus_sel.png' % raíz_imgs,
+                 'BtPlus_norm': 'BtPlus_norm.png',
+                 'BtPlus_sel': 'BtPlus_sel.png',
 
-                 'BtEscribIzqDer': '%sBtEscribIzqDer.png' % raíz_imgs,
-                 'BtEscribDerIzq': '%sBtEscribDerIzq.png' % raíz_imgs,
+                 'BtEscribIzqDer': 'BtEscribIzqDer.png',
+                 'BtEscribDerIzq': 'BtEscribDerIzq.png',
 
-                 'BtConecciónIzqDer': '%sBtConecciónIzqDer.png' % raíz_imgs,
-                 'BtConecciónDerIzq': '%sBtConecciónDerIzq.png' % raíz_imgs,
+                 'BtConecciónIzqDer': 'BtConecciónIzqDer.png',
+                 'BtConecciónDerIzq': 'BtConecciónDerIzq.png',
 
-                 'FlchConex_colaizq': '%sFlchConex_colaizq.png' % raíz_imgs,
-                 'FlchConex_colader': '%sFlchConex_colader.png' % raíz_imgs,
-                 'FlchConex_cbzizq': '%sFlchConex_cbzizq.png' % raíz_imgs,
-                 'FlchConex_cbzder': '%sFlchConex_cbzder.png' % raíz_imgs
+                 'FlchConex_colaizq': 'FlchConex_colaizq.png',
+                 'FlchConex_colader': 'FlchConex_colader.png',
+                 'FlchConex_cbzizq': 'FlchConex_cbzizq.png',
+                 'FlchConex_cbzder': 'FlchConex_cbzder.png'
 
                  }
 

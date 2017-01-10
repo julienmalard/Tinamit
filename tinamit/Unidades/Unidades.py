@@ -1,7 +1,10 @@
 import json
 import os
+import pkg_resources
 
-with open(os.path.join(os.path.dirname(__file__), 'equiv_unid.json'), 'r', encoding='utf8') as d:
+archivo_json = pkg_resources.resource_filename('tinamit.Unidades', 'equiv_unid.json')
+
+with open(os.path.join(archivo_json), 'r', encoding='utf8') as d:
     dic_doc = json.load(d)
     dic_conv = dic_doc['conv']
     dic_equiv = dic_doc['equiv']

@@ -49,7 +49,7 @@
       }
     },
     "Bahasa Melayu": {
-      "Estado": 0.04878048780487805,
+      "Estado": 0.0975609756097561,
       "IzqaDerech": true,
       "Trads": {
         "AnálisisIncert": "",
@@ -67,9 +67,9 @@
         "CargarModelos": "",
         "ConectarVariables": "",
         "Corrida": "",
-        "Empezar": "",
+        "Empezar": "Bermula",
         "EnTrabajo": "",
-        "Entendido": "",
+        "Entendido": "Saya faham",
         "ErrorCargarBf": "",
         "ErrorCargarMDS": "",
         "ErrorCreandoMod": "",
@@ -190,7 +190,7 @@
       }
     },
     "Français": {
-      "Estado": 0.975609756097561,
+      "Estado": 1.0,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "Incertitude",

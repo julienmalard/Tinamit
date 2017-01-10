@@ -343,7 +343,7 @@ class SuperConectado(Modelo):
         """
 
         # No hay nada que hacer para el SuperConectado, pero podemos cerrar los submodelos.
-        for mod in símismo.modelos:
+        for mod in símismo.modelos.values():
             mod.cerrar_modelo()
 
     def conectar_vars(símismo, dic_vars, modelo_fuente, conv=None):

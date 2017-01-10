@@ -19,7 +19,7 @@ doc/_build
 site.cfg
 setup.cfg
 
-.dist/
+dist/
 
 # Archivos de VENSIM #
 ######################
