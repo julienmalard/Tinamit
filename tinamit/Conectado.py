@@ -347,15 +347,7 @@ class SuperConectado(Modelo):
             mod.cerrar_modelo()
 
     def conectar_vars(símismo, dic_vars, modelo_fuente, conv=None):
-        """
-        Conecta variables entre los submodelos.
 
-        :param dic_vars: Un diccionario especificando los variables de cada modelo en el formato {mod1: var, mod2: var}.
-        :type dic_vars: dict
-
-
-
-        """
 
         # Una lista de los submodelos.
         l_mods = list(símismo.modelos)
