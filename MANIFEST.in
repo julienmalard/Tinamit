@@ -4,10 +4,10 @@ include LICENSE.txt
 include README.md
 
 # Incluir modelos de dinámicas de los sistemas
-include *.vpm
+recursive-include * *.vpm
 
 # Archivos json
-include *.json
+recursive-include * *.json
 
 # Imágenes para el interfaz
 recursive-include Interfaz *.jpg *.jpeg *.png *.gif
