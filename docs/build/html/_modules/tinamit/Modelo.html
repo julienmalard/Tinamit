@@ -63,6 +63,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">nombre</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        La función de inicialización de todos modelos, conectados o no.</span>
 
 <span class="sd">        :param nombre: El nombre del modelo. Sirve para identificar distintos modelos en un modelo conectado.</span>
 <span class="sd">        :type nombre: str</span>
@@ -161,17 +162,17 @@
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">valores</span><span class="p">:</span>
             <span class="n">símismo</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;val&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">valores</span><span class="p">[</span><span class="n">var</span><span class="p">]</span>
 
-        <span class="n">símismo</span><span class="o">.</span><span class="n">cambiar_vals_modelo</span><span class="p">(</span><span class="n">valores</span><span class="o">=</span><span class="n">valores</span><span class="p">)</span></div>
+        <span class="n">símismo</span><span class="o">.</span><span class="n">cambiar_vals_modelo_interno</span><span class="p">(</span><span class="n">valores</span><span class="o">=</span><span class="n">valores</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Modelo.cambiar_vals_modelo"><a class="viewcode-back" href="../../Modelo.html#tinamit.Modelo.Modelo.cambiar_vals_modelo">[documentos]</a>    <span class="k">def</span> <span class="nf">cambiar_vals_modelo</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">valores</span><span class="p">):</span>
+<div class="viewcode-block" id="Modelo.cambiar_vals_modelo_interno"><a class="viewcode-back" href="../../Modelo.html#tinamit.Modelo.Modelo.cambiar_vals_modelo_interno">[documentos]</a>    <span class="k">def</span> <span class="nf">cambiar_vals_modelo_interno</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">valores</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Esta función debe cambiar el valor de variables en el :class:`Modelo`, incluso tomar acciones para asegurarse</span>
 <span class="sd">        de que el cambio se hizo en el modelo externo, si aplica.</span>
 
 <span class="sd">        :param valores: Un diccionario de variables y valores para cambiar, con el formato siguiente:</span>
-<span class="sd">            { var1: nuevovalor,</span>
-<span class="sd">              var2: nuevovalor,</span>
-<span class="sd">              ...</span>
+<span class="sd">            {var1: nuevovalor,</span>
+<span class="sd">            var2: nuevovalor,</span>
+<span class="sd">            ...</span>
 <span class="sd">            }</span>
 <span class="sd">        :type valores: dict</span>
 

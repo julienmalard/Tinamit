@@ -42,8 +42,7 @@ puedes agregar un nuevo).
 
 Para cambiar idiomas, hacer clic en el icono del globo terrestre.
 
-.. image:: Imágenes/Cabeza_tinamit_globo.png
-   :scale: 100 %
+.. image:: Imágenes/IGU_cabeza_globo.png
    :align: center
    :alt: Icono de cambio de idiomas de Tinamit.
 
@@ -70,8 +69,7 @@ cuanto termines la etapa precedente.
 La primera etapa sería, por supuesto, de cargar los modelos biofísicos y DS con :guilabel:`Cargar MDS` y
 :guilabel:`Cargar modelo biofísico`.
 
-.. image:: Imágenes/Cargar_modelos_tinamit.png
-   :scale: 90 %
+.. image:: Imágenes/IGU_cargar_modelos.png
    :align: center
    :alt: Cargar modelos en Tinamit.
 
@@ -80,8 +78,7 @@ Conectar modelos (II)
 Después de eso, vamos a conectar los dos modelos por sus variables comunes. La flecha muestra la dirección de la conexión, y 
 puedes especificar un factor de conversión, si quieres. Hay que hacer clic en :guilabel:`Guardar` cada vez que haces una conexión.
 
-.. image:: Imágenes/Tinamit_conectar_vars.png
-   :scale: 90 %
+.. image:: Imágenes/IGU_conectar_vars.png
    :align: center
    :alt: Conectar variables en Tinamit.
 
@@ -90,7 +87,6 @@ con la cruz roja. Nota que el interfaz no te dejará conectar un variable más q
 lógica en la conexión de los dos modelos).
 
 .. image:: Imágenes/IGU_editar_conexión.png
-   :scale: 90 %
    :align: center
    :alt: Cambiar la conexión de variables en Tinamit.
 
@@ -111,6 +107,11 @@ Guardar y cargar modelos conectados
 Ah, sí, ¿qué pasa si no terminas todo antes del almuerzo? No te preocupes, que no vas a perder todo. Allí, arriba por a la
 izquierda del logo muy bonito de Tinamit, hay cuatro botones muy útiles. Uno guarda tu trabajo, uno lo guarda bajo un nuevo
 nombre, otro abre un trabajo ya guardado y el último borra todo y te deja empezar de cero. No te voy a decir cuál es cuál.
+
+.. image:: Imágenes/IGU_cabeza_archivos.png
+   :align: center
+   :alt: Acciones de archivo en Tinamit.
+
 
 El IPA
 ------

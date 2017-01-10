@@ -60,13 +60,17 @@
 
 <div class="viewcode-block" id="EnvolturaBF"><a class="viewcode-back" href="../../BF.html#tinamit.BF.EnvolturaBF">[documentos]</a><span class="k">class</span> <span class="nc">EnvolturaBF</span><span class="p">(</span><span class="n">Modelo</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Esta clase ofrece una envoltura para **TODOS** tipos de modelos biofísicos.</span>
 
+<span class="sd">    Modelos biofísicos específicos se implementan por crear una subclase de `~tinamit.BF.ClaseModeloBF` específica</span>
+<span class="sd">    para ellos.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">archivo</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Incializar la envoltura.</span>
 
-<span class="sd">        :param archivo:</span>
+<span class="sd">        :param archivo: El archivo con el</span>
 <span class="sd">        :type archivo: str</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -77,9 +81,14 @@
         <span class="n">módulo</span> <span class="o">=</span> <span class="n">importar_mod</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">nombre_mod</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">símismo</span><span class="o">.</span><span class="n">modelo</span> <span class="o">=</span> <span class="n">módulo</span><span class="o">.</span><span class="n">Modelo</span><span class="p">()</span>
+            <span class="n">modelo</span> <span class="o">=</span> <span class="n">módulo</span><span class="o">.</span><span class="n">Modelo</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;El archivo especificado (</span><span class="si">{}</span><span class="s1">) no contiene una clase llamada Modelo.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">archivo</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">modelo</span><span class="p">):</span>
+            <span class="n">símismo</span><span class="o">.</span><span class="n">modelo</span> <span class="o">=</span> <span class="n">modelo</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">símismo</span><span class="o">.</span><span class="n">modelo</span> <span class="o">=</span> <span class="n">modelo</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">símismo</span><span class="o">.</span><span class="n">modelo</span><span class="p">,</span> <span class="n">ClaseModeloBF</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;El archivo especificado (</span><span class="si">{}</span><span class="s1">) contiene una clase llamada Modelo, pero&#39;</span>
@@ -102,13 +111,17 @@
 
 <div class="viewcode-block" id="EnvolturaBF.inic_vars"><a class="viewcode-back" href="../../BF.html#tinamit.BF.EnvolturaBF.inic_vars">[documentos]</a>    <span class="k">def</span> <span class="nf">inic_vars</span><span class="p">(</span><span class="n">símismo</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inicializa los variables del modelo biofísico y los conecta al diccionario de variables del modelo.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Crear el vínculo</span>
         <span class="n">símismo</span><span class="o">.</span><span class="n">modelo</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="n">símismo</span><span class="o">.</span><span class="n">variables</span>
 
+        <span class="c1"># Inicializar los variables del modelo externo.</span>
         <span class="n">símismo</span><span class="o">.</span><span class="n">modelo</span><span class="o">.</span><span class="n">inic_vars</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EnvolturaBF.cambiar_vals_modelo"><a class="viewcode-back" href="../../BF.html#tinamit.BF.EnvolturaBF.cambiar_vals_modelo">[documentos]</a>    <span class="k">def</span> <span class="nf">cambiar_vals_modelo</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">valores</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvolturaBF.cambiar_vals_modelo_interno"><a class="viewcode-back" href="../../BF.html#tinamit.BF.EnvolturaBF.cambiar_vals_modelo_interno">[documentos]</a>    <span class="k">def</span> <span class="nf">cambiar_vals_modelo_interno</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">valores</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param valores:</span>
@@ -164,7 +177,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">nombre</span><span class="o">=</span><span class="s1">&#39;modeloBF&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ClaseModeloBF.cambiar_vals_modelo"><a class="viewcode-back" href="../../BF.html#tinamit.BF.ClaseModeloBF.cambiar_vals_modelo">[documentos]</a>    <span class="k">def</span> <span class="nf">cambiar_vals_modelo</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">valores</span><span class="p">):</span>
+<div class="viewcode-block" id="ClaseModeloBF.cambiar_vals_modelo_interno"><a class="viewcode-back" href="../../BF.html#tinamit.BF.ClaseModeloBF.cambiar_vals_modelo_interno">[documentos]</a>    <span class="k">def</span> <span class="nf">cambiar_vals_modelo_interno</span><span class="p">(</span><span class="n">símismo</span><span class="p">,</span> <span class="n">valores</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param valores:</span>

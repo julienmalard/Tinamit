@@ -66,8 +66,8 @@
 <dd><p>Se debe desarrollar una subclase de esta clase para cada tipo modelo biofísico que se quiere volver compatible
 con Tinamit.</p>
 <dl class="method">
-<dt id="tinamit.BF.ClaseModeloBF.cambiar_vals_modelo">
-<code class="descname">cambiar_vals_modelo</code><span class="sig-paren">(</span><em>símismo</em>, <em>valores</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/BF.html#ClaseModeloBF.cambiar_vals_modelo"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.BF.ClaseModeloBF.cambiar_vals_modelo" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dt id="tinamit.BF.ClaseModeloBF.cambiar_vals_modelo_interno">
+<code class="descname">cambiar_vals_modelo_interno</code><span class="sig-paren">(</span><em>símismo</em>, <em>valores</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/BF.html#ClaseModeloBF.cambiar_vals_modelo_interno"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.BF.ClaseModeloBF.cambiar_vals_modelo_interno" title="Enlazar permanentemente con esta definición">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -155,9 +155,12 @@ quebrará las conexiones con el modelo conectado.</p>
 <dl class="class">
 <dt id="tinamit.BF.EnvolturaBF">
 <em class="property">class </em><code class="descclassname">tinamit.BF.</code><code class="descname">EnvolturaBF</code><span class="sig-paren">(</span><em>símismo</em>, <em>archivo</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/BF.html#EnvolturaBF"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.BF.EnvolturaBF" title="Enlazar permanentemente con esta definición">¶</a></dt>
-<dd><dl class="method">
-<dt id="tinamit.BF.EnvolturaBF.cambiar_vals_modelo">
-<code class="descname">cambiar_vals_modelo</code><span class="sig-paren">(</span><em>símismo</em>, <em>valores</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/BF.html#EnvolturaBF.cambiar_vals_modelo"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.BF.EnvolturaBF.cambiar_vals_modelo" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Esta clase ofrece una envoltura para <strong>TODOS</strong> tipos de modelos biofísicos.</p>
+<p>Modelos biofísicos específicos se implementan por crear una subclase de <cite>~tinamit.BF.ClaseModeloBF</cite> específica
+para ellos.</p>
+<dl class="method">
+<dt id="tinamit.BF.EnvolturaBF.cambiar_vals_modelo_interno">
+<code class="descname">cambiar_vals_modelo_interno</code><span class="sig-paren">(</span><em>símismo</em>, <em>valores</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/BF.html#EnvolturaBF.cambiar_vals_modelo_interno"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.BF.EnvolturaBF.cambiar_vals_modelo_interno" title="Enlazar permanentemente con esta definición">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -189,7 +192,8 @@ quebrará las conexiones con el modelo conectado.</p>
 <dl class="method">
 <dt id="tinamit.BF.EnvolturaBF.inic_vars">
 <code class="descname">inic_vars</code><span class="sig-paren">(</span><em>símismo</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tinamit/BF.html#EnvolturaBF.inic_vars"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#tinamit.BF.EnvolturaBF.inic_vars" title="Enlazar permanentemente con esta definición">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Inicializa los variables del modelo biofísico y los conecta al diccionario de variables del modelo.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="tinamit.BF.EnvolturaBF.iniciar_modelo">

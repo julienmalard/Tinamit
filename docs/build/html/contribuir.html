@@ -62,7 +62,7 @@
 <h2>Traducir<a class="headerlink" href="#traducir" title="Enlazar permanentemente con este título">¶</a></h2>
 <p>¡Siempre querremos traducciones para hacer de Tinamit una herramienta aún más accesible!
 El interfaz de Tinamit tiene funcionalidades para la traducción del interfaz sí mismo (el globo).</p>
-<a class="reference internal image-reference" href="_images/Cabeza_tinamit_globo1.png"><img alt="Icono de cambio de idiomas de Tinamit." class="align-center" src="_images/Cabeza_tinamit_globo1.png" style="width: 1095.0px; height: 100.0px;" /></a>
+<a class="reference internal image-reference" href="Imágenes/Cabeza_tinamit_globo.png"><img alt="Icono de cambio de idiomas de Tinamit." class="align-center" src="Imágenes/Cabeza_tinamit_globo.png" /></a>
 <p>Allí puedes editar lenguas existentes o agregar nuevas lenguas. Notar que hay un error en la funcionalidad del
 interfaz de Python para escribir texto en lenguas indias. Para estas, desafortunademente tienes que escribir tu traducción
 en otro programa primero (Word, Notas, etc.) y después copiarla en la caja. Lo siento. (Pero no es culpa mia.)</p>
@@ -82,7 +82,7 @@ prehechos. Si vas a tener que crear una nueva envoltura para ti, ¡te rogamos qu
 y después implementar allí las funciones siguientes:</p>
 <ul class="simple">
 <li><code class="xref py py-func docutils literal"><span class="pre">__init__()</span></code></li>
-<li><a class="reference internal" href="BF.html#tinamit.BF.ClaseModeloBF.cambiar_vals_modelo" title="tinamit.BF.ClaseModeloBF.cambiar_vals_modelo"><code class="xref py py-func docutils literal"><span class="pre">cambiar_vals_modelo()</span></code></a></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">cambiar_vals_modelo()</span></code></li>
 <li><a class="reference internal" href="BF.html#tinamit.BF.ClaseModeloBF.incrementar" title="tinamit.BF.ClaseModeloBF.incrementar"><code class="xref py py-func docutils literal"><span class="pre">incrementar()</span></code></a></li>
 <li><a class="reference internal" href="BF.html#tinamit.BF.ClaseModeloBF.leer_vals" title="tinamit.BF.ClaseModeloBF.leer_vals"><code class="xref py py-func docutils literal"><span class="pre">leer_vals()</span></code></a></li>
 <li><a class="reference internal" href="BF.html#tinamit.BF.ClaseModeloBF.iniciar_modelo" title="tinamit.BF.ClaseModeloBF.iniciar_modelo"><code class="xref py py-func docutils literal"><span class="pre">iniciar_modelo()</span></code></a></li>
@@ -120,19 +120,19 @@ de comanda, por un dll, o por algo similar):</p>
 simulación.</p>
 <p>Si puedes hacer esto, ya estás listo. Los cambios de tendrán que efectuar directamente al código fuente de Tinamit
 (al contrario de la adición de una envoltura biofísica), así que recomiento fuertemente que creas una nueva rama de
-Tinamit en GitHub (<a href="#id1"><span class="problematic" id="id2">|GitHub|</span></a>) primero.</p>
-<p>Después, vaya al archivo MDS.py y crea una subclase de la clase <a class="reference internal" href="MDS.html#tinamit.MDS.EnvolturaMDS" title="tinamit.MDS.EnvolturaMDS"><code class="xref py py-class docutils literal"><span class="pre">EnvolturaMDS</span></code></a>. En esta clase,
+Tinamit en GitHub (<a class="reference external" href="https://github.com/julienmalard/Tinamit">https://github.com/julienmalard/Tinamit</a>) primero.</p>
+<p>Después, vaya al archivo MDS.py y crea una subclase de la clase <code class="xref py py-class docutils literal"><span class="pre">EnvolturaMDS</span></code>. En esta clase,
 se debe definir cada una de las funciones siguientes (ver, como ejemplo, la implementación para VENSIM en
-<a class="reference internal" href="MDS.html#tinamit.MDS.ModeloVENSIM" title="tinamit.MDS.ModeloVENSIM"><code class="xref py py-class docutils literal"><span class="pre">ModeloVENSIM</span></code></a>):</p>
+<code class="xref py py-class docutils literal"><span class="pre">ModeloVENSIM</span></code>):</p>
 <ul class="simple">
 <li><code class="xref py py-func docutils literal"><span class="pre">__init__()</span></code></li>
-<li><a class="reference internal" href="MDS.html#tinamit.MDS.EnvolturaMDS.inic_vars" title="tinamit.MDS.EnvolturaMDS.inic_vars"><code class="xref py py-func docutils literal"><span class="pre">inic_vars()</span></code></a></li>
-<li><a class="reference internal" href="MDS.html#tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo" title="tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo"><code class="xref py py-func docutils literal"><span class="pre">obt_unidad_tiempo()</span></code></a></li>
-<li><a class="reference internal" href="MDS.html#tinamit.MDS.EnvolturaMDS.iniciar_modelo" title="tinamit.MDS.EnvolturaMDS.iniciar_modelo"><code class="xref py py-func docutils literal"><span class="pre">iniciar_modelo()</span></code></a></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">inic_vars()</span></code></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">obt_unidad_tiempo()</span></code></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">iniciar_modelo()</span></code></li>
 <li><code class="xref py py-func docutils literal"><span class="pre">cambiar_vals_modelo()</span></code></li>
 <li><code class="xref py py-func docutils literal"><span class="pre">incrementar()</span></code></li>
 <li><code class="xref py py-func docutils literal"><span class="pre">leer_vals()</span></code></li>
-<li><a class="reference internal" href="MDS.html#tinamit.MDS.EnvolturaMDS.cerrar_modelo" title="tinamit.MDS.EnvolturaMDS.cerrar_modelo"><code class="xref py py-func docutils literal"><span class="pre">cerrar_modelo()</span></code></a></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">cerrar_modelo()</span></code></li>
 </ul>
 </div>
 </div>

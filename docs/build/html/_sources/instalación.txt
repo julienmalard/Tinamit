@@ -8,7 +8,8 @@ Si sabes lo que estás haciendo
 ------------------------------
 ¡Felicitaciones! Tinamit necesita Python 3.5+, NumPy, SciPy, y Matplotlib. Tinamit sí mismo es un paquete de Python que se 
 puede conseguir con
- :command:`pip install tinamit.`
+
+   :command:`pip install tinamit.`
 
 Si no sabes lo que estás haciendo (para Windows)
 ------------------------------------------------
@@ -42,7 +43,9 @@ gente normal, no lo sabes, haz lo siguiente:
    seguramente 32). Por ejemplo, para SciPy en Python 3.6 con un Python de 32 bits, escogerías “scipy-0.18.1-cp36-cp36m-win32.whl”.
 3. ¡Bravo! Ahora, hay que instalar los paquetes que acabaste de cargar. Va a la línea de comanda (se encuentra en la 
    lista de aplicaciones de tu computadora) y escribe el siguiente:
-     :command:`pip install C:\Users\jeanne\Downloads\numpy‑1.11.3+mkl‑cp36‑cp36m‑win32.whl`
+
+      :command:`pip install C:\Users\jeanne\Downloads\numpy‑1.11.3+mkl‑cp36‑cp36m‑win32.whl`
+
    Después, pulse “Intro”. Por supuesto, tienes que cambiar la última parte para corresponder a dónde tú guardaste el
    paquete NumPy en tu computador cuando lo descargaste. Ver la imagen para un ejemplo:
   
@@ -58,7 +61,7 @@ gente normal, no lo sabes, haz lo siguiente:
    funciona en Windows sin este.
 6. Y por fin, por supuesto, instalar Tinamit sí mismo en la línea de comanda así:
 
-     :command:`pip install tinamit`
+      :command:`pip install tinamit`
      
  Bueno, si todo esto te parece un poco incómodo, estoy de acuerdo. Hay una nueva lengua de programación llamada 
  `Julia <http://julialang.org/>_` que es tan rápida como C y tan intuitiva como Python, y por lo tanto no tiene nada de
