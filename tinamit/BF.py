@@ -178,10 +178,10 @@ class ClaseModeloBF(Modelo):
         MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe para símismo.variables, no crear un
         diccionario nuevo.
         Por ejemplo, NO HAGAS:
-          símismo.variables = {var1: {...}, var2: {...}, ...}
+           símismo.variables = {var1: {...}, var2: {...}, ...}
         sino:
-          símismo.variables[var1] = {...}
-          símismo.variables[var2] = {...}
+           símismo.variables[var1] = {...}
+           símismo.variables[var2] = {...}
 
         Al no hacer esto, romperás la conección entre los diccionarios de variables de ClaseModeloBF y EnvolturaBF,
         lo cual impedirá después la conexión de estos variables con el modelo DS.
