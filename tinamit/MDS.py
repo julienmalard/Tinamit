@@ -359,7 +359,7 @@ class ModeloVENSIM(EnvolturaMDS):
     def verificar_vensim(símismo):
         """
         Esta función regresa el estatus de Vensim. Es particularmente útil para desboguear (no tiene uso en las
-          otras funciones de esta clase, y se incluye como ayuda a la programadora.)
+        otras funciones de esta clase, y se incluye como ayuda a la programadora.)
 
         :return: estatus número integral de código de estatus
             | 0 = Vensim está listo
@@ -385,7 +385,7 @@ class ModeloVENSIM(EnvolturaMDS):
     @staticmethod
     def comanda_vensim(func, args, mensaje_error=None, val_error=None, devolver=False):
         """
-        Essta función sirve para llamar todo tipo de comanda VENSIM.
+        Esta función sirve para llamar todo tipo de comanda VENSIM.
 
         :param func: La función DLL a llamar.
         :type func: function
@@ -397,7 +397,8 @@ class ModeloVENSIM(EnvolturaMDS):
         :type mensaje_error: str
 
         :param val_error: Un valor de regreso VENSIM que indica un error para esta función. Si se deja ``None``, todos
-        valores que no son 1 se considerarán como er
+        valores que no son 1 se considerarán como erróneas.
+
         :type val_error: int
 
         :param devolver: Si se debe devolver el valor devuelto por VENSIM o no.
