@@ -13,7 +13,8 @@ Pero son bastante inútiles para representar procesos físicos más complejos, c
 
 Y sí, por supuesto que ya existen muchas maneras de conectar estos tipos de modelos. Pero la mayoría involucra cientos de líneas de código, que usted tendrá que entender (incluso, por ejemplo, el manejo del DLL de Vensim y de la línea de comanda), y, si jamás decide uno hacia cambiar el nombre de un variable o conectar un variable más (o menos), habrá que volver a meterse de nuevo a descifrar todo el código. Lo que no es un punto favorable cuando quieres convencer una profesional en, digamos, agricultura o política que el modelo que vas a construir con ella será muy fácil utilizar después de que te vayas.
 
-.. image:: Imágenes/Fig_Estructura Tinamit.PNG
+.. image:: Imágenes/Fig_estructura_tinamit.png
+   :align: center
    :alt: Diagrama de la estructura conceptual de Tinamit.
 
 Por eso se inventó Tinamit, el programa gratis y libre para hacer todo eso para ti. Viene con:
