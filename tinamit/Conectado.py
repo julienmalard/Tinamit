@@ -368,8 +368,8 @@ class SuperConectado(Modelo):
                                  'Desconéctalo primero con .desconectar_vars().'.format(var, nombre_mod))
                 
         # Identificar el nombre del modelo recipiente también.
-        ind_mod_fuente = l_mods.index(modelo_fuente)
-        modelo_recip = l_mods[(ind_mod_fuente + 1) % 2]
+        n_mod_fuente = l_mods.index(modelo_fuente)
+        modelo_recip = l_mods[(n_mod_fuente + 1) % 2]
         
         # Identificar los nombres de los variables fuente y recipiente, tanto como sus unidades.
         var_fuente = dic_vars[modelo_fuente]
