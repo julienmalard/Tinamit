@@ -366,6 +366,10 @@ class SuperConectado(Modelo):
             if var in mod.vars_saliendo or var in mod.vars_entrando:
                 raise ValueError('El variable "{}" del modelo "{}" ya está conectado. '
                                  'Desconéctalo primero con .desconectar_vars().'.format(var, nombre_mod))
+                
+        # Identificar el nombre del modelo recipiente también.
+        índ_mod_fuente = l_mods.index(modelo_fuente)
+        modelo_recip = l_mods[(índ_mod_fuente + 1) % 2]
 
     def desconectar_vars(símismo, var_fuente, modelo_fuente):
         """
