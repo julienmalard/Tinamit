@@ -351,18 +351,7 @@ class SuperConectado(Modelo):
         # Una lista de los submodelos.
         l_mods = list(símismo.modelos)
 
-        # Asegurarse de que modelos y variables especificados sí existan.
-        for nombre_mod in dic_vars:
-            if nombre_mod not in símismo.modelos:
-                raise ValueError('Nombre de modelo "{}" erróneo.'.format(nombre_mod))
-
-            mod = símismo.modelos[nombre_mod]
-            var = dic_vars[nombre_mod]
-
-            if var not in mod.variables:
-                raise ValueError('El variable "{}" no existe en el modelo "{}".'.format(var, nombre_mod))
-
-            
+        
 
         # Identificar el nombre del modelo recipiente también.
         índ_mod_fuente = l_mods.index(modelo_fuente)
