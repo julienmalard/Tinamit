@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='tinamit',
-    version='1.2.1rcJULIEN.MALARD',
+    version='1.2.1',
     packages=find_packages(),
     url='https://github.com/julienmalard/Tinamit',
     license='GNU GPL 3',
