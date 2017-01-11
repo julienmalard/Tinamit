@@ -347,7 +347,21 @@ class SuperConectado(Modelo):
             mod.cerrar_modelo()
 
     def conectar_vars(símismo, dic_vars, modelo_fuente, conv=None):
+        """
+        Conecta variables entre los submodelos.
 
+        :param dic_vars: Un diccionario especificando los variables de cada modelo en el formato {mod1: var, mod2: var}.
+        :type dic_vars: dict
+
+        :param modelo_fuente: El nombre del modelo fuente.
+        :type modelo_fuente: str
+
+        :param conv: La conversión entre las unidades de ambos modelos. En el caso None, se intentará
+        adivinar la conversión con el módulo tinamit.Unidades.
+        :type conv: float
+
+        """
+        
         # Una lista de los submodelos.
         l_mods = list(símismo.modelos)
 
