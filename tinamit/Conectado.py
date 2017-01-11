@@ -377,12 +377,7 @@ class SuperConectado(Modelo):
         unid_fuente = símismo.modelos[modelo_fuente].variables[var_fuente]['unidades']
         unid_recip = símismo.modelos[modelo_recip].variables[var_recip]['unidades']
 
-        # Agregar el diccionario de conexión a la lista de conexiones.
-        símismo.conexiones.append(dic_conex)
-
-        # Para hacer: el siguiente debe ser recursivo.
-        símismo.modelos[modelo_fuente].vars_saliendo.append(var_fuente)
-        símismo.modelos[modelo_recip].vars_entrando.append(var_recip)
+        
 
     def desconectar_vars(símismo, var_fuente, modelo_fuente):
         """
