@@ -366,7 +366,10 @@ class SuperConectado(Modelo):
             if var in mod.vars_saliendo or var in mod.vars_entrando:
                 raise ValueError('El variable "{}" del modelo "{}" ya está conectado. '
                                  'Desconéctalo primero con .desconectar_vars().'.format(var, nombre_mod))
+                
+        # Identificar el nombre del modelo recipiente también.
 
+        
         # Identificar los nombres de los variables fuente y recipiente, tanto como sus unidades.
         var_fuente = dic_vars[modelo_fuente]
         var_recip = dic_vars[modelo_recip]
