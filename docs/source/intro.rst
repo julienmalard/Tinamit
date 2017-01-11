@@ -16,6 +16,10 @@ Y sí, por supuesto que ya existen muchas maneras de conectar estos tipos de mod
 .. figure:: Imágenes/Fig_estructura_tinamit.png
    :align: center
    :alt: Diagrama de la estructura conceptual de Tinamit.
+   
+   Figura 1
+
+   Diagrama de la estructura conceptual de Tinamit.
 
 Por eso se inventó Tinamit, el programa gratis y libre para hacer todo eso para ti. Viene con:
 
