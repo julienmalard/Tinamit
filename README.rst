@@ -14,6 +14,8 @@ Tinamit permite la conexión rápida, flexible y reproducible de modelos con:
 * Una estructura transparente para que todos puedan agregar modelos y recursos.
 * Apoyo multilingual en el IGU.
 
-Julien Malard julien.malard@mail.mcgill.ca
+Autores
+=======
 
-محمّد اظہر انعام بیگ muhammad.baig@mail.mcgill.ca
+* Julien Malard julien.malard@mail.mcgill.ca
+* محمّد اظہر انعام بیگ  muhammad.baig@mail.mcgill.ca
