@@ -1,0 +1,76 @@
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamit 1.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-01-13 13:10-0500\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-01-09 02:32-0500\n"
+"Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>\n"
+"Language-Team: Urdu\n"
+"Language: ur\n"
+"X-Generator: Zanata 3.9.6\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#: ../../source/BF.rst:2
+msgid "BF (Modelos BiofÃ­sicos)"
+msgstr ""
+
+#: ../../../../../../appdata/local/programs/python/python35-32/lib/site-packages/tinamit/BF.py:docstring of tinamit.BF.ClaseModeloBF:1
+msgid ""
+"Se debe desarrollar una subclase de esta clase para cada tipo modelo "
+"biofÃ­sico que se quiere volver compatible con Tinamit."
+msgstr ""
+
+#: ../../../../../../appdata/local/programs/python/python35-32/lib/site-packages/tinamit/BF.py:docstring of tinamit.BF.ClaseModeloBF.inic_vars:1
+msgid ""
+"MUY IMPORTANTE: Esta funciÃ³n debe modificar el diccionario que ya existe "
+"para sÃ­mismo.variables, no crear un diccionario nuevo. Por ejemplo, NO HAGAS:"
+""
+msgstr ""
+
+#: ../../../../../../appdata/local/programs/python/python35-32/lib/site-packages/tinamit/BF.py:docstring of tinamit.BF.ClaseModeloBF.inic_vars:4
+msgid "sÃ­mismo.variables = {var1: {...}, var2: {...}, ...}"
+msgstr ""
+
+#: ../../../../../../appdata/local/programs/python/python35-32/lib/site-packages/tinamit/BF.py:docstring of tinamit.BF.ClaseModeloBF.inic_vars:7
+msgid "sino:"
+msgstr ""
+
+#: ../../../../../../appdata/local/programs/python/python35-32/lib/site-packages/tinamit/BF.py:docstring of tinamit.BF.ClaseModeloBF.inic_vars:6
+msgid "sÃ­mismo.variables[var1] = {...} sÃ­mismo.variables[var2] = {...}"
+msgstr ""
+
+#: ../../../../../../appdata/local/programs/python/python35-32/lib/site-packages/tinamit/BF.py:docstring of tinamit.BF.ClaseModeloBF.inic_vars:9
+msgid ""
+"Al no hacer esto, romperÃ¡s la conecciÃ³n entre los diccionarios de variables "
+"de ClaseModeloBF y EnvolturaBF, lo cual impedirÃ¡ despuÃ©s la conexiÃ³n de "
+"estos variables con el modelo DS."
+msgstr ""
+
+#: ../../../../../../appdata/local/programs/python/python35-32/lib/site-packages/tinamit/BF.py:docstring of tinamit.BF.ClaseModeloBF.leer_vals:1
+msgid ""
+"Esta funciÃ³n debe leer los variables del modelo desde el modelo externo y "
+"copiarlos al diccionario interno de variables. AsegÃºrese que estÃ© "
+"*actualizando* el diccionario interno, y que no lo estÃ© recreando, lo cual "
+"quebrarÃ¡ las conexiones con el modelo conectado."
+msgstr ""
+
+#: ../../../../../../appdata/local/programs/python/python35-32/lib/site-packages/tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF:1
+msgid ""
+"Esta clase ofrece una envoltura para **TODOS** tipos de modelos biofÃ­sicos."
+msgstr ""
+
+#: ../../../../../../appdata/local/programs/python/python35-32/lib/site-packages/tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF:3
+msgid ""
+"Modelos biofÃ­sicos especÃ­ficos se implementan por crear una subclase de "
+"`~tinamit.BF.ClaseModeloBF` especÃ­fica para ellos."
+msgstr ""
+
+#: ../../../../../../appdata/local/programs/python/python35-32/lib/site-packages/tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF.inic_vars:1
+msgid ""
+"Inicializa los variables del modelo biofÃ­sico y los conecta al diccionario "
+"de variables del modelo."
+msgstr ""

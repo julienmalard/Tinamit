@@ -1,5 +1,5 @@
-Contribuidores a Tinamit
-========================
+Agradecimientos
+===============
 
 Tinamit es un proyecto de fuente abierta. Las personas e instituciones siguientes hicieron posible su desarrollo.
 

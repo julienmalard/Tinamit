@@ -14,10 +14,10 @@ Versión: |version|
    :maxdepth: 2
 
    intro
-   instalación
+   instal
    uso
    ejemplos
-   documentación
+   docum
    contribuir
    agradecimientos
 

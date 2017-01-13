@@ -357,7 +357,7 @@ class SuperConectado(Modelo):
         :param modelo_fuente: El nombre del modelo fuente.
         :type modelo_fuente: str
 
-        :param conv: La conversión entre las unidades de ambos modelos. En el caso :keyword:`None`, se intentará
+        :param conv: La conversión entre las unidades de ambos modelos. En el caso ``None``, se intentará
         adivinar la conversión con el módulo :mod:`~tinamit.Unidades`.
         :type conv: float
 
@@ -525,7 +525,7 @@ class Conectado(SuperConectado):
         :param var_bf: El nombre del variable correspondiente en el modelo biofísico.
         :type var_bf: str
 
-        :param mds_fuente: Si :keyword:`True`, el modelo DS es el modelo fuente para la conexión. Sino, será el modelo
+        :param mds_fuente: Si ``True``, el modelo DS es el modelo fuente para la conexión. Sino, será el modelo
         biofísico.
         :type mds_fuente: bool
 

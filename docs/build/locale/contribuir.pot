@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-09 13:38-0500\n"
+"POT-Creation-Date: 2017-01-13 13:10-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +18,10 @@ msgstr ""
 
 #: ../../source/contribuir.rst:2
 msgid "Contribuir a Tinamit"
+msgstr ""
+
+#: ../../source/contribuir.rst:0
+msgid "Contenido"
 msgstr ""
 
 #: ../../source/contribuir.rst:8
@@ -133,7 +137,7 @@ msgid "Avanzar la simulación de un número de pasos predeterminados."
 msgstr ""
 
 #: ../../source/contribuir.rst:70
-msgid "4. Leer valores intermediaros de los variables, y cambiar estos valores antes de seguir con el próximo paso de la simulación."
+msgid "Leer valores intermediaros de los variables, y cambiar estos valores antes de seguir con el próximo paso de la simulación."
 msgstr ""
 
 #: ../../source/contribuir.rst:73

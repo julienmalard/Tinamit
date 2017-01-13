@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-09 13:38-0500\n"
+"POT-Creation-Date: 2017-01-13 11:34-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,32 +39,22 @@ msgid ""
 msgstr ""
 
 #: of tinamit.Modelo.Modelo.cambiar_vals:5
-#: tinamit.Modelo.Modelo.cambiar_vals_modelo:4
 msgid ""
 "Un diccionario de variables y valores para cambiar, con el formato "
-"siguiente:"
+"siguiente: { var1: nuevovalor, var2: nuevovalor, ... }"
 msgstr ""
 
-#: of tinamit.Modelo.Modelo.cambiar_vals:7
-#: tinamit.Modelo.Modelo.cambiar_vals_modelo:6
-msgid "{ var1: nuevovalor,"
-msgstr ""
-
-#: of tinamit.Modelo.Modelo.cambiar_vals:7
-#: tinamit.Modelo.Modelo.cambiar_vals_modelo:6
-msgid "var2: nuevovalor, ..."
-msgstr ""
-
-#: of tinamit.Modelo.Modelo.cambiar_vals:9
-#: tinamit.Modelo.Modelo.cambiar_vals_modelo:8
-msgid "} :type valores: dict"
-msgstr ""
-
-#: of tinamit.Modelo.Modelo.cambiar_vals_modelo:1
+#: of tinamit.Modelo.Modelo.cambiar_vals_modelo_interno:1
 msgid ""
 "Esta función debe cambiar el valor de variables en el :class:`Modelo`, "
 "incluso tomar acciones para asegurarse de que el cambio se hizo en el "
 "modelo externo, si aplica."
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.cambiar_vals_modelo_interno:4
+msgid ""
+"Un diccionario de variables y valores para cambiar, con el formato "
+"siguiente: {var1: nuevovalor, var2: nuevovalor, ... }"
 msgstr ""
 
 #: of tinamit.Modelo.Modelo.cerrar_modelo:1
@@ -121,4 +111,19 @@ msgstr ""
 #: of tinamit.Modelo.Modelo.obt_unidad_tiempo:3
 msgid "La unidad de tiempo (p. ejemplo, 'meses', 'días', etc."
 msgstr ""
+
+#~ msgid ""
+#~ "Un diccionario de variables y valores"
+#~ " para cambiar, con el formato "
+#~ "siguiente:"
+#~ msgstr ""
+
+#~ msgid "{ var1: nuevovalor,"
+#~ msgstr ""
+
+#~ msgid "var2: nuevovalor, ..."
+#~ msgstr ""
+
+#~ msgid "} :type valores: dict"
+#~ msgstr ""
 
