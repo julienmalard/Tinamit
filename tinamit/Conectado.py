@@ -15,10 +15,10 @@ class SuperConectado(Modelo):
 
     def __init__(símismo, nombre="SuperConectado"):
         """
-        El nombre automático para este modelo es "SuperConectado". Si vas a conectar más que un modelo SuperConectado,
-        asegúrate de darle un nombre distinto al menos a un de ellos.
+        El nombre automático para este modelo es "SuperConectado". Si vas a conectar más que un modelo
+        :class:`.SuperConectado` en un modelo jerárquico, asegúrate de darle un nombre distinto al menos a un de ellos.
 
-        :param nombre: El nombre del modelo SuperConectado.
+        :param nombre: El nombre del modelo :class:`.SuperConectado`.
         :type nombre: str
 
         """
@@ -78,7 +78,8 @@ class SuperConectado(Modelo):
 
     def inic_vars(símismo):
         """
-        Esta función no es necesaria, por lo de estab_modelo.
+        Esta función no es necesaria, porque :func:`.estab_modelo` ya llama las funciones
+        :func:`~tinamit.Modelo.inic_vars` de los submodelos.
         """
         pass
 
@@ -94,7 +95,7 @@ class SuperConectado(Modelo):
         Después se actualiza el variable símismo.conv_tiempo para guardar en memoria la conversión necesaria entre
         los pasos de los dos submodelos.
 
-        Se emplea el módulo Unidades.Unidades para convertir unidades.
+        Se emplea las clase :class:`~tinamit.Unidades.Unidades` para convertir unidades.
 
         :return: El tiempo de paso del modelo SuperConectado.
         :rtype: str
@@ -197,11 +198,11 @@ class SuperConectado(Modelo):
 
     def cambiar_vals_modelo_interno(símismo, valores):
         """
-        Esta función cambia los valores del modelo. A través de la función Conectado.cambiar_vals, se vuelve
-        recursivo.
+        Esta función cambia los valores del modelo. A través de la función :func:`~tinamit.Conectado.cambiar_vals`, se
+        vuelve recursiva.
 
         :param valores: El diccionario de nombres de variables para cambiar. Hay que prefijar cada nombre de variable
-        con el nombre del submodelo en en cual se ubica (separados con un "_"), para que Tinamit sepa en cuál
+        con el nombre del submodelo en en cual se ubica (separados con un ``_``), para que Tinamit sepa en cuál
         submodelo se ubica cada variable.
         :type valores: dict
 
@@ -218,7 +219,7 @@ class SuperConectado(Modelo):
 
     def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamit'):
         """
-        Simula el modelo SuperConectado.
+        Simula el modelo :class:`~tinamit.Conectado.SuperConectado`.
 
         :param tiempo_final: El tiempo final de la simulación.
         :type tiempo_final: int
@@ -226,7 +227,7 @@ class SuperConectado(Modelo):
         :param paso: El paso (intervalo de intercambio de valores entre los dos submodelos).
         :type paso: int
 
-        :param nombre_corrida: El nombre de la corrida.  El valor automático es 'Corrida Tinamit'.
+        :param nombre_corrida: El nombre de la corrida.  El valor automático es ``Corrida Tinamit``.
         :type nombre_corrida: str
 
         """
@@ -252,8 +253,8 @@ class SuperConectado(Modelo):
 
     def incrementar(símismo, paso):
         """
-        Esta función avanza los dos submodelos conectados de intervalo de tiempo paso. Emplea el módulo
-        threading para correr los dos submodelos en paralelo, así ahorando tiempo.
+        Esta función avanza los dos submodelos conectados de intervalo de tiempo ``paso``. Emplea el módulo
+        :py:mod:`threading` para correr los dos submodelos en paralelo, así ahorando tiempo.
 
         :param paso: El intervalo de tiempo.
         :type paso: int
@@ -290,8 +291,8 @@ class SuperConectado(Modelo):
     def leer_vals(símismo):
         """
         Leamos los valores de los variables de los dos submodelos. Por la conexión entre los diccionarios de variables
-        de los submodelos y del SuperConectado, no hay necesidad de actualizar el diccionario del SuperConectado
-        sí mismo.
+        de los submodelos y del :class:`~tinamit.Conectado.SuperConectado`, no hay necesidad de actualizar el
+        diccionario del :class:`~tinamit.Modelo.SuperConectado` sí mismo.
         """
 
         for mod in símismo.modelos.values():
@@ -356,8 +357,8 @@ class SuperConectado(Modelo):
         :param modelo_fuente: El nombre del modelo fuente.
         :type modelo_fuente: str
 
-        :param conv: La conversión entre las unidades de ambos modelos. En el caso None, se intentará
-        adivinar la conversión con el módulo tinamit.Unidades.
+        :param conv: La conversión entre las unidades de ambos modelos. En el caso :keyword:`None`, se intentará
+        adivinar la conversión con el módulo :mod:`~tinamit.Unidades`.
         :type conv: float
 
         """
@@ -462,13 +463,13 @@ class SuperConectado(Modelo):
 
 class Conectado(SuperConectado):
     """
-    Esta clase representa un tipo especial de modelo SuperConectado: la conexión entre un modelo biofísico y un modelo
-    DS.
+    Esta clase representa un tipo especial de modelo :class:`~tinamit.Conectado.SuperConectado`: la conexión entre un
+    modelo biofísico y un modelo DS.
     """
 
     def __init__(símismo):
         """
-        Inicializar el modelo Conectado.
+        Inicializar el modelo :mod:`~tinamit.Conectado.Conectado`.
         """
 
         # Referencias rápidas a los submodelos.
@@ -480,7 +481,7 @@ class Conectado(SuperConectado):
 
     def estab_mds(símismo, archivo_mds):
         """
-        Establecemos el modelo DS.
+        Establecemos el modelo de dinámicas de los sistemas (:class:`~tinamit.MDS.EnvolturaMDS`).
 
         :param archivo_mds: El archivo del modelo DS.
         :type archivo_mds: str
@@ -498,7 +499,7 @@ class Conectado(SuperConectado):
 
     def estab_bf(símismo, archivo_bf):
         """
-        Establece el modelo biofísico.
+        Establece el modelo biofísico ((:class:`~tinamit.BF.EnvolturaBF`)).
 
         :param archivo_bf: El archivo con la clase del modelo biofísico. **Debe** ser un archivo de Python.
         :type archivo_bf: str
@@ -524,7 +525,7 @@ class Conectado(SuperConectado):
         :param var_bf: El nombre del variable correspondiente en el modelo biofísico.
         :type var_bf: str
 
-        :param mds_fuente: Si True, el modelo DS es el modelo fuente para la conexión. Sino, será el modelo
+        :param mds_fuente: Si :keyword:`True`, el modelo DS es el modelo fuente para la conexión. Sino, será el modelo
         biofísico.
         :type mds_fuente: bool
 
