@@ -17,7 +17,7 @@ Versión: |version|
    instal
    uso
    ejemplos
-   docum
+   docu
    contribuir
    agradecimientos
 
