@@ -21,7 +21,7 @@ def run_model(name, switches):
     modelo = Conectado()
 
     # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
-    modelo.estab_mds("C:\\SahysMod\\julien\\GBSDM_V4.vpm")
+    modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'GBSDM_V4.vpm'))
 
     modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'SAHYSMOD.py'))
 

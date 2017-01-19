@@ -5,6 +5,16 @@ import re
 
 
 class ModeloMDS(object):
+    """
+
+
+    :type tipo: str
+
+    :type regex_var: str
+    :type regex_fun: str
+    :type regex_op: str
+    :type lím_línea: int
+    """
 
     tipo = NotImplemented
 
@@ -59,8 +69,10 @@ class ModeloMDS(object):
         return símismo.vars[var]
 
     def leer_modelo(símismo):
-        with open(símismo.archivo_mds) as d:
-            símismo._leer_doc_modelo(d)
+        with open(símismo.archivo_mds, 'r', encoding='utf8') as d:
+            doc = d.readlines()
+
+        símismo._leer_doc_modelo(doc)
 
     def naturalizar_ec(símismo, ec):
 
@@ -175,14 +187,14 @@ class ModeloMDS(object):
             d.write(doc)
 
 
-class ModeloVENSIM(ModeloMDS):
+class ModeloVENSIMmdl(ModeloMDS):
 
     tipo = 'VENSIM'
     lím_línea = 80
 
     # l = ['abd = 1', 'abc d = 1', 'abc_d = 1', '"ab3 *" = 1', '"-1\"f" = 1', 'a', 'é = A FUNCTION OF ()',
     #      'வணக்கம்', 'a3b', '"5a"']
-    regex_var = r'(?<= *)[^\W\d]+[\w\d_ ்]*(?=$|[\w\d_ ])[\w\d_்]*(?![\w\d_ ]*\()|".*"'
+    regex_var = r'[^\W\d][\w\d_ ்्੍્]+|\".*?(?<!\\)\"'
     # for i in l:
     #     print(re.findall(regex_var, i))
 
@@ -206,48 +218,83 @@ class ModeloVENSIM(ModeloMDS):
         símismo.vpm.correr_incert(nombre_corrida)
 
     def _leer_doc_modelo(símismo, d):
+        """
+        Esta función extrae la información del modelo DS.
 
+        :param d: El archivo ya abierto, en forma de lista.
+        :type d: list
+
+        """
+
+        # Borrar lo que podría haber allí desde antes.
         símismo.vars.clear()
 
-        l_texto_temp = []
-        n = 0
-        símismo.dic_doc['cabeza'] = d[n]
+        l_texto_var = []  # Una lista para combinar información en línea múltiples
 
-        n += 1
+        # La primera línea del documento, con {UTF-8}
+        símismo.dic_doc['cabeza'] = d[0]
+
+        # Inicializar la línea y su número
+        n = 1
         l = d[n]
-        while re.search(r'^\*+$', l) is None:
 
-            while l != '\t|':
-                l_texto_temp.append(l)
+        while re.match(r'\*+$', l) is None:
+            # Pasar a través de todas las líneas en la sección de variables del documento
+
+            while re.match(r'(\t~\t)?\t\|', l) is None:
+                # Pasar a través de cada variable
+
+                if l != '\n':
+                    # Si la línea no es vacía...
+
+                    # Agregar la línea a la lista de líneas que pertenecen a este variable
+                    l_texto_var.append(l)
                 n += 1
                 l = d[n]
 
-            nombre, dic_var = símismo._leer_var(texto=l_texto_temp)
+            # Extraer la información del variable
+            nombre, dic_var = símismo._leer_var(l_texto=l_texto_var)
 
             símismo.vars[nombre] = dic_var
-            l_texto_temp = []
+            l_texto_var = []
 
+            # Pasa a la próxima línea
+            n += 1
+            l = d[n]
+
+        # Guardar todo el resto del archivo (que no contiene información de ecuaciones de variables)
         símismo.dic_doc['cola'] = d[n:]
 
+        # Transferir los nombres de los variables parientes a los diccionarios de sus hijos correspondientes
         for var, d_var in símismo.vars.items():
-            for hijo in d_var['hijos']:
-                símismo.vars[hijo]['parientes'].append(var)
+            for pariente in d_var['parientes']:
+                símismo.vars[pariente]['hijos'].append(var)
 
+        # Borrar lo que había antes en las listas siguientes:
         símismo.flujos.clear()
         símismo.auxiliares.clear()
         símismo.constantes.clear()
         símismo.niveles.clear()
 
+        # Guardar una lista de los nombres de variables de tipo "nivel"
         símismo.niveles += [x for x in símismo.vars if re.match(r'INTEG *\(', símismo.vars[x]['ec']) is not None]
 
+        # Los flujos, por definición, son los parientes de los niveles.
         for niv in símismo.niveles:
+
             for flujo in símismo.vars[niv]['parientes']:
+                # Para cada nivel en el modelo...
+
                 if flujo not in símismo.flujos:
+                    # Evitar agregar un flujo dos veces
                     símismo.flujos.append(flujo)
 
+        # Los auxiliares son los variables con parientes que son ni niveles, ni flujos.
         símismo.auxiliares += [x for x, d in símismo.vars.items()
                                if x not in símismo.niveles and x not in símismo.flujos
                                and len(d['parientes'])]
+
+        # Los constantes son los variables que quedan.
         símismo.constantes += [x for x in símismo.vars if x not in símismo.niveles and x not in símismo.flujos
                                and x not in símismo.auxiliares]
 
@@ -257,56 +304,76 @@ class ModeloVENSIM(ModeloMDS):
 
         return doc
 
-    def _leer_var(símismo, texto):
+    def _leer_var(símismo, l_texto):
         """
+        Esta función toma un lista de las líneas de texto que especifican un variable y le extrae su información.
 
-        :param texto:
-        :type texto: list
+        :param l_texto: Una lista del texto que corresponde a este variable.
+        :type l_texto: list
 
-        :return:
+        :return: El numbre del variable, y un diccionario con su información
         :rtype: (str, dict)
         """
 
-        nombre = sacar_variables(texto[0], regex=símismo.regex_var, n=1)
+        # Identificar el nombre del variable
+        nombre = sacar_variables(l_texto[0], regex=símismo.regex_var, n=1)[0]
 
-        dic_var = {'nombre': '', 'unidades': '', 'comentarios': '', 'hijos': [], 'parientes': [], 'ec': ''}
+        # El diccionario en el cual guardar todo
+        dic_var = {'nombre': nombre, 'unidades': '', 'comentarios': '', 'hijos': [], 'parientes': [], 'ec': ''}
 
-        l_texto_temp = re.match(r' += +.*$', texto[len(nombre), :]).groups()[0]
+        # Empezar una lista para todas las líneas del documento que corresponden ala ecuación de este variable
+        l_tx_ec = []
+
+        # Sacar el inicio de la ecuación que puede empezar después del signo de igualdad.
+        m = re.match(r' +=.*$', l_texto[0][len(nombre) :])
+        if m is not None:
+            l_tx_ec.append(m.groups()[0])
+
+        # Seguir con la segunda línea
         n = 1
-        l = texto[n]
-        while '\t~\t' not in l:
-            l_texto_temp.append(l.remove('\t'))
+        l = l_texto[n]
+
+        while re.match(r'\t~\t', l) is None:
+            # Mientras no llegamos a la marca de fin de ecuación, seguir con la lectura.
+
+            # Quitar el tabulador de la izquierda de la línea
+            l_tx_ec.append(l.lstrip('\t').rstrip('\n'))
             n += 1
-            l = texto[n]
+            l = l_texto[n]
 
-        ec = juntar(l_texto_temp)
+        # Combinar las líneas de texto de la ecuación
+        ec = juntar(l_tx_ec)
 
-        # Esto no funcionará si hay un variable que se llama "A FUNCTION OF ("
+        # Extraer los nombre de los variables parientes
+        dic_var['parientes'] = sacar_variables(texto=ec, regex=símismo.regex_var)
+
+        # Si no hay ecuación especificada, dar una ecuación vacía.
         if re.match(r'A FUNCTION OF *\(', ec) is not None:
             dic_var['ec'] = ''
         else:
             dic_var['ec'] = ec
 
-        l_texto_temp.append(l.replace('\t~\t', ''))
-        n += 1
-        l = texto[n]
+        # Ahora sacamos las unidades.
+        l = l.replace('\t~\t', '')  # Quitar el marcador de especificación de unidades
+        l_tx_unid = []
 
-        while '\t~\t' not in l:
-            l_texto_temp.append(l.remove('\t'))
+        while re.match(r'\t~\t', l) is None:
+            # Mientras no llegamos al marcador de empezamiento de comentarios...
+
+            # Agregar la línea a la lista de lineas de unidades.
+            l_tx_unid.append(l.lstrip('\t'))
+
+            # ...y seguir con la próxima línea.
             n += 1
-            l = texto[n]
-        dic_var['unidades'] = juntar(l_texto_temp)
+            l = l_texto[n]
 
-        l_texto_temp = []
+        # Guardar las unidades
+        dic_var['unidades'] = juntar(l_tx_unid)
 
-        while n != len(texto):
-            l_texto_temp.append(l.remove('\t'))
-            n += 1
-            l = texto[n]
+        # Agregar todas las líneas que quedan para la sección de comentarios
+        l_tx_temp = [l.lstrip('\t~\t')] + l_texto[n+1:]
 
-        dic_var['comentarios'] = juntar(l_texto_temp)
-
-        dic_var['parientes'] = sacar_variables(texto=dic_var['ec'], regex=símismo.regex_var)
+        dic_var['comentarios'] = juntar(l_tx_temp)
 
         return nombre, dic_var
 
@@ -420,22 +487,23 @@ def comanda_vensim(función, args):
 
 def mds(archivo_mds):
     """
+    Esta función crea una instancia de modelo de DS de la subclase apropiada para el tipo de modelo dado.
 
-    :param archivo_mds:
+    :param archivo_mds: La ubicación del archivo de MDS.
     :type archivo_mds: str
 
-    :return:
+    :return: El objeto de MDS apropiado.
     :rtype: ModeloMDS
 
     """
-    ext = os.path.splitext(archivo_mds)[0]
+    ext = os.path.splitext(archivo_mds)[1]
 
     if ext == '.mdl':
-        modelo = ModeloVENSIM(archivo_mds=archivo_mds)
+        modelo = ModeloVENSIMmdl(archivo_mds=archivo_mds)
     elif ext == '.vpm':
         modelo = ModeloVENSIMvpm(archivo_mds=archivo_mds)
     else:
-        raise NotImplementedError('No se han implementado modelos de tipo %s' % ext)
+        raise NotImplementedError('No se han implementado modelos de tipo "{}"'.format(ext))
 
     return modelo
 
@@ -467,36 +535,45 @@ def cortar(texto, máx_car, lín_1=None, lín_otras=None):
 
 def juntar(l):
     """
+    Esta función junta una lista de líneas de texto en una sola línea de texto.
 
-    :param l:
-    :type l: list
+    :param l: La lexta de líneas de texto.
+    :type l: list[str]
 
-    :return:
+    :return: El texto combinado.
     :rtype: str
+
     """
 
-    l = [x.remove('\t').replace('\\\n', ' ') for x in l]
+    # Quitar tabulaciones y símbolos de final de línea
+    l = [x.lstrip('\t').rstrip('\n').rstrip('\\') for x in l]
 
-    texto = ''.join(l)
+    # Combinar las líneas y quitar espacios al principio y al final
+    texto = ''.join(l).strip(' ')
 
+    # Devolver el texto combinado.
     return texto
 
 
 def sacar_variables(texto, regex, n=None):
     """
+    Esat ecuación saca los variables de un texto.
 
-    :param texto:
+    :param texto: El texto de cual extraer los nombres de los variables.
     :type texto: str
 
-    :param regex:
+    :param regex: La expersión regex correspondiendo al formato de los variables.
     :type regex: str
 
-    :param n:
+    :param n: El número máximo de variables que sacar.
     :type n: int
 
-    :return:
+    :return: Una lista de los nombres de los variables.
     :rtype: list
+
     """
+
+    # Buscar los nombres
     b = re.findall(regex, texto)
 
     if n is None:

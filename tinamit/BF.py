@@ -120,7 +120,8 @@ class ClaseModeloBF(Modelo):
 
     def __init__(símismo):
         """
-        Esta función correrá automáticamente con la inclu
+        Esta función correrá automáticamente con la inclusión de `super().__init__()` en la función `__init__()` de las
+        subclases de esta clase.
         """
         super().__init__(nombre='modeloBF')
 
@@ -174,12 +175,14 @@ class ClaseModeloBF(Modelo):
 
     def inic_vars(símismo):
         """
-
         MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe para símismo.variables, no crear un
         diccionario nuevo.
         Por ejemplo, NO HAGAS:
+
            símismo.variables = {var1: {...}, var2: {...}, ...}
+
         sino:
+
            símismo.variables[var1] = {...}
            símismo.variables[var2] = {...}
 

@@ -35,6 +35,7 @@ Tinamit, y algunas adicionales.
 Se empieza el interfaz con la función ``correr`` del IGU:
 
    ``from tinamit.Interfaz.IGU import correr``
+
    ``correr()``
 
 Cambiar idiomas

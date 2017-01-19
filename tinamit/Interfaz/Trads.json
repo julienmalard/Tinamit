@@ -236,6 +236,11 @@
         "X": "X"
       }
     },
+    "Igbo": {
+      "Estado": 0.0,
+      "IzqaDerech": true,
+      "Trads": {}
+    },
     "Italiano": {
       "Estado": 0.07317073170731707,
       "IzqaDerech": "Normal",

@@ -95,7 +95,7 @@ class SuperConectado(Modelo):
         Después se actualiza el variable símismo.conv_tiempo para guardar en memoria la conversión necesaria entre
         los pasos de los dos submodelos.
 
-        Se emplea las clase :class:`~tinamit.Unidades.Unidades` para convertir unidades.
+        Se emplea las clase `~tinamit.Unidades.Unidades` para convertir unidades.
 
         :return: El tiempo de paso del modelo SuperConectado.
         :rtype: str
@@ -204,6 +204,7 @@ class SuperConectado(Modelo):
         :param valores: El diccionario de nombres de variables para cambiar. Hay que prefijar cada nombre de variable
         con el nombre del submodelo en en cual se ubica (separados con un ``_``), para que Tinamit sepa en cuál
         submodelo se ubica cada variable.
+
         :type valores: dict
 
         """
@@ -358,7 +359,8 @@ class SuperConectado(Modelo):
         :type modelo_fuente: str
 
         :param conv: La conversión entre las unidades de ambos modelos. En el caso ``None``, se intentará
-        adivinar la conversión con el módulo :mod:`~tinamit.Unidades`.
+        adivinar la conversión con el módulo `~tinamit.Unidades`.
+
         :type conv: float
 
         """

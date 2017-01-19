@@ -1,9 +1,11 @@
-from Incertidumbre.Controles import Control
-from Incertidumbre.Modelo import mds
+from tinamit.Incertidumbre.Controles import Control
+from tinamit.Incertidumbre.Modelo import mds
 
 from tinamit.Incertidumbre.Datos import DatosIndividuales, DatosRegión, Geografía, BaseDeDatos
 
-modelo = mds(archivo_mds='')  # MDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
+# MDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
+modelo = mds(archivo_mds='C:\\Users\\jmalar1\\Documents\\USB Julien\\USB après lavage août 2016\\PhD\\Iximulew\\'
+                         'MDS 2015\\Tz\'olöj Ya\'\\Taller 12\\Para Tinamit.mdl')
 print(modelo.vars)
 print(modelo.internos)  # variables internos al MDS (p. ej., TIMESTEP y TIME en VENSIM)
 print(modelo.auxiliares)
@@ -12,6 +14,7 @@ print(modelo.niveles)
 print(modelo.constantes)
 modelo.vacíos()
 
+raise SystemExit(0)
 datos_ind = DatosIndividuales(archivo_csv='', año=2011, col_cód_lugar='Código')
 
 # datos_ind = DatosIndividuales(fuente='')
