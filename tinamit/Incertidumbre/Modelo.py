@@ -50,11 +50,12 @@ class ModeloMDS(object):
 
     def vacíos(símismo):
         """
+        Devuelve una lista de los nombres de variables sin ecuaciones.
 
         :return:
         :rtype: list
         """
-        return [x for x in símismo.vars if símismo.vars[x]['ecuación'] is None]
+        return [x for x in símismo.vars if símismo.vars[x]['ec'] is None]
 
     def detalles_var(símismo, var):
         """
@@ -194,16 +195,22 @@ class ModeloVENSIMmdl(ModeloMDS):
 
     # l = ['abd = 1', 'abc d = 1', 'abc_d = 1', '"ab3 *" = 1', '"-1\"f" = 1', 'a', 'é = A FUNCTION OF ()',
     #      'வணக்கம்', 'a3b', '"5a"']
-    regex_var = r'[^\W\d][\w\d_ ்्੍્]+|\".*?(?<!\\)\"'
+    regex_var = r'[^\W\d][\w\d_ ்्੍્]*(?![\w\d_ ்्੍્ ]*\()|\".*?(?<!\\)\"'
     # for i in l:
     #     print(re.findall(regex_var, i))
 
-    regex_fun = r'(?<= *)[^\W\d]+[\w\d_ ்]*\('
+    regex_fun = r'([^\W\d]+[\w\d_ ்्੍્]*)(?= *\()'
     regex_op = r'(?<= *)[\^\*\-\+/\(\)]'
 
     def __init__(símismo, archivo_mds):
-        símismo.vpm = None
+        """
+
+        :param archivo_mds:
+        :type archivo_mds: str
+        """
         super().__init__(archivo_mds=archivo_mds)
+
+        símismo.vpm = None
 
     def correr(símismo, nombre_corrida):
         if símismo.vpm is None:
@@ -228,42 +235,36 @@ class ModeloVENSIMmdl(ModeloMDS):
 
         # Borrar lo que podría haber allí desde antes.
         símismo.vars.clear()
+        símismo.dic_doc.clear()
 
-        l_texto_var = []  # Una lista para combinar información en línea múltiples
+        # Variables internos a VENSIM
+        símismo.internos = ['FINAL TIME', 'TIME STEP', 'INITIAL TIME', 'SAVEPER', 'Time']
 
         # La primera línea del documento, con {UTF-8}
         símismo.dic_doc['cabeza'] = d[0]
 
-        # Inicializar la línea y su número
-        n = 1
-        l = d[n]
+        # La primera línea con informacion de variables
+        prim_vars = 1
 
-        while re.match(r'\*+$', l) is None:
-            # Pasar a través de todas las líneas en la sección de variables del documento
+        # La primer línea que NO contiene información de variables ("****...***" para VENSIM).
+        fin_vars = next((n for n, l in enumerate(d) if re.match(r'\*+$', l)), None)
 
-            while re.match(r'(\t~\t)?\t\|', l) is None:
-                # Pasar a través de cada variable
+        # La región con información de variables
+        sec_vars = d[prim_vars:fin_vars]
 
-                if l != '\n':
-                    # Si la línea no es vacía...
+        # Una lista de tuples que indican dónde empieza y termina cada variable
+        índs_vars = [(n, (n + 1) + next(i for i, l_v in enumerate(sec_vars[n+1:]) if re.match('\n', l_v)))
+                     for n, l in enumerate(sec_vars) if re.match(r'[\w]|\"', l)]
 
-                    # Agregar la línea a la lista de líneas que pertenecen a este variable
-                    l_texto_var.append(l)
-                n += 1
-                l = d[n]
+        # Guardar todo el resto del archivo (que no contiene información de ecuaciones de variables).
+        símismo.dic_doc['cola'] = d[fin_vars:]
+
+        for ubic_var in índs_vars:
 
             # Extraer la información del variable
-            nombre, dic_var = símismo._leer_var(l_texto=l_texto_var)
+            nombre, dic_var = símismo._leer_var(l_texto=sec_vars[ubic_var[0]:ubic_var[1]])
 
             símismo.vars[nombre] = dic_var
-            l_texto_var = []
-
-            # Pasa a la próxima línea
-            n += 1
-            l = d[n]
-
-        # Guardar todo el resto del archivo (que no contiene información de ecuaciones de variables)
-        símismo.dic_doc['cola'] = d[n:]
 
         # Transferir los nombres de los variables parientes a los diccionarios de sus hijos correspondientes
         for var, d_var in símismo.vars.items():
@@ -282,11 +283,19 @@ class ModeloVENSIMmdl(ModeloMDS):
         # Los flujos, por definición, son los parientes de los niveles.
         for niv in símismo.niveles:
 
-            for flujo in símismo.vars[niv]['parientes']:
+            # El primer argumento de la función INTEG de VENSIM
+            arg_integ = sacar_arg(símismo.vars[niv]['ec'], regex_var=símismo.regex_var,
+                               regex_fun=símismo.regex_fun, i=0)
+
+            # Extraer los variables flujos
+            flujos = sacar_variables(arg_integ, regex=símismo.regex_var, excluir=símismo.internos)
+
+            for flujo in flujos:
                 # Para cada nivel en el modelo...
 
                 if flujo not in símismo.flujos:
-                    # Evitar agregar un flujo dos veces
+                    # Agregar el flujo, si no está ya en la lista de flujos.
+
                     símismo.flujos.append(flujo)
 
         # Los auxiliares son los variables con parientes que son ni niveles, ni flujos.
@@ -321,31 +330,24 @@ class ModeloVENSIMmdl(ModeloMDS):
         # El diccionario en el cual guardar todo
         dic_var = {'nombre': nombre, 'unidades': '', 'comentarios': '', 'hijos': [], 'parientes': [], 'ec': ''}
 
-        # Empezar una lista para todas las líneas del documento que corresponden ala ecuación de este variable
-        l_tx_ec = []
-
         # Sacar el inicio de la ecuación que puede empezar después del signo de igualdad.
-        m = re.match(r' +=.*$', l_texto[0][len(nombre) :])
-        if m is not None:
-            l_tx_ec.append(m.groups()[0])
+        m = re.match(r' *=(.*)$', l_texto[0][len(nombre) :])
+        if m is None:
+            princ_ec = ''
+        else:
+            princ_ec = m.groups()[0]
 
-        # Seguir con la segunda línea
-        n = 1
-        l = l_texto[n]
+        # El principio de las unidades
+        prim_unid = next(n for n, l in enumerate(l_texto) if re.match(r'\t~\t', l))
 
-        while re.match(r'\t~\t', l) is None:
-            # Mientras no llegamos a la marca de fin de ecuación, seguir con la lectura.
-
-            # Quitar el tabulador de la izquierda de la línea
-            l_tx_ec.append(l.lstrip('\t').rstrip('\n'))
-            n += 1
-            l = l_texto[n]
+        # El principio de los comentarios
+        prim_com = next(n + (prim_unid + 1) for n, l in enumerate(l_texto[prim_unid + 1:]) if re.match(r'\t~\t', l))
 
         # Combinar las líneas de texto de la ecuación
-        ec = juntar(l_tx_ec)
+        ec = juntar([princ_ec] + l_texto[1:prim_unid])
 
         # Extraer los nombre de los variables parientes
-        dic_var['parientes'] = sacar_variables(texto=ec, regex=símismo.regex_var)
+        dic_var['parientes'] = sacar_variables(texto=ec, regex=símismo.regex_var, excluir=símismo.internos)
 
         # Si no hay ecuación especificada, dar una ecuación vacía.
         if re.match(r'A FUNCTION OF *\(', ec) is not None:
@@ -354,27 +356,12 @@ class ModeloVENSIMmdl(ModeloMDS):
             dic_var['ec'] = ec
 
         # Ahora sacamos las unidades.
-        l = l.replace('\t~\t', '')  # Quitar el marcador de especificación de unidades
-        l_tx_unid = []
+        dic_var['unidades'] = juntar(l_texto[prim_unid:prim_com], cabeza=r'\t~?\t')
 
-        while re.match(r'\t~\t', l) is None:
-            # Mientras no llegamos al marcador de empezamiento de comentarios...
+        # Y ahora agregamos todas las líneas que quedan para la sección de comentarios
+        dic_var['comentarios'] = juntar(l_texto[prim_com:], cabeza=r'\t~?\t', cola=r'\t\|')
 
-            # Agregar la línea a la lista de lineas de unidades.
-            l_tx_unid.append(l.lstrip('\t'))
-
-            # ...y seguir con la próxima línea.
-            n += 1
-            l = l_texto[n]
-
-        # Guardar las unidades
-        dic_var['unidades'] = juntar(l_tx_unid)
-
-        # Agregar todas las líneas que quedan para la sección de comentarios
-        l_tx_temp = [l.lstrip('\t~\t')] + l_texto[n+1:]
-
-        dic_var['comentarios'] = juntar(l_tx_temp)
-
+        # Devolver el variable decifrado.
         return nombre, dic_var
 
     def publicar_vpm(símismo):
@@ -533,17 +520,29 @@ def cortar(texto, máx_car, lín_1=None, lín_otras=None):
     return lista
 
 
-def juntar(l):
+def juntar(l, cabeza=None, cola=None):
     """
     Esta función junta una lista de líneas de texto en una sola línea de texto.
 
     :param l: La lexta de líneas de texto.
     :type l: list[str]
 
+    :param cabeza:
+    :type cabeza:
+
+    :param cola:
+    :type cola:
+
     :return: El texto combinado.
     :rtype: str
 
     """
+
+    # Quitar text no deseado del principio y del final
+    if cabeza is not None:
+        l[0] = re.sub(r'^({})'.format(cabeza), '', l[0])
+    if cola is not None:
+        l[-1] = re.sub(r'{}$'.format(cola), '', l[-1])
 
     # Quitar tabulaciones y símbolos de final de línea
     l = [x.lstrip('\t').rstrip('\n').rstrip('\\') for x in l]
@@ -555,7 +554,7 @@ def juntar(l):
     return texto
 
 
-def sacar_variables(texto, regex, n=None):
+def sacar_variables(texto, regex, n=None, excluir=None):
     """
     Esat ecuación saca los variables de un texto.
 
@@ -568,18 +567,75 @@ def sacar_variables(texto, regex, n=None):
     :param n: El número máximo de variables que sacar.
     :type n: int
 
+    :param excluir: Nombres de variables para excluir
+    :type excluir: list
+
     :return: Una lista de los nombres de los variables.
     :rtype: list
 
     """
 
+    # Poner el variable excluir en el formato necesario.
+    if excluir is None:
+        excluir = []
+    if type(excluir) is str:
+        excluir = [excluir]
+
     # Buscar los nombres
     b = re.findall(regex, texto)
 
+    # Quitar espacios extras
+    b = [x.strip(' ') for x in b]
+
+    # Devolver una lista de nombres de variables únicos.
     if n is None:
-        return b
+        return [x for x in set(b) if x not in excluir]
     else:
-        return b[:n]
+        return [x for x in set(b[:n]) if x not in excluir]
+
+
+def sacar_arg(ec, regex_var, regex_fun, i=None):
+    """
+    Esta función saca los argumentos de una función.
+
+    :param ec: La ecuación que contiene una función.
+    :type ec: str
+
+    :param i: El índice del argumento que querremos extraer (opcional)
+    :type i: int
+
+    :return: Una lista de los argumentos de la función
+    :rtype: list[str] | str
+
+    """
+
+    # El principio de la función
+    princ_fun = re.match(regex_fun, ec).end()
+
+    # El fin de la función
+    fin_fun = re.search(r' *\) *\n?$', ec).start()
+
+    # La parte de la ecuación con los argumentos de la función
+    sec_args = ec[princ_fun:fin_fun]
+
+    # Una lista de tuples con los índices de las ubicaciones de los variables
+    pos_vars = [m.span() for m in re.finditer(regex_var, sec_args)]
+
+    # Una lista de las ubicaciones de TODAS las comas en el ecuación
+    pos_comas = [m.start() for m in re.finditer(r',', sec_args)]
+
+    # Las índes de separación de argumentos de la función. Solo miramos las comas que NO hagan parte de un variable,
+    # y agregamos un 0 al principio, y el último índice del texto al final.
+    sep_args = [0] + [j for j in pos_comas if not any([p[0] <= j < p[1] for p in pos_vars])] + [len(sec_args)]
+
+    # Dividimos la ecuación en argumentos
+    args = [sec_args[p:sep_args[j+1]] for j, p in enumerate(sep_args[:-1])]
+
+    # Y devolvemos el argumento pedido.
+    if i is None:
+        return args
+    else:
+        return args[i]
 
 
 dic_funs = {

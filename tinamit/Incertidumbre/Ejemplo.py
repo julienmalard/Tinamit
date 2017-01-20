@@ -6,16 +6,16 @@ from tinamit.Incertidumbre.Datos import DatosIndividuales, DatosRegión, Geograf
 # MDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
 modelo = mds(archivo_mds='C:\\Users\\jmalar1\\Documents\\USB Julien\\USB après lavage août 2016\\PhD\\Iximulew\\'
                          'MDS 2015\\Tz\'olöj Ya\'\\Taller 12\\Para Tinamit.mdl')
-print(modelo.vars)
-print(modelo.internos)  # variables internos al MDS (p. ej., TIMESTEP y TIME en VENSIM)
-print(modelo.auxiliares)
-print(modelo.flujos)
-print(modelo.niveles)
-print(modelo.constantes)
-modelo.vacíos()
+print('vars', modelo.vars)
+print('internos', modelo.internos)  # variables internos al MDS (p. ej., TIMESTEP y TIME en VENSIM)
+print('auxiliares', modelo.auxiliares)
+print('flujos', modelo.flujos)
+print('niveles', modelo.niveles)
+print('constantes', modelo.constantes)
+print('vacíos', modelo.vacíos())
 
-raise SystemExit(0)
 datos_ind = DatosIndividuales(archivo_csv='', año=2011, col_cód_lugar='Código')
+raise SystemExit(0)
 
 # datos_ind = DatosIndividuales(fuente='')
 # datos_ind.estab_tiempo(col='año')

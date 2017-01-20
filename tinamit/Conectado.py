@@ -80,6 +80,7 @@ class SuperConectado(Modelo):
         """
         Esta función no es necesaria, porque :func:`.estab_modelo` ya llama las funciones
         :func:`~tinamit.Modelo.inic_vars` de los submodelos.
+
         """
         pass
 
