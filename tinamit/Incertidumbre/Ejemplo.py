@@ -14,24 +14,27 @@ print('niveles', modelo.niveles)
 print('constantes', modelo.constantes)
 print('vacíos', modelo.vacíos())
 
-datos_ind = DatosIndividuales(archivo_csv='', año=2011, col_cód_lugar='Código')
-raise SystemExit(0)
+datos_ind = DatosIndividuales(archivo_csv='ENCOVI_hog_2011.csv', año=2011, col_cód_lugar='Código_lugar',
+                              cód_vacío=['NA', 'na', 'Na'])
 
 # datos_ind = DatosIndividuales(fuente='')
-# datos_ind.estab_tiempo(col='año')
+# datos_ind.estab_col_año(col='año')
 
-geog = Geografía(archivo='ubicación.csv',
-                 orden=['Departamiento', 'Municipio'],
+geog = Geografía(archivo='Geografía Iximulew.csv',
+                 orden=['Departamento', 'Municipio'],
                  col_cód='Código')
 
-datos_ind.datos_irreg(var='')
-datos_ind.limpiar(var='', rango=(), tipo='valor')  # Hace cambios al csv
-datos_ind.limpiar(var='', rango=(0, 0.90))
+
+print(datos_ind.datos_irreg(var='Inseguridad.alimentaria'))
+print(datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(1, 4), tipo='valor'))  # Hace cambios al csv
+datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(0, 0.90))
+
+raise SystemExit(0)
 
 datos_ind.guardar_datos()  # Guarda el csv
 
 datos_muni = DatosRegión(archivo_csv='')
-datos_ind.estab_año(col='año')
+datos_ind.estab_col_año(col='año')
 
 bd = BaseDeDatos(datos=[datos_ind, datos_muni], geog=geog)
 

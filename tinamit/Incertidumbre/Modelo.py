@@ -285,7 +285,7 @@ class ModeloVENSIMmdl(ModeloMDS):
 
             # El primer argumento de la función INTEG de VENSIM
             arg_integ = sacar_arg(símismo.vars[niv]['ec'], regex_var=símismo.regex_var,
-                               regex_fun=símismo.regex_fun, i=0)
+                                  regex_fun=símismo.regex_fun, i=0)
 
             # Extraer los variables flujos
             flujos = sacar_variables(arg_integ, regex=símismo.regex_var, excluir=símismo.internos)
@@ -331,7 +331,7 @@ class ModeloVENSIMmdl(ModeloMDS):
         dic_var = {'nombre': nombre, 'unidades': '', 'comentarios': '', 'hijos': [], 'parientes': [], 'ec': ''}
 
         # Sacar el inicio de la ecuación que puede empezar después del signo de igualdad.
-        m = re.match(r' *=(.*)$', l_texto[0][len(nombre) :])
+        m = re.match(r' *=(.*)$', l_texto[0][len(nombre):])
         if m is None:
             princ_ec = ''
         else:
@@ -600,6 +600,12 @@ def sacar_arg(ec, regex_var, regex_fun, i=None):
 
     :param ec: La ecuación que contiene una función.
     :type ec: str
+
+    :param regex_var:
+    :type regex_var: str
+
+    :param regex_fun:
+    :type regex_fun: str
 
     :param i: El índice del argumento que querremos extraer (opcional)
     :type i: int

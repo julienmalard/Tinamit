@@ -28,7 +28,7 @@ class Geografía(object):
         :param escala:
         :type escala:
         :return:
-        :rtype: str
+        :rtype: list[str]
         """
 
         d_lugar = símismo.cód_a_lugar[cód_lugar]
@@ -44,7 +44,7 @@ class Geografía(object):
 
     def leer_archivo(símismo, archivo, orden, col_cód):
 
-        símismo.árbol = dict(*[(x, {}) for x in orden])
+        símismo.árbol = {}
 
         with open(archivo, newline='') as d:
 
@@ -53,9 +53,16 @@ class Geografía(object):
             # Guardar la primera fila como nombres de columnas
             cols = next(l)
 
-            i_cols = [cols.index(x) for x in orden]
-
-            in_col_cód = cols.index(col_cód)
+            try:
+                i_cols = [cols.index(x) for x in orden]
+            except ValueError:
+                raise ValueError('Los nombres de las regiones en "orden" ({}) no concuerdan con los nombres en el'
+                                 ' archivo ({}).'.format(', '.join(orden), ', '.join(cols)))
+            try:
+                in_col_cód = cols.index(col_cód)
+            except ValueError:
+                raise ValueError('La columna de código de región especificada ({}) no concuerda con los nombres de '
+                                 'columnas del archivo ({}).'.format(col_cód, ', '.join(cols)))
 
             # Para cada fila que sigue en el csv...
             for f in l:
@@ -69,26 +76,31 @@ class Geografía(object):
 
                     elif f[n] not in dic:
                         dic[f[n]] = {}
-                        dic = dic[f[n]]
 
-                símismo.árbol_inv[cód] = {*[(orden[k], f[j]) for k, j in enumerate(i_cols)]}
+                    dic = dic[f[n]]
+
+                símismo.árbol_inv[cód] = dict([(orden[k], f[j]) for k, j in enumerate(i_cols)])
 
                 escala = orden[max([n for n, i in enumerate(i_cols) if f[i] != ''])]
-                nombre = f[cols.index[orden[-1]]]
-                símismo.cód_a_lugar[cód] = {'escala': escala,
-                                            'nombre': nombre}
+                nombre = f[cols.index(escala)]
+                símismo.cód_a_lugar[cód] = {'escala': escala, 'nombre': nombre}
 
 
 class Datos(object):
-    def __init__(símismo, archivo_csv, año=None, cód_lugar=None, col_año=None, col_cód_lugar=None):
+    def __init__(símismo, archivo_csv, año=None, cód_lugar=None, col_año=None, col_cód_lugar=None, cód_vacío=''):
         """
 
         :param archivo_csv:
         :type archivo_csv: str
+
         :param año:
         :type año: int | float
+
         :param cód_lugar:
         :type cód_lugar: str
+
+        :param cód_vacío:
+        :type cód_vacío: list[int | float | str] | int | float | str
 
         """
 
@@ -101,18 +113,25 @@ class Datos(object):
         símismo.vars = []
         símismo.n_obs = None
 
+        if type(cód_vacío) is list:
+            símismo.cod_vacío = cód_vacío
+        else:
+            símismo.cod_vacío = [cód_vacío]
+
+        if '' not in símismo.cod_vacío:
+            símismo.cod_vacío.append('')
+
         símismo.cargar_bd()
 
         if año is not None:
-            símismo.años = np.empty(símismo.n_obs)
-            símismo.años[:] = año
+            símismo.años = np.full(símismo.n_obs, año, dtype=float)
         elif col_año is not None:
-            símismo.estab_año(col=col_año)
+            símismo.estab_col_año(col=col_año)
 
         if cód_lugar is not None:
             símismo.lugares = [cód_lugar] * símismo.n_obs
         elif col_cód_lugar is not None:
-            símismo.estab_lugar(col=col_cód_lugar)
+            símismo.estab_col_lugar(col=col_cód_lugar)
 
     def cargar_bd(símismo, archivo=None):
         """
@@ -136,7 +155,8 @@ class Datos(object):
 
             # Guardar la primera fila como nombres de columnas
             símismo.vars = next(l)
-            símismo.n_obs = len(l)
+
+            símismo.n_obs = len(list(l))
 
         for var in símismo.vars:
             símismo.datos[var] = None
@@ -155,8 +175,11 @@ class Datos(object):
 
         """
 
-        if símismo.datos[var] is None:
-            símismo._cargar_datos(var=var)
+        try:
+            if símismo.datos[var] is None:
+                símismo._cargar_datos(var=var)
+        except KeyError:
+            raise ValueError('Nombre de variable "{}" erróneo.'.format(var))
 
         datos = símismo.datos[var]
 
@@ -167,7 +190,11 @@ class Datos(object):
         else:
             raise ValueError
 
-        datos[datos < lím[0] | datos > lím[1]] = np.nan
+        índ_errores = np.where(np.logical_or(datos < lím[0], datos > lím[1]))
+
+        datos[índ_errores] = np.nan
+
+        return len(índ_errores)
 
     def datos_irreg(símismo, var):
         """
@@ -180,26 +207,36 @@ class Datos(object):
         :rtype: np.ndarray
         """
 
-        if símismo.datos[var] is None:
-            símismo._cargar_datos(var=var)
+        try:
+            if símismo.datos[var] is None:
+                símismo._cargar_datos(var=var)
+        except KeyError:
+            raise ValueError('Nombre de variable "{}" erróneo.'.format(var))
 
         datos = símismo.datos[var]
 
         q75, q25 = np.percentile(datos, [75, 25])
         riq = q75 - q25
+
         return datos[(datos < q25 - 1.5 * riq) | (datos > q75 + 1.5 * riq)]
 
-    def estab_año(símismo, col):
+    def estab_col_año(símismo, col):
 
-        símismo._cargar_datos(var=col)
+        try:
+            símismo._cargar_datos(var=col)
+        except ValueError:
+            raise ValueError('Nombre de columna de años "{}" erróneo.'.format(col))
+
         símismo.años = símismo.datos[col]
 
-    def estab_lugar(símismo, col):
-
-        símismo._cargar_datos(var=col)
+    def estab_col_lugar(símismo, col):
+        try:
+            símismo._cargar_datos(var=col)
+        except ValueError:
+            raise ValueError('Nombre de columna de códigos del lugar "{}" erróneo.'.format(col))
         símismo.lugares = símismo.datos[col]
 
-    def buscar_datos(símismo, l_vars, años=None, cód_lugar=None, ):
+    def buscar_datos(símismo, l_vars, años=None, cód_lugar=None):
         """
 
         :param l_vars:
@@ -281,8 +318,8 @@ class Datos(object):
         for v in var:
             n = símismo.vars.index(v)
 
-            matr = np.array([x[n] for x in valores])
-            matr[matr == ''] = np.nan
+            # Poner np.nan donde faltan observaciones y convertir a una matriz numpy
+            matr = np.array([x[n] if x[n] not in símismo.cod_vacío else np.nan for x in valores], dtype=np.str)
 
             símismo.datos[v] = matr.astype(np.float)
 
@@ -303,19 +340,7 @@ class Datos(object):
 
 
 class DatosIndividuales(Datos):
-
-    def __init__(símismo, archivo_csv, año=None, cód_lugar=None, col_año=None, col_cód_lugar=None):
-        """
-
-        :param archivo_csv:
-        :type archivo_csv: str
-        :param año:
-        :type año: int | float
-
-        """
-
-        super().__init__(archivo_csv=archivo_csv, año=año, cód_lugar=cód_lugar,
-                         col_año=col_año, col_cód_lugar=col_cód_lugar)
+    pass
 
 
 class DatosRegión(Datos):
