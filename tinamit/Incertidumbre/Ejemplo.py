@@ -29,12 +29,10 @@ print(datos_ind.datos_irreg(var='Inseguridad.alimentaria'))
 print(datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(1, 4), tipo='valor'))  # Hace cambios al csv
 datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(0, 0.90))
 
-raise SystemExit(0)
+# datos_ind.guardar_datos(archivo='ENCOVI_hog_2011_limp.csv')  # Guarda el csv
 
-datos_ind.guardar_datos()  # Guarda el csv
-
-datos_muni = DatosRegión(archivo_csv='')
-datos_ind.estab_col_año(col='año')
+datos_muni = DatosRegión(archivo_csv='Desnutrición_muni.csv', col_año='Año', col_cód_lugar='Código_lugar',
+                         col_tmñ_muestra='Tamaño_muestra')
 
 bd = BaseDeDatos(datos=[datos_ind, datos_muni], geog=geog)
 
@@ -56,6 +54,8 @@ bd.graficar(var='Población', años=None, cód_lugar=['0112', 1204])
 # Gráfico de un variable contra el otro
 bd.comparar(var_x='Sueldo', var_y='Educación', escala='individual', datos=None)
 # bd.comparar(var_x='Lluvia', var_y='Rendimiento', var_z='Suelo', escala='individual')
+
+raise SystemExit(0)
 
 bd.guardar(archivo='')
 bd.cargar(fuente='')

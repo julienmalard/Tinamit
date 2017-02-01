@@ -104,11 +104,11 @@ class Datos(object):
 
         """
 
-        símismo.archivo_bd = archivo_csv
+        símismo.archivo_datos = archivo_csv
 
         símismo.datos = {}
-        símismo.años = np.array([])
-        símismo.lugares = []
+        símismo.años = None  # type: np.array
+        símismo.lugares = None  # type: np.array
 
         símismo.vars = []
         símismo.n_obs = None
@@ -121,7 +121,7 @@ class Datos(object):
         if '' not in símismo.cod_vacío:
             símismo.cod_vacío.append('')
 
-        símismo.cargar_bd()
+        símismo.cargar_datos()
 
         if año is not None:
             símismo.años = np.full(símismo.n_obs, año, dtype=float)
@@ -129,11 +129,11 @@ class Datos(object):
             símismo.estab_col_año(col=col_año)
 
         if cód_lugar is not None:
-            símismo.lugares = [cód_lugar] * símismo.n_obs
+            símismo.lugares = np.array([cód_lugar] * símismo.n_obs)
         elif col_cód_lugar is not None:
             símismo.estab_col_lugar(col=col_cód_lugar)
 
-    def cargar_bd(símismo, archivo=None):
+    def cargar_datos(símismo, archivo=None):
         """
         Cargar los nombres de los variables y  el no. de observaciones, no los datos sí mismos.
 
@@ -145,9 +145,9 @@ class Datos(object):
         """
 
         if archivo is not None:
-            símismo.archivo_bd = archivo
+            símismo.archivo_datos = archivo
         else:
-            archivo = símismo.archivo_bd
+            archivo = símismo.archivo_datos
 
         with open(archivo, newline='') as d:
 
@@ -302,7 +302,7 @@ class Datos(object):
         if type(var) is str:
             var = [var]
 
-        with open(símismo.archivo_bd, newline='') as d:
+        with open(símismo.archivo_datos, newline='') as d:
 
             l = csv.reader(d)  # El lector de csv
 
@@ -323,16 +323,21 @@ class Datos(object):
 
             símismo.datos[v] = matr.astype(np.float)
 
-    def guardar_datos(símismo):
+    def guardar_datos(símismo, archivo=None):
         """
 
         """
+
+        if archivo is None:
+            archivo = símismo.archivo_datos
+        else:
+            símismo.archivo_datos = archivo
 
         for var in símismo.vars:
             if símismo.datos[var] is None:
                 símismo._cargar_datos(var)
 
-        with open(símismo.archivo_bd, 'w', newline='') as d:
+        with open(símismo.archivo_datos, 'w', newline='') as d:
             e = csv.writer(d)
             e.writerow(símismo.vars)
             for i in range(símismo.n_obs):
@@ -344,7 +349,39 @@ class DatosIndividuales(Datos):
 
 
 class DatosRegión(Datos):
-    pass
+
+    def __init__(símismo, archivo_csv, año=None, cód_lugar=None, col_año=None, col_cód_lugar=None, cód_vacío='',
+                 col_tmñ_muestra=None, col_error_est=None):
+
+        super().__init__(archivo_csv, año, cód_lugar, col_año, col_cód_lugar, cód_vacío)
+
+        símismo.tmñ_muestra = None
+
+        símismo.error_est = None
+
+        if col_tmñ_muestra is not None:
+            símismo.estab_col_año(col=col_tmñ_muestra)
+
+        if col_error_est is not None:
+            símismo.estab_col_error(col=col_error_est)
+
+    def estab_col_tmñ(símismo, col):
+
+        try:
+            símismo._cargar_datos(var=col)
+        except ValueError:
+            raise ValueError('Nombre de columna de tamaños de muestra "{}" erróneo.'.format(col))
+
+        símismo.tmñ_muestra = símismo.datos[col]
+
+    def estab_col_error(símismo, col):
+
+        try:
+            símismo._cargar_datos(var=col)
+        except ValueError:
+            raise ValueError('Nombre de columna de errores estándardes "{}" erróneo.'.format(col))
+
+        símismo.error_est = símismo.datos[col]
 
 
 class BaseDeDatos(object):
