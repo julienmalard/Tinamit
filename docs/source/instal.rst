@@ -36,15 +36,15 @@ de Python (NumPy, SciPy y Matplotlib), y ellos, sí tienen extensiones raras.
 Si sabes cómo instalar estas y compilar código C directamente en tu computadora, perfecto. Si, como la mayoría de la
 gente normal, no lo sabes, haz lo siguiente:
 
-1. Ir al <http://www.lfd.uci.edu/~gohlke/pythonlibs>.
-2. Descargar las versiones más recientes de numpy+mkl, scipy, y matplotlib. Tienes que tener cuidado de escoger la buena   
-   versión para tu computadora. Todas estas tienen la forma general “nombreDelPaquete-versiónDelPaquete-versiónDePython- 
-   númeroDeBits.whl”. Asegúrate de descargar el archivo apropiado (si no sabes el número de bits de du programa Python, es casi 
-   seguramente 32). Por ejemplo, para SciPy en Python 3.6 con un Python de 32 bits, escogerías “scipy-0.18.1-cp36-cp36m-win32.whl”.
+1. Ir al http://www.lfd.uci.edu/~gohlke/pythonlibs
+2. Descargar las versiones más recientes de `numpy+mkl`, `scipy`, y `matplotlib`. Tienes que tener cuidado de escoger la buena   
+   versión para tu computadora. Todas estas tienen la forma general ``nombreDelPaquete-versiónDelPaquete-versiónDePython- 
+   númeroDeBits.whl``. Asegúrate de descargar el archivo apropiado (si no sabes el número de bits de du programa Python, es casi 
+   seguramente 32). Por ejemplo, para SciPy en Python 3.6 con un Python de 32 bits, escogerías ``scipy-0.18.1-cp36-cp36m-win32.whl``.
 3. ¡Bravo! Ahora, hay que instalar los paquetes que acabaste de cargar. Va a la línea de comanda (se encuentra en la 
    lista de aplicaciones de tu computadora) y escribe el siguiente:
 
-      :command:`pip install C:\Users\jeanne\Downloads\numpy‑1.11.3+mkl‑cp36‑cp36m‑win32.whl`
+      :command:`pip install C:\\Users\\jeanne\\Downloads\\numpy‑1.11.3+mkl‑cp36‑cp36m‑win32.whl`
 
    Después, pulse “Intro”. Por supuesto, tienes que cambiar la última parte para corresponder a dónde tú guardaste el
    paquete NumPy en tu computador cuando lo descargaste. Ver la imagen para un ejemplo:
@@ -56,9 +56,9 @@ gente normal, no lo sabes, haz lo siguiente:
 
 4. Repetir etapa 3 con con SciPy y después con Matplotlib.
 5. ¡Casi terminado! Ahora, solamente tienes que ir a https://www.microsoft.com/es-ES/download/details.aspx?id=53840 y 
-   descargar el “C++ 2015 redistributable” (toma la versión terminando en “…x86.exe” si tienes Python de 32 bits (si no lo
-   sabes, toma este) y en “…x64.exe” si tienes Python de 64 bits. Después, instálalo. Por razones obscuras, SciPy no
-   funciona en Windows sin este.
+   descargar el ``C++ 2015 redistributable`` (toma la versión terminando el ``…x86.exe`` si tienes Python de 32 bits (si no lo
+   sabes, toma éste) y en ``…x64.exe`` si tienes Python de 64 bits. Después, instálalo. Por razones obscuras, SciPy no
+   funciona en Windows sin éste.
 6. Y por fin, por supuesto, instalar Tinamit sí mismo en la línea de comanda así:
 
       :command:`pip install tinamit`
