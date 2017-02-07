@@ -63,8 +63,9 @@ bd.cambiar_datos(nombre_datos, nueva_ubic)
 
 control = Control(bd=bd, modelo=modelo, fuente='')
 
-control.conectar_vars(datos=datos_ind, var_bd='', var_modelo='', transformación='promedio')
-control.conectar_vars(datos=datos_ind, var_bd='', var_modelo='', transformación='máximo')
+control.conectar_var_ind(datos=datos_ind, var_bd='', var_modelo='', transformación='promedio')
+control.conectar_var_ind(datos=datos_ind, var_bd='', var_modelo='', transformación='máximo')
+control.conectar_var_reg(datos=datos_muni, var_bd='Desnutr_crón_inft', var_modelo='', calc_error='porcentaje')
 
 control.comparar(var_mod_x='', var_mod_y='', escala='individual')  # llama BasedeDatos.comparar()
 control.estimar(constante='Desnutrición', escala='individual')  # Mal ejemplo

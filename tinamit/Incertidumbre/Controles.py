@@ -33,8 +33,9 @@ class Control(object):
                           'ecs': {},
                           'constantes': {}}
 
-    def conectar_vars(símismo, datos, var_bd, var_modelo, transformación):
-        símismo.receta['conexiones'][var_modelo] = {'var_bd': var_bd, 'datos': datos}
+    def conectar_var_ind(símismo, datos, var_bd, var_modelo, transformación):
+
+        símismo.receta['conexiones'][var_modelo] = {'var_bd': var_bd, 'datos': datos, 'trans': transformación}
 
     def comparar(símismo, var_mod_x, var_mod_y, escala='individual'):
         var_bd_x = símismo.receta['conexiones'][var_mod_x]
