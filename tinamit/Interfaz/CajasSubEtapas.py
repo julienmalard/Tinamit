@@ -225,10 +225,7 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
 
     def añadir_conexión(símismo, conexión):
 
-        try:
-            símismo.apli.Modelo.conectar_vars(**conexión)
-        except (TypeError, ValueError):
-            pass
+        símismo.apli.Modelo.conectar(**conexión)
 
         símismo.actualizar_menús()
 

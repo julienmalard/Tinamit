@@ -49,7 +49,7 @@
       }
     },
     "Bahasa Melayu": {
-      "Estado": 0.0975609756097561,
+      "Estado": 0.17073170731707318,
       "IzqaDerech": true,
       "Trads": {
         "AnálisisIncert": "",
@@ -80,19 +80,19 @@
         "ModeloCargado": "",
         "ModelosPython": "",
         "ModelospublicadosVENSIM": "",
-        "No": "",
+        "No": "Tidak",
         "NoGuardar": "",
         "OpsLengs": "",
         "ParaHacer": "",
         "Paso": "",
         "Simulando": "",
         "Simular": "",
-        "Sí": "",
+        "Sí": "Ya",
         "TiempoFinal": "",
         "Traducciones": "",
         "VariableBiofísico": "",
         "VariableMDS": "",
-        "X": ""
+        "X": "X"
       }
     },
     "English": {
@@ -239,7 +239,49 @@
     "Igbo": {
       "Estado": 0.0,
       "IzqaDerech": true,
-      "Trads": {}
+      "Trads": {
+        "AnálisisIncert": "",
+        "ArchivoCorrupto": "",
+        "ArchivoTinamit": "",
+        "AvisoBorrarLeng": "",
+        "AvisoReinic": "",
+        "Ayuda": "",
+        "Biofísico": "",
+        "Borrar": "",
+        "Cargar": "",
+        "CargarMDS": "",
+        "CargarModeloBf": "",
+        "CargarModeloConectado": "",
+        "CargarModelos": "",
+        "ConectarVariables": "",
+        "Corrida": "",
+        "Empezar": "",
+        "EnTrabajo": "",
+        "Entendido": "",
+        "ErrorCargarBf": "",
+        "ErrorCargarMDS": "",
+        "ErrorCreandoMod": "",
+        "Guardar": "",
+        "Listas": "",
+        "MDS": "",
+        "ModeloBiofísico": "",
+        "ModeloCargado": "",
+        "ModelosPython": "",
+        "ModelospublicadosVENSIM": "",
+        "No": "",
+        "NoGuardar": "",
+        "OpsLengs": "",
+        "ParaHacer": "",
+        "Paso": "",
+        "Simulando": "",
+        "Simular": "",
+        "Sí": "",
+        "TiempoFinal": "",
+        "Traducciones": "",
+        "VariableBiofísico": "",
+        "VariableMDS": "",
+        "X": ""
+      }
     },
     "Italiano": {
       "Estado": 0.07317073170731707,
@@ -336,7 +378,7 @@
       }
     },
     "K'iche'": {
-      "Estado": 0.024390243902439025,
+      "Estado": 0.04878048780487805,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -344,7 +386,7 @@
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
         "AvisoReinic": "",
-        "Ayuda": "¡Kinato'!",
+        "Ayuda": "¡Chinato'!",
         "Biofísico": "",
         "Borrar": "",
         "Cargar": "",
@@ -379,7 +421,7 @@
         "Traducciones": "",
         "VariableBiofísico": "",
         "VariableMDS": "",
-        "X": ""
+        "X": "X"
       }
     },
     "Kaqchikel": {
@@ -390,8 +432,8 @@
         "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
         "AvisoBorrarLeng": "",
-        "AvisoReinic": "Rajwaxic nachop ri Tinamit jun mul chïk chi natz'u pa ri kaqa' ch'abäl.",
-        "Ayuda": "¡Tinato'!",
+        "AvisoReinic": "Rajwaxik nachop ri Tinamit jun mul chïk chi natz'u pa ri kaqa' ch'abäl.",
+        "Ayuda": "¡Kinato'!",
         "Biofísico": "",
         "Borrar": "",
         "Cargar": "",
@@ -403,7 +445,7 @@
         "Corrida": "",
         "Empezar": "Tiqachöp",
         "EnTrabajo": "Man xek'is ta chïk",
-        "Entendido": "Xqax chnuqwäch",
+        "Entendido": "Xqax chnuwäch",
         "ErrorCargarBf": "",
         "ErrorCargarMDS": "",
         "ErrorCreandoMod": "",
