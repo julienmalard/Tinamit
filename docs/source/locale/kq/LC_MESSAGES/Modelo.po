@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-13 11:34-0500\n"
+"POT-Creation-Date: 2017-02-08 10:19-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,6 +36,12 @@ msgid ""
 "primero el valor en el diccionario interno del :class:`Modelo`, y después"
 " llama la función :func:`~Modelo.Modelo.cambiar_vals_modelo` para "
 "cambiar, si necesario, los valores de los variables en el modelo externo."
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.cambiar_vals
+#: tinamit.Modelo.Modelo.cambiar_vals_modelo_interno
+#: tinamit.Modelo.Modelo.incrementar tinamit.Modelo.Modelo.iniciar_modelo
+msgid "Parámetros"
 msgstr ""
 
 #: of tinamit.Modelo.Modelo.cambiar_vals:5
@@ -108,7 +114,15 @@ msgstr ""
 msgid "Esta función debe devolver la unidad de tiempo empleada por el modelo."
 msgstr ""
 
+#: of tinamit.Modelo.Modelo.obt_unidad_tiempo
+msgid "Devuelve"
+msgstr ""
+
 #: of tinamit.Modelo.Modelo.obt_unidad_tiempo:3
 msgid "La unidad de tiempo (p. ejemplo, 'meses', 'días', etc."
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.obt_unidad_tiempo
+msgid "Tipo del valor devuelto"
 msgstr ""
 

@@ -1,17 +1,12 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
-# This file is distributed under the same license as the tinamit package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
-#
-#, fuzzy
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-17 15:40-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2017-02-08 10:19-0500\n"
+"PO-Revision-Date: 2017-01-11 04:55-0500\n"
+"Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>\n"
+"Language-Team: French\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,7 +14,7 @@ msgstr ""
 
 #: ../../source/uso.rst:2
 msgid "Cómo se emplea Tinamit"
-msgstr ""
+msgstr "Comment utiliser Tinamit"
 
 #: ../../source/uso.rst:4
 msgid ""
@@ -37,23 +32,21 @@ msgid ""
 "muy lindos para llamar las funciones del IPA de manera automática)."
 msgstr ""
 
-#: ../../source/uso.rst
-msgid "Contenido"
-msgstr ""
-
 #: ../../source/uso.rst:15
 msgid "Preparación pre-uso"
-msgstr ""
+msgstr "Préparation préliminaire"
 
 #: ../../source/uso.rst:16
 msgid ""
 "No importe cuál del IPA o el IGU eliges usar, hay unas acciones "
 "preparatorias de las cuales no podrás escaparte."
 msgstr ""
+"Peut importe si vous utiliser l'IPA ou l'IGU, il y a quelques actions "
+"préparatrices desquelles vous ne vous échapperez pas."
 
 #: ../../source/uso.rst:19
 msgid "Preparación del modelo DS"
-msgstr ""
+msgstr "Préparation du modèle DS"
 
 #: ../../source/uso.rst:20
 msgid ""
@@ -67,7 +60,7 @@ msgstr ""
 
 #: ../../source/uso.rst:25
 msgid "Preparación del modelo biofísico"
-msgstr ""
+msgstr "Préparation du modèle biophysique"
 
 #: ../../source/uso.rst:26
 msgid ""
@@ -102,7 +95,7 @@ msgstr ""
 
 #: ../../source/uso.rst:42
 msgid "Cambiar idiomas"
-msgstr ""
+msgstr "Changer la langue"
 
 #: ../../source/uso.rst:43
 msgid ""
@@ -157,7 +150,7 @@ msgstr ""
 
 #: ../../source/uso.rst:71
 msgid "Cargar modelos (I)"
-msgstr ""
+msgstr "Ouvrir les modèles (I)"
 
 #: ../../source/uso.rst:72
 msgid ""
@@ -174,7 +167,7 @@ msgstr ""
 
 #: ../../source/uso.rst:83
 msgid "Conectar modelos (II)"
-msgstr ""
+msgstr "Connecter les modèles (II)"
 
 #: ../../source/uso.rst:84
 msgid ""
@@ -457,6 +450,9 @@ msgid ""
 "al mismo tiempo y se pone en un gran lío. Si no tienes ni idea de lo que "
 "estoy diciendo, perfecto."
 msgstr ""
+
+#~ msgid "Contenido"
+#~ msgstr "Contenu"
 
 #~ msgid "``from tinamit.Interfaz.IGU import correr`` ``correr()``"
 #~ msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-13 11:34-0500\n"
+"POT-Creation-Date: 2017-02-08 10:19-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,11 +29,18 @@ msgstr ""
 msgid "Esta función convierte un valor de una unidad a otra."
 msgstr ""
 
+#: of tinamit.Unidades.Unidades.convertir
+#: tinamit.Unidades.Unidades.convertir_unid_senc
+msgid "Parámetros"
+msgstr ""
+
 #: of tinamit.Unidades.Unidades.convertir:3
+#: tinamit.Unidades.Unidades.convertir_unid_senc:3
 msgid "La unidad original."
 msgstr ""
 
 #: of tinamit.Unidades.Unidades.convertir:6
+#: tinamit.Unidades.Unidades.convertir_unid_senc:6
 msgid "La unidad final."
 msgstr ""
 
@@ -46,10 +53,30 @@ msgid "El valor para convertir."
 msgstr ""
 
 #: of tinamit.Unidades.Unidades.convertir:15
+#: tinamit.Unidades.Unidades.convertir_unid_senc:12
 msgid "La lengua en la cuál se están especificando las unidades."
 msgstr ""
 
+#: of tinamit.Unidades.Unidades.convertir
+#: tinamit.Unidades.Unidades.convertir_unid_senc
+msgid "Devuelve"
+msgstr ""
+
 #: of tinamit.Unidades.Unidades.convertir:18
+#: tinamit.Unidades.Unidades.convertir_unid_senc:15
 msgid "El valor convertido."
+msgstr ""
+
+#: of tinamit.Unidades.Unidades.convertir
+#: tinamit.Unidades.Unidades.convertir_unid_senc
+msgid "Tipo del valor devuelto"
+msgstr ""
+
+#: of tinamit.Unidades.Unidades.convertir_unid_senc:1
+msgid "Esta función convierte una unidad sencilla a otra."
+msgstr ""
+
+#: of tinamit.Unidades.Unidades.convertir_unid_senc:9
+msgid "El tipo de unidad ('tiempo', 'distancia', etc.)"
 msgstr ""
 
