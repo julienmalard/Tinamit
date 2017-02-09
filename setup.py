@@ -1,8 +1,13 @@
 from setuptools import setup, find_packages
 
+
+with open('tikon/versión.txt') as archivo_versión:
+    versión = archivo_versión.read().strip()
+
+
 setup(
     name='tinamit',
-    version='1.2.1',
+    version=versión,
     packages=find_packages(),
     url='https://github.com/julienmalard/Tinamit',
     license='GNU GPL 3',
