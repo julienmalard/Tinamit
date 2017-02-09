@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 
-with open('tikon/versión.txt') as archivo_versión:
+with open('tinamit/versión.txt') as archivo_versión:
     versión = archivo_versión.read().strip()
 
 
