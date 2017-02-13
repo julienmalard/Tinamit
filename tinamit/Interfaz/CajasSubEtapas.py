@@ -179,8 +179,13 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
         símismo.MnVarsBf.refrescar(opciones=vars_bf)
 
         for conex in símismo.apli.receta['conexiones']:
+
+            dic_conex = {'var_mds': conex['vars']['mds'],
+                         'var_bf': conex['vars']['bf'],
+                         'mds_fuente': conex['fuente'] == 'mds'
+                         }
             Ctrl.ItemaConexión(grupo_control=símismo.grupo_controles, lista_itemas=símismo.lista,
-                               receta=conex, creando_manual=False)
+                               receta=dic_conex, creando_manual=False)
 
         símismo.actualizar_menús()
         símismo.verificar_completo()

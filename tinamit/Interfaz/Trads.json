@@ -1,5 +1,5 @@
 {
-  "Actual": "Kiswahili",
+  "Actual": "Español",
   "Lenguas": {
     "Bahasa Indonesia": {
       "Estado": 0.024390243902439025,
@@ -472,7 +472,7 @@
       }
     },
     "Kiswahili": {
-      "Estado": 0.36585365853658536,
+      "Estado": 0.4146341463414634,
       "IzqaDerech": true,
       "Trads": {
         "AnálisisIncert": "",
