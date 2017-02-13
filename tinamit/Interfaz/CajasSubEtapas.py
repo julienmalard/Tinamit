@@ -180,12 +180,8 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
 
         for conex in símismo.apli.receta['conexiones']:
 
-            dic_conex = {'var_mds': conex['vars']['mds'],
-                         'var_bf': conex['vars']['bf'],
-                         'mds_fuente': conex['fuente'] == 'mds'
-                         }
             Ctrl.ItemaConexión(grupo_control=símismo.grupo_controles, lista_itemas=símismo.lista,
-                               receta=dic_conex, creando_manual=False)
+                               receta=conex, creando_manual=False)
 
         símismo.actualizar_menús()
         símismo.verificar_completo()
@@ -231,13 +227,19 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
     def añadir_conexión(símismo, conexión):
 
         if 'modelo_fuente' in conexión:
-            conexión['mds_fuente'] = conexión['modelo_fuente'] == 'MDS'
-            conexión.pop('modelo_fuente')
-            conexión['var_mds'] = conexión['vars']['mds']
-            conexión['var_bf'] = conexión['vars']['bf']
-            conexión.pop('vars')
+            dic_conex = {
+                'mds_fuente': conexión['modelo_fuente'] == 'MDS',
+                'var_mds': conexión['vars']['mds'],
+                'var_bf': conexión['vars']['bf'],
+                'conv': conexión['conv']
+            }
+        else:
+            dic_conex = conexión
 
-        símismo.apli.Modelo.conectar(**conexión)
+        try:
+            símismo.apli.Modelo.conectar(**dic_conex)
+        except ValueError:
+            pass
 
         símismo.actualizar_menús()
 
