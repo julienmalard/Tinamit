@@ -225,6 +225,13 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
 
     def añadir_conexión(símismo, conexión):
 
+        if 'modelo_fuente' in conexión:
+            conexión['mds_fuente'] = conexión['modelo_fuente'] == 'MDS'
+            conexión.pop('modelo_fuente')
+            conexión['var_mds'] = conexión['vars']['mds']
+            conexión['var_bf'] = conexión['vars']['bf']
+            conexión.pop('vars')
+
         símismo.apli.Modelo.conectar(**conexión)
 
         símismo.actualizar_menús()

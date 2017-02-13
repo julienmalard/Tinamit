@@ -1,5 +1,5 @@
 {
-  "Actual": "Español",
+  "Actual": "Kiswahili",
   "Lenguas": {
     "Bahasa Indonesia": {
       "Estado": 0.024390243902439025,
@@ -478,7 +478,7 @@
         "AnálisisIncert": "",
         "ArchivoCorrupto": "",
         "ArchivoTinamit": "",
-        "AvisoBorrarLeng": "",
+        "AvisoBorrarLeng": "%s",
         "AvisoReinic": "",
         "Ayuda": "Msaidi",
         "Biofísico": "",
@@ -500,7 +500,7 @@
         "Listas": "Tayari",
         "MDS": "",
         "ModeloBiofísico": "",
-        "ModeloCargado": "",
+        "ModeloCargado": "%s",
         "ModelosPython": "",
         "ModelospublicadosVENSIM": "",
         "No": "Hapana",
