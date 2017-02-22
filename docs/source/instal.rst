@@ -54,7 +54,7 @@ gente normal, no lo sabes, haz lo siguiente:
    :align: center
    :alt: Ejemplo de la instalación de paquetes de Python precompilados con la línea de comanda de Windows.
 
-4. Repetir etapa 3 con con SciPy y después con Matplotlib.
+4. Repetir etapa 3 con SciPy y después con Matplotlib.
 5. ¡Casi terminado! Ahora, solamente tienes que ir a https://www.microsoft.com/es-ES/download/details.aspx?id=53840 y 
    descargar el ``C++ 2015 redistributable`` (toma la versión terminando el ``…x86.exe`` si tienes Python de 32 bits (si no lo
    sabes, toma éste) y en ``…x64.exe`` si tienes Python de 64 bits. Después, instálalo. Por razones obscuras, SciPy no

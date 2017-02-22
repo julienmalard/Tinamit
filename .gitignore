@@ -20,6 +20,7 @@ site.cfg
 setup.cfg
 
 dist/
+build/
 
 # Archivos de VENSIM #
 ######################
