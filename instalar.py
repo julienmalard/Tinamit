@@ -9,7 +9,6 @@ import shutil
 """
 Este programa instala Tinamit y todas sus dependencias de manera automática. Al momento, funciona para Windows con
 Python 3.6 de 32 bits. Necesita una buena conexión internet.
-
 Tinamit se instala de la versión más recién en PyPI. Si no quieres instalar Tinamit, pero únicamente sus requísitos,
 usar la función instalar_requísitos() en vez de instalar_todo().
 """
@@ -38,7 +37,7 @@ if not os.path.exists(directorio_móds):
 
 directorio_python = os.path.split(sys.executable)[0]
 
-versión_python = sys.version_info.major + sys.version_info.minor
+versión_python = str(sys.version_info.major) + str(sys.version_info.minor)
 
 so = platform.system()
 
@@ -68,7 +67,7 @@ info_paquetes = {'numpy': {'versión': '1.11.3',
 
 for paquete, dic_paq in info_paquetes.items():
     v = dic_paq['versión']
-    dic_paq['formato_archivo'] = dic_paq['formato_archivo'].format(versión=v, sis=sistema)
+    dic_paq['formato_archivo'] = dic_paq['formato_archivo'].format(versión=v, v_py=versión_python, sis=sistema)
 
 
 def _actualizar_pip():
@@ -83,14 +82,17 @@ def _descargar_whl(nombre):
     llave = info_paquetes[nombre]['id_google'][bits]  # type: str
     if llave is None:
         raise ValueError('No existe descarga para paquete {} en {} bits.'.format(nombre, bits))
-    url = 'https://drive.google.com/open?id=' + llave
-    nombre_archivo = info_paquetes[nombre]['archivo']
-    urllib.request.urlretrieve(url, os.path.join('Módulos', nombre_archivo))
+    if nombre == 'numpy':
+        url = 'https://www.dropbox.com/s/rmsmiu1ivpnvizd/numpy-1.11.3%2Bmkl-cp36-cp36m-win32.whl?dl=1'
+    else:
+        url = 'https://drive.google.com/uc?export=download&id=' + llave
+    nombre_archivo = info_paquetes[nombre]['formato_archivo']
+    urllib.request.urlretrieve(url, os.path.join(directorio_móds, nombre_archivo))
 
 
 def _instalar_whl(nombre):
 
-    nombre_archivo = info_paquetes[nombre]
+    nombre_archivo = info_paquetes[nombre]['formato_archivo']
 
     if not os.path.isfile(os.path.join(directorio_móds, nombre_archivo)):
         _descargar_whl(nombre)
@@ -150,7 +152,7 @@ def instalar_todo():
     print('Instalando paquetes requísitos...')
     instalar_requísitos()
 
-    print('Instalando Tinamit...')
+    print('Instalando Tiko\'n...')
     comanda = '%s install tinamit' % os.path.join(directorio_python, 'Scripts', 'pip')
 
     run(comanda)
