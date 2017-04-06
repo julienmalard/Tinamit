@@ -57,7 +57,7 @@ bd.comparar(var_x='Sueldo', var_y='Educación', escala='individual', datos=None)
 
 raise SystemExit(0)
 
-bd.guardar(archivo='')
+bd.guardar(proyecto='')
 bd.cargar(fuente='')
 bd.cambiar_datos(nombre_datos, nueva_ubic)
 
@@ -99,7 +99,7 @@ control.visualizar_corrida(var='')
 control.validar_MDS(año_inic=None, cód_lugar=['0112'], n_reps=100)  # Genera los análises de Barlas, gráficos, etc.
 control.validar_conectado(conectado=ObjDeModeloConectado)
 
-control.guardar(archivo='')
+control.guardar(proyecto='')
 control.cargar(fuente='')
 
 
@@ -107,4 +107,4 @@ otro_modelo = mds(archivo_mds='')
 control.estab_modelo(otro_modelo)
 control.recalibrar_ecs(cód_lugar='0113')  # Calibrar todas las equationes y constantes anteriormente calibradas
 
-control.guardar(archivo='otro archivo')
+control.guardar(proyecto='otro archivo')
