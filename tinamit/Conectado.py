@@ -389,11 +389,19 @@ class SuperConectado(Modelo):
         n_mod_fuente = l_mods.index(modelo_fuente)
         modelo_recip = l_mods[(n_mod_fuente + 1) % 2]
         
-        # Identificar los nombres de los variables fuente y recipiente, tanto como sus unidades.
+        # Identificar los nombres de los variables fuente y recipiente, tanto como sus unidades y dimensiones.
         var_fuente = dic_vars[modelo_fuente]
         var_recip = dic_vars[modelo_recip]
         unid_fuente = símismo.modelos[modelo_fuente].variables[var_fuente]['unidades']
         unid_recip = símismo.modelos[modelo_recip].variables[var_recip]['unidades']
+
+        dims_recip = símismo.modelos[modelo_recip].variables[var_recip]['dims']
+        dims_fuente = símismo.modelos[modelo_fuente].variables[var_fuente]['dims']
+
+        # Verificar que las dimensiones sean compatibles
+        if dims_fuente != dims_recip:
+            raise ValueError('Las dimensiones de los dos variables ({}: {}; {}: {}) no son compatibles.'
+                             .format(var_fuente, dims_fuente, var_recip, dims_recip))
 
         if conv is None:
             # Si no se especificó factor de conversión...

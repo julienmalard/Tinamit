@@ -28,7 +28,7 @@ class EnvolturaBF(Modelo):
         módulo = importar_mod(os.path.splitext(nombre_mod)[0])
 
         try:
-            modelo = módulo.Modelo
+            modelo = módulo.Modelo  # type: ClaseModeloBF
         except AttributeError:
             raise AttributeError('El archivo especificado ({}) no contiene una clase llamada Modelo.'.format(archivo))
 
@@ -38,8 +38,8 @@ class EnvolturaBF(Modelo):
             símismo.modelo = modelo
 
         if not isinstance(símismo.modelo, ClaseModeloBF):
-            raise AttributeError('El archivo especificado ({}) contiene una clase llamada Modelo, pero'
-                                 'esta clase no es una subclase de ClaseModeloBF.'.format(archivo))
+            raise TypeError('El archivo especificado ("{}") contiene una clase llamada Modelo, pero'
+                            'esta clase no es una subclase de ClaseModeloBF.'.format(archivo))
 
         super().__init__(nombre='bf')
 
@@ -135,11 +135,13 @@ class ClaseModeloBF(Modelo):
 
     def incrementar(símismo, paso):
         """
-
-        :param paso:
-        :type paso:
+        Esta función debe avanzar la simulación de ``paso`` pasos.
+        
+        :param paso: El número de pasos que hay que avanzar.
+        :type paso: int
 
         """
+
         raise NotImplementedError
 
     def leer_vals(símismo):
@@ -152,7 +154,8 @@ class ClaseModeloBF(Modelo):
 
     def iniciar_modelo(símismo, **kwargs):
         """
-
+        Esta función debe preparar el modelo para una simulación.
+        
         :param kwargs:
         :type kwargs:
         """
@@ -161,20 +164,23 @@ class ClaseModeloBF(Modelo):
 
     def cerrar_modelo(símismo):
         """
-
+        Esta función debe cerrar la simulación. No se aplica a todos los modelos biofísicos.
         """
         raise NotImplementedError
 
     def obt_unidad_tiempo(símismo):
         """
-
-        :return:
+        Esta función debe devolver la unidad de tiempo del modelo biofísico.
+        
+        :return: La unidad de tiempo del modelo.
         :rtype: str
         """
         raise NotImplementedError
 
     def inic_vars(símismo):
         """
+        Esta función debe iniciar el diccionario interno de variables.
+        
         MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe para símismo.variables, no crear un
         diccionario nuevo.
         Por ejemplo, NO HAGAS:
@@ -188,4 +194,5 @@ class ClaseModeloBF(Modelo):
         lo cual impedirá después la conexión de estos variables con el modelo DS.
 
         """
+
         raise NotImplementedError
