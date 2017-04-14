@@ -1,4 +1,5 @@
 from pkg_resources import resource_filename
+from . import Incertidumbre, Interfaz
 
 __author__ = 'Julien Malard'
 
