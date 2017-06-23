@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-08 10:19-0500\n"
+"POT-Creation-Date: 2017-05-20 22:09+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.3.4\n"
+"Generated-By: Babel 2.4.0\n"
 
 #: ../../source/BF.rst:2
 msgid "BF (Modelos Biofísicos)"
@@ -34,24 +34,46 @@ msgstr ""
 msgid "Parámetros"
 msgstr ""
 
+#: of tinamit.BF.ClaseModeloBF.cerrar_modelo:1
+msgid ""
+"Esta función debe cerrar la simulación. No se aplica a todos los modelos "
+"biofísicos."
+msgstr ""
+
+#: of tinamit.BF.ClaseModeloBF.incrementar:1
+msgid "Esta función debe avanzar la simulación de ``paso`` pasos."
+msgstr ""
+
+#: of tinamit.BF.ClaseModeloBF.incrementar:3
+msgid "El número de pasos que hay que avanzar."
+msgstr ""
+
 #: of tinamit.BF.ClaseModeloBF.inic_vars:1
+msgid "Esta función debe iniciar el diccionario interno de variables."
+msgstr ""
+
+#: of tinamit.BF.ClaseModeloBF.inic_vars:3
 msgid ""
 "MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe "
 "para símismo.variables, no crear un diccionario nuevo. Por ejemplo, NO "
 "HAGAS: |  símismo.variables = {var1: {...}, var2: {...}, ...}"
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.inic_vars:6
+#: of tinamit.BF.ClaseModeloBF.inic_vars:8
 msgid ""
 "sino: |  símismo.variables[var1] = {...} |  símismo.variables[var2] = "
 "{...}"
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.inic_vars:10
+#: of tinamit.BF.ClaseModeloBF.inic_vars:12
 msgid ""
 "Al no hacer esto, romperás la conección entre los diccionarios de "
 "variables de ClaseModeloBF y EnvolturaBF, lo cual impedirá después la "
 "conexión de estos variables con el modelo DS."
+msgstr ""
+
+#: of tinamit.BF.ClaseModeloBF.iniciar_modelo:1
+msgid "Esta función debe preparar el modelo para una simulación."
 msgstr ""
 
 #: of tinamit.BF.ClaseModeloBF.leer_vals:1
@@ -62,9 +84,17 @@ msgid ""
 "cual quebrará las conexiones con el modelo conectado."
 msgstr ""
 
+#: of tinamit.BF.ClaseModeloBF.obt_unidad_tiempo:1
+msgid "Esta función debe devolver la unidad de tiempo del modelo biofísico."
+msgstr ""
+
 #: of tinamit.BF.ClaseModeloBF.obt_unidad_tiempo
 #: tinamit.BF.EnvolturaBF.obt_unidad_tiempo
 msgid "Devuelve"
+msgstr ""
+
+#: of tinamit.BF.ClaseModeloBF.obt_unidad_tiempo:3
+msgid "La unidad de tiempo del modelo."
 msgstr ""
 
 #: of tinamit.BF.ClaseModeloBF.obt_unidad_tiempo

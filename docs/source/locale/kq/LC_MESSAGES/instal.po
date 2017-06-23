@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-08 10:19-0500\n"
+"POT-Creation-Date: 2017-05-20 22:09+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.3.4\n"
+"Generated-By: Babel 2.4.0\n"
 
 #: ../../source/instal.rst:2
 msgid "Instalación"
@@ -130,7 +130,7 @@ msgid ""
 msgstr ""
 
 #: ../../source/instal.rst:57
-msgid "Repetir etapa 3 con con SciPy y después con Matplotlib."
+msgid "Repetir etapa 3 con SciPy y después con Matplotlib."
 msgstr ""
 
 #: ../../source/instal.rst:58
@@ -241,5 +241,8 @@ msgstr ""
 #~ " programa de Tinamit en Julia "
 #~ "(después de todo, tengo una tesis "
 #~ "que escribir). Lo siento."
+#~ msgstr ""
+
+#~ msgid "Repetir etapa 3 con con SciPy y después con Matplotlib."
 #~ msgstr ""
 

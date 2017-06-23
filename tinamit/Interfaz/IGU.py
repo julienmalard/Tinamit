@@ -1,4 +1,4 @@
-import tkinter as tk
+﻿import tkinter as tk
 
 from tinamit.Interfaz import Cajas as Cj
 from tinamit.Interfaz import Formatos as Fm
@@ -16,7 +16,7 @@ class Apli(tk.Frame):
 
         pariente.geometry('%ix%i' % (Fm.ancho_ventana, Fm.altura_ventana))
         pariente.configure(background=Fm.col_fondo)
-        pariente.minsize(width=Fm.ancho_ventana, height=Fm.altura_ventana)
+        # pariente.minsize(width=Fm.ancho_ventana, height=Fm.altura_ventana)
 
         símismo.Modelo = Conectado()
 

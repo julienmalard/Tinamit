@@ -10,3 +10,7 @@ with open(resource_filename('tinamit', 'versión.txt')) as archivo_versión:
     versión = archivo_versión.read().strip()
 
 __version__ = versión
+
+
+def correr():
+    Interfaz.correr()

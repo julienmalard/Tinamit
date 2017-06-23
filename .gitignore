@@ -27,3 +27,6 @@ build/
 *.vdf
 *.tin
 */__pycache__/
+
+
+docs/.tx/*

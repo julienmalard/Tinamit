@@ -235,13 +235,16 @@ class ModeloVENSIM(EnvolturaMDS):
             mem_inter = ctypes.create_string_buffer(10)
             tamaño = símismo.comanda_vensim(func=símismo.dll.vensim_get_varattrib,
                                             args=[var, 9, mem_inter, 0],
-                                            mensaje_error='Error leyendo el tamaño de memoria para los subscriptos del'
-                                                          'variable "{}" en VENSIM'.format(var),
+                                            mensaje_error='Error leyendo el tamaño de memoria para los subscriptos del '
+                                                          'variable "{}" en Vensim'.format(var),
                                             val_error=-1,
                                             devolver=True)
             mem_inter = ctypes.create_string_buffer(tamaño)
             símismo.comanda_vensim(func=símismo.dll.vensim_get_varattrib,
-                                   args=[var, 9, mem_inter, tamaño])
+                                   args=[var, 9, mem_inter, tamaño],
+                                   mensaje_error='Error leyendo los subscriptos del '
+                                                 'variable "{}" en Vensim.'.format(var),
+                                   val_error=-1)
 
             subs = [x for x in mem_inter.raw.decode().split('\x00') if x]
 

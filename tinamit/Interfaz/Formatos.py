@@ -314,7 +314,7 @@ ubic_CjsCtrlsConectar = dict(side='left', padx=20, pady=20, expand=True, anchor=
 ubic_CjMedCtrlsConectar = dict(side='left', padx=20, pady=30, expand=True, anchor=tk.N)
 ubic_CtrlsConectar = dict(side='top')
 
-ubic_CjBtsConectar = dict(relx=0.5, rely=0, y=400, width=400, anchor=tk.N)
+ubic_CjBtsConectar = dict(relx=0.5, rely=0, y=340, width=400, anchor=tk.N)
 
 
 # Caja subetapa 3.1
