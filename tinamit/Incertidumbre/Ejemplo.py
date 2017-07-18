@@ -39,7 +39,7 @@ bd = BaseDeDatos(datos=[datos_ind, datos_muni], geog=geog)
 bd.renombrar_var(datos=datos_ind, var='P01221', nuevo_nombre='Insegurdad Alimentaria')  # puro ejemplo
 
 # Gráfico de "caja" con incertidumbre
-bd.graficar(var='Inseguridad Alimentaria', años=2011, cód_lugar='0112', datos=None)
+bd.graficar(var='Inseguridad Alimentaria', años=2011, cód_lugar='0708', datos=None)
 bd.graficar(var='Inseguridad Alimentaria', años=2011, lugar=['Iximulew', "Tz'olöj Ya'", 'Concepción'])  # Da lo mismo al antecedente
 
 # Gráfico de línea con tiempo en el eje x e incertidumbre mostrada
