@@ -1,7 +1,7 @@
 # Archivos que git debería ignorar. Inspirado por el de SciPy.
 # Archivos de PyCharm #
 #######################
-.idea/*
+.idea/
 .settings/
 *.tmp
 
