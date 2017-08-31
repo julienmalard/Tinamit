@@ -3,133 +3,146 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-20 22:09+0530\n"
-"PO-Revision-Date: 2017-01-11 11:24-0500\n"
+"POT-Creation-Date: 2017-08-31 11:09-0400\n"
+"PO-Revision-Date: 2017-02-08 10:40-0500\n"
 "Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>\n"
 "Language-Team: French\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.4.0\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"X-Generator: Zanata 3.9.6\n"
 
 #: ../../source/BF.rst:2
 msgid "BF (Modelos Biofísicos)"
 msgstr "BP (Modèles biophysiques)"
 
-#: of tinamit.BF.ClaseModeloBF:1
+#: ../../../tinamit/BF.pydocstring of tinamit.BF.ClaseModeloBF:1
 msgid ""
 "Se debe desarrollar una subclase de esta clase para cada tipo modelo "
 "biofísico que se quiere volver compatible con Tinamit."
 msgstr ""
+"Vous devrez développer une sous-classe de cette classe pour chaque genre de "
+"modèle biophysique que vous voulez rendre compatible avec Tinamit."
 
-#: of tinamit.BF.ClaseModeloBF.cambiar_vals_modelo_interno
-#: tinamit.BF.ClaseModeloBF.incrementar tinamit.BF.ClaseModeloBF.iniciar_modelo
-#: tinamit.BF.EnvolturaBF.cambiar_vals_modelo_interno
-#: tinamit.BF.EnvolturaBF.incrementar tinamit.BF.EnvolturaBF.iniciar_modelo
+#: ../../../tinamit/BF.pydocstring of
+#: tinamit.BF.ClaseModeloBF.cambiar_vals_modelo_interno:0
+#: ../../../tinamit/BF.pydocstring of tinamit.BF.ClaseModeloBF.incrementar:0
+#: ../../../tinamit/BF.pydocstring of
+#: tinamit.BF.ClaseModeloBF.iniciar_modelo:0 ../../../tinamit/BF.pydocstring
+#: of tinamit.BF.EnvolturaBF.cambiar_vals_modelo_interno:0
+#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF.incrementar:0
+#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF.iniciar_modelo:0
 msgid "Parámetros"
-msgstr ""
+msgstr "Paramètres"
 
-#: of tinamit.BF.ClaseModeloBF.cerrar_modelo:1
+#: ../../../tinamit/BF.pydocstring of tinamit.BF.ClaseModeloBF.cerrar_modelo:1
 msgid ""
 "Esta función debe cerrar la simulación. No se aplica a todos los modelos "
 "biofísicos."
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.incrementar:1
+#: ../../../tinamit/BF.pydocstring of tinamit.BF.ClaseModeloBF.incrementar:1
 msgid "Esta función debe avanzar la simulación de ``paso`` pasos."
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.incrementar:3
+#: ../../../tinamit/BF.pydocstring of tinamit.BF.ClaseModeloBF.incrementar:3
 msgid "El número de pasos que hay que avanzar."
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.inic_vars:1
+#: ../../../tinamit/BF.pydocstring of tinamit.BF.ClaseModeloBF.inic_vars:1
 msgid "Esta función debe iniciar el diccionario interno de variables."
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.inic_vars:3
-#, fuzzy
+#: ../../../tinamit/BF.pydocstring of tinamit.BF.ClaseModeloBF.inic_vars:3
 msgid ""
 "MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe "
 "para símismo.variables, no crear un diccionario nuevo. Por ejemplo, NO "
 "HAGAS: |  símismo.variables = {var1: {...}, var2: {...}, ...}"
 msgstr ""
-"TRÈS IMPORTANT : Cette fonction doit modifier le dictionnaire "
-"símismo.variables déjà existant, et non en créer un nouveau. Par exemple,"
-" NE PAS FAIRE :"
+"*Très important* : Cette fonction doit modifier le dictionnaire pré-existant"
+" de símismo.variables, et non créer un nouveau dictionnaire. Par exemple, "
+"*ne faites pas*  |  símismo.variables = {var1: {...}, var2: {...}, ...}"
 
-#: of tinamit.BF.ClaseModeloBF.inic_vars:8
-#, fuzzy
+#: ../../../tinamit/BF.pydocstring of tinamit.BF.ClaseModeloBF.inic_vars:8
 msgid ""
-"sino: |  símismo.variables[var1] = {...} |  símismo.variables[var2] = "
-"{...}"
-msgstr "símismo.variables[var1] = {...} símismo.variables[var2] = {...}"
-
-#: of tinamit.BF.ClaseModeloBF.inic_vars:12
-msgid ""
-"Al no hacer esto, romperás la conección entre los diccionarios de "
-"variables de ClaseModeloBF y EnvolturaBF, lo cual impedirá después la "
-"conexión de estos variables con el modelo DS."
+"sino: |  símismo.variables[var1] = {...} |  símismo.variables[var2] = {...}"
 msgstr ""
-"Dans le cas contraire, vous briserez la conection entre les dictionnaires"
-" de variable de ClaseModeloBF et de EnvolturaBF, ce qui empêchera ensuite"
-" la conection de ces variables avec le modèle DS.\n"
+"mais plutôt : |  símismo.variables[var1] = {...} |  símismo.variables[var2] "
+"= {...}"
 
-#: of tinamit.BF.ClaseModeloBF.iniciar_modelo:1
+#: ../../../tinamit/BF.pydocstring of tinamit.BF.ClaseModeloBF.inic_vars:12
+msgid ""
+"Al no hacer esto, romperás la conección entre los diccionarios de variables "
+"de ClaseModeloBF y EnvolturaBF, lo cual impedirá después la conexión de "
+"estos variables con el modelo DS."
+msgstr ""
+"Dans le cas contraire, vous briserez la conection entre les dictionnaires de"
+" variable de ClaseModeloBF et de EnvolturaBF, ce qui empêchera ensuite la "
+"conection de ces variables avec le modèle DS.\n"
+
+#: ../../../tinamit/BF.pydocstring of
+#: tinamit.BF.ClaseModeloBF.iniciar_modelo:1
 msgid "Esta función debe preparar el modelo para una simulación."
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.leer_vals:1
+#: ../../../tinamit/BF.pydocstring of tinamit.BF.ClaseModeloBF.leer_vals:1
 msgid ""
-"Esta función debe leer los variables del modelo desde el modelo externo y"
-" copiarlos al diccionario interno de variables. Asegúrese que esté "
-"*actualizando* el diccionario interno, y que no lo esté recreando, lo "
-"cual quebrará las conexiones con el modelo conectado."
+"Esta función debe leer los variables del modelo desde el modelo externo y "
+"copiarlos al diccionario interno de variables. Asegúrese que esté "
+"*actualizando* el diccionario interno, y que no lo esté recreando, lo cual "
+"quebrará las conexiones con el modelo conectado."
 msgstr ""
-"Cette fonction doit lire les variables du modèle externe et les copier au"
-" dictionnaire interne de variables. Assurez-vous que vous êtes en train "
-"*d'actualiser* le dictionnaire interne, et non en train de le recréer, "
-"car cela brisera les connexions avec le modèle connecté."
+"Cette fonction doit lire les variables du modèle externe et les copier au "
+"dictionnaire interne de variables. Assurez-vous que vous êtes en train "
+"*d'actualiser* le dictionnaire interne, et non en train de le recréer, car "
+"cela brisera les connexions avec le modèle connecté."
 
-#: of tinamit.BF.ClaseModeloBF.obt_unidad_tiempo:1
+#: ../../../tinamit/BF.pydocstring of
+#: tinamit.BF.ClaseModeloBF.obt_unidad_tiempo:1
 msgid "Esta función debe devolver la unidad de tiempo del modelo biofísico."
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.obt_unidad_tiempo
-#: tinamit.BF.EnvolturaBF.obt_unidad_tiempo
+#: ../../../tinamit/BF.pydocstring of
+#: tinamit.BF.ClaseModeloBF.obt_unidad_tiempo:0
+#: ../../../tinamit/BF.pydocstring of
+#: tinamit.BF.EnvolturaBF.obt_unidad_tiempo:0
 msgid "Devuelve"
-msgstr ""
+msgstr "Retourne"
 
-#: of tinamit.BF.ClaseModeloBF.obt_unidad_tiempo:3
+#: ../../../tinamit/BF.pydocstring of
+#: tinamit.BF.ClaseModeloBF.obt_unidad_tiempo:3
 msgid "La unidad de tiempo del modelo."
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.obt_unidad_tiempo
-#: tinamit.BF.EnvolturaBF.obt_unidad_tiempo
+#: ../../../tinamit/BF.pydocstring of
+#: tinamit.BF.ClaseModeloBF.obt_unidad_tiempo:0
+#: ../../../tinamit/BF.pydocstring of
+#: tinamit.BF.EnvolturaBF.obt_unidad_tiempo:0
 msgid "Tipo del valor devuelto"
-msgstr ""
+msgstr "Type de valeur retournée"
 
-#: of tinamit.BF.EnvolturaBF:1
+#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF:1
 msgid ""
-"Esta clase ofrece una envoltura para **TODOS** tipos de modelos "
-"biofísicos."
+"Esta clase ofrece una envoltura para **TODOS** tipos de modelos biofísicos."
 msgstr ""
+"Cette classe offre une couverture pour **TOUS** genres de modèles "
+"biophysiques."
 
-#: of tinamit.BF.EnvolturaBF:3
+#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF:3
 msgid ""
 "Modelos biofísicos específicos se implementan por crear una subclase de "
 "`~tinamit.BF.ClaseModeloBF` específica para ellos."
 msgstr ""
+"Les modèles biophysiques spécifiques s'implémentent en créant une sous-"
+"classe de `~tinamit.BF.ClaseModeloBF` spécifique au modèle biophysique "
+"désiré."
 
-#: of tinamit.BF.EnvolturaBF.inic_vars:1
+#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF.inic_vars:1
 msgid ""
-"Inicializa los variables del modelo biofísico y los conecta al "
-"diccionario de variables del modelo."
+"Inicializa los variables del modelo biofísico y los conecta al diccionario "
+"de variables del modelo."
 msgstr ""
-
-#~ msgid "símismo.variables = {var1: {...}, var2: {...}, ...}"
-#~ msgstr "símismo.variables = {var1: {...}, var2: {...}, ...}"
-
-#~ msgid "sino:"
-#~ msgstr "sinon :"
-
+"Inicialise les variables du modèle biophysique et les connecte avec le "
+"dictionnaire des variables du modèle."
