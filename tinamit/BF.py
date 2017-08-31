@@ -48,8 +48,9 @@ class EnvolturaBF(Modelo):
 
     def obt_unidad_tiempo(símismo):
         """
+        Esta función debe devolver la unidad de tiempo empleada por el modelo.
 
-        :return:
+        :return: La unidad de tiempo (p. ejemplo, 'meses', 'días', etc.
         :rtype: str
 
         """
@@ -70,9 +71,13 @@ class EnvolturaBF(Modelo):
 
     def cambiar_vals_modelo_interno(símismo, valores):
         """
+        Esta función cambia el valor de variables en el modelo.
 
-        :param valores:
-        :type valores:
+        :param valores: Un diccionario de variables y valores para cambiar, con el formato siguiente:
+        >>> {'var1': 10,  'var2': 15,
+        >>>    ...
+        >>>    }
+        :type valores: dict
 
         """
 
@@ -80,9 +85,10 @@ class EnvolturaBF(Modelo):
 
     def incrementar(símismo, paso):
         """
+        Esta función avanza el modelo por un periodo de tiempo especificado en `paso`.
 
-        :param paso:
-        :type paso:
+        :param paso: El paso.
+        :type paso: int
 
         """
 
@@ -90,15 +96,16 @@ class EnvolturaBF(Modelo):
 
     def leer_vals(símismo):
         """
+        Esta función lee los valores del modelo y los escribe en el diccionario interno de variables.
 
         """
         símismo.modelo.leer_vals()
 
     def iniciar_modelo(símismo, **kwargs):
         """
+        Inicializa el modelo biofísico interno.
 
-        :param kwargs:
-        :type kwargs:
+        :param kwargs: Argumentos para pasar al modelo interno.
 
         """
 
@@ -106,7 +113,7 @@ class EnvolturaBF(Modelo):
 
     def cerrar_modelo(símismo):
         """
-
+        Cierre el modelo interno.
         """
 
         símismo.modelo.cerrar_modelo()
@@ -127,18 +134,27 @@ class ClaseModeloBF(Modelo):
 
     def cambiar_vals_modelo_interno(símismo, valores):
         """
+        Esta función debe cambiar el valor de variables en el modelo biofísico.
 
-        :param valores:
-        :type valores:
+        :param valores: Un diccionario de variables y valores para cambiar, con el formato siguiente:
+        >>> {'var1': 10,  'var2': 15,
+        >>>    ...
+        >>>    }
+        :type valores: dict
+
         """
         raise NotImplementedError
 
     def incrementar(símismo, paso):
         """
-        Esta función debe avanzar la simulación de ``paso`` pasos.
-        
-        :param paso: El número de pasos que hay que avanzar.
-        :type paso: int
+        Esta función debe cambiar el valor de variables en el :class:`Modelo`, incluso tomar acciones para asegurarse
+        de que el cambio se hizo en el modelo externo, si aplica.
+
+        :param valores: Un diccionario de variables y valores para cambiar, con el formato siguiente:
+        >>> {'var1': 10,  'var2': 15,
+        >>>    ...
+        >>>    }
+        :type valores: dict
 
         """
 
@@ -164,7 +180,8 @@ class ClaseModeloBF(Modelo):
 
     def cerrar_modelo(símismo):
         """
-        Esta función debe cerrar la simulación. No se aplica a todos los modelos biofísicos.
+        Esta función debe cerrar la simulación. No se aplica a todos los modelos biofísicos (en ese caso, usar ``pass``
+        ).
         """
         raise NotImplementedError
 

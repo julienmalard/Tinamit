@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-31 11:09-0400\n"
+"POT-Creation-Date: 2017-08-31 12:50-0400\n"
 "PO-Revision-Date: 2017-02-08 10:38-0500\n"
 "Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>\n"
 "Language-Team: French\n"
@@ -100,7 +100,7 @@ msgstr ""
 
 #: ../../../tinamit/Conectado.pydocstring of
 #: tinamit.Conectado.Conectado.estab_bf:1
-msgid "Establece el modelo biofísico ((:class:`~tinamit.BF.EnvolturaBF`))."
+msgid "Establece el modelo biofísico (:class:`~tinamit.BF.EnvolturaBF`)."
 msgstr ""
 
 #: ../../../tinamit/Conectado.pydocstring of
@@ -246,7 +246,7 @@ msgstr ""
 #: tinamit.Conectado.SuperConectado.inic_vars:1
 msgid ""
 "Esta función no es necesaria, porque :func:`.estab_modelo` ya llama las "
-"funciones :func:`~tinamit.Modelo.inic_vars` de los submodelos."
+"funciones necesarias. :func:`~tinamit.Modelo.inic_vars` de los submodelos."
 msgstr ""
 
 #: ../../../tinamit/Conectado.pydocstring of

@@ -2,10 +2,10 @@
 
 class Modelo(object):
     """
-    Todas las cosas en Tinamit son instancias de Modelo, que sea un modelo de dinámicas de los sistemas, un modelo de
+    Todas las cosas en Tinamit son instancias de `Modelo`, que sea un modelo de dinámicas de los sistemas, un modelo de
     cultivos o de suelos o de clima, o un modelo conectado.
     Cada tipo de modelo se representa por subclases específicas. Por eso, la gran mayoría de los métodos definidos
-    aquí se implementan de manera independiente en cada
+    aquí se implementan de manera independiente en cada subclase de `Modelo`.
     """
 
     def __init__(símismo, nombre):
@@ -116,10 +116,9 @@ class Modelo(object):
         de que el cambio se hizo en el modelo externo, si aplica.
 
         :param valores: Un diccionario de variables y valores para cambiar, con el formato siguiente:
-            {var1: nuevovalor,
-            var2: nuevovalor,
-            ...
-            }
+        >>> {'var1': 10,  'var2': 15,
+        >>>    ...
+        >>>    }
         :type valores: dict
 
         """
@@ -128,6 +127,6 @@ class Modelo(object):
     def cerrar_modelo(símismo):
         """
         Esta función debe tomar las acciones necesarias para terminar la simulación y cerrar el modelo, si aplica.
-        Si no aplica, usar "pass".
+        Si no aplica, usar ``pass``.
         """
         raise NotImplementedError

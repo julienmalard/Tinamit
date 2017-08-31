@@ -78,7 +78,7 @@ class SuperConectado(Modelo):
 
     def inic_vars(símismo):
         """
-        Esta función no es necesaria, porque :func:`.estab_modelo` ya llama las funciones
+        Esta función no es necesaria, porque :func:`.estab_modelo` ya llama las funciones necesarias.
         :func:`~tinamit.Modelo.inic_vars` de los submodelos.
 
         """
@@ -510,7 +510,7 @@ class Conectado(SuperConectado):
 
     def estab_bf(símismo, archivo_bf):
         """
-        Establece el modelo biofísico ((:class:`~tinamit.BF.EnvolturaBF`)).
+        Establece el modelo biofísico (:class:`~tinamit.BF.EnvolturaBF`).
 
         :param archivo_bf: El archivo con la clase del modelo biofísico. **Debe** ser un archivo de Python.
         :type archivo_bf: str
