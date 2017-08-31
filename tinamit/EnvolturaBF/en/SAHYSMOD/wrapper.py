@@ -75,7 +75,8 @@ class Modelo(ClaseModeloBF):
             self.variables[name] = {'val': None,
                                     'unidades': dic['units'],
                                     'ingreso': dic['inp'],
-                                    'egreso': dic['out']}
+                                    'egreso': dic['out'],
+                                    'dims': (1,)}
 
     def iniciar_modelo(self, **kwargs):
 

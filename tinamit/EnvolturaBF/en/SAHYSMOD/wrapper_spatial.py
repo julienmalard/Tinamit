@@ -448,3 +448,9 @@ SAHYSMOD_input_vars = [v['code'] for v in vars_SAHYSMOD.values() if v['inp']]
 
 # A list containing only SAHYSMOD output variable codes
 SAHYSMOD_output_vars = [v['code'] for v in vars_SAHYSMOD.values() if v['out']]
+
+
+def read_output_file(file_path):
+
+    output_dic = NotImplemented
+    return output_dic
