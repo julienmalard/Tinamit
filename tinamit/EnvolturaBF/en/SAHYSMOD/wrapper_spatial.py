@@ -450,7 +450,7 @@ SAHYSMOD_input_vars = [v['code'] for v in vars_SAHYSMOD.values() if v['inp']]
 SAHYSMOD_output_vars = [v['code'] for v in vars_SAHYSMOD.values() if v['out']]
 
 
-def read_output_file(file_path):
+def read_output_file(file_path, n_season, n_poly):
 
     output_dic = NotImplemented
     return output_dic
