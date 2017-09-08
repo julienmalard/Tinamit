@@ -1,5 +1,5 @@
 from pkg_resources import resource_filename
-from . import Incertidumbre, Interfaz
+from . import Incertidumbre
 
 __author__ = 'Julien Malard'
 
@@ -10,7 +10,3 @@ with open(resource_filename('tinamit', 'versión.txt')) as archivo_versión:
     versión = archivo_versión.read().strip()
 
 __version__ = versión
-
-
-def correr():
-    Interfaz.correr()

@@ -24,7 +24,8 @@ build/
 ######################
 *.vdf
 *.tin
-*/__pycache__/
 
 
 docs/.tx/*
+__pycache__/
+docs/source/_static/
