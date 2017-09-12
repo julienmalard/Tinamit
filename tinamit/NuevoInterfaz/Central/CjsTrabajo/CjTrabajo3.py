@@ -6,7 +6,7 @@ BtSimular = Botón('Simular')
 
 CjSimulando = Caja()
 AnimSimul = Anim('Simulando')
-BtCancelar = BotónImg('BtBorrarItema_norm.png', img_sel='BtBorrarItema_sel.png', info='Cancelar la simulación')
+BtCancelar = BotónImg('BtBorrarItema_norm.png', img_sel='BtBorrarItema_sel.png', ayuda='Cancelar la simulación')
 
 CjSimulando.agregar(AnimSimul, BtCancelar)
 CjSimulando.esconder()

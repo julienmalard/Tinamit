@@ -43,16 +43,16 @@ class ItemaListaConex(ItemaLista):
 
 ListaConex = Lista(anchura_cols=[], cabeza=['Var MDS', 'Dirección', 'Var BF', None], itemas=ItemaListaConex)
 
-BtGuardar = Botón('Guardar')
-BtBorrar = Botón('Borrar')
-BtQuitar = Botón['Quitar']
+BtGuardar = Botón('Guardar', ayuda='Guardar la conexión')
+BtNoGuardar = Botón('No guardar', ayuda='Borrar los cambios')
+BtBorrar = Botón('Borrar', ayuda='Borrar esta conexión')
 
 IngrVarMDS = IngrMenú()
 IngVarBF = IngrMenú()
-IngrConv = IngrNúm()
+IngrConv = IngrNúm('X', ayuda='Factor de conversión entre unidades')
 Dir = BtOpción()
 
-Ctrls = CtrlLista(lista=ListaConex, bt_agregar=BtGuardar, bt_borrar=BtBorrar, bt_quitar=BtQuitar,
+Ctrls = CtrlLista(lista=ListaConex, bt_agregar=BtGuardar, bt_noguardar=BtNoGuardar, bt_borrar=BtBorrar,
                   ctrls={
                       'mds': IngrVarMDS,
                       'bf': IngVarBF,
