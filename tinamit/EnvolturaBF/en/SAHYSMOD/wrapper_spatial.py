@@ -1,5 +1,4 @@
 import os
-import re
 from subprocess import run
 from warnings import warn
 
@@ -46,6 +45,7 @@ class Modelo(ClaseModeloBF):
                                    if '#' in vars_SAHYSMOD[var]['code']])
 
         # Create some useful model attributes
+        self.n_poly = None  # Number of (internal) polygons in the model
         self.n_seasons = None  # Number of seasons per year
         self.len_seasons = []  # A list to store the length of each season, in months
         self.season = 0  # Current season number (Python numeration)
@@ -201,7 +201,7 @@ class Modelo(ClaseModeloBF):
 
         """
 
-        dic_out = read_output_file(self.output)
+        dic_out = read_output_file(self.output, n_season=self.n_seasons, n_poly=self.n_poly)
 
         for var_code in SAHYSMOD_output_vars:
 
@@ -254,6 +254,7 @@ class Modelo(ClaseModeloBF):
         # Save the number of seasons and length of each season
         self.n_seasons = dic_input['NS']
         self.len_seasons = dic_input['TS']
+        self.n_poly = dic_input['N_IN']
 
         if dic_input['NY'] != 1:
             warn('More than 1 year specified in SAHYSMO input file. Switching to 1 year of simulation.')
