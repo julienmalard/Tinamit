@@ -1,10 +1,11 @@
 import os
+import re
 from subprocess import run
 from warnings import warn
 
 import numpy as np
 
-from .sahysmodIO import read_into_param_dic, write_from_param_dic
+from tinamit.EnvolturaBF.en.SAHYSMOD.sahysmodIO import read_into_param_dic, write_from_param_dic
 from tinamit.BF import ClaseModeloBF
 
 
@@ -201,7 +202,7 @@ class Modelo(ClaseModeloBF):
 
         """
 
-        dic_out = read_output_file(self.output, n_season=self.n_seasons, n_poly=self.n_poly)
+        dic_out = read_output_file(file_path=self.output, n_s=self.n_seasons, n_p=self.n_poly)
 
         for var_code in SAHYSMOD_output_vars:
 
@@ -434,11 +435,12 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                                                                 'out': True},
                  'Cxb - Transition zone below-drain salinity': {'code': 'Cxb', 'units': 'dS / m', 'inp': True,
                                                                 'out': True},
-                 'SS - Soil salinity': {'code': 'SS', 'units': 'dS / m', 'inp': True, 'out': True},
+                 'SS - Soil salinity': {'code': 'SS', 'units': 'dS / m', 'inp': True, 'out': False},
                  'Cti - Transition zone incoming salinity': {'code': 'Cti', 'units': 'dS / m', 'inp': False,
                                                              'out': True},
-                 'Cqi - Aquifer salinity': {'code': 'Cqi', 'units': 'dS / m', 'inp': True, 'out': True},
-                 'Cd - Drainage salinity': {'code': 'Cd', 'units': 'ds / m', 'inp': False, 'out': True},
+                 'Cqf - Aquifer salinity': {'code': 'Cqf', 'units': 'dS / m', 'inp': True, 'out': True},
+                 'Cd - Drainage salinity': {'code': 'Cd', 'units': 'ds / m', 'inp': False, 'out': True},\
+                 'Cw - Well water salinity': {'code': 'Cw', 'units': 'ds / m', 'inp': False, 'out': True},\
                  }
 
 # A dictionary to get the variable name from its SAHYSMOD code.
@@ -451,7 +453,55 @@ SAHYSMOD_input_vars = [v['code'] for v in vars_SAHYSMOD.values() if v['inp']]
 SAHYSMOD_output_vars = [v['code'] for v in vars_SAHYSMOD.values() if v['out']]
 
 
-def read_output_file(file_path, n_season, n_poly):
+def read_output_file(file_path, n_s, n_p):
+    """
 
+    :param file_path:
+    :type file_path: str
+    :param n_s: Number of seasons per year.
+    :type n_s: int
+    :param n_p: Number of INTERNAL polygons in the SAHYSMOD model.
+    :type n_p: int
+    :return:
+    :rtype: dict
+    """
+
+    dic_data = dict([(k, np.empty((n_s, n_p))) for k in SAHYSMOD_output_vars])
+
+    with open(file_path, 'r') as d:
+        l = ''
+        while 'YEAR:      %i' % n_year not in l:
+            l = d.readline()
+        for season in range(n_s):
+            for season_poly in range(n_p):  # Read output for the last year's seasons from the output file
+                season_poly_output = []  # To hold the output file lines with the desired season
+                if n_p == 1 and n_s == 1:
+                    Poly = [next(d) for s in range(23)]
+                else:
+                    Poly = [next(d) for s in range(24)]
+                season_poly_output.append(Poly)
+                print(season_poly_output)
+
+                for cod in SAHYSMOD_output_vars:
+                    var_out = cod.replace('#', '').replace('*', '\*')
+
+                    for line in Poly:
+
+                        line += ' '
+                        m = re.search(' %s += +([^ ]*)' % var_out, line)
+
+                        if m:
+                            val = m.groups()[0]
+                            if val == '-':
+                                val = -1
+                            else:
+                                try:
+                                    val = float(val)
+                                except ValueError:
+                                    raise ValueError('The variable "%s" was not read from the SAHYSMOD output.'
+                                                     % var_out)
+                            dic_data[cod][(season, season_poly)] = val
+                            # print('%s  =' % var_out, val)
+                            break
     output_dic = NotImplemented
     return output_dic
