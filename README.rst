@@ -17,5 +17,5 @@ Tinamit permite la conexión rápida, flexible y reproducible de modelos con:
 Autores
 =======
 
-* Julien Malard julien.malard@mail.mcgill.ca
-* محمّد اظہر انعام بیگ  muhammad.baig@mail.mcgill.ca
+* `Julien Malard <https://www.researchgate.net/profile/Julien_Malard>`_; Correo: julien.malard@mail.mcgill.ca
+* `محمّد اظہر انعام بیگ <https://www.researchgate.net/profile/Azhar_Baig>`_; Correo: muhammad.baig@mail.mcgill.ca
