@@ -196,29 +196,28 @@ class Modelo(ClaseModeloBF):
         # And finally write the input file
         write_from_param_dic(param_dictionary=self.dic_input, to_fn=self.input)
 
-    def _read_out(self):
+    def _read_out(self, n_year):
         """
         This function reads the last year of a SAHYSMOD output file.
 
         """
 
-        dic_out = read_output_file(file_path=self.output, n_s=self.n_seasons, n_p=self.n_poly)
+        dic_out = read_output_file(file_path=self.output, n_s=self.n_seasons, n_p=self.n_poly, n_y=n_year)
 
         for var_code in SAHYSMOD_output_vars:
 
-            key = var_code.replace('#', '').upper()
             var_name = codes_to_vars[var_code]
 
             if var_code[-1] == '#':
                 # For seasonal variables...
 
-                self.internal_data[var_name]['val'][:] = dic_out[key]
+                self.internal_data[var_name]['val'][:] = dic_out[var_code]
                 # Note: dynamic link with self.variables has already been created in self._read_input_vals()
 
             else:
                 # For nonseasonal variables...
 
-                self.variables[var_name]['val'][:] = dic_out[key]
+                self.variables[var_name]['val'][:] = dic_out[var_code]
 
         # Ajust for soil salinity of different crops
         kr = self.variables[codes_to_vars['Kr']]['val']
@@ -253,33 +252,40 @@ class Modelo(ClaseModeloBF):
         self.dic_input.update(dic_input)
 
         # Save the number of seasons and length of each season
-        self.n_seasons = dic_input['NS']
-        self.len_seasons = dic_input['TS']
-        self.n_poly = dic_input['N_IN']
+        self.n_seasons = int(dic_input['NS'])
+        self.len_seasons = [int(float(x)) for x in dic_input['TS']]
+        self.n_poly = n_poly = int(dic_input['NN_IN'])
 
         if dic_input['NY'] != 1:
-            warn('More than 1 year specified in SAHYSMO input file. Switching to 1 year of simulation.')
+            warn('More than 1 year specified in SAHYSMOD input file. Switching to 1 year of simulation.')
             dic_input['NY'] = 1
-
-        n_poly = dic_input['NN_IN']
 
         # Make sure the number of season lengths equals the number of seasons.
         if self.n_seasons != len(self.len_seasons):
-            raise ValueError('Error in the SAHYSMOD input file: the number of season lengths specified is not equal'
+            raise ValueError('Error in the SAHYSMOD input file: the number of season lengths specified is not equal '
                              'to the number of seasons (lines 3 and 4).')
+
+        for var_name in vars_SAHYSMOD:
+            self.variables[var_name]['val'] = np.zeros(n_poly, dtype=float)
+            self.variables[var_name]['dims'] = (n_poly,)
+
+            var_code = vars_SAHYSMOD[var_name]['code']
+            if var_code[-1] == '#':
+                self.internal_data[var_name] = np.zeros((self.n_seasons, n_poly), dtype=float)
 
         for var_code in SAHYSMOD_input_vars:
 
             key = var_code.replace('#', '').upper()
+
             var_name = codes_to_vars[var_code]
 
-            self.variables[var_name]['val'] = np.zeros(n_poly, dtype=float)
-            self.variables[var_name]['dims'] = (n_poly, )
+            try:
+                data = np.array(dic_input[key], dtype=float)
+            except KeyError:
+                continue
 
-            if var_code[-1] == '#':
-                self.internal_data[var_name] = np.zeros((self.n_seasons, n_poly), dtype=float)
-
-            data = np.array(dic_input[key], dtype=float)
+            if len(data.shape) == 2:
+                data = data.swapaxes(0, 1)
 
             if var_code[-1] == '#':
                 self.internal_data[var_name][:] = data
@@ -287,26 +293,12 @@ class Modelo(ClaseModeloBF):
             else:
                 self.variables[var_name]['val'][:] = data
 
-        for var_code in SAHYSMOD_output_vars:
-
-            if var_code not in SAHYSMOD_input_vars:
-
-                var_name = codes_to_vars[var_code]
-
-                self.variables[var_name]['val'] = np.zeros(n_poly, dtype=float)
-                self.variables[var_name]['dims'] = (n_poly, )
-
-                if var_code[-1] == '#':
-                    self.internal_data[var_name] = np.zeros((self.n_seasons, n_poly), dtype=float)
-
 
 # A dictionary of SAHYSMOD variables. See the SAHYSMOD documentation for more details.
 vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp': True, 'out': False},
-                 'BL - Aquifer bottom level': {'code': 'BL', 'units': 'm', 'inp': True, 'out': False},
                  'Ci - Incoming canal salinity': {'code': 'Ci#', 'units': 'dS/m', 'inp': True, 'out': True},
-                 'Cinf - Aquifer inflow salinity': {'code': 'Cin', 'units': 'dS/m', 'inp': True, 'out': False},
-                 'Dt - Aquifer thickness': {'code': 'Dt', 'units': 'm', 'inp': True, 'out': False},
-                 'Dc - Capillary rise critical depth': {'code': 'Dcr', 'units': 'm', 'inp': True, 'out': False},
+                 'Cinf - Aquifer inflow salinity': {'code': 'Cinf', 'units': 'dS/m', 'inp': True, 'out': False},
+                 'Dc - Capillary rise critical depth': {'code': 'Dc', 'units': 'm', 'inp': True, 'out': False},
                  'Dd - Subsurface drain depth': {'code': 'Dd', 'units': 'm', 'inp': True, 'out': False},
                  'Dr - Root zone thickness': {'code': 'Dr', 'units': 'm', 'inp': True, 'out': False},
                  'Dx - Transition zone thickness': {'code': 'Dx', 'units': 'm', 'inp': True, 'out': False},
@@ -335,10 +327,18 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'Rice B - Crop B paddy?': {'code': 'KcB#', 'units': 'Dmnl', 'inp': True, 'out': False},
                  'Kd - Subsurface drainage?': {'code': 'Kd', 'units': 'Dmnl', 'inp': True, 'out': False},
                  'Kf - Farmers\'s responses?': {'code': 'Kf', 'units': 'Dmnl', 'inp': True, 'out': False},
-                 'Ki/e - Internal/external node index': {'code': 'Ki/e', 'units': 'Dmnl', 'inp': True, 'out': False},
-                 'Kaq - Horizontal hydraulic conductivity': {'code': 'Khor', 'units': 'm/day', 'inp': True,
-                                                             'out': False},
-                 'Ktop - Semi-confined aquifer?': {'code': 'Ksc', 'units': 'Dmnl', 'inp': True, 'out': False},
+                 'Kaq1 - Horizontal hydraulic conductivity 1': {'code': 'Kaq1', 'units': 'm/day', 'inp': True,
+                                                                'out': False},
+                 'Kaq2 - Horizontal hydraulic conductivity 2': {'code': 'Kaq2', 'units': 'm/day', 'inp': True,
+                                                                'out': False},
+                 'Kaq3 - Horizontal hydraulic conductivity 3': {'code': 'Kaq3', 'units': 'm/day', 'inp': True,
+                                                                'out': False},
+                 'Kaq4 - Horizontal hydraulic conductivity 4': {'code': 'Kaq4', 'units': 'm/day', 'inp': True,
+                                                                'out': False},
+                 'Ksc1 - Semi-confined aquifer 1?': {'code': 'Ksc1', 'units': 'Dmnl', 'inp': True, 'out': False},
+                 'Ksc2 - Semi-confined aquifer 2?': {'code': 'Ksc2', 'units': 'Dmnl', 'inp': True, 'out': False},
+                 'Ksc3 - Semi-confined aquifer 3?': {'code': 'Ksc3', 'units': 'Dmnl', 'inp': True, 'out': False},
+                 'Ksc4 - Semi-confined aquifer 4?': {'code': 'Ksc4', 'units': 'Dmnl', 'inp': True, 'out': False},
                  'Kr - Land use key': {'code': 'Kr', 'units': 'Dmnl', 'inp': True, 'out': True},
                  'Kvert - Vertical hydraulic conductivity semi-confined': {'code': 'Kvert', 'units': 'm/day',
                                                                            'inp': True, 'out': False},
@@ -364,8 +364,6 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'SdB - Surface outflow crop B': {'code': 'SoB#', 'units': 'm3/season/m2', 'inp': True, 'out': False},
                  'SoU - Surface outflow non-irrigated': {'code': 'SoU#', 'units': 'm3/season/m2',
                                                          'inp': True, 'out': False},
-                 'Ts - Season duration': {'code': 'Ts#', 'units': 'months', 'inp': True, 'out': False},
-
                  'It - Total irrigation': {'code': 'It', 'units': 'm3/season/m2', 'inp': False, 'out': True},
                  'Is - Canal irrigation': {'code': 'Is', 'units': 'm3/season/m2', 'inp': False, 'out': True},
 
@@ -406,9 +404,9 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'Gd - Total subsurface drainage': {'code': 'Gd', 'units': 'm3/season/m2',
                                                     'inp': False, 'out': True},
                  'Ga - Subsurface drainage above drains': {'code': 'Ga', 'units': 'm3/season/m2',
-                                                           'inp': True, 'out': True},
+                                                           'inp': False, 'out': True},
                  'Gb - Subsurface drainage below drains': {'code': 'Gb', 'units': 'm3/season/m2',
-                                                           'inp': True, 'out': True},
+                                                           'inp': False, 'out': True},
                  'Dw - Groundwater depth': {'code': 'Dw', 'units': 'm', 'inp': False, 'out': True},
                  'Hw - Water table elevation': {'code': 'Hw', 'units': 'm', 'inp': True, 'out': True},
                  'Hq - Subsoil hydraulic head': {'code': 'Hq', 'units': 'm', 'inp': False, 'out': True},
@@ -435,12 +433,11 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                                                                 'out': True},
                  'Cxb - Transition zone below-drain salinity': {'code': 'Cxb', 'units': 'dS / m', 'inp': True,
                                                                 'out': True},
-                 'SS - Soil salinity': {'code': 'SS', 'units': 'dS / m', 'inp': True, 'out': False},
                  'Cti - Transition zone incoming salinity': {'code': 'Cti', 'units': 'dS / m', 'inp': False,
                                                              'out': True},
                  'Cqf - Aquifer salinity': {'code': 'Cqf', 'units': 'dS / m', 'inp': True, 'out': True},
-                 'Cd - Drainage salinity': {'code': 'Cd', 'units': 'ds / m', 'inp': False, 'out': True},\
-                 'Cw - Well water salinity': {'code': 'Cw', 'units': 'ds / m', 'inp': False, 'out': True},\
+                 'Cd - Drainage salinity': {'code': 'Cd', 'units': 'ds / m', 'inp': False, 'out': True}, \
+                 'Cw - Well water salinity': {'code': 'Cw', 'units': 'ds / m', 'inp': False, 'out': True}, \
                  }
 
 # A dictionary to get the variable name from its SAHYSMOD code.
@@ -453,9 +450,10 @@ SAHYSMOD_input_vars = [v['code'] for v in vars_SAHYSMOD.values() if v['inp']]
 SAHYSMOD_output_vars = [v['code'] for v in vars_SAHYSMOD.values() if v['out']]
 
 
-def read_output_file(file_path, n_s, n_p):
+def read_output_file(file_path, n_s, n_p, n_y):
     """
 
+    :param n_y:
     :param file_path:
     :type file_path: str
     :param n_s: Number of seasons per year.
@@ -470,7 +468,7 @@ def read_output_file(file_path, n_s, n_p):
 
     with open(file_path, 'r') as d:
         l = ''
-        while 'YEAR:      %i' % n_year not in l:
+        while 'YEAR:      %i' % n_y not in l:
             l = d.readline()
         for season in range(n_s):
             for season_poly in range(n_p):  # Read output for the last year's seasons from the output file
@@ -480,7 +478,6 @@ def read_output_file(file_path, n_s, n_p):
                 else:
                     Poly = [next(d) for s in range(24)]
                 season_poly_output.append(Poly)
-                print(season_poly_output)
 
                 for cod in SAHYSMOD_output_vars:
                     var_out = cod.replace('#', '').replace('*', '\*')
@@ -501,7 +498,12 @@ def read_output_file(file_path, n_s, n_p):
                                     raise ValueError('The variable "%s" was not read from the SAHYSMOD output.'
                                                      % var_out)
                             dic_data[cod][(season, season_poly)] = val
-                            # print('%s  =' % var_out, val)
                             break
-    output_dic = NotImplemented
-    return output_dic
+    return dic_data
+
+
+if __name__ == '__main__':
+    from pprint import pprint
+    pprint(read_output_file(
+        'C:\\Users\\gis_lab\\PycharmProjects\\Tinamit\\tinamit\\Ejemplos\\en\\Ejemplo_SAHYSMOD\\test.out',
+        n_s=2, n_p=214, n_y=5))

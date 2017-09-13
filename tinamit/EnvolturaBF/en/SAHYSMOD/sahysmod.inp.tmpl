@@ -24,7 +24,7 @@
 (('D', 'W'), ('*DX',))
 (('D', 'W'), ('*KLC',))
 #Hydraulic Conductivity
-('FOR[NN_IN]', ((('D', 'W'), ('FROM_N', 'TO_N1', 'KAQ1', 'KTOP1', 'TO_N2', 'KAQ2', 'KTOP2', 'TO_N3', 'KAQ3', 'KTOP3', 'TO_N4', 'KAQ4', 'KTOP4')),))
+('FOR[NN_IN]', ((('D', 'W'), ('FROM_N', 'TO_N1', 'KAQ1', 'KSC1', 'TO_N2', 'KAQ2', 'KSC2', 'TO_N3', 'KAQ3', 'KSC3', 'TO_N4', 'KAQ4', 'KSC4')),))
 #???
 (('D', 'W'), ('*KVERT',))
 (('D', 'W'), ('*DTOP',))
@@ -61,7 +61,7 @@
 ('FOR[NS]', ((('D', 'W'), ('*EPU',)),))
 #Data on Irrigation Water
 ('FOR[NS]', ((('D', 'W'), ('*LC',)),))
-('FOR[NS]', ((('D', 'W'), ('*CIC',)),))
+('FOR[NS]', ((('D', 'W'), ('*CI',)),))
 ('FOR[NS]', ((('D', 'W'), ('*IAA',)),))
 ('FOR[NS]', ((('D', 'W'), ('*IAB',)),))
 #Surface Inflow/Outflow/Drainage
@@ -79,20 +79,20 @@
 ('FOR[NS]', ((('D', 'W'), ('*FW',)),))
 #Well Discharge and Drainage Reduction Factor
 ('FOR[NS]', ((('D', 'W'), ('*GW',)),))
-('FOR[NS]', ((('D', 'W'), ('*FCD',)),))
+('FOR[NS]', ((('D', 'W'), ('*FRD',)),))
 #Initial Hydraulic Head and Critical Depth Watertable
-(('D', 'W'), ('*H',))
+(('D', 'W'), ('*HW',))
 (('D', 'W'), ('*DC',))
-(('D', 'W'), ('*HCONF',))
+(('D', 'W'), ('*HC',))
 #Initial Salinity Conditions Root Zone
-(('D', 'W'), ('*CA0',))
-(('D', 'W'), ('*CB0',))
-(('D', 'W'), ('*CU0',))
+(('D', 'W'), ('*CRA',))
+(('D', 'W'), ('*CRB',))
+(('D', 'W'), ('*CRU',))
 #Initial Salinity Conditions Subsoil
-(('D', 'W'), ('*CXA0',))
-(('D', 'W'), ('*CXB0',))
-(('D', 'W'), ('*CX0',))
-(('D', 'W'), ('*CQ0',))
+(('D', 'W'), ('*CXA',))
+(('D', 'W'), ('*CXB',))
+(('D', 'W'), ('*CXF',))
+(('D', 'W'), ('*CQF',))
 #Aquifer inflow/outfloWconditions
 (('D', 'W'), ('*QINF',))
 (('D', 'W'), ('*CINF',))

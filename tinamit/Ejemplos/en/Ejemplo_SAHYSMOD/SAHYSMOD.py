@@ -1,6 +1,6 @@
 import os
 
-from tinamit.EnvolturaBF.en.SAHYSMOD.wrapper import Modelo
+from tinamit.EnvolturaBF.en.SAHYSMOD.wrapper_spatial import Modelo
 
 # Path to SAHYSMOD executable. Change as needed on your computer.
 SAHYSMOD = 'C:\\SahysMod\\julien\\SahysModConsole.exe'
