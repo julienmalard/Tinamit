@@ -50,6 +50,7 @@ SOFTWARE.
 import sys
 import itertools
 from ast import literal_eval
+import numpy as np
 
 
 def parse_l_line(line, parameter_names, parameter_dictionary):
@@ -141,7 +142,11 @@ def buildDLine(parameterNames, delim, parameterDictionary):
         if paramName[0] != '*':
             values.append(parameterDictionary[paramName])
         else:
-            values += parameterDictionary[paramName.strip('*')]
+            if isinstance(parameterDictionary[paramName.strip('*')], list):
+                values += [str(x) for x in parameterDictionary[paramName.strip('*')]]
+            else:
+                values += str(parameterDictionary[paramName.strip('*')])
+
             # print(values)
     return delim.join(values) + '  \n'
 
@@ -254,7 +259,11 @@ def writeFile(parameterDictionary, contentFn, templateFn):
                         for lineSpec in lineSpecTuple:
                             for paramName in lineSpec[1]:
                                 paramName = paramName.strip('*')
-                                exec('tempDict[paramName] = parameterDictionary[paramName]' + indicesString)
+                                try:
+                                    exec('tempDict[paramName] = parameterDictionary[paramName]' + indicesString)
+                                except IndexError:
+                                    array = np.array(parameterDictionary[paramName]).swapaxes(0, 1)
+                                    exec('tempDict[paramName] = list(array)' + indicesString)
                             contentF.write(buildLine(lineSpec[1], lineSpec[0], tempDict, configDictionary))
     return contentFn
 

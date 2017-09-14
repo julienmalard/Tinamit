@@ -82,7 +82,7 @@ def read_into_param_dic(from_fn):
     from_template = CSVTEMPLATE if from_fn[-3:] == 'csv' else INPTEMPLATE
 
     param_dictionary = mioparser.readFile(from_fn, from_template)
-    transpose_params(param_dictionary)
+    # transpose_params(param_dictionary)
 
     n_in_s = []
     season = []

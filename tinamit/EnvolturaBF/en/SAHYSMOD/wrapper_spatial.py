@@ -9,7 +9,7 @@ from tinamit.EnvolturaBF.en.SAHYSMOD.sahysmodIO import read_into_param_dic, writ
 from tinamit.BF import ClaseModeloBF
 
 
-class Modelo(ClaseModeloBF):
+class ModeloGener(ClaseModeloBF):
     """
     This is the wrapper for SAHYSMOD. At the moment, it only works for one polygon (no spatial models).
     """
@@ -176,7 +176,7 @@ class Modelo(ClaseModeloBF):
         """
 
         # Set the number of run years
-        self.dic_input['NY'] = n_year
+        self.dic_input['NY'] = str(n_year)
 
         for var_code in SAHYSMOD_output_vars:
 
@@ -184,9 +184,9 @@ class Modelo(ClaseModeloBF):
             var_name = codes_to_vars[var_code]
 
             if var_code[-1] == '#':
-                self.dic_input[key] = self.variables[var_name]['val']
+                self.dic_input[key] = self.internal_data[var_name].swapaxes(0, 1).astype(str).tolist()
             else:
-                self.dic_input[key] = self.internal_data[var_name]
+                self.dic_input[key] = self.variables[var_name]['val'].astype(str).tolist()
 
         # Make sure we have no missing areas
         for k in ["A", "B"]:
@@ -279,13 +279,10 @@ class Modelo(ClaseModeloBF):
 
             var_name = codes_to_vars[var_code]
 
-            try:
-                data = np.array(dic_input[key], dtype=float)
-            except KeyError:
-                continue
+            data = np.array(dic_input[key], dtype=float)
 
-            if len(data.shape) == 2:
-                data = data.swapaxes(0, 1)
+            # if len(data.shape) == 2:
+            #     data = data.swapaxes(0, 1)
 
             if var_code[-1] == '#':
                 self.internal_data[var_name][:] = data

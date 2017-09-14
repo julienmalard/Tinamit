@@ -1,6 +1,6 @@
 import os
 
-from tinamit.EnvolturaBF.en.SAHYSMOD.wrapper_spatial import Modelo
+from tinamit.EnvolturaBF.en.SAHYSMOD.wrapper_spatial import ModeloGener
 
 # Path to SAHYSMOD executable. Change as needed on your computer.
 SAHYSMOD = 'C:\\SahysMod\\julien\\SahysModConsole.exe'
@@ -9,5 +9,8 @@ SAHYSMOD = 'C:\\SahysMod\\julien\\SahysModConsole.exe'
 directory = os.path.dirname(__file__)
 initial_data = os.path.join(directory, 'INPUT_EXAMPLE.inp')
 
+
 # Creates the SAHYSMOD wrapper. Don't change this line.
-Modelo = Modelo(sayhsmod_exe=SAHYSMOD, initial_data=initial_data)
+class Modelo(ModeloGener):
+    def __init__(self):
+        super().__init__(sayhsmod_exe=SAHYSMOD, initial_data=initial_data)

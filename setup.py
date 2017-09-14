@@ -53,7 +53,7 @@ info_paquetes = {'numpy': {'versión': '1.13.1',
                                'Windows': {
                                    '32': {'id_dropbox': 'y66rav81q0i9gtu/numpy-1.11.3%2Bmkl-cp36-cp36m-win32.whl'
                                           },
-                                   '64': {'id_dropbox': None
+                                   '64': {'id_dropbox': '1aedimitzcmk34b/numpy-1.13.1%2Bmkl-cp36-cp36m-win_amd64.whl'
                                           }
                                }
                            },
@@ -72,7 +72,7 @@ info_paquetes = {'numpy': {'versión': '1.13.1',
                                'Windows': {
                                    '32': {'id_dropbox': '46vls88hkpohki8/scipy-0.19.1-cp36-cp36m-win32.whl'
                                           },
-                                   '64': {'id_google': None
+                                   '64': {'id_dropbox': '18rf9r0gbjl8zil/scipy-0.19.1-cp36-cp36m-win_amd64.whl'
                                           }
                                }
                            },
@@ -91,7 +91,7 @@ info_paquetes = {'numpy': {'versión': '1.13.1',
                                     'Windows': {
                                         '32': {'id_google': '0B8RjC9bwyAOwRDlIU2x1YlY0U1U'
                                                },
-                                        '64': {'id_google': None
+                                        '64': {'id_dropbox': 'ibq24o9299ij7ta/matplotlib-2.0.2-cp36-cp36m-win_amd64.whl'
                                                }
                                     }
                                 },
@@ -206,7 +206,10 @@ def instalar_requísitos():
 
 if so == 'Windows':
 
-    sistema = 'win' + bits
+    if bits == '32':
+        sistema = 'win' + bits
+    elif bits == '64':
+        sistema = 'win_amd' + bits
 
     for paquete, dic_paq in info_paquetes.items():
         v = dic_paq['versión']
@@ -218,7 +221,7 @@ if so == 'Windows':
 Ahora, las cosas normales de instalación.
 """
 
-with open('tinamit/versión.txt') as archivo_versión:
+with open(os.path.join(directorio, 'tinamit', 'versión.txt')) as archivo_versión:
     versión = archivo_versión.read().strip()
 
 setup(
@@ -238,6 +241,7 @@ setup(
     requires=['numpy', 'matplotlib', 'scipy'],
     classifiers=[
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
     package_data={
         # Incluir estos documentos de los paquetes:
