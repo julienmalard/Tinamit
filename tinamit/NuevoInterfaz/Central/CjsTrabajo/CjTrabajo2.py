@@ -1,4 +1,5 @@
 from Dibba import Caja, Botón, ItemaLista, Lista, CtrlLista, Texto, Imagen, IngrMenú, IngrNúm, BtOpción
+from ...Control import Control
 
 CjTrabajo2 = Caja('Conexión de variables')
 
@@ -30,11 +31,11 @@ class ItemaListaConex(ItemaLista):
         símismo.var_mds.poner_texto(info['mds'])
         símismo.var_bf.poner_texto(info['bf'])
         if info['mds_fuente']:
-            símismo.flecha_izq.poner_img('')
-            símismo.flecha_der.poner_img('')
+            símismo.flecha_izq.poner_img('FlchConez_cola.png', )
+            símismo.flecha_der.poner_img('FlchConex_cbz.png')
         else:
-            símismo.flecha_izq.poner_img('')
-            símismo.flecha_der.poner_img('')
+            símismo.flecha_izq.poner_img('FlchConex_cbz.png', girar=180)
+            símismo.flecha_der.poner_img('FlchConez_cola.png', girar=180)
 
         símismo.conv.poner_texto(info['conv'])
         símismo.unid_mds.ponder_texto(info['unid_mds'])
@@ -58,7 +59,7 @@ Ctrls = CtrlLista(lista=ListaConex, bt_agregar=BtGuardar, bt_noguardar=BtNoGuard
                       'bf': IngVarBF,
                       'conv': IngrConv,
                       'mds_fuente': Dir
-                  }
+                  },
                   )
 
 CjTrabajo2.agregar(ListaConex)

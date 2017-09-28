@@ -2,20 +2,22 @@
 # Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
 # This file is distributed under the same license as the tinamit package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
-#
-#, fuzzy
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-31 11:09-0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2017-09-21 03:18-0400\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ur\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "Generated-By: Babel 2.3.4\n"
+"X-Generator: Zanata 3.9.6\n"
 
 #: ../../source/uso.rst:2
 msgid "Cómo se emplea Tinamit"
@@ -23,18 +25,17 @@ msgstr ""
 
 #: ../../source/uso.rst:4
 msgid ""
-"Hay dos maneras de usar Tinamit. Si quieres hacerlo sin código cualquier,"
-" el IGU (Interfaz de Usuario Gráfico) es para ti. Si prefieres hacerlo "
-"con unas pocas líneas de código (lo cual puede acelerar bastante tu "
-"trabajo si tienes muchas simulaciones diferentes que quieres "
-"automatizar), entonces el IPA (Interfaz de Programación de Aplicaciones) "
-"es la mejor opción."
+"Hay dos maneras de usar Tinamit. Si quieres hacerlo sin código cualquier, el"
+" IGU (Interfaz de Usuario Gráfico) es para ti. Si prefieres hacerlo con unas"
+" pocas líneas de código (lo cual puede acelerar bastante tu trabajo si "
+"tienes muchas simulaciones diferentes que quieres automatizar), entonces el "
+"IPA (Interfaz de Programación de Aplicaciones) es la mejor opción."
 msgstr ""
 
 #: ../../source/uso.rst:8
 msgid ""
-"Al final, el IGU y el IPA hacen el mismo trabajo (el IGU tiene botones "
-"muy lindos para llamar las funciones del IPA de manera automática)."
+"Al final, el IGU y el IPA hacen el mismo trabajo (el IGU tiene botones muy "
+"lindos para llamar las funciones del IPA de manera automática)."
 msgstr ""
 
 #: ../../source/uso.rst:15
@@ -53,12 +54,12 @@ msgstr ""
 
 #: ../../source/uso.rst:20
 msgid ""
-"Tendrás que preparar el modelo de dinámicas de los sistemas antes de "
-"poder conectarlo. Para VENSIM (por el momento, Tinamit funciona con "
-"VENSIM solamente), primero hay que ir a cada variable en tu modelo VENSIM"
-" que quieres que pueda recibir valores desde el modelo biofísico y "
-"escoger “Gaming” como tipo de variable. Después, hay que publicar el "
-"modelo en formato .vpm."
+"Tendrás que preparar el modelo de dinámicas de los sistemas antes de poder "
+"conectarlo. Para VENSIM (por el momento, Tinamit funciona con VENSIM "
+"solamente), primero hay que ir a cada variable en tu modelo VENSIM que "
+"quieres que pueda recibir valores desde el modelo biofísico y escoger "
+"“Gaming” como tipo de variable. Después, hay que publicar el modelo en "
+"formato .vpm."
 msgstr ""
 
 #: ../../source/uso.rst:25
@@ -67,10 +68,10 @@ msgstr ""
 
 #: ../../source/uso.rst:26
 msgid ""
-"Si ya existe una envoltura específica para el modelo biofísico, no tienes"
-" que hacer nada más. Si no está disponible ya, tendrás que escribir una "
-"(o convencer a alguien de hacerlo para ti). Otra parte de este manual "
-"(que todavía no he escrito) te explicará cómo hacer esto."
+"Si ya existe una envoltura específica para el modelo biofísico, no tienes "
+"que hacer nada más. Si no está disponible ya, tendrás que escribir una (o "
+"convencer a alguien de hacerlo para ti). Otra parte de este manual (que "
+"todavía no he escrito) te explicará cómo hacer esto."
 msgstr ""
 
 #: ../../source/uso.rst:31
@@ -104,8 +105,8 @@ msgstr ""
 msgid ""
 "Bueno, primero, de pronto no hables español. O posiblemente trabajas con "
 "gente que no lo habla, y quieres hacerles la cortesía de trabajar en su "
-"idioma. O tal vez quieres practicar un idioma que no has hablado por "
-"mucho tiempo."
+"idioma. O tal vez quieres practicar un idioma que no has hablado por mucho "
+"tiempo."
 msgstr ""
 
 #: ../../source/uso.rst:46
@@ -121,34 +122,34 @@ msgstr ""
 
 #: ../../source/uso.rst:55
 msgid ""
-"En el centro, tienes las lenguas ya traducidas. Puedes escoger una con la"
-" cajita verde a la izquierda, o pulsar en lapicito para hacer cambios a "
-"la traducción."
+"En el centro, tienes las lenguas ya traducidas. Puedes escoger una con la "
+"cajita verde a la izquierda, o pulsar en lapicito para hacer cambios a la "
+"traducción."
 msgstr ""
 
 #: ../../source/uso.rst:58
 msgid ""
-"A la izquierda, tienes lenguas en progreso. La barra muestra el estado "
-"del progreso de la traducción. Puedes escoger una como lengua de "
-"interfaz; las traducciones que faltan aparecerán como espacios vacíos. "
-"También puedes hacer clic en el lapicito para contribuir a la traducción."
+"A la izquierda, tienes lenguas en progreso. La barra muestra el estado del "
+"progreso de la traducción. Puedes escoger una como lengua de interfaz; las "
+"traducciones que faltan aparecerán como espacios vacíos. También puedes "
+"hacer clic en el lapicito para contribuir a la traducción."
 msgstr ""
 
 #: ../../source/uso.rst:62
 msgid ""
 "Y, por fin, a la derecha tienes lenguas que todavía no hemos empezado a "
-"traducir. Puedes hacer clic en el lápiz para empezar la traducción. "
-"También puedes hacer clic en la cruz arriba para agregar un nuevo idioma "
-"que no se encuentra en la lista ya (y también especificar si se escribe "
-"de la izquierda hacia la derecha o al revés)."
+"traducir. Puedes hacer clic en el lápiz para empezar la traducción. También "
+"puedes hacer clic en la cruz arriba para agregar un nuevo idioma que no se "
+"encuentra en la lista ya (y también especificar si se escribe de la "
+"izquierda hacia la derecha o al revés)."
 msgstr ""
 
 #: ../../source/uso.rst:66
 msgid ""
-"Todas las traducciones se guardan automáticamente en un documento llamado"
-" “Trads” en el directorio de Tinamit. Si contribuyes a unas traducciones,"
-" puedes compartir este documento (|correo|, o por `GitHub <|GitHub|>`_) "
-"para que todas tengan acceso a tu idioma favorito."
+"Todas las traducciones se guardan automáticamente en un documento llamado "
+"“Trads” en el directorio de Tinamit. Si contribuyes a unas traducciones, "
+"puedes compartir este documento (|correo|, o por `GitHub <|GitHub|>`_) para "
+"que todas tengan acceso a tu idioma favorito."
 msgstr ""
 
 #: ../../source/uso.rst:71
@@ -157,15 +158,15 @@ msgstr ""
 
 #: ../../source/uso.rst:72
 msgid ""
-"El flujo de trabajo en Tinamit tiene cuatro etapas (en números mayas) y "
-"el interfaz desbloquea el acceso a cada etapa en cuanto termines la etapa"
-" precedente."
+"El flujo de trabajo en Tinamit tiene cuatro etapas (en números mayas) y el "
+"interfaz desbloquea el acceso a cada etapa en cuanto termines la etapa "
+"precedente."
 msgstr ""
 
 #: ../../source/uso.rst:75
 msgid ""
-"La primera etapa sería, por supuesto, de cargar los modelos biofísicos y "
-"DS con :guilabel:`Cargar MDS` y :guilabel:`Cargar modelo biofísico`."
+"La primera etapa sería, por supuesto, de cargar los modelos biofísicos y DS "
+"con :guilabel:`Cargar MDS` y :guilabel:`Cargar modelo biofísico`."
 msgstr ""
 
 #: ../../source/uso.rst:83
@@ -174,19 +175,18 @@ msgstr ""
 
 #: ../../source/uso.rst:84
 msgid ""
-"Después de eso, vamos a conectar los dos modelos por sus variables "
-"comunes. La flecha muestra la dirección de la conexión, y puedes "
-"especificar un factor de conversión, si quieres. Hay que hacer clic en "
-":guilabel:`Guardar` cada vez que haces una conexión."
+"Después de eso, vamos a conectar los dos modelos por sus variables comunes. "
+"La flecha muestra la dirección de la conexión, y puedes especificar un "
+"factor de conversión, si quieres. Hay que hacer clic en :guilabel:`Guardar` "
+"cada vez que haces una conexión."
 msgstr ""
 
 #: ../../source/uso.rst:91
 msgid ""
-"Si haces un error, puedes volver a editar una conexión ya hecha por hacer"
-" clic en el lapicito verde, o simplemente borrarla con la cruz roja. Nota"
-" que el interfaz no te dejará conectar un variable más que una vez al "
-"mismo tiempo (eso sería una falla lógica en la conexión de los dos "
-"modelos)."
+"Si haces un error, puedes volver a editar una conexión ya hecha por hacer "
+"clic en el lapicito verde, o simplemente borrarla con la cruz roja. Nota que"
+" el interfaz no te dejará conectar un variable más que una vez al mismo "
+"tiempo (eso sería una falla lógica en la conexión de los dos modelos)."
 msgstr ""
 
 #: ../../source/uso.rst:100
@@ -195,12 +195,12 @@ msgstr ""
 
 #: ../../source/uso.rst:101
 msgid ""
-"Ya puedes simular los modelos conectados. Puedes especificar el paso y el"
-" tiempo final de la simulación. Finalmente, puedes especificar un factor "
-"de conversión entre el paso de cada modelo si los dos modelos no tienen "
-"las mismas unidades para sus pasos de tiempo (por ejemplo, si tu modelo "
-"DS funciona en meses y tu modelo biofísico en años, lo cual sería una "
-"situación muy común)."
+"Ya puedes simular los modelos conectados. Puedes especificar el paso y el "
+"tiempo final de la simulación. Finalmente, puedes especificar un factor de "
+"conversión entre el paso de cada modelo si los dos modelos no tienen las "
+"mismas unidades para sus pasos de tiempo (por ejemplo, si tu modelo DS "
+"funciona en meses y tu modelo biofísico en años, lo cual sería una situación"
+" muy común)."
 msgstr ""
 
 #: ../../source/uso.rst:107
@@ -209,9 +209,9 @@ msgstr ""
 
 #: ../../source/uso.rst:108
 msgid ""
-"Un día, en el futuro, Tinamit tendrá unas funciones de autocalibración y "
-"de análisis de incertidumbre. Entre tanto, la página para esta cuarta "
-"etapa queda un blanco muy bonito."
+"Un día, en el futuro, Tinamit tendrá unas funciones de autocalibración y de "
+"análisis de incertidumbre. Entre tanto, la página para esta cuarta etapa "
+"queda un blanco muy bonito."
 msgstr ""
 
 #: ../../source/uso.rst:112
@@ -220,12 +220,11 @@ msgstr ""
 
 #: ../../source/uso.rst:113
 msgid ""
-"Ah, sí, ¿qué pasa si no terminas todo antes del almuerzo? No te "
-"preocupes, que no vas a perder todo. Allí, arriba por a la izquierda del "
-"logo muy bonito de Tinamit, hay cuatro botones muy útiles. Uno guarda tu "
-"trabajo, uno lo guarda bajo un nuevo nombre, otro abre un trabajo ya "
-"guardado y el último borra todo y te deja empezar de cero. No te voy a "
-"decir cuál es cuál."
+"Ah, sí, ¿qué pasa si no terminas todo antes del almuerzo? No te preocupes, "
+"que no vas a perder todo. Allí, arriba por a la izquierda del logo muy "
+"bonito de Tinamit, hay cuatro botones muy útiles. Uno guarda tu trabajo, uno"
+" lo guarda bajo un nuevo nombre, otro abre un trabajo ya guardado y el "
+"último borra todo y te deja empezar de cero. No te voy a decir cuál es cuál."
 msgstr ""
 
 #: ../../source/uso.rst:123
@@ -234,11 +233,11 @@ msgstr ""
 
 #: ../../source/uso.rst:124
 msgid ""
-"El IPA (interfaz de programación de aplicaciones) permite conectar "
-"modelos de manera rápida, flexible, y reproducible. Tiene las mismas "
-"funciones que el IGU, pero por ser una librería Python ya puedes "
-"automatizar el proceso. Si prefieres escribir líneas de código a hacer "
-"clic en botones, el IPA es para ti."
+"El IPA (interfaz de programación de aplicaciones) permite conectar modelos "
+"de manera rápida, flexible, y reproducible. Tiene las mismas funciones que "
+"el IGU, pero por ser una librería Python ya puedes automatizar el proceso. "
+"Si prefieres escribir líneas de código a hacer clic en botones, el IPA es "
+"para ti."
 msgstr ""
 
 #: ../../source/uso.rst:129
@@ -267,10 +266,10 @@ msgstr ""
 
 #: ../../source/uso.rst:138
 msgid ""
-"Primero, vamos a empezar por crear una instancia de la clase Conectado. "
-"Si no sabes lo que es una instancia de una clase, o puedes simplemente "
-"copiar el texto abajo, o (mejor) puedes echarle otro vistazo a tu último "
-"curso en Python."
+"Primero, vamos a empezar por crear una instancia de la clase Conectado. Si "
+"no sabes lo que es una instancia de una clase, o puedes simplemente copiar "
+"el texto abajo, o (mejor) puedes echarle otro vistazo a tu último curso en "
+"Python."
 msgstr ""
 
 #: ../../source/uso.rst:141
@@ -279,8 +278,8 @@ msgstr ""
 
 #: ../../source/uso.rst:143
 msgid ""
-"¿Pero cómo especificamos cuáles modelos biofísico y DS querremos? Esto se"
-" hace en la línea siguiente:"
+"¿Pero cómo especificamos cuáles modelos biofísico y DS querremos? Esto se "
+"hace en la línea siguiente:"
 msgstr ""
 
 #: ../../source/uso.rst:145
@@ -289,21 +288,21 @@ msgstr ""
 
 #: ../../source/uso.rst:147
 msgid ""
-"estab_mds, como probablemente adivinaste, establece el modelo DS. Le "
-"tienes que dar como argumento la ubicación del archivo .vpm de tu modelo "
-"DS publicado por VENSIM. En el futuro, si Tinamit puede aceptar modelos "
-"de otros programas que VENSIM, podrás poner otros tipos de archivos aquí."
-" (Notar que habrá que cambiar la ubicación aquí según tú computadora.)"
+"estab_mds, como probablemente adivinaste, establece el modelo DS. Le tienes "
+"que dar como argumento la ubicación del archivo .vpm de tu modelo DS "
+"publicado por VENSIM. En el futuro, si Tinamit puede aceptar modelos de "
+"otros programas que VENSIM, podrás poner otros tipos de archivos aquí. "
+"(Notar que habrá que cambiar la ubicación aquí según tú computadora.)"
 msgstr ""
 
 #: ../../source/uso.rst:151
 msgid ""
 "Y, para el modelo biofísico, especificamos la ubicación de la envoltura "
-"específica para el modelo biofísico que querremos usar. En este caso, "
-"vamos a usar SAHYSMOD, un modelo de flujos de agua subterránea y de "
-"salinidad. Esto no cambia mucho; cada vez que quieres conectar un modelo "
-"DS con un modelo en SAHYSMOD darás la misma envoltura, no importe cuáles "
-"variables estás conectando."
+"específica para el modelo biofísico que querremos usar. En este caso, vamos "
+"a usar SAHYSMOD, un modelo de flujos de agua subterránea y de salinidad. "
+"Esto no cambia mucho; cada vez que quieres conectar un modelo DS con un "
+"modelo en SAHYSMOD darás la misma envoltura, no importe cuáles variables "
+"estás conectando."
 msgstr ""
 
 #: ../../source/uso.rst:155
@@ -314,11 +313,10 @@ msgstr ""
 
 #: ../../source/uso.rst:157
 msgid ""
-"(No te preocupes por lo del ``os.path.split(__file__)[0]``, es "
-"simplemente una manera en Python de obtener la dirección en tu "
-"computadora del directorio actual. Esto le permite al programa encontrar "
-"la envoltura para el modelo biofísico, no importe dónde lo guardará "
-"alguién en su computadora)"
+"(No te preocupes por lo del ``os.path.split(__file__)[0]``, es simplemente "
+"una manera en Python de obtener la dirección en tu computadora del "
+"directorio actual. Esto le permite al programa encontrar la envoltura para "
+"el modelo biofísico, no importe dónde lo guardará alguién en su computadora)"
 msgstr ""
 
 #: ../../source/uso.rst:162
@@ -328,12 +326,11 @@ msgstr ""
 #: ../../source/uso.rst:163
 msgid ""
 "Ahora, vamos a conectar los dos modelos por crear enlaces entre los "
-"variables de cada uno. Cada conexión entre dos variables necesita 3 "
-"cosas: los nombres de los dos variables para conectar y la dirección de "
-"la conexión (es dec ir, de cuál modelo sacas el valor del variable para "
-"ponerlo en el otro modelo). Una simulación verdaderamente dinámica "
-"incluirá conexiones en ambas direcciones (del modelo DS al biofísico y "
-"viceversa)."
+"variables de cada uno. Cada conexión entre dos variables necesita 3 cosas: "
+"los nombres de los dos variables para conectar y la dirección de la conexión"
+" (es dec ir, de cuál modelo sacas el valor del variable para ponerlo en el "
+"otro modelo). Una simulación verdaderamente dinámica incluirá conexiones en "
+"ambas direcciones (del modelo DS al biofísico y viceversa)."
 msgstr ""
 
 #: ../../source/uso.rst:168
@@ -344,20 +341,20 @@ msgstr ""
 
 #: ../../source/uso.rst:170
 msgid ""
-"``var_mds`` es el nombre del variable en el modelo DS, y ``var_bf`` es el"
-" nombre del variable en el modelo biofísico (tal como especificado en la "
+"``var_mds`` es el nombre del variable en el modelo DS, y ``var_bf`` es el "
+"nombre del variable en el modelo biofísico (tal como especificado en la "
 "envoltura). ``mds_fuente`` indica si se lee el valor del variable en el "
-"modelo DS para transferirla al modelo biofísico, o si es al revés. En "
-"este ejemplo, tomamos el valor de la salinidad del suelo del modelo "
-"SAHYSMOD y lo pasamos al modelo DS (VENSIM)."
+"modelo DS para transferirla al modelo biofísico, o si es al revés. En este "
+"ejemplo, tomamos el valor de la salinidad del suelo del modelo SAHYSMOD y lo"
+" pasamos al modelo DS (VENSIM)."
 msgstr ""
 
 #: ../../source/uso.rst:174
 msgid ""
 "Opcionalmente, puedes especificar el parámetro ``conv``, un factor de "
-"conversión (si los dos variables tienen unidades distintas). Puedes "
-"conectar tantos variables como quieras. En nuestro ejemplo de SAHYSMOD "
-"que viene con Tinamit, conectamos un total de 8 variables."
+"conversión (si los dos variables tienen unidades distintas). Puedes conectar"
+" tantos variables como quieras. En nuestro ejemplo de SAHYSMOD que viene con"
+" Tinamit, conectamos un total de 8 variables."
 msgstr ""
 
 #: ../../source/uso.rst:179
@@ -376,10 +373,10 @@ msgstr ""
 
 #: ../../source/uso.rst:184
 msgid ""
-"``paso`` indica el intervalo de tiempo al cual se intercambian valores de"
-" variables entre los dos modelos. ``tiempo_final`` indica la duración de "
-"la simulación, y ``nombre_simul`` es el nombre de la simulación que se "
-"dará al archivo con los egresos (resultados) de la simulación."
+"``paso`` indica el intervalo de tiempo al cual se intercambian valores de "
+"variables entre los dos modelos. ``tiempo_final`` indica la duración de la "
+"simulación, y ``nombre_simul`` es el nombre de la simulación que se dará al "
+"archivo con los egresos (resultados) de la simulación."
 msgstr ""
 
 #: ../../source/uso.rst:189
@@ -388,21 +385,21 @@ msgstr ""
 
 #: ../../source/uso.rst:190
 msgid ""
-"Los que conocen los modelos de dinámicas de los sistemas sabrán que "
-"muchas veces se incorporan opciones de acciones o de políticas en los "
-"modelos con un variable “sí o no.” Por ejemplo, en nuestro modelo de "
-"salinidad de los suelos tenemos un variable llamado “Política de "
-"recuperación de aguas.” Si este variable es igual a 1, activará la parte "
-"del modelo de dinámicas de los sistemas para una política de recuperación"
-" de aguas. Si es igual a 0, no habrá intervención en la simulación. Estas"
-" cosas son muy útiles para comprobar la eficacidad (o no) de varias ideas"
-" de intervenciones en el sistema."
+"Los que conocen los modelos de dinámicas de los sistemas sabrán que muchas "
+"veces se incorporan opciones de acciones o de políticas en los modelos con "
+"un variable “sí o no.” Por ejemplo, en nuestro modelo de salinidad de los "
+"suelos tenemos un variable llamado “Política de recuperación de aguas.” Si "
+"este variable es igual a 1, activará la parte del modelo de dinámicas de los"
+" sistemas para una política de recuperación de aguas. Si es igual a 0, no "
+"habrá intervención en la simulación. Estas cosas son muy útiles para "
+"comprobar la eficacidad (o no) de varias ideas de intervenciones en el "
+"sistema."
 msgstr ""
 
 #: ../../source/uso.rst:196
 msgid ""
-"El asunto es que nosotros nos aburrimos muy rápido de tener que cambiar "
-"los valores de estos variables en el modelo VENSIM y tener que volver a "
+"El asunto es que nosotros nos aburrimos muy rápido de tener que cambiar los "
+"valores de estos variables en el modelo VENSIM y tener que volver a "
 "publicarlo cada vez que querríamos analizar una combinación diferente de "
 "políticas. Con 5 posibilidades de políticas distintas en nuestro modelo "
 "ejemplo, ¡acabamos con muchas combinaciones y permutaciones!"
@@ -410,13 +407,13 @@ msgstr ""
 
 #: ../../source/uso.rst:200
 msgid ""
-"Así que no se preocupen, ya incluimos una función en el IPA que les "
-"permite activar o desactivar una política en particular si tener que "
-"abrir VENSIM y republicar el modelo para cada cambio. Actualmente, puedes"
-" emplear esta función para cambiar el valor de cualquier variable en el "
-"modelo antes de empezar la simulación, pero es más útil que todo para "
-"activar y desactivar políticas. (¡Cuidado! Esta función solamente cambia "
-"el valor inicial del variable.)"
+"Así que no se preocupen, ya incluimos una función en el IPA que les permite "
+"activar o desactivar una política en particular si tener que abrir VENSIM y "
+"republicar el modelo para cada cambio. Actualmente, puedes emplear esta "
+"función para cambiar el valor de cualquier variable en el modelo antes de "
+"empezar la simulación, pero es más útil que todo para activar y desactivar "
+"políticas. (¡Cuidado! Esta función solamente cambia el valor inicial del "
+"variable.)"
 msgstr ""
 
 #: ../../source/uso.rst:205
@@ -426,8 +423,8 @@ msgstr ""
 #: ../../source/uso.rst:207
 msgid ""
 "``modelo.mds`` accede al objeto de modelo DS asociado con el modelo "
-"conectado, y la función ``.cambiar_var()`` hace exactamente lo que "
-"piensas que hace."
+"conectado, y la función ``.cambiar_var()`` hace exactamente lo que piensas "
+"que hace."
 msgstr ""
 
 #: ../../source/uso.rst:211
@@ -437,11 +434,10 @@ msgstr ""
 #: ../../source/uso.rst:212
 msgid ""
 "Y bueno, allí está. Ya puedes conectar, desconectar, simular y manipular "
-"modelos. Mira el documento “Ejemplo SAHYSMOD” en el directorio de "
-"ejemplos de Tinamit para un ejemplo del uso del IPA en la automatización "
-"de corridas para simular, de una vez, 5 corridas de un modelo "
-"socioeconómico DS con un modelo biofísico de calidad y salinidad de los "
-"suelos (SAHYSMOD)."
+"modelos. Mira el documento “Ejemplo SAHYSMOD” en el directorio de ejemplos "
+"de Tinamit para un ejemplo del uso del IPA en la automatización de corridas "
+"para simular, de una vez, 5 corridas de un modelo socioeconómico DS con un "
+"modelo biofísico de calidad y salinidad de los suelos (SAHYSMOD)."
 msgstr ""
 
 #: ../../source/uso.rst:216
@@ -449,8 +445,7 @@ msgid ""
 "Para las que conocen las funciones :py:mod:`threading` de Python, y que "
 "piensan que sería una manera brillante de correr las 5 simulaciones en "
 "paralelo para ahorrar tiempo, no lo hagan. Pensamos lo mismo y cuando lo "
-"intentamos sucede que el DLL de VENSIM no puede correr más que un modelo "
-"al mismo tiempo y se pone en un gran lío. Si no tienes ni idea de lo que "
-"estoy diciendo, perfecto."
+"intentamos sucede que el DLL de VENSIM no puede correr más que un modelo al "
+"mismo tiempo y se pone en un gran lío. Si no tienes ni idea de lo que estoy "
+"diciendo, perfecto."
 msgstr ""
-

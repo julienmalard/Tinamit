@@ -1,5 +1,5 @@
 from Dibba import Caja, Botón, CjMensaje, escoger_archivo
-from tinamit.NuevoInterfaz.Archivo import Archivo
+from tinamit.NuevoInterfaz.Control import Control
 
 CjTrabajo1 = Caja(título='Cargar modelos')
 
@@ -7,7 +7,7 @@ CjTrabajo1 = Caja(título='Cargar modelos')
 def cargar_mds():
     archivo = escoger_archivo(título='Escoget un modelo DS.', tipos={'.vpm': 'Modelo publicado VENSIM'})
     if archivo:
-        Archivo.estab_mds(archivo_mds=archivo)
+        Control.estab_mds(archivo_mds=archivo)
 
 
 CajaBtMDS = Caja()
@@ -21,9 +21,9 @@ def cargar_bf():
     archivo = escoger_archivo(título='Escoget un modelo biofísico.', tipos={'.py': 'Envoltura BF Tinamït'})
     if archivo:
         try:
-            Archivo.estab_bf(archivo_bf=archivo)
+            Control.estab_bf(archivo_bf=archivo)
         except:
-            pass
+            CjMensajeMDS.poner_mensaje('Error con el modelo biofísico.', formato='error')
 
 
 CajaBtBF = Caja()

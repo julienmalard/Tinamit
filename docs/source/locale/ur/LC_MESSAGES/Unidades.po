@@ -2,20 +2,22 @@
 # Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
 # This file is distributed under the same license as the tinamit package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
-#
-#, fuzzy
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-31 11:09-0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2017-09-21 03:18-0400\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ur\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "Generated-By: Babel 2.3.4\n"
+"X-Generator: Zanata 3.9.6\n"
 
 #: ../../source/Unidades.rst:2
 msgid "Manejo de Unidades"
@@ -25,58 +27,76 @@ msgstr ""
 msgid "Este módulo maneja la conversión automática de unidades en Tinamit."
 msgstr ""
 
-#: of tinamit.Unidades.Unidades.convertir:1
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
+#: tinamit.Unidades.Unidades.convertir:1
 msgid "Esta función convierte un valor de una unidad a otra."
 msgstr ""
 
-#: of tinamit.Unidades.Unidades.convertir
-#: tinamit.Unidades.Unidades.convertir_unid_senc
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
+#: tinamit.Unidades.Unidades.convertir:0
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
+#: tinamit.Unidades.Unidades.convertir_unid_senc:0
 msgid "Parámetros"
 msgstr ""
 
-#: of tinamit.Unidades.Unidades.convertir:3
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
+#: tinamit.Unidades.Unidades.convertir:3
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
 #: tinamit.Unidades.Unidades.convertir_unid_senc:3
 msgid "La unidad original."
 msgstr ""
 
-#: of tinamit.Unidades.Unidades.convertir:6
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
+#: tinamit.Unidades.Unidades.convertir:6
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
 #: tinamit.Unidades.Unidades.convertir_unid_senc:6
 msgid "La unidad final."
 msgstr ""
 
-#: of tinamit.Unidades.Unidades.convertir:9
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
+#: tinamit.Unidades.Unidades.convertir:9
 msgid "El tipo de unidad ('tiempo', 'distancia', etc.) No es obligatoria."
 msgstr ""
 
-#: of tinamit.Unidades.Unidades.convertir:12
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
+#: tinamit.Unidades.Unidades.convertir:12
 msgid "El valor para convertir."
 msgstr ""
 
-#: of tinamit.Unidades.Unidades.convertir:15
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
+#: tinamit.Unidades.Unidades.convertir:15
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
 #: tinamit.Unidades.Unidades.convertir_unid_senc:12
 msgid "La lengua en la cuál se están especificando las unidades."
 msgstr ""
 
-#: of tinamit.Unidades.Unidades.convertir
-#: tinamit.Unidades.Unidades.convertir_unid_senc
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
+#: tinamit.Unidades.Unidades.convertir:0
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
+#: tinamit.Unidades.Unidades.convertir_unid_senc:0
 msgid "Devuelve"
 msgstr ""
 
-#: of tinamit.Unidades.Unidades.convertir:18
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
+#: tinamit.Unidades.Unidades.convertir:18
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
 #: tinamit.Unidades.Unidades.convertir_unid_senc:15
 msgid "El valor convertido."
 msgstr ""
 
-#: of tinamit.Unidades.Unidades.convertir
-#: tinamit.Unidades.Unidades.convertir_unid_senc
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
+#: tinamit.Unidades.Unidades.convertir:0
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
+#: tinamit.Unidades.Unidades.convertir_unid_senc:0
 msgid "Tipo del valor devuelto"
 msgstr ""
 
-#: of tinamit.Unidades.Unidades.convertir_unid_senc:1
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
+#: tinamit.Unidades.Unidades.convertir_unid_senc:1
 msgid "Esta función convierte una unidad sencilla a otra."
 msgstr ""
 
-#: of tinamit.Unidades.Unidades.convertir_unid_senc:9
+#: ../../../tinamit/Unidades/Unidades.pydocstring of
+#: tinamit.Unidades.Unidades.convertir_unid_senc:9
 msgid "El tipo de unidad ('tiempo', 'distancia', etc.)"
 msgstr ""
-
