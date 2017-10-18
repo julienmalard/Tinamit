@@ -28,12 +28,13 @@ SOFTWARE.
 
 # sahysmodIO.py
 
-from tinamit.EnvolturaBF.en.SAHYSMOD import mioparser
+from . import mioparser
+import numpy as np
 import os
 import sys
 from pkg_resources import resource_filename
 
-CSVTEMPLATE = 'sahysmod.csv.tmpl'
+CSVTEMPLATE = resource_filename(__name__, 'sahysmod.csv.tmpl')
 INPTEMPLATE = resource_filename(__name__, 'sahysmod.inp.tmpl')
 
 paramsToTranspose = [
@@ -66,23 +67,27 @@ paramsToTranspose = [
 
 def transpose_params(parameter_dictionary):
     for param in paramsToTranspose:
-        array_a = parameter_dictionary[param]
-        array_b = []
-        for i in range(len(array_a[0])):
-            array_b.append([])
-        for vector in array_a:
-            i = 0
-            for element in vector:
-                array_b[i].append(element)
-                i += 1
-        parameter_dictionary[param] = array_b
+        array = parameter_dictionary[param]  # type: np.ndarray
+        array.transpose()
 
 
 def read_into_param_dic(from_fn):
+    """
+    Reads SAHYSMOD input data from a file into a dictionary.
+
+    :param from_fn: The file name of the input data. Can be in SAHYSMOD input (.inp) or in .csv format.
+    :type from_fn: str
+
+    :return: A dictionary with the initial data arranged by parameter name.
+    :rtype: dict
+    """
+
+    # Select the appropriate template.
     from_template = CSVTEMPLATE if from_fn[-3:] == 'csv' else INPTEMPLATE
 
+    # Read the input file.
     param_dictionary = mioparser.readFile(from_fn, from_template)
-    # transpose_params(param_dictionary)
+    transpose_params(param_dictionary)  # Transpose parameters that require it.
 
     n_in_s = []
     season = []

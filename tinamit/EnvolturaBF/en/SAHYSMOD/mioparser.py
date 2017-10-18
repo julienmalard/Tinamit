@@ -112,7 +112,7 @@ def buildFLine(parameterNames, columnWidths, parameterDictionary):
     return lineOut + '  \n'
 
 
-def parseDLine(line, parameterNames, delim, parameterDictionary):
+def parse_d_line(line, parameterNames, delim, parameterDictionary):
     line = line.strip()
     if delim == 'W':
         values = line.split()
@@ -157,7 +157,7 @@ def parseLine(line, parameterNames, lineSpec, parameterDictionary):
     elif lineSpec[0] == 'F':
         parse_f_line(line, parameterNames, lineSpec[1], parameterDictionary)
     elif lineSpec[0] == 'D':
-        parseDLine(line, parameterNames, lineSpec[1], parameterDictionary)
+        parse_d_line(line, parameterNames, lineSpec[1], parameterDictionary)
     return parameterDictionary
 
 
@@ -175,20 +175,18 @@ def buildLine(parameterNames, lineSpec, parameterDictionary, configDictionary):
     return line
 
 
-# This creates an array of zeros of dimensions i*j*... for arguments i,j,...
-# It is used to initialize arrays when parsing recursive for loops
-def recurseArrayOfZeros(*dims):
-    if len(dims) == 1:
-        return [0] * dims[0]
-    else:
-        arr = []
-        for i in range(dims[0]):
-            arr.append(recurseArrayOfZeros(*dims[1:]))
-        return arr
-
-
 def readFile(contentFn, templateFn):
-    parameterDictionary = {'#': []}
+    """
+    This function reads a SAHYSMOD input file (.inp or .csv format)
+    :param contentFn:
+    :type contentFn: str
+    :param templateFn:
+    :type templateFn: str
+    :return:
+    :rtype:
+    """
+
+    param_dictionary = {'#': []}
     configDictionary = {}
     with open(contentFn, 'r') as contentF, open(templateFn, 'r') as templateF:
         for templateLine in templateF:
@@ -200,34 +198,39 @@ def readFile(contentFn, templateFn):
                 templateTuple = literal_eval(templateLine.strip())
                 if templateTuple[0][0:4] != 'FOR[':
                     contentLine = contentF.readline().strip('\n')
-                    # print(contentLine)
-                    parseLine(contentLine, templateTuple[1], templateTuple[0], parameterDictionary)
+                    parseLine(contentLine, templateTuple[1], templateTuple[0], param_dictionary)
                 else:
                     dims = [i.strip(']') for i in templateTuple[0].split('[')][1:]
                     for i in range(len(dims)):
                         try:
                             dims[i] = int(dims[i])
                         except ValueError:
-                            dims[i] = int(parameterDictionary[dims[i]])
+                            dims[i] = int(param_dictionary[dims[i]])
                     lineSpecTuple = templateTuple[1]
                     for lineSpec in lineSpecTuple:
 
                         for paramName in lineSpec[1]:
                             paramName = paramName.strip('*')
-                            parameterDictionary[paramName] = recurseArrayOfZeros(*dims)
+                            param_dictionary[paramName] = np.zeros(dims)
+
                     iterdims = [range(dim) for dim in dims]
                     for indices in itertools.product(*iterdims):
                         tempDict = {}
                         indicesString = ''.join(['[{}]'.format(i) for i in indices])
                         for lineSpec in lineSpecTuple:
                             contentLine = contentF.readline().strip('\n')
-                            # pprint(contentLine)
                             parseLine(contentLine, lineSpec[1], lineSpec[0], tempDict)
-                            # pprint(tempDict)
                             for paramName in lineSpec[1]:
                                 paramName = paramName.strip("*")
-                                exec('parameterDictionary[paramName]' + indicesString + '= tempDict[paramName]')
-    return parameterDictionary
+                                d = param_dictionary[paramName]
+                                for i in indices[:-1]:
+                                    d = d[i]
+                                d[indices[-1]] = tempDict[paramName]
+                                # exec('param_dictionary[paramName]' + indicesString + '= tempDict[paramName]')
+    for k, v in param_dictionary:
+        if isinstance(v, list):
+            param_dictionary[k] = np.array(v).astype(float)
+    return param_dictionary
 
 
 def writeFile(parameterDictionary, contentFn, templateFn):

@@ -9,7 +9,7 @@ from tinamit.EnvolturaBF.en.SAHYSMOD.sahysmodIO import read_into_param_dic, writ
 from tinamit.BF import ClaseModeloBF
 
 
-class ModeloGener(ClaseModeloBF):
+class ModeloSAHYSMOD(ClaseModeloBF):
     """
     This is the wrapper for SAHYSMOD. At the moment, it only works for one polygon (no spatial models).
     """
