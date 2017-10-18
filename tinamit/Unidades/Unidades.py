@@ -67,9 +67,9 @@ def convertir(de, a,  val=1, clase=None, lengua=None):
     unidades_simp = re.finditer(regex, de)
     lista = list(unidades_simp)
     for l in lista:
-        print(l.group('unid'))
-        print(l.group('exp'))
-        print(l.group('oper'))
+        l.group('unid')
+        l.group('exp')
+        l.group('oper')
 
     factor = 1
     for u in unidades_simp:

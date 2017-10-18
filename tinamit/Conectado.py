@@ -1,5 +1,6 @@
 import threading
 from warnings import warn as avisar
+from PyMarkSim.مرکسم import مقام as pred_clima
 
 from tinamit.BF import EnvolturaBF
 from tinamit.Modelo import Modelo
@@ -219,7 +220,10 @@ class SuperConectado(Modelo):
             # Ahora, pedimos a los submodelos de hacer los cambios en los modelos externos, si hay.
             símismo.modelos[nombre_mod].cambiar_vals(valores={var: val})
 
-    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamit'):
+    def conectar_clima(símismo):
+        pass
+
+    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inicial=None, clima=True):
         """
         Simula el modelo :class:`~tinamit.Conectado.SuperConectado`.
 
@@ -242,6 +246,9 @@ class SuperConectado(Modelo):
         if not len(símismo.conv_tiempo):
             raise ValueError('Hay que especificar la conversión de unidades de tiempo con '
                              '.estab_conv_tiempo() antes de correr la simulación.')
+
+        # Preparar las predicciones de clima, si necesario
+
 
         # Iniciamos el modelo.
         símismo.iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
@@ -359,8 +366,8 @@ class SuperConectado(Modelo):
         :param modelo_fuente: El nombre del modelo fuente.
         :type modelo_fuente: str
 
-        :param conv: La conversión entre las unidades de ambos modelos. En el caso ``None``, se intentará
-        adivinar la conversión con el módulo `~tinamit.Unidades`.
+        :param conv: La conversión entre las unidades de ambos modelos. En el caso ``None``, se intentará adivinar la
+        conversión con el módulo `~tinamit.Unidades`.
 
         :type conv: float
 

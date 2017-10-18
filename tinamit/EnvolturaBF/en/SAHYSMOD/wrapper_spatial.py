@@ -176,7 +176,7 @@ class ModeloSAHYSMOD(ClaseModeloBF):
         """
 
         # Set the number of run years
-        self.dic_input['NY'] = str(n_year)
+        self.dic_input['NY'] = n_year
 
         for var_code in SAHYSMOD_output_vars:
 
@@ -184,9 +184,9 @@ class ModeloSAHYSMOD(ClaseModeloBF):
             var_name = codes_to_vars[var_code]
 
             if var_code[-1] == '#':
-                self.dic_input[key] = self.internal_data[var_name].swapaxes(0, 1).astype(str).tolist()
+                self.dic_input[key] = self.internal_data[var_name]
             else:
-                self.dic_input[key] = self.variables[var_name]['val'].astype(str).tolist()
+                self.dic_input[key] = self.variables[var_name]['val']
 
         # Make sure we have no missing areas
         for k in ["A", "B"]:
@@ -280,9 +280,6 @@ class ModeloSAHYSMOD(ClaseModeloBF):
             var_name = codes_to_vars[var_code]
 
             data = np.array(dic_input[key], dtype=float)
-
-            # if len(data.shape) == 2:
-            #     data = data.swapaxes(0, 1)
 
             if var_code[-1] == '#':
                 self.internal_data[var_name][:] = data

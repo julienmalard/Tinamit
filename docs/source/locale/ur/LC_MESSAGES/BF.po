@@ -1,11 +1,12 @@
+# Azhar Inam <azharinam@gmail.com>, 2017. #zanata
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-31 13:07-0400\n"
-"PO-Revision-Date: 2017-09-21 03:17-0400\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"PO-Revision-Date: 2017-10-02 05:25-0400\n"
+"Last-Translator: Azhar Inam <azharinam@gmail.com>\n"
 "Language-Team: Urdu\n"
 "Language: ur\n"
 "MIME-Version: 1.0\n"
@@ -16,19 +17,22 @@ msgstr ""
 
 #: ../../source/BF.rst:2
 msgid "BF (Modelos Biofísicos)"
-msgstr ""
+msgstr "  حیاتی طبیعیاتی ماڈل"
 
 #: ../../../tinamit/BF.pydocstring of tinamit.BF.ClaseModeloBF:1
 msgid ""
 "Se debe desarrollar una subclase de esta clase para cada tipo modelo "
 "biofísico que se quiere volver compatible con Tinamit."
 msgstr ""
+"اس کلاس کی ایک ذیلی کلاس ہر حیاتیاتی ماڈل کی نوعیت کے لحاظ سے تیار کی جاسکتی"
+" ہے جو ٹینامٹ کے ساتھ مطابقت رکھتی ہو"
 
 #: ../../../tinamit/BF.pydocstring of
 #: tinamit.BF.ClaseModeloBF.cambiar_vals_modelo_interno:1
 msgid ""
 "Esta función debe cambiar el valor de variables en el modelo biofísico."
 msgstr ""
+"یہ فعل حیاتی طبیعیاتی ماڈل میں متغیر کی قیمت کو تبدیل کرنے کے لیے ضروری ہے "
 
 #: ../../../tinamit/BF.pydocstring of
 #: tinamit.BF.ClaseModeloBF.cambiar_vals_modelo_interno:0
@@ -39,7 +43,7 @@ msgstr ""
 #: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF.incrementar:0
 #: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF.iniciar_modelo:0
 msgid "Parámetros"
-msgstr ""
+msgstr "متغیرات"
 
 #: ../../../tinamit/BF.pydocstring of
 #: tinamit.BF.ClaseModeloBF.cambiar_vals_modelo_interno:3
@@ -49,13 +53,15 @@ msgstr ""
 msgid ""
 "Un diccionario de variables y valores para cambiar, con el formato "
 "siguiente:"
-msgstr ""
+msgstr "متغیرات اور اقدار کی ايک لغت کو مندرجہ ذیل وضع میں تبدیل کرنے کے لئے"
 
 #: ../../../tinamit/BF.pydocstring of tinamit.BF.ClaseModeloBF.cerrar_modelo:1
 msgid ""
 "Esta función debe cerrar la simulación. No se aplica a todos los modelos "
 "biofísicos (en ese caso, usar ``pass`` )."
 msgstr ""
+"یہ فعل تخروپن بند کر دیںتا ہے۔ ساری حیاتی طبیعیات ماڈل پراس کا اطلاق نہیں "
+"ہوتا  (اطلاق نہ ہونے کی صورت میں \"پاس\" استعمال کریں) ۔"
 
 #: ../../../tinamit/BF.pydocstring of tinamit.BF.ClaseModeloBF.incrementar:1
 msgid ""

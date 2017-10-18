@@ -22,7 +22,7 @@ print('Actualizando con Transifex...')
 run('tx pull -a', cwd=dir_docs)
 run('zanata po push --copytrans --import-po', input=b'y', cwd=dir_docs)
 
-# Traer las traducciones más recientes de Zanata
+# Traemos las traducciones más recientes de Zanata
 print('Verificando las traducciones más recientes en Zanata...')
 run('zanata po pull', cwd=dir_docs)
 

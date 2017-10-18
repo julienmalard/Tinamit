@@ -140,14 +140,10 @@ def buildDLine(parameterNames, delim, parameterDictionary):
     delim = '  ' if delim == 'W' else delim
     for paramName in parameterNames:
         if paramName[0] != '*':
-            values.append(parameterDictionary[paramName])
+            values.append(str(parameterDictionary[paramName]))
         else:
-            if isinstance(parameterDictionary[paramName.strip('*')], list):
-                values += [str(x) for x in parameterDictionary[paramName.strip('*')]]
-            else:
-                values += str(parameterDictionary[paramName.strip('*')])
+            values += [str(x) for x in parameterDictionary[paramName.strip('*')]]
 
-            # print(values)
     return delim.join(values) + '  \n'
 
 
@@ -173,6 +169,15 @@ def buildLine(parameterNames, lineSpec, parameterDictionary, configDictionary):
         if diff > 0:
             line = line.strip() + ',' * diff + '\n'
     return line
+
+def createArrayOfZeros(*dims):
+    if len(dims) == 1:
+        return [0]*dims[0]
+    else:
+        arr = []
+        for i in range(dims[0]):
+            arr.append(createArrayOfZeros(*dims[1:]))
+        return arr
 
 
 def readFile(contentFn, templateFn):
@@ -211,12 +216,11 @@ def readFile(contentFn, templateFn):
 
                         for paramName in lineSpec[1]:
                             paramName = paramName.strip('*')
-                            param_dictionary[paramName] = np.zeros(dims)
+                            param_dictionary[paramName] = createArrayOfZeros(*dims)
 
                     iterdims = [range(dim) for dim in dims]
                     for indices in itertools.product(*iterdims):
                         tempDict = {}
-                        indicesString = ''.join(['[{}]'.format(i) for i in indices])
                         for lineSpec in lineSpecTuple:
                             contentLine = contentF.readline().strip('\n')
                             parseLine(contentLine, lineSpec[1], lineSpec[0], tempDict)
@@ -226,10 +230,11 @@ def readFile(contentFn, templateFn):
                                 for i in indices[:-1]:
                                     d = d[i]
                                 d[indices[-1]] = tempDict[paramName]
-                                # exec('param_dictionary[paramName]' + indicesString + '= tempDict[paramName]')
-    for k, v in param_dictionary:
+
+    for k, v in param_dictionary.items():
         if isinstance(v, list):
             param_dictionary[k] = np.array(v).astype(float)
+
     return param_dictionary
 
 
@@ -262,11 +267,12 @@ def writeFile(parameterDictionary, contentFn, templateFn):
                         for lineSpec in lineSpecTuple:
                             for paramName in lineSpec[1]:
                                 paramName = paramName.strip('*')
-                                try:
-                                    exec('tempDict[paramName] = parameterDictionary[paramName]' + indicesString)
-                                except IndexError:
-                                    array = np.array(parameterDictionary[paramName]).swapaxes(0, 1)
-                                    exec('tempDict[paramName] = list(array)' + indicesString)
+                                p_d = parameterDictionary[paramName]
+                                for i in indices:
+                                    p_d = p_d[i]
+
+                                tempDict[paramName] = p_d
+
                             contentF.write(buildLine(lineSpec[1], lineSpec[0], tempDict, configDictionary))
     return contentFn
 
