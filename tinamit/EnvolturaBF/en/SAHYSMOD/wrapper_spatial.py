@@ -468,15 +468,15 @@ def read_output_file(file_path, n_s, n_p, n_y):
             for season_poly in range(n_p):  # Read output for the last year's seasons from the output file
                 season_poly_output = []  # To hold the output file lines with the desired season
                 if n_p == 1 and n_s == 1:
-                    Poly = [next(d) for s in range(23)]
+                    poly = [next(d) for s in range(23)]
                 else:
-                    Poly = [next(d) for s in range(24)]
-                season_poly_output.append(Poly)
+                    poly = [next(d) for s in range(24)]
+                season_poly_output.append(poly)
 
                 for cod in SAHYSMOD_output_vars:
                     var_out = cod.replace('#', '').replace('*', '\*')
 
-                    for line in Poly:
+                    for line in poly:
 
                         line += ' '
                         m = re.search(' %s += +([^ ]*)' % var_out, line)
@@ -499,5 +499,5 @@ def read_output_file(file_path, n_s, n_p, n_y):
 if __name__ == '__main__':
     from pprint import pprint
     pprint(read_output_file(
-        'C:\\Users\\gis_lab\\PycharmProjects\\Tinamit\\tinamit\\Ejemplos\\en\\Ejemplo_SAHYSMOD\\test.out',
+        'C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\tinamit\\Ejemplos\\en\\Ejemplo_SAHYSMOD\\test.out',
         n_s=2, n_p=214, n_y=5))
