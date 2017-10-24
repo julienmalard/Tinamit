@@ -204,6 +204,36 @@ class ModeloSAHYSMOD(ClaseModeloBF):
 
         dic_out = read_output_file(file_path=self.output, n_s=self.n_seasons, n_p=self.n_poly, n_y=n_year)
 
+        for cr in ['CrA', 'CrB', 'CrU', 'Cr4']:
+            if dic_out[cr] == -1:
+                dic_out[cr] = 0
+
+
+        # Ajust for soil salinity of different crops
+        kr = self.variables[codes_to_vars['Kr']]['val']
+        if kr == 0:
+            u = 1 - dic_out['B#'] - dic_out['A#']
+            soil_sal = dic_out['A#'] * dic_out['CrA'] + dic_out['B#'] * dic_out['CrB'] + u * dic_out['CrU']
+            to_fill = ['Cr4']
+        elif kr == 1:
+            u = 1 - dic_out['B#'] - dic_out['A#']
+            soil_sal = dic_out['CrU'] * u + dic_out['C1*'] * (1 - u)
+            to_fill = ['CrA', 'CrB', 'Cr4']
+        elif kr == 2:
+            soil_sal = dic_out['CrA'] * dic_out['A#'] + dic_out['C2*'] * (1 - dic_out['A#'])
+            to_fill = ['CrB', 'CrU', 'Cr4']
+        elif kr == 3:
+            soil_sal = dic_out['CrB'] * dic_out['B#'] + dic_out['C3*'] * (1 - dic_out['B#'])
+            to_fill = ['CrA', 'CrU', 'Cr4']
+        elif kr == 4:
+            soil_sal = dic_out['Cr4']
+            to_fill = ['CrA', 'CrB', 'CrU']
+        else:
+            raise ValueError('There is a big mistake with your SAHYSMOD model. Sorry, we can\'t help.')
+
+        for cr in to_fill:
+            dic_out[cr][:] = soil_sal
+
         for var_code in SAHYSMOD_output_vars:
 
             var_name = codes_to_vars[var_code]
@@ -218,26 +248,6 @@ class ModeloSAHYSMOD(ClaseModeloBF):
                 # For nonseasonal variables...
 
                 self.variables[var_name]['val'][:] = dic_out[var_code]
-
-        # Ajust for soil salinity of different crops
-        kr = self.variables[codes_to_vars['Kr']]['val']
-        if kr == 0:
-            u = 1 - dic_out['B#'] - dic_out['A#']
-            soil_sal = dic_out['A#'] * dic_out['CrA'] + dic_out['B#'] * dic_out['CrB'] + u * dic_out['CrU']
-        elif kr == 1:
-            u = 1 - dic_out['B#'] - dic_out['A#']
-            soil_sal = dic_out['CrU'] * u + dic_out['C1*'] * (1 - u)
-        elif kr == 2:
-            soil_sal = dic_out['CrA'] * dic_out['A#'] + dic_out['C2*'] * (1 - dic_out['A#'])
-        elif kr == 3:
-            soil_sal = dic_out['CrB'] * dic_out['B#'] + dic_out['C3*'] * (1 - dic_out['B#'])
-        elif kr == 4:
-            soil_sal = dic_out['Cr4']
-        else:
-            raise ValueError
-
-        for cr in ['CrA', 'CrB', 'CrU', 'Cr4']:
-            self.internal_data[codes_to_vars[cr]]['val'][:] = soil_sal
 
     def _read_input_vals(self):
         """
