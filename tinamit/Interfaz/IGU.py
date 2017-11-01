@@ -41,6 +41,7 @@ def correr():
 
     raíz = tk.Tk()
     apli = Apli(raíz)
+    apli.lift()
     apli.mainloop()
 
 

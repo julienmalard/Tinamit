@@ -204,20 +204,17 @@ class ModeloSAHYSMOD(ClaseModeloBF):
 
         dic_out = read_output_file(file_path=self.output, n_s=self.n_seasons, n_p=self.n_poly, n_y=n_year)
 
-        for cr in ['CrA', 'CrB', 'CrU', 'Cr4']:
+        for cr in ['CrA', 'CrB', 'CrU', 'Cr4', 'A#', 'B#', 'U']:
             if dic_out[cr] == -1:
                 dic_out[cr] = 0
-
 
         # Ajust for soil salinity of different crops
         kr = self.variables[codes_to_vars['Kr']]['val']
         if kr == 0:
-            u = 1 - dic_out['B#'] - dic_out['A#']
-            soil_sal = dic_out['A#'] * dic_out['CrA'] + dic_out['B#'] * dic_out['CrB'] + u * dic_out['CrU']
+            soil_sal = dic_out['A#'] * dic_out['CrA'] + dic_out['B#'] * dic_out['CrB'] + dic_out['U'] * dic_out['CrU']
             to_fill = ['Cr4']
         elif kr == 1:
-            u = 1 - dic_out['B#'] - dic_out['A#']
-            soil_sal = dic_out['CrU'] * u + dic_out['C1*'] * (1 - u)
+            soil_sal = dic_out['CrU'] * dic_out['U'] + dic_out['C1*'] * (1 - dic_out['U'])
             to_fill = ['CrA', 'CrB', 'Cr4']
         elif kr == 2:
             soil_sal = dic_out['CrA'] * dic_out['A#'] + dic_out['C2*'] * (1 - dic_out['A#'])
