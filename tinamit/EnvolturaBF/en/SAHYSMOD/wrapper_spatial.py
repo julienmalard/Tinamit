@@ -437,8 +437,8 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'Cti - Transition zone incoming salinity': {'code': 'Cti', 'units': 'dS / m', 'inp': False,
                                                              'out': True},
                  'Cqf - Aquifer salinity': {'code': 'Cqf', 'units': 'dS / m', 'inp': True, 'out': True},
-                 'Cd - Drainage salinity': {'code': 'Cd', 'units': 'ds / m', 'inp': False, 'out': True}, \
-                 'Cw - Well water salinity': {'code': 'Cw', 'units': 'ds / m', 'inp': False, 'out': True}, \
+                 'Cd - Drainage salinity': {'code': 'Cd', 'units': 'ds / m', 'inp': False, 'out': True},
+                 'Cw - Well water salinity': {'code': 'Cw', 'units': 'ds / m', 'inp': False, 'out': True},
                  }
 
 # A dictionary to get the variable name from its SAHYSMOD code.
