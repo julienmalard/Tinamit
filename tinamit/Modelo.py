@@ -91,6 +91,24 @@ class Modelo(object):
         """
         raise NotImplementedError
 
+    def cambiar_var(símismo, var, val):
+        """
+        Est método cambia el valor inicial de un variable (antes de empezar la simulación). Se emplea principalmente
+        para activar y desactivar políticas.
+
+        :param var: El nombre del variable para cambiar.
+        :type var: str
+        :param val: El nuevo valor del variable.
+        :type val: float
+
+        """
+
+        if var not in símismo.variables:
+            raise ValueError('Este variable no existe en el modelo "{}".'.format(símismo.nombre))
+
+        # Simplemente se emplea la función Modelo.cambiar_vals().
+        símismo.cambiar_vals(valores={var: val})
+
     def cambiar_vals(símismo, valores):
         """
         Esta función cambiar el calor de uno o más variables del modelo. Cambia primero el valor en el diccionario

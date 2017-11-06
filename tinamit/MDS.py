@@ -101,7 +101,18 @@ class EnvolturaMDS(Modelo):
 
         """
 
-        # Simplemente se emplea la función Modelo.cambiar_vals().
+        # Verificar variable
+        if var not in símismo.variables:
+            raise ValueError('Este variable no existe en el modelo DS.')
+
+        # Formato para variables con dimenciones (matrices)
+        val_antes = símismo.variables[var]['val']
+        if isinstance(val_antes, np.ndarray):
+            matr = np.empty_like(val_antes)
+            matr.fill(val)
+            val = matr
+
+        # Por fin, simplemente se emplea la función Modelo.cambiar_vals().
         símismo.cambiar_vals(valores={var: val})
 
     def cerrar_modelo(símismo):
