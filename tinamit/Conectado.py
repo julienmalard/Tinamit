@@ -1,6 +1,6 @@
 import threading
 from warnings import warn as avisar
-from PyMarkSim.مرکسم import مقام as pred_clima
+# from PyMarkSim.مرکسم import مقام as pred_clima
 
 from tinamit.BF import EnvolturaBF
 from tinamit.Modelo import Modelo

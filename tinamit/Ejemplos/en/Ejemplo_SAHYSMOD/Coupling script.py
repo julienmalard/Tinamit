@@ -21,7 +21,7 @@ def run_model(name, switches):
     modelo = Conectado()
 
     # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
-    modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'GBSDM_V4.vpm'))
+    modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Tinamit_sub_v2.vpm'))
 
     modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'SAHYSMOD.py'))
 
@@ -30,10 +30,10 @@ def run_model(name, switches):
         modelo.mds.cambiar_var(var=switch, val=val)
 
     # Couple models(Change variable names as needed)
-    modelo.conectar(var_mds='Soil salinity AS1', mds_fuente=False, var_bf="Cr4 - Fully rotated land irrigated root zone salinity")
-    # modelo.conectar(var_mds='Soil salinity BS1', mds_fuente=False, var_bf="Cr4 - Fully rotated land irrigated root zone salinity")
-    modelo.conectar(var_mds='watertable depth', mds_fuente=False, var_bf="Dw - Groundwater depth")
-    modelo.conectar(var_mds='ECdw', mds_fuente=False, var_bf='Cqf - Aquifer salinity')
+    modelo.conectar(var_mds='Soil salinity Tinamit CropA', mds_fuente=False, var_bf="Cr4 - Fully rotated land irrigated root zone salinity")
+    modelo.conectar(var_mds='Soil salinity Tinamit CropB', mds_fuente=False, var_bf="Cr4 - Fully rotated land irrigated root zone salinity")
+    modelo.conectar(var_mds='Watertable depth Tinamit', mds_fuente=False, var_bf="Dw - Groundwater depth")
+    modelo.conectar(var_mds='ECdw Tinamit', mds_fuente=False, var_bf='Cqf - Aquifer salinity')
     modelo.conectar(var_mds='Lc', mds_fuente=True, var_bf='Lc - Canal percolation')
     modelo.conectar(var_mds='IaAS1', mds_fuente=True, var_bf='IaA - Crop A field irrigation')
     modelo.conectar(var_mds='IaBS1', mds_fuente=True, var_bf='IaB - Crop B field irrigation')
