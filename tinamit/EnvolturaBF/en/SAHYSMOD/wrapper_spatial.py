@@ -65,6 +65,9 @@ class ModeloSAHYSMOD(ClaseModeloBF):
         args = dict(SAHYSMOD=sayhsmod_exe, input=self.input, output=self.output)
         self.command = '{SAHYSMOD} {input} {output}'.format(**args)
 
+        # Read input values from .inp file. This also takes care of setting appropriate dims for each variable.
+        self._read_input_vals()
+
     def inic_vars(self):
 
         # DON'T change the names of the dictionary keys here. Bad things will happen if you do, because they are
@@ -80,9 +83,7 @@ class ModeloSAHYSMOD(ClaseModeloBF):
                                     }
 
     def iniciar_modelo(self, **kwargs):
-
-        # Read input values from .inp file
-        self._read_input_vals()
+        pass  # Nothing specific to do. Variables have already been read in .inic_vars()
 
     def obt_unidad_tiempo(self):
         return 'Months'
