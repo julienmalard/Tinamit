@@ -122,7 +122,7 @@ class Dll(object):
 
 ubicación_modelo = "C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\tinamit\\Ejemplos\\Subscripts.vpm"
 modelo = Dll(ubicación_modelo)
-# modelo.silenciar()
+modelo.silenciar()
 modelo.sacar_nombres_vars()
 
 modelo.estab_nombre_corrida('Corrida')
