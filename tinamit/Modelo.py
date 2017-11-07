@@ -32,6 +32,10 @@ class Modelo(object):
         símismo.variables = {}
         símismo.inic_vars()
 
+        # Un diccionarior para guardar valores de variables iniciales hasta el momento que empezamos la simulación.
+        # Es muy útil para modelos cuyos variables no podemos cambiar antes de empezar una simulación (como VENSIM).
+        símismo.vals_inic = {}
+
         # Listas de los nombres de los variables que sirven de conexión con otro modelo.
         símismo.vars_saliendo = []
         símismo.vars_entrando = []
@@ -91,23 +95,45 @@ class Modelo(object):
         """
         raise NotImplementedError
 
-    def cambiar_var(símismo, var, val):
+    def inic_val(símismo, var, val):
         """
         Est método cambia el valor inicial de un variable (antes de empezar la simulación). Se emplea principalmente
-        para activar y desactivar políticas.
+        para activar y desactivar políticas y para establecer parámetros y valores iniciales para simulaciones.
 
         :param var: El nombre del variable para cambiar.
         :type var: str
+
         :param val: El nuevo valor del variable.
         :type val: float
 
         """
 
+        # Primero, asegurarse que el variable existe.
         if var not in símismo.variables:
-            raise ValueError('Este variable no existe en el modelo "{}".'.format(símismo.nombre))
+            raise ValueError('El variable inicializado "{}" no existe en los variables del modelo.\n'
+                             'Pero antes de quejarte al gerente, sería buena idea verificar '
+                             'si lo escrbiste bien.'.format(var))  # Sí, lo "escrbí" así por propósito. :)
 
-        # Simplemente se emplea la función Modelo.cambiar_vals().
-        símismo.cambiar_vals(valores={var: val})
+        # Guardamos el valor en el diccionario `vals_inic`. Se aplicarán los valores iniciales únicamente al momento
+        # de empezar la simulación.
+        símismo.vals_inic[var] = val
+
+    def aplic_vals_inic(símismo):
+        """
+        Esta función aplica los valores iniciales de variables (ya especificados) para la simulación.
+
+        """
+
+        # Simplemente llamar la función símismo.cambiar_vals() con el diccionario de valores iniciales.
+        símismo.cambiar_vals(símismo.vals_inic)
+
+    def limp_vals_inic(símismo):
+        """
+        Esta función limpa los valores iniciales especificados anteriormente.
+        """
+
+        # Limpiar el diccionario.
+        símismo.vals_inic.clear()
 
     def cambiar_vals(símismo, valores):
         """
