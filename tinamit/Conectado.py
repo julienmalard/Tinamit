@@ -345,7 +345,8 @@ class SuperConectado(Modelo):
 
         # Iniciar los submodelos también.
         for mod in símismo.modelos.values():
-            mod.iniciar_modelo(**kwargs)
+            mod.iniciar_modelo(**kwargs)  # Iniciar el modelo
+            mod.aplic_vals_inic()  # Inicializar valores de variables
 
     def cerrar_modelo(símismo):
         """

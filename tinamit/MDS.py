@@ -89,21 +89,6 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def cambiar_var(símismo, var, val):
-        """
-        Est método cambia el valor inicial de un variable (antes de empezar la simulación). Se emplea principalmente
-        para activar y desactivar políticas.
-
-        :param var: El nombre del variable para cambiar.
-        :type var: str
-        :param val: El nuevo valor del variable.
-        :type val: float
-
-        """
-
-        # Simplemente se emplea la función Modelo.cambiar_vals().
-        símismo.cambiar_vals(valores={var: val})
-
     def cerrar_modelo(símismo):
         """
         Este método se deja a las subclases de :class:`~tinamit.MDS.EnvolturaMDS` para implementar.
@@ -163,25 +148,24 @@ class ModeloVENSIM(EnvolturaMDS):
 
         # Primero, verificamos el tamañano de memoria necesario para guardar una lista de los nombres de los variables.
 
-        mem_0 = ctypes.create_string_buffer(0)  # Crear una memoria intermedia
+        mem = ctypes.create_string_buffer(0)  # Crear una memoria intermedia
 
         # Verificar el tamaño necesario
         tamaño_nec = símismo.comanda_vensim(func=símismo.dll.vensim_get_varnames,
-                                            args=['*', 0, mem_0, 0],
+                                            args=['*', 0, mem, 0],
                                             mensaje_error='Error obteniendo eñ tamaño de los variables VENSIM.',
                                             val_error=-1, devolver=True
                                             )
 
-        mem_nb_vars = ctypes.create_string_buffer(tamaño_nec)  # Una memoria intermedia con el tamaño apropiado
+        mem = ctypes.create_string_buffer(tamaño_nec)  # Una memoria intermedia con el tamaño apropiado
 
         # Guardar y decodar los nombres de los variables.
         símismo.comanda_vensim(func=símismo.dll.vensim_get_varnames,
-                               args=['*', 0, mem_nb_vars, tamaño_nec],
+                               args=['*', 0, mem, tamaño_nec],
                                mensaje_error='Error obteniendo los nombres de los variables de VENSIM.',
                                val_error=-1
                                )
-        variables = [x for x in mem_nb_vars.raw.decode().split('\x00') if x]
-        limpiar_mem(mem_nb_vars)
+        variables = [x for x in mem.raw.decode().split('\x00') if x]
 
         # Quitar los nombres de variables VENSIM genéricos de la lista.
         for i in ['FINAL TIME', 'TIME STEP', 'INITIAL TIME', 'SAVEPER', 'Time']:
@@ -190,13 +174,13 @@ class ModeloVENSIM(EnvolturaMDS):
 
         # Sacar los nombres de variables editables
         símismo.comanda_vensim(func=símismo.dll.vensim_get_varnames,
-                               args=['*', 12, mem_nb_vars, tamaño_nec],
+                               args=['*', 12, mem, tamaño_nec],
                                mensaje_error='Error obteniendo los nombres de los variables editables ("Gaming") de '
                                              'VENSIM.',
                                val_error=-1
                                )
 
-        editables = [x for x in mem_nb_vars.raw.decode().split('\x00') if x]
+        editables = [x for x in mem.raw.decode().split('\x00') if x]
 
         # Sacar las unidades y las dimensiones de los variables, e identificar los variables constantes
         unidades = {}
@@ -204,32 +188,28 @@ class ModeloVENSIM(EnvolturaMDS):
         dims = {}
         nombres_subs = {}
 
-        mem_50 = ctypes.create_string_buffer(50)
-        tmñ_sub_0 = 0
-        mem_sub = ctypes.create_string_buffer(0)
-
         for var in variables:
             # Para cada variable...
 
             # Sacar sus unidades
+            mem = ctypes.create_string_buffer(50)
             símismo.comanda_vensim(func=símismo.dll.vensim_get_varattrib,
-                                   args=[var, 1, mem_50, 50],
+                                   args=[var, 1, mem, 50],
                                    mensaje_error='Error obteniendo las unidades del variable "{}" en '
                                                  'VENSIM'.format(var),
                                    val_error=-1
                                    )
             # Guardamos las unidades en un diccionario temporario.
-            unidades[var] = mem_50.raw.decode().split('\x00')[0]
-            limpiar_mem(mem_50)
+            unidades[var] = mem.raw.decode().split('\x00')[0]
 
             # Verificar si el variable es un constante (ingreso)
+            mem = ctypes.create_string_buffer(50)
             símismo.comanda_vensim(func=símismo.dll.vensim_get_varattrib,
-                                   args=[var, 14, mem_50, 50],
+                                   args=[var, 14, mem, 50],
                                    mensaje_error='Error obteniendo la clase del variable "{}" en VENSIM'.format(var),
                                    val_error=-1)
 
-            tipo_var = mem_50.value.decode()
-            limpiar_mem(mem_50)
+            tipo_var = mem.value.decode()
 
             # Guardamos los variables constantes en una lista.
             if tipo_var == 'Constant':
@@ -237,24 +217,23 @@ class ModeloVENSIM(EnvolturaMDS):
 
             if tipo_var != 'Constraint':
                 # Sacar las dimensiones del variable
+                mem = ctypes.create_string_buffer(10)
                 tmñ_sub = símismo.comanda_vensim(func=símismo.dll.vensim_get_varattrib,
-                                                 args=[var, 9, mem_0, 0],
+                                                 args=[var, 9, mem, 0],
                                                  mensaje_error='Error leyendo el tamaño de memoria para los subscriptos '
                                                                'del variable "{}" en Vensim'.format(var),
                                                  val_error=-1,
                                                  devolver=True)
-                if tmñ_sub > tmñ_sub_0:
-                    tmñ_sub_0 = tmñ_sub
-                    mem_sub = ctypes.create_string_buffer(tmñ_sub)
 
+                mem = ctypes.create_string_buffer(tmñ_sub)
                 símismo.comanda_vensim(func=símismo.dll.vensim_get_varattrib,
-                                       args=[var, 9, mem_sub, tmñ_sub_0],
+                                       args=[var, 9, mem, tmñ_sub],
                                        mensaje_error='Error leyendo los subscriptos del '
                                                      'variable "{}" en Vensim.'.format(var),
                                        val_error=-1)
 
-                subs = [x for x in mem_sub.raw.decode().split('\x00') if x]
-                limpiar_mem(mem_sub)
+                subs = [x for x in mem.raw.decode().split('\x00') if x]
+
             else:
                 subs = []
 
