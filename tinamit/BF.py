@@ -66,9 +66,6 @@ class EnvolturaBF(Modelo):
         # Crear el vínculo
         símismo.modelo.variables = símismo.variables
 
-        # Inicializar los variables del modelo externo.
-        símismo.modelo.inic_vars()
-
     def cambiar_vals_modelo_interno(símismo, valores):
         """
         Esta función cambia el valor de variables en el modelo.

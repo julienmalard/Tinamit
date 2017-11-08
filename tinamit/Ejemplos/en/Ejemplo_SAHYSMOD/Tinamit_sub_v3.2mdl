@@ -1,0 +1,3886 @@
+{UTF-8}
+Fw[Polygon]= GAME (
+	0.8)
+	~	Dmnl
+	~		|
+
+Negative behavior test crop2[Polygon,canal,kc2,c2]:THE CONDITION:
+	Canal supply at head[canal]=0:AND:Water requirment[Polygon]>0:AND:Policy RH=0:IMPLIES:\
+		Tubewell Nos[Polygon]>=0:AND:Crop area CropB[Polygon]>=0:AND:SS supply[Polygon]=0:AND:\
+		Water stress CropB[Polygon]>=0:AND:Salinity stress CropA[Polygon]>=0:AND:Farm income\
+		[Polygon]>=0
+	~	
+	~		|
+
+CY CropA[Polygon]=
+	CY max CropA*Salinity stress CropA[Polygon]*Water stress CropA[Polygon]
+	~	Kg/(m*m)/season
+	~	soil salinity stress = 1 means no stress similarly water stress = 1 means \
+		no stress and 0 means full stress no yield
+	|
+
+CY CropB[Polygon]=
+	CY max CropB*Salinity stress CropB[Polygon]*Water stress CropB[Polygon]
+	~	Kg/(m*m)/season
+	~	soil salinity stress = 1 means no stress similarly water stress = 1 means \
+		no stress and 0 means full stress no yield
+	|
+
+Kc CropA=
+	IF THEN ELSE(MODULO(Time, 2 )=0, 0.65 , 0.72 )
+	~	Dmnl
+	~		|
+
+Kc CropB=
+	IF THEN ELSE(MODULO(Time, 2 )=0, 0.7 , 0.85 )
+	~	Dmnl
+	~		|
+
+CY max CropB:INTERPOLATE::=
+	GET XLS DATA('?test', 'Crop_Yield' , 'b' , 'H2' )
+	~	Kg/(m*m)/season
+	~		|
+
+Ky CropA=
+	IF THEN ELSE(MODULO(Time, 2 )=0, 1.05 , 0.85 )
+	~	Dmnl
+	~		|
+
+Runoff supply per cropA[Polygon]=
+	(Rainfall contributions/Area)*Crop area CropA[Polygon]
+	~	m*m*m/season
+	~		|
+
+Runoff supply per cropB[Polygon]=
+	(Rainfall contributions/Area)*Crop area CropB[Polygon]
+	~	m*m*m/season
+	~		|
+
+Soil salinity Tinamit CropA[Polygon]= GAME (
+	Soil salinity CropA[Polygon])
+	~	dS/m
+	~		|
+
+leaching fraction[Polygon]=
+	ETc Rate CropB[Polygon]/(1-LR CropB[Polygon])+ETc Rate CropA[Polygon]/(1-LR CropA[Polygon\
+		])
+	~	m*m*m/season
+	~		|
+
+Salinity stress CropA[Polygon]=
+	Max(1-((IF THEN ELSE(Soil salinity Tinamit CropA[Polygon]<ECthreshold cropA, ECthreshold cropA\
+		 , Soil salinity Tinamit CropA[Polygon] )-ECthreshold cropA)*b cropA/100),0)
+	~	fraction
+	~	if soil salinity is 1 it means no stress and zero means full stress
+		1-(ECe-ECethreshold)*b/100
+	|
+
+Salinity stress CropB[Polygon]=
+	Max(1-((IF THEN ELSE(Soil salinity Tinamit CropB[Polygon]<ECthreshold cropB, ECthreshold cropB\
+		 , Soil salinity Tinamit CropB
+	[Polygon] )-ECthreshold cropB)*b CropB/100),0)
+	~	fraction
+	~	if soil salinity is 1 it means no stress and zero means full stress
+		1-(ECe-ECethreshold)*b/100
+	|
+
+Area fraction CropA[Polygon]:INTERPOLATE::=
+	GET XLS DATA('?test', 'AF' , 'A' , 'B2' )
+	~	Dmnl
+	~	Area fraction is the fraction (0-1) of the polygon covered by a specific \
+		crop. The area fraction is read from an excel file, where C1 (wheat) and \
+		C2 (grass) represent first-season crops and C3 (cotton) and C4 (rice) \
+		represent second-season crops.
+	|
+
+Total supply per cropB[Polygon]=
+	TW supply per cropB[Polygon]+Surface supply per cropB[Polygon]
+	~	m*m*m/season
+	~		|
+
+Area fraction Tinamit CropA[Polygon]= GAME (
+	Area fraction CropA[Polygon])
+	~	Dmnl
+	~		|
+
+Area fraction Tinamit CropB[Polygon]= GAME (
+	Area fraction CropB[Polygon])
+	~	Dmnl
+	~		|
+
+ETc Rate CropB[Polygon]=
+	Kc CropB*Reference ET[Polygon]*Crop area CropB[Polygon]
+	~	m*m*m/season
+	~	The (IF THEN ELSE(MODULO(Time, 2 )=0, 1 , 0 )) function is removed inorder \
+		to remove the floating error in water stress.
+	|
+
+Negative behavior test crop1[Polygon,canal,kc1,c1]:THE CONDITION:
+	Canal supply at head[canal]=0:AND:Water requirment[Polygon]>0:AND:Policy RH=0:IMPLIES:\
+		Tubewell Nos[Polygon]>=0:AND:Crop area CropB[Polygon]>=0:AND:SS supply[Polygon]=0:AND:\
+		Water stress CropB[Polygon]>=0:AND:Salinity stress CropA[Polygon]>=0:AND:Farm income\
+		[Polygon]>=0
+	~	
+	~		|
+
+Croped income CropB[Polygon]=
+	Crop area CropB[Polygon]*CY CropB[Polygon]*Market rate CropB
+	~	Rs/season
+	~		|
+
+Negative behavior test crop3[Polygon,canal,kc3,c3]:THE CONDITION:
+	Canal supply at head[canal]=0:AND:Water requirment[Polygon]>0:AND:Policy RH=0:IMPLIES:\
+		Tubewell Nos[Polygon]>=0:AND:Crop area CropB[Polygon]>=0:AND:SS supply[Polygon]=0:AND:\
+		Water stress CropB[Polygon]>=0:AND:Salinity stress CropA[Polygon]>=0:AND:Farm income\
+		[Polygon]>=0
+	~	
+	~		|
+
+LR CropA[Polygon]=
+	ECicw[Polygon]/(5*ECe CropA-ECicw[Polygon])
+	~	Dmnl
+	~		|
+
+LR CropB[Polygon]=
+	ECicw[Polygon]/(5*ECe CropB-ECicw[Polygon])
+	~	Dmnl
+	~		|
+
+TW supply per cropB[Polygon]=
+	(Tubewell discharge[Polygon])*((crop seasonal water requirement CropB*Crop area CropB\
+		[Polygon])/((crop seasonal water requirement CropA
+	*Crop area CropA[Polygon])+(crop seasonal water requirement CropB*Crop area CropB[Polygon\
+		])))
+	~	m*m*m/season
+	~		|
+
+b cropA=
+	IF THEN ELSE(MODULO(Time, 2 )=0, 7.1 , 4.3 )
+	~	fraction*m/dS
+	~		|
+
+b CropB=
+	IF THEN ELSE(MODULO(Time, 2 )=0, 5.2 , 5.7 )
+	~	fraction*m/dS
+	~		|
+
+ECthreshold cropB=
+	IF THEN ELSE(MODULO(Time, 2 )=0, 2.8 , 1.5 )
+	~	dS/m
+	~		|
+
+ECthreshold cropA=
+	IF THEN ELSE(MODULO(Time, 2 )=0, 6 , 7.7 )
+	~	dS/m
+	~		|
+
+Soil salinity Tinamit CropB[Polygon]= GAME (
+	Soil salinity CropB[Polygon])
+	~	dS/m
+	~		|
+
+Total canal supplies Crop[Polygon]=
+	canal supply per cropB[Polygon]+canal supply per cropA[Polygon]
+	~	m*m*m/season
+	~		|
+
+Market rate CropA:INTERPOLATE::=
+	GET XLS DATA('?test', 'Market_Rate' , 'h' , 'M2' )
+	~	Rs/Kg
+	~		|
+
+SS supply per cropB[Polygon]=
+	(SS supply[Polygon])*((crop seasonal water requirement CropB*Crop area CropB[Polygon\
+		])/((crop seasonal water requirement CropB
+	*Crop area CropB[Polygon])+(crop seasonal water requirement CropA*Crop area CropA[Polygon\
+		])))
+	~	m*m*m/season
+	~		|
+
+Crop area CropB[Polygon]=
+	Area fraction Tinamit CropB[Polygon]*Area
+	~	m*m
+	~		|
+
+crop seasonal water requirement CropA=
+	IF THEN ELSE(MODULO(Time, 2 )=0, 271 , 786 )
+	~	mm/season
+	~		|
+
+ETc Rate CropA[Polygon]=
+	Kc CropA*Reference ET[Polygon]*Crop area CropA[Polygon]
+	~	m*m*m/season
+	~	The (IF THEN ELSE(MODULO(Time, 2 )=0, 1 , 0 )) function is removed inorder \
+		to remove the floating error in water stress.
+	|
+
+crop seasonal water requirement CropB=
+	IF THEN ELSE(MODULO(Time, 2 )=0, 300 , 439 )
+	~	mm/season
+	~		|
+
+Croped income[Polygon]=
+	Croped income CropA[Polygon]+Croped income CropB[Polygon]
+	~	Rs/season
+	~		|
+
+Croped income CropA[Polygon]=
+	Crop area CropA[Polygon]*CY CropA[Polygon]*Market rate CropA
+	~	Rs/season
+	~		|
+
+Soil salinity CropB[Polygon]:INTERPOLATE::=
+	GET XLS DATA('?test', 'SS' , 'A' , 'HI2' )
+	~	dS/m
+	~		|
+
+canal supply per cropA[Polygon]=
+	Canal contributions[Polygon]*((crop seasonal water requirement CropA*Crop area CropA\
+		[Polygon])/((crop seasonal water requirement CropA*Crop area CropA[Polygon])+(crop seasonal water requirement CropB\
+		*Crop area CropB[Polygon])))
+	~	m*m*m/season
+	~	(Canal contributions[Polygon])*(crop seasonal water requirement[c1]*Crop \
+		area[Polygon,c1])/((crop seasonal water requirement[c1]*
+		Crop area[Polygon,c1])+(crop seasonal water requirement[c2]*(Crop \
+		area[Polygon,c2]))
+	|
+
+canal supply per cropB[Polygon]=
+	Canal contributions[Polygon]*((crop seasonal water requirement CropB*Crop area CropB\
+		[Polygon])/((crop seasonal water requirement CropA*Crop area CropA[Polygon])+(crop seasonal water requirement CropB\
+		*Crop area CropB[Polygon])))
+	~	m*m*m/season
+	~	(Canal contributions[Polygon])*(crop seasonal water requirement[c1]*Crop \
+		area[Polygon,c1])/((crop seasonal water requirement[c1]*
+		Crop area[Polygon,c1])+(crop seasonal water requirement[c2]*(Crop \
+		area[Polygon,c2]))
+	|
+
+Surface supply per cropB[Polygon]=
+	SS supply per cropB[Polygon]+Runoff supply per cropB[Polygon]+canal supply per cropB\
+		[Polygon]
+	~	m*m*m/season
+	~		|
+
+Negative behavior test crop4[Polygon,canal,kc4,c4]:THE CONDITION:
+	Canal supply at head[canal]=0:AND:Water requirment[Polygon]>0:AND:Policy RH=0:IMPLIES:\
+		Tubewell Nos[Polygon]>=0:AND:Crop area CropB[Polygon]>=0:AND:SS supply[Polygon]=0:AND:\
+		Water stress CropB[Polygon]>=0:AND:Salinity stress CropA[Polygon]>=0:AND:Farm income\
+		[Polygon]>=0
+	~	
+	~		|
+
+TW supply per cropA[Polygon]=
+	(Tubewell discharge[Polygon])*((crop seasonal water requirement CropA*Crop area CropA\
+		[Polygon])/((crop seasonal water requirement CropA
+	*Crop area CropA[Polygon])+(crop seasonal water requirement CropB*Crop area CropB[Polygon\
+		])))
+	~	m*m*m/season
+	~		|
+
+Water requirment[Polygon]=
+	(ETc Rate CropA[Polygon]+ETc Rate CropB[Polygon])/Irrigation efficiency[Polygon]
+	~	m*m*m/season
+	~		|
+
+Water stress CropA[Polygon]=
+	Max( IF THEN ELSE(ETc Rate CropA[Polygon]=0, 0 , 1-((Ky CropA)*(1-(IF THEN ELSE(Total supply per cropA\
+		[Polygon]>
+	ETc Rate CropA[Polygon], ETc Rate CropA[Polygon] , Total supply per cropA[Polygon])/\
+		ETc Rate CropA[Polygon]))) 
+	) , 0)
+	~	Dmnl
+	~	need to checked for its consistency and working after the linkage of AW stock. Check \
+		why it is giving nagitive values.it give nagative value when actual ET is \
+		very very less than the demand ET. then factor (1-ETactual/ET demand) give \
+		high value and if Ky is greater than one as in case of wheat it is 1.05 it \
+		become grater than 1 and on subtracting with one it give nagative value.
+		=1-Ky(1-ETcadj/ETc)
+		negative means that ETcadj<<<<ETc hence water stress can be taken as zero \
+		means no water to fullfill crop water requirements thats why I used max \
+		function.
+	|
+
+Water stress CropB[Polygon]=
+	Max( IF THEN ELSE(ETc Rate CropB[Polygon]=0, 0 , 1-((Ky CropB)*(1-(IF THEN ELSE(Total supply per cropB\
+		[Polygon]>
+	ETc Rate CropB[Polygon], ETc Rate CropB[Polygon] , Total supply per cropB[Polygon])/\
+		ETc Rate CropB[Polygon]))) 
+	) , 0)
+	~	Dmnl
+	~	need to checked for its consistency and working after the linkage of AW stock. Check \
+		why it is giving nagitive values.it give nagative value when actual ET is \
+		very very less than the demand ET. then factor (1-ETactual/ET demand) give \
+		high value and if Ky is greater than one as in case of wheat it is 1.05 it \
+		become grater than 1 and on subtracting with one it give nagative value.
+		=1-Ky(1-ETcadj/ETc)
+		negative means that ETcadj<<<<ETc hence water stress can be taken as zero \
+		means no water to fullfill crop water requirements thats why I used max \
+		function.
+	|
+
+SS supply per cropA[Polygon]=
+	(SS supply[Polygon])*((crop seasonal water requirement CropA*Crop area CropA[Polygon\
+		])/((crop seasonal water requirement CropB
+	*Crop area CropB[Polygon])+(crop seasonal water requirement CropA*Crop area CropA[Polygon\
+		])))
+	~	m*m*m/season
+	~		|
+
+Surface supply per cropA[Polygon]=
+	SS supply per cropA[Polygon]+Runoff supply per cropA[Polygon]+canal supply per cropA\
+		[Polygon]
+	~	m*m*m/season
+	~		|
+
+Ia CropA[Polygon]=
+	Surface supply per cropA[Polygon]/Area
+	~	m/season
+	~		|
+
+Total supply per cropA[Polygon]=
+	TW supply per cropA[Polygon]+Surface supply per cropA[Polygon]
+	~	m*m*m/season
+	~		|
+
+Ia CropB[Polygon]=
+	Surface supply per cropB[Polygon]/Area
+	~	m/season
+	~		~	:SUPPLEMENTARY 
+	|
+
+Crop area CropA[Polygon]=
+	Area fraction Tinamit CropA[Polygon]*Area
+	~	m*m
+	~		|
+
+ECe CropA=
+	IF THEN ELSE(MODULO(Time, 2 )=0, 7.4 , 8.5 )
+	~	dS/m
+	~		|
+
+ECdw Tinamit[Polygon]= GAME (
+	ECdw[Polygon])
+	~	dS/m
+	~		|
+
+ECicw[Polygon]=
+	IF THEN ELSE(Viw[Polygon]=0:AND:Vdw[Polygon]=0, 1 , (Viw[Polygon]*Eciw[Polygon]+Vdw[\
+		Polygon]*ECdw Tinamit[Polygon])/(Viw[Polygon
+	]+Vdw[Polygon]) )
+	~	dS/m
+	~		|
+
+Installation cost[Polygon]=
+	Standard cost * Cost vs depth lookup(Watertable depth Tinamit[Polygon] / Standard depth\
+		)
+	~	Rs/Nos
+	~		|
+
+Watertable depth Tinamit[Polygon]= GAME (
+	watertable depth[Polygon])
+	~	m
+	~		|
+
+Tubewell growth[Polygon]=
+	IF THEN ELSE(Tubewell Nos[Polygon]<maximum allowable number of tubewells :AND: ECdw Tinamit\
+		[Polygon]<Threshold EC for tubewell installation
+	, IF THEN ELSE(Costs for potential tubewell installation
+	[Polygon]<=Potential investment[Polygon]
+	, 
+	Desired Additional TW installed[Polygon], 0 ) , 0 )
+	~	Nos/season
+	~	Total no of tube wells
+	|
+
+Tubewell Nos[Polygon]= INTEG (
+	Tubewell growth[Polygon]-Tubewell decay[Polygon],
+		23)
+	~	Nos
+	~	According to report on groundwater economy of pakistan there were 23 \
+		private tube/1000 hectare (1 tubewell to serve 44 hectare) in 1990. \
+		according to grid size the initial density of tube well /polygon come out \
+		to be 4410000/1000 = 441 hectares No of tubewells = 441/44 = 10 \
+		tubewells/polygon
+	|
+
+Net canal seepage[canal]=
+	Canal seepage[canal]*(Total length[canal]-(lined percentage[canal]*Total length[canal\
+		]*(1-percentage losses lined))
+	)
+	~	m*m*m/season
+	~	Shold include effect of lining and need to see percentage of water seep from the \
+		canal before and after lining application (from literature)
+		(percentage losses unlined-(percentage losses unlined-percentage losses lined)*lined \
+		percentage[canal])*Canal supply at head
+		[canal]
+	|
+
+Canal seepage[canal]=
+	2e-005*(Canal supply at head[canal])
+	~	m*m*m/season/m
+	~		|
+
+Tubewell decay[Polygon]=
+	Tubewell Nos[Polygon]/Average TW life
+	~	Nos/season
+	~	Also need to include the option that if farmer is unable to supply funds for \
+		maintenance the decay rate increases.
+		Tubewell Nos[Polygon]/Average TW life
+	|
+
+Tubewell number at zero time[Polygon]=
+	GET XLS CONSTANTS('?test', 'TWN' , 'b2*' )
+	~	Nos
+	~		~	:SUPPLEMENTARY 
+	|
+
+Decay rate TWN[Polygon]= DELAY FIXED (
+	Tubewell growth[Polygon],Average TW life,0)
+	~	Nos/season
+	~		~	:SUPPLEMENTARY 
+	|
+
+Constrained behavior limit test[canal,Polygon]:THE CONDITION:
+	Farm income[Polygon]=0:IMPLIES:Canal lining[canal]=0:AND:Tubewell discharge[Polygon]\
+		=0:AND:Constructed capacity[Polygon]=0:AND:Irrigation efficiency[Polygon]=0.6
+	~	
+	~		|
+
+Canal seepage per polygon[Polygon]=
+	SUM(Seepage distribution[Polygon,canal!])
+	~	m*m*m/season
+	~		|
+
+Conservation of mass check[Ca4,N41,N49,N50]:THE CONDITION:
+	Canal supply at head[Ca4]>=0:IMPLIES:Canal supply at head[Ca4]-canal evaporation[Ca4\
+		]=Canal seepage per polygon[N41]+Canal seepage per polygon
+		[N49]+Canal seepage per polygon[N50]+canal supply in polygon[N41]+canal supply in polygon\
+		[N49]+canal supply in polygon[N50]
+	~	
+	~		|
+
+Recharge to aquifer[Polygon]=
+	Canal seepage per polygon[Polygon]*Cp+Recharge to aquifer rainfall[Polygon]
+	~	m*m*m/season
+	~	Will be use as Lc in SahysMod
+	|
+
+Potential investment per canal[canal]=
+	SUM(Potential investment polygons on canal[canal,Polygon!])
+	~	Rs/season
+	~		|
+
+Lining rate[canal]=
+	IF THEN ELSE( lining cost per season[canal]<=Potential investment per canal[canal],MIN\
+		(Problem perception state of canals[canal]*Incremental Length lined[canal]/TIME STEP\
+		*Policy Canal lining[canal],(Total length
+	[canal]-Canal lining[canal])/TIME STEP),0)
+	~	m/season
+	~		|
+
+RWH cost per season[Polygon]=
+	(Incremental Increase[Polygon]/TIME STEP)*Cost of pond*0.25
+	~	Rs/season
+	~		|
+
+cost of installation per season[Polygon]=
+	units per season[Polygon]/TIME STEP*Cost of installation*0.25
+	~	Rs/season
+	~		|
+
+Improvement rate[Polygon]=
+	IF THEN ELSE(cost of installation per season[Polygon]<=Potential investment[Polygon]\
+		,
+	MIN((Problem perception of irrigation efficiency[Polygon]*(+Irrigation Efficiency improvement\
+		[Polygon]/TIME STEP-Irrigation efficiency[Polygon])*Policy Irrigation improvement),\
+		 
+	(-Irrigation efficiency[Polygon]+Efficiency goal)/TIME STEP),
+	0)
+	~	1/season
+	~		|
+
+Potential investment polygons on canal[canal,Polygon]=
+	Potential investment[Polygon]*Polygonal factor[Polygon,canal]
+	~	Rs/season
+	~		|
+
+units per season[Polygon]=
+	Irrigation Efficiency improvement[Polygon]/Efficiency increse per unit
+	~	unit
+	~		|
+
+Construction rate[Polygon]=
+	IF THEN ELSE(RWH cost per season[Polygon]<=Potential investment[Polygon],IF THEN ELSE\
+		(Constructed capacity[Polygon]<Total rainwater harvesting capacity, Incremental Increase\
+		[Polygon]/TIME STEP
+	*Policy RH
+	 , 0
+	 ),0)
+	~	m*m*m/season
+	~		|
+
+lining cost per season[canal]=
+	(Incremental Length lined[canal]/TIME STEP)*cost of lining*0.25
+	~	Rs/season
+	~		|
+
+Farm income is zero[Polygon]:THE CONDITION:
+	Farm income[Polygon]=0:IMPLIES:Tubewell discharge[Polygon]=0
+	~	
+	~		|
+
+Checking canal lining when policy is zero[canal]:THE CONDITION:
+	Policy Canal lining[canal]=0:IMPLIES:Actual lining cost[canal]=0:AND:canal decay rate\
+		[canal]=0:AND:Canal lining[canal]=0:AND:lined percentage[canal]=0:AND:Lining rate[canal\
+		]=0
+	~	
+	~		|
+
+Checking canal lining when policy is not zero[canal]:THE CONDITION:
+	Policy Canal lining[canal]=1:IMPLIES:Actual lining cost[canal]>=0:AND:canal decay rate\
+		[canal]>=0:AND:Canal lining[canal]>=0:AND:lined percentage[canal]>=0:AND:Lining rate\
+		[canal]>=0
+	~	
+	~		|
+
+Check when RWH is not zero[Polygon]:THE CONDITION:
+	Policy RH=1:IMPLIES:Constructed capacity[Polygon]>=0:AND:Silted capacity[Polygon]>=0\
+		:AND:Actual RWH Costs[Polygon]>=0:AND:
+		Construction Percentage[Polygon]>=0:AND:Actual costs maintenance RH[Polygon]>=0:AND:\
+		inflow[Polygon]>=0:AND:water in storage
+		[Polygon]>=0:AND:Evaporation1[Polygon]>=0:AND:Seepage1[Polygon]>=0:AND:SS supply[Polygon\
+		]>=0:AND:Siltation rate[Polygon
+		]>=0:AND:maintenance rate[Polygon]>=0:AND:Construction rate[Polygon]>=0:AND:Available capacity\
+		[Polygon]>=0:AND:Available canalsupplies contributions to SS[Polygon]>=0:AND:Available runoff contribution to SS\
+		[Polygon]>=0
+	~	
+	~		|
+
+Check when RWH is zero[Polygon]:THE CONDITION:
+	Policy RH=0:IMPLIES:Constructed capacity[Polygon]=0:AND:Silted capacity[Polygon]=0:AND:\
+		Actual RWH Costs[Polygon]=0:AND:
+		Construction Percentage[Polygon]=0:AND:Actual costs maintenance RH[Polygon]=0:AND:inflow\
+		[Polygon]=0:AND:water in storage
+		[Polygon]=0:AND:Evaporation1[Polygon]=0:AND:Seepage1[Polygon]=0:AND:SS supply[Polygon\
+		]=0:AND:Siltation rate[Polygon]=0
+		:AND:maintenance rate[Polygon]=0:AND:Construction rate[Polygon]=0:AND:Available capacity\
+		[Polygon]=0:AND:Available canalsupplies contributions to SS[Polygon]=0:AND:Available runoff contribution to SS\
+		[Polygon]=0
+	~	
+	~		|
+
+SS supply[Polygon]=
+	IF THEN ELSE(Water requirment[Polygon]>(Total canal supplies Crop[Polygon]+Rainfall contributions\
+		), MIN((Water requirment[Polygon
+	]-Rainfall contributions-Total canal supplies Crop[Polygon]) , (water in storage[Polygon\
+		]/TIME STEP-Evaporation1[Polygon]-Seepage1[Polygon])),0 )
+	~	m*m*m/season
+	~		|
+
+delay rate CL[canal]= DELAY FIXED (
+	Lining rate[canal], Average canal decay time , 0)
+	~	m/season
+	~		|
+
+Incremental Length lined[canal]=
+	lookup canal lined[canal](Year)*Total length[canal]
+	~	m
+	~		|
+
+canal decay rate[canal]=
+	IF THEN ELSE(Time<Average canal decay time , Canal lining zero time stock[canal]/Average canal decay time\
+		 , delay rate CL[canal] )
+	~	m/season
+	~		|
+
+AW zero time stock[Polygon]=
+	GET XLS CONSTANTS('?test', 'AWS' , 'b2*' )
+	~	m*m*m
+	~		|
+
+Debt zero time stock[Polygon]=
+	GET XLS CONSTANTS('?test', 'DEB' , 'b2*' )
+	~	Rs
+	~		|
+
+Irrigation efficiency zero time stock[Polygon]=
+	GET XLS CONSTANTS('?test', 'IEE' , 'b2*' )
+	~	Dmnl
+	~		|
+
+Water in storage zero time stock[Polygon]=
+	GET XLS CONSTANTS('?test', 'WIS' , 'b2*' )
+	~	m*m*m
+	~		|
+
+silted capacity zero time stock[Polygon]=
+	GET XLS CONSTANTS('?test', 'SC' , 'b2*' )
+	~	m*m*m
+	~		|
+
+constructed capacity zero time stock[Polygon]=
+	GET XLS CONSTANTS('?test', 'CC' , 'b2*' )
+	~	m*m*m
+	~		|
+
+Canal lining zero time stock[canal]=
+	GET XLS CONSTANTS('?test', 'CLS' , 'b2*' )
+	~	m
+	~		|
+
+Farm income zero time stock[Polygon]=
+	GET XLS CONSTANTS('?test', 'FIC' , 'b2*' )
+	~	Rs
+	~		|
+
+Gw[Polygon]=
+	Tubewell discharge[Polygon]/Area
+	~	m/season
+	~		~	:SUPPLEMENTARY 
+	|
+
+Lc[Polygon]=
+	Recharge to aquifer[Polygon]/Area
+	~	m/season
+	~		~	:SUPPLEMENTARY 
+	|
+
+Factor=
+	0.6
+	~	Dmnl
+	~		|
+
+Desired Additional TW installed[Polygon]=
+	IF THEN ELSE(Required capacity[Polygon]<=0, 0 , Tubewell installed per season[Polygon\
+		])
+	~	Nos/season
+	~	goal seek by using max capacity and desire capacity
+	|
+
+Tubewell installed per season[Polygon]=
+	0.75+Tubewell decay[Polygon]*Factor
+	~	Nos/season
+	~		|
+
+Expenditure[Polygon]=
+	Actual operating cost[Polygon]+Costs for potential tubewell installation[Polygon]+Farmer irrigation improvement share\
+		[Polygon]+Actual costs maintenance RH[Polygon]+Farmer water harvesting share[Polygon\
+		]+Lining expenditure[Polygon]+maintenance cost[Polygon]+Payments[Polygon]
+	~	Rs/season
+	~		|
+
+Farm income[Polygon]= INTEG (
+	Income[Polygon]-Expenditure[Polygon],
+		Farm income zero time stock[Polygon])
+	~	Rs
+	~		|
+
+Surface supply[Polygon]=
+	Canal contributions[Polygon]+Rainfall contributions
+	~	m*m*m/season
+	~		|
+
+Market rate CropB:INTERPOLATE::=
+	GET XLS DATA('?test', 'Market_Rate' , 'h' , 'N2' )
+	~	Rs/Kg
+	~		|
+
+Vdw[Polygon]=
+	Tubewell discharge[Polygon]
+	~	m*m*m/season
+	~		|
+
+Required flow rate[Polygon]=
+	Water requirment[Polygon]-Surface supply[Polygon]-SS supply[Polygon]
+	~	m*m*m/season
+	~	Average tubewell pumping rate in pakistan
+	|
+
+CY max CropA:INTERPOLATE::=
+	GET XLS DATA('?test', 'Crop_Yield' , 'b' , 'G2' )
+	~	Kg/(m*m)/season
+	~		|
+
+maximum allowable number of tubewells=
+	30
+	~	Nos
+	~		|
+
+Actual capacity of TW[Polygon]=
+	Tubewell Nos[Polygon]*Capacity per tubewell*Actual operating hours[Polygon]
+	~	m*m*m/season
+	~		|
+
+Debt[Polygon]= INTEG (
+	Loan[Polygon]-Payments[Polygon],
+		Debt zero time stock[Polygon])
+	~	Rs
+	~		|
+
+Actual maintenance rate[Polygon]=
+	IF THEN ELSE(maintenance cost[Polygon]=0, 1 , IF THEN ELSE( Potential investment[Polygon\
+		]>maintenance cost[Polygon], 1 , Potential investment[Polygon]/maintenance cost[Polygon\
+		] ) )
+	~	Dmnl
+	~		~	:SUPPLEMENTARY 
+	|
+
+Actual operating cost[Polygon]=
+	Tubewell Nos[Polygon]*Operating cost per hr*Actual operating hours[Polygon]
+	~	Rs/season
+	~		|
+
+Actual operating hours[Polygon]=
+	Max(MIN(Potential investment[Polygon]/(Operating cost per hr*Tubewell Nos[Polygon]),\
+		potential operating hours),0)
+	~	hrs/season/Nos
+	~		|
+
+Ky CropB=
+	1
+	~	Dmnl
+	~		|
+
+Payments[Polygon]=
+	Percent of total income/100*Income[Polygon]
+	~	Rs/season
+	~		|
+
+Percent of total income=
+	20
+	~	Dmnl
+	~		|
+
+annual maintence cost=
+	maintence cost year 2003*Maintence factor*(IF THEN ELSE(MODULO(Time, 2 )=0, 1 , 0 ))
+	~	Rs/season/Nos
+	~		|
+
+ECdw[Polygon]:INTERPOLATE::=
+	GET XLS DATA('?test', 'ECdw' , 'A' , 'B2' )
+	~	dS/m
+	~		|
+
+ECe CropB=
+	IF THEN ELSE(MODULO(Time, 2 )=0, 3.8 , 5.1 )
+	~	dS/m
+	~		|
+
+Loan[Polygon]=
+	(Interest rate*Debt[Polygon]+"Govt. loan")*(IF THEN ELSE(MODULO(Time, 2 )=0, 1 , 0 )\
+		)
+	~	Rs/season
+	~		|
+
+Eciw[Polygon]=
+	1.5
+	~	dS/m
+	~		|
+
+Costs per tubwell[Polygon]=
+	Cost factor*Installation cost[Polygon]
+	~	Rs/Nos
+	~	Use lookup function for including the dynamics of increase in cost with \
+		depth
+	|
+
+Average TW life=
+	20
+	~	season
+	~		|
+
+Fuel price in year 2003=
+	22.3
+	~	Rs/liters
+	~		|
+
+Soil salinity CropA[Polygon]:INTERPOLATE::=
+	GET XLS DATA('?test', 'SS' , 'A' , 'B2' )
+	~	dS/m
+	~		|
+
+Potential investment[Polygon]=
+	Farm income[Polygon]/TIME STEP*0.2
+	~	Rs/season
+	~		|
+
+maintence cost year 2003=
+	7080
+	~	Rs/season/Nos
+	~	Reference Groundwater economy of Pakistan
+	|
+
+Standard depth=
+	6
+	~	m
+	~		|
+
+Max Capacity Tubewells[Polygon]=
+	Tubewell Nos[Polygon]*Capacity per tubewell*potential operating hours
+	~	m*m*m/season
+	~		|
+
+Cost vs depth lookup(
+	[(0,0)-(5,6)],(0,1),(1,1),(1.01,1.47),(2,1.47),(2.01,2.8),(3,2.8),(3.01,4.9),(4,4.9)\
+		,(4.01,5.97),(5,5.97))
+	~	Dmnl
+	~		|
+
+Costs for potential tubewell installation[Polygon]=
+	Desired Additional TW installed[Polygon]*Costs per tubwell[Polygon]
+	~	Rs/season
+	~		|
+
+Capacity per tubewell=
+	100.8
+	~	m*m*m/hrs
+	~	capacity is one cusec when converted to m3/hr it come equal to 100.8
+	|
+
+Viw[Polygon]=
+	canal supply in polygon[Polygon]
+	~	m*m*m/season
+	~		|
+
+maintenance cost[Polygon]=
+	annual maintence cost*Tubewell Nos[Polygon]
+	~	Rs/season
+	~		|
+
+"Govt. loan":INTERPOLATE::=
+	GET XLS DATA('?test', 'Loan' , 'e' , 'F2' )
+	~	Rs/season
+	~	for now I am taking it constant but we need to link it with agriculture \
+		input
+	|
+
+Potential operational cost[Polygon]=
+	Tubewell Nos[Polygon]*potential operating hours*Fuel cost*Dieseal consumption
+	~	Rs/season
+	~		~	:SUPPLEMENTARY 
+	|
+
+Total water requirments[Polygon]= INTEG (
+	leaching fraction[Polygon],
+		0)
+	~	m*m*m
+	~		~	:SUPPLEMENTARY 
+	|
+
+Cost factor=
+	Lookup function(Year)
+	~	Dmnl
+	~		|
+
+Dieseal consumption=
+	2.5
+	~	liters/hrs
+	~		|
+
+Income[Polygon]=
+	Croped income[Polygon]+"Govt. loan"
+	~	Rs/season
+	~		|
+
+Unused[Polygon]=
+	Max(Tubewell discharge[Polygon]+Supply[Polygon]+SS supply[Polygon]-Consumption[Polygon\
+		],0)
+	~	m*m*m/season
+	~		|
+
+Inflation factor=
+	diesel cost lookup(Year)
+	~	Dmnl
+	~		|
+
+Tubewell discharge[Polygon]=
+	Max(MIN(Required flow rate[Polygon],Actual capacity of TW[Polygon]),0)
+	~	m*m*m/season
+	~		|
+
+diesel cost lookup=
+	GET XLS LOOKUPS('?test', 'Diesel_cost' , 'a', 'b2' )
+	~	Dmnl
+	~		|
+
+Fuel cost=
+	Fuel price in year 2003*Inflation factor
+	~	Rs/liters
+	~		|
+
+Required capacity[Polygon]=
+	IF THEN ELSE(Max Capacity Tubewells[Polygon]>Required flow rate[Polygon], 0 , -Max Capacity Tubewells\
+		[Polygon]+Required flow rate[Polygon])
+	~	m*m*m/season
+	~		|
+
+Standard cost=
+	56796
+	~	Rs/Nos
+	~		|
+
+watertable depth[Polygon]:INTERPOLATE::=
+	GET XLS DATA('?test', 'WTD' , 'A' , 'B2' )
+	~	m
+	~		|
+
+Maintence factor=
+	Lookup function(Year)
+	~	Dmnl
+	~		|
+
+Interest rate:INTERPOLATE::=
+	GET XLS DATA('?test', 'Loan' , 'e' , 'G2' )
+	~	fraction/season
+	~		|
+
+Threshold EC for tubewell installation=
+	10
+	~	dS/m
+	~		|
+
+potential operating hours=
+	IF THEN ELSE(MODULO(Time, 2 )=0, 235 , 355 )
+	~	hrs/season/Nos
+	~	235 rabi, 355 Kharif 
+		Operating hours per day = 5 Average days per year Rabi = 47 and Kharif = 71 
+		therefore potential operating hours per day Rabi = 47 * 5 = 235 and Kharif = 71 * 5 \
+		= 355
+		Reference = Groundwater economy of Pakistan
+	|
+
+Operating cost per hr=
+	Dieseal consumption*Fuel cost
+	~	Rs/hrs
+	~		|
+
+Starting year=
+	1990
+	~	Dmnl
+	~		|
+
+Consumption[Polygon]=
+	MIN(Canal contributions[Polygon]+Rainfall contributions+SS supply[Polygon]+Tubewell discharge\
+		[Polygon],Water requirment[Polygon])
+	~	m*m*m/season
+	~		|
+
+Supply[Polygon]=
+	Canal contributions[Polygon]+Rainfall contributions+Tubewell discharge[Polygon]
+	~	m*m*m/season
+	~		|
+
+AW[Polygon]= INTEG (
+	SS supply[Polygon]+Supply[Polygon]-Consumption[Polygon]-Unused[Polygon],
+		AW zero time stock[Polygon])
+	~	m*m*m
+	~		~	:SUPPLEMENTARY 
+	|
+
+water in storage[Polygon]= INTEG (
+	inflow[Polygon]-Evaporation1[Polygon]-Seepage1[Polygon]-SS supply[Polygon],
+		Water in storage zero time stock[Polygon])
+	~	m*m*m
+	~		|
+
+No of units[Polygon]=
+	Improvement rate[Polygon]/Efficiency increse per unit
+	~	unit/season
+	~		|
+
+Irrigation efficiency[Polygon]= INTEG (
+	Improvement rate[Polygon]-Structure decay rate[Polygon],
+		Irrigation efficiency zero time stock[Polygon])
+	~	Dmnl
+	~		|
+
+Irrigation Efficiency improvement[Polygon]=
+	Efficiency improvement lookup[Polygon](Year)
+	~	Dmnl
+	~		|
+
+Irrigation efficiency perception lookup(
+	[(0,0)-(1,1)],(0.6,1),(0.65,1),(0.7,1),(0.75,1),(0.85,0.6),(0.9,0.5),(1,0.01))
+	~	Dmnl
+	~		|
+
+Actual improvement cost[Polygon]=
+	No of units[Polygon]*Cost of installation
+	~	Rs/season
+	~		|
+
+Efficiency improvement lookup[Polygon]=
+	GET XLS LOOKUPS('?test', 'Irreff lookup' , 'a', 'b2' )
+	~	Dmnl
+	~		|
+
+Sturcture life=
+	30
+	~	season
+	~		|
+
+Governament irrigation improvement share[Polygon]=
+	Irrigation improvement investment[Polygon]*0.75
+	~	Rs/season
+	~		~	:SUPPLEMENTARY 
+	|
+
+Cost of installation=
+	Installation cost factor*Installation cost 2003
+	~	Rs/unit
+	~		|
+
+switch[Polygon]=
+	IF THEN ELSE(Irrigation efficiency[Polygon]<=Minimum efficiency, 0 , 1 )
+	~	Dmnl
+	~		|
+
+Irrigation improvement investment[Polygon]=
+	Actual improvement cost[Polygon]
+	~	Rs/season
+	~		|
+
+Efficiency increse per unit=
+	0.05
+	~	1/unit
+	~		|
+
+Efficiency goal=
+	0.85
+	~	Dmnl
+	~		|
+
+Structure decay rate[Polygon]= DELAY FIXED (
+	Improvement rate[Polygon]*switch[Polygon],Sturcture life,0)
+	~	1/season
+	~		|
+
+Policy Irrigation improvement=
+	1
+	~	Dmnl [0,1,1]
+	~		|
+
+Minimum efficiency=
+	0.62
+	~	Dmnl
+	~		|
+
+Installation cost factor=
+	Lookup function(Year)
+	~	Dmnl
+	~		|
+
+Farmer irrigation improvement share[Polygon]=
+	Irrigation improvement investment[Polygon]*0.25
+	~	Rs/season
+	~		|
+
+Problem perception of irrigation efficiency[Polygon]=
+	Irrigation efficiency perception lookup(Irrigation efficiency[Polygon]/Efficiency goal\
+		)
+	~	Dmnl
+	~		|
+
+Installation cost 2003=
+	5900
+	~	Rs/unit
+	~		|
+
+Investment RH[Polygon]=
+	Actual RWH Costs[Polygon]
+	~	Rs/season
+	~		|
+
+Siltation perception Farmers[Polygon]=
+	IF THEN ELSE(Constructed capacity[Polygon]=0, 0 , Siltation perception lookup(Silted capacity\
+		[Polygon]/Constructed capacity[Polygon]) )
+	~	Dmnl
+	~		|
+
+Actual costs maintenance RH[Polygon]=
+	Cost of maintenance*maintenance rate[Polygon]
+	~	Rs/season
+	~		|
+
+Cost of pond=
+	Pond cost factor*Pond cost year 2003
+	~	Rs/(m*m*m)
+	~		|
+
+Actual RWH Costs[Polygon]=
+	Cost of pond*Construction rate[Polygon]
+	~	Rs/season
+	~		|
+
+Length=
+	14
+	~	m
+	~		|
+
+Farmer water harvesting share[Polygon]=
+	Investment RH[Polygon]*0.25
+	~	Rs/season
+	~		|
+
+maintenance rate[Polygon]=
+	Silted capacity[Polygon]/TIME STEP*Siltation perception Farmers[Polygon]
+	~	m*m*m/season
+	~		|
+
+Tank width=
+	14
+	~	m
+	~		|
+
+tanks per cell=
+	1000
+	~	Dmnl
+	~		|
+
+Policy RH=
+	1
+	~	Dmnl
+	~		|
+
+Siltation perception lookup(
+	[(0,0)-(1,1)],(0,0),(0.2,0),(0.5,0),(0.63,0.2),(0.688,0.3),(0.792,0.5),(0.89,0.9),(0.9\
+		,0.9),(0.94,1),(0.96,1),(1,1))
+	~	Dmnl
+	~		|
+
+Available canalsupplies contributions to SS[Polygon]=
+	IF THEN ELSE(water in storage[Polygon]<Available capacity[Polygon], MIN(canal supply in polygon\
+		[Polygon]-Canal contributions
+	[Polygon],(Available capacity[Polygon]-water in storage[Polygon])/TIME STEP) , 0)
+	~	m*m*m/season
+	~		|
+
+Available capacity[Polygon]=
+	Max(Constructed capacity[Polygon]-Silted capacity[Polygon],0)
+	~	m*m*m
+	~		|
+
+Available runoff contribution to SS[Polygon]=
+	IF THEN ELSE(water in storage[Polygon]<Available capacity[Polygon], MIN(Runoff[Polygon\
+		],
+	(Available capacity[Polygon]-water in storage[Polygon])/TIME STEP) , 0)
+	~	m*m*m/season
+	~		|
+
+Maintenance cost factor=
+	Lookup function(Year)
+	~	Dmnl
+	~		|
+
+Constructed capacity[Polygon]= INTEG (
+	Construction rate[Polygon],
+		constructed capacity zero time stock[Polygon])
+	~	m*m*m
+	~		|
+
+Maintence cost yesr 2003=
+	590
+	~	Rs/(m*m*m)
+	~		|
+
+Silted capacity[Polygon]= INTEG (
+	Siltation rate[Polygon]-maintenance rate[Polygon],
+		silted capacity zero time stock[Polygon])
+	~	m*m*m
+	~		|
+
+"Govt. water harvesting share"[Polygon]=
+	Investment RH[Polygon]*0.75
+	~	Rs/season
+	~		~	:SUPPLEMENTARY 
+	|
+
+Cost of maintenance=
+	Maintenance cost factor*Maintence cost yesr 2003
+	~	Rs/(m*m*m)
+	~		|
+
+Siltation rate[Polygon]=
+	IF THEN ELSE(Available capacity[Polygon]>0, Sediment doposition rate*tanks per cell \
+		, 0 )
+	~	m*m*m/season
+	~		|
+
+Construction Percentage[Polygon]=
+	Constructed capacity[Polygon]/Total rainwater harvesting capacity
+	~	Dmnl
+	~		|
+
+Capcacity Lookup=
+	GET XLS LOOKUPS('?test', 'Capacity increase' , 'a' , 'b2' )
+	~	Dmnl
+	~		|
+
+Pond cost factor=
+	Lookup function(Year)
+	~	Dmnl
+	~		|
+
+Incremental Increase[Polygon]=
+	Max(Capacity Increase[Polygon]-Constructed capacity[Polygon],0)
+	~	m*m*m
+	~		|
+
+Capacity Increase[Polygon]=
+	Capcacity Lookup(Year)*Total rainwater harvesting capacity
+	~	m*m*m
+	~		|
+
+Pond cost year 2003=
+	2950
+	~	Rs/(m*m*m)
+	~		|
+
+Sediment doposition rate=
+	0.021
+	~	m*m*m/season
+	~		|
+
+Total rainwater harvesting capacity=
+	Height*Length*Tank width*tanks per cell
+	~	m*m*m
+	~		|
+
+Height=
+	2
+	~	m
+	~		|
+
+Investment[canal]=
+	Actual lining cost[canal]
+	~	Rs/season
+	~		|
+
+CL share[canal]=
+	Farmer share[canal]/Nos of served polygon[canal]
+	~	Rs/season
+	~		|
+
+cost of lining=
+	Lining cost factor*Lining cost year 2003
+	~	Rs/m
+	~		|
+
+Actual lining cost[canal]=
+	cost of lining*Lining rate[canal]
+	~	Rs/season
+	~		|
+
+lookup canal lined[canal]=
+	GET XLS LOOKUPS('?test', 'Canalining policy' , 'a', 'b2' )
+	~	Dmnl
+	~		|
+
+lined percentage[canal]=
+	Canal lining[canal]/Total length[canal]
+	~	Dmnl
+	~		|
+
+Lining cost factor=
+	Lookup function(Year)
+	~	Dmnl
+	~		|
+
+Lining cost year 2003=
+	59000
+	~	Rs/m
+	~		|
+
+Lining expenditure[Polygon]=
+	SUM(Per Polygon CL share[Polygon,canal!])
+	~	Rs/season
+	~		|
+
+"Govt. share"[canal]=
+	Investment[canal]*0.75
+	~	Rs/season
+	~		~	:SUPPLEMENTARY 
+	|
+
+Policy Canal lining[canal]=
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	~	Dmnl
+	~		|
+
+Lookup function=
+	GET XLS LOOKUPS('?test', 'Inflation' , 'a', 'b2' )
+	~	Dmnl
+	~		|
+
+Average canal decay time=
+	30
+	~	season
+	~		|
+
+Year=
+	RAMP( 1 , 0 , 96 )/2+Starting year
+	~	Dmnl
+	~	Ramp (1,0,24)/2+1990 mean 1/2+1990 = 1990.5 and if it is Ramp \
+		(2,0,24)/2+1990 then it will be 1990+2/2 = 1991 and in case of Ramp \
+		(3,0,24)/2+1990 it will be 3/2+1990 = 1991.5 in that case 3 will be slope \
+		and increasing 3 will increase stepness of slope.
+	|
+
+Canal lining[canal]= INTEG (
+	Lining rate[canal]-canal decay rate[canal],
+		Canal lining zero time stock[canal])
+	~	m
+	~		|
+
+Problem perception state of canals[canal]=
+	Perception lookup(Canal lining[canal]/Total length[canal])
+	~	Dmnl
+	~		|
+
+Perception lookup(
+	[(0,0)-(1,1)],(0,1),(0.2,1),(0.5,1),(0.63,1),(0.688,0.98),(0.792,0.93),(0.89,0.82),(\
+		0.9,0.72),(0.94,0.64),(0.96,0.53),(1,0))
+	~	Dmnl
+	~		|
+
+Farmer share[canal]=
+	Investment[canal]*0.25
+	~	Rs/season
+	~		|
+
+Per Polygon CL share[Polygon,canal]=
+	CL share[canal]*Polygonal factor[Polygon,canal]
+	~	Rs/season
+	~		|
+
+Polygonal factor[Polygon,canal]=
+	GET XLS CONSTANTS( '?test' , 'Active' , 'b2' )
+	~	Dmnl
+	~		|
+
+Total length[canal]=
+	GET XLS CONSTANTS('?test', 'CL' , 'b2*' )
+	~	m
+	~		|
+
+Recharge to aquifer rainfall[Polygon]=
+	Deep percolated[Polygon]
+	~	m*m*m/season
+	~	Will be use as Lc in SahysMod
+	|
+
+Rainfall volume=
+	Rainfall*Area
+	~	m*m*m/season
+	~		|
+
+inflow[Polygon]=
+	Available canalsupplies contributions to SS[Polygon]+Available runoff contribution to SS\
+		[Polygon]
+	~	m*m*m/season
+	~		|
+
+Cp rainfall=
+	0.2
+	~	Dmnl
+	~		|
+
+Uneffective rainfall[Polygon]=
+	Rainfall volume-Rainfall contributions
+	~	m*m*m/season
+	~		|
+
+Runoff[Polygon]=
+	Uneffective rainfall[Polygon]-Deep percolated[Polygon]
+	~	m*m*m/season
+	~		|
+
+Deep percolated[Polygon]=
+	Uneffective rainfall[Polygon]*Cp rainfall
+	~	m*m*m/season
+	~		|
+
+P HassuDyCa16:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'Q5', 'Q22' , 'N' )
+	~	
+	~		|
+
+T ModiMrCa20:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'U5', 'U7' , 'N' )
+	~	
+	~		|
+
+S JaralaMrCa19:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'T5', 'T9' , 'N' )
+	~	
+	~		|
+
+M KakiLMrCa13:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'N5', 'N7' , 'N' )
+	~	
+	~		|
+
+O ArroutiMrCa15:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'P5', 'P7' , 'N' )
+	~	
+	~		|
+
+R DarkhanaDyCa18:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'S5', 'S13' , 'N' )
+	~	
+	~		|
+
+H DauranpurMrCa8:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'I5', 'I10' , 'N' )
+	~	
+	~		|
+
+J FaridMrCa10:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'K5', 'K11' , 'N' )
+	~	
+	~		|
+
+N BachrianwalaMrCa14:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'O5', 'O11' , 'N' )
+	~	
+	~		|
+
+Q BasiraDyCa17:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'R5', 'R9' , 'N' )
+	~	
+	~		|
+
+L KakiRMrCa12:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'M5', 'M7' , 'N' )
+	~	
+	~		|
+
+I PipliMrCa9:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'J5', 'J10' , 'N' )
+	~	
+	~		|
+
+U DangraMrCa21:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'V5', 'V7' , 'N' )
+	~	
+	~		|
+
+K RakhBhaMrCa11:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'L5', 'L14' , 'N' )
+	~	
+	~		|
+
+G KoraMrCa7:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'H5', 'H9' , 'N' )
+	~	
+	~		|
+
+D RajbanaMinorC4:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'E5', 'E7' , 'N' )
+	~	
+	~		|
+
+C JalalpurminorC3:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'D5', 'D23' , 'N' )
+	~	
+	~		|
+
+B MariminorC2:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'C5', 'C23' , 'N' )
+	~	
+	~		|
+
+A ShorkotdistryC1:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'b5', 'b18' , 'N' )
+	~	
+	~		|
+
+E LakiMrCa5:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'f5', 'f19' , 'N' )
+	~	
+	~		|
+
+Distributed supply[Polygon,canal]=
+	IF THEN ELSE(Distribution switch[canal]=1, IF THEN ELSE(Field location[Polygon,canal\
+		]<0.33, Supply after losses[canal]*
+	Distribution factor[Polygon,canal
+	]/Canal division[canal,Head], IF THEN ELSE(Field location[Polygon,canal]<0.66:AND:Field location\
+		[Polygon,canal]>0.33, Supply after losses[canal
+	]*Distribution factor[Polygon
+	,canal]/Canal division[canal,Middle] , Supply after losses[canal]*Distribution factor\
+		[Polygon,canal]/Canal division[canal,Tail] ) )
+	 , Equally distributed[canal]*Nos of served polygon[canal]*(1/Nos of served polygon[\
+		canal]) )
+	~	m*m*m/season
+	~		|
+
+canal supply in polygon[Polygon]=
+	SUM(Distributed supply[Polygon,canal!])
+	~	m*m*m/season
+	~		|
+
+F GaghDyCa6:
+	GET XLS SUBSCRIPT( '?test' , 'Canalsvspolygon', 'G5', 'G27' , 'N' )
+	~	
+	~		|
+
+Seepage distribution[Polygon,canal]=
+	IF THEN ELSE(Distribution switch[canal]=1, IF THEN ELSE(Seepage field location[Polygon\
+		,canal]<0.33, Net canal seepage[canal
+	]*
+	Seepage distribution factor[Polygon,canal]/Canal division[canal,Head], IF THEN ELSE(\
+		Seepage field location[Polygon,canal
+	]<0.66:AND:Seepage field location[Polygon,canal]>0.33, Net canal seepage[canal]*Seepage distribution factor\
+		[Polygon,canal]/Canal division
+	[canal,Middle] , Net canal seepage[canal]*Seepage distribution factor[Polygon,canal]\
+		/Canal division[canal,Tail] ) )
+	 , Equal distribution of seepage[canal] )
+	~	m*m*m/season
+	~		|
+
+Seepage field location[Polygon,canal]=
+	IF THEN ELSE ( active seep[Polygon,canal]=1 , Polygon RD[Polygon]/Channel length[canal\
+		] , 0)
+	~	Dmnl
+	~		|
+
+active seep[Polygon,canal]=
+	GET XLS CONSTANTS( '?test' , 'Active' , 'b2' )
+	~	Dmnl
+	~		|
+
+Seepage distribution factor[Polygon,canal]=
+	Polygon lookup(Seepage field location[Polygon,canal])
+	~	Dmnl
+	~		|
+
+Cp=
+	0.2
+	~	Dmnl
+	~		|
+
+Polygon lookup(
+	[(0,0)-(1,1)],(0,0),(0.0015,0.45),(0.329,0.45),(0.33,0.35),(0.659,0.35),(0.66,0.2),(\
+		0.999,0.2),(1,0.2))
+	~	Dmnl
+	~		|
+
+No of polygon over canal[canal]=
+	14,19,19,3,15,23,5,6,6,7,10,3,3,7,3,18,5,9,5,3,3
+	~	Dmnl
+	~		|
+
+Polygon RD[Polygon]=
+	GET XLS CONSTANTS('?test', 'RD' , 'b2*' )
+	~	m
+	~		|
+
+Equal distribution of seepage[canal]=
+	Net canal seepage[canal]/(No of polygon over canal[canal])
+	~	m*m*m/season
+	~		|
+
+Canal division[canal,position]=
+	GET XLS CONSTANTS( '?test' , 'Position' , 'b2' )
+	~	Dmnl
+	~		|
+
+position:
+	Head,Middle,Tail
+	~	Dmnl
+	~		|
+
+Equally distributed[canal]=
+	Supply after losses[canal]/(Nos of served polygon[canal])
+	~	m*m*m/season
+	~		|
+
+Distribution factor[Polygon,canal]=
+	Distribution lookup(Field location[Polygon,canal])
+	~	Dmnl
+	~		|
+
+Active[Polygon,canal]=
+	GET XLS CONSTANTS( '?test' , 'Active' , 'b2' )
+	~	Dmnl
+	~		|
+
+Field location[Polygon,canal]=
+	IF THEN ELSE ( Active[Polygon,canal]=1 , RD[Polygon]/Channel length[canal] , 0)
+	~	Dmnl
+	~		|
+
+Width=
+	5
+	~	m
+	~		|
+
+Seasonal evaporation:=
+	GET XLS DATA( '?test' , 'SEvapo', 'a', 'b2' )
+	~	m/season
+	~		|
+
+SF=
+	0.005
+	~	m/season
+	~		|
+
+Evaporation1[Polygon]=
+	MIN(Width*Width*Seasonal evaporation,water in storage[Polygon]/TIME STEP)
+	~	m*m*m/season
+	~		|
+
+Seepage1[Polygon]=
+	MIN(SF*(Width*Width+(4*water in storage[Polygon]/Width)),water in storage[Polygon]/TIME STEP\
+		)
+	~	m*m*m/season
+	~		|
+
+Reference ET[Polygon]:INTERPOLATE::=
+	GET XLS DATA('?test', 'ETref' , 'b' , 'c3' )
+	~	m/season
+	~		|
+
+Kccrop:
+	kc1,kc2,kc3,kc4
+	~	Dmnl
+	~		|
+
+Area=
+	4.41e+006
+	~	m*m
+	~		|
+
+Area fraction CropB[Polygon]:INTERPOLATE::=
+	GET XLS DATA('?test', 'AF' , 'A' , 'HI2' )
+	~	Dmnl
+	~	Area fraction is the fraction (0-1) of the polygon covered by a specific \
+		crop. The area fraction is read from an excel file, where C1 (wheat) and \
+		C2 (grass) represent first-season crops and C3 (cotton) and C4 (rice) \
+		represent second-season crops.
+	|
+
+canal:
+	GET XLS SUBSCRIPT( '?test' , 'Subscript', 'b1', 'b21' , 'Ca' )
+	~	
+	~		|
+
+Canal contributions[Polygon]=
+	IF THEN ELSE(Water requirment[Polygon]>Rainfall contributions, MIN(Water requirment[\
+		Polygon]-Rainfall contributions,canal supply in polygon[Polygon]) , 0 )
+	~	m*m*m/season
+	~		|
+
+canal evaporation[canal]=
+	MIN(Canal supply at head[canal]*Ep,Canal supply at head[canal])
+	~	m*m*m/season
+	~	Shold include average evapotrapiration distribution in different month and \
+		the surface area.or we need to find out the amount of percentage of water \
+		evaporate from the canal deliveries (from literature)
+	|
+
+Canal supply at head[canal]:INTERPOLATE::=
+	GET XLS DATA('?test', 'Canals supply' , 'b' , 'c4' )
+	~	m*m*m/season
+	~		|
+
+Channel length[canal]=
+	GET XLS CONSTANTS('?test', 'CL' , 'b2*' )
+	~	m
+	~		|
+
+crops:
+	c1,c2,c3,c4
+	~	
+	~		|
+
+Distribution lookup(
+	[(0,0)-(1,1)],(0,0),(0.0015,0.45),(0.329,0.45),(0.33,0.35),(0.659,0.35),(0.66,0.2),(\
+		0.999,0.2),(1,0.2))
+	~	Dmnl
+	~		|
+
+Distribution switch[canal]=
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	~	Dmnl [0,1]
+	~		|
+
+Effective rainfall:=
+	GET XLS DATA( '?test' , 'rainfall', 'a', 'c2' )
+	~	m/season
+	~		|
+
+Ep=
+	0.08
+	~	Dmnl
+	~		|
+
+Nos of served polygon[canal]=
+	14,19,19,3,15,23,5,6,6,7,10,3,3,7,3,18,5,9,5,3,3
+	~	Dmnl
+	~		|
+
+percentage losses lined=
+	0
+	~	Dmnl
+	~		|
+
+percentage losses unlined=
+	0.44
+	~	Dmnl
+	~		~	:SUPPLEMENTARY 
+	|
+
+Polygon:
+	GET XLS SUBSCRIPT( '?test' , 'Subscript', 'a1', 'a215' , 'N' )
+	~	
+	~		|
+
+Rainfall:=
+	GET XLS DATA( '?test' , 'rainfall', 'a', 'b2' )
+	~	m/season
+	~		|
+
+RD[Polygon]=
+	GET XLS CONSTANTS('?test', 'RD' , 'b2*' )
+	~	m
+	~		|
+
+Rainfall contributions:INTERPOLATE::=
+	Effective rainfall*Area
+	~	m*m*m/season
+	~	Effective rainfall is calculated by using standard table given in FAO \
+		(Irrigation water management)
+	|
+
+Supply after losses[canal]=
+	Canal supply at head[canal]-Net canal seepage[canal]-canal evaporation[canal]
+	~	m*m*m/season
+	~		|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 24
+	~	season
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 0
+	~	season
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP
+	~	season [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 1
+	~	season [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+10,1,AW,1269,3135,70,36,3,131,0,0,0,0,0,0
+12,2,48,1019,3125,10,8,0,3,0,0,-1,0,0,0
+1,3,5,1,4,0,0,22,0,0,0,-1--1--1,,1|(1163,3126)|
+1,4,5,2,100,0,0,22,0,0,0,-1--1--1,,1|(1072,3126)|
+11,5,48,1121,3126,6,8,34,3,0,0,1,0,0,0
+10,6,Supply,1121,3145,23,11,40,3,0,0,-1,0,0,0
+10,7,canal supply per cropB,1151,2630,52,19,8,131,0,0,0,0,0,0
+10,8,Time,1148,2507,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,9,water in storage,1265,3432,66,47,3,131,0,0,0,0,0,0
+12,10,48,1005,3432,10,8,0,3,0,0,-1,0,0,0
+1,11,13,9,4,0,0,22,0,0,0,-1--1--1,,1|(1151,3432)|
+1,12,13,10,100,0,0,22,0,0,0,-1--1--1,,1|(1053,3432)|
+11,13,48,1098,3432,6,8,34,3,0,0,1,0,0,0
+10,14,inflow,1098,3451,20,11,40,3,0,0,-1,0,0,0
+10,15,Rainfall contributions,1166,3008,41,19,8,3,0,0,0,0,0,0
+1,16,15,6,1,0,0,0,0,64,0,-1--1--1,,1|(1143,3064)|
+10,17,Total canal supplies Crop,951,2677,44,27,8,131,0,0,0,0,0,0
+1,18,7,17,1,0,0,0,0,64,0,-1--1--1,,1|(1008,2644)|
+10,19,Canal contributions,1070,3053,41,19,8,3,0,0,0,0,0,0
+10,20,Water requirment,890,2861,55,11,8,3,0,0,-1,0,0,0
+1,21,20,19,1,0,0,0,0,64,0,-1--1--1,,1|(955,2950)|
+1,22,19,6,1,0,0,0,0,64,0,-1--1--1,,1|(1073,3085)|
+10,23,Available canalsupplies contributions to SS,860,3229,73,19,8,3,0,0,0,0,0,0
+1,24,19,23,1,0,0,0,0,64,0,-1--1--1,,1|(934,3129)|
+10,25,canal evaporation,494,2713,55,11,8,3,0,4,0,0,0,0,-1--1--1,255-255-0,|12||0-0-0
+10,26,Canal supply at head,429,2573,49,19,8,3,0,0,0,0,0,0
+1,27,26,25,0,0,0,0,0,64,0,-1--1--1,,1|(459,2641)|
+10,28,Supply after losses,385,2788,59,11,8,3,0,0,0,0,0,0
+1,29,26,28,0,0,0,0,0,64,0,-1--1--1,,1|(407,2678)|
+1,30,25,28,0,0,0,0,0,64,0,-1--1--1,,1|(445,2747)|
+10,31,Distributed supply,361,2917,57,11,8,3,0,0,0,0,0,0
+10,32,Distribution switch,117,3036,58,11,8,3,0,0,0,0,0,0
+1,33,32,31,1,0,0,0,0,64,0,-1--1--1,,1|(278,3007)|
+10,34,Nos of served polygon,166,2911,46,19,8,3,0,0,0,0,0,0
+10,35,Equally distributed,292,2847,58,11,8,3,0,0,0,0,0,0
+1,36,34,35,1,0,0,0,0,64,0,-1--1--1,,1|(231,2873)|
+1,37,35,31,0,0,0,0,0,64,0,-1--1--1,,1|(321,2878)|
+10,38,Crop area CropB,1444,2818,43,20,8,131,0,0,-1,0,0,0
+1,39,38,7,1,0,0,0,0,64,0,-1--1--1,,1|(1327,2699)|
+10,40,crop seasonal water requirement CropA,1017,2553,64,19,8,3,0,4,0,0,0,0,-1--1--1,0-255-255,|12||0-0-0
+1,41,40,7,1,0,0,0,0,64,0,-1--1--1,,1|(1074,2592)|
+1,42,23,13,1,0,0,0,0,64,0,-1--1--1,,1|(926,3325)|
+1,43,9,23,1,0,0,0,0,64,0,-1--1--1,,1|(878,3394)|
+10,44,Area,1485,2892,17,11,8,3,0,0,-1,0,0,0
+10,45,Distribution factor,497,2859,56,11,8,131,0,0,0,0,0,0
+10,46,Field location,654,2903,43,11,8,3,0,0,0,0,0,0
+10,47,Channel length,810,2945,46,11,8,3,0,0,0,0,0,0
+10,48,RD,800,2893,13,11,8,3,0,0,0,0,0,0
+1,49,48,46,0,0,0,0,0,64,0,-1--1--1,,1|(748,2897)|
+1,50,47,46,0,0,0,0,0,64,0,-1--1--1,,1|(738,2926)|
+10,51,Distribution lookup,627,2803,60,11,8,3,0,0,0,0,0,0
+1,52,46,45,0,0,0,0,0,64,0,-1--1--1,,1|(582,2883)|
+1,53,34,31,1,0,0,0,0,64,0,-1--1--1,,1|(251,2918)|
+10,54,canal supply in polygon,935,3015,47,19,8,3,0,0,0,0,0,0
+1,55,31,54,1,0,0,0,0,64,0,-1--1--1,,1|(546,3029)|
+1,56,54,19,1,0,0,0,0,64,0,-1--1--1,,1|(1009,3033)|
+1,57,54,23,1,0,0,0,0,64,0,-1--1--1,,1|(851,3089)|
+1,58,19,7,1,0,0,0,0,64,0,-1--1--1,,1|(974,2808)|
+1,59,15,19,1,0,0,0,0,64,0,-1--1--1,,1|(1107,3018)|
+10,60,Net canal seepage,271,2713,58,11,8,3,0,0,-1,0,0,0
+1,61,60,28,0,0,0,0,0,64,0,-1--1--1,,1|(321,2747)|
+10,62,Area,1104,2935,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,63,44,38,0,0,0,0,0,0,0,-1--1--1,,1|(1470,2866)|
+10,64,Area fraction CropB,1689,2632,61,22,8,131,0,0,-1,0,0,0
+10,65,Effective rainfall,1287,2891,59,11,8,2,0,7,-1,0,0,0,128-128-128,0-255-255,|12||128-128-128
+1,66,65,15,0,0,0,0,0,64,0,-1--1--1,,1|(1235,2941)|
+10,67,percentage losses lined,141,2629,56,19,8,3,0,0,-1,0,0,0
+10,68,percentage losses unlined,204,2570,56,19,8,3,0,0,-1,0,0,0
+1,69,67,60,0,0,0,0,0,64,0,-1--1--1,,1|(205,2672)|
+10,70,Ep,562,2662,11,11,8,3,0,0,-1,0,0,0
+1,71,70,25,1,0,0,0,0,64,0,-1--1--1,,1|(512,2668)|
+10,72,Reference ET,830,2525,44,11,8,3,0,0,0,0,0,0
+10,73,Kc CropB,883,2341,37,18,8,131,0,0,0,0,0,0
+10,74,ETc Rate CropB,808,2447,63,17,8,131,0,0,-1,0,0,0
+1,75,38,74,1,0,0,0,0,0,0,-1--1--1,,1|(1262,2469)|
+1,76,72,74,0,0,0,0,0,64,0,-1--1--1,,1|(821,2496)|
+1,77,73,74,0,0,0,0,0,64,0,-1--1--1,,1|(849,2389)|
+1,78,74,20,1,0,0,0,0,64,0,-1--1--1,,1|(770,2698)|
+10,79,TIME STEP,1590,3511,41,11,8,3,0,0,-1,0,0,0
+12,80,48,1565,3405,10,8,0,3,0,0,-1,0,0,0
+1,81,83,80,4,0,0,22,0,0,0,-1--1--1,,1|(1500,3405)|
+1,82,83,9,100,0,0,22,0,0,0,-1--1--1,,1|(1382,3405)|
+11,83,48,1440,3405,6,8,34,3,0,0,1,0,0,0
+10,84,Evaporation1,1440,3424,43,11,40,3,0,0,-1,0,0,0
+12,85,48,1570,3461,10,8,0,3,0,0,-1,0,0,0
+1,86,88,85,4,0,0,22,0,0,0,-1--1--1,,1|(1505,3461)|
+1,87,88,9,100,0,0,22,0,0,0,-1--1--1,,1|(1385,3461)|
+11,88,48,1445,3461,6,8,34,3,0,0,1,0,0,0
+10,89,Seepage1,1445,3480,32,11,40,3,0,0,-1,0,0,0
+10,90,Seasonal evaporation,1463,3334,38,19,8,3,0,4,0,0,0,0,-1--1--1,0-255-255,|12||0-0-0
+10,91,SF,1446,3564,11,11,8,3,0,0,0,0,0,0
+10,92,Width,1527,3438,21,11,8,3,0,0,0,0,0,0
+1,93,92,84,1,0,0,0,0,64,0,-1--1--1,,1|(1502,3418)|
+1,94,92,89,1,0,0,0,0,64,0,-1--1--1,,1|(1490,3473)|
+1,95,90,83,1,0,0,0,0,64,0,-1--1--1,,1|(1459,3370)|
+1,96,91,89,1,0,0,0,0,64,0,-1--1--1,,1|(1443,3533)|
+1,97,79,84,1,0,0,0,0,64,0,-1--1--1,,1|(1606,3433)|
+1,98,79,89,1,0,0,0,0,64,0,-1--1--1,,1|(1490,3522)|
+1,99,9,84,1,0,0,0,0,64,0,-1--1--1,,1|(1343,3369)|
+1,100,9,89,1,0,0,0,0,64,0,-1--1--1,,1|(1348,3505)|
+10,101,Active,769,2994,22,11,8,3,0,0,0,0,0,0
+1,102,101,46,0,0,0,0,0,64,0,-1--1--1,,1|(717,2953)|
+1,103,51,45,0,0,0,0,0,64,0,-1--1--1,,1|(568,2829)|
+1,104,45,31,0,0,0,0,0,64,0,-1--1--1,,1|(435,2886)|
+1,105,46,31,0,0,0,0,0,64,0,-1--1--1,,1|(521,2910)|
+1,106,28,35,0,0,0,0,0,64,0,-1--1--1,,1|(344,2814)|
+1,107,28,31,0,0,0,0,0,64,0,-1--1--1,,1|(374,2846)|
+10,108,Canal division,520,2943,44,11,8,3,0,0,0,0,0,0
+1,109,108,31,0,0,0,0,0,64,0,-1--1--1,,1|(453,2933)|
+10,110,Recharge to aquifer,60,3467,39,19,8,3,0,4,0,0,0,0,-1--1--1,64-160-98,|12||0-0-0
+10,111,No of polygon over canal,-140,3225,47,19,8,3,0,0,0,0,0,0
+10,112,Equal distribution of seepage,-107,3137,64,19,8,3,0,0,0,0,0,0
+10,113,Seepage distribution,14,3181,35,19,8,3,0,0,0,0,0,0
+1,114,111,112,0,0,0,0,0,64,0,-1--1--1,,1|(-127,3188)|
+1,115,32,113,1,0,0,0,0,64,0,-1--1--1,,1|(15,3168)|
+10,116,Seepage field location,289,3170,43,19,8,3,0,0,0,0,0,0
+10,117,Polygon RD,471,3105,39,11,8,3,0,0,0,0,0,0
+10,118,Channel length,501,3188,55,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,119,Seepage distribution factor,184,3107,56,19,8,3,0,0,0,0,0,0
+10,120,Polygon lookup,301,3048,50,11,8,3,0,0,0,0,0,0
+1,121,119,113,0,0,0,0,0,64,0,-1--1--1,,1|(101,3144)|
+1,122,117,116,0,0,0,0,0,64,0,-1--1--1,,1|(393,3134)|
+1,123,118,116,0,0,0,0,0,64,0,-1--1--1,,1|(395,3180)|
+1,124,120,119,0,0,0,0,0,64,0,-1--1--1,,1|(256,3071)|
+1,125,116,119,0,0,0,0,0,64,0,-1--1--1,,1|(242,3143)|
+10,126,Canal seepage per polygon,-22,3397,59,19,8,131,0,0,0,0,0,0
+1,127,113,126,1,0,0,0,0,64,0,-1--1--1,,1|(11,3263)|
+1,128,126,110,1,0,0,0,0,64,0,-1--1--1,,1|(42,3437)|
+10,129,Cp,-98,3471,21,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,130,60,112,1,0,0,0,0,64,0,-1--1--1,,1|(-2,2930)|
+10,131,active seep,416,3243,36,11,8,3,0,0,0,0,0,0
+1,132,131,116,0,0,0,0,0,64,0,-1--1--1,,1|(365,3214)|
+1,133,116,113,0,0,0,0,0,64,0,-1--1--1,,1|(154,3176)|
+10,134,Canal division,70,3289,53,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,135,134,113,0,0,0,0,0,64,0,-1--1--1,,1|(47,3245)|
+1,136,60,113,1,0,0,0,0,64,0,-1--1--1,,1|(87,2885)|
+1,137,112,113,1,0,0,0,0,64,0,-1--1--1,,1|(-65,3196)|
+10,138,Rainfall volume,1580,2930,48,11,8,131,0,0,0,0,0,0
+10,139,Available runoff contribution to SS,1243,3679,58,19,8,3,0,0,0,0,0,0
+10,140,Recharge to aquifer rainfall,1655,3273,54,26,8,131,0,4,0,0,0,0,-1--1--1,64-160-98,|12||0-0-0
+10,141,Uneffective rainfall,1652,3064,58,11,8,3,0,0,0,0,0,0
+1,142,138,141,0,0,0,0,0,64,0,-1--1--1,,1|(1612,2991)|
+10,143,Deep percolated,1661,3188,53,11,8,3,0,0,0,0,0,0
+10,144,Cp rainfall,1759,3145,25,21,8,131,0,0,0,0,0,0
+1,145,141,143,1,0,0,0,0,64,0,-1--1--1,,1|(1638,3133)|
+1,146,144,143,0,0,0,0,0,64,0,-1--1--1,,1|(1716,3164)|
+10,147,Runoff,1876,3240,22,11,8,3,0,0,0,0,0,0
+1,148,141,147,1,0,0,0,0,64,0,-1--1--1,,1|(1825,3106)|
+1,149,143,147,1,0,0,0,0,64,0,-1--1--1,,1|(1764,3254)|
+1,150,143,140,1,0,0,0,0,64,0,-1--1--1,,1|(1657,3238)|
+10,151,TIME STEP,1151,3779,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,152,Rainfall,1681,2880,24,11,8,3,0,0,-1,0,0,0
+1,153,44,138,0,0,0,0,0,64,0,-1--1--1,,1|(1520,2906)|
+1,154,152,138,0,0,0,0,0,64,0,-1--1--1,,1|(1636,2902)|
+1,155,15,141,1,0,0,0,0,64,0,-1--1--1,,1|(1383,2946)|
+1,156,147,139,1,0,0,0,0,64,0,-1--1--1,,1|(1678,3537)|
+1,157,9,139,1,0,0,0,0,64,0,-1--1--1,,1|(1272,3552)|
+1,158,139,14,1,0,0,0,0,64,0,-1--1--1,,1|(1125,3568)|
+10,159,Recharge to aquifer rainfall,153,3395,49,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,160,159,110,1,0,0,0,0,64,0,-1--1--1,,1|(92,3427)|
+10,161,Canal lining,-1044,2743,58,35,3,131,0,0,0,0,0,0
+12,162,48,-1351,2736,10,8,0,3,0,0,-1,0,0,0
+1,163,165,162,4,0,0,22,0,0,0,-1--1--1,,1|(-1267,2737)|
+1,164,165,161,100,0,0,22,0,0,0,-1--1--1,,1|(-1141,2737)|
+11,165,48,-1186,2737,6,8,34,3,0,0,1,0,0,0
+10,166,canal decay rate,-1186,2756,51,11,40,3,0,0,-1,0,0,0
+12,167,48,-759,2739,10,8,0,3,0,0,-1,0,0,0
+1,168,170,161,4,0,0,22,0,0,0,-1--1--1,,1|(-929,2742)|
+1,169,170,167,100,0,0,22,0,0,0,-1--1--1,,1|(-815,2742)|
+11,170,48,-866,2742,6,8,34,3,0,0,1,0,0,0
+10,171,Lining rate,-866,2761,34,11,40,3,0,0,-1,0,0,0
+10,172,Average canal decay time,-1281,2809,46,19,8,3,0,0,0,0,0,0
+1,173,172,166,1,0,0,0,0,64,0,-1--1--1,,1|(-1270,2773)|
+10,174,Problem perception state of canals,-810,2843,63,19,8,3,0,0,0,0,0,0
+1,175,174,171,0,0,0,0,0,64,0,-1--1--1,,1|(-837,2804)|
+1,176,161,174,1,0,0,0,0,64,0,-1--1--1,,1|(-940,2817)|
+10,177,Perception lookup,-615,2822,58,11,8,3,0,0,0,0,0,0
+1,178,177,174,0,0,0,0,0,64,0,-1--1--1,,1|(-704,2832)|
+10,179,Total length,-1025,2870,37,11,8,3,0,0,0,0,0,0
+1,180,179,174,1,0,0,0,0,64,0,-1--1--1,,1|(-928,2886)|
+1,181,179,171,1,0,0,0,0,64,0,-1--1--1,,1|(-930,2830)|
+10,182,lined percentage,-1171,2868,57,11,8,3,0,0,0,0,0,0
+1,183,161,182,1,0,0,0,0,64,0,-1--1--1,,1|(-1149,2791)|
+1,184,179,182,1,0,0,0,0,64,0,-1--1--1,,1|(-1090,2838)|
+10,185,Policy Canal lining,-1015,2659,57,11,8,3,0,0,0,0,0,0
+1,186,185,170,1,0,0,0,0,64,0,-1--1--1,,1|(-949,2704)|
+10,187,Incremental Length lined,-1152,2521,52,19,8,3,0,0,0,0,0,0
+10,188,lookup canal lined,-1104,2443,57,11,8,3,0,0,0,0,0,0
+1,189,188,187,1,0,0,0,0,64,0,-1--1--1,,1|(-1114,2473)|
+10,190,Year,-1231,2455,17,11,8,3,0,0,-1,0,0,0
+1,191,190,187,1,0,0,0,0,64,0,-1--1--1,,1|(-1173,2483)|
+10,192,Actual lining cost,-613,2715,53,11,8,3,0,0,0,0,0,0
+1,193,171,192,1,0,0,0,0,64,0,-1--1--1,,1|(-705,2777)|
+10,194,cost of lining,-599,2632,40,11,8,3,0,0,0,0,0,0
+10,195,Investment,-360,2813,35,11,8,3,0,0,0,0,0,0
+1,196,194,192,1,0,0,0,0,64,0,-1--1--1,,1|(-603,2679)|
+10,197,Lining cost year 2003,-478,2571,50,19,8,3,0,0,0,0,0,0
+1,198,197,194,1,0,0,0,0,64,0,-1--1--1,,1|(-534,2598)|
+1,199,192,195,1,0,0,0,0,64,0,-1--1--1,,1|(-516,2787)|
+10,200,"Govt. share",-312,2858,37,11,8,3,0,0,0,0,0,0
+10,201,Farmer share,-384,2767,42,11,8,3,0,0,0,0,0,0
+1,202,195,201,0,0,0,0,0,64,0,-1--1--1,,1|(-369,2797)|
+1,203,195,200,0,0,0,0,0,64,0,-1--1--1,,1|(-342,2831)|
+10,204,Lining cost factor,-617,2575,54,11,8,3,0,0,0,0,0,0
+1,205,204,194,0,0,0,0,0,64,0,-1--1--1,,1|(-611,2597)|
+1,206,190,204,1,0,0,0,0,64,0,-1--1--1,,1|(-794,2429)|
+10,207,Lookup function,1221,72,52,11,8,3,0,0,-1,0,0,0
+10,208,CL share,-316,2710,30,11,8,3,0,0,0,0,0,0
+1,209,201,208,1,0,0,0,0,64,0,-1--1--1,,1|(-339,2720)|
+1,210,161,171,1,0,0,0,0,64,0,-1--1--1,,1|(-949,2767)|
+10,211,TIME STEP,-679,2659,50,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,212,211,171,1,0,0,0,0,64,0,-1--1--1,,1|(-715,2719)|
+10,213,Polygonal factor,-114,2658,51,11,8,3,0,0,0,0,0,0
+10,214,Per Polygon CL share,-260,2633,52,19,8,3,0,0,0,0,0,0
+1,215,213,214,0,0,0,0,0,64,0,-1--1--1,,1|(-180,2648)|
+10,216,Lining expenditure,-298,2567,57,11,8,3,0,0,0,0,0,0
+1,217,214,216,1,0,0,0,0,64,0,-1--1--1,,1|(-248,2594)|
+1,218,208,214,0,0,0,0,0,64,0,-1--1--1,,1|(-296,2682)|
+10,219,Nos of served polygon,-433,2639,50,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,220,219,208,1,0,0,0,0,64,0,-1--1--1,,1|(-344,2678)|
+10,221,lined percentage,55,2712,46,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,222,221,60,0,0,0,0,0,64,0,-1--1--1,,1|(150,2713)|
+10,223,Constructed capacity,-980,3351,41,29,3,131,0,0,0,0,0,0
+10,224,Silted capacity,-1492,3339,41,29,3,131,0,0,0,0,0,0
+1,225,226,224,4,0,0,22,0,0,0,-1--1--1,,1|(-1403,3355)|
+11,226,2892,-1348,3355,6,8,34,3,0,0,1,0,0,0
+10,227,Siltation rate,-1348,3374,40,11,40,131,0,0,-1,0,0,0
+1,228,229,224,100,0,0,22,0,0,0,-1--1--1,,1|(-1393,3312)|
+11,229,3020,-1328,3312,6,8,34,131,0,0,3,0,0,0
+10,230,maintenance rate,-1328,3293,53,11,40,131,0,0,-1,0,0,0
+12,231,48,-757,3349,10,8,0,3,0,0,-1,0,0,0
+1,232,234,223,4,0,0,22,0,0,0,-1--1--1,,1|(-899,3349)|
+1,233,234,231,100,0,0,22,0,0,0,-1--1--1,,1|(-807,3349)|
+11,234,48,-853,3349,6,8,34,3,0,0,1,0,0,0
+10,235,Construction rate,-853,3368,54,11,40,131,0,0,-1,0,0,0
+10,236,Cost of pond,-599,3236,42,11,8,3,0,0,0,0,0,0
+10,237,Investment RH,-461,3293,47,11,8,131,0,0,0,0,0,0
+10,238,Farmer water harvesting share,-281,3231,51,19,8,131,0,0,0,0,0,0
+10,239,Cost of maintenance,-1722,3250,40,19,8,131,0,0,0,0,0,0
+10,240,Total rainwater harvesting capacity,-891,3481,60,19,8,131,0,0,0,0,0,0
+1,241,240,235,1,0,0,0,0,64,0,-1--1--1,,1|(-878,3428)|
+10,242,Construction Percentage,-972,3427,41,19,8,3,0,0,0,0,0,0
+1,243,223,242,1,0,0,0,0,64,0,-1--1--1,,1|(-978,3391)|
+1,244,240,242,1,0,0,0,0,64,0,-1--1--1,,1|(-924,3461)|
+1,245,224,230,1,0,0,0,0,64,0,-1--1--1,,1|(-1405,3300)|
+1,246,223,234,1,0,0,0,0,64,0,-1--1--1,,1|(-913,3312)|
+10,247,Siltation perception Farmers,-1383,3242,61,19,8,3,0,0,0,0,0,0
+1,248,224,247,0,0,0,0,0,64,0,-1--1--1,,1|(-1438,3290)|
+1,249,223,247,1,0,0,0,0,64,0,-1--1--1,,1|(-1229,3207)|
+1,250,247,230,0,0,0,0,0,64,0,-1--1--1,,1|(-1357,3266)|
+10,251,Actual costs maintenance RH,-1689,3324,53,19,8,3,0,0,0,0,0,0
+1,252,229,251,1,0,0,0,0,64,0,-1--1--1,,1|(-1596,3378)|
+1,253,239,251,0,0,0,0,0,64,0,-1--1--1,,1|(-1709,3280)|
+12,254,48,-1214,3351,10,8,0,3,0,0,-1,0,0,0
+1,255,226,254,100,0,0,22,0,0,0,-1--1--1,,1|(-1283,3355)|
+12,256,48,-1197,3317,10,8,0,3,0,0,-1,0,0,0
+1,257,229,256,4,0,0,22,0,0,0,-1--1--1,,1|(-1265,3312)|
+10,258,Available capacity,-1383,3594,57,11,8,3,0,0,0,0,0,0
+1,259,224,258,1,0,0,0,0,64,0,-1--1--1,,1|(-1489,3469)|
+1,260,223,258,1,0,0,0,0,64,0,-1--1--1,,1|(-1171,3534)|
+1,261,258,226,1,0,0,0,0,64,0,-1--1--1,,1|(-1398,3442)|
+10,262,tanks per cell,-1221,3499,42,11,8,3,0,0,0,0,0,0
+1,263,262,227,1,0,0,0,0,64,0,-1--1--1,,1|(-1268,3477)|
+1,264,262,240,1,0,0,0,0,64,0,-1--1--1,,1|(-1068,3523)|
+10,265,Length,-789,3428,23,11,8,3,0,0,0,0,0,0
+10,266,Tank width,-759,3485,36,11,8,3,0,0,0,0,0,0
+10,267,Height,-820,3544,22,11,8,3,0,0,0,0,0,0
+1,268,267,240,0,0,0,0,0,64,0,-1--1--1,,1|(-846,3521)|
+1,269,266,240,0,0,0,0,0,64,0,-1--1--1,,1|(-807,3483)|
+1,270,265,240,0,0,0,0,0,64,0,-1--1--1,,1|(-827,3447)|
+10,271,Sediment doposition rate,-1198,3430,48,19,8,3,0,0,0,0,0,0
+1,272,271,227,1,0,0,0,0,64,0,-1--1--1,,1|(-1282,3390)|
+10,273,Maintence cost yesr 2003,-1614,3161,49,19,8,3,0,0,0,0,0,0
+10,274,Siltation perception lookup,-1392,3172,61,19,8,3,0,0,0,0,0,0
+1,275,274,247,1,0,0,0,0,64,0,-1--1--1,,1|(-1388,3200)|
+10,276,Actual RWH Costs,-585,3341,42,19,8,3,0,0,0,0,0,0
+1,277,236,276,1,0,0,0,0,64,0,-1--1--1,,1|(-583,3312)|
+1,278,235,276,1,0,0,0,0,64,0,-1--1--1,,1|(-691,3379)|
+1,279,276,237,0,0,0,0,0,64,0,-1--1--1,,1|(-524,3317)|
+1,280,237,238,1,0,0,0,0,64,0,-1--1--1,,1|(-377,3291)|
+10,281,Incremental Increase,-916,3220,37,19,8,3,0,0,0,0,0,0
+1,282,223,281,0,0,0,0,0,64,0,-1--1--1,,1|(-950,3286)|
+1,283,281,234,0,0,0,0,0,64,0,-1--1--1,,1|(-885,3284)|
+10,284,Policy RH,-840,3264,33,11,8,3,0,0,0,0,0,0
+1,285,284,234,0,0,0,0,0,64,0,-1--1--1,,1|(-846,3302)|
+10,286,Capacity Increase,-1060,3166,57,11,8,3,0,4,0,0,0,0,-1--1--1,0-255-0,|12||0-0-0
+1,287,286,281,0,0,0,0,0,64,0,-1--1--1,,1|(-999,3190)|
+10,288,Year,-1112,3043,26,11,8,2,0,0,-1,0,0,0
+1,289,288,286,0,0,0,0,0,64,0,-1--1--1,,1|(-1090,3099)|
+10,290,Capcacity Lookup,-936,3120,59,11,8,3,0,0,0,0,0,0
+1,291,290,286,1,0,0,0,0,64,0,-1--1--1,,1|(-1021,3115)|
+1,292,240,286,1,0,0,0,0,64,0,-1--1--1,,1|(-1105,3393)|
+10,293,Pond cost year 2003,-521,3173,48,19,8,3,0,0,0,0,0,0
+10,294,Lookup function,-539,3094,31,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,295,Pond cost factor,-640,3142,52,11,8,3,0,0,0,0,0,0
+1,296,288,295,1,0,0,0,0,64,0,-1--1--1,,1|(-924,3063)|
+1,297,294,295,1,0,0,0,0,64,0,-1--1--1,,1|(-609,3110)|
+1,298,295,236,0,0,0,0,0,64,0,-1--1--1,,1|(-623,3183)|
+1,299,293,236,0,0,0,0,0,64,0,-1--1--1,,1|(-560,3205)|
+10,300,"Govt. water harvesting share",-420,3217,51,19,8,3,0,0,0,0,0,0
+1,301,237,300,0,0,0,0,0,64,0,-1--1--1,,1|(-447,3265)|
+10,302,TIME STEP,-740,3269,50,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,303,302,234,1,0,0,0,0,64,0,-1--1--1,,1|(-786,3309)|
+10,304,TIME STEP,-1220,3247,50,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,305,304,230,0,0,0,0,0,64,0,-1--1--1,,1|(-1268,3267)|
+10,306,Maintenance cost factor,-1760,3152,56,19,8,3,0,0,0,0,0,0
+1,307,306,239,0,0,0,0,0,64,0,-1--1--1,,1|(-1745,3195)|
+1,308,273,239,0,0,0,0,0,64,0,-1--1--1,,1|(-1663,3202)|
+10,309,Lookup function,-1855,3074,31,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,310,288,306,1,0,0,0,0,64,0,-1--1--1,,1|(-1424,3062)|
+1,311,309,306,0,0,0,0,0,64,0,-1--1--1,,1|(-1814,3109)|
+10,312,Available capacity,870,3573,35,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,313,312,23,1,0,0,0,0,64,0,-1--1--1,,1|(803,3406)|
+1,314,312,139,1,0,0,0,0,64,0,-1--1--1,,1|(1025,3656)|
+10,315,Irrigation efficiency,-1422,4121,69,36,3,131,0,0,0,0,0,0
+12,316,48,-1707,4122,10,8,0,3,0,0,-1,0,0,0
+1,317,319,316,4,0,0,22,0,0,0,-1--1--1,,1|(-1646,4126)|
+1,318,319,315,100,0,0,22,0,0,0,-1--1--1,,1|(-1537,4126)|
+11,319,48,-1588,4126,6,8,34,3,0,0,1,0,0,0
+10,320,Structure decay rate,-1588,4153,50,19,40,3,0,0,-1,0,0,0
+10,321,Sturcture life,-1660,4208,40,11,8,3,0,0,0,0,0,0
+1,322,321,320,0,0,0,0,0,64,0,-1--1--1,,1|(-1636,4188)|
+12,323,48,-1062,4126,10,8,0,3,0,0,-1,0,0,0
+1,324,326,315,4,0,0,22,0,0,0,-1--1--1,,1|(-1283,4126)|
+1,325,326,323,100,0,0,22,0,0,0,-1--1--1,,1|(-1136,4126)|
+11,326,48,-1206,4126,6,8,34,3,0,0,1,0,0,0
+10,327,Improvement rate,-1206,4145,56,11,40,3,0,0,-1,0,0,0
+10,328,Policy Irrigation improvement,-1160,4045,50,19,8,3,0,0,0,0,0,0
+1,329,328,326,1,0,0,0,0,64,0,-1--1--1,,1|(-1181,4094)|
+10,330,Irrigation Efficiency improvement,-1418,3957,70,19,8,3,0,20,0,0,0,0,-1--1--1,0-255-0,|10|B|0-0-0
+10,331,Year,-1354,3807,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,332,331,330,1,0,0,0,0,64,0,-1--1--1,,1|(-1434,3862)|
+1,333,327,320,1,0,0,0,0,64,0,-1--1--1,,1|(-1399,4203)|
+10,334,Actual improvement cost,-946,4070,57,19,8,3,0,0,0,0,0,0
+10,335,Cost of installation,-914,3986,58,11,8,3,0,0,0,0,0,0
+1,336,335,334,0,0,0,0,0,64,0,-1--1--1,,1|(-926,4017)|
+10,337,Irrigation improvement investment,-722,4024,72,19,8,3,0,0,0,0,0,0
+1,338,334,337,1,0,0,0,0,64,0,-1--1--1,,1|(-792,3999)|
+10,339,Governament irrigation improvement share,-645,3923,72,19,8,3,0,0,0,0,0,0
+10,340,Farmer irrigation improvement share,-744,4106,60,19,8,3,0,0,0,0,0,0
+1,341,337,340,0,0,0,0,0,64,0,-1--1--1,,1|(-732,4058)|
+1,342,337,339,0,0,0,0,0,64,0,-1--1--1,,1|(-689,3979)|
+10,343,Problem perception of irrigation efficiency,-1176,4227,71,19,8,3,0,0,0,0,0,0
+10,344,Efficiency goal,-1438,4260,46,11,8,3,0,0,0,0,0,0
+1,345,315,343,0,0,0,0,0,64,0,-1--1--1,,1|(-1294,4176)|
+1,346,343,327,0,0,0,0,0,64,0,-1--1--1,,1|(-1190,4188)|
+10,347,switch,-1623,4046,21,11,8,3,0,0,0,0,0,0
+1,348,315,347,0,0,0,0,0,64,0,-1--1--1,,1|(-1540,4077)|
+1,349,347,320,0,0,0,0,0,64,0,-1--1--1,,1|(-1610,4088)|
+10,350,Minimum efficiency,-1672,3958,30,19,8,3,0,0,0,0,0,0
+1,351,350,347,0,0,0,0,0,64,0,-1--1--1,,1|(-1650,3999)|
+10,352,Efficiency improvement lookup,-1557,3855,66,19,8,3,0,0,0,0,0,0
+1,353,352,330,1,0,0,0,0,64,0,-1--1--1,,1|(-1542,3901)|
+10,354,Installation cost 2003,-796,3917,49,19,8,3,0,0,0,0,0,0
+1,355,354,335,1,0,0,0,0,64,0,-1--1--1,,1|(-867,3935)|
+10,356,Irrigation efficiency perception lookup,-1130,4304,60,19,8,3,0,0,0,0,0,0
+1,357,356,343,0,0,0,0,0,64,0,-1--1--1,,1|(-1150,4271)|
+1,358,344,343,0,0,0,0,0,64,0,-1--1--1,,1|(-1327,4245)|
+10,359,TIME STEP,-1240,4003,50,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,360,359,326,1,0,0,0,0,64,0,-1--1--1,,1|(-1248,4059)|
+10,361,Installation cost factor,-963,3910,49,19,8,3,0,0,0,0,0,0
+1,362,361,335,1,0,0,0,0,64,0,-1--1--1,,1|(-936,3955)|
+10,363,Lookup function,-896,3835,31,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,364,331,361,1,0,0,0,0,64,0,-1--1--1,,1|(-1139,3819)|
+1,365,363,361,0,0,0,0,0,64,0,-1--1--1,,1|(-925,3867)|
+10,366,Efficiency increse per unit,-844,4226,55,19,8,3,0,0,0,0,0,0
+10,367,No of units,-934,4170,36,11,8,3,0,0,0,0,0,0
+1,368,366,367,1,0,0,0,0,64,0,-1--1--1,,1|(-902,4182)|
+1,369,327,367,1,0,0,0,0,64,0,-1--1--1,,1|(-1043,4184)|
+1,370,367,334,1,0,0,0,0,64,0,-1--1--1,,1|(-933,4105)|
+10,371,ECthreshold cropA,2068,2110,64,18,8,131,0,0,0,0,0,0
+10,372,b CropB,1865,1903,27,11,8,3,0,0,0,0,0,0
+10,373,TIME STEP,714,3287,50,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,374,373,23,1,0,0,0,0,64,0,-1--1--1,,1|(747,3237)|
+1,375,377,1,4,0,0,22,0,0,0,-1--1--1,,1|(1265,3221)|
+1,376,377,9,100,0,0,22,0,0,0,-1--1--1,,1|(1265,3334)|
+11,377,92,1265,3278,8,6,33,3,0,0,4,0,0,0
+10,378,SS supply,1306,3278,33,11,40,3,0,4,-1,0,0,0,-1--1--1,255-0-255,|12||0-0-0
+12,379,48,1523,3137,10,8,0,3,0,0,-1,0,0,0
+1,380,382,379,4,0,0,22,0,0,0,-1--1--1,,1|(1472,3137)|
+1,381,382,1,100,0,0,22,0,0,0,-1--1--1,,1|(1379,3137)|
+11,382,48,1426,3137,6,8,34,3,0,0,1,0,0,0
+10,383,Consumption,1426,3156,42,11,40,3,0,0,-1,0,0,0
+12,384,48,1269,2974,10,8,0,3,0,0,-1,0,0,0
+1,385,387,384,4,0,0,22,0,0,0,-1--1--1,,1|(1269,3011)|
+1,386,387,1,100,0,0,22,0,0,0,-1--1--1,,1|(1269,3075)|
+11,387,48,1269,3045,8,6,33,3,0,0,4,0,0,0
+10,388,Unused,1302,3045,25,11,40,3,0,0,-1,0,0,0
+1,389,15,382,1,0,0,0,0,64,0,-1--1--1,,1|(1297,2995)|
+1,390,19,382,1,0,0,0,0,64,0,-1--1--1,,1|(1190,2939)|
+1,391,383,387,1,0,0,0,0,64,0,-1--1--1,,1|(1316,3026)|
+1,392,378,383,1,0,0,0,0,64,0,-1--1--1,,1|(1387,3231)|
+1,393,9,378,1,0,0,0,0,64,0,-1--1--1,,1|(1294,3340)|
+1,394,377,387,1,0,0,0,0,64,0,-1--1--1,,1|(1165,3112)|
+1,395,6,387,1,0,0,0,0,64,0,-1--1--1,,1|(1187,3047)|
+10,396,Water requirment,1443,3254,39,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,397,396,378,1,0,0,0,0,64,0,-1--1--1,,1|(1366,3281)|
+1,398,396,383,1,0,0,0,0,64,0,-1--1--1,,1|(1450,3203)|
+10,399,Total canal supplies Crop,1126,3300,47,25,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,400,399,377,1,0,0,0,0,64,0,-1--1--1,,1|(1217,3289)|
+10,401,TIME STEP,1183,3339,50,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,402,401,377,1,0,0,0,0,64,0,-1--1--1,,1|(1245,3308)|
+10,403,Rainfall contributions,1095,3232,46,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,404,403,377,1,0,0,0,0,64,0,-1--1--1,,1|(1172,3264)|
+1,405,79,139,1,0,0,0,0,64,0,-1--1--1,,1|(1436,3608)|
+10,406,Tubewell Nos,1019,563,66,30,3,131,0,0,0,0,0,0
+12,407,48,830,550,10,8,0,3,0,0,-1,0,0,0
+1,408,410,406,4,0,0,22,0,0,0,-1--1--1,,1|(927,550)|
+1,409,410,407,100,0,0,22,0,0,0,-1--1--1,,1|(864,550)|
+11,410,48,895,550,6,8,34,3,0,0,1,0,0,0
+10,411,Tubewell growth,895,569,53,11,40,3,0,0,-1,0,0,0
+10,412,Desired Additional TW installed,672,565,60,19,8,3,0,0,0,0,0,0
+1,413,412,411,1,0,0,0,0,64,0,-1--1--1,,1|(767,576)|
+10,414,Required flow rate,1068,774,58,11,8,3,0,0,0,0,0,0
+1,415,406,410,1,0,0,0,0,64,0,-1--1--1,,1|(934,517)|
+10,416,Max Capacity Tubewells,729,880,46,19,8,3,0,0,0,0,0,0
+1,417,412,419,1,0,0,0,0,64,0,-1--1--1,,1|(693,482)|
+10,418,Costs per tubwell,590,359,55,11,8,3,0,0,0,0,0,0
+10,419,Costs for potential tubewell installation,765,409,61,19,8,3,0,0,0,0,0,0
+1,420,418,419,0,0,0,0,0,64,0,-1--1--1,,1|(659,380)|
+1,421,419,410,1,0,0,0,0,64,0,-1--1--1,,1|(835,468)|
+10,422,Tubewell discharge,967,706,37,19,8,3,0,4,0,0,0,0,-1--1--1,64-160-98,|12||0-0-0
+1,423,414,422,1,0,0,0,0,64,0,-1--1--1,,1|(1040,725)|
+1,424,406,416,1,0,0,0,0,64,0,-1--1--1,,1|(805,644)|
+10,425,Potential operational cost,1062,319,51,19,8,3,0,0,0,0,0,0
+10,426,maintenance cost,1450,420,54,11,8,3,0,0,0,0,0,0
+1,427,406,425,0,0,0,0,0,64,0,-1--1--1,,1|(1039,443)|
+1,428,406,426,1,0,0,0,0,64,0,-1--1--1,,1|(1230,459)|
+10,429,annual maintence cost,1463,318,54,19,8,3,0,0,0,0,0,0
+1,430,429,426,1,0,0,0,0,64,0,-1--1--1,,1|(1460,356)|
+10,431,maintence cost year 2003,1555,228,47,19,8,3,0,0,0,0,0,0
+10,432,Maintence factor,1382,233,53,11,8,3,0,0,0,0,0,0
+1,433,432,429,0,0,0,0,0,64,0,-1--1--1,,1|(1413,267)|
+1,434,431,429,0,0,0,0,0,64,0,-1--1--1,,1|(1514,269)|
+10,435,Time,1263,242,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,436,435,429,0,0,0,0,0,64,0,-1--1--1,,1|(1344,273)|
+10,437,potential operating hours,1130,245,59,19,8,3,0,0,0,0,0,0
+1,438,435,437,0,0,0,0,0,64,0,-1--1--1,,1|(1219,243)|
+1,439,437,425,1,0,0,0,0,64,0,-1--1--1,,1|(1084,272)|
+10,440,Dieseal consumption,932,272,41,19,8,3,0,0,0,0,0,0
+1,441,440,425,1,0,0,0,0,64,0,-1--1--1,,1|(1002,281)|
+10,442,Fuel cost,1005,213,30,11,8,3,0,0,0,0,0,0
+10,443,Fuel price in year 2003,941,133,55,19,8,3,0,0,0,0,0,0
+10,444,Inflation factor,1057,146,46,11,8,3,0,0,0,0,0,0
+1,445,442,425,1,0,0,0,0,64,0,-1--1--1,,1|(1038,253)|
+1,446,444,442,0,0,0,0,0,64,0,-1--1--1,,1|(1035,175)|
+1,447,443,442,0,0,0,0,0,64,0,-1--1--1,,1|(971,172)|
+10,448,potential operating hours,652,747,54,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,449,448,416,1,0,0,0,0,64,0,-1--1--1,,1|(675,823)|
+10,450,Capacity per tubewell,851,842,42,19,8,3,0,0,0,0,0,0
+1,451,450,416,1,0,0,0,0,64,0,-1--1--1,,1|(810,849)|
+10,452,Required capacity,759,968,57,11,8,3,0,0,0,0,0,0
+1,453,416,452,1,0,0,0,0,64,0,-1--1--1,,1|(726,927)|
+1,454,414,452,1,0,0,0,0,64,0,-1--1--1,,1|(898,932)|
+1,455,452,412,1,0,0,0,0,64,0,-1--1--1,,1|(599,821)|
+10,456,Tubewell installed per season,501,515,57,19,8,3,0,0,0,0,0,0
+1,457,456,412,1,0,0,0,0,64,0,-1--1--1,,1|(572,556)|
+10,458,Cost factor,630,220,36,11,8,3,0,0,0,0,0,0
+10,459,Installation cost,332,286,49,11,8,3,0,0,0,0,0,0
+1,460,458,418,0,0,0,0,0,64,0,-1--1--1,,1|(611,283)|
+1,461,459,418,0,0,0,0,0,64,0,-1--1--1,,1|(453,321)|
+10,462,watertable depth,6,165,53,11,8,3,0,4,0,0,0,0,-1--1--1,0-255-255,|12||0-0-0
+10,463,Cost vs depth lookup,490,277,45,19,8,3,0,0,0,0,0,0
+1,464,463,459,0,0,0,0,0,64,0,-1--1--1,,1|(419,281)|
+10,465,Standard depth,340,206,49,11,8,3,0,0,0,0,0,0
+10,466,Standard cost,393,376,44,11,8,3,0,0,0,0,0,0
+1,467,465,459,0,0,0,0,0,64,0,-1--1--1,,1|(336,240)|
+1,468,466,459,0,0,0,0,0,64,0,-1--1--1,,1|(366,337)|
+1,469,207,432,1,0,0,0,0,64,0,-1--1--1,,1|(1320,136)|
+10,470,Surface supply,1225,853,33,22,8,131,0,0,-1,0,0,0
+1,471,470,414,0,0,0,0,0,64,0,-1--1--1,,1|(1146,815)|
+10,472,Operating cost per hr,852,197,47,19,8,3,0,0,0,0,0,0
+1,473,440,472,1,0,0,0,0,64,0,-1--1--1,,1|(889,239)|
+1,474,442,472,1,0,0,0,0,64,0,-1--1--1,,1|(940,188)|
+10,475,Actual operating hours,1168,344,53,19,8,3,0,0,0,0,0,0
+1,476,472,475,1,0,0,0,0,64,0,-1--1--1,,1|(957,366)|
+1,477,406,475,0,0,0,0,0,64,0,-1--1--1,,1|(1093,454)|
+10,478,Actual operating cost,1310,397,53,19,8,3,0,0,0,0,0,0
+1,479,475,478,1,0,0,0,0,64,0,-1--1--1,,1|(1261,343)|
+1,480,406,478,1,0,0,0,0,64,0,-1--1--1,,1|(1149,467)|
+10,481,Operating cost per hr,1322,316,52,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,482,481,478,1,0,0,0,0,64,0,-1--1--1,,1|(1336,341)|
+12,483,48,1397,560,10,8,0,3,0,0,-1,0,0,0
+1,484,486,483,4,0,0,22,0,0,0,-1--1--1,,1|(1276,558)|
+1,485,486,406,100,0,0,22,0,0,0,-1--1--1,,1|(1119,558)|
+11,486,48,1159,558,6,8,34,131,0,0,1,0,0,0
+10,487,Tubewell decay,1159,577,50,11,40,3,0,0,-1,0,0,0
+10,488,Average TW life,1307,640,52,11,8,3,0,0,0,0,0,0
+1,489,488,487,1,0,0,0,0,64,0,-1--1--1,,1|(1252,598)|
+1,490,207,458,1,0,0,0,0,64,0,-1--1--1,,1|(852,64)|
+10,491,SS supply,1091,873,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,492,491,414,0,0,0,0,0,64,0,-1--1--1,,1|(1081,831)|
+10,493,LR CropA,2117,1604,36,14,8,131,0,0,0,0,0,0
+10,494,ECe CropB,2000,1530,40,21,8,131,0,0,0,0,0,0
+10,495,ECicw,2175,1554,29,11,8,3,0,0,0,0,0,0
+1,496,495,493,1,0,0,0,0,64,0,-1--1--1,,1|(2127,1575)|
+10,497,Total water requirments,1926,1671,52,31,3,131,0,0,0,0,0,0
+12,498,48,2209,1671,10,8,0,3,0,0,-1,0,0,0
+1,499,501,497,4,0,0,22,0,0,0,-1--1--1,,1|(2036,1666)|
+1,500,501,498,100,0,0,22,0,0,0,-1--1--1,,1|(2153,1666)|
+11,501,48,2101,1666,6,8,34,3,0,0,1,0,0,0
+10,502,leaching fraction,2101,1685,57,11,40,3,0,0,-1,0,0,0
+1,503,493,502,1,0,0,0,0,64,0,-1--1--1,,1|(2111,1641)|
+10,504,Viw,2088,1478,21,11,8,3,0,0,0,0,0,0
+10,505,Eciw,2162,1463,23,11,8,3,0,0,0,0,0,0
+10,506,Vdw,2295,1549,23,11,8,3,0,0,0,0,0,0
+1,507,504,495,1,0,0,0,0,64,0,-1--1--1,,1|(2115,1522)|
+1,508,505,495,1,0,0,0,0,64,0,-1--1--1,,1|(2177,1499)|
+1,509,506,495,1,0,0,0,0,64,0,-1--1--1,,1|(2247,1563)|
+10,510,Ky CropB,1533,1893,34,24,8,131,0,0,0,0,0,0
+10,511,Water stress CropB,1680,2007,49,25,8,131,0,4,0,0,0,0,-1--1--1,255-0-0,|12||0-0-0
+1,512,510,511,1,0,0,0,0,64,0,-1--1--1,,1|(1594,1919)|
+10,513,Soil salinity CropA,2435,1829,59,11,8,3,0,4,0,0,0,0,-1--1--1,0-255-255,|12||0-0-0
+10,514,Salinity stress CropA,1910,2093,53,29,8,131,0,0,0,0,0,0
+1,515,371,514,0,0,0,0,0,64,0,-1--1--1,,1|(1990,2103)|
+10,516,CY CropA,1797,2189,35,21,8,131,0,0,0,0,0,0
+10,517,CY max CropA,1928,2152,43,23,8,131,0,0,0,0,0,0
+1,518,514,516,1,0,0,0,0,64,0,-1--1--1,,1|(1871,2142)|
+1,519,517,516,1,0,0,0,0,64,0,-1--1--1,,1|(1852,2182)|
+10,520,Farm income,2262,2309,61,33,3,131,0,0,0,0,0,0
+12,521,48,1609,2304,10,8,0,3,0,0,-1,0,0,0
+1,522,524,520,4,0,0,22,0,0,0,-1--1--1,,1|(1971,2305)|
+1,523,524,521,100,0,0,22,0,0,0,-1--1--1,,1|(1674,2305)|
+11,524,48,1735,2305,6,8,34,3,0,0,1,0,0,0
+10,525,Income,1735,2324,31,11,40,3,0,0,-1,0,0,0
+10,526,Market rate CropB,1522,2122,44,26,8,131,0,0,0,0,0,0
+10,527,"Govt. loan",1693,2412,40,11,8,3,0,0,0,0,0,0
+1,528,527,525,1,0,0,0,0,64,0,-1--1--1,,1|(1691,2367)|
+10,529,Debt,1925,2470,50,26,3,131,0,0,0,0,0,0
+12,530,48,1718,2468,10,8,0,3,0,0,-1,0,0,0
+1,531,533,529,4,0,0,22,0,0,0,-1--1--1,,1|(1841,2469)|
+1,532,533,530,100,0,0,22,0,0,0,-1--1--1,,1|(1762,2469)|
+11,533,48,1802,2469,6,8,34,3,0,0,1,0,0,0
+10,534,Loan,1802,2488,24,11,40,3,0,0,-1,0,0,0
+1,535,527,534,0,0,0,0,0,64,0,-1--1--1,,1|(1741,2447)|
+12,536,48,2126,2472,10,8,0,3,0,0,-1,0,0,0
+1,537,539,536,4,0,0,22,0,0,0,-1--1--1,,1|(2083,2472)|
+1,538,539,529,100,0,0,22,0,0,0,-1--1--1,,1|(2007,2472)|
+11,539,48,2045,2472,6,8,34,3,0,0,1,0,0,0
+10,540,Payments,2045,2491,31,11,40,3,0,0,-1,0,0,0
+10,541,Interest rate,1777,2563,44,11,8,3,0,0,0,0,0,0
+1,542,541,534,1,0,0,0,0,64,0,-1--1--1,,1|(1803,2517)|
+1,543,525,540,1,0,0,0,0,64,0,-1--1--1,,1|(1927,2376)|
+10,544,Croped income,1623,2264,55,11,8,3,0,0,0,0,0,0
+1,545,544,525,0,0,0,0,0,64,0,-1--1--1,,1|(1672,2291)|
+1,546,529,534,1,0,0,0,0,64,0,-1--1--1,,1|(1848,2434)|
+10,547,TIME STEP,2368,2242,50,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,548,Time,1773,2408,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,549,548,534,1,0,0,0,0,64,0,-1--1--1,,1|(1789,2445)|
+10,550,Percent of total income,1990,2542,49,19,8,3,0,0,0,0,0,0
+1,551,550,540,1,0,0,0,0,64,0,-1--1--1,,1|(2050,2503)|
+10,552,ECdw,772,543,28,11,8,3,0,0,0,0,0,0
+10,553,Potential investment,2251,2201,40,19,8,3,0,0,0,0,0,0
+1,554,520,553,0,0,0,0,0,64,0,-1--1--1,,1|(2256,2255)|
+1,555,547,553,1,0,0,0,0,64,0,-1--1--1,,1|(2296,2241)|
+10,556,Potential investment,984,457,45,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,557,Potential investment,1179,412,45,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,558,556,410,1,0,0,0,0,64,0,-1--1--1,,1|(922,495)|
+1,559,557,475,0,0,0,0,0,64,0,-1--1--1,,1|(1174,385)|
+10,560,Threshold EC for tubewell installation,706,648,61,19,8,3,0,0,0,0,0,0
+1,561,560,411,0,0,0,0,0,64,0,-1--1--1,,1|(803,608)|
+10,562,maximum allowable number of tubewells,909,401,64,19,8,3,0,0,0,0,0,0
+1,563,562,410,0,0,0,0,0,64,0,-1--1--1,,1|(902,476)|
+10,564,diesel cost lookup,1053,95,57,11,8,3,0,0,0,0,0,0
+1,565,564,444,1,0,0,0,0,64,0,-1--1--1,,1|(1069,123)|
+10,566,Starting year,-1332,2423,40,11,8,3,0,0,0,0,0,0
+1,567,437,475,0,0,0,0,0,64,0,-1--1--1,,1|(1146,288)|
+10,568,Actual capacity of TW,826,737,49,19,8,3,0,0,0,0,0,0
+10,569,Actual operating hours,929,654,57,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,570,406,568,1,0,0,0,0,64,0,-1--1--1,,1|(870,635)|
+1,571,450,568,0,0,0,0,0,64,0,-1--1--1,,1|(840,797)|
+1,572,569,568,1,0,0,0,0,64,0,-1--1--1,,1|(871,686)|
+1,573,568,422,1,0,0,0,0,64,0,-1--1--1,,1|(892,704)|
+10,574,Actual maintenance rate,1586,354,54,19,8,3,0,0,0,0,0,0
+10,575,Potential investment,1690,290,45,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,576,426,574,1,0,0,0,0,64,0,-1--1--1,,1|(1501,375)|
+1,577,575,574,1,0,0,0,0,64,0,-1--1--1,,1|(1631,293)|
+10,578,Year,591,139,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,579,578,458,0,0,0,0,0,64,0,-1--1--1,,1|(606,174)|
+1,580,566,190,0,0,0,0,0,64,0,-1--1--1,,1|(-1280,2440)|
+10,581,Year,1218,165,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,582,581,444,0,0,0,0,0,64,0,-1--1--1,,1|(1154,158)|
+1,583,581,432,0,0,0,0,0,64,0,-1--1--1,,1|(1293,196)|
+10,584,Lookup function,-508,2486,31,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,585,584,204,1,0,0,0,0,64,0,-1--1--1,,1|(-579,2507)|
+10,586,Tubewell discharge,1348,3077,42,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,587,586,383,0,0,0,0,0,64,0,-1--1--1,,1|(1385,3116)|
+1,588,586,6,1,0,0,0,0,64,0,-1--1--1,,1|(1212,3081)|
+1,589,586,387,0,0,0,0,0,64,0,-1--1--1,,1|(1298,3057)|
+10,590,canal supply in polygon,2034,1414,52,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,591,590,504,0,0,0,0,0,64,0,-1--1--1,,1|(2059,1445)|
+10,592,Tubewell discharge,2407,1497,35,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,593,592,506,1,0,0,0,0,64,0,-1--1--1,,1|(2357,1528)|
+10,594,ETc Rate CropB,1636,1619,47,26,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,595,594,501,1,0,0,0,0,64,0,-1--1--1,,1|(1988,1796)|
+10,596,Water requirment,1128,690,39,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,597,596,414,1,0,0,0,0,64,0,-1--1--1,,1|(1098,734)|
+1,598,594,511,1,0,0,0,0,64,0,-1--1--1,,1|(1608,1684)|
+10,599,canal supply per cropB,1070,1746,57,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,600,Time,1483,837,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,601,Canal contributions,1382,876,49,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,602,Rainfall contributions,1382,780,46,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,603,602,470,0,0,0,0,0,64,0,-1--1--1,,1|(1306,816)|
+1,604,601,470,0,0,0,0,0,64,0,-1--1--1,,1|(1302,865)|
+10,605,Time,2398,3401,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+12,606,48,2704,2307,10,8,0,3,0,0,-1,0,0,0
+1,607,609,606,4,0,0,22,0,0,0,-1--1--1,,1|(2641,2307)|
+1,608,609,520,100,0,0,22,0,0,0,-1--1--1,,1|(2450,2307)|
+11,609,48,2583,2307,6,8,34,3,0,0,1,0,0,0
+10,610,Expenditure,2583,2326,38,11,40,3,0,0,-1,0,0,0
+1,611,539,610,1,0,0,0,0,64,0,-1--1--1,,1|(2201,2466)|
+10,612,Lining expenditure,2526,2427,42,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,613,Costs for potential tubewell installation,2663,2406,66,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,614,Farmer irrigation improvement share,2784,2376,65,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,615,Actual operating cost,2709,2218,57,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,616,Farmer water harvesting share,2575,2202,56,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,617,maintenance cost,2495,2251,44,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,618,Actual costs maintenance RH,2737,2257,57,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,619,612,610,0,0,0,0,0,64,0,-1--1--1,,1|(2552,2379)|
+1,620,613,610,0,0,0,0,0,64,0,-1--1--1,,1|(2623,2367)|
+1,621,614,610,0,0,0,0,0,64,0,-1--1--1,,1|(2676,2350)|
+1,622,618,610,0,0,0,0,0,64,0,-1--1--1,,1|(2657,2293)|
+1,623,615,610,0,0,0,0,0,64,0,-1--1--1,,1|(2646,2272)|
+1,624,616,610,0,0,0,0,0,64,0,-1--1--1,,1|(2578,2262)|
+1,625,617,610,0,0,0,0,0,64,0,-1--1--1,,1|(2538,2288)|
+10,626,Total supply per cropB,1361,1688,52,19,8,3,0,0,0,0,0,0
+1,627,626,511,1,0,0,0,0,64,0,-1--1--1,,1|(1447,1927)|
+10,628,Surface supply per cropB,1152,1691,47,19,8,3,0,0,0,0,0,0
+1,629,628,626,1,0,0,0,0,64,0,-1--1--1,,1|(1245,1645)|
+1,630,599,628,0,0,0,0,0,64,0,-1--1--1,,1|(1104,1723)|
+10,631,Runoff supply per cropB,967,1691,57,19,8,3,0,0,0,0,0,0
+1,632,631,628,1,0,0,0,0,64,0,-1--1--1,,1|(1074,1688)|
+10,633,SS supply per cropB,1081,1847,45,19,8,3,0,0,0,0,0,0
+1,634,633,628,1,0,0,0,0,64,0,-1--1--1,,1|(1146,1766)|
+10,635,TW supply per cropB,1192,1901,48,19,8,3,0,0,0,0,0,0
+1,636,635,626,1,0,0,0,0,64,0,-1--1--1,,1|(1260,1783)|
+10,637,SS supply,968,1755,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,638,637,633,1,0,0,0,0,64,0,-1--1--1,,1|(1037,1801)|
+10,639,Rainfall contributions,843,1650,46,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,640,639,631,1,0,0,0,0,64,0,-1--1--1,,1|(918,1644)|
+10,641,Crop area CropB,804,1854,48,23,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,642,Area,1020,1625,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,643,Tubewell discharge,1229,1991,35,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,644,641,631,1,0,0,0,0,64,0,-1--1--1,,1|(840,1745)|
+1,645,642,631,1,0,0,0,0,64,0,-1--1--1,,1|(991,1665)|
+1,646,641,633,1,0,0,0,0,64,0,-1--1--1,,1|(904,1811)|
+1,647,641,635,1,0,0,0,0,64,0,-1--1--1,,1|(882,2012)|
+1,648,643,635,1,0,0,0,0,64,0,-1--1--1,,1|(1203,1947)|
+1,649,487,456,1,0,0,0,0,64,0,-1--1--1,,1|(735,465)|
+10,650,Factor,457,444,22,11,8,3,0,0,0,0,0,0
+1,651,650,456,1,0,0,0,0,64,0,-1--1--1,,1|(505,460)|
+10,652,Lc,61,3557,10,11,8,3,0,0,0,0,0,0
+10,653,Area,151,3500,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,654,653,652,1,0,0,0,0,64,0,-1--1--1,,1|(110,3534)|
+1,655,110,652,1,0,0,0,0,64,0,-1--1--1,,1|(57,3524)|
+10,656,Gw,947,774,13,11,8,3,0,0,0,0,0,0
+1,657,422,656,1,0,0,0,0,64,0,-1--1--1,,1|(916,753)|
+10,658,Area,939,823,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,659,658,656,1,0,0,0,0,64,0,-1--1--1,,1|(956,798)|
+10,660,Ia CropB,1123,1631,35,14,8,131,0,0,0,0,0,0
+1,661,642,660,1,0,0,0,0,64,0,-1--1--1,,1|(1056,1605)|
+1,662,628,660,1,0,0,0,0,64,0,-1--1--1,,1|(1142,1647)|
+10,663,Farm income zero time stock,2804,1347,108,20,8,131,0,0,0,0,0,0
+10,664,Debt zero time stock,2781,1382,112,21,8,131,0,0,0,0,0,0
+10,665,AW zero time stock,2777,1416,95,22,8,131,0,0,0,0,0,0
+10,666,Water in storage zero time stock,2814,1451,115,20,8,131,0,0,0,0,0,0
+10,667,constructed capacity zero time stock,2827,1485,124,20,8,131,0,0,0,0,0,0
+10,668,silted capacity zero time stock,2811,1515,120,18,8,131,0,0,0,0,0,0
+10,669,Irrigation efficiency zero time stock,2827,1552,135,20,8,131,0,0,0,0,0,0
+10,670,Canal lining zero time stock,2806,1582,121,16,8,131,0,0,0,0,0,0
+1,671,663,520,0,0,0,0,0,64,1,-1--1--1,,1|(2539,1816)|
+1,672,664,529,0,0,0,0,0,64,1,-1--1--1,,1|(2359,1919)|
+1,673,665,1,0,0,0,0,0,64,1,-1--1--1,,1|(2033,2264)|
+1,674,666,9,0,0,0,0,0,64,1,-1--1--1,,1|(2054,2423)|
+1,675,667,223,0,0,0,0,0,64,1,-1--1--1,,1|(930,2415)|
+1,676,668,224,0,0,0,0,0,64,1,-1--1--1,,1|(665,2425)|
+1,677,669,315,0,0,0,0,0,64,1,-1--1--1,,1|(721,2825)|
+1,678,670,161,0,0,0,0,0,64,1,-1--1--1,,1|(890,2160)|
+1,679,83,378,1,0,0,0,0,64,0,-1--1--1,,1|(1353,3311)|
+1,680,89,378,1,0,0,0,0,64,0,-1--1--1,,1|(1363,3339)|
+12,681,0,1785,2997,125,23,8,135,0,4,-1,0,0,0,-1--1--1,255-0-255,|12||0-0-0
+Parameter equation changed during the reality check
+12,682,0,2809,1273,98,16,0,135,0,24,3,0,0,0,-1--1--1,255-255-255,|20|BI|0-0-0
+Initializing Stocks
+1,683,187,171,1,0,0,0,0,64,0,-1--1--1,,1|(-928,2663)|
+1,684,179,187,1,0,0,0,0,64,0,-1--1--1,,1|(-1364,2789)|
+10,685,Canal lining zero time stock,-1266,2658,57,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,686,685,165,1,0,0,0,0,64,0,-1--1--1,,1|(-1189,2697)|
+10,687,delay rate CL,-1034,2828,41,20,8,131,0,0,0,0,0,0
+1,688,171,687,1,0,0,0,0,64,0,-1--1--1,,1|(-1003,2811)|
+1,689,687,166,1,0,0,0,0,64,0,-1--1--1,,1|(-1127,2789)|
+1,690,172,687,1,0,0,0,0,64,0,-1--1--1,,1|(-1194,2806)|
+10,691,Time,-1131,2665,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,692,691,166,0,0,0,0,0,64,0,-1--1--1,,1|(-1155,2705)|
+1,693,330,327,1,0,0,0,0,64,0,-1--1--1,,1|(-1317,4081)|
+1,694,344,327,1,0,0,0,0,64,0,-1--1--1,,1|(-1314,4214)|
+1,695,315,327,1,0,0,0,0,64,0,-1--1--1,,1|(-1317,4147)|
+10,696,lining cost per season,-883,2518,44,19,8,3,0,0,0,0,0,0
+1,697,187,696,1,0,0,0,0,64,0,-1--1--1,,1|(-1007,2502)|
+1,698,211,696,1,0,0,0,0,64,0,-1--1--1,,1|(-753,2579)|
+1,699,194,696,1,0,0,0,0,64,0,-1--1--1,,1|(-748,2542)|
+10,700,RWH cost per season,-781,3214,45,18,8,131,0,0,0,0,0,0
+1,701,281,700,1,0,0,0,0,64,0,-1--1--1,,1|(-855,3189)|
+1,702,236,700,1,0,0,0,0,64,0,-1--1--1,,1|(-690,3208)|
+1,703,302,700,1,0,0,0,0,64,0,-1--1--1,,1|(-753,3230)|
+10,704,Potential investment,-695,3312,39,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,705,704,234,1,0,0,0,0,64,0,-1--1--1,,1|(-777,3329)|
+1,706,700,235,0,0,0,0,0,64,0,-1--1--1,,1|(-816,3288)|
+10,707,units per season,-1229,3956,50,11,8,3,0,0,0,0,0,0
+1,708,330,707,1,0,0,0,0,64,0,-1--1--1,,1|(-1285,3985)|
+10,709,Efficiency increse per unit,-1324,3895,60,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,710,709,707,1,0,0,0,0,64,0,-1--1--1,,1|(-1241,3905)|
+10,711,cost of installation per season,-1123,3922,57,19,8,3,0,0,0,0,0,0
+1,712,707,711,1,0,0,0,0,64,0,-1--1--1,,1|(-1190,3903)|
+1,713,359,711,1,0,0,0,0,64,0,-1--1--1,,1|(-1150,3980)|
+1,714,335,711,1,0,0,0,0,64,0,-1--1--1,,1|(-1007,3941)|
+1,715,711,326,1,0,0,0,0,64,0,-1--1--1,,1|(-1095,4035)|
+10,716,Potential investment,-1049,4055,39,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,717,716,326,1,0,0,0,0,64,0,-1--1--1,,1|(-1108,4101)|
+10,718,Potential investment polygons on canal,2382,2146,63,19,8,3,0,0,0,0,0,0
+1,719,553,718,1,0,0,0,0,64,0,-1--1--1,,1|(2329,2196)|
+10,720,Polygonal factor,2471,2076,49,22,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,721,720,718,1,0,0,0,0,64,0,-1--1--1,,1|(2432,2112)|
+10,722,Potential investment per canal,2320,2054,63,19,8,3,0,0,0,0,0,0
+1,723,718,722,1,0,0,0,0,64,0,-1--1--1,,1|(2347,2111)|
+10,724,Potential investment per canal,-894,2617,68,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,725,724,170,1,0,0,0,0,64,0,-1--1--1,,1|(-873,2680)|
+1,726,696,170,1,0,0,0,0,64,0,-1--1--1,,1|(-805,2668)|
+1,727,129,110,0,0,0,0,0,64,0,-1--1--1,,1|(-36,3469)|
+10,728,Time,1171,603,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,729,Time,1200,624,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,730,Tubewell number at zero time,2807,1311,141,23,8,131,0,0,0,0,0,0
+10,731,Decay rate TWN,1062,630,55,11,8,3,0,0,0,0,0,0
+1,732,411,731,1,0,0,0,0,64,0,-1--1--1,,1|(960,614)|
+1,733,488,731,1,0,0,0,0,64,0,-1--1--1,,1|(1166,662)|
+1,734,406,487,0,0,0,0,0,64,0,-1--1--1,,1|(1090,570)|
+10,735,Irrigation efficiency,719,2748,35,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,736,735,20,0,0,0,0,0,64,0,-1--1--1,,1|(804,2805)|
+10,737,Area,1206,2953,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,738,737,15,0,0,0,0,0,64,0,-1--1--1,,1|(1192,2971)|
+10,739,Canal seepage,295,2651,46,11,8,3,0,0,0,0,0,0
+1,740,26,739,0,0,0,0,0,64,0,-1--1--1,,1|(361,2613)|
+1,741,739,60,0,0,0,0,0,64,0,-1--1--1,,1|(285,2676)|
+10,742,Total length,73,2761,46,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,743,742,60,0,0,0,0,0,64,0,-1--1--1,,1|(164,2739)|
+10,744,Soil salinity Tinamit CropB,2173,1851,73,24,8,131,0,0,0,0,0,0
+10,745,Watertable depth Tinamit,165,247,56,19,8,3,0,0,0,0,0,0
+1,746,462,745,0,0,0,0,0,64,0,-1--1--1,,1|(71,199)|
+1,747,745,459,0,0,0,0,0,64,0,-1--1--1,,1|(245,266)|
+10,748,ECdw Tinamit,783,494,46,11,8,3,0,0,0,0,0,0
+1,749,552,748,1,0,0,0,0,64,0,-1--1--1,,1|(781,515)|
+1,750,748,411,1,0,0,0,0,64,0,-1--1--1,,1|(862,534)|
+10,751,ECdw Tinamit,2275,1478,55,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,752,751,495,0,0,0,0,0,64,0,-1--1--1,,1|(2230,1512)|
+10,753,Area fraction Tinamit CropB,1524,2696,52,26,8,131,0,0,0,0,0,0
+1,754,64,753,0,0,0,0,0,64,0,-1--1--1,,1|(1611,2663)|
+1,755,753,38,0,0,0,0,0,64,0,-1--1--1,,1|(1485,2755)|
+10,756,Soil salinity CropB,2411,1769,59,11,8,3,0,0,0,0,0,0
+10,757,b cropA,2105,2041,42,12,8,131,0,0,0,0,0,0
+1,758,757,514,0,0,0,0,0,64,0,-1--1--1,,1|(2019,2064)|
+10,759,Time,2030,1970,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,760,759,757,1,0,0,0,0,64,0,-1--1--1,,1|(2105,1992)|
+1,761,759,372,0,0,0,0,0,64,0,-1--1--1,,1|(1954,1940)|
+10,762,ECthreshold cropB,1784,1940,63,17,8,131,0,0,0,0,0,0
+1,763,759,371,1,0,0,0,0,64,0,-1--1--1,,1|(2027,2041)|
+1,764,759,762,1,0,0,0,0,64,0,-1--1--1,,1|(1906,1857)|
+10,765,Soil salinity Tinamit CropA,2234,1910,72,19,8,131,0,0,0,0,0,0
+1,766,513,765,0,0,0,0,0,64,0,-1--1--1,,1|(2350,1863)|
+1,767,756,744,0,0,0,0,0,64,0,-1--1--1,,1|(2317,1802)|
+10,768,Salinity stress CropB,1885,2004,44,24,8,131,0,0,0,0,0,0
+1,769,372,768,0,0,0,0,0,64,0,-1--1--1,,1|(1872,1941)|
+1,770,744,768,0,0,0,0,0,64,0,-1--1--1,,1|(2034,1925)|
+1,771,762,768,0,0,0,0,0,64,0,-1--1--1,,1|(1822,1965)|
+1,772,765,514,0,0,0,0,0,64,0,-1--1--1,,1|(2087,1994)|
+10,773,CY CropB,1785,2130,35,20,8,131,0,0,0,0,0,0
+10,774,CY max CropB,1797,2028,46,19,8,131,0,0,0,0,0,0
+1,775,774,773,0,0,0,0,0,64,0,-1--1--1,,1|(1791,2072)|
+1,776,768,773,0,0,0,0,0,64,0,-1--1--1,,1|(1837,2064)|
+1,777,511,773,0,0,0,0,0,64,0,-1--1--1,,1|(1729,2066)|
+10,778,Market rate CropA,1710,2211,51,24,8,131,0,0,0,0,0,0
+10,779,Area fraction CropA,1802,2696,54,24,8,131,0,0,-1,0,0,0
+10,780,Area fraction Tinamit CropA,1639,2762,57,24,8,131,0,0,0,0,0,0
+1,781,779,780,0,0,0,0,0,64,0,-1--1--1,,1|(1728,2726)|
+10,782,Crop area CropA,1562,2839,42,19,8,131,0,0,-1,0,0,0
+1,783,44,782,0,0,0,0,0,64,0,-1--1--1,,1|(1511,2874)|
+1,784,780,782,0,0,0,0,0,64,0,-1--1--1,,1|(1602,2799)|
+10,785,crop seasonal water requirement CropB,1284,2563,69,19,8,3,0,4,0,0,0,0,-1--1--1,0-255-255,|12||0-0-0
+1,786,8,785,1,0,0,0,0,64,0,-1--1--1,,1|(1210,2518)|
+10,787,canal supply per cropA,1177,2776,52,19,8,131,0,0,0,0,0,0
+1,788,19,787,0,0,0,0,0,64,0,-1--1--1,,1|(1120,2922)|
+1,789,38,787,1,0,0,0,0,64,0,-1--1--1,,1|(1312,2774)|
+1,790,40,787,0,0,0,0,0,64,0,-1--1--1,,1|(1092,2659)|
+1,791,782,787,1,0,0,0,0,64,0,-1--1--1,,1|(1373,2853)|
+1,792,785,787,0,0,0,0,0,64,0,-1--1--1,,1|(1233,2664)|
+1,793,782,7,1,0,0,0,0,64,0,-1--1--1,,1|(1393,2680)|
+1,794,785,7,0,0,0,0,0,64,0,-1--1--1,,1|(1223,2594)|
+1,795,787,17,0,0,0,0,0,64,0,-1--1--1,,1|(1070,2730)|
+1,796,8,40,0,0,0,0,0,64,0,-1--1--1,,1|(1103,2523)|
+10,797,crop seasonal water requirement CropB,1044,1914,69,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,798,797,633,1,0,0,0,0,64,0,-1--1--1,,1|(1060,1869)|
+1,799,797,635,1,0,0,0,0,64,0,-1--1--1,,1|(1134,1911)|
+10,800,Crop area CropA,888,1864,38,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,801,crop seasonal water requirement CropA,1016,1974,69,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,802,801,633,1,0,0,0,0,64,0,-1--1--1,,1|(953,1886)|
+1,803,801,635,1,0,0,0,0,64,0,-1--1--1,,1|(1111,1954)|
+1,804,800,633,1,0,0,0,0,64,0,-1--1--1,,1|(922,1838)|
+1,805,800,635,1,0,0,0,0,64,0,-1--1--1,,1|(951,1996)|
+10,806,Total supply per cropA,1428,1130,52,19,8,3,0,0,0,0,0,0
+10,807,Surface supply per cropA,1219,1133,60,19,8,3,0,0,0,0,0,0
+1,808,807,806,1,0,0,0,0,64,0,-1--1--1,,1|(1312,1087)|
+10,809,Runoff supply per cropA,1034,1133,57,19,8,3,0,0,0,0,0,0
+1,810,809,807,1,0,0,0,0,64,0,-1--1--1,,1|(1141,1130)|
+10,811,SS supply per cropA,1148,1289,45,19,8,3,0,0,0,0,0,0
+1,812,811,807,1,0,0,0,0,64,0,-1--1--1,,1|(1213,1208)|
+10,813,TW supply per cropA,1259,1343,48,19,8,3,0,0,0,0,0,0
+1,814,813,806,1,0,0,0,0,64,0,-1--1--1,,1|(1327,1225)|
+10,815,SS supply,1035,1197,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,816,815,811,1,0,0,0,0,64,0,-1--1--1,,1|(1104,1243)|
+10,817,Rainfall contributions,910,1092,46,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,818,817,809,1,0,0,0,0,64,0,-1--1--1,,1|(985,1086)|
+10,819,Crop area CropB,953,1316,38,19,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,820,Area,1087,1067,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,821,Tubewell discharge,1296,1433,35,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,822,820,809,1,0,0,0,0,64,0,-1--1--1,,1|(1058,1107)|
+1,823,819,811,1,0,0,0,0,64,0,-1--1--1,,1|(1019,1265)|
+1,824,819,813,1,0,0,0,0,64,0,-1--1--1,,1|(1004,1441)|
+1,825,821,813,1,0,0,0,0,64,0,-1--1--1,,1|(1270,1389)|
+10,826,Ia CropA,1175,1076,26,17,8,131,0,0,0,0,0,0
+1,827,820,826,1,0,0,0,0,64,0,-1--1--1,,1|(1123,1047)|
+1,828,807,826,1,0,0,0,0,64,0,-1--1--1,,1|(1209,1089)|
+10,829,crop seasonal water requirement CropB,1111,1356,69,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,830,829,811,1,0,0,0,0,64,0,-1--1--1,,1|(1127,1311)|
+1,831,829,813,1,0,0,0,0,64,0,-1--1--1,,1|(1201,1353)|
+10,832,Crop area CropA,862,1297,38,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,833,crop seasonal water requirement CropA,1083,1416,69,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,834,833,811,1,0,0,0,0,64,0,-1--1--1,,1|(1020,1328)|
+1,835,833,813,1,0,0,0,0,64,0,-1--1--1,,1|(1178,1396)|
+1,836,832,811,1,0,0,0,0,64,0,-1--1--1,,1|(914,1245)|
+1,837,832,813,1,0,0,0,0,64,0,-1--1--1,,1|(1038,1529)|
+1,838,832,809,1,0,0,0,0,64,0,-1--1--1,,1|(899,1192)|
+10,839,canal supply per cropA,1141,1199,61,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,840,839,807,0,0,0,0,0,64,0,-1--1--1,,1|(1174,1171)|
+10,841,Ky CropA,1510,1491,35,11,8,3,0,0,0,0,0,0
+10,842,Time,1493,1395,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,843,842,841,0,0,0,0,0,64,0,-1--1--1,,1|(1499,1437)|
+10,844,Water stress CropA,1616,1418,47,28,8,131,0,4,0,0,0,0,-1--1--1,255-0-0,|12||0-0-0
+10,845,Kc CropA,1018,2420,31,18,8,131,0,0,0,0,0,0
+10,846,ETc Rate CropA,943,2474,57,21,8,131,0,0,-1,0,0,0
+10,847,Crop area CropA,1099,2448,38,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,848,72,846,0,0,0,0,0,64,0,-1--1--1,,1|(868,2508)|
+1,849,847,846,0,0,0,0,0,64,0,-1--1--1,,1|(1037,2459)|
+1,850,845,846,0,0,0,0,0,64,0,-1--1--1,,1|(988,2442)|
+1,851,846,20,1,0,0,0,0,64,0,-1--1--1,,1|(849,2645)|
+10,852,Time,995,2332,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,853,852,845,0,0,0,0,0,64,0,-1--1--1,,1|(1003,2366)|
+1,854,852,73,0,0,0,0,0,64,0,-1--1--1,,1|(951,2336)|
+10,855,ETc Rate CropA,1806,1469,35,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,856,855,502,1,0,0,0,0,64,0,-1--1--1,,1|(1783,1562)|
+1,857,855,844,1,0,0,0,0,64,0,-1--1--1,,1|(1688,1424)|
+1,858,806,844,0,0,0,0,0,64,0,-1--1--1,,1|(1514,1264)|
+1,859,841,844,0,0,0,0,0,64,0,-1--1--1,,1|(1544,1467)|
+10,860,Water stress CropA,1941,2210,49,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,861,860,516,1,0,0,0,0,64,0,-1--1--1,,1|(1859,2208)|
+10,862,Croped income CropB,1542,2217,67,20,8,131,0,0,0,0,0,0
+10,863,Croped income CropA,1878,2278,55,19,8,131,0,0,0,0,0,0
+10,864,Crop area CropB,1385,2133,38,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,865,773,862,0,0,0,0,0,64,0,-1--1--1,,1|(1680,2168)|
+1,866,526,862,0,0,0,0,0,64,0,-1--1--1,,1|(1530,2166)|
+1,867,864,862,0,0,0,0,0,64,0,-1--1--1,,1|(1455,2172)|
+10,868,Crop area CropA,2045,2257,38,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,869,516,863,0,0,0,0,0,64,0,-1--1--1,,1|(1833,2230)|
+1,870,778,863,0,0,0,0,0,64,0,-1--1--1,,1|(1788,2243)|
+1,871,868,863,0,0,0,0,0,64,0,-1--1--1,,1|(1976,2266)|
+1,872,862,544,0,0,0,0,0,64,0,-1--1--1,,1|(1583,2242)|
+1,873,863,544,0,0,0,0,0,64,0,-1--1--1,,1|(1757,2272)|
+10,874,ECe CropA,2239,1601,35,19,8,131,0,0,0,0,0,0
+10,875,Time,1943,1464,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,876,875,494,0,0,0,0,0,64,0,-1--1--1,,1|(1961,1487)|
+1,877,874,493,1,0,0,0,0,64,0,-1--1--1,,1|(2142,1600)|
+10,878,LR CropB,2009,1598,41,20,8,131,0,0,0,0,0,0
+1,879,494,878,0,0,0,0,0,64,0,-1--1--1,,1|(2002,1558)|
+1,880,495,878,1,0,0,0,0,64,0,-1--1--1,,1|(2082,1567)|
+10,881,Time,2329,1602,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,882,881,874,0,0,0,0,0,64,0,-1--1--1,,1|(2296,1602)|
+1,883,878,502,0,0,0,0,0,64,0,-1--1--1,,1|(2054,1642)|
+10,884,Fw,1564,586,12,11,8,3,0,0,0,0,0,0
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Graphs
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,100,0
+12,1,0,325,98,267,172,3,188,0,0,1,0,0,0
+Canal_water_distribution
+12,2,0,737,30,80,20,3,124,0,0,0,0,0,0
+Distribution switch,0,1,1
+12,3,0,942,360,342,232,3,188,0,0,1,0,0,0
+canal_lining
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Reality check
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+10,1,Check when RWH is zero,443,260,61,19,8,3,0,0,0,0,0,0
+10,2,Constructed capacity,810,138,44,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,3,Silted capacity,813,209,55,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,4,2,1,0,0,0,0,0,64,0,-1--1--1,,1|(639,194)|
+1,5,3,1,0,0,0,0,0,64,0,-1--1--1,,1|(637,232)|
+1,6,8,1,0,0,0,0,0,64,0,-1--1--1,,1|(644,269)|
+10,7,Check when RWH is not zero,1220,259,61,19,8,3,0,0,0,0,0,0
+10,8,Policy RH,813,277,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,9,2,7,0,0,0,0,0,64,0,-1--1--1,,1|(999,193)|
+1,10,3,7,0,0,0,0,0,64,0,-1--1--1,,1|(1006,232)|
+1,11,8,7,0,0,0,0,0,64,0,-1--1--1,,1|(1000,268)|
+10,12,Actual RWH Costs,817,70,47,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,13,12,1,0,0,0,0,0,64,0,-1--1--1,,1|(636,161)|
+1,14,12,7,0,0,0,0,0,64,0,-1--1--1,,1|(1011,161)|
+10,15,Construction Percentage,823,331,46,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,16,15,1,0,0,0,0,0,64,0,-1--1--1,,1|(647,298)|
+1,17,15,7,0,0,0,0,0,64,0,-1--1--1,,1|(1007,297)|
+10,18,Actual costs maintenance RH,826,391,57,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,19,18,1,0,0,0,0,0,64,0,-1--1--1,,1|(641,327)|
+1,20,18,7,0,0,0,0,0,64,0,-1--1--1,,1|(1015,327)|
+10,21,inflow,826,461,29,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,22,21,1,0,0,0,0,0,64,0,-1--1--1,,1|(648,367)|
+1,23,21,7,0,0,0,0,0,64,0,-1--1--1,,1|(1008,367)|
+10,24,water in storage,823,512,59,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,25,24,1,0,0,0,0,0,64,0,-1--1--1,,1|(644,393)|
+1,26,24,7,0,0,0,0,0,64,0,-1--1--1,,1|(1009,393)|
+10,27,Evaporation1,815,4,52,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,28,27,1,0,0,0,0,0,64,0,-1--1--1,,1|(640,124)|
+1,29,27,7,0,0,0,0,0,64,0,-1--1--1,,1|(1004,123)|
+10,30,Seepage1,808,-52,41,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,31,30,1,1,0,0,0,0,64,0,-1--1--1,,1|(607,44)|
+1,32,30,7,1,0,0,0,0,64,0,-1--1--1,,1|(1045,27)|
+10,33,SS supply,832,576,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,34,33,1,1,0,0,0,0,64,0,-1--1--1,,1|(560,431)|
+1,35,33,7,1,0,0,0,0,64,0,-1--1--1,,1|(1031,445)|
+10,36,Siltation rate,824,623,49,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,37,maintenance rate,827,663,44,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,38,Construction rate,828,712,46,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,39,36,7,1,0,0,0,0,64,0,-1--1--1,,1|(1114,472)|
+1,40,36,1,1,0,0,0,0,64,0,-1--1--1,,1|(546,489)|
+1,41,37,7,1,0,0,0,0,64,0,-1--1--1,,1|(1139,524)|
+1,42,37,1,1,0,0,0,0,64,0,-1--1--1,,1|(549,556)|
+1,43,38,7,1,0,0,0,0,64,0,-1--1--1,,1|(1177,528)|
+1,44,38,1,1,0,0,0,0,64,0,-1--1--1,,1|(512,573)|
+10,45,Available capacity,807,-96,35,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,46,45,1,1,0,0,0,0,64,0,-1--1--1,,1|(568,16)|
+1,47,45,7,1,0,0,0,0,64,0,-1--1--1,,1|(1093,10)|
+10,48,Available canalsupplies contributions to SS,804,-159,78,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,49,Available runoff contribution to SS,799,-224,62,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,50,48,1,1,0,0,0,0,64,0,-1--1--1,,1|(573,-66)|
+1,51,48,7,1,0,0,0,0,64,0,-1--1--1,,1|(1104,-55)|
+1,52,49,1,1,0,0,0,0,64,0,-1--1--1,,1|(541,-82)|
+1,53,49,7,1,0,0,0,0,64,0,-1--1--1,,1|(1127,-66)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 4
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+12,1,0,395,113,28,11,8,7,0,0,-1,0,0,0
+Changes
+12,2,0,587,155,227,27,8,135,0,0,-1,0,0,0
+Tubewell stock at time zero has been included in initization list
+12,3,0,505,187,158,19,8,135,0,0,-1,0,0,0
+SS supply equation has been updated
+12,4,0,1413,138,37,11,8,7,0,0,-1,0,0,0
+Useful links
+12,5,0,1467,179,218,19,8,135,0,0,-1,0,0,0
+http://pdf.usaid.gov/pdf_docs/Pnaaq566.pdf
+12,6,0,1638,218,316,15,8,135,0,0,-1,0,0,0
+http://idup.gov.in/wps/UpidHm/UPWSRP/WSRP_StandardsAndGuidelines/Canal%20Lining.htm
+12,7,0,532,217,239,23,8,135,0,0,-1,0,0,0
+Canal lining model has been change considerably
+12,8,0,561,252,188,24,8,135,0,0,-1,0,0,0
+Irrigation efficiency model has been change considerably
+12,9,0,1805,179,193,17,8,135,0,0,-1,0,0,0
+See mendeley under title of Lining egystian canals
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*RC Canal lining and Irrigation eff
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+10,1,Checking canal lining when policy is zero,302,312,58,40,8,131,0,0,0,0,0,0
+10,2,Checking canal lining when policy is not zero,884,313,58,43,8,131,0,0,0,0,0,0
+10,3,Policy Canal lining,588,322,67,16,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,4,Lining rate,584,261,43,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,5,Canal lining,580,382,46,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,6,canal decay rate,591,436,77,21,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,7,lined percentage,585,202,62,15,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,8,Actual lining cost,582,137,66,18,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,9,3,1,0,0,0,0,0,64,0,-1--1--1,,1|(447,317)|
+1,10,3,2,0,0,0,0,0,64,0,-1--1--1,,1|(733,317)|
+1,11,4,1,1,0,0,0,0,64,0,-1--1--1,,1|(406,273)|
+1,12,4,2,1,0,0,0,0,64,0,-1--1--1,,1|(736,273)|
+1,13,7,1,1,0,0,0,0,64,0,-1--1--1,,1|(424,218)|
+1,14,7,2,1,0,0,0,0,64,0,-1--1--1,,1|(770,222)|
+1,15,8,1,1,0,0,0,0,64,0,-1--1--1,,1|(405,170)|
+1,16,8,2,1,0,0,0,0,64,0,-1--1--1,,1|(770,165)|
+1,17,5,2,1,0,0,0,0,64,0,-1--1--1,,1|(733,371)|
+1,18,5,1,1,0,0,0,0,64,0,-1--1--1,,1|(421,367)|
+1,19,6,1,1,0,0,0,0,64,0,-1--1--1,,1|(412,412)|
+1,20,6,2,1,0,0,0,0,64,0,-1--1--1,,1|(753,421)|
+10,21,Farm income is zero,1069,427,73,25,8,131,0,0,0,0,0,0
+10,22,Tubewell discharge,1305,432,35,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,23,22,21,1,0,0,0,0,64,0,-1--1--1,,1|(1225,384)|
+10,24,Farm income,1320,508,51,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,25,24,21,1,0,0,0,0,64,0,-1--1--1,,1|(1164,500)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Reality check 1
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+10,1,Negative behavior test crop1,612,175,73,22,8,131,0,0,0,0,0,0
+10,2,Canal supply at head,902,79,81,18,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,3,Water requirment,885,173,79,20,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,4,Policy RH,877,266,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,5,2,1,0,0,0,0,0,64,0,-1--1--1,,1|(769,122)|
+1,6,3,1,0,0,0,0,0,64,0,-1--1--1,,1|(752,173)|
+1,7,4,1,0,0,0,0,0,64,0,-1--1--1,,1|(767,228)|
+10,8,Tubewell Nos,358,31,54,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,9,Crop area CropB,358,95,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,10,SS supply,344,154,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,11,Water stress CropB,342,212,49,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,12,Salinity stress CropA,349,275,52,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,13,Farm income,344,335,51,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,14,8,1,0,0,0,0,0,64,0,-1--1--1,,1|(468,94)|
+1,15,9,1,0,0,0,0,0,64,0,-1--1--1,,1|(460,127)|
+1,16,10,1,0,0,0,0,0,64,0,-1--1--1,,1|(455,162)|
+1,17,11,1,0,0,0,0,0,64,0,-1--1--1,,1|(458,196)|
+1,18,12,1,0,0,0,0,0,64,0,-1--1--1,,1|(458,232)|
+1,19,13,1,0,0,0,0,0,64,0,-1--1--1,,1|(462,264)|
+10,20,Negative behavior test crop2,641,553,58,19,8,131,0,0,0,0,0,0
+10,21,Canal supply at head,931,457,54,19,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,22,Water requirment,914,551,39,19,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,23,Policy RH,906,644,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,24,21,20,0,0,0,0,0,64,0,-1--1--1,,1|(794,501)|
+1,25,22,20,0,0,0,0,0,64,0,-1--1--1,,1|(793,551)|
+1,26,23,20,0,0,0,0,0,64,0,-1--1--1,,1|(791,604)|
+10,27,Tubewell Nos,387,409,54,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,28,Crop area CropB,387,473,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,29,SS supply,373,532,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,30,Water stress CropB,371,590,49,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,31,Salinity stress CropA,378,653,52,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,32,Farm income,373,713,51,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,33,27,20,0,0,0,0,0,64,0,-1--1--1,,1|(500,473)|
+1,34,28,20,0,0,0,0,0,64,0,-1--1--1,,1|(495,506)|
+1,35,29,20,0,0,0,0,0,64,0,-1--1--1,,1|(492,540)|
+1,36,30,20,0,0,0,0,0,64,0,-1--1--1,,1|(494,573)|
+1,37,31,20,0,0,0,0,0,64,0,-1--1--1,,1|(491,609)|
+1,38,32,20,0,0,0,0,0,64,0,-1--1--1,,1|(493,640)|
+10,39,Negative behavior test crop3,1322,143,58,19,8,131,0,0,0,0,0,0
+10,40,Canal supply at head,1612,47,54,19,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,41,Water requirment,1595,141,39,19,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,42,Policy RH,1587,234,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,43,40,39,0,0,0,0,0,64,0,-1--1--1,,1|(1475,91)|
+1,44,41,39,0,0,0,0,0,64,0,-1--1--1,,1|(1474,141)|
+1,45,42,39,0,0,0,0,0,64,0,-1--1--1,,1|(1472,194)|
+10,46,Tubewell Nos,1068,-1,54,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,47,Crop area CropB,1068,63,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,48,SS supply,1054,122,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,49,Water stress CropB,1052,180,49,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,50,Salinity stress CropA,1059,243,52,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,51,Farm income,1054,303,51,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,52,46,39,0,0,0,0,0,64,0,-1--1--1,,1|(1181,63)|
+1,53,47,39,0,0,0,0,0,64,0,-1--1--1,,1|(1176,96)|
+1,54,48,39,0,0,0,0,0,64,0,-1--1--1,,1|(1173,130)|
+1,55,49,39,0,0,0,0,0,64,0,-1--1--1,,1|(1175,163)|
+1,56,50,39,0,0,0,0,0,64,0,-1--1--1,,1|(1172,199)|
+1,57,51,39,0,0,0,0,0,64,0,-1--1--1,,1|(1174,230)|
+10,58,Negative behavior test crop4,1351,521,58,19,8,131,0,0,0,0,0,0
+10,59,Canal supply at head,1641,425,54,19,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,60,Water requirment,1624,519,39,19,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,61,Policy RH,1616,612,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,62,59,58,0,0,0,0,0,64,0,-1--1--1,,1|(1504,469)|
+1,63,60,58,0,0,0,0,0,64,0,-1--1--1,,1|(1503,519)|
+1,64,61,58,0,0,0,0,0,64,0,-1--1--1,,1|(1501,572)|
+10,65,Tubewell Nos,1097,377,54,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,66,Crop area CropB,1097,441,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,67,SS supply,1083,500,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,68,Water stress CropB,1081,558,49,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,69,Salinity stress CropA,1088,621,52,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,70,Farm income,1083,681,51,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,71,65,58,0,0,0,0,0,64,0,-1--1--1,,1|(1210,441)|
+1,72,66,58,0,0,0,0,0,64,0,-1--1--1,,1|(1205,474)|
+1,73,67,58,0,0,0,0,0,64,0,-1--1--1,,1|(1202,508)|
+1,74,68,58,0,0,0,0,0,64,0,-1--1--1,,1|(1204,541)|
+1,75,69,58,0,0,0,0,0,64,0,-1--1--1,,1|(1201,577)|
+1,76,70,58,0,0,0,0,0,64,0,-1--1--1,,1|(1203,608)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Reality check 2
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+10,1,Conservation of mass check,851,338,51,19,8,131,0,0,0,0,0,0
+10,2,Canal supply at head,1150,342,54,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,3,canal supply in polygon,584,264,52,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,4,Canal seepage per polygon,581,375,64,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,5,3,1,0,0,0,0,0,64,0,-1--1--1,,1|(711,298)|
+1,6,4,1,0,0,0,0,0,64,0,-1--1--1,,1|(715,356)|
+1,7,2,1,0,0,0,0,0,64,0,-1--1--1,,1|(1005,340)|
+10,8,canal evaporation,772,182,43,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,9,8,1,0,0,0,0,0,64,0,-1--1--1,,1|(807,253)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Reality check 3
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+10,1,Farm income,785,341,51,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,2,Canal lining,248,212,46,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,3,Tubewell discharge,244,308,35,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,4,Constructed capacity,229,392,44,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,5,Irrigation efficiency,240,476,35,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,6,Constrained behavior limit test,505,337,56,19,8,3,0,0,0,0,0,0
+1,7,1,6,0,0,0,0,0,64,0,-1--1--1,,1|(654,339)|
+1,8,2,6,0,0,0,0,0,64,0,-1--1--1,,1|(361,267)|
+1,9,3,6,0,0,0,0,0,64,0,-1--1--1,,1|(357,319)|
+1,10,4,6,0,0,0,0,0,64,0,-1--1--1,,1|(353,367)|
+1,11,5,6,0,0,0,0,0,64,0,-1--1--1,,1|(365,410)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Reality check 4
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Reality check 5
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*crop yield and income model
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,80,0
+10,1,ECthreshold cropA,801,129,47,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,2,b CropB,778,76,7,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,3,Ky CropB,468,27,13,11,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+10,4,Water stress CropB,518,135,47,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,5,3,4,1,0,0,0,0,64,0,-1--1--1,,1|(480,76)|
+10,6,Soil salinity CropA,702,35,43,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,7,Salinity stress CropA,642,134,51,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,8,6,7,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(697,85)|
+1,9,1,7,0,0,0,0,0,64,0,-1--1--1,,1|(730,130)|
+1,10,2,7,1,0,0,0,0,64,0,-1--1--1,,1|(722,111)|
+10,11,CY CropA,624,240,15,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,12,CY max CropA,712,203,32,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,13,4,11,1,0,0,0,0,64,0,-1--1--1,,1|(540,158)|
+1,14,7,11,1,0,0,0,0,64,0,-1--1--1,,1|(614,185)|
+1,15,12,11,1,0,0,0,0,64,0,-1--1--1,,1|(652,251)|
+10,16,Farm income,917,369,61,33,3,131,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+12,17,48,452,365,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,18,20,16,4,0,0,22,0,0,0,-1--1--1,,1|(720,366)|
+1,19,20,17,100,0,0,22,0,0,0,-1--1--1,,1|(517,366)|
+11,20,48,578,366,6,8,34,3,0,0,1,0,0,0
+10,21,Income,578,385,29,11,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,22,Market rate CropB,520,241,44,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,23,"Govt. loan",480,473,40,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,24,23,21,1,0,0,0,0,64,0,-1--1--1,,1|(534,428)|
+10,25,Debt,712,531,50,26,3,131,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+12,26,48,505,529,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,27,29,25,4,0,0,22,0,0,0,-1--1--1,,1|(628,530)|
+1,28,29,26,100,0,0,22,0,0,0,-1--1--1,,1|(549,530)|
+11,29,48,589,530,6,8,34,3,0,0,1,0,0,0
+10,30,Loan,589,549,21,11,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,31,23,30,0,0,0,0,0,64,0,-1--1--1,,1|(528,507)|
+12,32,48,913,533,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,33,35,32,4,0,0,22,0,0,0,-1--1--1,,1|(870,533)|
+1,34,35,25,100,0,0,22,0,0,0,-1--1--1,,1|(794,533)|
+11,35,48,832,533,6,8,34,3,0,0,1,0,0,0
+10,36,Payments,832,552,38,11,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,37,Interest rate,564,624,45,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,38,37,30,1,0,0,0,0,64,0,-1--1--1,,1|(590,578)|
+1,39,21,36,1,0,0,0,0,64,0,-1--1--1,,1|(770,437)|
+10,40,Croped income,500,312,57,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,41,40,21,0,0,0,0,0,64,0,-1--1--1,,1|(533,343)|
+1,42,22,40,0,0,0,0,0,64,0,-1--1--1,,1|(511,269)|
+1,43,11,40,0,0,0,0,0,64,0,-1--1--1,,1|(569,270)|
+1,44,25,30,1,0,0,0,0,64,0,-1--1--1,,1|(635,495)|
+10,45,TIME STEP,766,291,59,11,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+10,46,Time,560,469,31,11,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,47,46,30,1,0,0,0,0,64,0,-1--1--1,,1|(576,506)|
+10,48,Percent of total income,777,603,59,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,49,48,36,1,0,0,0,0,64,0,-1--1--1,,1|(837,564)|
+10,50,Potential investment,906,266,42,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,51,16,50,0,0,0,0,0,64,0,-1--1--1,,1|(911,317)|
+1,52,45,50,1,0,0,0,0,64,0,-1--1--1,,1|(803,253)|
+10,53,ETc Rate CropB,585,30,47,11,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,54,53,4,1,0,0,0,0,64,0,-1--1--1,,1|(576,77)|
+10,55,canal supply per cropB,186,348,53,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+12,56,48,1359,372,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,57,59,56,4,0,0,22,0,0,0,-1--1--1,,1|(1296,372)|
+1,58,59,16,100,0,0,22,0,0,0,-1--1--1,,1|(1105,372)|
+11,59,48,1238,372,6,8,34,3,0,0,1,0,0,0
+10,60,Expenditure,1238,391,45,11,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,61,35,60,1,0,0,0,0,64,0,-1--1--1,,1|(913,466)|
+10,62,Lining expenditure,1102,495,49,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+10,63,Costs for potential tubewell installation,1295,518,80,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+10,64,Farmer irrigation improvement share,1442,465,78,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+10,65,Actual operating cost,1362,233,58,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+10,66,Farmer water harvesting share,1223,225,67,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+10,67,maintenance cost,1101,294,53,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+10,68,Actual costs maintenance RH,1459,332,69,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,69,62,60,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1169,442)|
+1,70,63,60,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1267,456)|
+1,71,64,60,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1334,425)|
+1,72,68,60,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1341,363)|
+1,73,65,60,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1300,311)|
+1,74,66,60,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1229,305)|
+1,75,67,60,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1169,342)|
+10,76,Total supply per cropB,350,146,48,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,77,76,4,0,0,0,0,0,64,0,-1--1--1,,1|(427,140)|
+10,78,Surface supply per cropB,291,269,57,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,79,78,76,1,0,0,0,0,64,0,-1--1--1,,1|(333,202)|
+1,80,55,78,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(232,312)|
+10,81,Runoff supply per cropB,106,269,55,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,82,81,78,1,0,0,0,0,64,0,-1--1--1,,1|(213,266)|
+10,83,SS supply per cropB,220,425,53,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,84,83,78,1,0,0,0,0,64,0,-1--1--1,,1|(285,344)|
+10,85,TW supply per cropB,331,479,58,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,86,85,76,1,0,0,0,0,64,0,-1--1--1,,1|(398,381)|
+10,87,SS supply,334,359,48,11,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,88,87,83,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(273,402)|
+10,89,Rainfall contributions,-18,228,55,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,90,89,81,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(57,222)|
+10,91,Crop area CropB,-1,370,48,11,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+10,92,Area,159,203,29,11,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+10,93,Time,-21,550,31,11,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+10,94,Tubewell discharge,368,569,41,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+10,95,crop seasonal water requirement CropA,149,503,74,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,96,91,81,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(28,306)|
+1,97,92,81,1,0,0,0,0,64,0,-1--1--1,,1|(130,243)|
+1,98,91,83,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(88,373)|
+1,99,93,83,1,0,0,0,0,64,0,-1--1--1,,1|(84,459)|
+1,100,91,85,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(53,543)|
+1,101,94,85,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(342,525)|
+1,102,95,83,1,0,0,0,0,64,0,-1--1--1,,1|(172,464)|
+1,103,95,85,1,0,0,0,0,64,0,-1--1--1,,1|(240,529)|
+1,104,93,85,1,0,0,0,0,64,0,-1--1--1,,1|(220,597)|
+1,105,93,81,1,0,0,0,0,64,0,-1--1--1,,1|(-70,374)|
+10,106,Ia CropB,235,206,9,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,107,92,106,1,0,0,0,0,64,0,-1--1--1,,1|(195,183)|
+1,108,78,106,1,0,0,0,0,64,0,-1--1--1,,1|(281,225)|
+10,109,Potential investment polygons on canal,1037,211,77,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,110,50,109,1,0,0,0,0,64,0,-1--1--1,,1|(984,261)|
+10,111,Polygonal factor,1126,141,43,20,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,112,111,109,1,0,0,0,0,64,0,-1--1--1,,1|(1087,177)|
+10,113,Potential investment per canal,975,119,77,20,8,3,0,8,0,0,0,0,-1--1--1,0-0-0,|14||0-0-0
+1,114,109,113,1,0,0,0,0,64,0,-1--1--1,,1|(1002,176)|
+10,115,Farm income zero time stock,861,442,74,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+10,116,Crop area CropB,654,300,48,11,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,117,116,40,0,0,0,0,0,64,0,-1--1--1,,1|(588,304)|
+1,118,115,16,0,0,0,0,0,64,1,-1--1--1,,1|(879,417)|
+10,119,Debt zero time stock,712,576,62,20,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,120,119,25,0,1,0,0,0,64,1,-1--1--1,,1|(712,563)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*effective rainfall model
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,80,0
+10,1,AW,775,112,70,36,3,131,0,0,0,0,0,0
+12,2,48,525,102,10,8,0,3,0,0,-1,0,0,0
+1,3,5,1,4,0,0,22,0,0,0,-1--1--1,,1|(669,103)|
+1,4,5,2,100,0,0,22,0,0,0,-1--1--1,,1|(578,103)|
+11,5,48,627,103,6,8,34,3,0,0,1,0,0,0
+10,6,Supply,627,122,23,11,40,3,0,0,-1,0,0,0
+10,7,water in storage,734,240,66,47,3,131,0,0,0,0,0,0
+10,8,Rainfall contributions,515,213,41,19,8,3,0,0,0,0,0,0
+1,9,8,6,1,0,0,0,0,64,0,-1--1--1,,1|(555,151)|
+10,10,Area,435,260,17,11,8,3,0,0,-1,0,0,0
+10,11,Effective rainfall,456,129,59,11,8,2,0,3,-1,0,0,0,128-128-128,0-255-255,|12||128-128-128
+1,12,11,8,1,0,0,0,0,64,0,-1--1--1,,1|(495,169)|
+10,13,Rainfall volume,321,224,48,11,8,131,0,0,0,0,0,0
+10,14,Available runoff contribution to SS,610,351,58,19,8,3,0,0,0,0,0,0
+10,15,Recharge to aquifer rainfall,386,540,54,26,8,131,0,0,0,0,0,0
+10,16,Uneffective rainfall,225,296,58,11,8,3,0,0,0,0,0,0
+1,17,13,16,0,0,0,0,0,64,0,-1--1--1,,1|(278,255)|
+10,18,Deep percolated,296,474,53,11,8,3,0,0,0,0,0,0
+10,19,Cp rainfall,316,411,25,21,8,131,0,0,0,0,0,0
+1,20,16,18,1,0,0,0,0,64,0,-1--1--1,,1|(235,373)|
+1,21,19,18,0,0,0,0,0,64,0,-1--1--1,,1|(306,440)|
+10,22,Runoff,551,434,22,11,8,3,0,0,0,0,0,0
+1,23,16,22,1,0,0,0,0,64,0,-1--1--1,,1|(403,402)|
+1,24,18,22,1,0,0,0,0,64,0,-1--1--1,,1|(412,477)|
+1,25,18,15,1,0,0,0,0,64,0,-1--1--1,,1|(334,491)|
+1,26,10,13,1,0,0,0,0,64,0,-1--1--1,,1|(369,262)|
+1,27,8,16,1,0,0,0,0,64,0,-1--1--1,,1|(415,308)|
+1,28,22,14,1,0,0,0,0,64,0,-1--1--1,,1|(589,402)|
+1,29,7,14,1,0,0,0,0,64,0,-1--1--1,,1|(677,304)|
+10,30,Rainfall,387,180,33,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,31,30,13,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(344,201)|
+10,32,Available capacity,748,339,35,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,33,32,14,0,0,0,0,0,64,0,-1--1--1,,1|(697,343)|
+10,34,SS supply,447,973,42,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,35,34,7,0,1,0,0,0,64,0,-1--1--1,,1|(580,631)|
+10,36,inflow,447,973,29,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,37,36,7,0,1,0,0,0,64,0,-1--1--1,,1|(580,631)|
+10,38,Evaporation1,447,973,52,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,39,38,7,0,1,0,0,0,64,0,-1--1--1,,1|(580,631)|
+10,40,Seepage1,447,973,41,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,41,40,7,0,1,0,0,0,64,0,-1--1--1,,1|(580,631)|
+10,42,Water in storage zero time stock,447,973,58,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,43,42,7,0,1,0,0,0,64,1,-1--1--1,,1|(581,627)|
+10,44,Tubewell discharge,627,152,35,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,45,44,6,0,1,0,0,0,64,0,-1--1--1,,1|(627,133)|
+10,46,Canal contributions,627,152,46,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,47,46,6,0,1,0,0,0,64,0,-1--1--1,,1|(627,133)|
+10,48,AW zero time stock,775,167,50,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,49,48,1,0,1,0,0,0,64,1,-1--1--1,,1|(775,148)|
+10,50,SS supply,775,167,42,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,51,50,1,0,1,0,0,0,64,0,-1--1--1,,1|(775,159)|
+10,52,Consumption,775,167,51,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,53,52,1,0,1,0,0,0,64,0,-1--1--1,,1|(775,159)|
+10,54,Unused,775,167,34,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,55,54,1,0,1,0,0,0,64,0,-1--1--1,,1|(775,159)|
+1,56,10,8,1,0,0,0,0,64,0,-1--1--1,,1|(467,248)|
+10,57,TIME STEP,610,389,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,58,57,14,0,1,0,0,0,64,0,-1--1--1,,1|(610,381)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Surface water storage sub-model
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,70,0
+10,1,Constructed capacity,970,318,51,26,3,131,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,2,Silted capacity,448,309,41,29,3,131,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,3,4,2,4,0,0,22,0,0,0,-1--1--1,,1|(537,325)|
+11,4,2892,592,325,6,8,34,3,0,0,1,0,0,0
+10,5,Siltation rate,592,344,47,11,40,131,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,6,7,2,100,0,0,22,0,0,0,-1--1--1,,1|(547,282)|
+11,7,3020,612,282,6,8,34,131,0,0,3,0,0,0
+10,8,maintenance rate,612,254,48,20,40,131,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+12,9,48,1206,321,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,10,12,1,4,0,0,22,0,0,0,-1--1--1,,1|(1051,319)|
+1,11,12,9,100,0,0,22,0,0,0,-1--1--1,,1|(1144,319)|
+11,12,48,1087,319,6,8,34,3,0,0,1,0,0,0
+10,13,Construction rate,1087,347,49,20,40,131,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,14,Cost of pond,1341,206,49,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,15,Investment RH,1479,263,57,11,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,16,Farmer water harvesting share,1659,201,61,20,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,17,Cost of maintenance,218,220,48,20,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,18,Total rainwater harvesting capacity,1049,477,72,20,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,19,18,13,1,0,0,0,0,64,0,-1--1--1,,1|(1059,411)|
+10,20,Construction Percentage,968,397,49,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,21,1,20,1,0,0,0,0,64,0,-1--1--1,,1|(962,361)|
+1,22,18,20,1,0,0,0,0,64,0,-1--1--1,,1|(1015,447)|
+1,23,2,8,1,0,0,0,0,64,0,-1--1--1,,1|(535,270)|
+1,24,1,12,1,0,0,0,0,64,0,-1--1--1,,1|(1027,282)|
+10,25,Siltation perception Farmers,532,173,73,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,26,2,25,0,0,0,0,0,64,0,-1--1--1,,1|(488,242)|
+1,27,1,25,1,0,0,0,0,64,0,-1--1--1,,1|(703,140)|
+1,28,25,8,0,0,0,0,0,64,0,-1--1--1,,1|(566,208)|
+10,29,Actual costs maintenance RH,251,294,64,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,30,7,29,1,0,0,0,0,64,0,-1--1--1,,1|(344,348)|
+1,31,17,29,0,0,0,0,0,64,0,-1--1--1,,1|(231,250)|
+12,32,48,728,327,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,33,4,32,100,0,0,22,0,0,0,-1--1--1,,1|(658,325)|
+12,34,48,743,287,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,35,7,34,4,0,0,22,0,0,0,-1--1--1,,1|(675,282)|
+10,36,Available capacity,550,513,35,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,37,2,36,1,0,0,0,0,64,0,-1--1--1,,1|(463,412)|
+1,38,1,36,1,0,0,0,0,64,0,-1--1--1,,1|(758,475)|
+1,39,36,4,1,0,0,0,0,64,0,-1--1--1,,1|(553,393)|
+10,40,tanks per cell,637,436,50,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,41,40,5,1,0,0,0,0,64,0,-1--1--1,,1|(619,413)|
+1,42,40,18,1,0,0,0,0,64,0,-1--1--1,,1|(821,505)|
+10,43,Length,1151,398,27,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,44,Tank width,1224,445,44,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,45,Height,1043,566,26,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,46,45,18,0,0,0,0,0,64,0,-1--1--1,,1|(1044,532)|
+1,47,44,18,0,0,0,0,0,64,0,-1--1--1,,1|(1157,456)|
+1,48,43,18,0,0,0,0,0,64,0,-1--1--1,,1|(1111,428)|
+10,49,Sediment doposition rate,754,379,56,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,50,49,5,1,0,0,0,0,64,0,-1--1--1,,1|(662,351)|
+10,51,Maintence cost yesr 2003,326,131,58,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,52,Siltation perception lookup,524,95,68,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,53,52,25,1,0,0,0,0,64,0,-1--1--1,,1|(528,126)|
+10,54,Actual RWH Costs,1355,311,49,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,55,14,54,1,0,0,0,0,64,0,-1--1--1,,1|(1357,282)|
+1,56,13,54,1,0,0,0,0,64,0,-1--1--1,,1|(1249,349)|
+1,57,54,15,0,0,0,0,0,64,0,-1--1--1,,1|(1420,286)|
+1,58,15,16,1,0,0,0,0,64,0,-1--1--1,,1|(1563,261)|
+10,59,Incremental Increase,1004,178,45,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,60,1,59,0,0,0,0,0,64,0,-1--1--1,,1|(985,251)|
+1,61,59,12,0,0,0,0,0,64,0,-1--1--1,,1|(1045,249)|
+10,62,Policy RH,1085,218,40,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,63,62,12,0,0,0,0,0,64,0,-1--1--1,,1|(1085,264)|
+10,64,Capacity Increase,880,136,34,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,65,64,59,0,0,0,0,0,64,0,-1--1--1,,1|(929,152)|
+10,66,Year,828,13,30,11,8,2,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,67,66,64,0,0,0,0,0,64,0,-1--1--1,,1|(848,63)|
+10,68,Capcacity Lookup,1004,90,38,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,69,68,64,1,0,0,0,0,64,0,-1--1--1,,1|(919,85)|
+1,70,18,64,1,0,0,0,0,64,0,-1--1--1,,1|(815,380)|
+10,71,Pond cost year 2003,1419,143,57,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,72,Lookup function,1401,64,37,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+10,73,Pond cost factor,1300,112,39,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,74,66,73,1,0,0,0,0,64,0,-1--1--1,,1|(1016,33)|
+1,75,72,73,1,0,0,0,0,64,0,-1--1--1,,1|(1331,80)|
+1,76,73,14,0,0,0,0,0,64,0,-1--1--1,,1|(1319,157)|
+1,77,71,14,0,0,0,0,0,64,0,-1--1--1,,1|(1380,174)|
+10,78,"Govt. water harvesting share",1520,187,61,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,79,15,78,0,0,0,0,0,64,0,-1--1--1,,1|(1493,235)|
+10,80,TIME STEP,1212,236,59,11,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,81,80,12,1,0,0,0,0,64,0,-1--1--1,,1|(1161,278)|
+10,82,TIME STEP,720,217,59,11,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,83,82,8,0,0,0,0,0,64,0,-1--1--1,,1|(680,230)|
+10,84,Maintenance cost factor,180,122,49,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,85,84,17,0,0,0,0,0,64,0,-1--1--1,,1|(195,164)|
+1,86,51,17,0,0,0,0,0,64,0,-1--1--1,,1|(277,171)|
+10,87,Lookup function,85,44,37,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,88,66,84,1,0,0,0,0,64,0,-1--1--1,,1|(516,32)|
+1,89,87,84,0,0,0,0,0,64,0,-1--1--1,,1|(126,78)|
+10,90,RWH cost per season,1156,164,55,20,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,91,59,90,1,0,0,0,0,64,0,-1--1--1,,1|(1070,136)|
+1,92,14,90,1,0,0,0,0,64,0,-1--1--1,,1|(1250,167)|
+1,93,80,90,1,0,0,0,0,64,0,-1--1--1,,1|(1198,181)|
+10,94,Potential investment,1239,289,47,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,95,94,12,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1160,303)|
+1,96,90,13,0,0,0,0,0,64,0,-1--1--1,,1|(1124,248)|
+10,97,silted capacity zero time stock,448,357,64,20,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,98,97,2,0,1,0,0,0,64,1,-1--1--1,,1|(448,344)|
+10,99,constructed capacity zero time stock,960,369,83,20,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,100,99,1,0,1,0,0,0,64,1,-1--1--1,,1|(962,353)|
+10,101,AW,1342,396,70,36,3,131,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,102,water in storage,1338,693,66,47,3,131,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+12,103,48,1078,693,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,104,106,102,4,0,0,22,0,0,0,-1--1--1,,1|(1224,693)|
+1,105,106,103,100,0,0,22,0,0,0,-1--1--1,,1|(1126,693)|
+11,106,48,1171,693,6,8,34,3,0,0,1,0,0,0
+10,107,inflow,1171,712,25,11,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,108,Available canalsupplies contributions to SS,705,606,72,30,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,109,108,106,1,0,0,0,0,64,0,-1--1--1,,1|(899,689)|
+1,110,102,108,1,0,0,0,0,64,0,-1--1--1,,1|(1015,618)|
+10,111,canal supply in polygon,774,521,57,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,112,111,108,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(711,558)|
+12,113,48,1638,666,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,114,116,113,4,0,0,22,0,0,0,-1--1--1,,1|(1573,666)|
+1,115,116,102,100,0,0,22,0,0,0,-1--1--1,,1|(1455,666)|
+11,116,48,1513,666,6,8,34,3,0,0,1,0,0,0
+10,117,Evaporation1,1513,685,50,11,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+12,118,48,1643,722,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,119,121,118,4,0,0,22,0,0,0,-1--1--1,,1|(1578,722)|
+1,120,121,102,100,0,0,22,0,0,0,-1--1--1,,1|(1458,722)|
+11,121,48,1518,722,6,8,34,3,0,0,1,0,0,0
+10,122,Seepage1,1518,741,36,11,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,123,Seasonal evaporation,1536,595,45,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,124,SF,1625,747,12,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,125,Width,1600,699,24,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,126,125,117,1,0,0,0,0,64,0,-1--1--1,,1|(1575,679)|
+1,127,125,122,1,0,0,0,0,64,0,-1--1--1,,1|(1563,734)|
+1,128,123,116,1,0,0,0,0,64,0,-1--1--1,,1|(1532,631)|
+1,129,124,122,1,0,0,0,0,64,0,-1--1--1,,1|(1576,763)|
+1,130,102,117,1,0,0,0,0,64,0,-1--1--1,,1|(1413,644)|
+1,131,102,122,1,0,0,0,0,64,0,-1--1--1,,1|(1418,755)|
+10,132,Available runoff contribution to SS,374,608,69,20,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+10,133,Runoff,316,523,28,11,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,134,133,132,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(348,564)|
+1,135,102,132,1,0,0,0,0,64,0,-1--1--1,,1|(1038,777)|
+1,136,132,107,1,0,0,0,0,64,0,-1--1--1,,1|(640,717)|
+1,137,36,108,1,0,0,0,0,64,0,-1--1--1,,1|(629,557)|
+1,138,36,132,1,0,0,0,0,64,0,-1--1--1,,1|(447,555)|
+1,139,141,101,4,0,0,22,0,0,0,-1--1--1,,1|(1338,482)|
+1,140,141,102,100,0,0,22,0,0,0,-1--1--1,,1|(1338,595)|
+11,141,4412,1338,539,8,6,33,3,0,0,4,0,0,0
+10,142,SS supply,1384,539,38,11,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|14||0-0-0
+1,143,102,142,1,0,0,0,0,64,0,-1--1--1,,1|(1367,601)|
+10,144,Water requirment,1554,524,47,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,145,144,142,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1458,538)|
+10,146,Total canal supplies Crop,1464,437,48,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,147,146,141,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1388,504)|
+10,148,Rainfall contributions,1560,467,55,20,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,149,148,141,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1450,507)|
+1,150,116,142,1,0,0,0,0,64,0,-1--1--1,,1|(1426,572)|
+1,151,122,142,1,0,0,0,0,64,0,-1--1--1,,1|(1436,600)|
+10,152,Water in storage zero time stock,1338,759,68,20,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,153,152,102,0,1,0,0,0,64,1,-1--1--1,,1|(1338,746)|
+10,154,AW zero time stock,1342,451,59,20,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,155,154,101,0,1,0,0,0,64,1,-1--1--1,,1|(1342,438)|
+10,156,Consumption,1342,451,40,21,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,157,156,101,0,1,0,0,0,64,0,-1--1--1,,1|(1342,438)|
+10,158,Unused,1342,451,40,11,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,159,158,101,0,1,0,0,0,64,0,-1--1--1,,1|(1342,443)|
+10,160,Supply,1342,451,37,11,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,161,160,101,0,1,0,0,0,64,0,-1--1--1,,1|(1342,443)|
+10,162,Distributed supply,1477,411,47,20,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,163,162,111,0,1,0,0,0,64,0,-1--1--1,,1|(1137,463)|
+10,164,Deep percolated,2142,1168,39,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,165,164,133,0,1,0,0,0,64,0,-1--1--1,,1|(1230,845)|
+10,166,Uneffective rainfall,2142,1168,41,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,167,166,133,0,1,0,0,0,64,0,-1--1--1,,1|(1229,845)|
+10,168,Canal contributions,693,648,55,20,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,169,168,108,0,1,0,0,0,64,0,-1--1--1,,1|(695,638)|
+10,170,TIME STEP,693,648,59,11,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,171,170,108,0,1,0,0,0,64,0,-1--1--1,,1|(696,643)|
+10,172,TIME STEP,1513,715,59,11,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,173,172,117,0,1,0,0,0,64,0,-1--1--1,,1|(1513,707)|
+10,174,TIME STEP,1518,771,59,11,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,175,174,122,0,1,0,0,0,64,0,-1--1--1,,1|(1518,763)|
+10,176,TIME STEP,390,646,59,11,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,177,176,132,0,1,0,0,0,64,0,-1--1--1,,1|(387,637)|
+10,178,TIME STEP,1379,569,59,11,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,179,178,142,0,1,0,0,0,64,0,-1--1--1,,1|(1379,560)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Irrigation distribution and application
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,5,0
+10,1,canal supply per cropB,943,275,52,19,8,131,0,0,0,0,0,0
+10,2,Time,1007,196,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,3,2,1,0,0,0,0,0,64,0,-1--1--1,,1|(982,226)|
+10,4,water in storage,818,595,66,47,3,131,0,0,0,0,0,0
+10,5,Rainfall contributions,993,387,41,19,8,3,0,0,0,0,0,0
+10,6,Total canal supplies Crop,1098,351,35,19,8,3,0,0,0,0,0,0
+1,7,1,6,1,0,0,0,0,64,0,-1--1--1,,1|(1011,315)|
+10,8,Canal contributions,897,432,41,19,8,3,0,0,0,0,0,0
+10,9,Water requirment,773,309,55,11,8,3,0,0,-1,0,0,0
+1,10,9,8,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(825,374)|
+10,11,Available canalsupplies contributions to SS,652,520,73,19,8,3,0,0,0,0,0,0
+1,12,8,11,1,0,0,0,0,64,0,-1--1--1,,1|(751,456)|
+10,13,canal evaporation,359,131,55,11,8,3,0,0,0,0,0,0
+10,14,Canal supply at head,270,51,49,19,8,3,0,0,0,0,0,0
+1,15,14,13,0,0,0,0,0,64,0,-1--1--1,,1|(313,90)|
+10,16,Supply after losses,250,206,59,11,8,3,0,0,0,0,0,0
+1,17,14,16,0,0,0,0,0,64,0,-1--1--1,,1|(260,125)|
+1,18,13,16,0,0,0,0,0,64,0,-1--1--1,,1|(310,164)|
+10,19,Distributed supply,226,335,57,11,8,3,0,0,0,0,0,0
+10,20,Distribution switch,228,435,58,11,8,3,0,0,0,0,0,0
+1,21,20,19,1,0,0,0,0,64,0,-1--1--1,,1|(211,391)|
+10,22,Nos of served polygon,31,329,46,19,8,3,0,0,0,0,0,0
+10,23,Equally distributed,157,265,58,11,8,3,0,0,0,0,0,0
+1,24,22,23,1,0,0,0,0,64,0,-1--1--1,,1|(52,287)|
+1,25,23,19,0,0,0,0,0,64,0,-1--1--1,,1|(186,295)|
+10,26,Crop area CropB,1103,235,33,11,8,3,0,0,-1,0,0,0
+1,27,26,1,0,0,0,0,0,64,0,-1--1--1,,1|(1039,250)|
+10,28,crop seasonal water requirement CropA,874,188,64,19,8,3,0,0,0,0,0,0
+1,29,28,1,0,0,0,0,0,64,0,-1--1--1,,1|(903,225)|
+1,30,4,11,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(684,539)|
+10,31,Distribution factor,362,277,56,11,8,131,0,0,0,0,0,0
+10,32,Field location,482,327,43,11,8,3,0,0,0,0,0,0
+10,33,Channel length,634,329,46,11,8,3,0,0,0,0,0,0
+10,34,RD,601,270,13,11,8,3,0,0,0,0,0,0
+1,35,34,32,0,0,0,0,0,64,0,-1--1--1,,1|(552,292)|
+1,36,33,32,0,0,0,0,0,64,0,-1--1--1,,1|(563,328)|
+10,37,Distribution lookup,492,221,60,11,8,3,0,0,0,0,0,0
+1,38,32,31,0,0,0,0,0,64,0,-1--1--1,,1|(428,304)|
+1,39,22,19,1,0,0,0,0,64,0,-1--1--1,,1|(110,371)|
+10,40,canal supply in polygon,683,395,47,19,8,3,0,0,0,0,0,0
+1,41,19,40,1,0,0,0,0,64,0,-1--1--1,,1|(385,428)|
+1,42,40,8,1,0,0,0,0,64,0,-1--1--1,,1|(800,409)|
+1,43,40,11,1,0,0,0,0,64,0,-1--1--1,,1|(652,445)|
+1,44,8,1,1,0,0,0,0,64,0,-1--1--1,,1|(859,346)|
+1,45,5,8,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(934,397)|
+10,46,Net canal seepage,136,131,44,11,8,3,0,0,-1,0,0,0
+1,47,46,16,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(186,164)|
+1,48,14,46,0,0,0,0,0,0,0,-1--1--1,,1|(202,91)|
+10,49,Area fraction CropB,1163,166,42,11,8,3,0,0,-1,0,0,0
+1,50,49,26,0,0,0,0,3,0,0,255-0-0,|12||0-0-0,1|(1137,194)|
+10,51,Ep,427,80,11,11,8,3,0,0,-1,0,0,0
+1,52,51,13,1,0,0,0,0,64,0,-1--1--1,,1|(389,99)|
+10,53,Active,591,372,22,11,8,3,0,0,0,0,0,0
+1,54,53,32,0,0,0,0,0,64,0,-1--1--1,,1|(544,353)|
+1,55,37,31,0,0,0,0,0,64,0,-1--1--1,,1|(433,246)|
+1,56,31,19,0,0,0,0,0,64,0,-1--1--1,,1|(300,303)|
+1,57,32,19,0,0,0,0,0,64,0,-1--1--1,,1|(367,330)|
+1,58,16,23,0,0,0,0,0,64,0,-1--1--1,,1|(209,231)|
+1,59,16,19,0,0,0,0,0,64,0,-1--1--1,,1|(239,263)|
+10,60,Canal division,391,376,44,11,8,3,0,0,0,0,0,0
+1,61,60,19,0,0,0,0,0,64,0,-1--1--1,,1|(315,357)|
+10,62,Available capacity,632,604,35,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,63,62,11,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(638,562)|
+10,64,TIME STEP,523,577,50,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,65,64,11,1,0,0,0,0,64,0,-1--1--1,,1|(566,550)|
+10,66,Irrigation efficiency,778,247,35,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,67,66,9,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(775,275)|
+10,68,Area,1183,302,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,69,68,26,0,0,0,0,0,64,0,-1--1--1,,1|(1148,272)|
+10,70,lined percentage,136,161,40,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,71,70,46,0,1,0,0,0,64,0,-1--1--1,,1|(136,142)|
+10,72,percentage losses lined,136,161,41,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,73,72,46,0,1,0,0,0,64,0,-1--1--1,,1|(136,142)|
+10,74,percentage losses unlined,136,161,61,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,75,74,46,0,1,0,0,0,64,0,-1--1--1,,1|(136,142)|
+10,76,Water in storage zero time stock,831,683,58,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,77,76,4,0,1,0,0,0,64,1,-1--1--1,,1|(828,659)|
+10,78,SS supply,831,683,42,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,79,78,4,0,1,0,0,0,64,0,-1--1--1,,1|(828,663)|
+10,80,Seepage1,831,683,41,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,81,80,4,0,1,0,0,0,64,0,-1--1--1,,1|(828,663)|
+10,82,inflow,831,683,29,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,83,82,4,0,1,0,0,0,64,0,-1--1--1,,1|(828,663)|
+10,84,Evaporation1,831,683,52,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,85,84,4,0,1,0,0,0,64,0,-1--1--1,,1|(828,663)|
+10,86,AW,1200,558,70,36,3,131,0,0,0,0,0,0
+12,87,48,950,548,10,8,0,3,0,0,-1,0,0,0
+1,88,90,86,4,0,0,22,0,0,0,-1--1--1,,1|(1094,549)|
+1,89,90,87,100,0,0,22,0,0,0,-1--1--1,,1|(1003,549)|
+11,90,48,1052,549,6,8,34,3,0,0,1,0,0,0
+10,91,Supply,1052,568,23,11,40,3,0,0,-1,0,0,0
+1,92,5,91,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1061,511)|
+1,93,8,91,1,0,0,0,0,64,0,-1--1--1,,1|(999,473)|
+10,94,SS supply,1200,613,42,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,95,94,86,0,1,0,0,0,64,0,-1--1--1,,1|(1200,605)|
+10,96,Unused,1200,613,34,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,97,96,86,0,1,0,0,0,64,0,-1--1--1,,1|(1200,605)|
+10,98,Consumption,1200,613,51,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,99,98,86,0,1,0,0,0,64,0,-1--1--1,,1|(1200,605)|
+10,100,AW zero time stock,1200,613,50,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,101,100,86,0,1,0,0,0,64,1,-1--1--1,,1|(1200,594)|
+10,102,Tubewell discharge,1052,598,35,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,103,102,91,0,1,0,0,0,64,0,-1--1--1,,1|(1052,579)|
+10,104,ETc Rate CropB,741,248,40,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,105,104,9,0,1,0,0,0,64,0,-1--1--1,,1|(753,272)|
+10,106,Effective rainfall,993,425,59,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,107,106,5,0,1,0,0,0,64,0,-1--1--1,,1|(993,417)|
+10,108,Area,993,425,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,109,108,5,0,1,0,0,0,64,0,-1--1--1,,1|(993,417)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Canal lining and seepage submodel
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+10,1,Canal supply at head,732,367,49,19,8,3,0,0,0,0,0,0
+10,2,Distribution switch,825,479,58,11,8,3,0,0,0,0,0,0
+10,3,Net canal seepage,507,500,54,23,8,131,0,0,-1,0,0,0
+10,4,percentage losses lined,439,389,56,19,8,3,0,0,-1,0,0,0
+1,5,4,3,0,0,0,0,0,64,0,-1--1--1,,1|(467,436)|
+10,6,Recharge to aquifer,1335,558,39,19,8,3,0,0,0,0,0,0
+10,7,No of polygon over canal,564,612,47,19,8,3,0,0,0,0,0,0
+10,8,Equal distribution of seepage,721,588,64,19,8,3,0,0,0,0,0,0
+10,9,Seepage distribution,842,632,35,19,8,3,0,0,0,0,0,0
+1,10,7,8,0,0,0,0,0,64,0,-1--1--1,,1|(627,602)|
+1,11,2,9,1,0,0,0,0,64,0,-1--1--1,,1|(827,545)|
+10,12,Seepage field location,1009,442,43,19,8,3,0,0,0,0,0,0
+10,13,Polygon RD,1191,377,39,11,8,3,0,0,0,0,0,0
+10,14,Channel length,1221,460,55,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,15,Seepage distribution factor,904,379,56,19,8,3,0,0,0,0,0,0
+10,16,Polygon lookup,1021,320,50,11,8,3,0,0,0,0,0,0
+1,17,15,9,1,0,0,0,0,64,0,-1--1--1,,1|(911,505)|
+1,18,13,12,0,0,0,0,0,64,0,-1--1--1,,1|(1113,404)|
+1,19,14,12,0,0,0,0,0,64,0,-1--1--1,,1|(1115,451)|
+1,20,16,15,0,0,0,0,0,64,0,-1--1--1,,1|(976,342)|
+1,21,12,15,0,0,0,0,0,64,0,-1--1--1,,1|(962,414)|
+10,22,Canal seepage per polygon,1178,572,59,19,8,131,0,0,0,0,0,0
+1,23,9,22,1,0,0,0,0,64,0,-1--1--1,,1|(1010,591)|
+1,24,22,6,1,0,0,0,0,64,0,-1--1--1,,1|(1259,564)|
+10,25,Cp,1266,492,21,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,26,3,8,1,0,0,0,0,64,0,-1--1--1,,1|(692,524)|
+10,27,active seep,1136,515,36,11,8,3,0,0,0,0,0,0
+1,28,27,12,0,0,0,0,0,64,0,-1--1--1,,1|(1085,485)|
+1,29,12,9,1,0,0,0,0,64,0,-1--1--1,,1|(962,532)|
+10,30,Canal division,964,632,53,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,31,30,9,0,0,0,0,0,64,0,-1--1--1,,1|(901,632)|
+1,32,3,9,1,0,0,0,0,64,0,-1--1--1,,1|(717,469)|
+1,33,8,9,1,0,0,0,0,64,0,-1--1--1,,1|(763,647)|
+10,34,Canal lining,496,142,58,35,3,131,0,0,0,0,0,0
+12,35,48,189,135,10,8,0,3,0,0,-1,0,0,0
+1,36,38,35,4,0,0,22,0,0,0,-1--1--1,,1|(273,136)|
+1,37,38,34,100,0,0,22,0,0,0,-1--1--1,,1|(399,136)|
+11,38,48,354,136,6,8,34,3,0,0,1,0,0,0
+10,39,canal decay rate,354,155,51,11,40,3,0,0,-1,0,0,0
+12,40,48,781,138,10,8,0,3,0,0,-1,0,0,0
+1,41,43,34,4,0,0,22,0,0,0,-1--1--1,,1|(611,141)|
+1,42,43,40,100,0,0,22,0,0,0,-1--1--1,,1|(725,141)|
+11,43,48,674,141,6,8,34,3,0,0,1,0,0,0
+10,44,Lining rate,674,160,34,11,40,3,0,0,-1,0,0,0
+10,45,Average canal decay time,259,208,46,19,8,3,0,0,0,0,0,0
+1,46,45,39,1,0,0,0,0,64,0,-1--1--1,,1|(270,172)|
+10,47,Problem perception state of canals,730,242,63,19,8,3,0,0,0,0,0,0
+1,48,47,44,0,0,0,0,0,64,0,-1--1--1,,1|(703,202)|
+1,49,34,47,1,0,0,0,0,64,0,-1--1--1,,1|(600,216)|
+10,50,Perception lookup,836,308,58,11,8,3,0,0,0,0,0,0
+1,51,50,47,1,0,0,0,0,64,0,-1--1--1,,1|(829,240)|
+10,52,Total length,515,269,37,11,8,3,0,0,0,0,0,0
+1,53,52,47,1,0,0,0,0,64,0,-1--1--1,,1|(612,285)|
+1,54,52,44,1,0,0,0,0,64,0,-1--1--1,,1|(610,229)|
+10,55,lined percentage,369,267,57,11,8,3,0,0,0,0,0,0
+1,56,34,55,1,0,0,0,0,64,0,-1--1--1,,1|(391,190)|
+1,57,52,55,1,0,0,0,0,64,0,-1--1--1,,1|(450,237)|
+10,58,Policy Canal lining,525,58,57,11,8,3,0,0,0,0,0,0
+1,59,58,43,1,0,0,0,0,64,0,-1--1--1,,1|(591,103)|
+10,60,Incremental Length lined,388,-80,52,19,8,3,0,0,0,0,0,0
+10,61,lookup canal lined,436,-158,57,11,8,3,0,0,0,0,0,0
+1,62,61,60,1,0,0,0,0,64,0,-1--1--1,,1|(426,-128)|
+10,63,Year,309,-146,17,11,8,3,0,0,-1,0,0,0
+1,64,63,60,1,0,0,0,0,64,0,-1--1--1,,1|(367,-118)|
+10,65,Actual lining cost,927,114,53,11,8,3,0,0,0,0,0,0
+1,66,44,65,1,0,0,0,0,64,0,-1--1--1,,1|(835,176)|
+10,67,cost of lining,941,31,40,11,8,3,0,0,0,0,0,0
+10,68,Investment,1180,212,35,11,8,3,0,0,0,0,0,0
+1,69,67,65,1,0,0,0,0,64,0,-1--1--1,,1|(937,78)|
+10,70,Lining cost year 2003,1062,-30,50,19,8,3,0,0,0,0,0,0
+1,71,70,67,1,0,0,0,0,64,0,-1--1--1,,1|(1006,-3)|
+1,72,65,68,1,0,0,0,0,64,0,-1--1--1,,1|(1024,186)|
+10,73,"Govt. share",1228,257,37,11,8,3,0,0,0,0,0,0
+10,74,Farmer share,1156,166,42,11,8,3,0,0,0,0,0,0
+1,75,68,74,0,0,0,0,0,64,0,-1--1--1,,1|(1171,195)|
+1,76,68,73,0,0,0,0,0,64,0,-1--1--1,,1|(1198,229)|
+10,77,Lining cost factor,923,-26,54,11,8,3,0,0,0,0,0,0
+1,78,77,67,0,0,0,0,0,64,0,-1--1--1,,1|(929,-3)|
+1,79,63,77,1,0,0,0,0,64,0,-1--1--1,,1|(746,-172)|
+10,80,CL share,1224,109,30,11,8,3,0,0,0,0,0,0
+1,81,74,80,1,0,0,0,0,64,0,-1--1--1,,1|(1201,119)|
+1,82,34,44,1,0,0,0,0,64,0,-1--1--1,,1|(591,166)|
+10,83,TIME STEP,861,58,50,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,84,83,44,1,0,0,0,0,64,0,-1--1--1,,1|(825,118)|
+10,85,Polygonal factor,1426,57,51,11,8,3,0,0,0,0,0,0
+10,86,Per Polygon CL share,1280,32,52,19,8,3,0,0,0,0,0,0
+1,87,85,86,0,0,0,0,0,64,0,-1--1--1,,1|(1360,46)|
+10,88,Lining expenditure,1242,-34,57,11,8,3,0,0,0,0,0,0
+1,89,86,88,1,0,0,0,0,64,0,-1--1--1,,1|(1292,-7)|
+1,90,80,86,0,0,0,0,0,64,0,-1--1--1,,1|(1244,80)|
+10,91,Nos of served polygon,1107,38,50,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,92,91,80,1,0,0,0,0,64,0,-1--1--1,,1|(1196,77)|
+1,93,55,3,1,0,0,0,0,64,0,-1--1--1,,1|(368,393)|
+10,94,Starting year,194,-134,40,11,8,3,0,0,0,0,0,0
+1,95,94,63,0,0,0,0,0,64,0,-1--1--1,,1|(256,-140)|
+10,96,Lookup function,1032,-115,31,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,97,96,77,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(961,-94)|
+10,98,Lc,1359,611,10,11,8,3,0,0,0,0,0,0
+1,99,6,98,1,0,0,0,0,64,0,-1--1--1,,1|(1349,592)|
+1,100,60,44,1,0,0,0,0,64,0,-1--1--1,,1|(612,62)|
+1,101,52,60,1,0,0,0,0,64,0,-1--1--1,,1|(176,188)|
+10,102,Canal lining zero time stock,274,57,57,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,103,102,38,1,0,0,0,0,64,0,-1--1--1,,1|(351,96)|
+10,104,delay rate CL,506,227,41,20,8,131,0,0,0,0,0,0
+1,105,44,104,1,0,0,0,0,64,0,-1--1--1,,1|(537,210)|
+1,106,104,39,1,0,0,0,0,64,0,-1--1--1,,1|(413,188)|
+1,107,45,104,1,0,0,0,0,64,0,-1--1--1,,1|(346,205)|
+10,108,Time,409,64,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,109,108,39,0,0,0,0,0,64,0,-1--1--1,,1|(385,103)|
+10,110,lining cost per season,667,-47,44,19,8,3,0,0,0,0,0,0
+1,111,60,110,1,0,0,0,0,64,0,-1--1--1,,1|(541,-80)|
+1,112,83,110,1,0,0,0,0,64,0,-1--1--1,,1|(787,-3)|
+1,113,67,110,1,0,0,0,0,64,0,-1--1--1,,1|(794,-35)|
+10,114,Potential investment per canal,663,35,68,18,8,130,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,115,114,43,1,0,0,0,0,64,0,-1--1--1,,1|(673,91)|
+1,116,110,43,1,0,0,0,0,64,0,-1--1--1,,1|(739,81)|
+1,117,25,6,1,0,0,0,0,64,0,-1--1--1,,1|(1307,521)|
+10,118,Recharge to aquifer rainfall,1408,475,49,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,119,118,6,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1376,511)|
+1,120,102,34,0,0,0,0,0,64,1,-1--1--1,,1|(373,95)|
+10,121,Area,1325,791,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,122,121,98,0,1,0,0,0,64,0,-1--1--1,,1|(1340,707)|
+10,123,Canal seepage,599,401,46,11,8,3,0,0,-1,0,0,0
+1,124,123,3,0,0,0,0,0,64,0,-1--1--1,,1|(563,439)|
+1,125,52,3,0,0,0,0,0,64,0,-1--1--1,,1|(511,371)|
+1,126,1,123,0,0,0,0,3,0,0,255-0-0,|12||0-0-0,1|(669,382)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Groundwater abstraction model
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+10,1,Lookup function,1081,-339,52,11,8,3,0,0,-1,0,0,0
+10,2,Tubewell Nos,1016,185,66,30,3,131,0,0,0,0,0,0
+12,3,48,827,178,10,8,0,3,0,0,-1,0,0,0
+1,4,6,2,4,0,0,22,0,0,0,-1--1--1,,1|(924,178)|
+1,5,6,3,100,0,0,22,0,0,0,-1--1--1,,1|(861,178)|
+11,6,48,892,178,6,8,34,3,0,0,1,0,0,0
+10,7,Tubewell growth,892,197,53,11,40,3,0,0,-1,0,0,0
+10,8,Desired Additional TW installed,669,187,60,19,8,3,0,0,0,0,0,0
+1,9,8,7,1,0,0,0,0,64,0,-1--1--1,,1|(764,198)|
+10,10,Required flow rate,1065,396,58,11,8,3,0,0,0,0,0,0
+1,11,2,6,1,0,0,0,0,64,0,-1--1--1,,1|(931,139)|
+10,12,Max Capacity Tubewells,726,502,46,19,8,3,0,0,0,0,0,0
+1,13,8,15,1,0,0,0,0,64,0,-1--1--1,,1|(690,104)|
+10,14,Costs per tubwell,587,-19,55,11,8,3,0,0,0,0,0,0
+10,15,Costs for potential tubewell installation,762,31,61,19,8,3,0,0,0,0,0,0
+1,16,14,15,0,0,0,0,0,64,0,-1--1--1,,1|(656,0)|
+1,17,15,6,1,0,0,0,0,64,0,-1--1--1,,1|(832,90)|
+10,18,Tubewell discharge,964,328,37,19,8,3,0,0,0,0,0,0
+1,19,10,18,1,0,0,0,0,64,0,-1--1--1,,1|(1037,347)|
+1,20,2,12,1,0,0,0,0,64,0,-1--1--1,,1|(809,283)|
+10,21,Potential operational cost,1059,-59,51,19,8,3,0,0,0,0,0,0
+10,22,maintenance cost,1447,42,54,11,8,3,0,0,0,0,0,0
+1,23,2,21,0,0,0,0,0,64,0,-1--1--1,,1|(1036,64)|
+1,24,2,22,1,0,0,0,0,64,0,-1--1--1,,1|(1227,81)|
+10,25,annual maintence cost,1460,-60,54,19,8,3,0,0,0,0,0,0
+1,26,25,22,1,0,0,0,0,64,0,-1--1--1,,1|(1457,-22)|
+10,27,maintence cost year 2003,1552,-150,47,19,8,3,0,0,0,0,0,0
+10,28,Maintence factor,1379,-145,53,11,8,3,0,0,0,0,0,0
+1,29,28,25,0,0,0,0,0,64,0,-1--1--1,,1|(1410,-111)|
+1,30,27,25,0,0,0,0,0,64,0,-1--1--1,,1|(1511,-109)|
+10,31,Time,1260,-136,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,32,31,25,0,0,0,0,0,64,0,-1--1--1,,1|(1341,-105)|
+10,33,potential operating hours,1127,-133,59,19,8,3,0,0,0,0,0,0
+1,34,31,33,0,0,0,0,0,64,0,-1--1--1,,1|(1216,-135)|
+1,35,33,21,1,0,0,0,0,64,0,-1--1--1,,1|(1081,-106)|
+10,36,Dieseal consumption,929,-106,41,19,8,3,0,0,0,0,0,0
+1,37,36,21,1,0,0,0,0,64,0,-1--1--1,,1|(999,-97)|
+10,38,Fuel cost,1002,-165,30,11,8,3,0,0,0,0,0,0
+10,39,Fuel price in year 2003,938,-245,55,19,8,3,0,0,0,0,0,0
+10,40,Inflation factor,1054,-232,46,11,8,3,0,0,0,0,0,0
+1,41,38,21,1,0,0,0,0,64,0,-1--1--1,,1|(1035,-125)|
+1,42,40,38,0,0,0,0,0,64,0,-1--1--1,,1|(1032,-203)|
+1,43,39,38,0,0,0,0,0,64,0,-1--1--1,,1|(968,-206)|
+10,44,potential operating hours,660,400,54,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,45,44,12,1,0,0,0,0,64,0,-1--1--1,,1|(684,457)|
+10,46,Capacity per tubewell,828,440,42,19,8,3,0,0,0,0,0,0
+1,47,46,12,1,0,0,0,0,64,0,-1--1--1,,1|(792,456)|
+10,48,Required capacity,756,590,57,11,8,3,0,0,0,0,0,0
+1,49,12,48,1,0,0,0,0,64,0,-1--1--1,,1|(723,549)|
+1,50,10,48,1,0,0,0,0,64,0,-1--1--1,,1|(895,554)|
+1,51,48,8,1,0,0,0,0,64,0,-1--1--1,,1|(596,443)|
+10,52,Tubewell installed per season,498,137,57,19,8,3,0,0,0,0,0,0
+1,53,52,8,1,0,0,0,0,64,0,-1--1--1,,1|(569,178)|
+10,54,Cost factor,627,-158,36,11,8,3,0,0,0,0,0,0
+10,55,Installation cost,329,-92,49,11,8,3,0,0,0,0,0,0
+1,56,54,14,0,0,0,0,0,64,0,-1--1--1,,1|(608,-95)|
+1,57,55,14,0,0,0,0,0,64,0,-1--1--1,,1|(450,-57)|
+10,58,watertable depth,230,-146,53,11,8,3,0,0,0,0,0,0
+10,59,Cost vs depth lookup,455,-147,45,19,8,3,0,0,0,0,0,0
+1,60,59,55,0,0,0,0,0,64,0,-1--1--1,,1|(389,-118)|
+10,61,Standard depth,337,-172,49,11,8,3,0,0,0,0,0,0
+10,62,Standard cost,390,-2,44,11,8,3,0,0,0,0,0,0
+1,63,61,55,0,0,0,0,0,64,0,-1--1--1,,1|(333,-138)|
+1,64,62,55,0,0,0,0,0,64,0,-1--1--1,,1|(363,-42)|
+1,65,1,28,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1256,-281)|
+10,66,Surface supply,1189,415,33,22,8,131,0,0,-1,0,0,0
+1,67,66,10,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1146,408)|
+10,68,Operating cost per hr,849,-181,47,19,8,3,0,0,0,0,0,0
+1,69,36,68,1,0,0,0,0,64,0,-1--1--1,,1|(886,-139)|
+1,70,38,68,1,0,0,0,0,64,0,-1--1--1,,1|(937,-190)|
+10,71,Actual operating hours,1165,-34,53,19,8,3,0,0,0,0,0,0
+1,72,68,71,1,0,0,0,0,64,0,-1--1--1,,1|(954,-12)|
+1,73,2,71,0,0,0,0,0,64,0,-1--1--1,,1|(1090,75)|
+10,74,Actual operating cost,1307,19,53,19,8,3,0,0,0,0,0,0
+1,75,71,74,1,0,0,0,0,64,0,-1--1--1,,1|(1258,-35)|
+1,76,2,74,1,0,0,0,0,64,0,-1--1--1,,1|(1146,89)|
+10,77,Operating cost per hr,1319,-62,52,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,78,77,74,1,0,0,0,0,64,0,-1--1--1,,1|(1333,-37)|
+12,79,48,1394,182,10,8,0,3,0,0,-1,0,0,0
+1,80,82,79,4,0,0,22,0,0,0,-1--1--1,,1|(1273,180)|
+1,81,82,2,100,0,0,22,0,0,0,-1--1--1,,1|(1116,180)|
+11,82,48,1156,180,6,8,34,131,0,0,1,0,0,0
+10,83,Tubewell decay,1156,199,50,11,40,3,0,0,-1,0,0,0
+10,84,Average TW life,1268,257,52,11,8,3,0,0,0,0,0,0
+1,85,84,83,1,0,0,0,0,64,0,-1--1--1,,1|(1226,223)|
+1,86,1,54,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(793,-290)|
+10,87,SS supply,1088,495,42,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,88,87,10,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1078,452)|
+10,89,ECdw,770,127,28,11,8,3,0,0,0,0,0,0
+1,90,89,7,1,0,0,0,0,64,0,-1--1--1,,1|(838,140)|
+10,91,Potential investment,981,79,45,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,92,Potential investment,1176,34,45,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,93,91,6,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(919,117)|
+1,94,92,71,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1171,6)|
+10,95,Threshold EC for tubewell installation,703,270,61,19,8,3,0,0,0,0,0,0
+1,96,95,7,0,0,0,0,0,64,0,-1--1--1,,1|(800,232)|
+10,97,maximum allowable number of tubewells,906,23,64,19,8,3,0,0,0,0,0,0
+1,98,97,6,0,0,0,0,0,64,0,-1--1--1,,1|(899,100)|
+1,99,58,55,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(268,-109)|
+10,100,diesel cost lookup,1050,-283,57,11,8,3,0,0,0,0,0,0
+1,101,100,40,1,0,0,0,0,64,0,-1--1--1,,1|(1066,-255)|
+1,102,33,71,0,0,0,0,0,64,0,-1--1--1,,1|(1143,-90)|
+10,103,Actual capacity of TW,823,359,49,19,8,3,0,0,0,0,0,0
+10,104,Actual operating hours,926,276,57,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,105,2,103,1,0,0,0,0,64,0,-1--1--1,,1|(867,257)|
+1,106,46,103,0,0,0,0,0,64,0,-1--1--1,,1|(825,406)|
+1,107,104,103,1,0,0,0,0,64,0,-1--1--1,,1|(868,308)|
+1,108,103,18,1,0,0,0,0,64,0,-1--1--1,,1|(889,326)|
+10,109,Actual maintenance rate,1583,-24,54,19,8,3,0,0,0,0,0,0
+10,110,Potential investment,1687,-88,45,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,111,22,109,1,0,0,0,0,64,0,-1--1--1,,1|(1498,-3)|
+1,112,110,109,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1628,-85)|
+10,113,Year,688,-100,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,114,113,54,0,0,0,0,0,64,0,-1--1--1,,1|(662,-124)|
+10,115,Year,1215,-213,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,116,115,40,0,0,0,0,0,64,0,-1--1--1,,1|(1151,-220)|
+1,117,115,28,0,0,0,0,0,64,0,-1--1--1,,1|(1290,-182)|
+10,118,Water requirment,1125,312,39,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,119,118,10,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1095,356)|
+10,120,Time,1480,459,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,121,Canal contributions,1300,433,49,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,122,Rainfall contributions,1300,337,46,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,123,122,66,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1252,370)|
+1,124,121,66,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1243,424)|
+1,125,83,52,1,0,0,0,0,64,0,-1--1--1,,1|(732,87)|
+10,126,Factor,454,66,22,11,8,3,0,0,0,0,0,0
+1,127,126,52,1,0,0,0,0,64,0,-1--1--1,,1|(502,82)|
+10,128,Gw,944,396,13,11,8,3,0,0,0,0,0,0
+1,129,18,128,1,0,0,0,0,64,0,-1--1--1,,1|(913,375)|
+10,130,Area,936,445,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,131,130,128,1,0,0,0,0,64,0,-1--1--1,,1|(953,420)|
+10,132,Time,1168,225,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,133,Decay rate TWN,1059,252,55,11,8,3,0,0,0,0,0,0
+1,134,7,133,1,0,0,0,0,64,0,-1--1--1,,1|(957,236)|
+1,135,84,133,1,0,0,0,0,64,0,-1--1--1,,1|(1148,274)|
+1,136,2,83,1,0,0,0,0,64,0,-1--1--1,,1|(1114,224)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Irrigation efficienccy submodel
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,80,0
+10,1,Irrigation efficiency,525,393,69,36,3,131,0,0,0,0,0,0
+12,2,48,240,394,10,8,0,3,0,0,-1,0,0,0
+1,3,5,2,4,0,0,22,0,0,0,-1--1--1,,1|(301,398)|
+1,4,5,1,100,0,0,22,0,0,0,-1--1--1,,1|(410,398)|
+11,5,48,359,398,6,8,34,3,0,0,1,0,0,0
+10,6,Structure decay rate,359,425,50,19,40,3,0,0,-1,0,0,0
+10,7,Sturcture life,284,475,40,11,8,3,0,0,0,0,0,0
+1,8,7,6,0,0,0,0,0,64,0,-1--1--1,,1|(309,457)|
+12,9,48,885,398,10,8,0,3,0,0,-1,0,0,0
+1,10,12,1,4,0,0,22,0,0,0,-1--1--1,,1|(664,398)|
+1,11,12,9,100,0,0,22,0,0,0,-1--1--1,,1|(811,398)|
+11,12,48,741,398,6,8,34,3,0,0,1,0,0,0
+10,13,Improvement rate,741,417,56,11,40,3,0,0,-1,0,0,0
+10,14,Policy Irrigation improvement,787,317,50,19,8,3,0,0,0,0,0,0
+1,15,14,12,1,0,0,0,0,64,0,-1--1--1,,1|(766,366)|
+10,16,Irrigation Efficiency improvement,529,229,70,19,8,3,0,16,0,0,0,0,-1--1--1,0-255-0,|10|B|0-0-0
+10,17,Year,593,79,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,18,17,16,1,0,0,0,0,64,0,-1--1--1,,1|(513,134)|
+1,19,13,6,1,0,0,0,0,64,0,-1--1--1,,1|(548,475)|
+10,20,Actual improvement cost,1001,342,57,19,8,3,0,0,0,0,0,0
+10,21,Cost of installation,1033,258,58,11,8,3,0,0,0,0,0,0
+1,22,21,20,0,0,0,0,0,64,0,-1--1--1,,1|(1021,289)|
+10,23,Irrigation improvement investment,1225,296,72,19,8,3,0,0,0,0,0,0
+1,24,20,23,1,0,0,0,0,64,0,-1--1--1,,1|(1155,271)|
+10,25,Governament irrigation improvement share,1302,195,72,19,8,3,0,0,0,0,0,0
+10,26,Farmer irrigation improvement share,1203,378,60,19,8,3,0,0,0,0,0,0
+1,27,23,26,0,0,0,0,0,64,0,-1--1--1,,1|(1215,330)|
+1,28,23,25,0,0,0,0,0,64,0,-1--1--1,,1|(1258,251)|
+10,29,Problem perception of irrigation efficiency,771,499,71,19,8,3,0,0,0,0,0,0
+10,30,Efficiency goal,509,532,46,11,8,3,0,0,0,0,0,0
+1,31,1,29,0,0,0,0,0,64,0,-1--1--1,,1|(653,448)|
+1,32,29,13,0,0,0,0,0,64,0,-1--1--1,,1|(757,460)|
+10,33,switch,324,318,21,11,8,3,0,0,0,0,0,0
+1,34,1,33,0,0,0,0,0,64,0,-1--1--1,,1|(407,349)|
+1,35,33,6,0,0,0,0,0,64,0,-1--1--1,,1|(337,360)|
+10,36,Minimum efficiency,471,295,30,19,8,3,0,0,0,0,0,0
+1,37,36,33,0,0,0,0,0,64,0,-1--1--1,,1|(399,305)|
+10,38,Efficiency improvement lookup,397,155,66,19,8,3,0,0,0,0,0,0
+1,39,38,16,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(442,186)|
+10,40,Installation cost 2003,1151,189,49,19,8,3,0,0,0,0,0,0
+1,41,40,21,1,0,0,0,0,64,0,-1--1--1,,1|(1080,207)|
+10,42,Irrigation efficiency perception lookup,817,576,60,19,8,3,0,0,0,0,0,0
+1,43,42,29,0,0,0,0,0,64,0,-1--1--1,,1|(797,543)|
+1,44,30,29,0,0,0,0,0,64,0,-1--1--1,,1|(620,517)|
+10,45,TIME STEP,677,302,50,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,46,45,12,1,0,0,0,0,64,0,-1--1--1,,1|(688,351)|
+10,47,Installation cost factor,984,182,49,19,8,3,0,0,0,0,0,0
+1,48,47,21,1,0,0,0,0,64,0,-1--1--1,,1|(1011,227)|
+10,49,Lookup function,1051,107,31,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,50,17,47,1,0,0,0,0,64,0,-1--1--1,,1|(808,91)|
+1,51,49,47,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1022,139)|
+10,52,Efficiency increse per unit,1103,498,55,19,8,3,0,0,0,0,0,0
+10,53,No of units,1013,442,36,11,8,3,0,0,0,0,0,0
+1,54,52,53,1,0,0,0,0,64,0,-1--1--1,,1|(1045,454)|
+1,55,13,53,1,0,0,0,0,64,0,-1--1--1,,1|(904,456)|
+1,56,53,20,1,0,0,0,0,64,0,-1--1--1,,1|(1014,377)|
+1,57,16,13,1,0,0,0,0,64,0,-1--1--1,,1|(630,353)|
+1,58,30,13,1,0,0,0,0,64,0,-1--1--1,,1|(633,486)|
+1,59,1,13,1,0,0,0,0,64,0,-1--1--1,,1|(630,419)|
+10,60,units per season,718,228,50,11,8,3,0,0,0,0,0,0
+1,61,16,60,1,0,0,0,0,64,0,-1--1--1,,1|(662,257)|
+10,62,Efficiency increse per unit,604,172,60,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,63,62,60,1,0,0,0,0,64,0,-1--1--1,,1|(678,203)|
+10,64,cost of installation per season,824,194,57,19,8,3,0,0,0,0,0,0
+1,65,60,64,1,0,0,0,0,64,0,-1--1--1,,1|(757,175)|
+1,66,45,64,1,0,0,0,0,64,0,-1--1--1,,1|(764,266)|
+1,67,21,64,1,0,0,0,0,64,0,-1--1--1,,1|(940,213)|
+1,68,64,12,1,0,0,0,0,64,0,-1--1--1,,1|(852,307)|
+10,69,Potential investment,898,327,39,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,70,69,12,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(841,369)|
+10,71,Irrigation efficiency zero time stock,525,448,65,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,72,71,1,0,1,0,0,0,64,1,-1--1--1,,1|(525,429)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Water availability
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+10,1,AW,836,352,70,36,3,131,0,0,0,0,0,0
+12,2,48,545,348,10,8,0,3,0,0,-1,0,0,0
+1,3,5,1,4,0,0,22,0,0,0,-1--1--1,,1|(709,349)|
+1,4,5,2,100,0,0,22,0,0,0,-1--1--1,,1|(598,349)|
+11,5,48,647,349,6,8,34,3,0,0,1,0,0,0
+10,6,Supply,647,368,23,11,40,3,0,0,-1,0,0,0
+10,7,water in storage,832,649,66,47,3,131,0,0,0,0,0,0
+10,8,Rainfall contributions,723,195,41,19,8,3,0,0,0,0,0,0
+1,9,8,6,1,0,0,0,0,64,0,-1--1--1,,1|(683,253)|
+10,10,Canal contributions,621,274,41,19,8,3,0,0,0,0,0,0
+1,11,10,6,1,0,0,0,0,64,0,-1--1--1,,1|(625,316)|
+1,12,8,10,1,0,0,0,0,64,0,-1--1--1,,1|(653,219)|
+10,13,Area,671,152,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,14,16,1,4,0,0,22,0,0,0,-1--1--1,,1|(832,438)|
+1,15,16,7,100,0,0,22,0,0,0,-1--1--1,,1|(832,551)|
+11,16,652,832,495,8,6,33,3,0,0,4,0,0,0
+10,17,SS supply,873,495,33,11,40,3,0,0,-1,0,0,0
+12,18,48,1192,353,10,8,0,3,0,0,-1,0,0,0
+1,19,21,18,4,0,0,22,0,0,0,-1--1--1,,1|(1116,352)|
+1,20,21,1,100,0,0,22,0,0,0,-1--1--1,,1|(972,352)|
+11,21,48,1045,352,6,8,34,3,0,0,1,0,0,0
+10,22,Consumption,1045,371,42,11,40,3,0,0,-1,0,0,0
+12,23,48,836,121,10,8,0,3,0,0,-1,0,0,0
+1,24,26,23,4,0,0,22,0,0,0,-1--1--1,,1|(832,168)|
+1,25,26,1,100,0,0,22,0,0,0,-1--1--1,,1|(832,268)|
+11,26,48,832,214,8,6,33,3,0,0,4,0,0,0
+10,27,Unused,865,214,25,11,40,3,0,0,-1,0,0,0
+1,28,8,21,1,0,0,0,0,64,0,-1--1--1,,1|(865,99)|
+1,29,10,21,1,0,0,0,0,64,0,-1--1--1,,1|(782,27)|
+1,30,22,26,1,0,0,0,0,64,0,-1--1--1,,1|(936,196)|
+1,31,17,22,1,0,0,0,0,64,0,-1--1--1,,1|(977,436)|
+1,32,7,17,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(880,569)|
+1,33,16,26,1,0,0,0,0,64,0,-1--1--1,,1|(740,332)|
+1,34,6,26,1,0,0,0,0,64,0,-1--1--1,,1|(718,272)|
+10,35,Water requirment,1010,471,39,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,36,35,17,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(933,498)|
+1,37,35,22,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(1052,436)|
+10,38,Total canal supplies Crop,686,467,40,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,39,38,16,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(782,491)|
+10,40,TIME STEP,716,545,50,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,41,40,16,1,0,0,0,0,64,0,-1--1--1,,1|(801,529)|
+1,42,8,16,1,0,0,0,0,64,0,-1--1--1,,1|(704,395)|
+10,43,Tubewell discharge,927,280,42,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,44,43,22,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(984,325)|
+1,45,43,6,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(765,285)|
+1,46,43,26,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(867,246)|
+10,47,Area,688,139,26,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,48,47,8,0,0,0,0,0,64,0,-1--1--1,,1|(698,157)|
+10,49,Effective rainfall,805,73,59,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,50,49,8,1,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(743,114)|
+10,51,canal supply in polygon,487,300,52,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,52,51,10,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(552,287)|
+10,53,Water requirment,491,242,39,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,54,53,10,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(548,255)|
+10,55,Evaporation1,983,576,52,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,56,55,17,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(933,539)|
+10,57,Seepage1,1074,550,41,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,58,57,17,0,0,0,0,3,64,0,255-0-0,|12||0-0-0,1|(976,523)|
+10,59,AW zero time stock,836,407,50,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,60,59,1,0,1,0,0,0,64,1,-1--1--1,,1|(836,388)|
+10,61,Evaporation1,832,715,52,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,62,61,7,0,1,0,0,0,64,0,-1--1--1,,1|(832,707)|
+10,63,inflow,832,715,29,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,64,63,7,0,1,0,0,0,64,0,-1--1--1,,1|(832,707)|
+10,65,Seepage1,832,715,41,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,66,65,7,0,1,0,0,0,64,0,-1--1--1,,1|(832,707)|
+10,67,Water in storage zero time stock,832,715,58,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,68,67,7,0,1,0,0,0,64,1,-1--1--1,,1|(832,703)|
+///---\\\
+:GRAPH Canal_water_distribution
+:TITLE Water distribution pattren
+:X-AXIS Time
+:X-LABEL Seasons
+:SCALE
+:VAR Distributed supply[Polygon,canal]
+
+:GRAPH Farmer_income
+:TITLE Farmer income
+:X-AXIS Time
+:X-LABEL Seasons
+:SCALE
+:VAR Farm income
+
+:GRAPH Tubewell_growth
+:TITLE Tubewell Nos Vs Time
+:X-AXIS Time
+:X-LABEL Seasons
+:SCALE
+:VAR Tubewell Nos
+
+:GRAPH Well_discharge
+:TITLE Tubewell discharge
+:X-AXIS Time
+:X-LABEL Seasons
+:SCALE
+:VAR Tubewell discharge
+:L<%^E!@
+9:run2
+22:$,Dollar,Dollars,$s
+22:Hour,Hours
+22:Month,Months
+22:Person,People,Persons
+22:Unit,Units
+22:Week,Weeks
+22:Year,Years
+22:Day,Days
+30:?test=test.xlsx
+30:?test.xlsx=test.xlsx
+30:?test.xlsx - Excel=test.xlsx
+30:?test.xls=test.xls
+11:canal distribution and seepage model_1.voc
+12:new.vpd
+18:canal distribution and seepage model_1.vsc
+20:canal distribution_seepage_rainfall_lining_WH_IrrEff_stress_TW model_1.lst
+15:0,0,0,0,0,0
+19:75,0
+27:2,
+34:0,
+4:Time
+5:Fw[Polygon]
+35:Date
+36:YYYY-MM-DD
+37:1990
+38:1
+39:1
+40:2
+41:0
+42:1
+24:0
+25:24
+26:24
+6:c1
+6:c2
+6:c3
+6:c4
+6:Head
+6:kc1
+6:kc2
+6:kc3
+6:kc4
+6:Middle
+6:Tail

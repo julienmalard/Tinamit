@@ -120,7 +120,7 @@ class Dll(object):
             print('Tienes un problema.', estatus)
 
 
-ubicación_modelo = "C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\tinamit\\Ejemplos\\Subscripts.vpm"
+ubicación_modelo = "C:\\Users\\gis_lab\\PycharmProjects\\Tinamit\\tinamit\\Ejemplos\\Subscripts.vpm"
 modelo = Dll(ubicación_modelo)
 modelo.silenciar()
 modelo.sacar_nombres_vars()
