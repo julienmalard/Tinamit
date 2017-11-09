@@ -41,6 +41,8 @@ def run_model(name, switches):
 
     modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'SAHYSMOD.py'))
 
+    modelo.estab_conv_tiempo(mod_base='mds', conv=6)
+
     # Set appropriate switches for policy analysis
     for switch, val in switches.items():
         modelo.mds.inic_val(var=switch, val=val)
