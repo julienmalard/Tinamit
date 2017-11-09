@@ -2,7 +2,6 @@ import os
 
 from tinamit.Conectado import Conectado
 
-
 modelo = Conectado()
 
 directorio = os.path.dirname(__file__)

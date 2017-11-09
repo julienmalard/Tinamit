@@ -1,5 +1,6 @@
-import numpy as np
 from warnings import warn as avisar
+
+import numpy as np
 
 
 class Modelo(object):

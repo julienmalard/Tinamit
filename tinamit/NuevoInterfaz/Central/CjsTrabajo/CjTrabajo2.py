@@ -1,5 +1,4 @@
 from Dibba import Caja, Botón, ItemaLista, Lista, CtrlLista, Texto, Imagen, IngrMenú, IngrNúm, BtOpción
-from ...Control import Control
 
 CjTrabajo2 = Caja('Conexión de variables')
 

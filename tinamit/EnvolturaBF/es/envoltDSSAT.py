@@ -1,14 +1,7 @@
-import os
-import re
-from subprocess import run
-
-import numpy as np
-from . import Lector
-
-from tinamit.BF import ModeloBF
+from tinamit.BF import ModeloFlexible
 
 
-class ModeloDSSAT(ModeloBF):
+class ModeloDSSAT(ModeloFlexible):
     def __init__(símismo, exe_DSSAT, archivo_ingr):
         super().__init__()
 

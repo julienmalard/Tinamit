@@ -1,6 +1,8 @@
 from warnings import warn as avisar
-from tinamit.Conectado import Conectado
+
 from Dibba import cargar_json, guardar_json, guardar_doc, ControlApli
+
+from tinamit.Conectado import Conectado
 
 
 class ClaseControlTinamït(ControlApli):

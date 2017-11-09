@@ -26,6 +26,7 @@ SOFTWARE.
 
 # !/bin/python
 
+import itertools
 # mioparser.py
 #
 # This module can parse fixed format text files based on template files
@@ -48,8 +49,8 @@ SOFTWARE.
 #
 ##########
 import sys
-import itertools
 from ast import literal_eval
+
 import numpy as np
 
 

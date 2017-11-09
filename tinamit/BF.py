@@ -2,6 +2,8 @@ import os
 import sys
 from importlib import import_module as importar_mod
 
+import numpy as np
+
 from tinamit.Modelo import Modelo
 from .Unidades.Unidades import convertir
 

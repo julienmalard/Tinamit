@@ -1,4 +1,5 @@
 from dibba import Página, Caja
+
 from .Cabeza import Cabeza
 from .Recuadro import CjRecuadro
 from .Trabajo import CjTrabajo

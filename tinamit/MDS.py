@@ -1,7 +1,8 @@
 import ctypes
 import os
-import numpy as np
 import struct
+
+import numpy as np
 
 from tinamit.Modelo import Modelo
 

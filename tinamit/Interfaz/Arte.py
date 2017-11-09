@@ -1,5 +1,5 @@
-import os
 import tkinter as tk
+
 import pkg_resources
 
 

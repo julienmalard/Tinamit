@@ -1,6 +1,6 @@
-from Dibba import Caja, Botón, BotónImg, Anim, IngrNúm, IngrTexto
-from ...Control import Control
+from Dibba import Caja, Botón, BotónImg, Anim, IngrNúm
 
+from ...Control import Control
 
 CjTrabajo3 = Caja('Simulación')
 

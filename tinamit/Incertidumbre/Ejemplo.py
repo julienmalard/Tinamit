@@ -1,7 +1,5 @@
-from tinamit.Incertidumbre.Controles import Control
-from tinamit.Incertidumbre.Modelo import mds
-
 from tinamit.Incertidumbre.Datos import DatosIndividuales, DatosRegión, Geografía, BaseDeDatos
+from tinamit.Incertidumbre.Modelo import mds
 
 # MDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
 modelo = mds(archivo_mds='C:\\Users\\jmalar1\\Documents\\USB Julien\\USB après lavage août 2016\\PhD\\Iximulew\\'

@@ -28,11 +28,13 @@ SOFTWARE.
 
 # sahysmodIO.py
 
-from . import mioparser
-import numpy as np
 import os
 import sys
+
+import numpy as np
 from pkg_resources import resource_filename
+
+from . import mioparser
 
 CSVTEMPLATE = resource_filename(__name__, 'sahysmod.csv.tmpl')
 INPTEMPLATE = resource_filename(__name__, 'sahysmod.inp.tmpl')

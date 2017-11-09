@@ -1,9 +1,10 @@
 from dibba import apli
-from .Inic import PáginaInic
+
 from .Central.Central import PáginaCentral
-from .Trads import PgTrads
-from .Formatos import formato
 from .Control import Control
+from .Formatos import formato
+from .Inic import PáginaInic
+from .Trads import PgTrads
 
 Apli = apli(título='Tinamit', dim=(640, 480), dim_mín=(640, 480), formato=formato,
             lengua_orig='español', dir_imgs='Imgs')

@@ -1,6 +1,7 @@
 import json
-import pkg_resources
 import re
+
+import pkg_resources
 
 # Buscar el archivo de conversiones.
 archivo_json = pkg_resources.resource_filename('tinamit.Unidades', 'equiv_unid.json')
