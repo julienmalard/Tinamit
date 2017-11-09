@@ -140,8 +140,10 @@ class SuperConectado(Modelo):
             except ValueError:
                 # Si no lo logramos, hay un error.
                 avisar('No se pudo inferir la conversión de unidades de tiempo entre {} y {}.'
-                       'Especificarla con la función .estab_conv_tiempo().'.format(unid_mod_1, unid_mod_2))
-                return None
+                       'Especificarla con la función .estab_conv_tiempo().\n'
+                       'Por el momento pusimos el factor de conversión a 1, pero probablemente no es lo que quieres.'
+                       .format(unid_mod_1, unid_mod_2))
+                factor_conv = 1
 
             if factor_conv > 1:
                 # Si la unidad de tiempo del primer modelo es más grande que la del otro...
@@ -346,7 +348,6 @@ class SuperConectado(Modelo):
         # Iniciar los submodelos también.
         for mod in símismo.modelos.values():
             mod.iniciar_modelo(**kwargs)  # Iniciar el modelo
-            mod.aplic_vals_inic()  # Inicializar valores de variables
 
     def cerrar_modelo(símismo):
         """

@@ -6,10 +6,10 @@ from warnings import warn
 import numpy as np
 
 from tinamit.EnvolturaBF.en.SAHYSMOD.sahysmodIO import read_into_param_dic, write_from_param_dic
-from tinamit.BF import ClaseModeloBF
+from tinamit.BF import ModeloBF
 
 
-class ModeloSAHYSMOD(ClaseModeloBF):
+class ModeloSAHYSMOD(ModeloBF):
     """
     This is the wrapper for SAHYSMOD. At the moment, it only works for one polygon (no spatial models).
     """

@@ -4,10 +4,10 @@ from subprocess import run
 
 import numpy as np
 
-from tinamit.BF import ClaseModeloBF
+from tinamit.BF import ModeloBF
 
 
-class Modelo(ClaseModeloBF):
+class Modelo(ModeloBF):
     """
     This is the wrapper for SAHYSMOD. At the moment, it only works for one polygon (no spatial models).
     """

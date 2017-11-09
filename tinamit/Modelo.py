@@ -1,3 +1,5 @@
+import numpy as np
+from warnings import warn as avisar
 
 
 class Modelo(object):
@@ -20,7 +22,9 @@ class Modelo(object):
         # No se puede incluir nombres de modelos con "_" en el nombre (podría corrumpir el manejo de variables en
         # modelos jerarquizados).
         if "_" in nombre:
-            raise ValueError('No se pueden emplear nombres de modelos con "_".')
+            avisar('No se pueden emplear nombres de modelos con "_", así que no puedes nombrar tu modelo"{}".\n'
+                   'Sino, causaría problemas de conexión de variables por una razón muy compleja y oscura.\n'
+                   'Vamos a renombrar tu modelo "{}". Lo siento.'.format(nombre, nombre.replace('_', '.')))
 
         # El nombre del modelo (sirve como una referencia a este modelo en el modelo conectado).
         símismo.nombre = nombre
@@ -65,8 +69,9 @@ class Modelo(object):
 
     def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
-        Esta función llama cualquier acción necesaria para preparar el modelo para la simulación.
-        Si no es necesario, usar "pass".
+        Esta función llama cualquier acción necesaria para preparar el modelo para la simulación. Esto incluye aplicar
+        valores iniciales. En general es muy fácil y se hace simplemente con "símismo.cambiar_vals(símismo.vals_inic)",
+        pero para unos modelos　(como Vensim) es un poco distinto así que los dejamos a ti para implementar.
 
         :param tiempo_final: El tiempo final de la simulación.
         :type tiempo_final: int
@@ -118,15 +123,6 @@ class Modelo(object):
         # de empezar la simulación.
         símismo.vals_inic[var] = val
 
-    def aplic_vals_inic(símismo):
-        """
-        Esta función aplica los valores iniciales de variables (ya especificados) para la simulación.
-
-        """
-
-        # Simplemente llamar la función símismo.cambiar_vals() con el diccionario de valores iniciales.
-        símismo.cambiar_vals(símismo.vals_inic)
-
     def limp_vals_inic(símismo):
         """
         Esta función limpa los valores iniciales especificados anteriormente.
@@ -150,7 +146,10 @@ class Modelo(object):
         """
 
         for var in valores:
-            símismo.variables[var]['val'] = valores[var]
+            if isinstance(símismo.variables[var]['val'], np.ndarray):
+                símismo.variables[var]['val'][:] = valores[var]
+            else:
+                símismo.variables[var]['val'] = valores[var]
 
         símismo.cambiar_vals_modelo_interno(valores=valores)
 

@@ -5,10 +5,10 @@ from subprocess import run
 import numpy as np
 from . import Lector
 
-from tinamit.BF import ClaseModeloBF
+from tinamit.BF import ModeloBF
 
 
-class ModeloDSSAT(ClaseModeloBF):
+class ModeloDSSAT(ModeloBF):
     def __init__(símismo, exe_DSSAT, archivo_ingr):
         super().__init__()
 

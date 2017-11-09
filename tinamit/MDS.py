@@ -13,12 +13,18 @@ class EnvolturaMDS(Modelo):
     """
 
     def __init__(símismo):
+        # Listas vacías para distintos tipos de variables.
+        símismo.constantes = []
+        símismo.niveles = []
+        símismo.flujos = []
+
         # Modelos DS se identifican por el nombre 'mds'.
         super().__init__(nombre='mds')
 
     def inic_vars(símismo):
         """
-        Este método se deja a las subclases de :class:`~tinamit.MDS.EnvolturaMDS` para implementar.
+        Este método se deja a las subclases de :class:`~tinamit.MDS.EnvolturaMDS` para implementar. Además de los
+        diccionarios de variables normales, debe establecer `símismo.constantes`, `símismo.flujos`, y `símismo.niveles`.
 
         Ver :func:`Modelo.Modelo.inic_vars` para más información.
         """
@@ -76,7 +82,8 @@ class EnvolturaMDS(Modelo):
 
     def iniciar_modelo(símismo, nombre_corrida, tiempo_final):
         """
-        Este método se deja a las subclases de :class:`~tinamit.MDS.EnvolturaMDS` para implementar.
+        Este método se deja a las subclases de :class:`~tinamit.MDS.EnvolturaMDS` para implementar. Notar que la
+        implementación de este método debe incluir la aplicación de valores iniciales.
 
         Ver :func:`Modelo.Modelo.iniciar_modelo` para más información.
 
@@ -101,7 +108,7 @@ class EnvolturaMDS(Modelo):
         raise NotImplementedError
 
 
-class ModeloVENSIM(EnvolturaMDS):
+class ModeloVensim(EnvolturaMDS):
     """
     Esta es la envoltura para modelos de tipo VENSIM. Puede leer y controlar (casi) cualquier modelo VENSIM para que
     se pueda emplear en Tinamit.
@@ -137,6 +144,9 @@ class ModeloVENSIM(EnvolturaMDS):
 
         # El paso para incrementar
         símismo.paso = 1
+
+        # Una lista de variables editables
+        símismo.editables = []
 
         # Inicializar ModeloVENSIM como una EnvolturaMDS.
         super().__init__()
@@ -185,6 +195,8 @@ class ModeloVENSIM(EnvolturaMDS):
         # Sacar las unidades y las dimensiones de los variables, e identificar los variables constantes
         unidades = {}
         constantes = []
+        niveles = []
+        flujos = []
         dims = {}
         nombres_subs = {}
 
@@ -214,14 +226,16 @@ class ModeloVENSIM(EnvolturaMDS):
             # Guardamos los variables constantes en una lista.
             if tipo_var == 'Constant':
                 constantes.append(var)
+            elif tipo_var == 'Level':
+                niveles.append(var)
 
             if tipo_var != 'Constraint':
                 # Sacar las dimensiones del variable
                 mem = ctypes.create_string_buffer(10)
                 tmñ_sub = símismo.comanda_vensim(func=símismo.dll.vensim_get_varattrib,
                                                  args=[var, 9, mem, 0],
-                                                 mensaje_error='Error leyendo el tamaño de memoria para los subscriptos '
-                                                               'del variable "{}" en Vensim'.format(var),
+                                                 mensaje_error='Error leyendo el tamaño de memoria para los subscriptos'
+                                                               ' del variable "{}" en Vensim'.format(var),
                                                  val_error=-1,
                                                  devolver=True)
 
@@ -259,6 +273,14 @@ class ModeloVENSIM(EnvolturaMDS):
             # Guadar el diccionario del variable en el diccionario general de variables.
             símismo.variables[var] = dic_var
 
+        for l in [símismo.editables, símismo.constantes, símismo.niveles, símismo.flujos]:
+            l.clear()
+
+        símismo.editables.extend(editables)
+        símismo.constantes.extend(constantes)
+        símismo.niveles.extend(niveles)
+        símismo.flujos.extend(flujos)  # para hacer
+
     def obt_unidad_tiempo(símismo):
         """
         Aquí, sacamos las unidades de tiempo del modelo VENSIM.
@@ -294,6 +316,10 @@ class ModeloVENSIM(EnvolturaMDS):
 
         """
 
+        # En Vensim, tenemos que incializar los valores de variables constantes antes de empezar la simulación.
+        símismo.cambiar_vals({var: val for var, val in símismo.vals_inic.items()
+                              if var in símismo.constantes})
+
         # Establecer el nombre de la corrida.
         símismo.comanda_vensim(func=símismo.dll.vensim_command,
                                args="SIMULATE>RUNNAME|%s" % nombre_corrida,
@@ -309,6 +335,10 @@ class ModeloVENSIM(EnvolturaMDS):
         símismo.comanda_vensim(func=símismo.dll.vensim_command,
                                args="MENU>GAME",
                                mensaje_error='Error inicializando el juego VENSIM.')
+
+        # Aplicar los valores iniciales de variables editables (que
+        símismo.cambiar_vals({var: val for var, val in símismo.vals_inic.items()
+                              if var not in símismo.constantes})
 
     def cambiar_vals_modelo_interno(símismo, valores):
         """
@@ -331,9 +361,18 @@ class ModeloVENSIM(EnvolturaMDS):
                                        args='SIMULATE>SETVAL|%s = %f' % (var, val),
                                        mensaje_error='Error cambiando el variable %s.' % var)
             else:
-                for n, s in enumerate(símismo.variables[var]['subscriptos']):
+                # Para hacer: opciones de dimensiones múltiples
+                # La lista de subscriptos
+                subs = símismo.variables[var]['subscriptos']
+                if isinstance(val, np.ndarray):
+                    matr = val
+                else:
+                    matr = np.empty(len(subs))
+                    matr[:] = val
+
+                for n, s in enumerate(subs):
                     var_s = var + s
-                    val_s = val[n]  # Para hacer: opciones de dimensiones múltiples
+                    val_s = matr[n]
 
                     símismo.comanda_vensim(func=símismo.dll.vensim_command,
                                            args='SIMULATE>SETVAL|%s = %f' % (var_s, val_s),
@@ -511,7 +550,7 @@ def generar_mds(archivo):
     # Crear la instancia de modelo apropiada para la extensión del archivo.
     if ext == '.vpm':
         # Modelos VENSIM
-        return ModeloVENSIM(archivo)
+        return ModeloVensim(archivo)
     else:
         # Agregar otros tipos de modelos DS aquí.
 
