@@ -247,20 +247,27 @@ class ModeloImpaciente(ModeloBF):
         #  ...
         #  }
         símismo.datos_internos = dict([(var, np.array([])) for var in símismo.variables
-                                   if var in símismo.estacionales])
+                                       if var in símismo.estacionales])
 
     def cambiar_vals_modelo_interno(símismo, valores):
         """
-        Esta función debe cambiar el valor de variables en el modelo biofísico.
+        Solamente nos tenemos que asegurar que los datos internos (para variables estacionales) queda consistente
+        con los nuevos valores cambiadas por la conexión con el modelo externo. La función `.avanzar_modelo()` debe
+        utilizar este diccionario interno para mandar los nuevos valores a la próxima simulación.
 
-        :param valores: Un diccionario de variables y valores para cambiar, con el formato siguiente:
-        >>> {'var1': 10,  'var2': 15,
-        >>>    ...
-        >>>    }
+        :param valores: Un diccionario de variables y valores para cambiar.
         :type valores: dict
 
         """
-        raise NotImplementedError
+
+        for var, val in valores.items():
+            # Para cada valor para cambiar...
+
+            if var in símismo.datos_internos:
+                # Si el variable queda presente en los datos internos...
+
+                # Cambiar el valor del diccionario interno para la estación actual.
+                símismo.datos_internos[var][símismo.estación] = val
 
     def incrementar(símismo, paso):
         """
@@ -277,60 +284,56 @@ class ModeloImpaciente(ModeloBF):
             raise ValueError('El paso debe ser un número entero.')
 
 
-        m = self.month
-        s = self.season
-        y = 0  # The number of years to simulate.
+        m = símismo.mes
+        e = símismo.estación
+        a = 0  # El número de años para simular
 
         m += int(paso)
 
-        while m >= self.len_seasons[self.season]:
-            m %= int(self.len_seasons[s])
-            s += 1
+        while m >= símismo.dur_estaciones[e]:
+            m %= int(símismo.dur_estaciones[e])
+            a += 1
 
-        if s >= self.n_seasons:  # s starts counting at 0 (Python convention)
-            y += s // self.n_seasons
-            s %= self.n_seasons
+        if e >= símismo.n_estaciones:  # s empieza a contar en 0 (convención de Python)
+            a += e // símismo.n_estaciones
+            e %= símismo.n_estaciones
 
-        # Save the season and month for the next time.
-        self.month = m
-        self.season = s
+        # Guardar la estación y el mes por la próxima vez.
+        símismo.mes = m
+        símismo.estación = e
 
-        # If this is the first month of the season, we change the variables dictionary values accordingly
+        # Si es el primer mes de la estación, hay que cambiar los variables
         if m == 0:
-            # Set the internal diccionary of values to this season's values
-            for var in self.internal_data:
-                # For every variable in the internal data dictionary (i.e., all variables that vary by season)
+            # Apuntar el diccionario interno de los valores al valor de esta estación
+            for var in símismo.datos_internos:
+                # Para cada variable en el diccionario interno de variables (es decir, todos los variables que
+                # cambian por estación)...
 
-                # Set the variables dictionary value to this season's value
+                # Poner el valor del variable al valor de esta estación
                 try:
-                    self.variables[var]['val'] = self.internal_data[var][s]
+                    símismo.variables[var]['val'] = símismo.datos_internos[var][e]
                 except IndexError:
                     pass
 
-            # If this is also the first season of the year, we also run a SAHYSMOD simulation
-            if s == 0:
-                # Create the appropriate input file:
-                self._write_inp(n_year=y)
+            # Si es la primera estación del año, también hay que correr una simulación del modelo externo.
+            if e == 0:
+                # Avanzar la simulación
+                símismo.avanzar_modelo(n_paso_mín=a)
 
-                # Run the command prompt command
-                run(self.command, cwd=self.working_dir)
+                # Leer los egresos
+                símismo.leer_egr()
 
-                # Read the output
-                self._read_out(n_year=y)
-
-        # Save incoming coupled variables to the internal data
-        for var in self.variables:
-            if var in self.vars_entrando:
-                self.internal_data[var][s] = self.variables[var]['val']
-
+        # Guardar los nuevos valores de los variables conectados en los datos internos
+        for var in símismo.variables:
+            if var in símismo.vars_entrando:
+                símismo.datos_internos[var][e] = símismo.variables[var]['val']
 
     def leer_vals(símismo):
         """
-        Esta función debe leer los variables del modelo desde el modelo externo y copiarlos al diccionario interno
-        de variables. Asegúrese que esté *actualizando* el diccionario interno, y que no lo esté recreando, lo cual
-        quebrará las conexiones con el modelo conectado.
+        Empleamos leer_egr() en vez, lo cual lee los egresos de todas los pasos de la última simulación.
+        .incrementar() arrelga lo de apuntar los diccionarios de variables actuales a la estación apropiada.
         """
-        raise NotImplementedError
+        pass
 
     def iniciar_modelo(símismo, **kwargs):
         """
@@ -389,6 +392,14 @@ class ModeloImpaciente(ModeloBF):
         :param n_paso_mín: El número de pasos mínimos con el cual avanzar.
         :type n_paso_mín: int
 
+        """
+        raise NotImplementedError
+
+    def leer_egr(símismo):
+        """
+
+        :return:
+        :rtype:
         """
         raise NotImplementedError
 

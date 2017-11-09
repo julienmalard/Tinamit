@@ -2,6 +2,7 @@ import os
 import re
 from warnings import warn
 
+from subprocess import run
 import numpy as np
 
 from tinamit.BF import ModeloImpaciente
@@ -77,27 +78,18 @@ class ModeloSAHYSMOD(ModeloImpaciente):
     def obt_unidad_tiempo(self):
         return 'Months'
 
-    def leer_vals(self):
-        pass  # Already included in .incrementar()
-
-    def cambiar_vals_modelo_interno(self, valores):
-        """
-        Here we just ensure that the internal data (for seasonal variables) stays consistent with the newly inputed
-        coupled values (as it is this internal data that will be written to the next SAHYSMOD call's input file.
-        
-        :param valores: The dictionary of input values.
-        :type valores: dict
-         
+    def avanzar_modelo(self, n_paso_mín):
         """
 
-        for var_name in valores:
-            # For every inputed value...
+        :param n_paso_mín:
+        :type n_paso_mín: int
+        """
 
-            if var_name in self.internal_data:
-                # If the variable in present in the internal data...
+        # Create the appropriate input file:
+        self._write_inp(n_year=n_paso_mín)
 
-                # Change the internal data value for the current season.
-                self.internal_data[var_name][self.season] = valores[var_name]
+        # Run the command prompt command
+        run(self.command, cwd=self.working_dir)
 
     def cerrar_modelo(self):
         pass  # Ne specific closing actions necessary.
@@ -134,7 +126,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # And finally write the input file
         write_from_param_dic(param_dictionary=self.dic_input, to_fn=self.input)
 
-    def _read_out(self, n_year):
+    def leer_egr(self, n_year):
         """
         This function reads the last year of a SAHYSMOD output file.
 
