@@ -1,15 +1,14 @@
 import os
 import re
-from subprocess import run
 from warnings import warn
 
 import numpy as np
 
-from tinamit.BF import ModeloBF
+from tinamit.BF import ModeloImpaciente
 from tinamit.EnvolturaBF.en.SAHYSMOD.sahysmodIO import read_into_param_dic, write_from_param_dic
 
 
-class ModeloSAHYSMOD(ModeloBF):
+class ModeloSAHYSMOD(ModeloImpaciente):
     """
     This is the wrapper for SAHYSMOD. At the moment, it only works for one polygon (no spatial models).
     """
@@ -34,16 +33,6 @@ class ModeloSAHYSMOD(ModeloBF):
         super().__init__()
 
         # The following attributes are specific to the SAHYSMOD wrapper
-
-        # This class will simulate on a seasonal time basis, but the SAHYSMOD executable must run for a full year
-        # at the same time. Therefore, we create an internal dictionary to store variable data for all seasons in a
-        # year.
-        # {'code var 1': [season1value, season2value, ...],
-        #  'code var 2': [season1value, season2value, ...],
-        #  ...
-        #  }
-        self.internal_data = dict([(var, np.array([])) for var in self.variables
-                                   if '#' in vars_SAHYSMOD[var]['code']])
 
         # Create some useful model attributes
         self.n_poly = None  # Number of (internal) polygons in the model
@@ -109,66 +98,6 @@ class ModeloSAHYSMOD(ModeloBF):
 
                 # Change the internal data value for the current season.
                 self.internal_data[var_name][self.season] = valores[var_name]
-
-    def incrementar(self, paso):
-
-        # Note: this subclass can only be used with a coupling time step multiple of 1 month.
-        if int(paso) != paso:
-            raise ValueError('Time step ("paso") must be a whole number.')
-
-        m = self.month
-        s = self.season
-        y = 0  # The number of years to simulate.
-
-        m += int(paso)
-
-        while m >= self.len_seasons[s]:
-            m -= int(self.len_seasons[s])
-            s += 1
-
-            if s == self.n_seasons:  # s starts counting at 0 (Python convention)
-                y += 1
-                s = 0
-
-        # Save the season and month for the next time.
-        self.month = m
-        self.season = s
-
-        # If this is the first month of the season, we change the variables dictionary values accordingly
-        if m == 0:
-            # Set the internal diccionary of values to this season's values
-            for var in self.internal_data:
-                # For every variable in the internal data dictionary (i.e., all variables that vary by season)
-
-                # Set the variables dictionary value to this season's value
-                try:
-                    self.variables[var]['val'] = self.internal_data[var][s]
-                except IndexError:
-                    pass
-
-            # If this is also the first season of the year, we also run a SAHYSMOD simulation
-            if s == 0:
-                # Create the appropriate input file:
-                self._write_inp(n_year=y)
-
-                # Run the command prompt command
-                try:
-                    run(self.command, cwd=self.working_dir)
-                except FileNotFoundError:
-                    raise FileNotFoundError('Can\'t find the SAHYSMOD executable. Does it really exist?\n'
-                                            '{}'.format(self.command.split()[0]))
-
-                if not os.path.isfile(self.output):
-                    raise RuntimeError('The SAHYSMOD model did not complete a successful run. Perhaps check your'
-                                       'input file.')
-
-                # Read the output
-                self._read_out(n_year=y)
-
-        # Save incoming coupled variables to the internal data
-        for var in self.variables:
-            if var in self.vars_entrando:
-                self.internal_data[var][s] = self.variables[var]['val']
 
     def cerrar_modelo(self):
         pass  # Ne specific closing actions necessary.

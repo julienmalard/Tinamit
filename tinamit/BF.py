@@ -241,7 +241,13 @@ class ModeloImpaciente(ModeloBF):
         símismo.paso_mín = "Año"
         símismo.ratio_pasos = convertir(de=símismo.unidad_tiempo, a=símismo.paso_mín)
 
-        símismo.vars_internos = np.array()
+        # Creamos un diccionario para guardar valores de variables para cada paso. Tiene el formato siguiente:
+        # {'var 1': [valorpaso1, valorpaso2, ...],
+        #  'var 2': [valorpaso1, valorpaso2, ...],
+        #  ...
+        #  }
+        símismo.datos_internos = dict([(var, np.array([])) for var in símismo.variables
+                                   if var in símismo.estacionales])
 
     def cambiar_vals_modelo_interno(símismo, valores):
         """
@@ -258,10 +264,64 @@ class ModeloImpaciente(ModeloBF):
 
     def incrementar(símismo, paso):
         """
+        Incrementa el modelo, tomando valores de variables desde el diccionario de valores internos.
+        Si necesitamos avanzar la simulación del modelo externo, lo hace ahora y después lee los resultados.
 
+        :param paso: El paso con cual avanzar la simulación.
+        :type paso: int
 
         """
 
+        # No podemos tener pasos fraccionales
+        if int(paso) != paso:
+            raise ValueError('El paso debe ser un número entero.')
+
+
+        m = self.month
+        s = self.season
+        y = 0  # The number of years to simulate.
+
+        m += int(paso)
+
+        while m >= self.len_seasons[self.season]:
+            m %= int(self.len_seasons[s])
+            s += 1
+
+        if s >= self.n_seasons:  # s starts counting at 0 (Python convention)
+            y += s // self.n_seasons
+            s %= self.n_seasons
+
+        # Save the season and month for the next time.
+        self.month = m
+        self.season = s
+
+        # If this is the first month of the season, we change the variables dictionary values accordingly
+        if m == 0:
+            # Set the internal diccionary of values to this season's values
+            for var in self.internal_data:
+                # For every variable in the internal data dictionary (i.e., all variables that vary by season)
+
+                # Set the variables dictionary value to this season's value
+                try:
+                    self.variables[var]['val'] = self.internal_data[var][s]
+                except IndexError:
+                    pass
+
+            # If this is also the first season of the year, we also run a SAHYSMOD simulation
+            if s == 0:
+                # Create the appropriate input file:
+                self._write_inp(n_year=y)
+
+                # Run the command prompt command
+                run(self.command, cwd=self.working_dir)
+
+                # Read the output
+                self._read_out(n_year=y)
+
+        # Save incoming coupled variables to the internal data
+        for var in self.variables:
+            if var in self.vars_entrando:
+                self.internal_data[var][s] = self.variables[var]['val']
 
 
     def leer_vals(símismo):

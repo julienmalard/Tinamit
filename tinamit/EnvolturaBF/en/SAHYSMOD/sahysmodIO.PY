@@ -1,4 +1,5 @@
 """
+Código modificado de Jérôme Boisvert-Chouinard bajo la licencia MIT.
 Code modified from Jérôme Boisvert-Chouinard under the MIT license.
 
 The MIT License (MIT)
