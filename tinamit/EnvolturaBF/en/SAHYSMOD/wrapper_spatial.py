@@ -59,7 +59,7 @@ class ModeloSAHYSMOD(ModeloBF):
 
         # Set the working directory to write model output, and remember where the initial data is stored.
         self.working_dir, self.initial_data = os.path.split(initial_data)
-        self.output = 'SAHYSMOD.out'
+        self.output = os.path.join(self.working_dir, 'SAHYSMOD.out')
 
         # Prepare the command to the SAHYSMOD executable
         args = dict(SAHYSMOD=sayhsmod_exe, input=self.input, output=self.output)
@@ -153,6 +153,9 @@ class ModeloSAHYSMOD(ModeloBF):
 
                 # Run the command prompt command
                 run(self.command, cwd=self.working_dir)
+                if not os.path.isfile(self.output):
+                    raise RuntimeError('The SAHYSMOD model did not complete a successful run. Perhaps check your'
+                                       'input file.')
 
                 # Read the output
                 self._read_out(n_year=y)
