@@ -3840,8 +3840,6 @@ $192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,7
 :SCALE
 :VAR Tubewell discharge
 :L<%^E!@
-1:run3.vdf
-1:run2.vdf
 9:run3
 22:$,Dollar,Dollars,$s
 22:Hour,Hours

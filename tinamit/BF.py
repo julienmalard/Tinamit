@@ -236,10 +236,22 @@ class ModeloImpaciente(ModeloBF):
         Esta función correrá automáticamente con la inclusión de `super().__init__()` en la función `__init__()` de las
         subclases de esta clase.
         """
+
+        # Número y duración de las estaciones del año. Para modelos puramente mensuales, puedes utilizar 12 y 1.
+        # Se deben modificar, si necesario, en la función __init__() de la subclase.
+        símismo.n_estaciones = 12
+        símismo.dur_estaciones = [1] * 12
+
+        # Inicializar como la clase pariente.
         super().__init__()
 
         símismo.paso_mín = "Año"
         símismo.ratio_pasos = convertir(de=símismo.unidad_tiempo, a=símismo.paso_mín)
+        símismo.estacionales = símismo.gen_estacionales()
+
+        # El mes y la estación iniciales
+        símismo.estación = 0
+        símismo.mes = 0
 
         # Creamos un diccionario para guardar valores de variables para cada paso. Tiene el formato siguiente:
         # {'var 1': [valorpaso1, valorpaso2, ...],
@@ -283,7 +295,7 @@ class ModeloImpaciente(ModeloBF):
         if int(paso) != paso:
             raise ValueError('El paso debe ser un número entero.')
 
-
+        # Para simplificar el código un poco.
         m = símismo.mes
         e = símismo.estación
         a = 0  # El número de años para simular
@@ -318,10 +330,10 @@ class ModeloImpaciente(ModeloBF):
             # Si es la primera estación del año, también hay que correr una simulación del modelo externo.
             if e == 0:
                 # Avanzar la simulación
-                símismo.avanzar_modelo(n_paso_mín=a)
+                símismo.avanzar_modelo(n_años=a)
 
                 # Leer los egresos
-                símismo.leer_egr()
+                símismo.leer_egr(n_años_egr=a)
 
         # Guardar los nuevos valores de los variables conectados en los datos internos
         for var in símismo.variables:
@@ -334,6 +346,16 @@ class ModeloImpaciente(ModeloBF):
         .incrementar() arrelga lo de apuntar los diccionarios de variables actuales a la estación apropiada.
         """
         pass
+
+    def obt_unidad_tiempo(símismo):
+        """
+        **¡Cuidado!** Esta función devuelve la unidad de tiempo del modelo **a la cual quieres que pueda
+        evaluarse**.  Así que función debe devolver "mes" y no "año".
+
+        :return: La unidad de tiempo **deseada** del modelo.
+        :rtype: str
+        """
+        return "Mes"
 
     def iniciar_modelo(símismo, **kwargs):
         """
@@ -351,17 +373,6 @@ class ModeloImpaciente(ModeloBF):
         ).
         """
         raise NotImplementedError
-
-    def obt_unidad_tiempo(símismo):
-        """
-        **¡Cuidado!** Esta función debe devolver la unidad de tiempo del modelo **a la cual quieres que pueda
-        evaluarse**.  Por ejemplo, si tu modelo biofísico evalua con un paso de simulación mínimo de 1 año, pero
-        quieres que se pueda conectar con un paso de 1 mes, esta función debe devolver "mes" y no "año".
-
-        :return: La unidad de tiempo **deseada** del modelo.
-        :rtype: str
-        """
-        return "Mes"
 
     def inic_vars(símismo):
         """
@@ -383,24 +394,28 @@ class ModeloImpaciente(ModeloBF):
 
         raise NotImplementedError
 
-    def avanzar_modelo(símismo, n_paso_mín):
+    def avanzar_modelo(símismo, n_años):
         """
         Esta función debe avanzar el modelo de `n_paso_mín` de paso mínimos de simulación. Por ejemplo, si tienes
         un modelo que simula con un paso mínimo de 1 año pero que quieres conectar con paso mensual, esta función
         debe avanzar el modelo de `n_paso_mín` **años**.
 
-        :param n_paso_mín: El número de pasos mínimos con el cual avanzar.
-        :type n_paso_mín: int
+        :param n_años: El número de pasos mínimos con el cual avanzar.
+        :type n_años: int
 
         """
         raise NotImplementedError
 
-    def leer_egr(símismo):
+    def leer_egr(símismo, n_años_egr):
         """
 
-        :return:
-        :rtype:
+        :param n_años_egr:
+        :type n_años_egr: int
+
         """
+        raise NotImplementedError
+
+    def gen_estacionales(símismo):
         raise NotImplementedError
 
 

@@ -217,6 +217,7 @@ class SuperConectado(Modelo):
 
         # Para cada nombre de variable...
         for nombre_var, val in valores.items():
+
             # Primero, vamos a sacar el nombre del variable y el nombre del submodelo.
             nombre_mod, var = nombre_var.split('_', 1)
 
@@ -251,7 +252,15 @@ class SuperConectado(Modelo):
                              '.estab_conv_tiempo() antes de correr la simulación.')
 
         # Preparar las predicciones de clima, si necesario
-
+        if clima is not None:
+            if fecha_inicial is None:
+                raise ValueError('Necesitamos un año inicial para incorporar datos de clima.\n'
+                                 'Tinamït es inteligente, pero no puede adivinar todo.')
+            días_simul = mat.ceil(convertir(símismo.unidad_tiempo, a='días', val=tiempo_final))
+            fecha_final = ft.datetime.strptime(fecha_inicial, '%d-%m-%Y').date() + ft.timedelta(días_simul)
+            datos = clima.gendiario(fecha_inic=fecha_inicial, fecha_fin=fecha_final)
+            for mod in símismo.modelos.values():
+                mod.aplicar_clima(datos=datos)
 
         # Iniciamos el modelo.
         símismo.iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
@@ -272,6 +281,10 @@ class SuperConectado(Modelo):
         :type paso: int
 
         """
+
+        # Primero, aplicar datos exógenos
+        for mod in símismo.modelos.values():
+            mod.act_exógenos()
 
         # Una función independiente para controlar cada modelo
         def incr_mod(mod, nombre, d, args):

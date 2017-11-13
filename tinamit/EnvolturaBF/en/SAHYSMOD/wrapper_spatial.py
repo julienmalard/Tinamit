@@ -72,24 +72,33 @@ class ModeloSAHYSMOD(ModeloImpaciente):
                                     'dims': (1, )  # This will be changed later for multidimensional variables.
                                     }
 
+    def gen_estacionales(símismo):
+        return
+
     def iniciar_modelo(self, **kwargs):
         pass  # Nothing specific to do. Variables have already been read in .inic_vars()
 
-    def obt_unidad_tiempo(self):
-        return 'Months'
-
-    def avanzar_modelo(self, n_paso_mín):
+    def avanzar_modelo(self, n_años):
         """
 
-        :param n_paso_mín:
-        :type n_paso_mín: int
+        :param n_años:
+        :type n_años: int
         """
 
-        # Create the appropriate input file:
-        self._write_inp(n_year=n_paso_mín)
+        # Create the appropriate input file
+        self._write_inp(n_year=n_años)
+
+        # Clear any previously existing output file
+        if os.path.isfile(self.output):
+            os.remove(self.output)
 
         # Run the command prompt command
         run(self.command, cwd=self.working_dir)
+
+        # Check that the output file was written by SAHYSMOD
+        if not os.path.isfile(self.output):
+            raise FileNotFoundError('The SAHYSMOD model didn\'t write any output.\n'
+                                    'This probably means it crashed. Have fun debugging! :)')
 
     def cerrar_modelo(self):
         pass  # Ne specific closing actions necessary.
@@ -114,7 +123,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
             var_name = codes_to_vars[var_code]
 
             if var_code[-1] == '#':
-                self.dic_input[key] = self.internal_data[var_name]
+                self.dic_input[key] = self.datos_internos[var_name]
             else:
                 self.dic_input[key] = self.variables[var_name]['val']
 
@@ -132,7 +141,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
         """
 
-        dic_out = read_output_file(file_path=self.output, n_s=self.n_seasons, n_p=self.n_poly, n_y=n_year)
+        dic_out = read_output_file(file_path=self.output, n_s=self.n_estaciones, n_p=self.n_poly, n_y=n_year)
 
         for cr in ['CrA', 'CrB', 'CrU', 'Cr4', 'A#', 'B#', 'U#']:
             dic_out[cr][dic_out[cr] == -1] = 0
@@ -209,8 +218,8 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         self.dic_input.update(dic_input)
 
         # Save the number of seasons and length of each season
-        self.n_seasons = int(dic_input['NS'])
-        self.len_seasons = [int(float(x)) for x in dic_input['TS']]
+        self.n_estaciones = int(dic_input['NS'])
+        self.dur_estaciones = [int(float(x)) for x in dic_input['TS']]
         self.n_poly = n_poly = int(dic_input['NN_IN'])
 
         if dic_input['NY'] != 1:
@@ -218,7 +227,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
             dic_input['NY'] = 1
 
         # Make sure the number of season lengths equals the number of seasons.
-        if self.n_seasons != len(self.len_seasons):
+        if self.n_estaciones != len(self.dur_estaciones):
             raise ValueError('Error in the SAHYSMOD input file: the number of season lengths specified is not equal '
                              'to the number of seasons (lines 3 and 4).')
 
@@ -228,7 +237,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
             var_code = vars_SAHYSMOD[var_name]['code']
             if var_code[-1] == '#':
-                self.internal_data[var_name] = np.zeros((self.n_seasons, n_poly), dtype=float)
+                self.datos_internos[var_name] = np.zeros((self.n_estaciones, n_poly), dtype=float)
 
         for var_code in SAHYSMOD_input_vars:
 
@@ -239,7 +248,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
             data = np.array(dic_input[key], dtype=float)
 
             if var_code[-1] == '#':
-                self.internal_data[var_name][:] = data
+                self.datos_internos[var_name][:] = data
                 self.variables[var_name]['val'] = data[0]  # Create a dynamic link.
             else:
                 self.variables[var_name]['val'][:] = data
