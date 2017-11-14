@@ -197,7 +197,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
             if var_code[-1] == '#':
                 # For seasonal variables...
 
-                self.internal_data[var_name][:] = dic_out[var_code]
+                self.datos_internos[var_name][:] = dic_out[var_code]
                 # Note: dynamic link with self.variables has already been created in self._read_input_vals()
 
             else:
