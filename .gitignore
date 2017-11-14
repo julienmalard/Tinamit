@@ -7,7 +7,7 @@
 
 # Código compilado #
 ###################
-*.py[ocd]
+__pycache__/
 
 # Archivos de Python #
 ######################
@@ -20,17 +20,24 @@ setup.cfg
 dist/
 build/
 
+# Documentación #
+#################
+docs/.tx/*
+
 # Archivos de VENSIM #
 ######################
 *.vdf
 
+# Archivos de Tinamït #
+#######################
 *.tin
+
+# Archivos de SAHYSMOD #
+########################
 *.frq
 *.gwt
 *.txt
 *.out
 *.inp
+*.lst
 
-docs/.tx/*
-__pycache__/
-docs/source/_static/
