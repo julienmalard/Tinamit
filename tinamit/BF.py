@@ -303,12 +303,12 @@ class ModeloImpaciente(ModeloBF):
         m += int(paso)
 
         while m >= símismo.dur_estaciones[e]:
-            m %= int(símismo.dur_estaciones[e])
-            a += 1
+            m -= int(símismo.dur_estaciones[e])
+            e += 1
 
-        if e >= símismo.n_estaciones:  # s empieza a contar en 0 (convención de Python)
-            a += e // símismo.n_estaciones
-            e %= símismo.n_estaciones
+            if e == símismo.n_estaciones:  # s empieza a contar en 0 (convención de Python)
+                a += 1
+                e = 0
 
         # Guardar la estación y el mes por la próxima vez.
         símismo.mes = m
