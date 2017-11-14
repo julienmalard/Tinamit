@@ -66,6 +66,22 @@ paramsToTranspose = [
     'HS'
 ]
 
+int_params = [
+    'N_IN',
+    'N_EX',
+    'KIE_IN',
+    'KIE_EX',
+    'KLC',
+    'FROM_N',
+    'TO_N1',
+    'TO_N2',
+    'TO_N3',
+    'TO_N4',
+    'KD',
+    'KF',
+    'KR',
+    'KRF',
+]
 
 def transpose_params(parameter_dictionary):
     for param in paramsToTranspose:
@@ -88,7 +104,7 @@ def read_into_param_dic(from_fn):
     from_template = CSVTEMPLATE if from_fn[-3:] == 'csv' else INPTEMPLATE
 
     # Read the input file.
-    param_dictionary = mioparser.readFile(from_fn, from_template)
+    param_dictionary = mioparser.read_file(from_fn, from_template, int_params=int_params)
     transpose_params(param_dictionary)  # Transpose parameters that require it.
 
     n_in_s = []
@@ -112,7 +128,7 @@ def write_from_param_dic(param_dictionary, to_fn, csv=False):
 
     to_template = CSVTEMPLATE if csv else INPTEMPLATE
 
-    mioparser.writeFile(param_dictionary, to_fn, to_template)
+    mioparser.write_file(param_dictionary, to_fn, to_template, int_params=int_params)
 
 
 def main(from_fn, to_fn):

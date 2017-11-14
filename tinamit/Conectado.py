@@ -193,7 +193,7 @@ class SuperConectado(Modelo):
 
         # Identificar el modelo que no sirve de referencia para la unidad de tiempo
         l_mod = list(símismo.modelos)
-        mod_otro = l_mod[(l_mod.index(mod_base)+1) % 2]
+        mod_otro = l_mod[(l_mod.index(mod_base) + 1) % 2]
 
         # Establecer las conversiones
         símismo.conv_tiempo[mod_base] = 1
@@ -217,7 +217,6 @@ class SuperConectado(Modelo):
 
         # Para cada nombre de variable...
         for nombre_var, val in valores.items():
-
             # Primero, vamos a sacar el nombre del variable y el nombre del submodelo.
             nombre_mod, var = nombre_var.split('_', 1)
 
@@ -258,7 +257,7 @@ class SuperConectado(Modelo):
         símismo.iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
 
         # Hasta llegar al tiempo final, incrementamos el modelo.
-        for i in range(int(tiempo_final/paso)):
+        for i in range(int(tiempo_final / paso)):
             símismo.incrementar(paso)
 
         # Después de la simulación, cerramos el modelo.
@@ -274,9 +273,32 @@ class SuperConectado(Modelo):
 
         """
 
+        # Una función independiente para controlar cada modelo
+        def incr_mod(mod, nombre, d, args):
+            """
+            Esta función intenta incrementar un modelo y nos dice si hubo un error.
+
+            :param mod: El modelo para incrementar
+            :type mod: Modelo
+            :param nombre: El nombre del modelo (para el diccionario de errores).
+            :type nombre: str
+            :param d: El diccionario en el cual cuardar información de errores.
+            :type d: dict
+            :param args: Los argumentos para el modelo
+            :type args: tuple
+            """
+            try:
+                mod.incrementar(*args)
+            except:
+                d[nombre] = True
+                raise
+
+        # Un diccionario para comunicar errores
+        dic_err = {x: False for x in símismo.modelos}
+
         # Un hilo para cada modelo
         l_hilo = [threading.Thread(name='hilo_%s' % nombre,
-                                   target=mod.incrementar, args=(símismo.conv_tiempo[nombre] * paso,))
+                                   target=incr_mod, args=(mod, nombre, dic_err, (símismo.conv_tiempo[nombre] * paso,)))
                   for nombre, mod in símismo.modelos.items()]
 
         # Empezar los dos hilos al mismo tiempo
@@ -286,6 +308,11 @@ class SuperConectado(Modelo):
         # Esperar que los dos hilos hayan terminado
         for hilo in l_hilo:
             hilo.join()
+
+        # Verificar si hubo error
+        for m, e in dic_err.items():
+            if e:
+                raise ChildProcessError('Hubo error en modelo "{}"'.format(m))
 
         # Leer egresos
         for mod in símismo.modelos.values():
@@ -376,7 +403,7 @@ class SuperConectado(Modelo):
         :type conv: float
 
         """
-        
+
         # Una lista de los submodelos.
         l_mods = list(símismo.modelos)
 
@@ -395,11 +422,11 @@ class SuperConectado(Modelo):
             if var in mod.vars_saliendo or var in mod.vars_entrando:
                 raise ValueError('El variable "{}" del modelo "{}" ya está conectado. '
                                  'Desconéctalo primero con .desconectar_vars().'.format(var, nombre_mod))
-                
+
         # Identificar el nombre del modelo recipiente también.
         n_mod_fuente = l_mods.index(modelo_fuente)
         modelo_recip = l_mods[(n_mod_fuente + 1) % 2]
-        
+
         # Identificar los nombres de los variables fuente y recipiente, tanto como sus unidades y dimensiones.
         var_fuente = dic_vars[modelo_fuente]
         var_recip = dic_vars[modelo_recip]
@@ -434,7 +461,7 @@ class SuperConectado(Modelo):
                               },
                      'conv': conv
                      }
-        
+
         # Agregar el diccionario de conexión a la lista de conexiones.
         símismo.conexiones.append(dic_conex)
 

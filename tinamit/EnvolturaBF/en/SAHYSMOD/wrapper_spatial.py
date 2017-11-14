@@ -59,7 +59,7 @@ class ModeloSAHYSMOD(ModeloBF):
 
         # Set the working directory to write model output, and remember where the initial data is stored.
         self.working_dir, self.initial_data = os.path.split(initial_data)
-        self.output = 'SAHYSMOD.out'
+        self.output = os.path.join(self.working_dir, 'SAHYSMOD.out')
 
         # Prepare the command to the SAHYSMOD executable
         args = dict(SAHYSMOD=sayhsmod_exe, input=self.input, output=self.output)
@@ -122,13 +122,13 @@ class ModeloSAHYSMOD(ModeloBF):
 
         m += int(paso)
 
-        while m >= self.len_seasons[self.season]:
-            m %= int(self.len_seasons[s])
+        while m >= self.len_seasons[s]:
+            m -= int(self.len_seasons[s])
             s += 1
 
-        if s >= self.n_seasons:  # s starts counting at 0 (Python convention)
-            y += s // self.n_seasons
-            s %= self.n_seasons
+            if s == self.n_seasons:  # s starts counting at 0 (Python convention)
+                y += 1
+                s = 0
 
         # Save the season and month for the next time.
         self.month = m
@@ -152,7 +152,11 @@ class ModeloSAHYSMOD(ModeloBF):
                 self._write_inp(n_year=y)
 
                 # Run the command prompt command
-                run(self.command, cwd=self.working_dir)
+                try:
+                    run(self.command, cwd=self.working_dir)
+                except FileNotFoundError:
+                    raise FileNotFoundError('Can\'t find the SAHYSMOD executable. Does it really exist?\n'
+                                            '{}'.format(self.command.split()[0]))
 
                 # Read the output
                 self._read_out(n_year=y)
@@ -205,32 +209,52 @@ class ModeloSAHYSMOD(ModeloBF):
 
         dic_out = read_output_file(file_path=self.output, n_s=self.n_seasons, n_p=self.n_poly, n_y=n_year)
 
-        for cr in ['CrA', 'CrB', 'CrU', 'Cr4', 'A#', 'B#', 'U']:
-            if dic_out[cr] == -1:
-                dic_out[cr] = 0
+        for cr in ['CrA', 'CrB', 'CrU', 'Cr4', 'A#', 'B#', 'U#']:
+            dic_out[cr][dic_out[cr] == -1] = 0
 
         # Ajust for soil salinity of different crops
-        kr = self.variables[codes_to_vars['Kr']]['val']
-        if kr == 0:
-            soil_sal = dic_out['A#'] * dic_out['CrA'] + dic_out['B#'] * dic_out['CrB'] + dic_out['U'] * dic_out['CrU']
-            to_fill = ['Cr4']
-        elif kr == 1:
-            soil_sal = dic_out['CrU'] * dic_out['U'] + dic_out['C1*'] * (1 - dic_out['U'])
-            to_fill = ['CrA', 'CrB', 'Cr4']
-        elif kr == 2:
-            soil_sal = dic_out['CrA'] * dic_out['A#'] + dic_out['C2*'] * (1 - dic_out['A#'])
-            to_fill = ['CrB', 'CrU', 'Cr4']
-        elif kr == 3:
-            soil_sal = dic_out['CrB'] * dic_out['B#'] + dic_out['C3*'] * (1 - dic_out['B#'])
-            to_fill = ['CrA', 'CrU', 'Cr4']
-        elif kr == 4:
-            soil_sal = dic_out['Cr4']
-            to_fill = ['CrA', 'CrB', 'CrU']
-        else:
-            raise ValueError('There is a big mistake with your SAHYSMOD model. Sorry, we can\'t help.')
+        kr = dic_out['Kr']
 
-        for cr in to_fill:
-            dic_out[cr][:] = soil_sal
+        soil_sal = np.zeros((self.n_seasons, self.n_poly))
+
+        # Create a boolean mask for every potential Kr value and fill in soil salinity accordingly
+        kr0 = (kr == 0)
+        soil_sal[kr0] = dic_out['A#'][kr0] * dic_out['CrA'][kr0] + \
+                        dic_out['B#'][kr0] * dic_out['CrB'][kr0] + \
+                        dic_out['U#'][kr0] * dic_out['CrU'][kr0]
+
+        kr1 = (kr == 1)
+        soil_sal[kr1] = dic_out['CrU'][kr1] * dic_out['U#'][kr1] + \
+                        dic_out['C1*'][kr1] * (1 - dic_out['U#'][kr1])
+
+        kr2 = (kr == 2)
+        soil_sal[kr2] = dic_out['CrA'][kr2] * dic_out['A#'][kr2] + \
+                        dic_out['C2*'][kr2] * (1 - dic_out['A#'][kr2])
+
+        kr3 = (kr == 3)
+        soil_sal[kr3] = dic_out['CrB'][kr3] * dic_out['B#'][kr3] + \
+                        dic_out['C3*'][kr3] * (1 - dic_out['B#'][kr3])
+
+        kr4 = (kr == 4)
+        soil_sal[kr4] = dic_out['Cr4'][kr4]
+
+        to_fill = [{'mask': kr0, 'cr': ['Cr4']},
+                   {'mask': kr1, 'cr': ['CrA', 'CrB', 'Cr4']},
+                   {'mask': kr2, 'cr': ['CrB', 'CrU', 'Cr4']},
+                   {'mask': kr3, 'cr': ['CrA', 'CrU', 'Cr4']},
+                   {'mask': kr4, 'cr': ['CrA', 'CrB', 'CrU']}
+                   ]
+
+        for d in to_fill:
+            l_cr = d['cr']
+            mask = d['mask']
+
+            for cr in l_cr:
+                dic_out[cr][mask] = soil_sal[mask]
+
+        final_season_vars = ['Kr', 'CrA', 'CrB', 'CrU', 'Cr4', 'Hw', 'C1*', 'C2*', 'C3*', 'Cxf', 'Cxa', 'Cxb', 'Cqf']
+        for v in final_season_vars:
+            dic_out[v] = dic_out[v][1]  # Take the last season only
 
         for var_code in SAHYSMOD_output_vars:
 
@@ -239,7 +263,7 @@ class ModeloSAHYSMOD(ModeloBF):
             if var_code[-1] == '#':
                 # For seasonal variables...
 
-                self.internal_data[var_name]['val'][:] = dic_out[var_code]
+                self.internal_data[var_name][:] = dic_out[var_code]
                 # Note: dynamic link with self.variables has already been created in self._read_input_vals()
 
             else:
@@ -366,59 +390,59 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'SdB - Surface outflow crop B': {'code': 'SoB#', 'units': 'm3/season/m2', 'inp': True, 'out': False},
                  'SoU - Surface outflow non-irrigated': {'code': 'SoU#', 'units': 'm3/season/m2',
                                                          'inp': True, 'out': False},
-                 'It - Total irrigation': {'code': 'It', 'units': 'm3/season/m2', 'inp': False, 'out': True},
-                 'Is - Canal irrigation': {'code': 'Is', 'units': 'm3/season/m2', 'inp': False, 'out': True},
+                 'It - Total irrigation': {'code': 'It#', 'units': 'm3/season/m2', 'inp': False, 'out': True},
+                 'Is - Canal irrigation': {'code': 'Is#', 'units': 'm3/season/m2', 'inp': False, 'out': True},
 
-                 'FfA - Irrigation efficiency crop A': {'code': 'FfA', 'units': 'Dmnl', 'inp': False, 'out': True},
-                 'FfB - Irrigation efficiency crop B': {'code': 'FfB', 'units': 'Dmnl', 'inp': False, 'out': True},
-                 'FfT - Total irrigation efficiency': {'code': 'FfT', 'units': 'Dmnl', 'inp': False, 'out': True},
-                 'Io - Water leaving by canal': {'code': 'Io', 'units': 'm3/season/m2', 'inp': False, 'out': True},
-                 'JsA - Irrigation sufficiency crop A': {'code': 'JsA', 'units': 'Dmnl', 'inp': False, 'out': True},
-                 'JsB - Irrigation sufficiency crop B': {'code': 'JsB', 'units': 'Dmnl', 'inp': False, 'out': True},
-                 'EaU - Actual evapotranspiration nonirrigated': {'code': 'EaU', 'units': 'm3/season/m2',
+                 'FfA - Irrigation efficiency crop A': {'code': 'FfA#', 'units': 'Dmnl', 'inp': False, 'out': True},
+                 'FfB - Irrigation efficiency crop B': {'code': 'FfB#', 'units': 'Dmnl', 'inp': False, 'out': True},
+                 'FfT - Total irrigation efficiency': {'code': 'FfT#', 'units': 'Dmnl', 'inp': False, 'out': True},
+                 'Io - Water leaving by canal': {'code': 'Io#', 'units': 'm3/season/m2', 'inp': False, 'out': True},
+                 'JsA - Irrigation sufficiency crop A': {'code': 'JsA#', 'units': 'Dmnl', 'inp': False, 'out': True},
+                 'JsB - Irrigation sufficiency crop B': {'code': 'JsB#', 'units': 'Dmnl', 'inp': False, 'out': True},
+                 'EaU - Actual evapotranspiration nonirrigated': {'code': 'EaU#', 'units': 'm3/season/m2',
                                                                   'inp': False, 'out': True},
-                 'LrA - Root zone percolation crop A': {'code': 'LrA', 'units': 'm3/season/m2',
+                 'LrA - Root zone percolation crop A': {'code': 'LrA#', 'units': 'm3/season/m2',
                                                         'inp': False, 'out': True},
-                 'LrB - Root zone percolation crop B': {'code': 'LrB', 'units': 'm3/season/m2',
+                 'LrB - Root zone percolation crop B': {'code': 'LrB#', 'units': 'm3/season/m2',
                                                         'inp': False, 'out': True},
-                 'LrU - Root zone percolation nonirrigated': {'code': 'LrU', 'units': 'm3/season/m2',
+                 'LrU - Root zone percolation nonirrigated': {'code': 'LrU#', 'units': 'm3/season/m2',
                                                               'inp': False, 'out': True},
-                 'LrT - Total root zone percolation': {'code': 'LrT', 'units': 'm3/season/m2', 'inp': False,
+                 'LrT - Total root zone percolation': {'code': 'LrT#', 'units': 'm3/season/m2', 'inp': False,
                                                        'out': True},
-                 'RrA - Capillary rise crop A': {'code': 'RrA', 'units': 'm3/season/m2', 'inp': False, 'out': True},
-                 'RrB - Capillary rise crop B': {'code': 'RrB', 'units': 'm3/season/m2', 'inp': False, 'out': True},
-                 'RrU - Capillary rise non-irrigated': {'code': 'RrU', 'units': 'm3/season/m2', 'inp': False,
+                 'RrA - Capillary rise crop A': {'code': 'RrA#', 'units': 'm3/season/m2', 'inp': False, 'out': True},
+                 'RrB - Capillary rise crop B': {'code': 'RrB#', 'units': 'm3/season/m2', 'inp': False, 'out': True},
+                 'RrU - Capillary rise non-irrigated': {'code': 'RrU#', 'units': 'm3/season/m2', 'inp': False,
                                                         'out': True},
-                 'RrT - Total capillary rise': {'code': 'RrT', 'units': 'm3/season/m2', 'inp': False, 'out': True},
-                 'Gti - Trans zone horizontal incoming groundwater': {'code': 'Gti', 'units': 'm3/season/m2',
+                 'RrT - Total capillary rise': {'code': 'RrT#', 'units': 'm3/season/m2', 'inp': False, 'out': True},
+                 'Gti - Trans zone horizontal incoming groundwater': {'code': 'Gti#', 'units': 'm3/season/m2',
                                                                       'inp': False, 'out': True},
-                 'Gto - Trans zone horizontal outgoing groundwater': {'code': 'Gto', 'units': 'm3/season/m2',
+                 'Gto - Trans zone horizontal outgoing groundwater': {'code': 'Gto#', 'units': 'm3/season/m2',
                                                                       'inp': False, 'out': True},
-                 'Qv - Net vertical water table recharge': {'code': 'Qv', 'units': 'm', 'inp': False, 'out': True},
-                 'Gqi - Aquifer horizontal incoming groundwater': {'code': 'Gqi', 'units': 'm3/season/m2',
+                 'Qv - Net vertical water table recharge': {'code': 'Qv#', 'units': 'm', 'inp': False, 'out': True},
+                 'Gqi - Aquifer horizontal incoming groundwater': {'code': 'Gqi#', 'units': 'm3/season/m2',
                                                                    'inp': False, 'out': True},
-                 'Gqo - Aquifer horizontal outgoing groundwater': {'code': 'Gqo', 'units': 'm3/season/m2',
+                 'Gqo - Aquifer horizontal outgoing groundwater': {'code': 'Gqo#', 'units': 'm3/season/m2',
                                                                    'inp': False, 'out': True},
-                 'Gaq - Net aquifer horizontal flow': {'code': 'Gaq', 'units': 'm3/season/m2',
+                 'Gaq - Net aquifer horizontal flow': {'code': 'Gaq#', 'units': 'm3/season/m2',
                                                        'inp': False, 'out': True},
-                 'Gnt - Net horizontal groundwater flow': {'code': 'Gnt', 'units': 'm3/season/m2',
+                 'Gnt - Net horizontal groundwater flow': {'code': 'Gnt#', 'units': 'm3/season/m2',
                                                            'inp': False, 'out': True},
-                 'Gd - Total subsurface drainage': {'code': 'Gd', 'units': 'm3/season/m2',
+                 'Gd - Total subsurface drainage': {'code': 'Gd#', 'units': 'm3/season/m2',
                                                     'inp': False, 'out': True},
-                 'Ga - Subsurface drainage above drains': {'code': 'Ga', 'units': 'm3/season/m2',
+                 'Ga - Subsurface drainage above drains': {'code': 'Ga#', 'units': 'm3/season/m2',
                                                            'inp': False, 'out': True},
-                 'Gb - Subsurface drainage below drains': {'code': 'Gb', 'units': 'm3/season/m2',
+                 'Gb - Subsurface drainage below drains': {'code': 'Gb#', 'units': 'm3/season/m2',
                                                            'inp': False, 'out': True},
-                 'Dw - Groundwater depth': {'code': 'Dw', 'units': 'm', 'inp': False, 'out': True},
+                 'Dw - Groundwater depth': {'code': 'Dw#', 'units': 'm', 'inp': False, 'out': True},
                  'Hw - Water table elevation': {'code': 'Hw', 'units': 'm', 'inp': True, 'out': True},
-                 'Hq - Subsoil hydraulic head': {'code': 'Hq', 'units': 'm', 'inp': False, 'out': True},
-                 'Sto - Water table storage': {'code': 'Sto', 'units': 'm', 'inp': False, 'out': True},
-                 'Zs - Surface water salt': {'code': 'Zs', 'units': 'm*dS/m', 'inp': False, 'out': True},
+                 'Hq - Subsoil hydraulic head': {'code': 'Hq#', 'units': 'm', 'inp': False, 'out': True},
+                 'Sto - Water table storage': {'code': 'Sto#', 'units': 'm', 'inp': False, 'out': True},
+                 'Zs - Surface water salt': {'code': 'Zs#', 'units': 'm*dS/m', 'inp': False, 'out': True},
                  'Area A - Seasonal fraction area crop A': {'code': 'A#', 'units': 'Dmnl', 'inp': True, 'out': True},
                  'Area B - Seasonal fraction area crop B': {'code': 'B#', 'units': 'Dmnl', 'inp': True, 'out': True},
-                 'Area U - Seasonal fraction area nonirrigated': {'code': 'U', 'units': 'Dmnl', 'inp': False,
+                 'Area U - Seasonal fraction area nonirrigated': {'code': 'U#', 'units': 'Dmnl', 'inp': False,
                                                                   'out': True},
-                 'Uc - Fraction permanently non-irrigated': {'code': 'Uc', 'units': 'Dmnl', 'inp': False, 'out': True},
+                 'Uc - Fraction permanently non-irrigated': {'code': 'Uc#', 'units': 'Dmnl', 'inp': False, 'out': True},
                  'CrA - Root zone salinity crop A': {'code': 'CrA', 'units': 'dS / m', 'inp': True, 'out': True},
                  'CrB - Root zone salinity crop B': {'code': 'CrB', 'units': 'dS / m', 'inp': True, 'out': True},
                  'CrU - Root zone salinity non-irrigated': {'code': 'CrU', 'units': 'dS / m', 'inp': True, 'out': True},
@@ -435,11 +459,11 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                                                                 'out': True},
                  'Cxb - Transition zone below-drain salinity': {'code': 'Cxb', 'units': 'dS / m', 'inp': True,
                                                                 'out': True},
-                 'Cti - Transition zone incoming salinity': {'code': 'Cti', 'units': 'dS / m', 'inp': False,
+                 'Cti - Transition zone incoming salinity': {'code': 'Cti#', 'units': 'dS / m', 'inp': False,
                                                              'out': True},
                  'Cqf - Aquifer salinity': {'code': 'Cqf', 'units': 'dS / m', 'inp': True, 'out': True},
-                 'Cd - Drainage salinity': {'code': 'Cd', 'units': 'ds / m', 'inp': False, 'out': True},
-                 'Cw - Well water salinity': {'code': 'Cw', 'units': 'ds / m', 'inp': False, 'out': True},
+                 'Cd - Drainage salinity': {'code': 'Cd#', 'units': 'ds / m', 'inp': False, 'out': True},
+                 'Cw - Well water salinity': {'code': 'Cw#', 'units': 'ds / m', 'inp': False, 'out': True},
                  }
 
 # A dictionary to get the variable name from its SAHYSMOD code.
@@ -467,6 +491,8 @@ def read_output_file(file_path, n_s, n_p, n_y):
     """
 
     dic_data = dict([(k, np.empty((n_s, n_p))) for k in SAHYSMOD_output_vars])
+    for k, v in dic_data.items():
+        v[:] = -1
 
     with open(file_path, 'r') as d:
         l = ''
@@ -474,12 +500,13 @@ def read_output_file(file_path, n_s, n_p, n_y):
             l = d.readline()
         for season in range(n_s):
             for season_poly in range(n_p):  # Read output for the last year's seasons from the output file
-                season_poly_output = []  # To hold the output file lines with the desired season
-                if n_p == 1 and n_s == 1:
-                    poly = [next(d) for s in range(23)]
-                else:
-                    poly = [next(d) for s in range(24)]
-                season_poly_output.append(poly)
+
+                poly = []
+                while re.match(' #', l) is None:
+                    poly.append(l)
+                    l = d.readline()
+
+                l = d.readline()  # Advance one more line for the next season
 
                 for cod in SAHYSMOD_output_vars:
                     var_out = cod.replace('#', '').replace('*', '\*')

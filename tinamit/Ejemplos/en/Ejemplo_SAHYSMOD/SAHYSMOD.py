@@ -3,7 +3,7 @@ import os
 from tinamit.EnvolturaBF.en.SAHYSMOD.wrapper_spatial import ModeloSAHYSMOD
 
 # Path to SAHYSMOD executable. Change as needed on your computer.
-SAHYSMOD = 'C:\\SahysMod\\julien\\SahysModConsole.exe'
+SAHYSMOD = 'C:\\Users\\jmalar1\\Documents\\SAHYSMOD\\SahysModConsole.exe'
 
 # Path to the SAHYSMOD input file with the initial data. Change as needed on your computer.
 directory = os.path.dirname(__file__)

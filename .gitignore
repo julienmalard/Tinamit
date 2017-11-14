@@ -24,7 +24,12 @@ build/
 ######################
 *.vdf
 *.tin
+*.frq
+*.gwt
+*.txt
 
+
+*.out
 
 docs/.tx/*
 __pycache__/
