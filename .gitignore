@@ -23,13 +23,13 @@ build/
 # Archivos de VENSIM #
 ######################
 *.vdf
+
 *.tin
 *.frq
 *.gwt
 *.txt
-
-
 *.out
+*.inp
 
 docs/.tx/*
 __pycache__/
