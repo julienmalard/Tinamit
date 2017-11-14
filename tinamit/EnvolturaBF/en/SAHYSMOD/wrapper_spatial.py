@@ -157,6 +157,10 @@ class ModeloSAHYSMOD(ModeloBF):
                 except FileNotFoundError:
                     raise FileNotFoundError('Can\'t find the SAHYSMOD executable. Does it really exist?\n'
                                             '{}'.format(self.command.split()[0]))
+                run(self.command, cwd=self.working_dir)
+                if not os.path.isfile(self.output):
+                    raise RuntimeError('The SAHYSMOD model did not complete a successful run. Perhaps check your'
+                                       'input file.')
 
                 # Read the output
                 self._read_out(n_year=y)
