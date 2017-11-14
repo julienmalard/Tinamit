@@ -39,7 +39,11 @@ class Modelo(object):
 
         # Un diccionarior para guardar valores de variables iniciales hasta el momento que empezamos la simulación.
         # Es muy útil para modelos cuyos variables no podemos cambiar antes de empezar una simulación (como VENSIM).
-        símismo.vals_inic = {}
+        símismo.vals_exo = {'inic': {}, 'temporal': {}}
+        símismo.vars_clima = {
+            '': ,
+        '':
+        }
 
         # Listas de los nombres de los variables que sirven de conexión con otro modelo.
         símismo.vars_saliendo = []
@@ -72,7 +76,7 @@ class Modelo(object):
         """
         Esta función llama cualquier acción necesaria para preparar el modelo para la simulación. Esto incluye aplicar
         valores iniciales. En general es muy fácil y se hace simplemente con "símismo.cambiar_vals(símismo.vals_inic)",
-        pero para unos modelos　(como Vensim) es un poco distinto así que los dejamos a ti para implementar.
+        pero para unos modelos (como Vensim) es un poco más delicado así que los dejamos a ti para implementar.
 
         :param tiempo_final: El tiempo final de la simulación.
         :type tiempo_final: int
@@ -122,7 +126,7 @@ class Modelo(object):
 
         # Guardamos el valor en el diccionario `vals_inic`. Se aplicarán los valores iniciales únicamente al momento
         # de empezar la simulación.
-        símismo.vals_inic[var] = val
+        símismo.vals_exo['inic'][var] = val
 
     def limp_vals_inic(símismo):
         """
@@ -130,7 +134,17 @@ class Modelo(object):
         """
 
         # Limpiar el diccionario.
-        símismo.vals_inic.clear()
+        for v in símismo.vals_exo.values():
+            v.clear()
+
+    def act_exógenos(símismo, i):
+
+        símismo.cambiar_vals({var: val[i] for var, val in símismo.vals_exo['temporal'].items()})
+
+    def aplicar_clima(símismo, datos):
+        for v_intern, v_clima in símismo.vars_clima.items():
+            datos_var = datos[v_clima]
+            símismo.vals_exo['temporal'][v_intern] = datos_var
 
     def cambiar_vals(símismo, valores):
         """
