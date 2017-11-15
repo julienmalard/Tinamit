@@ -333,7 +333,7 @@ class ModeloImpaciente(ModeloBF):
                 símismo.avanzar_modelo()
 
                 # Leer los egresos
-                símismo.leer_archivo_egr(n_años_egr=a)
+                símismo.leer_egr(n_años_egr=a)
 
         # Aplicar el incremento de paso
         m += int(paso)
@@ -428,7 +428,11 @@ class ModeloImpaciente(ModeloBF):
                 símismo.datos_internos[var][:] = datos
                 símismo.variables[var]['val'] = datos[0]  # Crear un enlace dinámico
             else:
-                símismo.variables[var]['val'][:] = datos
+                if var in símismo.tipos_vars['Estacionales']:
+                    símismo.datos_internos[var][:] = datos
+                    símismo.variables[var]['val'] = datos[0]  # Crear un enlace dinámico
+                else:
+                    símismo.variables[var]['val'][:] = datos
 
     def leer_archivo_vals_inic(símismo):
         """

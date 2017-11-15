@@ -142,40 +142,40 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
         dic_out = read_output_file(file_path=self.output, n_s=self.n_estaciones, n_p=self.n_poly, n_y=n_años_egr)
 
-        for cr in ['CrA', 'CrB', 'CrU', 'Cr4', 'A#', 'B#', 'U#']:
+        for cr in ['CrA#', 'CrB#', 'CrU#', 'Cr4#', 'A#', 'B#', 'U#']:
             dic_out[cr][dic_out[cr] == -1] = 0
 
         # Ajust for soil salinity of different crops
-        kr = dic_out['Kr']
+        kr = dic_out['Kr#']
 
         soil_sal = np.zeros((self.n_estaciones, self.n_poly))
 
         # Create a boolean mask for every potential Kr value and fill in soil salinity accordingly
         kr0 = (kr == 0)
-        soil_sal[kr0] = dic_out['A#'][kr0] * dic_out['CrA'][kr0] + \
-                        dic_out['B#'][kr0] * dic_out['CrB'][kr0] + \
-                        dic_out['U#'][kr0] * dic_out['CrU'][kr0]
+        soil_sal[kr0] = dic_out['A#'][kr0] * dic_out['CrA#'][kr0] + \
+                        dic_out['B#'][kr0] * dic_out['CrB#'][kr0] + \
+                        dic_out['U#'][kr0] * dic_out['CrU#'][kr0]
 
         kr1 = (kr == 1)
-        soil_sal[kr1] = dic_out['CrU'][kr1] * dic_out['U#'][kr1] + \
-                        dic_out['C1*'][kr1] * (1 - dic_out['U#'][kr1])
+        soil_sal[kr1] = dic_out['CrU#'][kr1] * dic_out['U#'][kr1] + \
+                        dic_out['C1*#'][kr1] * (1 - dic_out['U#'][kr1])
 
         kr2 = (kr == 2)
-        soil_sal[kr2] = dic_out['CrA'][kr2] * dic_out['A#'][kr2] + \
-                        dic_out['C2*'][kr2] * (1 - dic_out['A#'][kr2])
+        soil_sal[kr2] = dic_out['CrA#'][kr2] * dic_out['A#'][kr2] + \
+                        dic_out['C2*#'][kr2] * (1 - dic_out['A#'][kr2])
 
         kr3 = (kr == 3)
-        soil_sal[kr3] = dic_out['CrB'][kr3] * dic_out['B#'][kr3] + \
-                        dic_out['C3*'][kr3] * (1 - dic_out['B#'][kr3])
+        soil_sal[kr3] = dic_out['CrB#'][kr3] * dic_out['B#'][kr3] + \
+                        dic_out['C3*#'][kr3] * (1 - dic_out['B#'][kr3])
 
         kr4 = (kr == 4)
-        soil_sal[kr4] = dic_out['Cr4'][kr4]
+        soil_sal[kr4] = dic_out['Cr4#'][kr4]
 
-        to_fill = [{'mask': kr0, 'cr': ['Cr4']},
-                   {'mask': kr1, 'cr': ['CrA', 'CrB', 'Cr4']},
-                   {'mask': kr2, 'cr': ['CrB', 'CrU', 'Cr4']},
-                   {'mask': kr3, 'cr': ['CrA', 'CrU', 'Cr4']},
-                   {'mask': kr4, 'cr': ['CrA', 'CrB', 'CrU']}
+        to_fill = [{'mask': kr0, 'cr': ['Cr4#']},
+                   {'mask': kr1, 'cr': ['CrA#', 'CrB#', 'Cr4#']},
+                   {'mask': kr2, 'cr': ['CrB#', 'CrU#', 'Cr4#']},
+                   {'mask': kr3, 'cr': ['CrA#', 'CrU#', 'Cr4#']},
+                   {'mask': kr4, 'cr': ['CrA#', 'CrB#', 'CrU#']}
                    ]
 
         for d in to_fill:
@@ -286,9 +286,9 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'Ptq - Aquifer total pore space': {'code': 'Ptq', 'units': 'm/m', 'inp': True, 'out': False},
                  'Ptr - Root zone total pore space': {'code': 'Ptr', 'units': 'm/m', 'inp': True, 'out': False},
                  'Ptx - Transition zone total pore space': {'code': 'Ptx', 'units': 'm/m', 'inp': True, 'out': False},
-                 'QH1 - Drain discharge to water table height ratio': {'code': 'QH1#', 'units': 'm/day/m',
+                 'QH1 - Drain discharge to water table height ratio': {'code': 'QH1', 'units': 'm/day/m',
                                                                        'inp': True, 'out': False},
-                 'QH2 - Drain discharge to sq. water table height ratio': {'code': 'QH2#', 'units': 'm/day/m2',
+                 'QH2 - Drain discharge to sq. water table height ratio': {'code': 'QH2', 'units': 'm/day/m2',
                                                                            'inp': True, 'out': False},
                  'Qinf - Aquifer inflow': {'code': 'Qinf', 'units': 'm3/season/m2', 'inp': True, 'out': False},
                  'Qout - Aquifer outflow': {'code': 'Qout', 'units': 'm3/season/m2', 'inp': True, 'out': False},
