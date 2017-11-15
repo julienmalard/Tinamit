@@ -271,10 +271,6 @@ class SuperConectado(Modelo):
 
         """
 
-        # Primero, aplicar datos exógenos
-        for mod in símismo.modelos.values():
-            mod.act_exógenos()
-
         # Una función independiente para controlar cada modelo
         def incr_mod(mod, nombre, d, args):
             """

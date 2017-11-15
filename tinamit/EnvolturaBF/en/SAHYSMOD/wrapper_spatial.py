@@ -30,17 +30,10 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
         """
 
-        # Inicialise as the super class.
-        super().__init__()
-
         # The following attributes are specific to the SAHYSMOD wrapper
 
         # Create some useful model attributes
         self.n_poly = None  # Number of (internal) polygons in the model
-        self.n_seasons = None  # Number of seasons per year
-        self.len_seasons = []  # A list to store the length of each season, in months
-        self.season = 0  # Current season number (Python numeration)
-        self.month = 0  # Current month of the season
 
         # Set the path from which to read input data.
         current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -55,8 +48,8 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         args = dict(SAHYSMOD=sayhsmod_exe, input=self.input, output=self.output)
         self.command = '{SAHYSMOD} {input} {output}'.format(**args)
 
-        # Read input values from .inp file. This also takes care of setting appropriate dims for each variable.
-        self._read_input_vals()
+        # Inicialise as the super class.
+        super().__init__()
 
     def inic_vars(self):
 
@@ -71,6 +64,19 @@ class ModeloSAHYSMOD(ModeloImpaciente):
                                     'egreso': dic['out'],
                                     'dims': (1, )  # This will be changed later for multidimensional variables.
                                     }
+
+        # Set seasonal outputs and inputs
+        seasonal_outputs = [x for x in SAHYSMOD_output_vars if x[-1] == '#']
+
+        nonseasonal_input = ['Kr', 'CrA', 'CrB', 'CrU', 'Cr4', 'Hw', 'C1*', 'C2*', 'C3*', 'Cxf', 'Cxa', 'Cxb', 'Cqf']
+        seasonal_inputs = [x for x in SAHYSMOD_input_vars if x[-1] == '#'
+                           and x[:-1] not in nonseasonal_input]
+
+        # Save all to the internal dictionary
+        self.tipos_vars['Ingresos'] = [codes_to_vars[x] for x in SAHYSMOD_input_vars]
+        self.tipos_vars['Egresos'] = [codes_to_vars[x] for x in SAHYSMOD_output_vars]
+        self.tipos_vars['IngrEstacionales'] = [codes_to_vars[x] for x in seasonal_inputs]
+        self.tipos_vars['EgrEstacionales'] = [codes_to_vars[x] for x in seasonal_outputs]
 
     def gen_estacionales(self):
         return
@@ -98,20 +104,20 @@ class ModeloSAHYSMOD(ModeloImpaciente):
     def cerrar_modelo(self):
         pass  # Ne specific closing actions necessary.
 
-    def escribir_archivo_ingr(self, n_year, dic_ingr):
+    def escribir_archivo_ingr(self, n_años_simul, dic_ingr):
         """
         This function writes a SAHYSMOD input file according to the model's current internal state (so that the
         simulation based on the input file will start with initial values corresponding to the model's present state).
 
-        :param n_year: The number of years for which SAHYSMOD will be run.
-        :type n_year: int
+        :param n_años_simul: The number of years for which SAHYSMOD will be run.
+        :type n_años_simul: int
 
         :param dic_ingr: The dictionary of input variable values
         :type dic_ingr: dict
         """
 
         # Set the number of run years
-        self.dic_input['NY'] = n_year
+        self.dic_input['NY'] = n_años_simul
 
         # Copy data from the input dictionary
         for var, val in dic_ingr.items():
@@ -142,7 +148,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # Ajust for soil salinity of different crops
         kr = dic_out['Kr']
 
-        soil_sal = np.zeros((self.n_seasons, self.n_poly))
+        soil_sal = np.zeros((self.n_estaciones, self.n_poly))
 
         # Create a boolean mask for every potential Kr value and fill in soil salinity accordingly
         kr0 = (kr == 0)
@@ -185,23 +191,23 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # Return the final dictionary
         return dic_final
 
-    # Some internal functions specific to this SAHYSMOD wrapper
-    def _read_input_vals(self):
+    def leer_archivo_vals_inic(self):
         """
         This function will read the initial values for the model from a SAHYSMOD input (.inp) file and save the
         relavant information to this model class's internal variables.
 
+        :rtype: (dict, tuple)
         """
 
         # Read the input file
         dic_input = read_into_param_dic(from_fn=self.initial_data)
         self.dic_input.clear()
-        self.dic_input.update(dic_input)
+        self.dic_input.update(dic_input)  # Save values for future writing of the input file
 
         # Save the number of seasons and length of each season
         self.n_estaciones = int(dic_input['NS'])
         self.dur_estaciones = [int(float(x)) for x in dic_input['TS']]
-        self.n_poly = n_poly = int(dic_input['NN_IN'])
+        self.n_poly = int(dic_input['NN_IN'])
 
         if dic_input['NY'] != 1:
             warn('More than 1 year specified in SAHYSMOD input file. Switching to 1 year of simulation.')
@@ -212,44 +218,16 @@ class ModeloSAHYSMOD(ModeloImpaciente):
             raise ValueError('Error in the SAHYSMOD input file: the number of season lengths specified is not equal '
                              'to the number of seasons (lines 3 and 4).')
 
-        for var_name in vars_SAHYSMOD:
-            self.variables[var_name]['val'] = np.zeros(n_poly, dtype=float)
-            self.variables[var_name]['dims'] = (n_poly,)
+        # Format the final dictionary properly
+        dic_final = {}
+        for c in SAHYSMOD_input_vars:
+            key = c.upper().replace('#', '')
 
-            var_code = vars_SAHYSMOD[var_name]['code']
-            if var_code[-1] == '#':
-                self.datos_internos[var_name] = np.zeros((self.n_estaciones, n_poly), dtype=float)
+            if key in dic_input:
+                var_name = codes_to_vars[c]
+                dic_final[var_name] = dic_input[key]
 
-        for var_code in SAHYSMOD_input_vars:
-
-            key = var_code.replace('#', '').upper()
-
-            var_name = codes_to_vars[var_code]
-
-            data = np.array(dic_input[key], dtype=float)
-
-            if var_code[-1] == '#':
-                self.datos_internos[var_name][:] = data
-                self.variables[var_name]['val'] = data[0]  # Create a dynamic link.
-            else:
-                self.variables[var_name]['val'][:] = data
-
-    def gen_tipos_vars(self):
-        """
-
-        """
-
-        seasonal_outputs = [x for x in SAHYSMOD_output_vars if x[-1] == '#']
-
-        nonseasonal_input = ['Kr', 'CrA', 'CrB', 'CrU', 'Cr4', 'Hw', 'C1*', 'C2*', 'C3*', 'Cxf', 'Cxa', 'Cxb', 'Cqf']
-        seasonal_inputs = [x for x in SAHYSMOD_input_vars if x[-1] == '#'
-                           and x not in nonseasonal_input]
-
-        # Save all to the internal dictionary
-        self.tipos_vars['Ingresos'] = [codes_to_vars[x] for x in SAHYSMOD_input_vars]
-        self.tipos_vars['Egresos'] = [codes_to_vars[x] for x in SAHYSMOD_output_vars]
-        self.tipos_vars['IngrEstacionales'] = [codes_to_vars[x] for x in seasonal_inputs]
-        self.tipos_vars['EgrEstacionales'] = [codes_to_vars[x] for x in seasonal_outputs]
+        return dic_final, (self.n_poly,)
 
 
 # A dictionary of SAHYSMOD variables. See the SAHYSMOD documentation for more details.

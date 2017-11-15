@@ -233,21 +233,20 @@ class ModeloImpaciente(ModeloBF):
         """
 
         # Número y duración de las estaciones del año. Para modelos puramente mensuales, puedes utilizar 12 y 1.
-        # Se deben modificar, si necesario, en la función __init__() de la subclase.
+        # Se deben modificar, si necesario, en la función leer_archivo_vals_inic() de la subclase.
         símismo.n_estaciones = 12
         símismo.dur_estaciones = [1] * 12
+
+        #
+        símismo.tipos_vars = {
+            'Ingresos': [], 'Egresos': [], 'IngrEstacionales': [], 'EgrEstacionales': []
+        }
 
         # Inicializar como la clase pariente.
         super().__init__()
 
         símismo.paso_mín = "Año"
         símismo.ratio_pasos = convertir(de=símismo.unidad_tiempo, a=símismo.paso_mín)
-
-        #
-        símismo.tipos_vars = {
-            'Ingresos': [], 'Egresos': [], 'IngrEstacionales': [], 'EgrEstacionales': []
-        }
-        símismo.gen_tipos_vars()
 
         # Una lista de todos los variables estacionales (que sean ingresos o egresos)
         símismo.tipos_vars['Estacionales'] = list(
@@ -262,8 +261,9 @@ class ModeloImpaciente(ModeloBF):
         #  'var 2': [valorpaso1, valorpaso2, ...],
         #  ...
         #  }
-        símismo.datos_internos = dict([(var, np.array([])) for var in símismo.variables
-                                       if var in símismo.tipos_vars['Estacionales']])
+        símismo.datos_internos = {var: None for var in símismo.variables if var in símismo.tipos_vars['Estacionales']}
+
+        símismo.leer_vals_inic()
 
     def cambiar_vals_modelo_interno(símismo, valores):
         """
@@ -282,7 +282,7 @@ class ModeloImpaciente(ModeloBF):
             if var in símismo.datos_internos:
                 # Si el variable queda presente en los datos internos...
 
-                # Cambiar el valor del diccionario interno para la estación actual.  para hacer
+                # Cambiar el valor del diccionario interno para la estación actual.
                 símismo.datos_internos[var][símismo.estación] = val
 
     def incrementar(símismo, paso):
@@ -343,11 +343,6 @@ class ModeloImpaciente(ModeloBF):
             m -= int(símismo.dur_estaciones[e])
             e += 1
             e %= símismo.n_estaciones  # s empieza a contar en 0 (convención de Python)
-
-        # Guardar los nuevos valores de los variables conectados en los datos internos  para hacer
-        for var in símismo.variables:
-            if var in símismo.vars_entrando:
-                símismo.datos_internos[var][e] = símismo.variables[var]['val']
 
     def leer_vals(símismo):
         """
@@ -412,6 +407,37 @@ class ModeloImpaciente(ModeloBF):
         """
         raise NotImplementedError
 
+    def leer_vals_inic(símismo):
+        """
+        Esta función lee los valores iniciales del modelo.
+        :return:
+        :rtype:
+        """
+        dic_inic, dims = símismo.leer_archivo_vals_inic()
+
+        for var, d_var in símismo.variables.items():
+            d_var['val'] = np.zeros(dims, dtype=float)
+            d_var['dims'] = dims
+
+            if var in símismo.tipos_vars['Estacionales']:
+                símismo.datos_internos[var] = np.zeros((símismo.n_estaciones, *dims), dtype=float)
+
+        for var in símismo.tipos_vars['Ingresos']:
+            datos = np.array(dic_inic[var], dtype=float)
+            if var in símismo.tipos_vars['IngrEstacionales']:
+                símismo.datos_internos[var][:] = datos
+                símismo.variables[var]['val'] = datos[0]  # Crear un enlace dinámico
+            else:
+                símismo.variables[var]['val'][:] = datos
+
+    def leer_archivo_vals_inic(símismo):
+        """
+        Esta función devuelve un diccionario con los valores leídos del archivo de valores iniciales.
+        :return:
+        :rtype: (dict, tuple)
+        """
+        raise NotImplementedError
+
     def leer_egr(símismo, n_años_egr):
         """
 
@@ -449,17 +475,17 @@ class ModeloImpaciente(ModeloBF):
         dic_ingr = {}
 
         ingresos = símismo.tipos_vars['Ingresos']
-        egr_estacional = símismo.tipos_vars['EgrEstacionales']
+        estacionales = símismo.tipos_vars['Estacionales']
         ingr_estacional = símismo.tipos_vars['IngrEstacionales']
 
         for var in ingresos:
-            if var in egr_estacional:
+            if var in estacionales:
                 if var in ingr_estacional:
                     dic_ingr[var] = símismo.datos_internos[var]
                 else:
                     dic_ingr[var] = símismo.datos_internos[var][-1, ...]
             else:
-                dic_ingr[var] = símismo.variables[var]['val']
+                dic_ingr[var] =  símismo.variables[var]['val']
 
         símismo.escribir_archivo_ingr(n_años_simul=n_años_simul, dic_ingr=dic_ingr)
 
@@ -484,14 +510,6 @@ class ModeloImpaciente(ModeloBF):
 
         """
 
-        raise NotImplementedError
-
-    def gen_tipos_vars(símismo):
-        """
-
-        :return:
-        :rtype:
-        """
         raise NotImplementedError
 
 
