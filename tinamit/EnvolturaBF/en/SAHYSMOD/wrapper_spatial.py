@@ -3,6 +3,7 @@ import re
 from subprocess import run
 from warnings import warn
 
+import math as mat
 import numpy as np
 
 from tinamit.BF import ModeloBF
@@ -118,21 +119,6 @@ class ModeloSAHYSMOD(ModeloBF):
 
         m = self.month
         s = self.season
-        y = 0  # The number of years to simulate.
-
-        m += int(paso)
-
-        while m >= self.len_seasons[s]:
-            m -= int(self.len_seasons[s])
-            s += 1
-
-            if s == self.n_seasons:  # s starts counting at 0 (Python convention)
-                y += 1
-                s = 0
-
-        # Save the season and month for the next time.
-        self.month = m
-        self.season = s
 
         # If this is the first month of the season, we change the variables dictionary values accordingly
         if m == 0:
@@ -148,6 +134,9 @@ class ModeloSAHYSMOD(ModeloBF):
 
             # If this is also the first season of the year, we also run a SAHYSMOD simulation
             if s == 0:
+                # The number of years to simulate.
+                y = mat.ceil(paso / 12)  # type: int
+
                 # Create the appropriate input file:
                 self._write_inp(n_year=y)
 
@@ -164,6 +153,19 @@ class ModeloSAHYSMOD(ModeloBF):
 
                 # Read the output
                 self._read_out(n_year=y)
+
+        # Apply time step increment
+        m += int(paso)
+
+        while m >= self.len_seasons[s]:
+            m -= int(self.len_seasons[s])
+            s += 1
+
+            s %= self.n_seasons  # s starts counting at 0 (Python convention)
+
+        # Save the season and month for the next time.
+        self.month = m
+        self.season = s
 
         # Save incoming coupled variables to the internal data
         for var in self.variables:
