@@ -292,7 +292,6 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                                                                            'inp': True, 'out': False},
                  'Qinf - Aquifer inflow': {'code': 'Qinf', 'units': 'm3/season/m2', 'inp': True, 'out': False},
                  'Qout - Aquifer outflow': {'code': 'Qout', 'units': 'm3/season/m2', 'inp': True, 'out': False},
-                 'Scale': {'code': 'Scale', 'units': 'Dmnl', 'inp': True, 'out': False},
                  'SL - Soil surface level': {'code': 'SL', 'units': 'm', 'inp': True, 'out': False},
                  'SiU - Surface inflow to non-irrigated': {'code': 'SiU#', 'units': 'm3/season/m2',
                                                            'inp': True, 'out': False},
