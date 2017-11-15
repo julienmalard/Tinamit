@@ -227,7 +227,7 @@ class SuperConectado(Modelo):
     def conectar_clima(símismo):
         pass
 
-    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inicial=None, clima=True):
+    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït'):
         """
         Simula el modelo :class:`~tinamit.Conectado.SuperConectado`.
 
@@ -250,17 +250,6 @@ class SuperConectado(Modelo):
         if not len(símismo.conv_tiempo):
             raise ValueError('Hay que especificar la conversión de unidades de tiempo con '
                              '.estab_conv_tiempo() antes de correr la simulación.')
-
-        # Preparar las predicciones de clima, si necesario
-        if clima is not None:
-            if fecha_inicial is None:
-                raise ValueError('Necesitamos un año inicial para incorporar datos de clima.\n'
-                                 'Tinamït es inteligente, pero no puede adivinar todo.')
-            días_simul = mat.ceil(convertir(símismo.unidad_tiempo, a='días', val=tiempo_final))
-            fecha_final = ft.datetime.strptime(fecha_inicial, '%d-%m-%Y').date() + ft.timedelta(días_simul)
-            datos = clima.gendiario(fecha_inic=fecha_inicial, fecha_fin=fecha_final)
-            for mod in símismo.modelos.values():
-                mod.aplicar_clima(datos=datos)
 
         # Iniciamos el modelo.
         símismo.iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)

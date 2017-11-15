@@ -2,6 +2,7 @@ import os
 import sys
 from importlib import import_module as importar_mod
 
+import math as mat
 import numpy as np
 
 from tinamit.Modelo import Modelo
@@ -152,15 +153,9 @@ class ModeloBF(Modelo):
 
     def incrementar(símismo, paso):
         """
-        Esta función debe cambiar el valor de variables en el :class:`Modelo`, incluso tomar acciones para asegurarse
-        de que el cambio se hizo en el modelo externo, si aplica.
-
-        :param valores: Un diccionario de variables y valores para cambiar, con el formato siguiente:
-        >>> {'var1': 10,  'var2': 15,
-        >>>    ...
-        >>>    }
-        :type valores: dict
-
+        Esta función debe incrementar el modelo de `paso` unidades de tiempo.
+        :param paso: El número de pasos
+        :type paso: int
         """
 
         raise NotImplementedError
@@ -247,7 +242,16 @@ class ModeloImpaciente(ModeloBF):
 
         símismo.paso_mín = "Año"
         símismo.ratio_pasos = convertir(de=símismo.unidad_tiempo, a=símismo.paso_mín)
-        símismo.estacionales = símismo.gen_estacionales()
+
+        #
+        símismo.tipos_vars = {
+            'Ingresos': [], 'Egresos': [], 'IngrEstacionales': [], 'EgrEstacionales': []
+        }
+        símismo.gen_tipos_vars()
+
+        # Una lista de todos los variables estacionales (que sean ingresos o egresos)
+        símismo.tipos_vars['Estacionales'] = list(
+            {*símismo.tipos_vars['IngrEstacionales'], *símismo.tipos_vars['EgrEstacionales']})
 
         # El mes y la estación iniciales
         símismo.estación = 0
@@ -259,7 +263,7 @@ class ModeloImpaciente(ModeloBF):
         #  ...
         #  }
         símismo.datos_internos = dict([(var, np.array([])) for var in símismo.variables
-                                       if var in símismo.estacionales])
+                                       if var in símismo.tipos_vars['Estacionales']])
 
     def cambiar_vals_modelo_interno(símismo, valores):
         """
@@ -278,7 +282,7 @@ class ModeloImpaciente(ModeloBF):
             if var in símismo.datos_internos:
                 # Si el variable queda presente en los datos internos...
 
-                # Cambiar el valor del diccionario interno para la estación actual.
+                # Cambiar el valor del diccionario interno para la estación actual.  para hacer
                 símismo.datos_internos[var][símismo.estación] = val
 
     def incrementar(símismo, paso):
@@ -298,17 +302,6 @@ class ModeloImpaciente(ModeloBF):
         # Para simplificar el código un poco.
         m = símismo.mes
         e = símismo.estación
-        a = 0  # El número de años para simular
-
-        m += int(paso)
-
-        while m >= símismo.dur_estaciones[e]:
-            m -= int(símismo.dur_estaciones[e])
-            e += 1
-
-            if e == símismo.n_estaciones:  # s empieza a contar en 0 (convención de Python)
-                a += 1
-                e = 0
 
         # Guardar la estación y el mes por la próxima vez.
         símismo.mes = m
@@ -329,13 +322,29 @@ class ModeloImpaciente(ModeloBF):
 
             # Si es la primera estación del año, también hay que correr una simulación del modelo externo.
             if e == 0:
+
+                # El número de años para simular
+                a = mat.ceil(paso / 12)  # type: int
+
+                # Escribir el archivo de ingresos
+                símismo.escribir_ingr(n_años_simul=a)
+
                 # Avanzar la simulación
-                símismo.avanzar_modelo(n_años=a)
+                símismo.avanzar_modelo()
 
                 # Leer los egresos
-                símismo.leer_egr(n_años_egr=a)
+                símismo.leer_archivo_egr(n_años_egr=a)
 
-        # Guardar los nuevos valores de los variables conectados en los datos internos
+        # Aplicar el incremento de paso
+        m += int(paso)
+
+        # Calcular la nueva estación y mes para el próximo incremento
+        while m >= símismo.dur_estaciones[e]:
+            m -= int(símismo.dur_estaciones[e])
+            e += 1
+            e %= símismo.n_estaciones  # s empieza a contar en 0 (convención de Python)
+
+        # Guardar los nuevos valores de los variables conectados en los datos internos  para hacer
         for var in símismo.variables:
             if var in símismo.vars_entrando:
                 símismo.datos_internos[var][e] = símismo.variables[var]['val']
@@ -343,7 +352,7 @@ class ModeloImpaciente(ModeloBF):
     def leer_vals(símismo):
         """
         Empleamos leer_egr() en vez, lo cual lee los egresos de todas los pasos de la última simulación.
-        .incrementar() arrelga lo de apuntar los diccionarios de variables actuales a la estación apropiada.
+        .incrementar() arregla lo de apuntar los diccionarios de variables actuales a la estación apropiada.
         """
         pass
 
@@ -394,14 +403,11 @@ class ModeloImpaciente(ModeloBF):
 
         raise NotImplementedError
 
-    def avanzar_modelo(símismo, n_años):
+    def avanzar_modelo(símismo):
         """
         Esta función debe avanzar el modelo de `n_paso_mín` de paso mínimos de simulación. Por ejemplo, si tienes
         un modelo que simula con un paso mínimo de 1 año pero que quieres conectar con paso mensual, esta función
         debe avanzar el modelo de `n_paso_mín` **años**.
-
-        :param n_años: El número de pasos mínimos con el cual avanzar.
-        :type n_años: int
 
         """
         raise NotImplementedError
@@ -413,9 +419,79 @@ class ModeloImpaciente(ModeloBF):
         :type n_años_egr: int
 
         """
+
+        # Leer el archivo de egreso
+        dic_egr = símismo.leer_archivo_egr(n_años_egr=n_años_egr)
+
+        # Para simplificar el código
+        estacionales = símismo.tipos_vars['EgrEstacionales']
+        finales = [v for v in símismo.tipos_vars['Egresos'] if v not in estacionales]
+
+        # Guardar los nuevos valores
+        for var in estacionales:
+            # Para variables estacionales...
+
+            símismo.datos_internos[var][:] = dic_egr[var]
+            # Nota: el enlace dinámico con símismo.variables ya se hizo antes.
+
+        for var in finales:
+            # Para variables no estacionales...
+
+            símismo.variables[var]['val'][:] = dic_egr[var]
+
+    def escribir_ingr(símismo, n_años_simul):
+        """
+
+        :param n_años_simul:
+        :type n_años_simul:
+        """
+
+        dic_ingr = {}
+
+        ingresos = símismo.tipos_vars['Ingresos']
+        egr_estacional = símismo.tipos_vars['EgrEstacionales']
+        ingr_estacional = símismo.tipos_vars['IngrEstacionales']
+
+        for var in ingresos:
+            if var in egr_estacional:
+                if var in ingr_estacional:
+                    dic_ingr[var] = símismo.datos_internos[var]
+                else:
+                    dic_ingr[var] = símismo.datos_internos[var][-1, ...]
+            else:
+                dic_ingr[var] = símismo.variables[var]['val']
+
+        símismo.escribir_archivo_ingr(n_años_simul=n_años_simul, dic_ingr=dic_ingr)
+
+    def leer_archivo_egr(símismo, n_años_egr):
+        """
+
+        :param n_años_egr:
+        :type n_años_egr:
+        :return:
+        :rtype: dict
+        """
+
         raise NotImplementedError
 
-    def gen_estacionales(símismo):
+    def escribir_archivo_ingr(símismo, n_años_simul, dic_ingr):
+        """
+
+        :param n_años_simul:
+        :type n_años_simul: int
+        :param dic_ingr:
+        :type dic_ingr: dict
+
+        """
+
+        raise NotImplementedError
+
+    def gen_tipos_vars(símismo):
+        """
+
+        :return:
+        :rtype:
+        """
         raise NotImplementedError
 
 

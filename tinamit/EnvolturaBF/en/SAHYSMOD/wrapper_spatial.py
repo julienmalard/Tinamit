@@ -72,21 +72,16 @@ class ModeloSAHYSMOD(ModeloImpaciente):
                                     'dims': (1, )  # This will be changed later for multidimensional variables.
                                     }
 
-    def gen_estacionales(símismo):
+    def gen_estacionales(self):
         return
 
     def iniciar_modelo(self, **kwargs):
         pass  # Nothing specific to do. Variables have already been read in .inic_vars()
 
-    def avanzar_modelo(self, n_años):
+    def avanzar_modelo(self):
         """
 
-        :param n_años:
-        :type n_años: int
         """
-
-        # Create the appropriate input file
-        self._write_inp(n_year=n_años)
 
         # Clear any previously existing output file
         if os.path.isfile(self.output):
@@ -103,8 +98,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
     def cerrar_modelo(self):
         pass  # Ne specific closing actions necessary.
 
-    # Some internal functions specific to this SAHYSMOD wrapper
-    def _write_inp(self, n_year):
+    def escribir_archivo_ingr(self, n_year, dic_ingr):
         """
         This function writes a SAHYSMOD input file according to the model's current internal state (so that the
         simulation based on the input file will start with initial values corresponding to the model's present state).
@@ -112,20 +106,19 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         :param n_year: The number of years for which SAHYSMOD will be run.
         :type n_year: int
 
+        :param dic_ingr: The dictionary of input variable values
+        :type dic_ingr: dict
         """
 
         # Set the number of run years
         self.dic_input['NY'] = n_year
 
-        for var_code in SAHYSMOD_output_vars:
-
+        # Copy data from the input dictionary
+        for var, val in dic_ingr.items():
+            var_code = vars_SAHYSMOD[var]['code']
             key = var_code.replace('#', '').upper()
-            var_name = codes_to_vars[var_code]
 
-            if var_code[-1] == '#':
-                self.dic_input[key] = self.datos_internos[var_name]
-            else:
-                self.dic_input[key] = self.variables[var_name]['val']
+            self.dic_input[key] = val
 
         # Make sure we have no missing areas
         for k in ["A", "B"]:
@@ -135,13 +128,13 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # And finally write the input file
         write_from_param_dic(param_dictionary=self.dic_input, to_fn=self.input)
 
-    def leer_egr(self, n_year):
+    def leer_archivo_egr(self, n_años_egr):
         """
         This function reads the last year of a SAHYSMOD output file.
 
         """
 
-        dic_out = read_output_file(file_path=self.output, n_s=self.n_estaciones, n_p=self.n_poly, n_y=n_year)
+        dic_out = read_output_file(file_path=self.output, n_s=self.n_estaciones, n_p=self.n_poly, n_y=n_años_egr)
 
         for cr in ['CrA', 'CrB', 'CrU', 'Cr4', 'A#', 'B#', 'U#']:
             dic_out[cr][dic_out[cr] == -1] = 0
@@ -186,25 +179,13 @@ class ModeloSAHYSMOD(ModeloImpaciente):
             for cr in l_cr:
                 dic_out[cr][mask] = soil_sal[mask]
 
-        final_season_vars = ['Kr', 'CrA', 'CrB', 'CrU', 'Cr4', 'Hw', 'C1*', 'C2*', 'C3*', 'Cxf', 'Cxa', 'Cxb', 'Cqf']
-        for v in final_season_vars:
-            dic_out[v] = dic_out[v][1]  # Take the last season only
+        # Convert variable codes to variable names
+        dic_final = {codes_to_vars[c]: v for c, v in dic_out.items()}
 
-        for var_code in SAHYSMOD_output_vars:
+        # Return the final dictionary
+        return dic_final
 
-            var_name = codes_to_vars[var_code]
-
-            if var_code[-1] == '#':
-                # For seasonal variables...
-
-                self.datos_internos[var_name][:] = dic_out[var_code]
-                # Note: dynamic link with self.variables has already been created in self._read_input_vals()
-
-            else:
-                # For nonseasonal variables...
-
-                self.variables[var_name]['val'][:] = dic_out[var_code]
-
+    # Some internal functions specific to this SAHYSMOD wrapper
     def _read_input_vals(self):
         """
         This function will read the initial values for the model from a SAHYSMOD input (.inp) file and save the
@@ -253,6 +234,23 @@ class ModeloSAHYSMOD(ModeloImpaciente):
             else:
                 self.variables[var_name]['val'][:] = data
 
+    def gen_tipos_vars(self):
+        """
+
+        """
+
+        seasonal_outputs = [x for x in SAHYSMOD_output_vars if x[-1] == '#']
+
+        nonseasonal_input = ['Kr', 'CrA', 'CrB', 'CrU', 'Cr4', 'Hw', 'C1*', 'C2*', 'C3*', 'Cxf', 'Cxa', 'Cxb', 'Cqf']
+        seasonal_inputs = [x for x in SAHYSMOD_input_vars if x[-1] == '#'
+                           and x not in nonseasonal_input]
+
+        # Save all to the internal dictionary
+        self.tipos_vars['Ingresos'] = [codes_to_vars[x] for x in SAHYSMOD_input_vars]
+        self.tipos_vars['Egresos'] = [codes_to_vars[x] for x in SAHYSMOD_output_vars]
+        self.tipos_vars['IngrEstacionales'] = [codes_to_vars[x] for x in seasonal_inputs]
+        self.tipos_vars['EgrEstacionales'] = [codes_to_vars[x] for x in seasonal_outputs]
+
 
 # A dictionary of SAHYSMOD variables. See the SAHYSMOD documentation for more details.
 vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp': True, 'out': False},
@@ -299,7 +297,7 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'Ksc2 - Semi-confined aquifer 2?': {'code': 'Ksc2', 'units': 'Dmnl', 'inp': True, 'out': False},
                  'Ksc3 - Semi-confined aquifer 3?': {'code': 'Ksc3', 'units': 'Dmnl', 'inp': True, 'out': False},
                  'Ksc4 - Semi-confined aquifer 4?': {'code': 'Ksc4', 'units': 'Dmnl', 'inp': True, 'out': False},
-                 'Kr - Land use key': {'code': 'Kr', 'units': 'Dmnl', 'inp': True, 'out': True},
+                 'Kr - Land use key': {'code': 'Kr#', 'units': 'Dmnl', 'inp': True, 'out': True},
                  'Kvert - Vertical hydraulic conductivity semi-confined': {'code': 'Kvert', 'units': 'm/day',
                                                                            'inp': True, 'out': False},
                  'Lc - Canal percolation': {'code': 'Lc#', 'units': 'm3/season/m2', 'inp': True, 'out': False},
@@ -368,7 +366,7 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'Gb - Subsurface drainage below drains': {'code': 'Gb#', 'units': 'm3/season/m2',
                                                            'inp': False, 'out': True},
                  'Dw - Groundwater depth': {'code': 'Dw#', 'units': 'm', 'inp': False, 'out': True},
-                 'Hw - Water table elevation': {'code': 'Hw', 'units': 'm', 'inp': True, 'out': True},
+                 'Hw - Water table elevation': {'code': 'Hw#', 'units': 'm', 'inp': True, 'out': True},
                  'Hq - Subsoil hydraulic head': {'code': 'Hq#', 'units': 'm', 'inp': False, 'out': True},
                  'Sto - Water table storage': {'code': 'Sto#', 'units': 'm', 'inp': False, 'out': True},
                  'Zs - Surface water salt': {'code': 'Zs#', 'units': 'm*dS/m', 'inp': False, 'out': True},
@@ -377,25 +375,26 @@ vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp'
                  'Area U - Seasonal fraction area nonirrigated': {'code': 'U#', 'units': 'Dmnl', 'inp': False,
                                                                   'out': True},
                  'Uc - Fraction permanently non-irrigated': {'code': 'Uc#', 'units': 'Dmnl', 'inp': False, 'out': True},
-                 'CrA - Root zone salinity crop A': {'code': 'CrA', 'units': 'dS / m', 'inp': True, 'out': True},
-                 'CrB - Root zone salinity crop B': {'code': 'CrB', 'units': 'dS / m', 'inp': True, 'out': True},
-                 'CrU - Root zone salinity non-irrigated': {'code': 'CrU', 'units': 'dS / m', 'inp': True, 'out': True},
-                 'Cr4 - Fully rotated land irrigated root zone salinity': {'code': 'Cr4', 'units': 'dS / m',
+                 'CrA - Root zone salinity crop A': {'code': 'CrA#', 'units': 'dS / m', 'inp': True, 'out': True},
+                 'CrB - Root zone salinity crop B': {'code': 'CrB#', 'units': 'dS / m', 'inp': True, 'out': True},
+                 'CrU - Root zone salinity non-irrigated': {'code': 'CrU#', 'units': 'dS / m',
+                                                            'inp': True, 'out': True},
+                 'Cr4 - Fully rotated land irrigated root zone salinity': {'code': 'Cr4#', 'units': 'dS / m',
                                                                            'inp': False, 'out': True},
-                 'C1 - Key 1 non-permanently irrigated root zone salinity': {'code': 'C1*', 'units': 'dS / m',
+                 'C1 - Key 1 non-permanently irrigated root zone salinity': {'code': 'C1*#', 'units': 'dS / m',
                                                                              'inp': False, 'out': True},
-                 'C2 - Key 2 non-permanently irrigated root zone salinity': {'code': 'C2*', 'units': 'dS / m',
+                 'C2 - Key 2 non-permanently irrigated root zone salinity': {'code': 'C2*#', 'units': 'dS / m',
                                                                              'inp': False, 'out': True},
-                 'C3 - Key 3 non-permanently irrigated root zone salinity': {'code': 'C3*', 'units': 'dS / m',
+                 'C3 - Key 3 non-permanently irrigated root zone salinity': {'code': 'C3*#', 'units': 'dS / m',
                                                                              'inp': False, 'out': True},
-                 'Cxf - Transition zone salinity': {'code': 'Cxf', 'units': 'dS / m', 'inp': True, 'out': True},
-                 'Cxa - Transition zone above-drain salinity': {'code': 'Cxa', 'units': 'dS / m', 'inp': True,
+                 'Cxf - Transition zone salinity': {'code': 'Cxf#', 'units': 'dS / m', 'inp': True, 'out': True},
+                 'Cxa - Transition zone above-drain salinity': {'code': 'Cxa#', 'units': 'dS / m', 'inp': True,
                                                                 'out': True},
-                 'Cxb - Transition zone below-drain salinity': {'code': 'Cxb', 'units': 'dS / m', 'inp': True,
+                 'Cxb - Transition zone below-drain salinity': {'code': 'Cxb#', 'units': 'dS / m', 'inp': True,
                                                                 'out': True},
                  'Cti - Transition zone incoming salinity': {'code': 'Cti#', 'units': 'dS / m', 'inp': False,
                                                              'out': True},
-                 'Cqf - Aquifer salinity': {'code': 'Cqf', 'units': 'dS / m', 'inp': True, 'out': True},
+                 'Cqf - Aquifer salinity': {'code': 'Cqf#', 'units': 'dS / m', 'inp': True, 'out': True},
                  'Cd - Drainage salinity': {'code': 'Cd#', 'units': 'ds / m', 'inp': False, 'out': True},
                  'Cw - Well water salinity': {'code': 'Cw#', 'units': 'ds / m', 'inp': False, 'out': True},
                  }
