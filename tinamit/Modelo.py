@@ -41,8 +41,8 @@ class Modelo(object):
         # Es muy útil para modelos cuyos variables no podemos cambiar antes de empezar una simulación (como VENSIM).
         símismo.vals_exo = {'inic': {}, 'temporal': {}}
         símismo.vars_clima = {
-            '': ,
-        '':
+#            '': ,
+#        '':
         }
 
         # Listas de los nombres de los variables que sirven de conexión con otro modelo.

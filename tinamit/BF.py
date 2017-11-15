@@ -112,7 +112,7 @@ class EnvolturaBF(Modelo):
 
         # Aplicar valores iniciales antes de la inicialización del modelo. Simplemente llamamos la función
         # símismo.cambiar_vals() con el diccionario de valores iniciales.
-        símismo.cambiar_vals(símismo.vals_inic)
+        símismo.cambiar_vals(símismo.vals_exo['inic'])
 
         # ...y inicializar el modelo.
         símismo.modelo.iniciar_modelo(**kwargs)

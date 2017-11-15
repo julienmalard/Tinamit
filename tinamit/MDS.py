@@ -318,7 +318,7 @@ class ModeloVensim(EnvolturaMDS):
         """
 
         # En Vensim, tenemos que incializar los valores de variables constantes antes de empezar la simulación.
-        símismo.cambiar_vals({var: val for var, val in símismo.vals_exo.items()
+        símismo.cambiar_vals({var: val for var, val in símismo.vals_exo['inic'].items()
                               if var in símismo.constantes})
 
         # Establecer el nombre de la corrida.
@@ -338,7 +338,7 @@ class ModeloVensim(EnvolturaMDS):
                                mensaje_error='Error inicializando el juego VENSIM.')
 
         # Aplicar los valores iniciales de variables editables (que
-        símismo.cambiar_vals({var: val for var, val in símismo.vals_exo.items()
+        símismo.cambiar_vals({var: val for var, val in símismo.vals_exo['inic'].items()
                               if var not in símismo.constantes})
 
     def cambiar_vals_modelo_interno(símismo, valores):
