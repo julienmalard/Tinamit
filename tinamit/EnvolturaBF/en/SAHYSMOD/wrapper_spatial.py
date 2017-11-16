@@ -78,9 +78,6 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         self.tipos_vars['IngrEstacionales'] = [codes_to_vars[x] for x in seasonal_inputs]
         self.tipos_vars['EgrEstacionales'] = [codes_to_vars[x] for x in seasonal_outputs]
 
-    def gen_estacionales(self):
-        return
-
     def iniciar_modelo(self, **kwargs):
         pass  # Nothing specific to do. Variables have already been read in .inic_vars()
 
