@@ -93,6 +93,10 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         if os.path.isfile(self.output):
             os.remove(self.output)
 
+        # Remove any previously existing output file
+        if os.path.isfile(self.output):
+            os.remove(self.output)
+
         # Run the command prompt command
         run(self.command, cwd=self.working_dir)
 
