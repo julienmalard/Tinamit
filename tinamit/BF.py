@@ -1,9 +1,12 @@
+import math as mat
 import os
 import sys
 from importlib import import_module as importar_mod
+from warnings import warn as avisar
 
-import math as mat
 import numpy as np
+import datetime as ft
+from dateutil.relativedelta import relativedelta as deltarelativo
 
 from tinamit.Modelo import Modelo
 from .Unidades.Unidades import convertir
@@ -112,7 +115,7 @@ class EnvolturaBF(Modelo):
 
         # Aplicar valores iniciales antes de la inicialización del modelo. Simplemente llamamos la función
         # símismo.cambiar_vals() con el diccionario de valores iniciales.
-        símismo.cambiar_vals(símismo.vals_exo['inic'])
+        símismo.cambiar_vals(símismo.vals_inic)
 
         # ...y inicializar el modelo.
         símismo.modelo.iniciar_modelo(**kwargs)
@@ -237,7 +240,7 @@ class ModeloImpaciente(ModeloBF):
         símismo.n_estaciones = 12
         símismo.dur_estaciones = [1] * 12
 
-        #
+        # Un diccionario de variables de ingreso, egreso, y variables estacionales de cada tipo.
         símismo.tipos_vars = {
             'Ingresos': [], 'Egresos': [], 'IngrEstacionales': [], 'EgrEstacionales': []
         }
@@ -256,13 +259,14 @@ class ModeloImpaciente(ModeloBF):
         símismo.estación = 0
         símismo.mes = 0
 
-        # Creamos un diccionario para guardar valores de variables para cada paso. Tiene el formato siguiente:
-        # {'var 1': [valorpaso1, valorpaso2, ...],
-        #  'var 2': [valorpaso1, valorpaso2, ...],
+        # Creamos un diccionario para guardar valores de variables para cada estación. Tiene el formato siguiente:
+        # {'var 1': [valorestación1, valorestación2, ...],
+        #  'var 2': [valorestación1, valorestación2, ...],
         #  ...
         #  }
         símismo.datos_internos = {var: None for var in símismo.variables if var in símismo.tipos_vars['Estacionales']}
 
+        # Leer los valores iniciales
         símismo.leer_vals_inic()
 
     def cambiar_vals_modelo_interno(símismo, valores):
@@ -275,6 +279,10 @@ class ModeloImpaciente(ModeloBF):
         :type valores: dict
 
         """
+        pass
+
+        """
+        ESTO NO ES NECESARIO DADO LOS ENLACES DINÁMICOS, YO PIENSO (VERIFICAR).
 
         for var, val in valores.items():
             # Para cada valor para cambiar...
@@ -284,6 +292,58 @@ class ModeloImpaciente(ModeloBF):
 
                 # Cambiar el valor del diccionario interno para la estación actual.
                 símismo.datos_internos[var][símismo.estación] = val
+        """
+
+    def act_vals_clima(símismo, n_paso, f):
+        """
+
+
+        :param n_paso:
+        :type n_paso: int
+        :param f:
+        :type f: ft.datetime
+
+        """
+
+        # Si avanzamos por más que un año, perderemos la precisión del clima
+        if n_paso > 12:
+            avisar('El paso es superior a 1 año (12 meses). Las predicciones climáticas perderán su precisión.')
+
+        # Solamante hay que cambiar los datos si es el principio de un nuevo año.
+        if símismo.mes == 0 and símismo.estación == 0:
+
+            # La lista de variables climáticos
+            vars_clima = list(símismo.vars_clima)
+            nombres_extrn = [d['nombre_extrn'] for d in símismo.vars_clima.values()]
+
+            # La lista de maneras de combinar los valores diarios
+            combins = [d['combin'] for d in símismo.vars_clima.values()]
+
+            # La fecha inicial
+            f_inic = f
+
+            for e, dur in enumerate(símismo.dur_estaciones):
+                # Para cada estación...
+
+                # La fecha final
+                f_final = f_inic + deltarelativo(months=+dur)
+
+                # Calcular los datos
+                datos = símismo.datos_clima.comb_datos(vars_clima=nombres_extrn, combin=combins,
+                                                       f_inic=f_inic, f_final=f_final)
+
+                # Aplicar los valores de variables calculados
+                for i, var in enumerate(vars_clima):
+                    # Para cada variable en la lista de clima...
+
+                    # El nombre oficial del variable de clima
+                    var_clima = nombres_extrn[i]
+
+                    # Guardar el valor para esta estación
+                    símismo.datos_internos[var][e, ...] = datos[var_clima]
+
+                # Avanzar la fecha
+                f_inic = f_final
 
     def incrementar(símismo, paso):
         """
@@ -314,11 +374,8 @@ class ModeloImpaciente(ModeloBF):
                 # Para cada variable en el diccionario interno de variables (es decir, todos los variables que
                 # cambian por estación)...
 
-                # Poner el valor del variable al valor de esta estación
-                try:
-                    símismo.variables[var]['val'] = símismo.datos_internos[var][e]
-                except IndexError:
-                    pass
+                # Poner el valor del variable al valor de esta estación. (Guarda el enlace dinámico.)
+                símismo.variables[var]['val'] = símismo.datos_internos[var][e]
 
             # Si es la primera estación del año, también hay que correr una simulación del modelo externo.
             if e == 0:
@@ -410,6 +467,7 @@ class ModeloImpaciente(ModeloBF):
     def leer_vals_inic(símismo):
         """
         Esta función lee los valores iniciales del modelo.
+
         :return:
         :rtype:
         """
@@ -521,6 +579,7 @@ class ModeloFlexible(ModeloBF):
     """
 
     """
+
     def __init__(símismo):
         """
         Esta función correrá automáticamente con la inclusión de `super().__init__()` en la función `__init__()` de las

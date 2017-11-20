@@ -6,7 +6,7 @@
 *.tmp
 
 # Código compilado #
-###################
+####################
 __pycache__/
 
 # Archivos de Python #
@@ -27,6 +27,8 @@ docs/.tx/*
 # Archivos de VENSIM #
 ######################
 *.vdf
+*.2mdl
+*.3vm
 
 # Archivos de Tinamït #
 #######################
@@ -37,6 +39,12 @@ docs/.tx/*
 *.frq
 *.gwt
 *.out
-*.inp
 *.lst
+*SAHYSMOD.inp
+*/Ejemplos/**/*SAHYSMOD/NAME*
+*/Ejemplos/**/*SAHYSMOD/*.txt
+*/EnvolturaBF/**/*SAHYSMOD/*.txt
 
+# Archivos temporarios de Excel #
+#################################
+~$*.xlsx*

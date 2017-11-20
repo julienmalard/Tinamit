@@ -238,7 +238,7 @@ setup(
                      'sistemas (MDS). Es muy útil para proyectos de modelización participativa, especialmente'
                      'en proyectos de manejo del ambiente. El interaz gráfico traducible facilita la adopción por'
                      'comunidades en cualquier parte del mundo.',
-    requires=['numpy', 'matplotlib', 'scipy', 'taqdir'],
+    requires=['numpy', 'matplotlib', 'scipy', 'taqdir', 'python-dateutil', 'pandas'],
     classifiers=[
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',

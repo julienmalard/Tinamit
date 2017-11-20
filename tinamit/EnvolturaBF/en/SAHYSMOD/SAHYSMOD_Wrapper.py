@@ -1,8 +1,8 @@
 import os
 import re
+from subprocess import run
 from warnings import warn
 
-from subprocess import run
 import numpy as np
 
 from tinamit.BF import ModeloImpaciente
@@ -30,14 +30,16 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
         """
 
-        # The following attributes are specific to the SAHYSMOD wrapper
+        # The following attributes are specific to the SAHYSMOD wrapper, so edit them as you like.
 
-        # Create some useful model attributes
-        self.n_poly = None  # Number of (internal) polygons in the model
+        # Number of (internal) polygons in the model
+        self.n_poly = None
 
         # Set the path from which to read input data.
         current_dir = os.path.dirname(os.path.realpath(__file__))
         self.input = os.path.join(current_dir, 'SAHYSMOD.inp')
+
+        # Empty dictionary to store input data later on
         self.dic_input = {}
 
         # Set the working directory to write model output, and remember where the initial data is stored.
@@ -48,10 +50,16 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         args = dict(SAHYSMOD=sayhsmod_exe, input=self.input, output=self.output)
         self.command = '{SAHYSMOD} {input} {output}'.format(**args)
 
-        # Inicialise as the super class.
+        # Inicialise as the parent class.
         super().__init__()
 
+        # Set climatic variables. Actually, "variable" for the moment.
+        self.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total')
+
     def inic_vars(self):
+        """
+
+        """
 
         # DON'T change the names of the dictionary keys here. Bad things will happen if you do, because they are
         # specific to Tinamit's model wrapper class.
@@ -79,11 +87,15 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         self.tipos_vars['EgrEstacionales'] = [codes_to_vars[x] for x in seasonal_outputs]
 
     def iniciar_modelo(self, **kwargs):
-        pass  # Nothing specific to do. Variables have already been read in .inic_vars()
+        """
+        Nothing specific to do. Variables have already been read in .inic_vars()
+        """
+
+        pass
 
     def avanzar_modelo(self):
         """
-
+        This function advances the SAHYSMOD simulation.
         """
 
         # Clear any previously existing output file
@@ -103,7 +115,10 @@ class ModeloSAHYSMOD(ModeloImpaciente):
                                     'This probably means it crashed. Have fun debugging! :)')
 
     def cerrar_modelo(self):
-        pass  # Ne specific closing actions necessary.
+        """
+        No specific closing actions necessary.
+        """
+        pass
 
     def escribir_archivo_ingr(self, n_años_simul, dic_ingr):
         """

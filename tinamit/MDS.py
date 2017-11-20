@@ -43,6 +43,22 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
+    def iniciar_modelo(símismo, nombre_corrida, tiempo_final):
+        """
+        Este método se deja a las subclases de :class:`~tinamit.MDS.EnvolturaMDS` para implementar. Notar que la
+        implementación de este método debe incluir la aplicación de valores iniciales.
+
+        Ver :func:`Modelo.Modelo.iniciar_modelo` para más información.
+
+        :param nombre_corrida: El nombre de la corrida (útil para guardar datos).
+        :type nombre_corrida: str
+
+        :param tiempo_final: El tiempo final de la simulación.
+        :type tiempo_final: int
+
+        """
+        raise NotImplementedError
+
     def cambiar_vals_modelo_interno(símismo, valores):
         """
         Este método se deja a las subclases de :class:`~tinamit.MDS.EnvolturaMDS` para implementar.
@@ -77,22 +93,6 @@ class EnvolturaMDS(Modelo):
         conectados con el modelo biofísico).
 
         Ver :func:`Modelo.Modelo.leer_vals` para más información.
-
-        """
-        raise NotImplementedError
-
-    def iniciar_modelo(símismo, nombre_corrida, tiempo_final):
-        """
-        Este método se deja a las subclases de :class:`~tinamit.MDS.EnvolturaMDS` para implementar. Notar que la
-        implementación de este método debe incluir la aplicación de valores iniciales.
-
-        Ver :func:`Modelo.Modelo.iniciar_modelo` para más información.
-
-        :param nombre_corrida: El nombre de la corrida (útil para guardar datos).
-        :type nombre_corrida: str
-
-        :param tiempo_final: El tiempo final de la simulación.
-        :type tiempo_final: int
 
         """
         raise NotImplementedError
@@ -318,7 +318,7 @@ class ModeloVensim(EnvolturaMDS):
         """
 
         # En Vensim, tenemos que incializar los valores de variables constantes antes de empezar la simulación.
-        símismo.cambiar_vals({var: val for var, val in símismo.vals_exo['inic'].items()
+        símismo.cambiar_vals({var: val for var, val in símismo.vals_inic.items()
                               if var in símismo.constantes})
 
         # Establecer el nombre de la corrida.
@@ -338,7 +338,7 @@ class ModeloVensim(EnvolturaMDS):
                                mensaje_error='Error inicializando el juego VENSIM.')
 
         # Aplicar los valores iniciales de variables editables (que
-        símismo.cambiar_vals({var: val for var, val in símismo.vals_exo['inic'].items()
+        símismo.cambiar_vals({var: val for var, val in símismo.vals_inic.items()
                               if var not in símismo.constantes})
 
     def cambiar_vals_modelo_interno(símismo, valores):
@@ -558,14 +558,3 @@ def generar_mds(archivo):
         # Mensaje para modelos todavía no incluidos en Tinamit.
         raise ValueError('El tipo de modelo "{}" no se acepta como modelo DS en Tinamit al momento. Si piensas'
                          'que podrías contribuir aquí, ¡contáctenos!'.format(ext))
-
-
-def limpiar_mem(mem):
-    """
-    Limpia la memoria de un objeto ctypes.
-
-    :param mem: El objeto de memoria
-    """
-
-    tmñ = len(mem)
-    mem.value = b'\x00' * tmñ

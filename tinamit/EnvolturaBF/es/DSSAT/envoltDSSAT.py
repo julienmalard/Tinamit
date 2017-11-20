@@ -2,6 +2,7 @@ from tinamit.BF import ModeloFlexible
 
 
 class ModeloDSSAT(ModeloFlexible):
+
     def __init__(símismo, exe_DSSAT, archivo_ingr):
         super().__init__()
 
@@ -11,8 +12,9 @@ class ModeloDSSAT(ModeloFlexible):
         símismo.día_act = 0  # El día actual de la simulación
         símismo.día_princ_últ_sim = 0  # El primer día de la última llamada a DSSAT
 
-    def iniciar_modelo(símismo, **kwargs):
-        pass  # Aquí no hay nada que hacer.
+    def iniciar_modelo(símismo, tiempo_final, **kwargs):
+
+        símismo.inic_vars_clima(tiempo_final=tiempo_final)
 
     def cerrar_modelo(símismo):
         pass  # Aquí no hay nada que hacer.
@@ -26,7 +28,7 @@ class ModeloDSSAT(ModeloFlexible):
                                        'unidades': dic['unidades'],
                                        'ingreso': dic['ingr'],
                                        'egreso': dic['egr'],
-                                       'dims': (1,)  # Para hacer: dimensiones múltiples
+                                       'dims': (1,)
                                        }
 
     def obt_unidad_tiempo(símismo):
@@ -41,6 +43,12 @@ class ModeloDSSAT(ModeloFlexible):
         raise NotImplementedError
 
     def cambiar_vals_modelo_interno(símismo, valores):
+        raise NotImplementedError
+
+    def mandar_simul(símismo):
+        raise NotImplementedError
+
+    def inic_vars_clima(símismo, tiempo_final):
         raise NotImplementedError
 
 vars_DSSAT = {
