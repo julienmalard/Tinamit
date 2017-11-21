@@ -1,9 +1,22 @@
 import os
 
 from tinamit.Conectado import Conectado
-from tinamit.Geog.Geog import Lugar
+from tinamit.Geog.Geog import Lugar, Geografía
 
 use_simple = True
+
+# 0. Site geography
+
+Rechna_Doab = Geografía(nombre='Rechna Doab')
+
+base_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Shape_files')
+Rechna_Doab.agregar_regiones(os.path.join(base_dir, 'Grid_2100m_internal.shp'))
+Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'RIVR.shp'), color='agua')
+Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'CNL_Arc.shp'), color='agua', llenar=False)
+Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'Forst_polygon.shp'), color='bosque')
+# Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'Grid_2100m_external.shp'), color='#edf4da')
+Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'buildup_Polygon.shp'), color='ciudad')
+Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'road.shp'), color='calle', llenar=False)
 
 # 1. Simple runs
 runs_simple = {'CWU': {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,
@@ -78,17 +91,20 @@ else:
     runs = runs_complex
 
 # Run the model for all desired runs
-for n_run, run in runs.items():
+for name, run in runs.items():
 
-    print('Runing model %s.' % n_run)
+    print('Runing model %s.' % name)
 
     # Set appropriate switches for policy analysis
     for switch, val in run.items():
         modelo.mds.inic_val(var=switch, val=val)
 
     # Simulate the coupled model
-    modelo.simular(paso=1, tiempo_final=20, nombre_corrida=n_run)  # time step and final time are in months
+    modelo.simular(paso=1, tiempo_final=20, nombre_corrida=name)  # time step and final time are in months
 
+    # Draw maps
+    modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio=os.path.join('Maps'))
+    modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio=os.path.join('Maps'))
 
 # Climate change runs
 location = Lugar(lat=32.178207, long=73.217391, elev=217)

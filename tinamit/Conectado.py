@@ -1,11 +1,13 @@
 import threading
 from warnings import warn as avisar
 import datetime as ft
+import os
 
 from tinamit.BF import EnvolturaBF
 from tinamit.MDS import generar_mds
 from tinamit.Modelo import Modelo
 from tinamit.Unidades.Unidades import convertir
+from tinamit.Geog.Geog import Geografía
 
 from taqdir.مقامات import مقام
 
@@ -682,3 +684,53 @@ class Conectado(SuperConectado):
 
         # Llamar la función apropiada de la clase superior.
         símismo.desconectar_vars(var_fuente=var_mds, modelo_fuente='mds')
+
+    def dibujar(símismo, geog, var, corrida, directorio, i_paso=None, colores=None):
+        """
+
+        :param geog:
+        :type geog: Geografía
+        :param var:
+        :type var:
+        :param corrida:
+        :type corrida: str
+        :param directorio:
+        :type directorio:
+        :param i_paso:
+        :type i_paso: list | tuple | int
+        :param colores:
+        :type colores: tuple | list
+        """
+
+        def valid_nombre_arch(nombre):
+            for x in ['\\', '/', '\|', ':' '*', '?', '"', '>', '<']:
+                nombre = nombre.replace(x, '_')
+
+            return nombre
+
+        if os.path.split(directorio)[1] != corrida:
+            dir_corrida = corrida
+            directorio = os.path.join(directorio, dir_corrida)
+
+        if not os.path.isdir(directorio):
+            os.makedirs(directorio)
+
+        nombre_var = valid_nombre_arch(var)
+
+        bd = símismo.mds.leer_resultados(corrida, var)
+
+        if isinstance(i_paso, tuple):
+            i_paso = list(i_paso)
+        if i_paso is None:
+            i_paso = [0, bd.shape[-1]]
+        if isinstance(i_paso, int):
+            i_paso = [i_paso, i_paso+1]
+        if i_paso[0] is None:
+            i_paso[0] = 0
+        if i_paso[1] is None:
+            i_paso[1] = bd.shape[-1]
+
+        for i in range(*i_paso):
+            valores = bd[..., i]
+            nombre_archivo = os.path.join(directorio, '{}, {}'.format(nombre_var, i))
+            geog.dibujar(archivo=nombre_archivo, valores=valores, colores=colores)
