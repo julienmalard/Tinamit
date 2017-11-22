@@ -685,7 +685,7 @@ class Conectado(SuperConectado):
         # Llamar la función apropiada de la clase superior.
         símismo.desconectar_vars(var_fuente=var_mds, modelo_fuente='mds')
 
-    def dibujar(símismo, geog, var, corrida, directorio, i_paso=None, colores=None):
+    def dibujar(símismo, geog, var, corrida, directorio, i_paso=None, colores=None, escala=None):
         """
 
         :param geog:
@@ -700,6 +700,8 @@ class Conectado(SuperConectado):
         :type i_paso: list | tuple | int
         :param colores:
         :type colores: tuple | list
+        :param escala:
+        :type escala: list | np.ndarray
         """
 
         def valid_nombre_arch(nombre):
@@ -730,7 +732,10 @@ class Conectado(SuperConectado):
         if i_paso[1] is None:
             i_paso[1] = bd.shape[-1]
 
+        unid = símismo.mds.variables[var]['unidades']
+
         for i in range(*i_paso):
             valores = bd[..., i]
             nombre_archivo = os.path.join(directorio, '{}, {}'.format(nombre_var, i))
-            geog.dibujar(archivo=nombre_archivo, valores=valores, colores=colores)
+            geog.dibujar(archivo=nombre_archivo, valores=valores, título=var, unidades=unid,
+                         colores=colores, escala=escala)

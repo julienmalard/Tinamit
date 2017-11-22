@@ -6,15 +6,15 @@ from tinamit.Geog.Geog import Lugar, Geografía
 use_simple = True
 
 # 0. Site geography
-
 Rechna_Doab = Geografía(nombre='Rechna Doab')
 
 base_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Shape_files')
-Rechna_Doab.agregar_regiones(os.path.join(base_dir, 'Grid_2100m_internal.shp'))
+Rechna_Doab.agregar_regiones(os.path.join(base_dir, 'Internal_Polygon.shp'), col_orden='Polygon_ID')
+
+Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'External_Polygon.shp'), color='#edf4da')
 Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'RIVR.shp'), color='agua')
 Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'CNL_Arc.shp'), color='agua', llenar=False)
 Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'Forst_polygon.shp'), color='bosque')
-# Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'Grid_2100m_external.shp'), color='#edf4da')
 Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'buildup_Polygon.shp'), color='ciudad')
 Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'road.shp'), color='calle', llenar=False)
 
@@ -93,7 +93,7 @@ else:
 # Run the model for all desired runs
 for name, run in runs.items():
 
-    print('Runing model %s.' % name)
+    print('Runing model {}.'.format(name))
 
     # Set appropriate switches for policy analysis
     for switch, val in run.items():
@@ -111,5 +111,6 @@ location = Lugar(lat=32.178207, long=73.217391, elev=217)
 location.observar('مشاہدہ بارش.csv', mes='مہینہ', año='سال',
                   datos={'Precipitación': 'بارش (میٹر)'})
 for rcp in [2.6, 4.5, 6.0, 8.5]:
+    print('Runing with rcp {}'.format(rcp))
     modelo.simular(paso=1, tiempo_final=50, fecha_inic=1990, lugar=location, tcr=rcp)
 
