@@ -114,13 +114,15 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def leer_resultados(símismo, corrida, var):
+    def leer_resultados_mds(símismo, corrida, var):
         """
 
         :param corrida:
         :type corrida: str
         :param var:
         :type var: str
+        :return:
+        :rtype: np.ndarray
         """
         if var not in símismo.variables:
             raise ValueError('El variable "{}" no existe.'.format(var))

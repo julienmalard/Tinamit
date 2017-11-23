@@ -106,6 +106,7 @@ for name, run in runs.items():
     modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio=os.path.join('Maps'))
     modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio=os.path.join('Maps'))
 
+raise SystemExit(0)
 # Climate change runs
 location = Lugar(lat=32.178207, long=73.217391, elev=217)
 location.observar('مشاہدہ بارش.csv', mes='مہینہ', año='سال',
