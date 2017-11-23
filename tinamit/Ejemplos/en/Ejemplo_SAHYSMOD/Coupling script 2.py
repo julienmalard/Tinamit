@@ -12,11 +12,11 @@ base_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Shape_file
 Rechna_Doab.agregar_regiones(os.path.join(base_dir, 'Internal_Polygon.shp'), col_orden='Polygon_ID')
 
 Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'External_Polygon.shp'), color='#edf4da')
-Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'RIVR.shp'), color='agua')
-Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'CNL_Arc.shp'), color='agua', llenar=False)
-Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'Forst_polygon.shp'), color='bosque')
-Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'buildup_Polygon.shp'), color='ciudad')
-Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'road.shp'), color='calle', llenar=False)
+Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'RIVR.shp'), tipo='agua')
+Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'CNL_Arc.shp'), tipo='agua', llenar=False)
+Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'Forst_polygon.shp'), tipo='bosque')
+Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'buildup_Polygon.shp'), tipo='ciudad')
+Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'road.shp'), tipo='calle')
 
 # 1. Simple runs
 runs_simple = {'CWU': {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,
@@ -103,15 +103,30 @@ for name, run in runs.items():
     modelo.simular(paso=1, tiempo_final=20, nombre_corrida=name)  # time step and final time are in months
 
     # Draw maps
-    modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio=os.path.join('Maps'))
-    modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio=os.path.join('Maps'))
+    modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
+    modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
 
-raise SystemExit(0)
+
 # Climate change runs
 location = Lugar(lat=32.178207, long=73.217391, elev=217)
 location.observar('مشاہدہ بارش.csv', mes='مہینہ', año='سال',
                   datos={'Precipitación': 'بارش (میٹر)'})
 for rcp in [2.6, 4.5, 6.0, 8.5]:
-    print('Runing with rcp {}'.format(rcp))
-    modelo.simular(paso=1, tiempo_final=50, fecha_inic=1990, lugar=location, tcr=rcp)
+    print('Runing with rcp {}\n************'.format(rcp))
+
+    for name, run in runs.items():
+
+        print('\tRuning model {}.'.format(name))
+
+        # Set appropriate switches for policy analysis
+        for switch, val in run.items():
+            modelo.mds.inic_val(var=switch, val=val)
+
+        modelo.simular(paso=1, tiempo_final=50, fecha_inic=1990, lugar=location, tcr=rcp,
+                       nombre_corrida='{}, {}'.format(rcp, name))
+
+        modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit',
+                       directorio=os.path.join('Maps', str(rcp)))
+        modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA',
+                       directorio=os.path.join('Maps', str(rcp)))
 
