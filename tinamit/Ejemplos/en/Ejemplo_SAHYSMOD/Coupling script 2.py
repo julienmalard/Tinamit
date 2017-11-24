@@ -14,9 +14,9 @@ Rechna_Doab.agregar_regiones(os.path.join(base_dir, 'Internal_Polygon.shp'), col
 Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'External_Polygon.shp'), color='#edf4da')
 Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'RIVR.shp'), color='agua')
 Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'CNL_Arc.shp'), color='agua', llenar=False)
-Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'Forst_polygon.shp'), color='bosque')
+#Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'Forst_polygon.shp'), color='bosque')
 Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'buildup_Polygon.shp'), color='ciudad')
-Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'road.shp'), color='calle', llenar=False)
+#Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'road.shp'), color='calle', llenar=False)
 
 # 1. Simple runs
 runs_simple = {'CWU': {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,
@@ -80,7 +80,9 @@ modelo.conectar(var_mds='Lc', mds_fuente=True, var_bf='Lc - Canal percolation')
 modelo.conectar(var_mds='Ia CropA', mds_fuente=True, var_bf='IaA - Crop A field irrigation')
 modelo.conectar(var_mds='Ia CropB', mds_fuente=True, var_bf='IaB - Crop B field irrigation')
 modelo.conectar(var_mds='Gw', mds_fuente=True, var_bf='Gw - Groundwater extraction')
-modelo.conectar(var_mds='Irrigation efficiency', mds_fuente=True, var_bf='FsA - Water storage efficiency crop A')
+modelo.conectar(var_mds='FsA Irrigation eff Crop A', mds_fuente=True, var_bf='FsA - Water storage efficiency crop A')
+modelo.conectar(var_mds='FsB Irrigation eff Crop B', mds_fuente=True, var_bf='FsB - Water storage efficiency crop B')
+modelo.conectar(var_mds='FsU irrigation eff Crop U', mds_fuente=True, var_bf='FsU - Water storage efficiency non-irrigated')
 modelo.conectar(var_mds='Fw', mds_fuente=True, var_bf='Fw - Fraction well water to irrigation')
 
 
@@ -106,6 +108,7 @@ for name, run in runs.items():
     modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio=os.path.join('Maps'))
     modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio=os.path.join('Maps'))
 
+raise SystemExit(0)
 # Climate change runs
 location = Lugar(lat=32.178207, long=73.217391, elev=217)
 location.observar('مشاہدہ بارش.csv', mes='مہینہ', año='سال',
