@@ -52,6 +52,7 @@ class EnvolturaBF(Modelo):
 
         símismo.vars_entrando = símismo.modelo.vars_entrando
         símismo.vars_saliendo = símismo.modelo.vars_saliendo
+        símismo.vars_clima = símismo.modelo.vars_clima
 
     def obt_unidad_tiempo(símismo):
         """
@@ -85,7 +86,7 @@ class EnvolturaBF(Modelo):
 
         """
 
-        símismo.modelo.cambiar_vals(valores=valores)
+        símismo.modelo.cambiar_vals_modelo_interno(valores=valores)
 
     def incrementar(símismo, paso):
         """
@@ -363,10 +364,6 @@ class ModeloImpaciente(ModeloBF):
         m = símismo.mes
         e = símismo.estación
 
-        # Guardar la estación y el mes por la próxima vez.
-        símismo.mes = m
-        símismo.estación = e
-
         # Si es el primer mes de la estación, hay que cambiar los variables
         if m == 0:
             # Apuntar el diccionario interno de los valores al valor de esta estación
@@ -400,6 +397,10 @@ class ModeloImpaciente(ModeloBF):
             m -= int(símismo.dur_estaciones[e])
             e += 1
             e %= símismo.n_estaciones  # s empieza a contar en 0 (convención de Python)
+
+        # Guardar la estación y el mes por la próxima vez.
+        símismo.mes = m
+        símismo.estación = e
 
     def leer_vals(símismo):
         """

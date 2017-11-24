@@ -3,6 +3,8 @@ from warnings import warn as avisar
 import datetime as ft
 import os
 
+import numpy as np
+
 from tinamit.BF import EnvolturaBF
 from tinamit.MDS import generar_mds
 from tinamit.Modelo import Modelo
@@ -719,7 +721,7 @@ class Conectado(SuperConectado):
 
         nombre_var = valid_nombre_arch(var)
 
-        bd = símismo.mds.leer_resultados(corrida, var)
+        bd = símismo.mds.leer_resultados_mds(corrida, var)
 
         if isinstance(i_paso, tuple):
             i_paso = list(i_paso)
@@ -733,6 +735,8 @@ class Conectado(SuperConectado):
             i_paso[1] = bd.shape[-1]
 
         unid = símismo.mds.variables[var]['unidades']
+        if escala is None:
+            escala = np.min(bd), np.max(bd)
 
         for i in range(*i_paso):
             valores = bd[..., i]

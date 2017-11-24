@@ -84,13 +84,15 @@ class Geografía(object):
         símismo.regiones = {}
         símismo.objetos = {}
 
-    def agregar_objeto(símismo, archivo, nombre=None, color='#000000', llenar=True):
+    def agregar_objeto(símismo, archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=True):
         if nombre is None:
             nombre = os.path.splitext(os.path.split(archivo)[1])[0]
 
         símismo.objetos[nombre] = {'obj': sf.Reader(archivo),
                                    'color': color,
-                                   'llenar': llenar}
+                                   'llenar': llenar,
+                                   'alpha': alpha,
+                                   'tipo': tipo}
 
     def agregar_regiones(símismo, archivo, col_orden=None):
 
@@ -174,29 +176,27 @@ class Geografía(object):
                 dib.colorbar(cpick)
 
         for nombre, d_obj in símismo.objetos.items():
+
+            tipo = d_obj['tipo']
+
+            for a in ['color', 'llenar', 'alpha']:
+                if d_obj[a] is None:
+                    d_obj[a] = formatos_auto(a, tipo)
+
             color = d_obj['color']
             llenar = d_obj['llenar']
-            if color == 'agua':
-                color = '#A5BFDD'
-            elif color == 'calle':
-                color = '#7B7B7B'
-            elif color == 'ciudad':
-                color = '#FB9A99'
-            elif color == 'bosque':
-                color = '#33A02C'
-            elif not re.match('#?[0-9A-Fa-f]{6}$', color):
-                color = '#000000'
+            alpha = d_obj['alpha']
 
-            dibujar_shp(frm=d_obj['obj'], colores=color, llenar=llenar)
+            dibujar_shp(frm=d_obj['obj'], colores=color, alpha=alpha, llenar=llenar)
 
         if título is not None:
             dib.title(título)
 
         dib.savefig(archivo, dpi=500)
-        dib.clf()
+        dib.close()
 
 
-def dibujar_shp(frm, colores, orden=None, llenar=True):
+def dibujar_shp(frm, colores, orden=None, alpha=1.0, llenar=True):
     """
 
     Basado en código de Chris Halvin: https://github.com/chrishavlin/learning_shapefiles/tree/master/src
@@ -206,6 +206,12 @@ def dibujar_shp(frm, colores, orden=None, llenar=True):
 
     :param colores:
     :type colores: str | list[str] | np.ndarray
+
+    :param orden:
+    :type orden: np.ndarray | list
+
+    :param alpha:
+    :type alpha: float | int
 
     :param llenar:
     :type llenar: bool
@@ -235,9 +241,9 @@ def dibujar_shp(frm, colores, orden=None, llenar=True):
                 x_lon[ip] = forma.points[ip][0]
                 y_lat[ip] = forma.points[ip][1]
             if llenar:
-                dib.fill(x_lon, y_lat, color=col)
+                dib.fill(x_lon, y_lat, color=col, alpha=alpha)
             else:
-                dib.plot(x_lon, y_lat, color=col)
+                dib.plot(x_lon, y_lat, color=col, alpha=alpha)
 
         else:
             for ip in range(n_partes):  # Para cada parte del imagen
@@ -255,50 +261,9 @@ def dibujar_shp(frm, colores, orden=None, llenar=True):
                     y_lat[ip] = seg[ip][1]
 
                 if llenar:
-                    dib.fill(x_lon, y_lat, color=col)
+                    dib.fill(x_lon, y_lat, color=col, alpha=alpha)
                 else:
-                    dib.plot(x_lon, y_lat, color=col)
-
-
-def inter_color(colores, p, tipo='hex'):
-    """
-
-    :param colores:
-    :type colores: list[str, str]
-    :param p:
-    :type p: float | int
-    :param tipo:
-    :type tipo: str
-    :return:
-    :rtype: str
-    """
-    colores = colores.copy()
-
-    for i, c in enumerate(colores):
-        if isinstance(c, str):
-            colores[i] = tuple(int(c.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4))
-
-    def interpol(val1, val2, u):
-        return int(val1 + (val2 - val1)*u)
-
-    def interpol_col(col1, col2, u):
-        return tuple([interpol(col1[n], col2[n], u) for n in range(3)])
-
-    pos = p * (len(colores)-1)
-    inic = max(0, int(pos) - 1)
-    fin = inic + 1
-    if fin >= len(colores):
-        fin = len(colores) - 1
-    col = interpol_col(colores[inic], colores[fin], u=pos)
-
-    if tipo == 'rgb':
-        col_final = col
-    elif tipo == 'hex':
-        col_final = '#%02x%02x%02x' % col
-    else:
-        raise KeyError
-
-    return col_final
+                    dib.plot(x_lon, y_lat, color=col, alpha=alpha)
 
 
 def hex_a_rva(hex):
@@ -319,3 +284,39 @@ def gen_d_mapacolores(colores):
                  range(0, n_colores))}
 
     return dic_c
+
+
+def formatos_auto(a, tipo):
+    """
+
+    :param a:
+    :type a: str
+    :param tipo:
+    :type tipo: str
+    :return:
+    :rtype: str | bool | float
+    """
+
+    d_formatos = {
+        'agua': {'color': '#A5BFDD',
+                 'llenar': True,
+                 'alpha': 0.5},
+        'calle': {'color': '#7B7B7B',
+                  'llenar': False,
+                  'alpha': 1.0},
+        'ciudad': {'color': '#FB9A99',
+                   'llenar': True,
+                   'alpha': 1.0},
+        'bosque': {'color': '#33A02C',
+                   'llenar': True,
+                   'alpha': 0.7},
+        'otro': {'color': '#FFECB3',
+                 'llenar': False,
+                 'alpha': 1.0}
+    }
+
+    if tipo is None or tipo not in d_formatos:
+        tipo = 'otro'
+
+    return d_formatos[tipo.lower()][a.lower()]
+
