@@ -1,7 +1,6 @@
 import datetime as ft
 import os
 import re
-from warnings import warn as avisar
 
 import matplotlib.pyplot as dib
 from matplotlib import cm
@@ -11,7 +10,8 @@ import numpy as np
 import pandas as pd
 import shapefile as sf
 
-from taqdir.مقامات import مقام
+from taqdir.مقام import مقام
+from taqdir.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
 
 # Ofrecemos la oportunidad de utilizar تقدیر, taqdir, en español
 conv_vars = {
@@ -27,15 +27,34 @@ conv_vars = {
 class Lugar(مقام):
     def __init__(símismo, lat, long, elev):
 
-        super().__init__(lat=lat, long=long, elev=elev)
+        super().__init__(چوڑائی=lat, طول=long, بلندی=elev)
 
-    def observar(símismo, archivo, datos, fecha=None, mes=None, año=None):
-        super().cargar_datos(archivo=archivo, cols_datos=datos, fecha=fecha, mes=mes, año=año)
+    def observar_diarios(símismo, archivo, cols_datos, fecha):
 
-    def prep_datos(símismo, primer_año, último_año, rcp, n_rep=1, diario=True, mensual=True,
-                   postdict=None, predict=None, regenerar=True):
-        super().prep_datos(primer_año, último_año, rcp, n_rep=1, diario=True, mensual=True,
-                           postdict=None, predict=None, regenerar=True)
+        d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
+
+        obs = دن_مشا(archivo=archivo, c_fecha=fecha, cols_datos=d_cols)
+
+        símismo.مشاہدہ_کرنا(مشاہد=obs)
+
+    def observar_mensuales(símismo, archivo, cols_datos, meses, años):
+
+        d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
+
+        obs = مہنہ_مشا(archivo=archivo, cols_datos=d_cols, c_meses=meses, c_años=años)
+
+        símismo.مشاہدہ_کرنا(obs)
+
+    def observar_anuales(símismo, archivo, cols_datos, años):
+
+        d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
+
+        obs = سال_مشا(archivo=archivo, cols_datos=d_cols, c_años=años)
+        símismo.مشاہدہ_کرنا(obs)
+
+    def prep_datos(símismo, fecha_inic, fecha_final, rcp, prefs=None, lím_prefs=False, regenerar=True):
+        super().اعداد_تیاری(fecha_inic, fecha_final, rcp, n_rep=1,
+                            ترجیحات=prefs, lím_prefs=lím_prefs, regenerar=regenerar)
 
     def comb_datos(símismo, vars_clima, combin, f_inic, f_final):
         """
@@ -52,8 +71,8 @@ class Lugar(مقام):
         :rtype: dict[np.ndarray]
         """
 
-        bd = símismo.datos['diario']  # type: pd.DataFrame
-        datos_interés = bd[vars_clima][(bd['دن'] >= f_inic) & (bd['دن'] <= f_final)]
+        bd = símismo.اعداد_دن  # type: pd.DataFrame
+        datos_interés = bd.loc[f_inic:f_final]
 
         resultados = {}
         for v, c in zip(vars_clima, combin):
@@ -84,7 +103,7 @@ class Geografía(object):
         símismo.regiones = {}
         símismo.objetos = {}
 
-    def agregar_objeto(símismo, archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=True):
+    def agregar_objeto(símismo, archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=None):
         if nombre is None:
             nombre = os.path.splitext(os.path.split(archivo)[1])[0]
 
@@ -104,7 +123,7 @@ class Geografía(object):
             try:
                 orden = np.array([x.record[nombres_attr.index(col_orden)] for x in af.shapeRecords()])
             except ValueError:
-                raise ValueError('La columna "{}" no existe en la base de datos.'.format(col_orden))
+                raise ValueError('La columna "{}" no existe en la base de اعداد_دن.'.format(col_orden))
 
             orden -= np.min(orden)
 
@@ -151,7 +170,7 @@ class Geografía(object):
 
             n_regiones = len(regiones.shapes())
             if len(valores) != n_regiones:
-                raise ValueError ('El número de regiones no corresponde con el tamñao de los valores.')
+                raise ValueError('El número de regiones no corresponde con el tamñao de los valores.')
 
             if escala is None:
                 escala = (np.min(valores), np.max(valores))
@@ -225,7 +244,7 @@ def dibujar_shp(frm, colores, orden=None, alpha=1.0, llenar=True):
         regiones = frm.shapes()
 
     if isinstance(colores, str) or isinstance(colores, tuple):
-        colores = [colores]*n_formas
+        colores = [colores] * n_formas
     else:
         if len(colores) != n_formas:
             raise ValueError
@@ -256,9 +275,9 @@ def dibujar_shp(frm, colores, orden=None, alpha=1.0, llenar=True):
                 seg = forma.points[i0:i1 + 1]
                 x_lon = np.zeros((len(seg), 1))
                 y_lat = np.zeros((len(seg), 1))
-                for ip in range(len(seg)):
-                    x_lon[ip] = seg[ip][0]
-                    y_lat[ip] = seg[ip][1]
+                for i in range(len(seg)):
+                    x_lon[i] = seg[i][0]
+                    y_lat[i] = seg[i][1]
 
                 if llenar:
                     dib.fill(x_lon, y_lat, color=col, alpha=alpha)
@@ -266,8 +285,8 @@ def dibujar_shp(frm, colores, orden=None, alpha=1.0, llenar=True):
                     dib.plot(x_lon, y_lat, color=col, alpha=alpha)
 
 
-def hex_a_rva(hex):
-    return tuple(int(hex.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4))
+def hex_a_rva(hx):
+    return tuple(int(hx.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4))
 
 
 def gen_d_mapacolores(colores):
@@ -319,4 +338,3 @@ def formatos_auto(a, tipo):
         tipo = 'otro'
 
     return d_formatos[tipo.lower()][a.lower()]
-

@@ -58,7 +58,7 @@ class EnvolturaBF(Modelo):
         """
         Esta función debe devolver la unidad de tiempo empleada por el modelo.
 
-        :return: La unidad de tiempo (p. ejemplo, 'meses', 'días', etc.
+        :return: La unidad de tiempo (p. ejemplo, 'meses', 'مہینہ', etc.
         :rtype: str
 
         """
@@ -226,7 +226,7 @@ class ModeloImpaciente(ModeloBF):
     año, pero ofrece detalles al nivel estacional (de 1-12 meses) que pueden ser muy diferentes para distintas
     estaciones. Los llamo "impacientes" porque no los puedes hacer correr por un mes, sin que el modelo simule
     el año entero, sino más.
-    Esta envoltura te permite crear envolturas con pasos mensuales para este tipo de modelo anual,　pero sin　el
+    Esta envoltura te permite crear envolturas con pasos اعداد_مہینہ para este tipo de modelo anual,　pero sin　el
     dolor de cabeza.
     """
 
@@ -236,7 +236,7 @@ class ModeloImpaciente(ModeloBF):
         subclases de esta clase.
         """
 
-        # Número y duración de las estaciones del año. Para modelos puramente mensuales, puedes utilizar 12 y 1.
+        # Número y duración de las estaciones del año. Para modelos puramente اعداد_مہینہ, puedes utilizar 12 y 1.
         # Se deben modificar, si necesario, en la función leer_archivo_vals_inic() de la subclase.
         símismo.n_estaciones = 12
         símismo.dur_estaciones = [1] * 12
@@ -272,7 +272,7 @@ class ModeloImpaciente(ModeloBF):
 
     def cambiar_vals_modelo_interno(símismo, valores):
         """
-        Solamente nos tenemos que asegurar que los datos internos (para variables estacionales) queda consistente
+        Solamente nos tenemos que asegurar que los اعداد_دن internos (para variables estacionales) queda consistente
         con los nuevos valores cambiadas por la conexión con el modelo externo. La función `.avanzar_modelo()` debe
         utilizar este diccionario interno para mandar los nuevos valores a la próxima simulación.
 
@@ -289,7 +289,7 @@ class ModeloImpaciente(ModeloBF):
             # Para cada valor para cambiar...
 
             if var in símismo.datos_internos:
-                # Si el variable queda presente en los datos internos...
+                # Si el variable queda presente en los اعداد_دن internos...
 
                 # Cambiar el valor del diccionario interno para la estación actual.
                 símismo.datos_internos[var][símismo.estación] = val
@@ -310,7 +310,7 @@ class ModeloImpaciente(ModeloBF):
         if n_paso > 12:
             avisar('El paso es superior a 1 año (12 meses). Las predicciones climáticas perderán su precisión.')
 
-        # Solamante hay que cambiar los datos si es el principio de un nuevo año.
+        # Solamante hay que cambiar los اعداد_دن si es el principio de un nuevo año.
         if símismo.mes == 0 and símismo.estación == 0:
 
             # La lista de variables climáticos
@@ -329,9 +329,9 @@ class ModeloImpaciente(ModeloBF):
                 # La fecha final
                 f_final = f_inic + deltarelativo(months=+dur)
 
-                # Calcular los datos
-                datos = símismo.datos_clima.comb_datos(vars_clima=nombres_extrn, combin=combins,
-                                                       f_inic=f_inic, f_final=f_final)
+                # Calcular los اعداد_دن
+                datos = símismo.lugar.comb_datos(vars_clima=nombres_extrn, combin=combins,
+                                                 f_inic=f_inic, f_final=f_final)
 
                 # Aplicar los valores de variables calculados
                 for i, var in enumerate(vars_clima):
@@ -377,7 +377,7 @@ class ModeloImpaciente(ModeloBF):
             # Si es la primera estación del año, también hay que correr una simulación del modelo externo.
             if e == 0:
 
-                # El número de años para simular
+                # El número de سال para simular
                 a = mat.ceil(paso / 12)  # type: int
 
                 # Escribir el archivo de ingresos
@@ -460,7 +460,7 @@ class ModeloImpaciente(ModeloBF):
         """
         Esta función debe avanzar el modelo de `n_paso_mín` de paso mínimos de simulación. Por ejemplo, si tienes
         un modelo que simula con un paso mínimo de 1 año pero que quieres conectar con paso mensual, esta función
-        debe avanzar el modelo de `n_paso_mín` **años**.
+        debe avanzar el modelo de `n_paso_mín` **سال**.
 
         """
         raise NotImplementedError

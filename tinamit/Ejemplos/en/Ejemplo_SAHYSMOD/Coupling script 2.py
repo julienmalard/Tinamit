@@ -90,27 +90,27 @@ if use_simple:
 else:
     runs = runs_complex
 
-# Run the model for all desired runs
-for name, run in runs.items():
-
-    print('Runing model {}.'.format(name))
-
-    # Set appropriate switches for policy analysis
-    for switch, val in run.items():
-        modelo.mds.inic_val(var=switch, val=val)
-
-    # Simulate the coupled model
-    modelo.simular(paso=1, tiempo_final=20, nombre_corrida=name)  # time step and final time are in months
-
-    # Draw maps
-    modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
-    modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
+# # Run the model for all desired runs
+# for name, run in runs.items():
+#
+#     print('Runing model {}.'.format(name))
+#
+#     # Set appropriate switches for policy analysis
+#     for switch, val in run.items():
+#         modelo.mds.inic_val(var=switch, val=val)
+#
+#     # Simulate the coupled model
+#     modelo.simular(paso=1, tiempo_final=20, nombre_corrida=name)  # time step and final time are in months
+#
+#     # Draw maps
+#     modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
+#     modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
 
 
 # Climate change runs
 location = Lugar(lat=32.178207, long=73.217391, elev=217)
-location.observar('مشاہدہ بارش.csv', mes='مہینہ', año='سال',
-                  datos={'Precipitación': 'بارش (میٹر)'})
+location.observar_mensuales('مشاہدہ بارش.csv', meses='مہینہ', años='سال',
+                          cols_datos={'Precipitación': 'بارش (میٹر)'})
 for rcp in [2.6, 4.5, 6.0, 8.5]:
     print('Runing with rcp {}\n************'.format(rcp))
 
@@ -122,7 +122,7 @@ for rcp in [2.6, 4.5, 6.0, 8.5]:
         for switch, val in run.items():
             modelo.mds.inic_val(var=switch, val=val)
 
-        modelo.simular(paso=1, tiempo_final=50, fecha_inic=1990, lugar=location, tcr=rcp,
+        modelo.simular(paso=1, tiempo_final=50*2, fecha_inic=1990, lugar=location, tcr=rcp, clima=True, recalc=False,
                        nombre_corrida='{}, {}'.format(rcp, name))
 
         modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit',

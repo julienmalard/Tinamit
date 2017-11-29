@@ -1,9 +1,10 @@
-import threading
-from warnings import warn as avisar
 import datetime as ft
 import os
+import threading
+from warnings import warn as avisar
 
 import numpy as np
+from dateutil.relativedelta import relativedelta
 
 from tinamit.BF import EnvolturaBF
 from tinamit.MDS import generar_mds
@@ -11,7 +12,7 @@ from tinamit.Modelo import Modelo
 from tinamit.Unidades.Unidades import convertir
 from tinamit.Geog.Geog import Geografía
 
-from taqdir.مقامات import مقام
+from taqdir.مقام import مقام
 
 
 class SuperConectado(Modelo):
@@ -97,7 +98,7 @@ class SuperConectado(Modelo):
         Si los dos submodelos tienen las mismas unidades, esta será la unidad del modelo conectado también.
         Si los dos tienen unidades distintas, intentaremos encontrar la conversión entre los dos y después se
         considerará como unidad de tiempo de base la más grande de los dos. Por ejemplo, si se conecta un modelo
-        con una unidad de tiempo de meses con un modelo de unidad de año, se aplicará una unidad de tiempo de años
+        con una unidad de tiempo de meses con un modelo de unidad de año, se aplicará una unidad de tiempo de سال
         al modelo conectado.
 
         Después se actualiza el variable símismo.conv_tiempo para guardar en memoria la conversión necesaria entre
@@ -228,13 +229,13 @@ class SuperConectado(Modelo):
             # Ahora, pedimos a los submodelos de hacer los cambios en los modelos externos, si hay.
             símismo.modelos[nombre_mod].cambiar_vals(valores={var: val})
 
-    def _conectar_clima(símismo, n_pasos, clima, fecha_inic, tcr):
+    def _conectar_clima(símismo, n_pasos, lugar, fecha_inic, tcr, recalc):
         """
 
         :param  n_pasos:
         :type n_pasos: int
-        :param clima:
-        :type clima: مقام
+        :param lugar:
+        :type lugar: مقام
         :param fecha_inic:
         :type fecha_inic: ft.date | ft.datetime | str | int
         :param tcr:
@@ -242,32 +243,50 @@ class SuperConectado(Modelo):
 
         """
 
-        # Formatear la fecha inicial
-        if isinstance(fecha_inic, ft.date):
-            pass
-        elif isinstance(fecha_inic, ft.datetime):
-            fecha_inic = fecha_inic.date()
-        elif isinstance(fecha_inic, int):
-            año = fecha_inic
-            día = mes = 1
-            fecha_inic = ft.date(year=año, month=mes, day=día)
-        elif isinstance(fecha_inic, str):
-            try:
-                fecha_inic = ft.datetime.strptime(fecha_inic, '%d/%m/%Y')
-            except ValueError:
-                raise ValueError('La fecha inicial debe ser en formato "día/mes/año", por ejemplo "24/12/2017".')
+
+
+        # Conectar el lugar
+        símismo.lugar = lugar
+        for m in símismo.modelos.values():
+            m.lugar = lugar
 
         # Calcular la fecha final
-        n_días = convertir(de=símismo.unidad_tiempo, a='días', val=n_pasos)
-        fecha_final = fecha_inic + ft.timedelta(n_días)
+        fecha_final = None
+        n_días = None
+        try:
+            n_días = convertir(de=símismo.unidad_tiempo, a='días', val=n_pasos)
+        except ValueError:
+            for m in símismo.modelos.values():
+                try:
+                    n_días = convertir(de=m.unidad_tiempo, a='días', val=símismo.conv_tiempo[m.nombre]*n_pasos)
+                    continue
+                except ValueError:
+                    pass
 
-        # Obtener los datos de clima
-        datos = clima.prep_datos(primer_año=fecha_inic.year, último_año=fecha_final.year, rcp=tcr,
-                                 n_rep=1, diario=True, mensual=True, postdict=None, predict=None, regenerar=True)
+        if n_días is not None:
+            fecha_final = fecha_inic + ft.timedelta(int(n_días))
 
-        símismo.datos_clima = NotImplemented
+        else:
+            n_meses = None
+            try:
+                n_meses = convertir(de=símismo.unidad_tiempo, a='meses', val=n_pasos)
+            except ValueError:
+                for m in símismo.modelos.values():
+                    try:
+                        n_meses = convertir(de=m.unidad_tiempo, a='meses', val=símismo.conv_tiempo[m.nombre]*n_pasos)
+                        continue
+                    except ValueError:
+                        pass
+            if n_meses is not None:
+                fecha_final = fecha_inic + relativedelta(months=int(n_meses) + 1)
 
-    def act_vals_clima(símismo, paso, f):
+        if fecha_final is None:
+            raise ValueError
+
+        # Obtener los اعداد_دن de lugar
+        lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, rcp=tcr, regenerar=recalc)
+
+    def act_vals_clima(símismo, n_paso, f):
         """
 
         :param paso:
@@ -278,10 +297,10 @@ class SuperConectado(Modelo):
         """
 
         for nombre, mod in símismo.modelos.items():
-            mod.act_vals_clima(paso=símismo.conv_tiempo[nombre] * paso, f=f)
+            mod.act_vals_clima(n_paso=símismo.conv_tiempo[nombre] * n_paso, f=f)
 
     def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None, tcr=None,
-                clima=False):
+                recalc=True, clima=False):
         """
         Simula el modelo :class:`~tinamit.Conectado.SuperConectado`.
 
@@ -315,9 +334,24 @@ class SuperConectado(Modelo):
             else:
                 if fecha_inic is None:
                     raise ValueError('Hay que especificar la fecha inicial para simulaciones de clima')
+                elif isinstance(fecha_inic, ft.date):
+                    # Formatear la fecha inicial
+                    pass
+                elif isinstance(fecha_inic, ft.datetime):
+                    fecha_inic = fecha_inic.date()
+                elif isinstance(fecha_inic, int):
+                    año = fecha_inic
+                    día = mes = 1
+                    fecha_inic = ft.date(year=año, month=mes, day=día)
+                elif isinstance(fecha_inic, str):
+                    try:
+                        fecha_inic = ft.datetime.strptime(fecha_inic, '%d/%m/%Y')
+                    except ValueError:
+                        raise ValueError('La fecha inicial debe ser en formato "día/mes/año", por ejemplo "24/12/2017".')
+
                 if tcr is None:
                     tcr = 8.5
-                símismo._conectar_clima(n_pasos=n_pasos, clima=lugar, fecha_inic=fecha_inic, tcr=tcr)
+                símismo._conectar_clima(n_pasos=n_pasos, lugar=lugar, fecha_inic=fecha_inic, tcr=tcr, recalc=recalc)
 
         # Iniciamos el modelo.
         símismo.iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
@@ -333,7 +367,7 @@ class SuperConectado(Modelo):
 
             # Actualizar variables de clima, si necesario
             if clima:
-                símismo.act_vals_clima(paso=paso, f=fecha_act)
+                símismo.act_vals_clima(n_paso=paso, f=fecha_act)
                 fecha_act += ft.timedelta(paso)  # Avanzar la fecha
 
             # Incrementar el modelo

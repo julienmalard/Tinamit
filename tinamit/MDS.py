@@ -56,7 +56,7 @@ class EnvolturaMDS(Modelo):
 
         Ver :func:`Modelo.Modelo.iniciar_modelo` para más información.
 
-        :param nombre_corrida: El nombre de la corrida (útil para guardar datos).
+        :param nombre_corrida: El nombre de la corrida (útil para guardar اعداد_دن).
         :type nombre_corrida: str
 
         :param tiempo_final: El tiempo final de la simulación.
@@ -625,6 +625,6 @@ def leer_egr_mds(archivo, var):
             datos.append(f[1:])
 
     else:
-        raise ValueError('El formato de datos "{}" no se puede leer al momento.'.format(ext))
+        raise ValueError('El formato de اعداد_دن "{}" no se puede leer al momento.'.format(ext))
 
     return np.array(datos, dtype=float)

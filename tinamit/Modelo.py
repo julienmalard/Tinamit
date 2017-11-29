@@ -46,7 +46,7 @@ class Modelo(object):
         # Es muy útil para modelos cuyos variables no podemos cambiar antes de empezar una simulación (como VENSIM).
         símismo.vals_inic = {}
         símismo.vars_clima = {}  # Formato: var_intern1: {'nombre_extrn': nombre_oficial, 'combin': 'prom' | 'total'}
-        símismo.datos_clima = None  # type: Geog.Lugar
+        símismo.lugar = None  # type: Geog.Lugar
 
         # Listas de los nombres de los variables que sirven de conexión con otro modelo.
         símismo.vars_saliendo = []
@@ -69,7 +69,7 @@ class Modelo(object):
         """
         Esta función debe devolver la unidad de tiempo empleada por el modelo.
 
-        :return: La unidad de tiempo (p. ejemplo, 'meses', 'días', etc.
+        :return: La unidad de tiempo (p. ejemplo, 'meses', 'مہینہ', etc.
         :rtype: str
 
         """
@@ -249,15 +249,15 @@ class Modelo(object):
             except ValueError:
                 raise ValueError('La unidad de tiempo "{}" no se pudo convertir a meses.')
 
-            f_final = deltarelativo(months=n_meses)
+            f_final = f + deltarelativo(months=n_meses)
 
         if n_meses > 1:
             avisar('El paso ({} {}) es superior a 1 mes. Puede ser que las predicciones climáticas no sean confiables'
                    .format(n_paso, símismo.unidad_tiempo))
 
-        # Calcular los datos
-        datos = símismo.datos_clima.comb_datos(vars_clima=nombres_extrn, combin=combins,
-                                               f_inic=f, f_final=f_final)
+        # Calcular los اعداد_دن
+        datos = símismo.lugar.comb_datos(vars_clima=nombres_extrn, combin=combins,
+                                         f_inic=f, f_final=f_final)
 
         # Aplicar los valores de variables calculados
         for i, var in enumerate(vars_clima):

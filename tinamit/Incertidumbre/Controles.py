@@ -35,7 +35,7 @@ class Control(object):
 
     def conectar_var_ind(símismo, datos, var_bd, var_modelo, transformación):
 
-        símismo.receta['conexiones'][var_modelo] = {'var_bd': var_bd, 'datos': datos, 'trans': transformación}
+        símismo.receta['conexiones'][var_modelo] = {'var_bd': var_bd, 'اعداد_دن': datos, 'trans': transformación}
 
     def comparar(símismo, var_mod_x, var_mod_y, escala='individual'):
         var_bd_x = símismo.receta['conexiones'][var_mod_x]
@@ -48,14 +48,14 @@ class Control(object):
         try:
             var_bd = símismo.receta['conexiones'][constante]
         except KeyError:
-            raise ValueError('No hay datos vinculados con este variable (%s).' % constante)
+            raise ValueError('No hay اعداد_دن vinculados con este variable (%s).' % constante)
 
         est = símismo.bd.estimar(var=var_bd, escala=escala, años=años, lugar=lugar, cód_lugar=cód_lugar)
 
         símismo.receta['constantes'][constante] = {'distr': est['distr'],
                                                    'máx': est['máx'],
                                                    'escala': escala,
-                                                   'años': años,
+                                                   'سال': años,
                                                    'lugar': lugar,
                                                    'cód_lugar': cód_lugar}
 
@@ -172,7 +172,7 @@ class Control(object):
         dic_ec = símismo.receta['ecs'][var]
         dic_ec['párams'] = calibrados
         dic_ec['escala'] = escala
-        dic_ec['años'] = años
+        dic_ec['سال'] = años
         dic_ec['lugar'] = lugar
         dic_ec['cód_lugar'] = cód_lugar
 
@@ -207,7 +207,7 @@ class Control(object):
 
             dic['cód_lugar'] = cód_lugar
 
-            años = dic['años']
+            años = dic['سال']
             escala = dic['escala']
             lugar = dic['lugar']
 
@@ -222,7 +222,7 @@ class Control(object):
 
             dic['cód_lugar'] = cód_lugar
 
-            años = dic['años']
+            años = dic['سال']
             escala = dic['escala']
             lugar = dic['lugar']
 
