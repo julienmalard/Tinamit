@@ -58,32 +58,3 @@ Unos apuntos para cuándo vas a compartir una nueva envoltura:
 * Incluir tantos comentarios como posible en tu envoltura (el código fuente de Tinamit es un ejemplo).
 * Se recomienda escribir envolturas en castellano, pero aceptamos envolturas escritas en todos idiomas.
 
-Agregar modelos DS
-------------------
-Tinamit ya puede leer (casi) cualquier modelo en VENSIM. Para poder agregar un nuevo programa de modelos DS, tienes que
-saber cómo ejecutar las acciones siguientes en el programa *sin el uso del interfaz gráfico* (es decir, por la línea
-de comanda, por un dll, o por algo similar):
-
-1. Cargar un modelo.
-2. Empezar una simulación.
-3. Avanzar la simulación de un número de pasos predeterminados.
-4. Leer valores intermediaros de los variables, y cambiar estos valores antes de seguir con el próximo paso de la
-   simulación.
-
-Si puedes hacer esto, ya estás listo. Los cambios de tendrán que efectuar directamente al código fuente de Tinamit
-(al contrario de la adición de una envoltura biofísica), así que recomiento fuertemente que creas una nueva rama de
-Tinamit en GitHub (|GitHub|) primero.
-
-Después, vaya al archivo MDS.py y crea una subclase de la clase :class:`~tinamit.MDS.EnvolturaMDS`. En esta clase,
-se debe definir cada una de las funciones siguientes (ver, como ejemplo, la implementación para VENSIM en
-:class:`~tinamit.MDS.ModeloVENSIM`):
-
-* :func:`~tinamit.MDS.EnvolturaMDS.__init__`
-* :func:`~tinamit.MDS.EnvolturaMDS.inic_vars`
-* :func:`~tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo`
-* :func:`~tinamit.MDS.EnvolturaMDS.iniciar_modelo`
-* :func:`~tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo`
-* :func:`~tinamit.MDS.EnvolturaMDS.incrementar`
-* :func:`~tinamit.MDS.EnvolturaMDS.leer_vals`
-* :func:`~tinamit.MDS.EnvolturaMDS.cerrar_modelo`
-
