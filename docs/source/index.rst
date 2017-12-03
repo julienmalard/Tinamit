@@ -20,7 +20,7 @@ Tinamit permite la conexión rápida, flexible y reproducible de modelos con:
 ¿Quieres contribuir?
 --------------------
 Puedes **agregar modelos**, desarrollar **nuevas funcionalidades**, o ayudar a **traducir Tinamït** en tu lengua preferida.
-Lo explicamos todo :ref:`aquí <desarrollo>`_.
+Lo explicamos todo :ref:`aquí <desarrollo>`.
 
 Contacto: |correo|
 
