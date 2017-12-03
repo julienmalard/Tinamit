@@ -11,10 +11,10 @@ automática). No obstante, nuevas funcionalidades divertidas siempre aparecen en
 Para una introducción rápida:
 -----------------------------
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    IGU
-   API
+   IPA
    avanzado
 
 Funcionalidades actuales y futuras de Tinamït
@@ -39,9 +39,6 @@ Funcionalidades actuales y futuras de Tinamït
    "Simulaciones en paralelo", "", ""
    
 ¿? = En teoría, pero no hemos intendado. Por favor avísanos si te funciona.
-
-.. contents:: Contenido
-   :depth: 3
 
 Preparación pre-uso
 -------------------
