@@ -25,7 +25,7 @@ puedes agregar un nuevo).
 
 Para cambiar idiomas, hacer clic en el icono del globo terrestre.
 
-.. image:: Imágenes/IGU/IGU_cabeza_globo.png
+.. image:: ../Imágenes/IGU/IGU_cabeza_globo.png
    :align: center
    :alt: Icono de cambio de idiomas de Tinamït.
 
@@ -52,7 +52,7 @@ cuanto termines la etapa precedente.
 La primera etapa sería, por supuesto, de cargar los modelos biofísicos y DS con :guilabel:`Cargar MDS` y
 :guilabel:`Cargar modelo biofísico`.
 
-.. image:: Imágenes/IGU/IGU_cargar_modelos.png
+.. image:: ../Imágenes/IGU/IGU_cargar_modelos.png
    :align: center
    :alt: Cargar modelos en Tinamït.
 
@@ -69,7 +69,7 @@ Si haces un error, puedes volver a editar una conexión ya hecha por hacer clic 
 con la cruz roja. Nota que el interfaz no te dejará conectar un variable más que una vez al mismo tiempo (eso sería una falla
 lógica en la conexión de los dos modelos).
 
-.. image:: Imágenes/IGU/IGU_editar_conexión.png
+.. image:: ../Imágenes/IGU/IGU_editar_conexión.png
    :align: center
    :alt: Cambiar la conexión de variables en Tinamït.
 
@@ -91,6 +91,6 @@ Ah, sí, ¿qué pasa si no terminas todo antes del almuerzo? No te preocupes, qu
 izquierda del logo muy bonito de Tinamït, hay cuatro botones muy útiles. Uno guarda tu trabajo, uno lo guarda bajo un nuevo
 nombre, otro abre un trabajo ya guardado y el último borra todo y te deja empezar de cero. No te voy a decir cuál es cuál.
 
-.. image:: Imágenes/IGU/IGU_cabeza_archivos.png
+.. image:: ../Imágenes/IGU/IGU_cabeza_archivos.png
    :align: center
    :alt: Acciones de archivo en Tinamït.
