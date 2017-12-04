@@ -7,7 +7,7 @@ las mismas funciones que el IGU, pero por ser una librería Python ya puedes aut
 líneas de código a hacer clic en botones, el IPA es para ti.
 
 Preparar todo
-^^^^^^^^^^^^^
+-------------
 Antes que todo, hay que importar los objetos de Tinamit que vamos a necesitar:
 
   ``from Conectado import Conectado``
@@ -15,7 +15,7 @@ Antes que todo, hay que importar los objetos de Tinamit que vamos a necesitar:
 Esta línea importa la clase Conectado del módulo Conectado de Tinamit. Increíblemente, es la única cosa que tenemos que importar.
 
 Cargar modelos
-^^^^^^^^^^^^^^
+--------------
 Primero, vamos a empezar por crear una instancia de la clase Conectado. Si no sabes lo que es una instancia de una clase, o 
 puedes simplemente copiar el texto abajo, o (mejor) puedes echarle otro vistazo a tu último curso en Python.
 
@@ -40,7 +40,7 @@ computadora del directorio actual. Esto le permite al programa encontrar la envo
 importe dónde lo guardará alguién en su computadora)
 
 Conectar Variables
-^^^^^^^^^^^^^^^^^^
+------------------
 Ahora, vamos a conectar los dos modelos por crear enlaces entre los variables de cada uno. Cada conexión entre dos variables 
 necesita 3 cosas: los nombres de los dos variables para conectar y la dirección de la conexión (es dec
 ir, de cuál modelo sacas el valor del variable para ponerlo en el otro modelo). Una simulación verdaderamente dinámica incluirá 
@@ -57,7 +57,7 @@ distintas). Puedes conectar tantos variables como quieras. En nuestro ejemplo de
 total de 8 variables.
 
 Simular
-^^^^^^^
+-------
 Ya, por fin, podemos simular el modelo:
 
   ``modelo.simular(paso=1, tiempo_final=240, nombre_simul='Mi primera simulación Tinamit')``
@@ -67,7 +67,7 @@ indica la duración de la simulación, y ``nombre_simul`` es el nombre de la sim
 (resultados) de la simulación.
 
 Implementación de políticas
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------
 Los que conocen los modelos de dinámicas de los sistemas sabrán que muchas veces se incorporan opciones de acciones o de 
 políticas en los modelos con un variable “sí o no.” Por ejemplo, en nuestro modelo de salinidad de los suelos tenemos un 
 variable llamado “Política de recuperación de aguas.” Si este variable es igual a 1, activará la parte del modelo de dinámicas 
@@ -89,7 +89,7 @@ políticas. (¡Cuidado! Esta función solamente cambia el valor inicial del vari
 lo que piensas que hace.
 
 Resumen
-^^^^^^^
+-------
 Y bueno, allí está. Ya puedes conectar, desconectar, simular y manipular modelos. Mira el documento “Ejemplo SAHYSMOD” en el 
 directorio de ejemplos de Tinamit para un ejemplo del uso del IPA en la automatización de corridas para simular, de una vez, 5 
 corridas de un modelo socioeconómico DS con un modelo biofísico de calidad y salinidad de los suelos (SAHYSMOD).

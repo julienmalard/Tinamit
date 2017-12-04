@@ -1,16 +1,22 @@
+.. _IGU:
+
 El IGU
-------
+======
 Para los que no quieren programar, el IGU ofrece una manera sencilla de acceder (casi) todas las funcionalidades del IPA 
 Tinamit, y algunas adicionales.
 
-Se empieza el interfaz con la función ``correr`` del IGU:
+.. contents:: Contenido
+   :depth: 3
 
-   ``from tinamit.Interfaz.IGU import correr``
+Empezar el IGU
+--------------
+Se empieza el interfaz con la función ``correr`` del IGU::
 
-   ``correr()``
+   from tinamit.Interfaz.IGU import correr
+   correr()
 
 Cambiar idiomas
-^^^^^^^^^^^^^^^
+---------------
 Bueno, primero, de pronto no hables español. O posiblemente trabajas con gente que no lo habla, y quieres hacerles la cortesía 
 de trabajar en su idioma. O tal vez quieres practicar un idioma que no has hablado por mucho tiempo.
 
@@ -39,7 +45,7 @@ a unas traducciones, puedes compartir este documento (|correo|, o por `GitHub <|
 a tu idioma favorito.
 
 Cargar modelos (I)
-^^^^^^^^^^^^^^^^^^
+------------------
 El flujo de trabajo en Tinamit tiene cuatro etapas (en números mayas) y el interfaz desbloquea el acceso a cada etapa en 
 cuanto termines la etapa precedente.
 
@@ -51,7 +57,7 @@ La primera etapa sería, por supuesto, de cargar los modelos biofísicos y DS co
    :alt: Cargar modelos en Tinamit.
 
 Conectar modelos (II)
-^^^^^^^^^^^^^^^^^^^^^
+---------------------
 Después de eso, vamos a conectar los dos modelos por sus variables comunes. La flecha muestra la dirección de la conexión, y 
 puedes especificar un factor de conversión, si quieres. Hay que hacer clic en :guilabel:`Guardar` cada vez que haces una conexión.
 
@@ -68,19 +74,19 @@ lógica en la conexión de los dos modelos).
    :alt: Cambiar la conexión de variables en Tinamit.
 
 Simular (III)
-^^^^^^^^^^^^^
+-------------
 Ya puedes simular los modelos conectados. Puedes especificar el paso y el tiempo final de la simulación. Finalmente, puedes 
 especificar un factor de conversión entre el paso de cada modelo si los dos modelos no tienen las mismas unidades para sus 
 pasos de tiempo (por ejemplo, si tu modelo DS funciona en meses y tu modelo biofísico en años, lo cual sería una situación 
 muy común).
 
 Incertidumbre (IV)
-^^^^^^^^^^^^^^^^^^
+------------------
 Un día, en el futuro, Tinamit tendrá unas funciones de autocalibración y de análisis de incertidumbre. Entre tanto, la página
 para esta cuarta etapa queda un blanco muy bonito.
 
 Guardar y cargar modelos conectados
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------------
 Ah, sí, ¿qué pasa si no terminas todo antes del almuerzo? No te preocupes, que no vas a perder todo. Allí, arriba por a la
 izquierda del logo muy bonito de Tinamit, hay cuatro botones muy útiles. Uno guarda tu trabajo, uno lo guarda bajo un nuevo
 nombre, otro abre un trabajo ya guardado y el último borra todo y te deja empezar de cero. No te voy a decir cuál es cuál.
