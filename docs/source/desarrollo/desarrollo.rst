@@ -27,9 +27,9 @@ models incluidos pero simplemente *conecta* con ellos; los tienes que instalar s
 :ref:`agregar una nueva envoltura <des_bf>` para tu modelo BF preferido. Por el momento, tenemos:
 
 * **SAHYSMOD**: Un modelo de salinidad de suelos. Ver la `documentación completa <https://www.waterlog.info
-  /sahysmod.htm>`_ y la :mod:`envoltura <tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT>`.
+  /sahysmod.htm>`_ y la :mod:`envoltura <tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper>`.
 * **DSSAT**: Un modelo de cultivos, que toma en cuenta semilla, clima, suelo y manejo humano. Ver la `documentación
-  completa <https://dssat.net/>`_. (:mod:`Envoltura <tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper>` en trabajo.)
+  completa <https://dssat.net/>`_. (:mod:`Envoltura <tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT>` en trabajo.)
 
 Modelos de Clima
 ----------------

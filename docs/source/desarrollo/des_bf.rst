@@ -103,33 +103,33 @@ según el escenario climático escogido por el usuario.
 
 Cuando un usuario corre un modelo con un escenario climático, cada modelo conectado se conectará automáticamente, por
 su atributo `.lugar`, con un objeto `~tinamit.Geog.Geog.Lugar`. Si tu modelo requiere datos climáticos con la
-**misma precisión que su paso**, simplemente puedes llamar la función `~tinamit.Modelo.conectar_var_clima` en su
-método `.__init__()`. Por ejemplo, en la envoltura de SAHYSMOD::
+**misma precisión que su paso**, simplemente puedes llamar la función :func:`~tinamit.Modelo.conectar_var_clima` en su
+método ``.__init__()``. Por ejemplo, en la envoltura de SAHYSMOD::
 
    self.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total')
 
-Esta comanda conecta el variable interno `Pp - Rainfall` de la envoltura SAHYSMOD con el variable climático
-`Precipitación`. En cada paso, Tinamït actualizará este variable con el valor `total` de precipitación en cada
+Esta comanda conecta el variable interno ``Pp - Rainfall`` de la envoltura SAHYSMOD con el variable climático
+``Precipitación``. En cada paso, Tinamït actualizará este variable con el valor ``total`` de precipitación en cada
 paso de la simulación para el escenario climático apropiado. Chévere, ¿no?
 
-El parámetro `var` es el nombre de este variable en tu envoltura. Puede ser lo que quieres, en el idioma que quieres.
-La opciones actuales para variables climáticos (`var_clima`) incluyen:
+El parámetro ``var`` es el nombre de este variable en tu envoltura. Puede ser lo que quieres, en el idioma que quieres.
+La opciones actuales para variables climáticos (``var_clima``) incluyen:
 
-* `Precipitación` mm
-* `Radiación solar`:
-* `Temperatura máxima`: grados C
-* `Temperatura promedia`: grados C
-* `Temperatura mínima`: grados C
+* ``Precipitación`` mm
+* ``Radiación solar``:
+* ``Temperatura máxima``: grados C
+* ``Temperatura promedia``: grados C
+* ``Temperatura mínima``: grados C
 
 .. note::
-   `Combin` puede ser `prom` (calculará el promedio de este variable climático por el periodo deseado) o `total`
-   (calculará el total, como para lluvia). Si no se especifica, se supondrá `total` para `Precipitación` y `prom`
+   ``Combin`` puede ser ``prom`` (calculará el promedio de este variable climático por el periodo deseado) o ``total``
+   (calculará el total, como para lluvia). Si no se especifica, se supondrá ``total`` para ``Precipitación`` y ``prom``
    para todos los otrs variables climáticos.
 
 Si, al contrario, tu modelo necesita variables climáticos **con un paso distinto del suyo** (por ejemplo, un modelo de
 cultivos necesita que los variables climáticos diarios se escriben en un archivo separado antes de empezar la
-simulación), lo tendrás que implementar en :func:`~tinamit.BF.Modelo.iniciar_modelo`. Puedes acceder los variables
-climáticos que quieres con el método `~tinamit.Geog.Geog.Lugar.devolver_datos` de `símismo.lugar`.
+simulación), lo tendrás que implementar en :func:`~tinamit.BF.ModeloBF.iniciar_modelo`. Puedes acceder los variables
+climáticos que quieres con el método :func:`~tinamit.Geog.Geog.Lugar.devolver_datos` de ``símismo.lugar``.
 
 Cómo compartir tu nueva envoltura
 ---------------------------------

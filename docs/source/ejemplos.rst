@@ -4,10 +4,6 @@ Aquí presentamos unos ejemplos del uso de Tinamït, más allá de lo presentado
 
 El código para estos ejemplos también se encuentra en el archivo :file:`Ejemplos` de Tinamït.
 
-.. note::
-   Notar que estas pueden estar en el idioma original en cual se desarrollaron.
-
-
 Ejemplo muy básico
 ------------------
 También es un ejemplo un poco estúpido. Pero demuestra muy bien cómo funciona Tinamït, y no tienes que instalar

@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import shapefile as sf
 
-from taqdir.مقام import مقام as lugarTaqdir
+from taqdir.مقام import مقام
 from taqdir.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
 
 # Ofrecemos la oportunidad de utilizar تقدیر, taqdir, en español
@@ -24,7 +24,7 @@ conv_vars = {
 
 
 # Una subclase traducida
-class Lugar(lugarTaqdir):
+class Lugar(مقام):
     """
     Esta clase conecta con la clase مقام, o Lugar, del paquete taqdir.
     """
