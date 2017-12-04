@@ -25,7 +25,20 @@ conv_vars = {
 
 # Una subclase traducida
 class Lugar(lugarTaqdir):
+    """
+    Esta clase conecta con la clase مقام, o Lugar, del paquete taqdir.
+    """
+
     def __init__(símismo, lat, long, elev):
+        """
+
+        :param lat:
+        :type lat:
+        :param long:
+        :type long:
+        :param elev:
+        :type elev:
+        """
 
         super().__init__(چوڑائی=lat, طول=long, بلندی=elev)
 

@@ -3,3 +3,9 @@
 Uso avanzado de Tinamït
 =======================
 
+Mapas espaciales
+----------------
+
+
+Cambios climáticos
+------------------

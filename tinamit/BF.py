@@ -226,7 +226,7 @@ class ModeloImpaciente(ModeloBF):
     año, pero ofrece detalles al nivel estacional (de 1-12 meses) que pueden ser muy diferentes para distintas
     estaciones. Los llamo "impacientes" porque no los puedes hacer correr por un mes, sin que el modelo simule
     el año entero, sino más.
-    Esta envoltura te permite crear envolturas con pasos اعداد_مہینہ para este tipo de modelo anual,　pero sin　el
+    Esta envoltura te permite crear envolturas con pasos mensuales para este tipo de modelo anual,　pero sin　el
     dolor de cabeza.
     """
 
@@ -578,7 +578,8 @@ class ModeloImpaciente(ModeloBF):
 
 class ModeloFlexible(ModeloBF):
     """
-
+    Esta clase permite desarrollar envolturas para modelos con pasos variables (por ejemplo, modelos de cultivos
+    cuyas duraciones de simulación depienden del tiempo hasta la cosecha).
     """
 
     def __init__(símismo):

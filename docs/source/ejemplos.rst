@@ -1,9 +1,11 @@
 Ejemplos
 ========
-
-Aquí presentamos unos ejemplos del uso de Tinamït, más allá de lo presentado en la sección :doc:`Uso <uso>`.
+Aquí presentamos unos ejemplos del uso de Tinamït, más allá de lo presentado en la sección `Usar <usar>`.
 
 El código para estos ejemplos también se encuentra en el archivo :file:`Ejemplos` de Tinamït.
+
+.. note::
+   Notar que estas pueden estar en el idioma original en cual se desarrollaron.
 
 
 Ejemplo muy básico
@@ -22,16 +24,16 @@ cualquier modelo biofísico externo para que te funcione, así que empecemos con
     modelo.conectar(var_mds='Bosques', var_bf='Bosque', mds_fuente=True)
     modelo.simular(paso=1, tiempo_final=100, nombre_corrida='Corrida_Tinamït')
 
-Tomémoslo línea por línea. Primero, importamos Tinamït.
+Tomémoslo línea por línea. Primero, importamos Tinamït. ::
 
-   ``import os``
-   ``from tinamit.Conectado import Conectado``
+   import os
+   from tinamit.Conectado import Conectado
 
-Segundo, conectamos los variables biofísicos y de DS:
+Segundo, conectamos los variables biofísicos y de DS::
 
-   ``directorio = os.path.dirname(__file__)``
-   ``modelo.estab_mds(os.path.join(directorio, "Prueba dll.vpm"))``
-   ``modelo.estab_bf(os.path.join(directorio, 'Prueba bf.py'))``
+   directorio = os.path.dirname(__file__)
+   modelo.estab_mds(os.path.join(directorio, "Prueba dll.vpm"))
+   modelo.estab_bf(os.path.join(directorio, 'Prueba bf.py'))
 
 Tenemos unos modelos muy sencillos. El modelo DS determina, dado la lluvia, la cantidad de pesca posible y su impacto
 en la necesidad de explotar recursos del bosque.
@@ -41,14 +43,14 @@ en la necesidad de explotar recursos del bosque.
    :alt: Modelo VENSIM.
 
 Del otro lado, el "modelo" biofísico nos da la precipitación según la cubertura forestal. Vamos a conectar los variables
-necesarios:
+necesarios::
 
-   ``modelo.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)``
-   ``modelo.conectar(var_mds='Bosques', var_bf='Bosque', mds_fuente=True)``
+   modelo.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)
+   modelo.conectar(var_mds='Bosques', var_bf='Bosque', mds_fuente=True)
 
-Y corremos la simulación para 100 meses. ¡Allí está! Ya puedes visualizar los resultados directamente en VENSIM.
+Y corremos la simulación para 100 meses. ¡Allí está! Ya puedes visualizar los resultados directamente en VENSIM. ::
 
-   ``modelo.simular(paso=1, tiempo_final=100, nombre_corrida='Corrida_Tinamït')``
+   modelo.simular(paso=1, tiempo_final=100, nombre_corrida='Corrida_Tinamït')
 
 Ejemplo más realístico (salinidad de suelos)
 --------------------------------------------
