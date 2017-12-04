@@ -1,7 +1,7 @@
 Agradecimientos
 ===============
 
-Tinamit es un proyecto de fuente abierta. Las personas e instituciones siguientes hicieron posible su desarrollo.
+Tinamït es un proyecto de fuente abierta. Las personas e instituciones siguientes hicieron posible su desarrollo.
 
 Autores del código
 ------------------
@@ -12,7 +12,7 @@ Autores del código
 Autores de envolturas
 ---------------------
 Gracias a los siguientes por escribir envolturas específicas a los modelos biofísicos siguientes (nota: escribimos las
-*envolturas* para que estos modelos sean compatibles con Tinamit, ¡no los modelos sí mismos!)
+*envolturas* para que estos modelos sean compatibles con Tinamït, ¡no los modelos sí mismos!)
 
 SAHYSMOD
 ^^^^^^^^
@@ -23,12 +23,12 @@ SAHYSMOD es un modelo de predicción de salinidad de los suelos.
 
 Traductores
 -----------
-Cuando se habrán traducido Tinamit y su documentación, los agradecimientos irán aquí.
+Cuando se habrán traducido Tinamït y su documentación, los agradecimientos irán aquí.
 
 Instituciones afiliadas
 -----------------------
 
-Los autores de Tinamit están afiliados con las instituciones siguientes:
+Los autores de Tinamït están afiliados con las instituciones siguientes:
 
 .. image:: Imágenes/Logo_McGill_IGFS.jpg
    :width: 200

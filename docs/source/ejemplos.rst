@@ -1,14 +1,14 @@
 Ejemplos
 ========
 
-Aquí presentamos unos ejemplos del uso de Tinamit, más allá de lo presentado en la sección :doc:`Uso <uso>`.
+Aquí presentamos unos ejemplos del uso de Tinamït, más allá de lo presentado en la sección :doc:`Uso <uso>`.
 
-El código para estos ejemplos también se encuentra en el archivo :file:`Ejemplos` de Tinamit.
+El código para estos ejemplos también se encuentra en el archivo :file:`Ejemplos` de Tinamït.
 
 
 Ejemplo muy básico
 ------------------
-También es un ejemplo un poco estúpido. Pero demuestra muy bien cómo funciona Tinamit, y no tienes que instalar
+También es un ejemplo un poco estúpido. Pero demuestra muy bien cómo funciona Tinamït, y no tienes que instalar
 cualquier modelo biofísico externo para que te funcione, así que empecemos con este. ::
 
     import os
@@ -20,9 +20,9 @@ cualquier modelo biofísico externo para que te funcione, así que empecemos con
     modelo.estab_bf(os.path.join(directorio, 'Prueba bf.py'))
     modelo.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)
     modelo.conectar(var_mds='Bosques', var_bf='Bosque', mds_fuente=True)
-    modelo.simular(paso=1, tiempo_final=100, nombre_corrida='Corrida_Tinamit')
+    modelo.simular(paso=1, tiempo_final=100, nombre_corrida='Corrida_Tinamït')
 
-Tomémoslo línea por línea. Primero, importamos Tinamit.
+Tomémoslo línea por línea. Primero, importamos Tinamït.
 
    ``import os``
    ``from tinamit.Conectado import Conectado``
@@ -48,9 +48,9 @@ necesarios:
 
 Y corremos la simulación para 100 meses. ¡Allí está! Ya puedes visualizar los resultados directamente en VENSIM.
 
-   ``modelo.simular(paso=1, tiempo_final=100, nombre_corrida='Corrida_Tinamit')``
+   ``modelo.simular(paso=1, tiempo_final=100, nombre_corrida='Corrida_Tinamït')``
 
 Ejemplo más realístico (salinidad de suelos)
 --------------------------------------------
 
-Para un ejemplo un poco más realístico, ver el ejemplo de SAHYSMOD en el código de Tinamit.
+Para un ejemplo un poco más realístico, ver el ejemplo de SAHYSMOD en el código de Tinamït.

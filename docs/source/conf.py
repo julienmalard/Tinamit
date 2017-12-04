@@ -161,7 +161,7 @@ else:
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #
-html_short_title = "Tinamit"
+html_short_title = "Tinamït"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.

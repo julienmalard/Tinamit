@@ -38,7 +38,7 @@ que instalar ti misma.
 
 Traducciones
 ------------
-¡Siempre querremos traducciones para hacer de Tinamit una herramienta aún más accesible! Se puede :ref:`traducir <des_trad>` el interfaz
+¡Siempre querremos traducciones para hacer de Tinamït una herramienta aún más accesible! Se puede :ref:`traducir <des_trad>` el interfaz
 y la documentación de Tinamït en tu lengua preferida.
 
 
@@ -46,6 +46,6 @@ Para más información...
 -----------------------
 .. toctree::
    :maxdepth: 1
-   Desarrollar Envolturas MDS <des_mds>
-   Desarrollar Envolturas BF <des_bf>
-   Contribuir traducciones <des_trad>
+   Desarrollar Envolturas MDS <desarrollo/des_mds>
+   Desarrollar Envolturas BF <desarrollo/des_bf>
+   Contribuir traducciones <desarrollo/des_trad>

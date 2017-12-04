@@ -8,11 +8,11 @@ líneas de código a hacer clic en botones, el IPA es para ti.
 
 Preparar todo
 -------------
-Antes que todo, hay que importar los objetos de Tinamit que vamos a necesitar:
+Antes que todo, hay que importar los objetos de Tinamït que vamos a necesitar:
 
   ``from Conectado import Conectado``
 
-Esta línea importa la clase Conectado del módulo Conectado de Tinamit. Increíblemente, es la única cosa que tenemos que importar.
+Esta línea importa la clase Conectado del módulo Conectado de Tinamït. Increíblemente, es la única cosa que tenemos que importar.
 
 Cargar modelos
 --------------
@@ -26,7 +26,7 @@ puedes simplemente copiar el texto abajo, o (mejor) puedes echarle otro vistazo 
   ``modelo.estab_mds("C:\\Yo\\MisArchivos\\MiModeloVENSIM.vpm")``
 
 estab_mds, como probablemente adivinaste, establece el modelo DS. Le tienes que dar como argumento la ubicación del archivo 
-.vpm de tu modelo DS publicado por VENSIM. En el futuro, si Tinamit puede aceptar modelos de otros programas que VENSIM, podrás 
+.vpm de tu modelo DS publicado por VENSIM. En el futuro, si Tinamït puede aceptar modelos de otros programas que VENSIM, podrás
 poner otros tipos de archivos aquí. (Notar que habrá que cambiar la ubicación aquí según tú computadora.)
 
 Y, para el modelo biofísico, especificamos la ubicación de la envoltura específica para el modelo biofísico que querremos usar. 
@@ -53,14 +53,14 @@ especificado en la envoltura). ``mds_fuente`` indica si se lee el valor del vari
 modelo biofísico, o si es al revés. En este ejemplo, tomamos el valor de la salinidad del suelo del modelo SAHYSMOD y lo pasamos al modelo DS (VENSIM).
 
 Opcionalmente, puedes especificar el parámetro ``conv``, un factor de conversión (si los dos variables tienen unidades 
-distintas). Puedes conectar tantos variables como quieras. En nuestro ejemplo de SAHYSMOD que viene con Tinamit, conectamos un 
+distintas). Puedes conectar tantos variables como quieras. En nuestro ejemplo de SAHYSMOD que viene con Tinamït, conectamos un
 total de 8 variables.
 
 Simular
 -------
 Ya, por fin, podemos simular el modelo:
 
-  ``modelo.simular(paso=1, tiempo_final=240, nombre_simul='Mi primera simulación Tinamit')``
+  ``modelo.simular(paso=1, tiempo_final=240, nombre_simul='Mi primera simulación Tinamït')``
   
 ``paso`` indica el intervalo de tiempo al cual se intercambian valores de variables entre los dos modelos. ``tiempo_final`` 
 indica la duración de la simulación, y ``nombre_simul`` es el nombre de la simulación que se dará al archivo con los egresos 
@@ -91,7 +91,7 @@ lo que piensas que hace.
 Resumen
 -------
 Y bueno, allí está. Ya puedes conectar, desconectar, simular y manipular modelos. Mira el documento “Ejemplo SAHYSMOD” en el 
-directorio de ejemplos de Tinamit para un ejemplo del uso del IPA en la automatización de corridas para simular, de una vez, 5 
+directorio de ejemplos de Tinamït para un ejemplo del uso del IPA en la automatización de corridas para simular, de una vez, 5
 corridas de un modelo socioeconómico DS con un modelo biofísico de calidad y salinidad de los suelos (SAHYSMOD).
 
 Para las que conocen las funciones :py:mod:`threading` de Python, y que piensan que sería una manera brillante de correr las 

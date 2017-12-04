@@ -9,7 +9,7 @@ Versión: |version|
 
 Tinamït es un programa para conectar modelos socioeconómicos (dinámicas de los sistemas) con modelos biofísicos.
 
-Tinamit permite la conexión rápida, flexible y reproducible de modelos con:
+Tinamït permite la conexión rápida, flexible y reproducible de modelos con:
 
 * Un interfaz (IGU) para los que no quieren escribir código.
 * Un libreria (IPA) para las que sí.
@@ -33,7 +33,7 @@ Contacto: |correo|
 
    Introducción <intro>
    Instalar <instal>
-   Usar <uso>
+   Usar <uso/uso>
    Desarrollo <desarrollo/desarrollo>
    Ejemplos <ejemplos>
    Publicaciones <pubs>

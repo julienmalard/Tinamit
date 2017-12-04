@@ -3,7 +3,7 @@
 El IGU
 ======
 Para los que no quieren programar, el IGU ofrece una manera sencilla de acceder (casi) todas las funcionalidades del IPA 
-Tinamit, y algunas adicionales.
+Tinamït, y algunas adicionales.
 
 .. contents:: Contenido
    :depth: 3
@@ -20,14 +20,14 @@ Cambiar idiomas
 Bueno, primero, de pronto no hables español. O posiblemente trabajas con gente que no lo habla, y quieres hacerles la cortesía 
 de trabajar en su idioma. O tal vez quieres practicar un idioma que no has hablado por mucho tiempo.
 
-Mientras que el código de Tinamit sí mismo es en español, el interfaz de Tinamit está disponible en muchos idiomas (y siempre 
+Mientras que el código de Tinamït sí mismo es en español, el interfaz de Tinamït está disponible en muchos idiomas (y siempre
 puedes agregar un nuevo).
 
 Para cambiar idiomas, hacer clic en el icono del globo terrestre.
 
 .. image:: Imágenes/IGU_cabeza_globo.png
    :align: center
-   :alt: Icono de cambio de idiomas de Tinamit.
+   :alt: Icono de cambio de idiomas de Tinamït.
 
 En el centro, tienes las lenguas ya traducidas. Puedes escoger una con la cajita verde a la izquierda, o pulsar en lapicito 
 para hacer cambios a la traducción.
@@ -40,13 +40,13 @@ Y, por fin, a la derecha tienes lenguas que todavía no hemos empezado a traduci
 la traducción. También puedes hacer clic en la cruz arriba para agregar un nuevo idioma que no se encuentra en la lista ya (y
 también especificar si se escribe de la izquierda hacia la derecha o al revés).
 
-Todas las traducciones se guardan automáticamente en un documento llamado “Trads” en el directorio de Tinamit. Si contribuyes
+Todas las traducciones se guardan automáticamente en un documento llamado “Trads” en el directorio de Tinamït. Si contribuyes
 a unas traducciones, puedes compartir este documento (|correo|, o por `GitHub <|GitHub|>`_) para que todas tengan acceso
 a tu idioma favorito.
 
 Cargar modelos (I)
 ------------------
-El flujo de trabajo en Tinamit tiene cuatro etapas (en números mayas) y el interfaz desbloquea el acceso a cada etapa en 
+El flujo de trabajo en Tinamït tiene cuatro etapas (en números mayas) y el interfaz desbloquea el acceso a cada etapa en
 cuanto termines la etapa precedente.
 
 La primera etapa sería, por supuesto, de cargar los modelos biofísicos y DS con :guilabel:`Cargar MDS` y
@@ -54,7 +54,7 @@ La primera etapa sería, por supuesto, de cargar los modelos biofísicos y DS co
 
 .. image:: Imágenes/IGU_cargar_modelos.png
    :align: center
-   :alt: Cargar modelos en Tinamit.
+   :alt: Cargar modelos en Tinamït.
 
 Conectar modelos (II)
 ---------------------
@@ -63,7 +63,7 @@ puedes especificar un factor de conversión, si quieres. Hay que hacer clic en :
 
 .. image:: Imágenes/IGU_conectar_vars.png
    :align: center
-   :alt: Conectar variables en Tinamit.
+   :alt: Conectar variables en Tinamït.
 
 Si haces un error, puedes volver a editar una conexión ya hecha por hacer clic en el lapicito verde, o simplemente borrarla
 con la cruz roja. Nota que el interfaz no te dejará conectar un variable más que una vez al mismo tiempo (eso sería una falla
@@ -71,7 +71,7 @@ lógica en la conexión de los dos modelos).
 
 .. image:: Imágenes/IGU_editar_conexión.png
    :align: center
-   :alt: Cambiar la conexión de variables en Tinamit.
+   :alt: Cambiar la conexión de variables en Tinamït.
 
 Simular (III)
 -------------
@@ -82,15 +82,15 @@ muy común).
 
 Incertidumbre (IV)
 ------------------
-Un día, en el futuro, Tinamit tendrá unas funciones de autocalibración y de análisis de incertidumbre. Entre tanto, la página
+Un día, en el futuro, Tinamït tendrá unas funciones de autocalibración y de análisis de incertidumbre. Entre tanto, la página
 para esta cuarta etapa queda un blanco muy bonito.
 
 Guardar y cargar modelos conectados
 -----------------------------------
 Ah, sí, ¿qué pasa si no terminas todo antes del almuerzo? No te preocupes, que no vas a perder todo. Allí, arriba por a la
-izquierda del logo muy bonito de Tinamit, hay cuatro botones muy útiles. Uno guarda tu trabajo, uno lo guarda bajo un nuevo
+izquierda del logo muy bonito de Tinamït, hay cuatro botones muy útiles. Uno guarda tu trabajo, uno lo guarda bajo un nuevo
 nombre, otro abre un trabajo ya guardado y el último borra todo y te deja empezar de cero. No te voy a decir cuál es cuál.
 
 .. image:: Imágenes/IGU_cabeza_archivos.png
    :align: center
-   :alt: Acciones de archivo en Tinamit.
+   :alt: Acciones de archivo en Tinamït.
