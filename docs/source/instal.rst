@@ -35,13 +35,18 @@ Si instalaste Python 3.6 de 32 bits tal como te dije, no deberías tener problem
    descargar el ``C++ 2015 redistributable`` (toma la versión terminando el ``…x86.exe`` si tienes Python de 32 bits
    (si no lo sabes, toma éste) y en ``…x64.exe`` si tienes *Python* (no Windows) de 64 bits. Después, instálalo. Por
    razones obscuras, `SciPy`, una extensión utilizada por Tinamït, no funciona en Windows sin éste.
-#. Descarga y corre :download:`este código </pre_instal.py>` en Python 3.6.
+#. Descarga y corre :download:`este código <../pre_instal.py>` en Python 3.6.
 #. Ahora, puedes instalar Tinamït con la comanda siguiente en la línea de comanda (el Terminal en PyCharm):
 
       :command:`pip install tinamit`
 
 Tinamït debería instalarse y todos los otros paquetes que necesitar automáticamente [#f2]_. Si aún así te da problemas,
 no dudes en escribirme (|correo|).
+:download:`este código </pre_instal.py>`
+:download:`este código <../pre_instal.py>`
+:download:`este código </../pre_instal.py>`
+:download:`este código </tinamit/pre_instal.py>`
+:download:`este código <../tinamit/pre_instal.py>`
 
 Uso con PyCharm
 ^^^^^^^^^^^^^^^
