@@ -11,11 +11,11 @@ automática). No obstante, nuevas funcionalidades divertidas siempre aparecen en
 Para una introducción rápida, ver:
 
 .. contents::
-   :maxdepth: 1
+   :depth: 1
 
    IGU (Interfaz) <IGU>
    IPA (Programa) <IPA>
-   avanzado
+   Avanzado <avanzado>
 
 Funcionalidades actuales y futuras de Tinamït
 ---------------------------------------------
