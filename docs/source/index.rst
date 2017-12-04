@@ -37,5 +37,5 @@ Contacto: |correo|
    Desarrollo <desarrollo/desarrollo>
    Ejemplos <ejemplos>
    Publicaciones <pubs>
-   Documentación <docu>
+   Documentación <docu/docu>
    Agradecimientos <agradecimientos>
