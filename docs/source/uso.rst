@@ -10,8 +10,8 @@ automática). No obstante, nuevas funcionalidades divertidas siempre aparecen en
 
 Para una introducción rápida, ver:
 
-.. contents::
-   :depth: 1
+.. toctree::
+   :maxdepth: 1
 
    IGU (Interfaz) <IGU>
    IPA (Programa) <IPA>
