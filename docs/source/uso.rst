@@ -8,9 +8,9 @@ diferentes que quieres automatizar), entonces el IPA (Interfaz de Programación 
 Al final, el IGU y el IPA hacen el mismo trabajo (el IGU tiene botones muy lindos para llamar las funciones del IPA de manera
 automática). No obstante, nuevas funcionalidades divertidas siempre aparecen en el IPA primero (lo siento).
 
-Para una introducción rápida:
------------------------------
-.. toctree::
+Para una introducción rápida, ver:
+
+.. contents::
    :maxdepth: 1
 
    IGU (Interfaz) <IGU>
