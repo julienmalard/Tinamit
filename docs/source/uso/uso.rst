@@ -15,7 +15,7 @@ Para una introducción rápida, ver:
 
    IGU (Interfaz) <IGU>
    IPA (Programa) <IPA>
-   Avanzado <uso/avanzado>
+   Avanzado <avanzado>
 
 Funcionalidades actuales y futuras de Tinamït
 ---------------------------------------------
