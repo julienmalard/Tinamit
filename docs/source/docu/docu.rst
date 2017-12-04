@@ -14,7 +14,7 @@ se incluirán en paquetes distintos en revisiones futuras).
    Modelo
    MDS
    BF
-   Envolturas BF <envolturasBF>
+   Envolturas BF <envolturasBF/envolturasBF>
    Conectado
    Unidades
    Geog

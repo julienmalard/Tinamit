@@ -1,3 +1,5 @@
+.. _SAHYSMOD:
+
 Envoltura SAHYSMOD
 ==================
 
