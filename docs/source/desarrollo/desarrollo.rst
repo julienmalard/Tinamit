@@ -46,6 +46,6 @@ Para más información...
 -----------------------
 .. toctree::
    :maxdepth: 1
-   Desarrollar Envolturas MDS <desarrollo/des_mds>
-   Desarrollar Envolturas BF <desarrollo/des_bf>
-   Contribuir traducciones <desarrollo/des_trad>
+   Desarrollar Envolturas MDS <des_mds>
+   Desarrollar Envolturas BF <des_bf>
+   Contribuir traducciones <des_trad>
