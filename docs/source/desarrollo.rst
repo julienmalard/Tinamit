@@ -1,6 +1,7 @@
 .. _desarrollo:
 
 .. toctree::
+   :hidden:
    des_mds
    des_bf
    des_trad
@@ -40,3 +41,8 @@ que instalar ti misma.
 
 * **Marksim CMIP 5**: Marksim v2 permite generar predicciones climáticas con varios escenarios de cambios climáticos para cualquier región del mundo. Para más información, ver su `documentación oficial <http://www.ccafs-climate.org/pattern_scaling/>`_.
 * **Marksim CMIP 3**: ¿Por qué usar CMIP 3 cuando tienes CMIP 5? Bueno, justo en caso, estamos trabajando en agregar compatibilidad con `Marksim <http://www.ccafs-climate.org/pattern_scaling/>`_ v1.
+
+Traducciones
+------------
+¡Siempre querremos traducciones para hacer de Tinamit una herramienta aún más accesible! Se puede :ref:`traducir <des_trad>` el interfaz
+y la documentación de Tinamït en tu lengua preferida.

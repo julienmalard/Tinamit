@@ -30,6 +30,7 @@ Contacto: |correo|
 .. toctree::
    :maxdepth: 1
    :titlesonly:
+   :includehidden:
 
    Introducción <intro>
    Instalar <instal>
