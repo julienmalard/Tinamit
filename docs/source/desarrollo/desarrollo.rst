@@ -42,8 +42,10 @@ Traducciones
 y la documentación de Tinamït en tu lengua preferida.
 
 
-
+Para más información...
+-----------------------
 .. toctree::
+   :maxdepth: 1
    Desarrollar Envolturas MDS <des_mds>
    Desarrollar Envolturas BF <des_bf>
    Contribuir traducciones <des_trad>
