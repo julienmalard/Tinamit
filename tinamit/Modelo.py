@@ -4,8 +4,8 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 import datetime as ft
 import numpy as np
 
-import Geog.Geog as Geog
-from Unidades.Unidades import convertir
+import tinamit.Geog.Geog as Geog
+from tinamit.Unidades.Unidades import convertir
 
 
 class Modelo(object):

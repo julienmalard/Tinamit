@@ -15,8 +15,10 @@ Modelos DS
 Tinamït queda compatible con modelos escritos con los programas siguientes. Siempre puedes
 :ref:`escribir más <des_mds>`.
 
-* **Vensim**: Un programa de MDS bastante popular. Desafortunadamente, requiere la versión pagada (DSS) para conectar con Tinamït. Ver su `página oficial <http://vensim.com/>`_ y la envoltura.
-* **Stella**: Otro programa bastante popular. Ver su `página oficial <https://www.iseesystems.com/store/products/stella-architect.aspx>`_ aquí. Envoltura todavía en trabajo.
+* **Vensim**: Un programa de MDS bastante popular. Desafortunadamente, requiere la versión pagada (DSS) para conectar
+  con Tinamït. Ver su `página oficial <http://vensim.com/>`_ y la :class:`envoltura <tinamit.MDS.ModeloVensim>`.
+* **Stella**: Otro programa bastante popular. Ver su `página oficial <https://www.iseesystems.com/
+  store/products/stella-architect.aspx>`_ aquí. Envoltura todavía en trabajo.
 
 Modelos BF
 ----------
@@ -35,8 +37,11 @@ Tinamït, por el paquete :py:ref:`taqdir`, ofrece la posibilidad de correr anál
 Igual que para envolturas de modelos BF, simplemente conecta con estos modelos, no los incluye. Así que los tendrás
 que instalar ti misma.
 
-* **Marksim CMIP 5**: Marksim v2 permite generar predicciones climáticas con varios escenarios de cambios climáticos para cualquier región del mundo. Para más información, ver su `documentación oficial <http://www.ccafs-climate.org/pattern_scaling/>`_.
-* **Marksim CMIP 3**: ¿Por qué usar CMIP 3 cuando tienes CMIP 5? Bueno, justo en caso, estamos trabajando en agregar compatibilidad con `Marksim <http://www.ccafs-climate.org/pattern_scaling/>`_ v1.
+* **Marksim CMIP 5**: Marksim v2 permite generar predicciones climáticas con varios escenarios de cambios climáticos
+  para cualquier región del mundo. Para más información, ver su
+  `documentación oficial <http://www.ccafs-climate.org/pattern_scaling/>`_.
+* **Marksim CMIP 3**: ¿Por qué usar CMIP 3 cuando tienes CMIP 5? Bueno, justo en caso, estamos trabajando en
+  agregar compatibilidad con `Marksim <http://www.ccafs-climate.org/pattern_scaling/>`_ v1.
 
 Traducciones
 ------------
