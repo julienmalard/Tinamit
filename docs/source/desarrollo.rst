@@ -1,11 +1,5 @@
 .. _desarrollo:
 
-.. toctree::
-   :hidden:
-   des_mds
-   des_bf
-   des_trad
-
 Desarrollo de Tinamït
 =====================
 Tinamït tiene una estructura modular, así que es muy fácil agregar más funcionalidades. En particular, por el desarrollo
@@ -46,3 +40,10 @@ Traducciones
 ------------
 ¡Siempre querremos traducciones para hacer de Tinamit una herramienta aún más accesible! Se puede :ref:`traducir <des_trad>` el interfaz
 y la documentación de Tinamït en tu lengua preferida.
+
+
+
+.. toctree::
+   Desarrollar Envolturas MDS <des_mds>
+   Desarrollar Envolturas BF <des_bf>
+   Contribuir traducciones <des_trad>
