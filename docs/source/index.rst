@@ -30,11 +30,11 @@ Contacto: |correo|
 .. toctree::
    :maxdepth: 1
 
-   intro
-   instal
-   uso
-   desarrollo
-   ejemplos
-   pubs
-   docu
-   agradecimientos
+   Introducción <intro>
+   Instalar <instal>
+   Usar <uso>
+   Desarrollo <desarrollo>
+   Ejemplos <ejemplos>
+   Publicaciones <pubs>
+   Documentación <docu>
+   Agradecimientos <agradecimientos>

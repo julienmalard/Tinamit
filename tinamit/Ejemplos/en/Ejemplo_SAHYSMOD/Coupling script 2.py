@@ -48,7 +48,6 @@ for cp in ops['Capacity per tubewell']:
         for cl in ops['Policy Canal lining']:
             for rw in ops['Policy RH']:
                 for ir in ops['Policy Irrigation improvement']:
-
                     run_name = 'TC {}, Fw {}, CL {}, RW {}, II {}'.format(
                         cp, fw, cl, rw, ir
                     )
@@ -60,7 +59,6 @@ for cp in ops['Capacity per tubewell']:
                         'Policy RH': rw,
                         'Policy Irrigation improvement': ir
                     }
-
 
 # 3. Now create the model
 # Create a coupled model instance
@@ -83,34 +81,32 @@ modelo.conectar(var_mds='Gw', mds_fuente=True, var_bf='Gw - Groundwater extracti
 modelo.conectar(var_mds='Irrigation efficiency', mds_fuente=True, var_bf='FsA - Water storage efficiency crop A')
 modelo.conectar(var_mds='Fw', mds_fuente=True, var_bf='Fw - Fraction well water to irrigation')
 
-
 # 4. Finally, run the model
 if use_simple:
     runs = runs_simple
 else:
     runs = runs_complex
 
-# # Run the model for all desired runs
-# for name, run in runs.items():
-#
-#     print('Runing model {}.'.format(name))
-#
-#     # Set appropriate switches for policy analysis
-#     for switch, val in run.items():
-#         modelo.mds.inic_val(var=switch, val=val)
-#
-#     # Simulate the coupled model
-#     modelo.simular(paso=1, tiempo_final=20, nombre_corrida=name)  # time step and final time are in months
-#
-#     # Draw maps
-#     modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
-#     modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
+# Run the model for all desired runs
+for name, run in runs.items():
 
+    print('Runing model {}.'.format(name))
+
+    # Set appropriate switches for policy analysis
+    for switch, val in run.items():
+        modelo.mds.inic_val(var=switch, val=val)
+
+    # Simulate the coupled model
+    modelo.simular(paso=1, tiempo_final=20, nombre_corrida=name)  # time step and final time are in months
+
+    # Draw maps
+    modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
+    modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
 
 # Climate change runs
 location = Lugar(lat=32.178207, long=73.217391, elev=217)
 location.observar_mensuales('مشاہدہ بارش.csv', meses='مہینہ', años='سال',
-                          cols_datos={'Precipitación': 'بارش (میٹر)'})
+                            cols_datos={'Precipitación': 'بارش (میٹر)'})
 for rcp in [2.6, 4.5, 6.0, 8.5]:
     print('Runing with rcp {}\n************'.format(rcp))
 
@@ -122,11 +118,10 @@ for rcp in [2.6, 4.5, 6.0, 8.5]:
         for switch, val in run.items():
             modelo.mds.inic_val(var=switch, val=val)
 
-        modelo.simular(paso=1, tiempo_final=50*2, fecha_inic=1990, lugar=location, tcr=rcp, clima=True, recalc=False,
+        modelo.simular(paso=1, tiempo_final=50 * 2, fecha_inic=1990, lugar=location, tcr=rcp, clima=True, recalc=False,
                        nombre_corrida='{}, {}'.format(rcp, name))
 
         modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit',
                        directorio=os.path.join('Maps', str(rcp)))
         modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA',
                        directorio=os.path.join('Maps', str(rcp)))
-

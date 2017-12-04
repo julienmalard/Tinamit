@@ -13,15 +13,14 @@ Para una introducción rápida:
 .. toctree::
    :maxdepth: 1
 
-   IGU
-   IPA
+   IGU (Interfaz) <IGU>
+   IPA (Programa) <IPA>
    avanzado
 
 Funcionalidades actuales y futuras de Tinamït
 ---------------------------------------------
 .. csv-table:: 
    :header: "Funcionalidad", "IGU", "IPA"
-   :widths: 45, 30, 30
    :align: center
 
    "Conectar modelos BF y DS", "X", "X"
