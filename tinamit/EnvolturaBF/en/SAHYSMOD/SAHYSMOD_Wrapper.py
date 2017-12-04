@@ -42,6 +42,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # Empty dictionary to store input data later on
         self.dic_input = {}
 
+
         # Set the working directory to write model output, and remember where the initial data is stored.
         self.working_dir, self.initial_data = os.path.split(initial_data)
         self.output = os.path.join(self.working_dir, 'SAHYSMOD.out')
