@@ -8,7 +8,7 @@
 Desarrollo de Tinamït
 =====================
 Tinamït tiene una estructura modular, así que es muy fácil agregar más funcionalidades. En particular, por el desarrollo
- de envolturas específicas, se puede agregar compatibilidad con varios programas de modelos
+de envolturas específicas, se puede agregar compatibilidad con varios programas de modelos
 **de dinámicas de sistemas (DS)** y modelos **biofísicos (BF)**. También se pueden contribuir **traducciones** del
 interfaz y de la documentación.
 
@@ -20,10 +20,8 @@ Modelos DS
 Tinamït queda compatible con modelos escritos con los programas siguientes. Siempre puedes
 :ref:`escribir más <des_mds>`.
 
-* **Vensim**: Un programa de MDS bastante popular. Desafortunadamente, requiere la versión pagada (DSS) para
-conectar con Tinamït. Ver su `página oficial <http://vensim.com/>`_ y la envoltura.
-* **Stella**: Otro programa bastante popular. Ver su `página oficial <https://www.iseesystems.com/store/products/stella
--architect.aspx>`_ aquí. Envoltura todavía en trabajo.
+* **Vensim**: Un programa de MDS bastante popular. Desafortunadamente, requiere la versión pagada (DSS) para conectar con Tinamït. Ver su `página oficial <http://vensim.com/>`_ y la envoltura.
+* **Stella**: Otro programa bastante popular. Ver su `página oficial <https://www.iseesystems.com/store/products/stella-architect.aspx>`_ aquí. Envoltura todavía en trabajo.
 
 Modelos BF
 ----------
