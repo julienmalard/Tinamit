@@ -665,11 +665,42 @@ class ModeloFlexible(ModeloBF):
 
         raise NotImplementedError
 
+    def leer_archivo_vals_inic(símismo):
+        """
+        Esta función devuelve un diccionario con los valores leídos del archivo de valores iniciales.
+        :return:
+        :rtype: (dict, tuple)
+        """
+        raise NotImplementedError
+
     def mandar_simul(símismo):
         """
 
         :return: El número de pasos que avanzamos con esta simulación.
         :rtype: int
+        """
+
+        raise NotImplementedError
+
+    def leer_archivo_egr(símismo, n_años_egr):
+        """
+
+        :param n_años_egr:
+        :type n_años_egr:
+        :return:
+        :rtype: dict
+        """
+
+        raise NotImplementedError
+
+    def escribir_archivo_ingr(símismo, n_años_simul, dic_ingr):
+        """
+
+        :param n_años_simul:
+        :type n_años_simul: int
+        :param dic_ingr:
+        :type dic_ingr: dict
+
         """
 
         raise NotImplementedError

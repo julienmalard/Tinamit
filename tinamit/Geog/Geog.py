@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import shapefile as sf
 
-from taqdir.مقام import مقام
+from taqdir.مقام import مقام as lugarTaqdir
 from taqdir.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
 
 # Ofrecemos la oportunidad de utilizar تقدیر, taqdir, en español
@@ -24,7 +24,7 @@ conv_vars = {
 
 
 # Una subclase traducida
-class Lugar(مقام):
+class Lugar(lugarTaqdir):
     def __init__(símismo, lat, long, elev):
 
         super().__init__(چوڑائی=lat, طول=long, بلندی=elev)
@@ -56,6 +56,30 @@ class Lugar(مقام):
         super().اعداد_تیاری(fecha_inic, fecha_final, rcp, n_rep=1,
                             ترجیحات=prefs, lím_prefs=lím_prefs, regenerar=regenerar)
 
+    def devolver_datos(símismo, vars_clima, f_inic, f_final):
+        """
+
+        :param vars_clima:
+        :type vars_clima: list[str]
+        :param f_inic:
+        :type f_inic: ft.datetime | ft.date
+        :param f_final:
+        :type f_final: ft.datetime | ft.date
+        :return:
+        :rtype: dict[pd.DataFrame]
+        """
+        bd = símismo.اعداد_دن  # type: pd.DataFrame
+        datos_interés = bd.loc[f_inic:f_final]
+
+        for v in vars_clima:
+            if v not in conv_vars:
+                raise ValueError('El variable "{}" está erróneo. Debe ser uno de:\n'
+                                 '\t{}'.format(v, ', '.join(conv_vars)))
+
+        v_conv = [conv_vars[v] for v in vars_clima]
+
+        return datos_interés[v_conv]
+
     def comb_datos(símismo, vars_clima, combin, f_inic, f_final):
         """
 
@@ -64,9 +88,9 @@ class Lugar(مقام):
         :param combin:
         :type combin: list[str]
         :param f_inic:
-        :type f_inic: ft.datetime
+        :type f_inic: ft.datetime | ft.date
         :param f_final:
-        :type f_final: ft.datetime
+        :type f_final: ft.datetime | ft.date
         :return:
         :rtype: dict[np.ndarray]
         """

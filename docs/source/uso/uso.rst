@@ -52,4 +52,4 @@ desde el modelo biofísico y escoger “Gaming” como tipo de variable. Despué
 Preparación del modelo biofísico
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Si ya existe una envoltura específica para el modelo biofísico, no tienes que hacer nada más. Si no está disponible ya, tendrás
-que escribir una (o convencer a alguien de hacerlo para ti). 
+que escribir una (o convencer a alguien de hacerlo para ti). Ver la documentación de :ref:`envolturas BF <des_bf>`_.

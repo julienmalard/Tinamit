@@ -61,7 +61,7 @@ Conectar modelos (II)
 Después de eso, vamos a conectar los dos modelos por sus variables comunes. La flecha muestra la dirección de la conexión, y 
 puedes especificar un factor de conversión, si quieres. Hay que hacer clic en :guilabel:`Guardar` cada vez que haces una conexión.
 
-.. image:: Imágenes/IGU/IGU_conectar_vars.png
+.. image:: ../Imágenes/IGU/IGU_conectar_vars.png
    :align: center
    :alt: Conectar variables en Tinamït.
 
