@@ -30,7 +30,7 @@ Segundo, conectamos los variables biofísicos y de DS::
 Tenemos unos modelos muy sencillos. El modelo DS determina, dado la lluvia, la cantidad de pesca posible y su impacto
 en la necesidad de explotar recursos del bosque.
 
-.. image:: Imágenes/Ejemplos/Ejemplo_básico_modelo_VENSIM.png
+.. image:: ../Imágenes/Ejemplos/Ejemplo_básico_modelo_VENSIM.png
    :align: center
    :alt: Modelo Vensim.
 

@@ -1,0 +1,166 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamit 1.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-12-05 12:43-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language-Team: French (https://www.transifex.com/qatikon/teams/70565/fr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: ../../source/desarrollo/desarrollo.rst:4
+msgid "Desarrollo de Tinamït"
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:5
+msgid ""
+"Tinamït tiene una estructura modular, así que es muy fácil agregar más "
+"funcionalidades. En particular, por el desarrollo de envolturas específicas,"
+" se puede agregar compatibilidad con varios programas de modelos **de "
+"dinámicas de sistemas (DS)** y modelos **biofísicos (BF)**. También se "
+"pueden contribuir **traducciones** del interfaz y de la documentación."
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:10
+msgid ""
+"Además, Tinamït permite incorporar los resultados de modelos de **predicción"
+" climática** en las corridas de modelos apropiados."
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:14
+msgid "Modelos DS"
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:15
+msgid ""
+"Tinamït queda compatible con modelos escritos con los programas siguientes. "
+"Siempre puedes :ref:`escribir más <des_mds>`."
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:18
+msgid ""
+"**Vensim**: Un programa de MDS bastante popular. Desafortunadamente, "
+"requiere la versión pagada (DSS) para conectar con Tinamït. Ver su `página "
+"oficial <http://vensim.com/>`_ y la :class:`envoltura "
+"<tinamit.MDS.ModeloVensim>`."
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:20
+msgid ""
+"**Stella**: Otro programa bastante popular. Ver su `página oficial "
+"<https://www.iseesystems.com/ store/products/stella-architect.aspx>`_ aquí. "
+"Envoltura todavía en trabajo."
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:24
+msgid "Modelos BF"
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:25
+msgid ""
+"Cada envoltura agrega compatibilidad con un tipo de modelo biofísico "
+"distinto. Notar que Tinamït no viene con estos models incluidos pero "
+"simplemente *conecta* con ellos; los tienes que instalar separadamente. "
+"Siempre puedes :ref:`agregar una nueva envoltura <des_bf>` para tu modelo BF"
+" preferido. Por el momento, tenemos:"
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:29
+msgid ""
+"**SAHYSMOD**: Un modelo de salinidad de suelos. Ver la `documentación "
+"completa <https://www.waterlog.info /sahysmod.htm>`_ y la :mod:`envoltura "
+"<tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper>`."
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:31
+msgid ""
+"**DSSAT**: Un modelo de cultivos, que toma en cuenta semilla, clima, suelo y"
+" manejo humano. Ver la `documentación completa <https://dssat.net/>`_. "
+"(:mod:`Envoltura <tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT>` en trabajo.)"
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:35
+msgid "Modelos de Clima"
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:36
+msgid ""
+"Tinamït, por el paquete :py:ref:`taqdir`, ofrece la posibilidad de correr "
+"análisis de impactos de cambios climáticos. Igual que para envolturas de "
+"modelos BF, simplemente conecta con estos modelos, no los incluye. Así que "
+"los tendrás que instalar ti misma."
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:40
+msgid ""
+"**Marksim CMIP 5**: Marksim v2 permite generar predicciones climáticas con "
+"varios escenarios de cambios climáticos para cualquier región del mundo. "
+"Para más información, ver su `documentación oficial <http://www.ccafs-"
+"climate.org/pattern_scaling/>`_."
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:43
+msgid ""
+"**Marksim CMIP 3**: ¿Por qué usar CMIP 3 cuando tienes CMIP 5? Bueno, justo "
+"en caso, estamos trabajando en agregar compatibilidad con `Marksim "
+"<http://www.ccafs-climate.org/pattern_scaling/>`_ v1."
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:47
+msgid "Traducciones"
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:48
+msgid ""
+"¡Siempre querremos traducciones para hacer de Tinamït una herramienta aún "
+"más accesible! Se pueden :ref:`traducir <des_trad>` el interfaz y la "
+"documentación de Tinamït en tu lengua preferida."
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:53
+msgid "Cómo compartir tus inovaciones"
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:54
+msgid ""
+"La manera más fácil (para mi) es que te inscribas en GitHub, creas una nueva"
+" rama de Tinamït, le agreges tu contribución y después la combinemos con la "
+"rama central del proyecto. La manera más fácil para ti es probablemente "
+"mandarme tu nuevo código por correo electrónico (|correo|)."
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:58
+msgid "Unos apuntos para cuándo vas a compartir una nueva envoltura:"
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:60
+msgid ""
+"Incluir instrucciones, si necesario, para que tus usuarios puedan conseguir "
+"el modelo biofísico correspondiente."
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:61
+msgid ""
+"Incluir tantos comentarios como posible en tu envoltura (el código fuente de"
+" Tinamït es un ejemplo)."
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:62
+msgid ""
+"Se recomienda escribir envolturas en castellano, pero aceptamos envolturas "
+"escritas en todos idiomas. Apoyamos particularmente esfuerzos para escribir "
+"el código en el idioma nativo del lugar donde estás trabajando."
+msgstr ""
+
+#: ../../source/desarrollo/desarrollo.rst:67
+msgid "Para más información..."
+msgstr ""

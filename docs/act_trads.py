@@ -10,12 +10,34 @@ Funciona también (probablemente) para coordinar traducciones entre Zanata y Tra
 cuál es mejor. 
 """
 
+proyecto_transifex = 'tinamit'
+leng_orig = 'es'
+lenguas = ['ms', 'yo', 'fa', 'fr', 'ta', 'ur', 'nl']
+
 # El directorio de la documentación
 dir_docs = os.path.split(os.path.realpath(__file__))[0]
 
 # Primero, actualizamos los archivos de documentos para traducir (.pot), basado en el código más recién del programa
 print('Actualizando el proyecto...')
 run('make gettext', cwd=dir_docs)
+l_lengs = '-l ' + ' -l '.join(lenguas)
+run('sphinx-intl update -p build/locale {}'.format(l_lengs), cwd=dir_docs)
+run('tx init', cwd=dir_docs)
+run('sphinx-intl update-txconfig-resources --pot-dir build/locale --transifex-project-name {}'
+    .format(proyecto_transifex), cwd=dir_docs)
+
+archivo_config_tx = os.path.join(dir_docs, '.tx', 'config')
+final = []
+with open(archivo_config_tx, mode='r') as d:
+    for l in d.readlines():
+        if l == 'source_lang = en\n':
+            final.append('source_lang = {}\n'.format(leng_orig))
+        else:
+            final.append(l)
+
+with open(archivo_config_tx, mode='w') as d:
+    d.truncate()
+    d.writelines(final)
 
 # Traemos traducciones de Transifex y las mandamos a Zanata.
 print('Actualizando con Transifex...')

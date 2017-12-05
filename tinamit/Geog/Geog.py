@@ -50,7 +50,7 @@ class Lugar(مقام):
         :param archivo: El archivo con la base de datos.
         :type archivo: str
         :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y
-        el valor es el nombre de la columna en la base de datos.
+          el valor es el nombre de la columna en la base de datos.
         :type cols_datos: dict
         :param c_fecha: El nombre de la columna con las fechas de las observaciones.
         :type c_fecha: str
@@ -71,7 +71,7 @@ class Lugar(مقام):
         :type archivo: str
 
         :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y el valor es
-        el nombre de la columna en la base de datos.
+          el nombre de la columna en la base de datos.
         :type cols_datos: dict
 
         :param meses: El nombre de la columna con los meses de las observaciones.
@@ -96,7 +96,7 @@ class Lugar(مقام):
         :type archivo: str
 
         :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y el valor es
-        el nombre de la columna en la base de datos.
+          el nombre de la columna en la base de datos.
 
         :type cols_datos: dict
         :param años: El nombre de la columna con los años de las observaciones.
@@ -119,7 +119,7 @@ class Lugar(مقام):
         :param fecha_final: La fecha final.
         :type fecha_final: ft.date | ft.datetime
         :param tcr: El escenario climático, o trayectorio de concentración relativa (tcr), de la IPCC
-        (puede ser uno de 2.6, 4.5, 6.0, o 8.5).
+          (puede ser uno de 2.6, 4.5, 6.0, o 8.5).
         :type tcr: str | float
         :param prefs: Una lista opcional de fuentes potenciales de datos, en orden de preferencia.
         :type prefs: list
@@ -159,16 +159,17 @@ class Lugar(مقام):
 
     def comb_datos(símismo, vars_clima, combin, f_inic, f_final):
         """
+        Esta función combina datos climáticos entre dos fechas.
 
-        :param vars_clima:
+        :param vars_clima: Los variables de clima de interés.
         :type vars_clima: list[str]
-        :param combin:
+        :param combin: Cómo hay que combinar (promedio o total)
         :type combin: list[str]
-        :param f_inic:
+        :param f_inic: La fecha inicial
         :type f_inic: ft.datetime | ft.date
-        :param f_final:
+        :param f_final: La fecha final
         :type f_final: ft.datetime | ft.date
-        :return:
+        :return: Un diccionario con los resultados.
         :rtype: dict[np.ndarray]
         """
 

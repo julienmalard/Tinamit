@@ -499,7 +499,7 @@ class ModeloImpaciente(ModeloBF):
         Lee los egresos del modelo y los guarda en los diccionarios internos apropiados.
 
         :param n_años_egr: El número de años que se corrió la última simulación. Solamente se leerá el último año
-        de egresos.
+        　　de egresos.
         :type n_años_egr: int
 
         """
@@ -590,10 +590,7 @@ class ModeloFlexible(ModeloBF):
         """
         Esta función debe cambiar el valor de variables en el modelo biofísico.
 
-        :param valores: Un diccionario de variables y valores para cambiar, con el formato siguiente:
-        >>> {'var1': 10,  'var2': 15,
-        >>>    ...
-        >>>    }
+        :param valores: Un diccionario de variables y valores para cambiar．
         :type valores: dict
 
         """

@@ -8,9 +8,9 @@ ordenado por lengua.
 .. toctree::
    :maxdepth: 1
 
-   Ejemplo sencillo <ejemplo_senc>
-   Salinidad de suelos (SAHYSMOD) <ejemplo_sal>
-   Seguridad alimentaria <ejemplo_segali>
+   Ejemplo sencillo <sencillo>
+   Salinidad de suelos (SAHYSMOD) <salinidad_pk>
+   Seguridad alimentaria <segali_ix>
 
 Ejemplo muy sencillo
 --------------------

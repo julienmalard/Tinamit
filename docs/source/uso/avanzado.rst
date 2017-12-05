@@ -18,7 +18,7 @@ Primero, creamos el objeto de geografía::
     Rechna_Doab = Geografía(nombre='Rechna Doab')
 
 Después, agregamos las regiones que corresponden con los subscriptos (matriz) de los variables espaciales en nuestro
-modelo DS con la función `~tinamit.Geog.Geog.Geografía.agregar_regiones.
+modelo DS con la función `~tinamit.Geog.Geog.Geografía.agregar_regiones`.
 Estas son las regiones que se colorarán según los resultados::
 
     base_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Shape_files')
@@ -29,7 +29,7 @@ Estas son las regiones que se colorarán según los resultados::
    se especifica ``col_orden``, Tinamït supondrá que las regiones del archivo ``.shp`` están en el mismo orden que los
    índices en tu modelo DS, lo cual puede ser mala idea suponer.
 
-Ahora, agregamos otros objeto geográficos puramente estéticos con la función `~tinamit.Geog.Geog.Geografía.agregar_objeto::
+Ahora, agregamos otros objeto geográficos puramente estéticos con la función `~tinamit.Geog.Geog.Geografía.agregar_objeto`::
 
     Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'External_Polygon.shp'), color='#edf4da')
     Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'RIVR.shp'), tipo='agua')

@@ -4,8 +4,8 @@ msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-31 13:07-0400\n"
-"PO-Revision-Date: 2017-09-21 03:18-0400\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"PO-Revision-Date: 2017-12-05 05:37-0500\n"
+"Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -24,18 +24,18 @@ msgstr "Qu'est-ce que c'est ?"
 
 #: ../../source/intro.rst:6
 msgid ""
-"En breve, Tinamit sirve para conectar modelos de dinámicas de los sistemas "
+"En breve, Tinamït sirve para conectar modelos de dinámicas de los sistemas "
 "(DS) con modelos biofísicos. Permite el intercambio de valores de variables "
 "entre ambos modelos (y en ambas direcciones) a cada paso de simulación, y "
 "eso, con un mínimo de código (o, si de verdad lo quiere así, sin código "
 "cualquier)."
 msgstr ""
 
-#: ../../source/intro.rst:9
+#: ../../source/intro.rst:11
 msgid "¿Por qué?"
 msgstr "Et pour quoi faire ça ?"
 
-#: ../../source/intro.rst:10
+#: ../../source/intro.rst:12
 msgid ""
 "¿Por qué darse una tal tarea? Bueno, querer conectar modelos es algo "
 "bastante común. En nuestro caso,  los modelos DS son excelentes para "
@@ -47,7 +47,7 @@ msgid ""
 "gobierno, y otros en la construcción del modelo socioeconómico."
 msgstr ""
 
-#: ../../source/intro.rst:12
+#: ../../source/intro.rst:18
 msgid ""
 "Pero son bastante inútiles para representar procesos físicos más complejos, "
 "como el flujo de agua y de sal que resulta en la degradación del suelo. Esto"
@@ -58,7 +58,7 @@ msgid ""
 "prácticas de gestión de los suelos que adoptan."
 msgstr ""
 
-#: ../../source/intro.rst:14
+#: ../../source/intro.rst:24
 msgid ""
 "Y sí, por supuesto que ya existen muchas maneras de conectar estos tipos de "
 "modelos. Pero la mayoría involucra cientos de líneas de código, que usted "
@@ -71,46 +71,46 @@ msgid ""
 "te vayas."
 msgstr ""
 
-#: ../../source/intro.rst:20
+#: ../../source/intro.rst:35
 msgid "Figura 1"
+msgstr "Figure 1"
+
+#: ../../source/intro.rst:37
+msgid "Diagrama de la estructura conceptual de Tinamït."
 msgstr ""
 
-#: ../../source/intro.rst:22
-msgid "Diagrama de la estructura conceptual de Tinamit."
-msgstr ""
-
-#: ../../source/intro.rst:24
+#: ../../source/intro.rst:39
 msgid ""
-"Por eso se inventó Tinamit, el programa gratis y libre para hacer todo eso "
+"Por eso se inventó Tinamït, el programa gratis y libre para hacer todo eso "
 "para ti. Viene con:"
 msgstr ""
 
-#: ../../source/intro.rst:26
+#: ../../source/intro.rst:41
 msgid ""
 "Funciones predefinidas y flexibles para conectar modelos DS y biofísicos y "
 "simular el modelo conectado."
 msgstr ""
 
-#: ../../source/intro.rst:27
+#: ../../source/intro.rst:42
 msgid ""
 "Un interfaz gráfico de usuario (IGU) muy lindo, para los que le tienen miedo"
 " al código."
 msgstr ""
 
-#: ../../source/intro.rst:28
+#: ../../source/intro.rst:43
 msgid ""
 "Hablando del IGU, está disponible en varios idiomas, y siempre puedes "
 "agregarle una nueva y compartirla con quien quieras."
 msgstr ""
 
-#: ../../source/intro.rst:30
+#: ../../source/intro.rst:46
 msgid ""
-"Con Tinamit, cambiar la conexión entre los modelos o lanzar una nueva "
+"Con Tinamït, cambiar la conexión entre los modelos o lanzar una nueva "
 "simulación se hace con el pequeño cambio de una línea de código o, en el "
 "interfaz, con un clic del ratón."
 msgstr ""
 
-#: ../../source/intro.rst:32
+#: ../../source/intro.rst:49
 msgid ""
 "Lo único difícil es que, para cada tipo de modelo biofísico, hay que "
 "escribir un código (una “envoltura”) que pueda llamar las funciones de "
@@ -118,33 +118,33 @@ msgid ""
 "biofísico. Sí, es trabajo para alguien a quien le gusta la programación, "
 "pero lo bueno es que una vez hecha para un tipo de modelo biofísico ya no "
 "hay necesidad de volverlo a hacer, no importe con qué modelo lo vas a "
-"conectar. Tinamit ya viene con envolturas para algunos modelos biofísicos, y"
+"conectar. Tinamït ya viene con envolturas para algunos modelos biofísicos, y"
 " seguirá agregando más en tanto los escriben sus usuarios (¡ustedes!). "
 "Bueno, sabemos que no es ideal, pero es una limitación inevitable de "
-"conectar modelos (aunque no usaras Tinamit, lo tendrías que hacer de todo "
-"modo). Y, de verdad, para todo lo bueno de Tinamit, es un asunto de poca "
+"conectar modelos (aunque no usaras Tinamït, lo tendrías que hacer de todo "
+"modo). Y, de verdad, para todo lo bueno de Tinamït, es un asunto de poca "
 "importancia."
 msgstr ""
 
-#: ../../source/intro.rst:34
+#: ../../source/intro.rst:58
 msgid "En este manual, se supondrá que ya conoces, al menos, el siguiente:"
 msgstr ""
 
-#: ../../source/intro.rst:36
+#: ../../source/intro.rst:60
 msgid "Modelos de dinámicas de los sistemas"
 msgstr "Modèles de dynamiques des systèmes"
 
-#: ../../source/intro.rst:37
+#: ../../source/intro.rst:61
 msgid "Modelos físicos (en general)"
 msgstr "Modèles physiques"
 
-#: ../../source/intro.rst:38
+#: ../../source/intro.rst:62
 msgid "Python"
 msgstr "Python"
 
-#: ../../source/intro.rst:40
+#: ../../source/intro.rst:64
 msgid ""
 "Si no es el caso, ahora sería un momento excelente para ir a estudiarlos un "
-"poco. (¿Sabías? Para Python, www.codecademy.com tiene un curso fenomenal, "
-"gratis y en español.)"
+"poco. (¿Sabías? Para Python, `CodeCademy <www.codecademy.com>`_ tiene un "
+"curso fenomenal, gratis y en español.)"
 msgstr ""

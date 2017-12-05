@@ -16,7 +16,7 @@ usar como plantilla una de las subclases de :class:`~tinamit.BF.ModeloBF` que ya
 facilitarte la vida. (Fue un placer.)
 
 ¿Cómo escojo la mejor plantilla?
--------------------------------
+--------------------------------
 Para ayudarte a decidir cuál plantilla es mejor para ti, consulta el cuestionario siguiente.
 
 #. Mi modelo avanza con el **mismo paso que la precisión de sus egresos e ingresos**. Por ejemplo, tengo un modelo de

@@ -213,8 +213,8 @@ class SuperConectado(Modelo):
         vuelve recursiva.
 
         :param valores: El diccionario de nombres de variables para cambiar. Hay que prefijar cada nombre de variable
-        con el nombre del submodelo en en cual se ubica (separados con un ``_``), para que Tinamit sepa en cuál
-        submodelo se ubica cada variable.
+          con el nombre del submodelo en en cual se ubica (separados con un ``_``), para que Tinamit sepa en cuál
+          submodelo se ubica cada variable.
         :type valores: dict
 
         """
@@ -526,7 +526,7 @@ class SuperConectado(Modelo):
         :type modelo_fuente: str
 
         :param conv: La conversión entre las unidades de ambos modelos. En el caso ``None``, se intentará adivinar la
-        conversión con el módulo `~tinamit.Unidades`.
+          conversión con el módulo `~tinamit.Unidades`.
 
         :type conv: float
 
@@ -703,7 +703,7 @@ class Conectado(SuperConectado):
         :type var_bf: str
 
         :param mds_fuente: Si ``True``, el modelo DS es el modelo fuente para la conexión. Sino, será el modelo
-        biofísico.
+          biofísico.
         :type mds_fuente: bool
 
         :param conv: El factor de conversión entre los variables.
