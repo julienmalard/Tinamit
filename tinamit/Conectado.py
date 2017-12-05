@@ -10,7 +10,7 @@ from tinamit.BF import EnvolturaBF
 from tinamit.MDS import generar_mds
 from tinamit.Modelo import Modelo
 from tinamit.Unidades.Unidades import convertir
-from tinamit.Geog.Geog import Geografía
+from tinamit.Geog.Geog import Geografía, Lugar
 
 from taqdir.مقام import مقام
 
@@ -86,8 +86,8 @@ class SuperConectado(Modelo):
 
     def inic_vars(símismo):
         """
-        Esta función no es necesaria, porque :func:`.estab_modelo` ya llama las funciones necesarias.
-        :func:`~tinamit.Modelo.inic_vars` de los submodelos.
+        Esta función no es necesaria, porque :func:`~tinamit.Conectado.Conectado.estab_modelo` ya llama las funciones
+        necesarias, :func:`~tinamit.Modelo.inic_vars` de los submodelos.
 
         """
         pass
@@ -215,7 +215,6 @@ class SuperConectado(Modelo):
         :param valores: El diccionario de nombres de variables para cambiar. Hay que prefijar cada nombre de variable
         con el nombre del submodelo en en cual se ubica (separados con un ``_``), para que Tinamit sepa en cuál
         submodelo se ubica cada variable.
-
         :type valores: dict
 
         """
@@ -231,19 +230,18 @@ class SuperConectado(Modelo):
 
     def _conectar_clima(símismo, n_pasos, lugar, fecha_inic, tcr, recalc):
         """
+        Esta función conecta el clima de un lugar con el modelo Conectado.
 
-        :param  n_pasos:
+        :param  n_pasos: El número de pasos para la simulación.
         :type n_pasos: int
-        :param lugar:
-        :type lugar: مقام
-        :param fecha_inic:
+        :param lugar: El lugar.
+        :type lugar: Lugar
+        :param fecha_inic: La fecha inicial de la simulación.
         :type fecha_inic: ft.date | ft.datetime | str | int
-        :param tcr:
+        :param tcr: El escenario climático según el sistema de la IPCC (2.6, 4.5, 6.0, o 8.5)
         :type tcr: str | float
 
         """
-
-
 
         # Conectar el lugar
         símismo.lugar = lugar
@@ -284,15 +282,16 @@ class SuperConectado(Modelo):
             raise ValueError
 
         # Obtener los اعداد_دن de lugar
-        lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, rcp=tcr, regenerar=recalc)
+        lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=tcr, regenerar=recalc)
 
     def act_vals_clima(símismo, n_paso, f):
         """
+        Actualiza los variables climáticos según la fecha.
 
-        :param paso:
-        :type paso:
-        :param f:
-        :type f:
+        :param n_paso: El número de pasos en adelante para cuales tenemos que obtener predicciones.
+        :type n_paso: int
+        :param f: La fecha actual.
+        :type f: ft.datetime | ft.date
 
         """
 
@@ -312,6 +311,21 @@ class SuperConectado(Modelo):
 
         :param nombre_corrida: El nombre de la corrida.  El valor automático es ``Corrida Tinamit``.
         :type nombre_corrida: str
+
+        :param fecha_inic: La fecha inicial de la simulación. Necesaria para simulaciones con cambios climáticos.
+        :type fecha_inic: ft.datetime | ft.date | int | str
+
+        :param lugar: El lugar de la simulación.
+        :type lugar: Lugar
+
+        :param tcr: El escenario climático según el sistema de la IPCC (2.6, 4.5, 6.0, o 8.5)
+        :type tcr: str | float
+
+        :param recalc: Si quieres recalcular los datos climáticos, si ya existen.
+        :type recalc: bool
+
+        :param clima: Si es una simulación de cambios climáticos o no.
+        :type clima: bool
 
         """
 
@@ -459,6 +473,7 @@ class SuperConectado(Modelo):
         modelos.
 
         Se organiza este diccionario por modelo fuente. Tendrá la forma general:
+
         { modelo1: {var_fuente: {'var': var_recipiente_del_otro_modelo, 'conv': factor_conversión}, ...}, ...}
 
         """

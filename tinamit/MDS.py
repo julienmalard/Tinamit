@@ -16,6 +16,12 @@ class EnvolturaMDS(Modelo):
     """
 
     def __init__(símismo, archivo):
+        """
+        Iniciamos el modelo DS.
+
+        :param archivo: El archivo con el modelo DS.
+        :type archivo: str
+        """
 
         # Listas vacías para distintos tipos de variables.
         símismo.constantes = []
@@ -116,14 +122,16 @@ class EnvolturaMDS(Modelo):
 
     def leer_resultados_mds(símismo, corrida, var):
         """
+        Esta función lee los resultados desde un archivo de egresos del modelo DS.
 
-        :param corrida:
+        :param corrida: El nombre de la corrida. Debe corresponder al nombre del archivo de egresos.
         :type corrida: str
-        :param var:
+        :param var: El variable de interés.
         :type var: str
-        :return:
+        :return: Una matriz de los valores del variable de interés.
         :rtype: np.ndarray
         """
+
         if var not in símismo.variables:
             raise ValueError('El variable "{}" no existe.'.format(var))
 
@@ -468,7 +476,7 @@ class ModeloVensim(EnvolturaMDS):
 
     def cerrar_modelo(símismo):
         """
-        Cierre la simulación VENSIM.
+        Cierre la simulación Vensim.
         """
 
         # Llamar la comanda para terminar la simulación.
@@ -481,7 +489,7 @@ class ModeloVensim(EnvolturaMDS):
         Esta función regresa el estatus de Vensim. Es particularmente útil para desboguear (no tiene uso en las
         otras funciones de esta clase, y se incluye como ayuda a la programadora.)
 
-        :return: estatus número integral de código de estatus
+        :return: Código de estatus Vensim:
             | 0 = Vensim está listo
             | 1 = Vensim está en una simulación activa
             | 2 = Vensim está en una simulación, pero no está respondiendo
@@ -489,7 +497,7 @@ class ModeloVensim(EnvolturaMDS):
             | 4 = Error de memoria
             | 5 = Vensim está en modo de juego
             | 6 = Memoria no libre. Llamar vensim_command() debería de arreglarlo.
-            | 16 += ver documentación de VENSIM para vensim_check_status() en la sección de DLL (Suplemento DSS)
+            | 16 += ver documentación de Vensim para vensim_check_status() en la sección de DLL (Suplemento DSS)
         :rtype: int
 
         """
@@ -561,7 +569,7 @@ def comanda_vensim(func, args, mensaje_error=None, val_error=None, devolver=Fals
 def generar_mds(archivo):
     """
     Esta función genera una instancia de modelo de DS. Identifica el tipo de archivo por su extensión (p. ej., .vpm) y
-    después genera una instancia de la subclase apropiada de ``~Tinamit.MDS.EnvolturaMDS``.
+    después genera una instancia de la subclase apropiada de :class:`~tinamit.MDS.EnvolturaMDS`.
 
     :param archivo: El archivo del modelo DS.
     :type archivo: str
@@ -588,12 +596,13 @@ def generar_mds(archivo):
 
 def leer_egr_mds(archivo, var):
     """
+    Lee archivos de egresos de simulaciones MDS.
 
-    :param archivo:
+    :param archivo: El archivo de egresos.
     :type archivo: str
-    :param var:
+    :param var: El variable de interés
     :type var: str
-    :return:
+    :return: Una matriz con los valores del variable de interés.
     :rtype: np.ndarray
     """
 

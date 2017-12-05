@@ -48,6 +48,10 @@ Cambios climáticos
 También podemos conectar nuestro modelos con observaciones y predicciones climáticas si nuetro modelo tiene variables
 climáticos. Esto se hace con la clase :class:`~tinamit.Geog.Geog.Lugar` de Tinamït.
 
+.. warning::::
+   Debes tener un modelo de predicciones climáticos, como MarkSim, si quieres poder generar predicciones.
+   También puedes pre-descargar archivos de predicciones del sitio internet de MarkSim.
+
 Primero, debemos crear la instancia de :class:`~tinamit.Geog.Geog.Lugar`, con sus coordenadas::
 
     from tinamit.Geog.Geog import Lugar

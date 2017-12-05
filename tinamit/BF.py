@@ -146,10 +146,7 @@ class ModeloBF(Modelo):
         """
         Esta función debe cambiar el valor de variables en el modelo biofísico.
 
-        :param valores: Un diccionario de variables y valores para cambiar, con el formato siguiente:
-        >>> {'var1': 10,  'var2': 15,
-        >>>    ...
-        >>>    }
+        :param valores: Un diccionario de variables y valores para cambiar.
         :type valores: dict
 
         """
@@ -175,9 +172,7 @@ class ModeloBF(Modelo):
     def iniciar_modelo(símismo, **kwargs):
         """
         Esta función debe preparar el modelo para una simulación.
-        
-        :param kwargs:
-        :type kwargs:
+
         """
 
         raise NotImplementedError
@@ -201,18 +196,16 @@ class ModeloBF(Modelo):
     def inic_vars(símismo):
         """
         Esta función debe iniciar el diccionario interno de variables.
-        
+
         MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe para símismo.variables, no crear un
         diccionario nuevo.
-        Por ejemplo, NO HAGAS:
-        |  símismo.variables = {var1: {...}, var2: {...}, ...}
 
-        sino:
-        |  símismo.variables[var1] = {...}
-        |  símismo.variables[var2] = {...}
+        Por ejemplo, NO HAGAS: ``símismo.variables = {var1: {...}, var2: {...}, ...}``
 
-        Al no hacer esto, romperás la conección entre los diccionarios de variables de ClaseModeloBF y EnvolturaBF,
-        lo cual impedirá después la conexión de estos variables con el modelo DS.
+        sino: ``símismo.variables[var1] = {...}``, ``símismo.variables[var2] = {...}``, etc.
+
+        Al no hacer esto, romperás la conección entre los diccionarios de variables de :class:`ModeloBF` y
+        :class:`EnvolturaBF`, lo cual impedirá después la conexión de estos variables con el modelo DS.
 
         """
 
@@ -297,12 +290,12 @@ class ModeloImpaciente(ModeloBF):
 
     def act_vals_clima(símismo, n_paso, f):
         """
+        Actualiza los variables climáticos., según la estación.
 
-
-        :param n_paso:
+        :param n_paso: El número de pasos para avanzar
         :type n_paso: int
-        :param f:
-        :type f: ft.datetime
+        :param f: La fecha actual.
+        :type f: ft.datetime | ft.date
 
         """
 
@@ -404,8 +397,9 @@ class ModeloImpaciente(ModeloBF):
 
     def leer_vals(símismo):
         """
-        Empleamos leer_egr() en vez, lo cual lee los egresos de todas los pasos de la última simulación.
-        .incrementar() arregla lo de apuntar los diccionarios de variables actuales a la estación apropiada.
+        Empleamos :func:`ModeloImpaciente.leer_egr` en vez, lo cual lee los egresos de todas los pasos de la última
+        simulación. :func:`ModeloImpaciente.incrementar` arregla lo de apuntar los diccionarios de
+        variables actuales a la estación apropiada.
         """
         pass
 
@@ -423,8 +417,6 @@ class ModeloImpaciente(ModeloBF):
         """
         Esta función debe preparar el modelo para una simulación.
 
-        :param kwargs:
-        :type kwargs:
         """
 
         raise NotImplementedError
@@ -442,15 +434,17 @@ class ModeloImpaciente(ModeloBF):
 
         MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe para símismo.variables, no crear un
         diccionario nuevo.
-        Por ejemplo, NO HAGAS:
-        |  símismo.variables = {var1: {...}, var2: {...}, ...}
 
-        sino:
-        |  símismo.variables[var1] = {...}
-        |  símismo.variables[var2] = {...}
+        Por ejemplo, NO HAGAS: ``símismo.variables = {var1: {...}, var2: {...}, ...}``
 
-        Al no hacer esto, romperás la conección entre los diccionarios de variables de ClaseModeloBF y EnvolturaBF,
-        lo cual impedirá después la conexión de estos variables con el modelo DS.
+        sino: ``símismo.variables[var1] = {...}``, ``símismo.variables[var2] = {...}``, etc.
+
+        Al no hacer esto, romperás la conección entre los diccionarios de variables de :class:`ModeloBF` y
+        :class:`EnvolturaBF`, lo cual impedirá después la conexión de estos variables con el modelo DS.
+
+        También debe actualizar ``símismo.tipos_vars``, poniendo en 'Ingresos' los nombres de todos los variables
+        de ingreso, en 'Egresos' todos los variables de egreso, en 'IngrEstacionales' únicamente los variables de
+        ingreso estacionales, y en 'EgrEstacionales' los variables de egresos estacionales.
 
         """
 
@@ -458,9 +452,9 @@ class ModeloImpaciente(ModeloBF):
 
     def avanzar_modelo(símismo):
         """
-        Esta función debe avanzar el modelo de `n_paso_mín` de paso mínimos de simulación. Por ejemplo, si tienes
+        Esta función debe avanzar el modelo de ``n_paso_mín`` de paso mínimos de simulación. Por ejemplo, si tienes
         un modelo que simula con un paso mínimo de 1 año pero que quieres conectar con paso mensual, esta función
-        debe avanzar el modelo de `n_paso_mín` **سال**.
+        debe avanzar el modelo de `n_paso_mín` **años**.
 
         """
         raise NotImplementedError
@@ -469,8 +463,6 @@ class ModeloImpaciente(ModeloBF):
         """
         Esta función lee los valores iniciales del modelo.
 
-        :return:
-        :rtype:
         """
         dic_inic, dims = símismo.leer_archivo_vals_inic()
 
@@ -496,15 +488,18 @@ class ModeloImpaciente(ModeloBF):
     def leer_archivo_vals_inic(símismo):
         """
         Esta función devuelve un diccionario con los valores leídos del archivo de valores iniciales.
-        :return:
+        :return: Un diccionario de los variables iniciales y sus valores, con el número de polígonos (para modelos
+        espaciales). Si el modelo no es espacial, devolver ``(1,)`` para las dimensiones.
         :rtype: (dict, tuple)
         """
         raise NotImplementedError
 
     def leer_egr(símismo, n_años_egr):
         """
+        Lee los egresos del modelo y los guarda en los diccionarios internos apropiados.
 
-        :param n_años_egr:
+        :param n_años_egr: El número de años que se corrió la última simulación. Solamente se leerá el último año
+        de egresos.
         :type n_años_egr: int
 
         """
@@ -530,9 +525,9 @@ class ModeloImpaciente(ModeloBF):
 
     def escribir_ingr(símismo, n_años_simul):
         """
-
-        :param n_años_simul:
-        :type n_años_simul:
+        Escribe un archivo de ingresos del modelo en el formato que lee el modelo externo.
+        :param n_años_simul: El número de años para la simulación siguiente.
+        :type n_años_simul: int
         """
 
         dic_ingr = {}
@@ -554,10 +549,11 @@ class ModeloImpaciente(ModeloBF):
 
     def leer_archivo_egr(símismo, n_años_egr):
         """
+        Lee un archivo de egresos del modelo.
 
-        :param n_años_egr:
-        :type n_años_egr:
-        :return:
+        :param n_años_egr: El número de años en los egresos. Solamente leerá el último año.
+        :type n_años_egr: int
+        :return: Un diccionario de los resultados por variable.
         :rtype: dict
         """
 
@@ -565,10 +561,11 @@ class ModeloImpaciente(ModeloBF):
 
     def escribir_archivo_ingr(símismo, n_años_simul, dic_ingr):
         """
+        Escribe un archivo de ingresos para el modelo, en un formato que lee el modelo externo.
 
-        :param n_años_simul:
+        :param n_años_simul: El número de años para simular.
         :type n_años_simul: int
-        :param dic_ingr:
+        :param dic_ingr: El diccionario de valores iniciales, por variable.
         :type dic_ingr: dict
 
         """

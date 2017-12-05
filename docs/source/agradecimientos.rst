@@ -7,18 +7,17 @@ Autores del código
 ------------------
 
 * Julien Malard (`Sitio internet <https://www.researchgate.net/profile/Julien_Malard>`_)
-* محمّد اظہر انعام بیگ (`Sitio internet <https://www.researchgate.net/profile/Azhar_Baig>`_)
+* محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig, `Sitio internet <https://www.researchgate.net/profile/Azhar_Baig>`_)
+
 
 Autores de envolturas
 ---------------------
 Gracias a los siguientes por escribir envolturas específicas a los modelos biofísicos siguientes (nota: escribimos las
-*envolturas* para que estos modelos sean compatibles con Tinamït, ¡no los modelos sí mismos!)
+*envolturas* para que estos modelos sean compatibles con Tinamït, ¡no escribimos los modelos sí mismos!)
 
 SAHYSMOD
 ^^^^^^^^
-SAHYSMOD es un modelo de predicción de salinidad de los suelos.
-
-* محمّد اظہر انعام بیگ
+* محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)
 * Julien Malard
 
 Traductores
@@ -30,12 +29,12 @@ Instituciones afiliadas
 
 Los autores de Tinamït están afiliados con las instituciones siguientes:
 
-.. image:: Imágenes/Logo_McGill_IGFS.jpg
+.. image:: Imágenes/Logos/Logo_McGill_IGFS.jpg
    :width: 200
    :align: center
    :alt: Logo McGill
 
-.. image:: Imágenes/Logo_IARNA.jpg
+.. image:: Imágenes/Logos/Logo_IARNA.jpg
    :width: 200
    :align: center
    :alt: Logo IARNA URL

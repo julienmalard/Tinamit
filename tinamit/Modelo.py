@@ -57,10 +57,10 @@ class Modelo(object):
 
     def inic_vars(símismo):
         """
-        Esta función debe poblar el diccionario de variables del modelo, según la forma siguiente::
-            {'var1': {'val': 13, 'unidades': 'cm', 'ingreso': True, dims: (1,), 'egreso': True},
-            'var2': {'val': 2, 'unidades': 'cm', 'ingreso': False, dims: (3,2), 'egreso': True}}
-            }
+        Esta función debe poblar el diccionario de variables del modelo, según la forma siguiente:
+        {'var1': {'val': 13, 'unidades': 'cm', 'ingreso': True, dims: (1,), 'egreso': True},
+        'var2': {'val': 2, 'unidades': 'cm', 'ingreso': False, dims: (3,2), 'egreso': True}}
+        }
 
         """
         raise NotImplementedError
@@ -142,13 +142,14 @@ class Modelo(object):
 
     def conectar_var_clima(símismo, var, var_clima, combin=None):
         """
+        Conecta un variable climático.
 
-        :param var:
-        :type var:
-        :param var_clima:
-        :type var_clima:
-        :param combin:
-        :type combin:
+        :param var: El nombre interno del variable en el modelo.
+        :type var: str
+        :param var_clima: El nombre oficial del variable climático.
+        :type var_clima: str
+        :param combin: Si este variable se debe adicionar o tomar el promedio entre varios pasos.
+        :type combin: str
 
         """
         if var not in símismo.variables:
@@ -167,7 +168,7 @@ class Modelo(object):
         """
         Esta función desconecta un variable climático.
 
-        :param var:
+        :param var: El nombre interno del variable en el modelo.
         :type var: str
 
         """
@@ -180,10 +181,7 @@ class Modelo(object):
         interno del :class:`Modelo`, y después llama la función :func:`~Modelo.Modelo.cambiar_vals_modelo` para cambiar,
         si necesario, los valores de los variables en el modelo externo.
 
-        :param valores: Un diccionario de variables y valores para cambiar, con el formato siguiente:
-        >>> {'var1': 10,  'var2': 15,
-        >>>    ...
-        >>>    }
+        :param valores: Un diccionario de variables y sus valores para cambiar.
         :type valores: dict
 
         """
@@ -201,10 +199,7 @@ class Modelo(object):
         Esta función debe cambiar el valor de variables en el :class:`Modelo`, incluso tomar acciones para asegurarse
         de que el cambio se hizo en el modelo externo, si aplica.
 
-        :param valores: Un diccionario de variables y valores para cambiar, con el formato siguiente:
-        >>> {'var1': 10,  'var2': 15,
-        >>>    ...
-        >>>    }
+        :param valores: Un diccionario de variables y sus valores para cambiar.
         :type valores: dict
 
         """
@@ -219,11 +214,13 @@ class Modelo(object):
 
     def act_vals_clima(símismo, n_paso, f):
         """
+        Actualiza los variables climáticos. Esta función es la automática para cada modelo. Si necesitas algo más
+        complicado (como, por ejemplo, predicciones por estación), la puedes cambiar en tu subclase.
 
         :param n_paso: El número de pasos para avanzar
-        :type n_paso:
-        :param f:
-        :type f: ft.datetime
+        :type n_paso: int
+        :param f: La fecha actual.
+        :type f: ft.datetime | ft.date
         """
 
         if not len(símismo.vars_clima):
