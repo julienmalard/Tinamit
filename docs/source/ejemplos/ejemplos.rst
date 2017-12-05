@@ -1,6 +1,6 @@
 Ejemplos
 ========
-Aquí presentamos unos ejemplos del uso de Tinamït, más allá de lo presentado en la sección `Usar <usar>`.
+Aquí presentamos unos ejemplos del uso de Tinamït, más allá de lo presentado en la sección :ref:`Usar <uso/usar>`.
 
 El código para estos ejemplos también se encuentra en el archivo :file:`Ejemplos` de Tinamït.
 
@@ -36,7 +36,7 @@ en la necesidad de explotar recursos del bosque.
 
 .. image:: Imágenes/Ejemplos/Ejemplo_básico_modelo_VENSIM.png
    :align: center
-   :alt: Modelo VENSIM.
+   :alt: Modelo Vensim.
 
 Del otro lado, el "modelo" biofísico nos da la precipitación según la cubertura forestal. Vamos a conectar los variables
 necesarios::
@@ -44,7 +44,7 @@ necesarios::
    modelo.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)
    modelo.conectar(var_mds='Bosques', var_bf='Bosque', mds_fuente=True)
 
-Y corremos la simulación para 100 meses. ¡Allí está! Ya puedes visualizar los resultados directamente en VENSIM. ::
+Y corremos la simulación para 100 meses. ¡Allí está! Ya puedes visualizar los resultados directamente en Vensim. ::
 
    modelo.simular(paso=1, tiempo_final=100, nombre_corrida='Corrida_Tinamït')
 

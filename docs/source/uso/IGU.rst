@@ -15,6 +15,8 @@ Se empieza el interfaz con la función ``correr`` del IGU::
    from tinamit.Interfaz.IGU import correr
    correr()
 
+También simplemente puedes directamente ejecutar el archivo ``tinamit.Interfaz.IGU`` desde Python.
+
 Cambiar idiomas
 ---------------
 Bueno, primero, de pronto no hables español. O posiblemente trabajas con gente que no lo habla, y quieres hacerles la cortesía 
@@ -28,6 +30,12 @@ Para cambiar idiomas, hacer clic en el icono del globo terrestre.
 .. image:: ../Imágenes/IGU/IGU_cabeza_globo.png
    :align: center
    :alt: Icono de cambio de idiomas de Tinamït.
+
+Lo cual te dará...
+
+.. image:: ../Imágenes/IGU/IGU_trads.png
+   :align: center
+   :alt: Página de traducción de idiomas de Tinamït.
 
 En el centro, tienes las lenguas ya traducidas. Puedes escoger una con la cajita verde a la izquierda, o pulsar en lapicito 
 para hacer cambios a la traducción.

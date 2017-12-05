@@ -12,7 +12,7 @@ from tinamit.Modelo import Modelo
 class EnvolturaMDS(Modelo):
     """
     Esta clase sirve para representar modelo de dinámicas de los sistemas (MDS). Se debe crear una subclase para cada
-    tipo de MDS. Al moment, el único incluido es VENSIM.
+    tipo de MDS. Al moment, el único incluido es Vensim.
     """
 
     def __init__(símismo, archivo):
@@ -156,18 +156,18 @@ class ModeloVensim(EnvolturaMDS):
 
         # Inicializar Vensim
         comanda_vensim(func=dll.vensim_command,
-                               args=[''],
-                               mensaje_error='Error iniciando VENSIM.')
+                       args=[''],
+                       mensaje_error='Error iniciando VENSIM.')
 
         # Cargar el modelo
         comanda_vensim(func=dll.vensim_command,
-                               args='SPECIAL>LOADMODEL|%s' % archivo,
-                               mensaje_error='Eroor cargando el modelo de VENSIM.')
+                       args='SPECIAL>LOADMODEL|%s' % archivo,
+                       mensaje_error='Eroor cargando el modelo de VENSIM.')
 
         # Parámetros estéticos de ejecución.
         comanda_vensim(func=dll.vensim_be_quiet, args=[2],
-                               mensaje_error='Error en la comanda "vensim_be_quiet".',
-                               val_error=-1)
+                       mensaje_error='Error en la comanda "vensim_be_quiet".',
+                       val_error=-1)
 
         # El paso para incrementar
         símismo.paso = 1
@@ -189,19 +189,19 @@ class ModeloVensim(EnvolturaMDS):
 
         # Verificar el tamaño necesario
         tamaño_nec = comanda_vensim(func=símismo.dll.vensim_get_varnames,
-                                            args=['*', 0, mem, 0],
-                                            mensaje_error='Error obteniendo eñ tamaño de los variables VENSIM.',
-                                            val_error=-1, devolver=True
-                                            )
+                                    args=['*', 0, mem, 0],
+                                    mensaje_error='Error obteniendo eñ tamaño de los variables VENSIM.',
+                                    val_error=-1, devolver=True
+                                    )
 
         mem = ctypes.create_string_buffer(tamaño_nec)  # Una memoria intermedia con el tamaño apropiado
 
         # Guardar y decodar los nombres de los variables.
         comanda_vensim(func=símismo.dll.vensim_get_varnames,
-                               args=['*', 0, mem, tamaño_nec],
-                               mensaje_error='Error obteniendo los nombres de los variables de VENSIM.',
-                               val_error=-1
-                               )
+                       args=['*', 0, mem, tamaño_nec],
+                       mensaje_error='Error obteniendo los nombres de los variables de VENSIM.',
+                       val_error=-1
+                       )
         variables = [x for x in mem.raw.decode().split('\x00') if x]
 
         # Quitar los nombres de variables VENSIM genéricos de la lista.
@@ -211,11 +211,11 @@ class ModeloVensim(EnvolturaMDS):
 
         # Sacar los nombres de variables editables
         comanda_vensim(func=símismo.dll.vensim_get_varnames,
-                               args=['*', 12, mem, tamaño_nec],
-                               mensaje_error='Error obteniendo los nombres de los variables editables ("Gaming") de '
-                                             'VENSIM.',
-                               val_error=-1
-                               )
+                       args=['*', 12, mem, tamaño_nec],
+                       mensaje_error='Error obteniendo los nombres de los variables editables ("Gaming") de '
+                                     'VENSIM.',
+                       val_error=-1
+                       )
 
         editables = [x for x in mem.raw.decode().split('\x00') if x]
 
@@ -233,20 +233,20 @@ class ModeloVensim(EnvolturaMDS):
             # Sacar sus unidades
             mem = ctypes.create_string_buffer(50)
             comanda_vensim(func=símismo.dll.vensim_get_varattrib,
-                                   args=[var, 1, mem, 50],
-                                   mensaje_error='Error obteniendo las unidades del variable "{}" en '
-                                                 'VENSIM'.format(var),
-                                   val_error=-1
-                                   )
+                           args=[var, 1, mem, 50],
+                           mensaje_error='Error obteniendo las unidades del variable "{}" en '
+                                         'VENSIM'.format(var),
+                           val_error=-1
+                           )
             # Guardamos las unidades en un diccionario temporario.
             unidades[var] = mem.raw.decode().split('\x00')[0]
 
             # Verificar si el variable es un constante (ingreso)
             mem = ctypes.create_string_buffer(50)
             comanda_vensim(func=símismo.dll.vensim_get_varattrib,
-                                   args=[var, 14, mem, 50],
-                                   mensaje_error='Error obteniendo la clase del variable "{}" en VENSIM'.format(var),
-                                   val_error=-1)
+                           args=[var, 14, mem, 50],
+                           mensaje_error='Error obteniendo la clase del variable "{}" en VENSIM'.format(var),
+                           val_error=-1)
 
             tipo_var = mem.value.decode()
 
@@ -260,18 +260,18 @@ class ModeloVensim(EnvolturaMDS):
                 # Sacar las dimensiones del variable
                 mem = ctypes.create_string_buffer(10)
                 tmñ_sub = comanda_vensim(func=símismo.dll.vensim_get_varattrib,
-                                                 args=[var, 9, mem, 0],
-                                                 mensaje_error='Error leyendo el tamaño de memoria para los subscriptos'
-                                                               ' del variable "{}" en Vensim'.format(var),
-                                                 val_error=-1,
-                                                 devolver=True)
+                                         args=[var, 9, mem, 0],
+                                         mensaje_error='Error leyendo el tamaño de memoria para los subscriptos'
+                                                       ' del variable "{}" en Vensim'.format(var),
+                                         val_error=-1,
+                                         devolver=True)
 
                 mem = ctypes.create_string_buffer(tmñ_sub)
                 comanda_vensim(func=símismo.dll.vensim_get_varattrib,
-                                       args=[var, 9, mem, tmñ_sub],
-                                       mensaje_error='Error leyendo los subscriptos del '
-                                                     'variable "{}" en Vensim.'.format(var),
-                                       val_error=-1)
+                               args=[var, 9, mem, tmñ_sub],
+                               mensaje_error='Error leyendo los subscriptos del '
+                                             'variable "{}" en Vensim.'.format(var),
+                               val_error=-1)
 
                 subs = [x for x in mem.raw.decode().split('\x00') if x]
 
@@ -322,9 +322,9 @@ class ModeloVensim(EnvolturaMDS):
 
         # Sacar las unidades del variable "TIME STEP".
         comanda_vensim(func=símismo.dll.vensim_get_varattrib,
-                               args=['TIME STEP', 1, mem_inter, 50],
-                               mensaje_error='Error obteniendo las unidades de tiempo de VENSIM.',
-                               val_error=-1)
+                       args=['TIME STEP', 1, mem_inter, 50],
+                       mensaje_error='Error obteniendo las unidades de tiempo de VENSIM.',
+                       val_error=-1)
 
         # Decodar
         unidades = mem_inter.raw.decode().split('\x00')[0]
@@ -349,19 +349,19 @@ class ModeloVensim(EnvolturaMDS):
 
         # Establecer el nombre de la corrida.
         comanda_vensim(func=símismo.dll.vensim_command,
-                               args="SIMULATE>RUNNAME|%s" % nombre_corrida,
-                               mensaje_error='Error iniciando la corrida VENSIM.')
+                       args="SIMULATE>RUNNAME|%s" % nombre_corrida,
+                       mensaje_error='Error iniciando la corrida VENSIM.')
 
         # Establecer el tiempo final.
         comanda_vensim(func=símismo.dll.vensim_command,
-                               args='SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', tiempo_final),
-                               mensaje_error='Error estableciendo el tiempo final para VENSIM.')
+                       args='SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', tiempo_final),
+                       mensaje_error='Error estableciendo el tiempo final para VENSIM.')
 
         # Iniciar la simulación en modo juego ("Game"). Esto permitirá la actualización de los valores de los variables
         # a través de la simulación.
         comanda_vensim(func=símismo.dll.vensim_command,
-                               args="MENU>GAME",
-                               mensaje_error='Error inicializando el juego VENSIM.')
+                       args="MENU>GAME",
+                       mensaje_error='Error inicializando el juego VENSIM.')
 
         # Aplicar los valores iniciales de variables editables (que
         símismo.cambiar_vals({var: val for var, val in símismo.vals_inic.items()
@@ -385,8 +385,8 @@ class ModeloVensim(EnvolturaMDS):
 
                 # Actualizar el valor en el modelo VENSIM.
                 comanda_vensim(func=símismo.dll.vensim_command,
-                                       args='SIMULATE>SETVAL|%s = %f' % (var, val),
-                                       mensaje_error='Error cambiando el variable %s.' % var)
+                               args='SIMULATE>SETVAL|%s = %f' % (var, val),
+                               mensaje_error='Error cambiando el variable %s.' % var)
             else:
                 # Para hacer: opciones de dimensiones múltiples
                 # La lista de subscriptos
@@ -402,8 +402,8 @@ class ModeloVensim(EnvolturaMDS):
                     val_s = matr[n]
 
                     comanda_vensim(func=símismo.dll.vensim_command,
-                                           args='SIMULATE>SETVAL|%s = %f' % (var_s, val_s),
-                                           mensaje_error='Error cambiando el variable %s.' % var_s)
+                                   args='SIMULATE>SETVAL|%s = %f' % (var_s, val_s),
+                                   mensaje_error='Error cambiando el variable %s.' % var_s)
 
     def incrementar(símismo, paso):
         """
@@ -417,13 +417,13 @@ class ModeloVensim(EnvolturaMDS):
         # Establecer el paso.
         if paso != símismo.paso:
             comanda_vensim(func=símismo.dll.vensim_command,
-                                   args="GAME>GAMEINTERVAL|%i" % paso,
-                                   mensaje_error='Error estableciendo el paso de VENSIM.')
+                           args="GAME>GAMEINTERVAL|%i" % paso,
+                           mensaje_error='Error estableciendo el paso de VENSIM.')
             símismo.paso = paso
 
         # Avanzar el modelo.
         comanda_vensim(func=símismo.dll.vensim_command,
-                               args="GAME>GAMEON", mensaje_error='Error para incrementar VENSIM.')
+                       args="GAME>GAMEON", mensaje_error='Error para incrementar VENSIM.')
 
     def leer_vals(símismo):
         """
@@ -442,8 +442,8 @@ class ModeloVensim(EnvolturaMDS):
 
                 # Leer su valor.
                 comanda_vensim(func=símismo.dll.vensim_get_val,
-                                       args=[var, mem_inter],
-                                       mensaje_error='Error con VENSIM para leer variables.')
+                               args=[var, mem_inter],
+                               mensaje_error='Error con VENSIM para leer variables.')
 
                 # Decodar
                 val = struct.unpack('f', mem_inter)[0]
@@ -457,8 +457,8 @@ class ModeloVensim(EnvolturaMDS):
 
                     # Leer su valor.
                     comanda_vensim(func=símismo.dll.vensim_get_val,
-                                           args=[var_s, mem_inter],
-                                           mensaje_error='Error con VENSIM para leer variables.')
+                                   args=[var_s, mem_inter],
+                                   mensaje_error='Error con VENSIM para leer variables.')
 
                     # Decodar
                     val = struct.unpack('f', mem_inter)[0]
@@ -473,8 +473,8 @@ class ModeloVensim(EnvolturaMDS):
 
         # Llamar la comanda para terminar la simulación.
         comanda_vensim(func=símismo.dll.vensim_command,
-                               args="GAME>ENDGAME",
-                               mensaje_error='Error para terminar la simulación VENSIM.')
+                       args="GAME>ENDGAME",
+                       mensaje_error='Error para terminar la simulación VENSIM.')
 
     def verificar_vensim(símismo):
         """
@@ -496,10 +496,10 @@ class ModeloVensim(EnvolturaMDS):
 
         # Obtener el estatus.
         estatus = comanda_vensim(func=símismo.dll.vensim_check_status,
-                                         args=[],
-                                         mensaje_error='Error verificando el estatus de VENSIM. De verdad, la cosa'
-                                                       'te va muy mal.',
-                                         val_error=-1, devolver=True)
+                                 args=[],
+                                 mensaje_error='Error verificando el estatus de VENSIM. De verdad, la cosa'
+                                               'te va muy mal.',
+                                 val_error=-1, devolver=True)
         return int(estatus)
 
 

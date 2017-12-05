@@ -49,11 +49,25 @@ Traducciones
 :ref:`traducir <des_trad>` el interfaz y la documentación de Tinamït en tu lengua preferida.
 
 
+Cómo compartir tus inovaciones
+------------------------------
+La manera más fácil (para mi) es que te inscribas en GitHub, creas una nueva rama de Tinamït, le agreges tu contribución
+y después la combinemos con la rama central del proyecto.
+La manera más fácil para ti es probablemente mandarme tu nuevo código por correo electrónico (|correo|).
+
+Unos apuntos para cuándo vas a compartir una nueva envoltura:
+
+* Incluir instrucciones, si necesario, para que tus usuarios puedan conseguir el modelo biofísico correspondiente.
+* Incluir tantos comentarios como posible en tu envoltura (el código fuente de Tinamït es un ejemplo).
+* Se recomienda escribir envolturas en castellano, pero aceptamos envolturas escritas en todos idiomas. Apoyamos
+  particularmente esfuerzos para escribir el código en el idioma nativo del lugar donde estás trabajando.
+
+
 Para más información...
 -----------------------
 .. toctree::
    :maxdepth: 1
 
-   Desarrollar Envolturas MDS <des_mds>
-   Desarrollar Envolturas BF <des_bf>
+   Desarrollar envolturas MDS <des_mds>
+   Desarrollar envolturas BF <des_bf>
    Contribuir traducciones <des_trad>

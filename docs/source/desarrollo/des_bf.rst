@@ -22,14 +22,14 @@ Para ayudarte a decidir cuál plantilla es mejor para ti, consulta el cuestionar
 #. Mi modelo avanza con el **mismo paso que la precisión de sus egresos e ingresos**. Por ejemplo, tengo un modelo de
    poblaciones de insectos que puede avanzar con un paso de 1 mes y me da las poblaciones. Entonces, utilizar la
    plantilla estándar :class:`~tinamit.BF.ModeloBF`. Más detalles
-   :ref:`abajo <plantilla_modbf>`_.
+   :ref:`abajo <plantilla_modbf>`.
 #. Mi modelo avanza con un paso **superior a la precisión de sus egresos o ingresos**. Por ejemplo, mi modelo de
    salinidad de los suelos avanza por un paso mínimo de 1 año, pero después me da predicciones de salinidad distintas
    para dos estaciones de 6 meses cada una. Entonces, utilizar :class:`~tinamit.BF.ModeloImpaciente`. Más detalles
-   :ref:`abajo <plantilla_modimp>`_.
+   :ref:`abajo <plantilla_modimp>`.
 #. Mi modelo avanza con un **paso variable**. Por ejemplo, mi modelo de cultivos corre hasta la cosecha, la cual varía
    según el cultivo y el clima. Entonces, utilizar :class:`~tinamit.BF.ModeloFlexible`. Más detalles
-   :ref:`abajo <plantilla_modflex>`_.
+   :ref:`abajo <plantilla_modflex>`.
 
 Si todavía no estás segura, empieza con :class:`~tinamit.BF.ModeloBF`. Saberás que no fue la buena decisión por quedarte
 muy confundida muy pronto.
@@ -77,6 +77,8 @@ estaciones, de manera automática. Simplemente debes implementar las funciones s
 * :func:`~tinamit.BF.ModeloImpaciente.escribir_archivo_ingr`: Escribe un archivo de ingresos para el modelo, basado en
   los valores de los variables internos actuales.
 
+Un ejemplo sería la envoltura para SAHYSMOD, :class:`~tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper`.
+
 .. _plantilla_modflex:
 Plantilla ModeloFlexible
 ------------------------
@@ -95,6 +97,8 @@ las funciones siguientes en una subclase:
 * :func:`~tinamit.BF.ModeloFlexible.escribir_archivo_ingr`: Escribe un archivo de ingresos para el modelo, basado en
   los valores de los variables internos actuales.
 
+Un ejemplo sería la envoltura para DSSAT, :class:`~tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT`.
+
 Cambios climáticos
 ------------------
 Si tu modelo incluye variables climáticos, deberías considerar escribirlo para que pueda comunicar con las
@@ -102,9 +106,9 @@ funcionalidades de cambios climáticos de Tinamït. Esto permitirá que Tinamït
 según el escenario climático escogido por el usuario.
 
 Cuando un usuario corre un modelo con un escenario climático, cada modelo conectado se conectará automáticamente, por
-su atributo `.lugar`, con un objeto `~tinamit.Geog.Geog.Lugar`. Si tu modelo requiere datos climáticos con la
-**misma precisión que su paso**, simplemente puedes llamar la función :func:`~tinamit.Modelo.conectar_var_clima` en su
-método ``.__init__()``. Por ejemplo, en la envoltura de SAHYSMOD::
+su atributo ``.lugar``, con un objeto :class:`~tinamit.Geog.Geog.Lugar`. Si tu modelo requiere datos climáticos con la
+**misma precisión que su paso**, simplemente puedes llamar la función :func:`~tinamit.Modelo.Modelo.conectar_var_clima`
+en su método :func:`~tinamit.BF.ModeloBF.__init__`. Por ejemplo, en la envoltura de SAHYSMOD::
 
    self.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total')
 
@@ -115,11 +119,11 @@ paso de la simulación para el escenario climático apropiado. Chévere, ¿no?
 El parámetro ``var`` es el nombre de este variable en tu envoltura. Puede ser lo que quieres, en el idioma que quieres.
 La opciones actuales para variables climáticos (``var_clima``) incluyen:
 
-* ``Precipitación`` mm
-* ``Radiación solar``:
-* ``Temperatura máxima``: grados C
-* ``Temperatura promedia``: grados C
-* ``Temperatura mínima``: grados C
+* ``Precipitación`` : mm
+* ``Radiación solar`` : MJ / m2 / día
+* ``Temperatura máxima`` : grados C
+* ``Temperatura promedia`` : grados C
+* ``Temperatura mínima`` : grados C
 
 .. note::
    ``Combin`` puede ser ``prom`` (calculará el promedio de este variable climático por el periodo deseado) o ``total``
@@ -131,15 +135,3 @@ cultivos necesita que los variables climáticos diarios se escriben en un archiv
 simulación), lo tendrás que implementar en :func:`~tinamit.BF.ModeloBF.iniciar_modelo`. Puedes acceder los variables
 climáticos que quieres con el método :func:`~tinamit.Geog.Geog.Lugar.devolver_datos` de ``símismo.lugar``.
 
-Cómo compartir tu nueva envoltura
----------------------------------
-La manera más fácil (para mi) es que te inscribas en GitHub, creas una nueva rama de Tinamït, le agreges tu nueva envoltura
-y después la combinemos con la rama central del proyecto.
-La manera más fácil para ti es probablemente mandarme tu nuevo código por correo electrónico (|correo|).
-
-Unos apuntos para cuándo vas a compartir una nueva envoltura:
-
-* Incluir instrucciones, si necesario, para que tus usuarios puedan conseguir el modelo biofísico correspondiente.
-* Incluir tantos comentarios como posible en tu envoltura (el código fuente de Tinamït es un ejemplo).
-* Se recomienda escribir envolturas en castellano, pero aceptamos envolturas escritas en todos idiomas. Apoyamos
-  particularmente esfuerzos para escribir el código en el idioma nativo del lugar donde estás trabajando.

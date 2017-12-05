@@ -35,7 +35,7 @@ Contacto: |correo|
    Instalar <instal>
    Usar <uso/uso>
    Desarrollo <desarrollo/desarrollo>
-   Ejemplos <ejemplos>
+   Ejemplos <ejemplos/ejemplos>
    Publicaciones <pubs>
    Documentación <docu/docu>
    Agradecimientos <agradecimientos>
