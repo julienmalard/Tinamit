@@ -69,11 +69,14 @@ class Lugar(مقام):
 
         :param archivo: El archivo con la base de datos.
         :type archivo: str
-        :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y
-        el valor es el nombre de la columna en la base de datos.
+
+        :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y el valor es
+        el nombre de la columna en la base de datos.
         :type cols_datos: dict
+
         :param meses: El nombre de la columna con los meses de las observaciones.
         :type meses: str
+
         :param años: El nombre de la columna con los años de las observaciones.
         :type años: str
 
@@ -91,8 +94,10 @@ class Lugar(مقام):
 
         :param archivo: El archivo con la base de datos.
         :type archivo: str
-        :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y
-        el valor es el nombre de la columna en la base de datos.
+
+        :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y el valor es
+        el nombre de la columna en la base de datos.
+
         :type cols_datos: dict
         :param años: El nombre de la columna con los años de las observaciones.
         :type años: str
@@ -137,7 +142,7 @@ class Lugar(مقام):
         :type f_inic: ft.datetime | ft.date
         :param f_final: La fecha final.
         :type f_final: ft.datetime | ft.date
-        :return: U
+        :return: Los datos pedidos.
         :rtype: pd.DataFrame
         """
         bd = símismo.اعداد_دن  # type: pd.DataFrame
@@ -230,20 +235,19 @@ class Geografía(object):
 
     def dibujar(símismo, archivo, valores=None, título=None, unidades=None, colores=None, escala=None):
         """
+        Dibuja la Geografía.
 
-
-
-        :param archivo:
+        :param archivo: Dónde hay que guardar el mapa.
         :type archivo: str
-        :param valores:
+        :param valores: Los valores para dibujar.
         :type valores: np.ndarray
-        :param título:
+        :param título: El título del mapa.
         :type título: str
-        :param unidades:
+        :param unidades: Las unidades de los valores.
         :type unidades: str
-        :param colores:
+        :param colores: Los colores para dibujar.
         :type colores: str | list | tuple
-        :param escala:
+        :param escala: La escala numérica para los colores.
         :type escala: tuple
 
         """
@@ -275,7 +279,7 @@ class Geografía(object):
 
             vals_norm = (valores - escala[0]) / (escala[1] - escala[0])
 
-            d_clrs = gen_d_mapacolores(colores=colores)
+            d_clrs = _gen_d_mapacolores(colores=colores)
 
             mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs)
             norm = colors.Normalize(vmin=escala[0], vmax=escala[1])
@@ -283,7 +287,7 @@ class Geografía(object):
             cpick.set_array([])
 
             v_cols = mapa_color(vals_norm)
-            dibujar_shp(regiones, orden=orden, colores=v_cols)
+            _dibujar_shp(regiones, orden=orden, colores=v_cols)
 
             if unidades is not None:
                 dib.colorbar(cpick, label=unidades)
@@ -296,13 +300,13 @@ class Geografía(object):
 
             for a in ['color', 'llenar', 'alpha']:
                 if d_obj[a] is None:
-                    d_obj[a] = formatos_auto(a, tipo)
+                    d_obj[a] = _formatos_auto(a, tipo)
 
             color = d_obj['color']
             llenar = d_obj['llenar']
             alpha = d_obj['alpha']
 
-            dibujar_shp(frm=d_obj['obj'], colores=color, alpha=alpha, llenar=llenar)
+            _dibujar_shp(frm=d_obj['obj'], colores=color, alpha=alpha, llenar=llenar)
 
         if título is not None:
             dib.title(título)
@@ -311,24 +315,25 @@ class Geografía(object):
         dib.close()
 
 
-def dibujar_shp(frm, colores, orden=None, alpha=1.0, llenar=True):
+def _dibujar_shp(frm, colores, orden=None, alpha=1.0, llenar=True):
     """
+    Dibujar una forma geográfica.
 
     Basado en código de Chris Halvin: https://github.com/chrishavlin/learning_shapefiles/tree/master/src
 
-    :param frm:
+    :param frm: La forma
     :type frm: sf.Reader
 
-    :param colores:
+    :param colores: Los colores para dibujar.
     :type colores: str | list[str] | np.ndarray
 
-    :param orden:
+    :param orden: El orden de las partes de la forma, relativo al orden de las colores.
     :type orden: np.ndarray | list
 
-    :param alpha:
+    :param alpha: La transparencia
     :type alpha: float | int
 
-    :param llenar:
+    :param llenar: Si hay que llenar la forma, o simplemente dibujar los contornos.
     :type llenar: bool
     """
 
@@ -381,12 +386,29 @@ def dibujar_shp(frm, colores, orden=None, alpha=1.0, llenar=True):
                     dib.plot(x_lon, y_lat, color=col, alpha=alpha)
 
 
-def hex_a_rva(hx):
+def _hex_a_rva(hx):
+    """
+    Convierte colores RVA a Hex.
+
+    :param hx: El valor hex.
+    :type hx: str
+    :return: El valor rva.
+    :rtype: tuple
+    """
     return tuple(int(hx.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4))
 
 
-def gen_d_mapacolores(colores):
-    clrs_rva = [hex_a_rva(x) for x in colores]
+def _gen_d_mapacolores(colores):
+    """
+    Genera un diccionario de mapa de color para MatPlotLib.
+
+    :param colores: Una lista de colores
+    :type colores: list
+    :return: Un diccionario para MatPlotLib
+    :rtype: dict
+    """
+
+    clrs_rva = [_hex_a_rva(x) for x in colores]
     n_colores = len(colores)
 
     dic_c = {'red': tuple((round(i / (n_colores - 1), 2), clrs_rva[i][0] / 255, clrs_rva[i][0] / 255) for i in
@@ -401,14 +423,15 @@ def gen_d_mapacolores(colores):
     return dic_c
 
 
-def formatos_auto(a, tipo):
+def _formatos_auto(a, tipo):
     """
+    Formatos automáticos.
 
-    :param a:
+    :param a: El atributo.
     :type a: str
-    :param tipo:
+    :param tipo: El tipo de objeto geográfico.
     :type tipo: str
-    :return:
+    :return: El atributo automático.
     :rtype: str | bool | float
     """
 

@@ -452,5 +452,5 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 
 # Internacionalización
-locale_dirs = ['locale/']
+locale_dirs = ['_locale/']
 gettext_compact = False
