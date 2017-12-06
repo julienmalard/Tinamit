@@ -1,21 +1,23 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
 # This file is distributed under the same license as the tinamit package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-05 12:43-0500\n"
+"POT-Creation-Date: 2017-12-06 09:58-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ur\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
 
 #: ../../source/ejemplos/salinidad_pk.rst:4
 msgid "Ejemplo de salinidad de suelos en Pakistán"
@@ -27,61 +29,90 @@ msgstr ""
 
 #: ../../source/ejemplos/salinidad_pk.rst:8
 msgid ""
-"La mayoría de modelos biofísicos necesitan un modelo externo que instalas "
-"separadamente en tu computadora. Pero el problema es que la gente suele "
-"instalar cosas en lugares distintos en sus computadoras."
+"La mayoría de modelos biofísicos necesitan un modelo externo que instalas"
+" separadamente en tu computadora. Pero el problema es que la gente suele "
+"instalar cosas en lugares distintos en sus computadoras. Por eso no "
+"puedes referenciar la envoltura BF sí misma directamente, sino crear una "
+"implementación de esta envolutra que especifica el directorio del modelo "
+"SAHYSMOD y del archivo de datos iniciales (el cual determina nuestro "
+"modelo, incluso el número de polígonos, las propiedades hidrológicas de "
+"la cuenca, y las condiciones iniciales). Todo este se incluye en un "
+"archivo separado (``SAHYSMOD.py`` en el ejemplo) para facilitar su "
+"importación en el IGU. ::"
 msgstr ""
 
-#: ../../source/ejemplos/salinidad_pk.rst:13
+#: ../../source/ejemplos/salinidad_pk.rst:35
 msgid "Correr la simulación"
 msgstr ""
 
-#: ../../source/ejemplos/salinidad_pk.rst:14
-msgid "Primero, importamos todo::"
+#: ../../source/ejemplos/salinidad_pk.rst:36
+msgid "Primero, y en otro archivo Python, importamos todo::"
 msgstr ""
 
-#: ../../source/ejemplos/salinidad_pk.rst:22
+#: ../../source/ejemplos/salinidad_pk.rst:44
 msgid "Ahora, especificamos la geografía para el lugar. ::"
 msgstr ""
 
-#: ../../source/ejemplos/salinidad_pk.rst:36
+#: ../../source/ejemplos/salinidad_pk.rst:58
 msgid ""
-"Establecemos unas políticas, cada una de cuales implica valores distintos "
-"para variables distintos del modelo. ::"
+"Establecemos unas políticas, cada una de cuales implica valores distintos"
+" para variables distintos del modelo. ::"
 msgstr ""
 
-#: ../../source/ejemplos/salinidad_pk.rst:52
-msgid ""
-"Generamos otro diccionario para combinaciones de las políticas arriba::"
+#: ../../source/ejemplos/salinidad_pk.rst:74
+msgid "Generamos otro diccionario para combinaciones de las políticas arriba::"
 msgstr ""
 
-#: ../../source/ejemplos/salinidad_pk.rst:82
+#: ../../source/ejemplos/salinidad_pk.rst:104
 msgid "Ahora, creamos el modelo. ::"
 msgstr ""
 
-#: ../../source/ejemplos/salinidad_pk.rst:89
+#: ../../source/ejemplos/salinidad_pk.rst:112
 msgid ""
-"Visto que el modelo DS tiene un paso no estándar de ``estación`` (6 meses), "
-"tenemos que establecer la conversión de unidades de tiempo explícitamente::"
+"Referenciamos la implementación local del modelo biofísico (ver arriba), "
+"y no la envoltura sí misma directamente, para poder especificar el "
+"directorio del modelo SAHYSMOD y del archivo de datos iniciales en esta "
+"computadora."
 msgstr ""
 
-#: ../../source/ejemplos/salinidad_pk.rst:94
+#: ../../source/ejemplos/salinidad_pk.rst:115
+msgid ""
+"Visto que el modelo DS tiene un paso no estándar de ``estación`` (6 "
+"meses), tenemos que establecer la conversión de unidades de tiempo "
+"explícitamente::"
+msgstr ""
+
+#: ../../source/ejemplos/salinidad_pk.rst:120
 msgid "Conectamos los variables::"
 msgstr ""
 
-#: ../../source/ejemplos/salinidad_pk.rst:107
+#: ../../source/ejemplos/salinidad_pk.rst:133
 msgid ""
-"Ahora, corremos el modelo con el grupo de políticas que escogió el usuario::"
+"Ahora, corremos el modelo con el grupo de políticas que escogió el "
+"usuario::"
 msgstr ""
 
-#: ../../source/ejemplos/salinidad_pk.rst:130
+#: ../../source/ejemplos/salinidad_pk.rst:156
 msgid ""
 "Ahora, repetimos las corridas anteriores, pero con cambios climáticos. "
 "Primero, establecemos el lugar y sus observaciones::"
 msgstr ""
 
-#: ../../source/ejemplos/salinidad_pk.rst:137
+#: ../../source/ejemplos/salinidad_pk.rst:163
 msgid ""
 "Y corremos el modelo con combinaciones de cada política y escenario "
 "climático del IPCC::"
 msgstr ""
+
+#~ msgid ""
+#~ "La mayoría de modelos biofísicos "
+#~ "necesitan un modelo externo que instalas"
+#~ " separadamente en tu computadora. Pero "
+#~ "el problema es que la gente suele"
+#~ " instalar cosas en lugares distintos "
+#~ "en sus computadoras."
+#~ msgstr ""
+
+#~ msgid "Primero, importamos todo::"
+#~ msgstr ""
+

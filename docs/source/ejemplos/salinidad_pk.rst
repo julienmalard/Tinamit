@@ -6,12 +6,34 @@ Ejemplo de salinidad de suelos en Pakistán
 Preparación
 -----------
 La mayoría de modelos biofísicos necesitan un modelo externo que instalas separadamente en tu computadora.
-Pero el problema es que la gente suele instalar cosas en lugares distintos en sus computadoras.
+Pero el problema es que la gente suele instalar cosas en lugares distintos en sus computadoras. Por eso no puedes
+referenciar la envoltura BF sí misma directamente, sino crear una implementación de esta envolutra que especifica
+el directorio del modelo SAHYSMOD y del archivo de datos iniciales (el cual determina nuestro modelo, incluso el
+número de polígonos, las propiedades hidrológicas de la cuenca, y las condiciones iniciales). Todo este se incluye
+en un archivo separado (``SAHYSMOD.py`` en el ejemplo) para facilitar su importación en el IGU. ::
+
+    # Importar lo que importa
+    import os
+
+    from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import ModeloSAHYSMOD
+
+    # Ruta del archivo ejecutable SAHYSMOD. Cambiar según su computadora.
+    SAHYSMOD = 'C:\\SahysMod\\SahysModConsole.exe'
+
+    # Ruta al archivo in datos iniciales de SAHYSMOD. Cambiar según su computadora.
+    directorio = os.path.dirname(__file__)
+    datos_inic = os.path.join(directorio, 'INPUT_EXAMPLE2.inp')
+
+
+    # Creamos una envoltura específica a la computadora y la cuenca hidrológica. No cambiar esta línea.
+    class Modelo(ModeloSAHYSMOD):
+        def __init__(self):
+            super().__init__(sayhsmod_exe=SAHYSMOD, initial_data=datos_inic)
 
 
 Correr la simulación
 --------------------
-Primero, importamos todo::
+Primero, y en otro archivo Python, importamos todo::
 
     import os
     
@@ -85,6 +107,10 @@ Ahora, creamos el modelo. ::
 
     modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Tinamit_sub_v4.vpm'))
     modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'SAHYSMOD.py'))
+
+.. note::
+   Referenciamos la implementación local del modelo biofísico (ver arriba), y no la envoltura sí misma directamente,
+   para poder especificar el directorio del modelo SAHYSMOD y del archivo de datos iniciales en esta computadora.
 
 Visto que el modelo DS tiene un paso no estándar de ``estación`` (6 meses), tenemos que establecer la conversión de
 unidades de tiempo explícitamente::

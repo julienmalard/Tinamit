@@ -42,7 +42,6 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # Empty dictionary to store input data later on
         self.dic_input = {}
 
-
         # Set the working directory to write model output, and remember where the initial data is stored.
         self.working_dir, self.initial_data = os.path.split(initial_data)
         self.output = os.path.join(self.working_dir, 'SAHYSMOD.out')
@@ -59,7 +58,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
     def inic_vars(self):
         """
-
+        Initialises the variable and variable type dictionaries.
         """
 
         # DON'T change the names of the dictionary keys here. Bad things will happen if you do, because they are
@@ -89,7 +88,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
     def iniciar_modelo(self, **kwargs):
         """
-        Nothing specific to do. Variables have already been read in .inic_vars()
+        Nothing specific to do. Variables have already been read in func:`inic_vars`.
         """
 
         pass
@@ -155,6 +154,8 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         """
         This function reads the last year of a SAHYSMOD output file.
 
+        :param n_años_egr: The number of output years. Only the last year will be read.
+        :type n_años_egr: int
         """
 
         dic_out = read_output_file(file_path=self.output, n_s=self.n_estaciones, n_p=self.n_poly, n_y=n_años_egr)
@@ -405,16 +406,20 @@ SAHYSMOD_output_vars = [v['code'] for v in vars_SAHYSMOD.values() if v['out']]
 
 def read_output_file(file_path, n_s, n_p, n_y):
     """
+    Reads the last year (all seasons and polygons) of a SAHYSMOD output file.
 
-    :param n_y:
-    :param file_path:
+    :param n_y: The number of years in the output file. Only the last year will be read.
+    :type n_y: int
+    :param file_path: The absolute path to the output file.
     :type file_path: str
     :param n_s: Number of seasons per year.
     :type n_s: int
     :param n_p: Number of INTERNAL polygons in the SAHYSMOD model.
     :type n_p: int
-    :return:
-    :rtype: dict
+    :return: A dictionary of output values, where each key is a variable name (SAHYSMOD variable code format) and each
+      value is a numpy matrix with axis 0 = season, axis 1 = polygon. According to SAHYSMOD convention,
+      -1 indicates missing values.
+    :rtype: dict[np.ndarray]
     """
 
     dic_data = dict([(k, np.empty((n_s, n_p))) for k in SAHYSMOD_output_vars])
