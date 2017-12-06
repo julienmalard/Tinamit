@@ -1,5 +1,5 @@
 import os
-from subprocess import run
+from subprocess import run, Popen, PIPE
 
 
 """
@@ -22,7 +22,13 @@ print('Actualizando el proyecto...')
 run('make gettext', cwd=dir_docs)
 l_lengs = '-l ' + ' -l '.join(lenguas)
 run('sphinx-intl update -p build/locale {}'.format(l_lengs), cwd=dir_docs)
-run('tx init', cwd=dir_docs)
+
+p = Popen('tx init',stdin=PIPE, cwd='C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\docs', shell=True)
+p.stdin.write(b'y\n')
+p.stdin.flush()
+p.stdin.write(b'\n')
+p.stdin.flush()
+
 run('sphinx-intl update-txconfig-resources --pot-dir build/locale --transifex-project-name {}'
     .format(proyecto_transifex), cwd=dir_docs)
 
