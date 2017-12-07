@@ -21,6 +21,8 @@ dir_docs = os.path.split(os.path.realpath(__file__))[0]
 print('Actualizando el proyecto...')
 run('make gettext', cwd=dir_docs)
 l_lengs = '-l ' + ' -l '.join(lenguas)
+
+# Actualizamos traducciones ya hechas (documentos .po) con las nuevas cosas para traducir
 run('sphinx-intl update -p build/locale {}'.format(l_lengs), cwd=dir_docs)
 
 p = Popen('tx init',stdin=PIPE, cwd='C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\docs', shell=True)
@@ -45,6 +47,11 @@ with open(archivo_config_tx, mode='w') as d:
     d.truncate()
     d.writelines(final)
 
+
+# Mandar cambios locales al servidor Zanata
+print('Mandando los documentos de traducciones actualizados al servidor...')
+run('zanata po push --copytrans', input=b'y', cwd=dir_docs)
+
 # Traemos traducciones de Transifex y las mandamos a Zanata.
 print('Actualizando con Transifex...')
 run('tx pull -a', cwd=dir_docs)
@@ -53,10 +60,6 @@ run('zanata po push --copytrans --import-po', input=b'y', cwd=dir_docs)
 # Traemos las traducciones más recientes de Zanata
 print('Verificando las traducciones más recientes en Zanata...')
 run('zanata po pull', cwd=dir_docs)
-
-# Actualizamos traducciones ya hechas (documentos .po) con las nuevas cosas para traducir
-print('Actualizando los archivos de traducciones locales...')
-run('sphinx-intl update -p build/locale', cwd=dir_docs)
 
 # Mandar los documentos de traducciones actualizados al servidor Zanata
 print('Mandando los documentos de traducciones actualizados al servidor...')
