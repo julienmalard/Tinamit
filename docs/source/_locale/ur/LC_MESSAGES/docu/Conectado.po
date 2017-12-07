@@ -88,7 +88,7 @@ msgstr "متغیر کا نام متحرک نظام ماڈل میں منسلک ہ
 #: ../../docstring of tinamit.Conectado.Conectado.estab_bf:1
 msgid "Establece el modelo biofísico (:class:`~tinamit.BF.EnvolturaBF`)."
 msgstr ""
-"بائیوفیسیکل ماڈل (:class:`نمونہ <~tinamit.BF.EnvolturaBF>`) قائم کرتا ہے۔"
+"بائیوفیسیکل ماڈل (:class:`نمونہ <tinamit.BF.EnvolturaBF~>`) قائم کرتا ہے۔"
 
 #: ../../docstring of tinamit.Conectado.Conectado.estab_bf:3
 msgid ""
