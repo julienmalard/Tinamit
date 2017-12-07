@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-05 12:49-0500\n"
-"PO-Revision-Date: 2017-12-06 02:43-0500\n"
+"PO-Revision-Date: 2017-12-07 11:35-0500\n"
 "Last-Translator: Azhar Inam <azharinam@gmail.com>\n"
 "Language-Team: Urdu\n"
 "Language: ur\n"
@@ -226,10 +226,13 @@ msgid ""
 "``paso``. Emplea el módulo :py:mod:`threading` para correr los dos "
 "submodelos en paralelo, así ahorando tiempo."
 msgstr ""
+"   يہ خصوصیت دو سب ماڈل کو جو وقت کےقدم کےساتھ بذريعہ \" Paso\" جوڑے ہوتے "
+"ہيں کو چالاتا ہے۔ان دو سب ماڈل کومتوازی چالانے کے ليے يہ ماڈيول "
+":py:mod:`threading`استعال کرتا ہے  تو آہورانڈو کا وقت"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.incrementar:4
 msgid "El intervalo de tiempo."
-msgstr "وقت کی روشنی."
+msgstr "وقت کا وقفہ"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.inic_vars:1
 msgid ""
@@ -237,27 +240,34 @@ msgid ""
 ":func:`~tinamit.Conectado.Conectado.estab_modelo` ya llama las funciones "
 "necesarias, :func:`~tinamit.Modelo.inic_vars` de los submodelos."
 msgstr ""
+":func:`~tinamit.Modelo.inic_vars` .پہلے ہی ذیلی ماڈیولز کے لازمی ضروری کام "
+"کرتا ہے :func:`~tinamit.Conectado.Conectado.estab_modelo` یہ فعل ضروری نہیں "
+"ہے، کیونکہ "
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.iniciar_modelo:1
 msgid "Inicia el modelo en preparación para una simulación."
-msgstr ""
+msgstr " ایک تخروپن کی تیاری  کے لئے ماڈل شروع کریں"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.iniciar_modelo:3
 msgid ""
 "Actualizamos el diccionario de cconexiones rápidas para facilitar el "
 "intercambio eventual de valores entre los modelos."
 msgstr ""
+"ہم ماڈل کے درمیان متغیرات کے ابتدائی تبادلہ کو آسان بنانے کے لئے تیز کنکشن "
+"کی لغت کو اپ ڈیٹ کرتے ہیں"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.iniciar_modelo:6
 msgid ""
 "Se organiza este diccionario por modelo fuente. Tendrá la forma general:"
-msgstr ""
+msgstr "یہ لغت ماخذ ماڈل کے ذریعہ منظم کیا جاتا ہے. اس کی عام شکل ہوگی"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.iniciar_modelo:8
 msgid ""
 "{ modelo1: {var_fuente: {'var': var_recipiente_del_otro_modelo, 'conv': "
 "factor_conversión}, ...}, ...}"
 msgstr ""
+"{ modelo1: {var_fuente: {'var': var_recipiente_del_otro_modelo, 'conv': "
+"factor_conversión}, ...}, ...}"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.leer_vals:1
 msgid ""
@@ -266,6 +276,8 @@ msgid ""
 ":class:`~tinamit.Conectado.SuperConectado`, no hay necesidad de actualizar "
 "el diccionario del :class:`~tinamit.Modelo.SuperConectado` sí mismo."
 msgstr ""
+"آئیے ان متغیرات عوامل کے دو ذیلی ماڈیولز کی اقدار کو پڑھیں ۔ذیلی ماڈلوں کے متغیرات کی لغات کے درمیان  \n"
+"خود :class:`~tinamit.Modelo.SuperConectado`لغت کی تازہ کاری کرنے کی کوئی ضرورت نہیں ہے۔ :class:`~tinamit.Conectado.SuperConectado` رابطے کے لئے"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:1
 msgid ""
@@ -278,17 +290,24 @@ msgid ""
 "meses con un modelo de unidad de año, se aplicará una unidad de tiempo de "
 "سال al modelo conectado."
 msgstr ""
+"  یہ فنکشن منسلک ماڈل کے وقت کے یونٹوں کوکنڑول کرے گا۔ یہ ذيلی ماڈلوں پر منحصر ہے۔ اگر  دونوں ذيلی ماڈلوں کے يونيٹ يکساں ھوں گے تو يہ يونيٹ ماڈلوں کو جوڑے گا اور  \n"
+" اگر  دونوں ذيلی ماڈلوں کے يونيٹ مختلف ھوں گے تو يہ ان کے ليے تبادلہ تلاش کرنے کی کوشش کرے گا اور بڑے يونٹ کو لے گا۔ مثال کے طور پر، اگر ایک سال کے ایک \n"
+" یونٹ کے ساتھ مہینے کے وقت کا یونٹ منسلک ہوتا ہے تو، سال کا ایک یونٹ منسلک ماڈل پر لاگو کیا جائے گا."
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:8
 msgid ""
 "Después se actualiza el variable símismo.conv_tiempo para guardar en memoria"
 " la conversión necesaria entre los pasos de los dos submodelos."
 msgstr ""
+"  ميں رھتا ہے جبتکہ دونوں ذيلی ماڈلوں ميں جو تبادلہ چاہيے نہ ھو جا ے "
+"símismo.conv_tiempo  تازہ پن کے بعد متغیر یاداشت"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:11
 msgid ""
 "Se emplea las clase `~tinamit.Unidades.Unidades` para convertir unidades."
 msgstr ""
+"کلاس استعمال کی جاتی ہے `~tinamit.Unidades.Unidades` یونٹس کو تبدیل کرنے کے "
+"لئے"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:0
 msgid "Devuelve"
@@ -296,7 +315,7 @@ msgstr "واپسی"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:13
 msgid "El tiempo de paso del modelo SuperConectado."
-msgstr ""
+msgstr "  ماڈل سپر منسلک کے قدم کا وقفہ"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:0
 msgid "Tipo del valor devuelto"
@@ -304,40 +323,46 @@ msgstr "واپس قیمت کی قسم"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.simular:1
 msgid "Simula el modelo :class:`~tinamit.Conectado.SuperConectado`."
-msgstr ""
+msgstr ":class:`~tinamit.Conectado.SuperConectado` نمونہ ماڈل"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.simular:3
 msgid "El tiempo final de la simulación."
-msgstr ""
+msgstr "تخروپن کا آخری وقت."
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.simular:6
 msgid ""
 "El paso (intervalo de intercambio de valores entre los dos submodelos)."
-msgstr ""
+msgstr "(قدم (دو ذیلی ماڈلوں کے متغیرات کے درمیان اقدار کے تبادلے کا وقفہ"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.simular:9
 msgid "El nombre de la corrida.  El valor automático es ``Corrida Tinamit``."
 msgstr ""
+" خود کار طريقہ سے کورراڈا ميں ا‏عداد کی تعداد کا تعين کر تی ہے`` Corrida "
+"Tinamit``"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.simular:12
 msgid ""
 "La fecha inicial de la simulación. Necesaria para simulaciones con cambios "
 "climáticos."
 msgstr ""
+"   تخروپن کی شروع کی تاریخ۔ اس کی آب و ہوا کے تبدیلی والے تخروپن کو چالانے "
+"ميں ضرورت پڑھے گی"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.simular:15
 msgid "El lugar de la simulación."
-msgstr ""
+msgstr "  تخروپن کا مقام"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.simular:18
 msgid ""
 "El escenario climático según el sistema de la IPCC (2.6, 4.5, 6.0, o 8.5)"
-msgstr ""
+msgstr "(2.6,  4.5,  6.0,  or  8.5) کے لحاظ سے آب و ہوا کے  منظر نامے IPCC "
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.simular:21
 msgid "Si quieres recalcular los datos climáticos, si ya existen."
 msgstr ""
+"اگر آپ آب و ہوا کے ا‏عداد و شمار کا دوبارہ سے حساب کرنا چاہيں، اگر وہ پہلے "
+"سے وہاں موجود ھو"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.simular:24
 msgid "Si es una simulación de cambios climáticos o no."
-msgstr ""
+msgstr " اگر آب و ہوا کی ايک تخروپن ہے يا نہيں"
