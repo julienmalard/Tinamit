@@ -78,10 +78,7 @@ class EnvolturaBF(Modelo):
         """
         Esta función cambia el valor de variables en el modelo.
 
-        :param valores: Un diccionario de variables y valores para cambiar, con el formato siguiente:
-        >>> {'var1': 10,  'var2': 15,
-        >>>    ...
-        >>>    }
+        :param valores: Un diccionario de variables y valores para cambiar.
         :type valores: dict
 
         """
