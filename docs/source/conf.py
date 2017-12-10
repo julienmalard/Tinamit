@@ -143,7 +143,7 @@ con_rtd = os.environ.get('READTHEDOCS')
 if con_rtd:
     html_theme = 'default'
 else:
-    html_theme = 'classic'
+    html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -243,7 +243,7 @@ html_static_path = ['_static']
 #   'da', 'de', 'en', 'es', 'fi', 'fr', 'h', 'it', 'ja'
 #   'nl', 'no', 'pt', 'ro', 'r', 'sv', 'tr', 'zh'
 #
-# html_search_language = 'en'
+html_search_language = 'es'
 
 # A dictionary with options for the search language support, empty by default.
 # 'ja' uses this config value.
