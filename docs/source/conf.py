@@ -142,8 +142,6 @@ todo_include_todos = True
 con_rtd = os.environ.get('READTHEDOCS')
 if con_rtd:
     html_theme = 'default'
-    def setup(app):
-        app.add_stylesheet("tema.css")
 else:
     html_theme = 'alabaster'
 
