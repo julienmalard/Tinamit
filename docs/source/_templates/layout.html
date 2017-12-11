@@ -160,17 +160,6 @@
 
       {# PAGE CONTENT #}
       <div class="wy-nav-content">
-        <ul>
-        {% for cssfile in css_files %}
-          <li> {{ pathto(cssfile, 1) }} </li>
-        {% endfor %}
-          <li> Prueba </li>
-
-        {% for cssfile in extra_css_files %}
-          <li> {{ pathto(cssfile, 1) }} </li>
-        {% endfor %}
-        </ul>
-        
         {% if (theme_style_external_links == 'True') %}
         <div class="rst-content style-external-links">
         {% else %}
