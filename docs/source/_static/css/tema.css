@@ -320,11 +320,11 @@ big,small {
 .fa-ul {
 	list-style-type:none
 }
-.ltr .fa-ul {
+:-moz-dir(ltr) .fa-ul {
 	padding-left:0;
 	margin-left:2.14286em
 }
-.rtl .fa-ul {
+:-moz-dir(rtl) .fa-ul {
 	padding-right:0;
 	margin-right:2.14286em
 }
@@ -929,7 +929,7 @@ big,small {
 	content:""
 }
 .fa-arrow-circle-left:before,.icon-circle-arrow-left:before {
-	content:""
+	content:"•"
 }
 .fa-arrow-circle-right:before,.icon-circle-arrow-right:before {
 	content:""
@@ -2702,10 +2702,10 @@ button[disabled] {
 	box-shadow:0 2px 2px 0 rgba(0,0,0,0.1);
 	padding:12px
 }
-.ltr .wy-dropdown-menu {
+:-moz-dir(ltr) .wy-dropdown-menu {
 	float:left
 }
-.rtl .wy-dropdown-menu {
+:-moz-dir(rtl) .wy-dropdown-menu {
 	float:right
 }
 .wy-dropdown-menu>dd>a {
@@ -2764,10 +2764,10 @@ button[disabled] {
 	right:0;
 	left:auto;
 }
-.ltr .wy-dropdown.wy-dropdown-left .wy-dropdown-menu {
+:-moz-dir(ltr) .wy-dropdown.wy-dropdown-left .wy-dropdown-menu {
 	text-align:right
 }
-.rtl .wy-dropdown.wy-dropdown-left .wy-dropdown-menu {
+:-moz-dir(rtl) .wy-dropdown.wy-dropdown-left .wy-dropdown-menu {
 	text-align:left
 }
 .wy-dropdown-arrow:before {
@@ -2798,18 +2798,18 @@ button[disabled] {
 	vertical-align:middle;
 	width:10em;
 }
-.ltr .wy-form-aligned .wy-control-group>label {
+:-moz-dir(ltr) .wy-form-aligned .wy-control-group>label {
 	float:left;
 	margin:6px 12px 0 0
 }
-.rtl .wy-form-aligned .wy-control-group>label {
+:-moz-dir(rtl) .wy-form-aligned .wy-control-group>label {
 	float:right;
 	margin:6px 0 0 12px;
 }
-.ltr .wy-form-aligned .wy-control {
+:-moz-dir(ltr) .wy-form-aligned .wy-control {
 	float:left
 }
-.rtl .wy-form-aligned .wy-control {
+:-moz-dir(rtl) .wy-form-aligned .wy-control {
 	float:right
 }
 .wy-form-aligned .wy-control label {
@@ -2884,72 +2884,72 @@ input,select,textarea {
 	display:block;
 	width:100%
 }
-.ltr .wy-control-group .wy-form-full {
+:-moz-dir(ltr) .wy-control-group .wy-form-full {
 	float:left;
 	margin-right:2.35765%;
 	margin-right:0
 }
-.rtl .wy-control-group .wy-form-full {
+:-moz-dir(rtl) .wy-control-group .wy-form-full {
 	float: right'
 	margin-left:2.35765%;
 	margin-left:0
 }
-.ltr .wy-control-group .wy-form-full:last-child {
+:-moz-dir(ltr) .wy-control-group .wy-form-full:last-child {
 	margin-right:0
 }
-.rtl .wy-control-group .wy-form-full:last-child {
+:-moz-dir(rtl) .wy-control-group .wy-form-full:last-child {
 	margin-left:0
 }
 .wy-control-group .wy-form-halves {
 	display:block;
 	width:48.82117%
 }
-.ltr .wy-control-group .wy-form-halves {
+:-moz-dir(ltr) .wy-control-group .wy-form-halves {
 	float:left
 }
-.rtl .wy-control-group .wy-form-halves {
+:-moz-dir(rtl) .wy-control-group .wy-form-halves {
 	float:right
 }
-.ltr .wy-control-group .wy-form-halves:last-child {
+:-moz-dir(ltr) .wy-control-group .wy-form-halves:last-child {
 	margin-right:0
 }
-.rtl .wy-control-group .wy-form-halves:last-child {
+:-moz-dir(rtl) .wy-control-group .wy-form-halves:last-child {
 	margin-left:0
 }
-.ltr .wy-control-group .wy-form-halves:nth-of-type(2n) {
+:-moz-dir(ltr) .wy-control-group .wy-form-halves:nth-of-type(2n) {
 	margin-right:0
 }
-.rtl .wy-control-group .wy-form-halves:nth-of-type(2n) {
+:-moz-dir(rtl) .wy-control-group .wy-form-halves:nth-of-type(2n) {
 	margin-left:0
 }
-.ltr .wy-control-group .wy-form-halves:nth-of-type(2n+1) {
+:-moz-dir(ltr) .wy-control-group .wy-form-halves:nth-of-type(2n+1) {
 	clear:left
 }
-.rtl .wy-control-group .wy-form-halves:nth-of-type(2n+1) {
+:-moz-dir(rtl) .wy-control-group .wy-form-halves:nth-of-type(2n+1) {
 	clear:right
 }
 .wy-control-group .wy-form-thirds {
 	display:block;
 	width:31.76157%
 }
-.ltr .wy-control-group .wy-form-thirds {
+:-moz-dir(ltr) .wy-control-group .wy-form-thirds {
 	float:left;
 	margin-right:2.35765%
 }
-.rtl .wy-control-group .wy-form-thirds {
+:-moz-dir(rtl) .wy-control-group .wy-form-thirds {
 	float:right;
 	margin-left:2.35765%
 }
-.ltr .wy-control-group .wy-form-thirds:last-child {
+:-moz-dir(ltr) .wy-control-group .wy-form-thirds:last-child {
 	margin-right:0
 }
-.ltr .wy-control-group .wy-form-thirds:nth-of-type(3n) {
+:-moz-dir(ltr) .wy-control-group .wy-form-thirds:nth-of-type(3n) {
 	margin-right:0
 }
-.rtl .wy-control-group .wy-form-thirds:last-child {
+:-moz-dir(rtl) .wy-control-group .wy-form-thirds:last-child {
 	margin-left:0
 }
-.rtl .wy-control-group .wy-form-thirds:nth-of-type(3n) {
+:-moz-dir(rtl) .wy-control-group .wy-form-thirds:nth-of-type(3n) {
 	margin-left:0
 }
 .wy-control-group .wy-form-thirds:nth-of-type(3n+1) {
@@ -2973,10 +2973,10 @@ input,select,textarea {
 	vertical-align:middle;
 	font-size:90%
 }
-.ltr .wy-form-message-inline {
+:-moz-dir(ltr) .wy-form-message-inline {
 	padding-left:0.3em
 }
-.rtl .wy-form-message-inline {
+:-moz-dir(rtl) .wy-form-message-inline {
 	padding-right:0.3em
 }
 .wy-form-message {
@@ -3030,10 +3030,10 @@ input[type="checkbox"],input[type="radio"] {
 	*height:13px;
 	*width:13px
 }
-.ltr input[type="checkbox"],.ltr input[type="radio"] {
+:-moz-dir(ltr) input[type="checkbox"],:-moz-dir(ltr) input[type="radio"] {
 	margin-right:.3125em;
 }
-.rtl input[type="checkbox"],.ltr input[type="radio"] {
+:-moz-dir(rtl) input[type="checkbox"],:-moz-dir(ltr) input[type="radio"] {
 	margin-left:.3125em;
 }
 input[type="search"] {
@@ -3134,16 +3134,16 @@ input[type="radio"][disabled],input[type="checkbox"][disabled] {
 	border:solid 1px #ccc;
 	color:#999
 }
-.ltr .wy-input-suffix .wy-input-context {
+:-moz-dir(ltr) .wy-input-suffix .wy-input-context {
 	border-left:0
 }
-.rtl .wy-input-suffix .wy-input-context {
+:-moz-dir(rtl) .wy-input-suffix .wy-input-context {
 	border-right:0
 }
-.ltr .wy-input-prefix .wy-input-context {
+:-moz-dir(ltr) .wy-input-prefix .wy-input-context {
 	border-right:0
 }
-.rtl .wy-input-prefix .wy-input-context {
+:-moz-dir(rtl) .wy-input-prefix .wy-input-context {
 	border-left:0
 }
 .wy-switch {
@@ -3291,10 +3291,10 @@ input[type="radio"][disabled],input[type="checkbox"][disabled] {
 		display:block;
 		width:100%
 	}
-	.ltr .wy-form-aligned .wy-control-group label {
+	:-moz-dir(ltr) .wy-form-aligned .wy-control-group label {
 		text-align:left
 	}
-	.rlt .wy-form-aligned .wy-control-group label {
+	:-moz-dir(rtl) .wy-form-aligned .wy-control-group label {
 		text-align:right
 	}
 	.wy-form-aligned .wy-control {
@@ -3343,10 +3343,10 @@ input[type="radio"][disabled],input[type="checkbox"][disabled] {
 	overflow:visible;
 	padding:8px 16px
 }
-.ltr .wy-table td:first-child,.ltr .rst-content table.docutils td:first-child,.ltr .rst-content table.field-list td:first-child,.ltr .wy-table th:first-child,.ltr .rst-content table.docutils th:first-child,.ltr .rst-content table.field-list th:first-child {
+:-moz-dir(ltr) .wy-table td:first-child,:-moz-dir(ltr) .rst-content table.docutils td:first-child,:-moz-dir(ltr) .rst-content table.field-list td:first-child,:-moz-dir(ltr) .wy-table th:first-child,:-moz-dir(ltr) .rst-content table.docutils th:first-child,:-moz-dir(ltr) .rst-content table.field-list th:first-child {
 	border-left-width:0
 }
-.rtl .wy-table td:first-child,.rtl .rst-content table.docutils td:first-child,.rtl .rst-content table.field-list td:first-child,.rtl .wy-table th:first-child,.rtl .rst-content table.docutils th:first-child,.rtl .rst-content table.field-list th:first-child {
+:-moz-dir(rtl) .wy-table td:first-child,:-moz-dir(rtl) .rst-content table.docutils td:first-child,:-moz-dir(rtl) .rst-content table.field-list td:first-child,:-moz-dir(rtl) .wy-table th:first-child,:-moz-dir(rtl) .rst-content table.docutils th:first-child,:-moz-dir(rtl) .rst-content table.field-list th:first-child {
 	border-right-width:0
 }
 .wy-table thead,.rst-content table.docutils thead,.rst-content table.field-list thead {
@@ -3354,10 +3354,10 @@ input[type="radio"][disabled],input[type="checkbox"][disabled] {
 	vertical-align:bottom;
 	white-space:nowrap
 }
-.ltr .wy-table thead,.rst-content table.docutils thead,.rst-content table.field-list thead {
+:-moz-dir(ltr) .wy-table thead,.rst-content table.docutils thead,.rst-content table.field-list thead {
 	text-align:left
 }
-.rtl .wy-table thead,.rst-content table.docutils thead,.rst-content table.field-list thead {
+:-moz-dir(rtl) .wy-table thead,.rst-content table.docutils thead,.rst-content table.field-list thead {
 	text-align:right
 }
 .wy-table thead th,.rst-content table.docutils thead th,.rst-content table.field-list thead th {
@@ -3377,10 +3377,10 @@ input[type="radio"][disabled],input[type="checkbox"][disabled] {
 .wy-table .wy-table-cell-min,.rst-content table.docutils .wy-table-cell-min,.rst-content table.field-list .wy-table-cell-min {
 	width:1%
 }
-.ltr .wy-table .wy-table-cell-min,.ltr .rst-content table.docutils .wy-table-cell-min,.ltr .rst-content table.field-list .wy-table-cell-min {
+:-moz-dir(ltr) .wy-table .wy-table-cell-min,:-moz-dir(ltr) .rst-content table.docutils .wy-table-cell-min,:-moz-dir(ltr) .rst-content table.field-list .wy-table-cell-min {
 	padding-right:0
 }
-.rtl .wy-table .wy-table-cell-min,.rtl .rst-content table.docutils .wy-table-cell-min,.rtl .rst-content table.field-list .wy-table-cell-min {
+:-moz-dir(rtl) .wy-table .wy-table-cell-min,:-moz-dir(rtl) .rst-content table.docutils .wy-table-cell-min,:-moz-dir(rtl) .rst-content table.field-list .wy-table-cell-min {
 	padding-left:0
 }
 .wy-table .wy-table-cell-min input[type=checkbox],.rst-content table.docutils .wy-table-cell-min input[type=checkbox],.rst-content table.field-list .wy-table-cell-min input[type=checkbox],.wy-table .wy-table-cell-min input[type=checkbox],.rst-content table.docutils .wy-table-cell-min input[type=checkbox],.rst-content table.field-list .wy-table-cell-min input[type=checkbox] {
@@ -3406,10 +3406,10 @@ input[type="radio"][disabled],input[type="checkbox"][disabled] {
 .wy-table-bordered-all td,.rst-content table.docutils td {
 	border-bottom:1px solid #e1e4e5
 }
-.ltr .wy-table-bordered-all td,.ltr .rst-content table.docutils td {
+:-moz-dir(ltr) .wy-table-bordered-all td,:-moz-dir(ltr) .rst-content table.docutils td {
 	border-left:1px solid #e1e4e5
 }
-.rtl .wy-table-bordered-all td,.rtl .rst-content table.docutils td {
+:-moz-dir(rtl) .wy-table-bordered-all td,:-moz-dir(rtl) .rst-content table.docutils td {
 	border-right:1px solid #e1e4e5
 }
 .wy-table-bordered-all tbody>tr:last-child td,.rst-content table.docutils tbody>tr:last-child td {
@@ -3578,10 +3578,10 @@ code.code-large,.rst-content tt.code-large {
 .wy-plain-list-disc li,.rst-content .section ul li,.rst-content .toctree-wrapper ul li,article ul li {
 	list-style:disc
 }
-.ltr .wy-plain-list-disc li,.ltr .rst-content .section ul li,.ltr .rst-content .toctree-wrapper ul li,.ltr article ul li {
+:-moz-dir(ltr) .wy-plain-list-disc li,:-moz-dir(ltr) .rst-content .section ul li,:-moz-dir(ltr) .rst-content .toctree-wrapper ul li,:-moz-dir(ltr) article ul li {
 	margin-left:24px
 }
-.rtl .wy-plain-list-disc li,.rtl .rst-content .section ul li,.rtl .rst-content .toctree-wrapper ul li,.rtl article ul li {
+:-moz-dir(rtl) .wy-plain-list-disc li,:-moz-dir(rtl) .rst-content .section ul li,:-moz-dir(rtl) .rst-content .toctree-wrapper ul li,:-moz-dir(rtl) article ul li {
 	margin-right: 24px
 }
 .wy-plain-list-disc li p:last-child,.rst-content .section ul li p:last-child,.rst-content .toctree-wrapper ul li p:last-child,article ul li p:last-child {
@@ -3607,10 +3607,10 @@ code.code-large,.rst-content tt.code-large {
 .wy-plain-list-decimal li,.rst-content .section ol li,.rst-content ol.arabic li,article ol li {
 	list-style:decimal
 }
-.ltr .wy-plain-list-decimal li,.ltr .rst-content .section ol li,.ltr .rst-content ol.arabic li,.ltr article ol li {
+:-moz-dir(ltr) .wy-plain-list-decimal li,:-moz-dir(ltr) .rst-content .section ol li,:-moz-dir(ltr) .rst-content ol.arabic li,:-moz-dir(ltr) article ol li {
 	margin-left:24px
 }
-.rtl .wy-plain-list-decimal li,.rtl .rst-content .section ol li,.rtl .rst-content ol.arabic li,.rtl article ol li {
+:-moz-dir(rtl) .wy-plain-list-decimal li,:-moz-dir(rtl) .rst-content .section ol li,:-moz-dir(rtl) .rst-content ol.arabic li,:-moz-dir(rtl) article ol li {
 	margin-right:24px
 }
 .wy-plain-list-decimal li p:last-child,.rst-content .section ol li p:last-child,.rst-content ol.arabic li p:last-child,article ol li p:last-child {
@@ -3667,10 +3667,10 @@ div[class^='highlight'] td.code {
 	line-height:1.5;
 	color:#d9d9d9
 }
-.ltr .linenodiv pre {
+:-moz-dir(ltr) .linenodiv pre {
 	border-right:solid 1px #e6e9ea;
 }
-.rtl .linenodiv pre {
+:-moz-dir(rtl) .linenodiv pre {
 	border-left:solid 1px #e6e9ea;
 }
 div[class^='highlight'] pre {
@@ -3901,20 +3901,20 @@ div[class^='highlight'] pre {
 .wy-breadcrumbs li {
 	display:inline-block
 }
-.ltr .wy-breadcrumbs li.wy-breadcrumbs-aside {
+:-moz-dir(ltr) .wy-breadcrumbs li.wy-breadcrumbs-aside {
 	float:right
 }
-.rtl .wy-breadcrumbs li.wy-breadcrumbs-aside {
+:-moz-dir(rtl) .wy-breadcrumbs li.wy-breadcrumbs-aside {
 	float:left
 }
 .wy-breadcrumbs li a {
 	display:inline-block;
 	padding:5px
 }
-.ltr .wy-breadcrumbs li a:first-child {
+:-moz-dir(ltr) .wy-breadcrumbs li a:first-child {
 	padding-left:0
 }
-.rtl .wy-breadcrumbs li a:first-child {
+:-moz-dir(rtl) .wy-breadcrumbs li a:first-child {
 	padding-right:0
 }
 .wy-breadcrumbs li code,.wy-breadcrumbs li .rst-content tt,.rst-content .wy-breadcrumbs li tt {
@@ -3967,16 +3967,16 @@ div[class^='highlight'] pre {
 .wy-menu-horiz li:hover {
 	background:rgba(255,255,255,0.1)
 }
-.ltr .wy-menu-horiz li.divide-left {
+:-moz-dir(ltr) .wy-menu-horiz li.divide-left {
 	border-left:solid 1px #404040
 }
-.rtl .wy-menu-horiz li.divide-left {
+:-moz-dir(rtl) .wy-menu-horiz li.divide-left {
 	border-right:solid 1px #404040
 }
-.ltr .wy-menu-horiz li.divide-right {
+:-moz-dir(ltr) .wy-menu-horiz li.divide-right {
 	border-right:solid 1px #404040
 }
-.rtl .wy-menu-horiz li.divide-right {
+:-moz-dir(rtl) .wy-menu-horiz li.divide-right {
 	border-left:solid 1px #404040
 }
 .wy-menu-horiz a {
@@ -4017,10 +4017,10 @@ div[class^='highlight'] pre {
 	color:gray;
 	padding:.4045em 2.427em
 }
-.ltr .wy-menu-vertical li.current a {
+:-moz-dir(ltr) .wy-menu-vertical li.current a {
 	border-right:solid 1px #c9c9c9;
 }
-.rtl .wy-menu-vertical li.current a {
+:-moz-dir(rtl) .wy-menu-vertical li.current a {
 	border-left:solid 1px #c9c9c9;
 }
 .wy-menu-vertical li.current a:hover {
@@ -4039,11 +4039,11 @@ div[class^='highlight'] pre {
 	line-height:1.6em;
 	color:#4d4d4d
 }
-.ltr .wy-menu-vertical li span.toctree-expand {
+:-moz-dir(ltr) .wy-menu-vertical li span.toctree-expand {
   float: left;
 	margin-left:-1.2em;
 }
-.rtl .wy-menu-vertical li span.toctree-expand {
+:-moz-dir(rtl) .wy-menu-vertical li span.toctree-expand {
   float: right;
 	margin-right:-1.2em;
 }
@@ -4057,10 +4057,10 @@ div[class^='highlight'] pre {
 	border-bottom:solid 1px #c9c9c9;
 	border-top:solid 1px #c9c9c9
 }
-.ltr .wy-menu-vertical li.on a,.ltr .wy-menu-vertical li.current>a {
+:-moz-dir(ltr) .wy-menu-vertical li.on a,:-moz-dir(ltr) .wy-menu-vertical li.current>a {
 	padding-left:1.618em -4px
 }
-.rtl .wy-menu-vertical li.on a,.rtl .wy-menu-vertical li.current>a {
+:-moz-dir(rtl) .wy-menu-vertical li.on a,:-moz-dir(rtl) .wy-menu-vertical li.current>a {
 	padding-right:1.618em -4px
 }
 .wy-menu-vertical li.on a:hover,.wy-menu-vertical li.current>a:hover {
@@ -4263,7 +4263,6 @@ div[class^='highlight'] pre {
 	position:fixed;
 	top:0;
 	bottom:0;
-	left:0;
 	padding-bottom:2em;
 	width:300px;
 	overflow-x:hidden;
@@ -4271,6 +4270,12 @@ div[class^='highlight'] pre {
 	min-height:100%;
 	background:#343131;
 	z-index:200
+}
+:-moz-dir(ltr) .wy-nav-side {
+	left:0
+}
+:-moz-dir(rtl) .wy-nav-side {
+	right:0
 }
 .wy-side-scroll {
 	width:320px;
@@ -4308,10 +4313,10 @@ div[class^='highlight'] pre {
 	padding:5px;
 	border-radius:100%
 }
-.ltr .wy-nav-top img {
+:-moz-dir(ltr) .wy-nav-top img {
 	margin-right:12px;
 }
-.rtl .wy-nav-top img {
+:-moz-dir(rtl) .wy-nav-top img {
 	margin-left:12px;
 }
 .wy-nav-top i {
@@ -4319,20 +4324,20 @@ div[class^='highlight'] pre {
 	cursor:pointer;
 	padding-top:inherit
 }
-.ltr .wy-nav-top i {
+:-moz-dir(ltr) .wy-nav-top i {
 	float:left
 }
-.rtl .wy-nav-top i {
+:-moz-dir(rtl) .wy-nav-top i {
 	float:right
 }
 .wy-nav-content-wrap {
 	background:#fcfcfc;
 	min-height:100%
 }
-.ltr .wy-nav-content-wrap {
+:-moz-dir(ltr) .wy-nav-content-wrap {
 	margin-left:300px;
 }
-.rtl .wy-nav-content-wrap {
+:-moz-dir(rtl) .wy-nav-content-wrap {
 	margin-right:300px;
 }
 .wy-nav-content {
@@ -4463,13 +4468,18 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 .rst-versions {
 	position:fixed;
 	bottom:0;
-	left:0;
 	width:300px;
 	color:#fcfcfc;
 	background:#1f1d1d;
 	border-top:solid 10px #343131;
 	font-family:"Lato","proxima-nova","Helvetica Neue",Arial,sans-serif;
 	z-index:400
+}
+:-moz-dir(ltr) .rst-versions {
+	left:0
+}
+:-moz-dir(rtl) .rst-versions {
+	right:0
 }
 .rst-versions a {
 	color:#2980B9;
@@ -4487,10 +4497,10 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	color:#27AE60;
 	*zoom:1
 }
-.ltr .rst-versions .rst-current-version {
+:-moz-dir(ltr) .rst-versions .rst-current-version {
 	text-align:right
 }
-.rtl .rst-versions .rst-current-version {
+:-moz-dir(rtl) .rst-versions .rst-current-version {
 	text-align:left
 }
 .rst-versions .rst-current-version:before,.rst-versions .rst-current-version:after {
@@ -4503,16 +4513,16 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 .rst-versions .rst-current-version .fa,.rst-versions .rst-current-version .wy-menu-vertical li span.toctree-expand,.wy-menu-vertical li .rst-versions .rst-current-version span.toctree-expand,.rst-versions .rst-current-version .rst-content .admonition-title,.rst-content .rst-versions .rst-current-version .admonition-title,.rst-versions .rst-current-version .rst-content h1 .headerlink,.rst-content h1 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content h2 .headerlink,.rst-content h2 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content h3 .headerlink,.rst-content h3 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content h4 .headerlink,.rst-content h4 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content h5 .headerlink,.rst-content h5 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content h6 .headerlink,.rst-content h6 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content dl dt .headerlink,.rst-content dl dt .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content p.caption .headerlink,.rst-content p.caption .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content tt.download span:first-child,.rst-content tt.download .rst-versions .rst-current-version span:first-child,.rst-versions .rst-current-version .rst-content code.download span:first-child,.rst-content code.download .rst-versions .rst-current-version span:first-child,.rst-versions .rst-current-version .icon {
 	color:#fcfcfc
 }
-.ltr .rst-versions .rst-current-version .fa-book,.ltr .rst-versions .rst-current-version .icon-book {
+:-moz-dir(ltr) .rst-versions .rst-current-version .fa-book,:-moz-dir(ltr) .rst-versions .rst-current-version .icon-book {
 	float:left
 }
-.rtl .rst-versions .rst-current-version .fa-book,.rtl .rst-versions .rst-current-version .icon-book {
+:-moz-dir(rtl) .rst-versions .rst-current-version .fa-book,:-moz-dir(rtl) .rst-versions .rst-current-version .icon-book {
 	float:right
 }
-.ltr .rst-versions .rst-current-version .icon-book {
+:-moz-dir(ltr) .rst-versions .rst-current-version .icon-book {
 	float:left
 }
-.rtl .rst-versions .rst-current-version .icon-book {
+:-moz-dir(rtl) .rst-versions .rst-current-version .icon-book {
 	float:right
 }
 .rst-versions .rst-current-version.rst-out-of-date {
@@ -4563,22 +4573,22 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 .rst-versions.rst-badge .fa-book,.rst-versions.rst-badge .icon-book {
 	float:none
 }
-.ltr .rst-versions.rst-badge.shift-up .rst-current-version {
+:-moz-dir(ltr) .rst-versions.rst-badge.shift-up .rst-current-version {
 	text-align:right
 }
-.rtl .rst-versions.rst-badge.shift-up .rst-current-version {
+:-moz-dir(rtl) .rst-versions.rst-badge.shift-up .rst-current-version {
 	text-align:left
 }
-.ltr .rst-versions.rst-badge.shift-up .rst-current-version .fa-book,.ltr .rst-versions.rst-badge.shift-up .rst-current-version .icon-book {
+:-moz-dir(ltr) .rst-versions.rst-badge.shift-up .rst-current-version .fa-book,:-moz-dir(ltr) .rst-versions.rst-badge.shift-up .rst-current-version .icon-book {
 	float:left
 }
-.rtl .rst-versions.rst-badge.shift-up .rst-current-version .fa-book,.rtl .rst-versions.rst-badge.shift-up .rst-current-version .icon-book {
+:-moz-dir(rtl) .rst-versions.rst-badge.shift-up .rst-current-version .fa-book,:-moz-dir(rtl) .rst-versions.rst-badge.shift-up .rst-current-version .icon-book {
 	float:right
 }
-.ltr .rst-versions.rst-badge.shift-up .rst-current-version .icon-book {
+:-moz-dir(ltr) .rst-versions.rst-badge.shift-up .rst-current-version .icon-book {
 	float:left
 }
-.rtl .rst-versions.rst-badge.shift-up .rst-current-version .icon-book {
+:-moz-dir(rtl) .rst-versions.rst-badge.shift-up .rst-current-version .icon-book {
 	float:right
 }
 .rst-versions.rst-badge .rst-current-version {
@@ -4621,19 +4631,19 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	line-height:24px;
 	margin-bottom:24px
 }
-.ltr .rst-content blockquote {
+:-moz-dir(ltr) .rst-content blockquote {
 	margin-left:24px;
 }
-.rtl .rst-content blockquote {
+:-moz-dir(rtl) .rst-content blockquote {
 	margin-right:24px;
 }
 .rst-content .note .last,.rst-content .attention .last,.rst-content .caution .last,.rst-content .danger .last,.rst-content .error .last,.rst-content .hint .last,.rst-content .important .last,.rst-content .tip .last,.rst-content .warning .last,.rst-content .seealso .last,.rst-content .admonition-todo .last {
 	margin-bottom:0
 }
-.ltr .rst-content .admonition-title:before {
+:-moz-dir(ltr) .rst-content .admonition-title:before {
 	margin-right:4px
 }
-.rtl .rst-content .admonition-title:before {
+:-moz-dir(rtl) .rst-content .admonition-title:before {
 	margin-left:4px
 }
 .rst-content .admonition table {
@@ -4652,10 +4662,10 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 .rst-content .section ol p,.rst-content .section ul p {
 	margin-bottom:12px
 }
-.ltr .rst-content .line-block {
+:-moz-dir(ltr) .rst-content .line-block {
 	margin-left:24px
 }
-.rtl .rst-content .line-block {
+:-moz-dir(rtl) .rst-content .line-block {
 	margin-right:24px
 }
 .rst-content .topic-title {
@@ -4698,11 +4708,11 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	background:#f3f6f6;
 	border:solid 1px #e1e4e5
 }
-.ltr .rst-content .sidebar {
+:-moz-dir(ltr) .rst-content .sidebar {
 	float:right;
 	margin:0 0 24px 24px
 }
-.rtl .rst-content .sidebar {
+:-moz-dir(rtl) .rst-content .sidebar {
 	float:left;
 	margin:0 24px 24px 0
 }
@@ -4764,19 +4774,19 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 .rst-content table.field-list .field-name {
 	white-space:nowrap
 }
-.ltr .rst-content table.field-list .field-name {
+:-moz-dir(ltr) .rst-content table.field-list .field-name {
 	text-align:left;
 	padding-right:10px
 }
-.rtl .rst-content table.field-list .field-name {
+:-moz-dir(rtl) .rst-content table.field-list .field-name {
 	text-align:right;
 	padding-left:10px
 }
-.ltr .rst-content table.field-list .field-body {
+:-moz-dir(ltr) .rst-content table.field-list .field-body {
 	text-align:left;
 	padding-left:0
 }
-.rtl .rst-content table.field-list .field-body {
+:-moz-dir(rtl) .rst-content table.field-list .field-body {
 	text-align:right;
 	padding-right:0
 }
@@ -4807,8 +4817,11 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 .rst-content dl p,.rst-content dl table,.rst-content dl ul,.rst-content dl ol {
 	margin-bottom:12px !important
 }
-.rst-content dl dd {
+:-moz-dir(ltr) .rst-content dl dd {
 	margin:0 0 12px 24px
+}
+:-moz-dir(rtl) .rst-content dl dd {
+	margin:0 24px 12px 0
 }
 .rst-content dl:not(.docutils) {
 	margin-bottom:24px
@@ -4835,12 +4848,12 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	margin-bottom:6px;
 	border:none;
 	background:#f0f0f0;
-	color:#555
+	color:#555;
 }
-.ltr rst-content dl:not(.docutils) dl dt {
-	border-left:solid 3px #ccc;
+:-moz-dir(ltr) .rst-content dl:not(.docutils) dl dt {
+	border-left:solid 3px #ccc
 }
-.rtl rst-content dl:not(.docutils) dl dt {
+:-moz-dir(rtl) .rst-content dl:not(.docutils) dl dt {
 	border-right:solid 3px #ccc;
 }
 .rst-content dl:not(.docutils) dl dt .headerlink {
@@ -4871,10 +4884,10 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 .rst-content dl:not(.docutils) .property {
 	display:inline-block
 }
-.ltr .rst-content dl:not(.docutils) .property {
+:-moz-dir(ltr) .rst-content dl:not(.docutils) .property {
 	padding-right:8px
 }
-.ltr .rst-content dl:not(.docutils) .property {
+:-moz-dir(ltr) .rst-content dl:not(.docutils) .property {
 	padding-left:8px
 }
 .rst-content .viewcode-link,.rst-content .viewcode-back {
@@ -4882,19 +4895,19 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	color:#27AE60;
 	font-size:80%;
 }
-.ltr .rst-content .viewcode-link,.ltr .rst-content .viewcode-back {
+:-moz-dir(ltr) .rst-content .viewcode-link,:-moz-dir(ltr) .rst-content .viewcode-back {
 	padding-left:24px
 }
-.rtl .rst-content .viewcode-link,.rtl .rst-content .viewcode-back {
+:-moz-dir(rtl) .rst-content .viewcode-link,:-moz-dir(rtl) .rst-content .viewcode-back {
 	padding-right:24px
 }
 .rst-content .viewcode-back {
 	display:block
 }
-.ltr .rst-content .viewcode-back {
+:-moz-dir(ltr) .rst-content .viewcode-back {
 	float:right
 }
-.rtl .rst-content .viewcode-back {
+:-moz-dir(rtl) .rst-content .viewcode-back {
 	float:left
 }
 .rst-content p.rubric {
@@ -4914,10 +4927,10 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 .rst-content tt.download span:first-child,.rst-content code.download span:first-child {
 	-webkit-font-smoothing:subpixel-antialiased
 }
-.ltr .rst-content tt.download span:first-child:before,.ltr .rst-content code.download span:first-child:before {
+:-moz-dir(ltr) .rst-content tt.download span:first-child:before,:-moz-dir(ltr) .rst-content code.download span:first-child:before {
 	margin-right:4px
 }
-.rtl .rst-content tt.download span:first-child:before,.rtl .rst-content code.download span:first-child:before {
+:-moz-dir(rtl) .rst-content tt.download span:first-child:before,:-moz-dir(rtl) .rst-content code.download span:first-child:before {
 	margin-left:4px
 }
 .rst-content .guilabel {
