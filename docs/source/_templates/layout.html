@@ -7,7 +7,7 @@
   {%- set titlesuffix = "" %}
 {%- endif %}
 {%- set lang_attr = 'en' if language == None else (language | replace('_', '-')) %}
-{% # set css_files = css_files + [ "_static/css/tema.css" ] # %}
+{%- set css_files = css_files + [ "_static/css/tema.css" ] %}
 
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="{{ lang_attr }}"  dir="auto"> <![endif]-->
@@ -160,6 +160,17 @@
 
       {# PAGE CONTENT #}
       <div class="wy-nav-content">
+        <ul>
+        {% for cssfile in css_files %}
+          <li> {{ pathto(cssfile, 1) }} </li>
+        {% endfor %}
+          <li> Prueba </li>
+
+        {% for cssfile in extra_css_files %}
+          <li> {{ pathto(cssfile, 1) }} </li>
+        {% endfor %}
+        </ul>
+        
         {% if (theme_style_external_links == 'True') %}
         <div class="rst-content style-external-links">
         {% else %}
