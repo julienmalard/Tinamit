@@ -318,15 +318,15 @@ big,small {
 	text-align:center
 }
 .fa-ul {
-	list-style-type:none
-}
-:-moz-dir(ltr) .fa-ul {
+	list-style-type:none;
 	padding-left:0;
 	margin-left:2.14286em
 }
 :-moz-dir(rtl) .fa-ul {
 	padding-right:0;
-	margin-right:2.14286em
+	margin-right:2.14286em;
+	padding-left:inherit;
+	margin-left:inherit
 }
 .fa-ul>li {
 	position:relative
@@ -2694,6 +2694,7 @@ button[disabled] {
 	position:absolute;
 	left:0;
 	display:none;
+	float:left;
 	top:100%;
 	min-width:100%;
 	background:#fcfcfc;
@@ -2701,9 +2702,6 @@ button[disabled] {
 	border:solid 1px #cfd7dd;
 	box-shadow:0 2px 2px 0 rgba(0,0,0,0.1);
 	padding:12px
-}
-:-moz-dir(ltr) .wy-dropdown-menu {
-	float:left
 }
 :-moz-dir(rtl) .wy-dropdown-menu {
 	float:right
@@ -2763,8 +2761,6 @@ button[disabled] {
 .wy-dropdown.wy-dropdown-left .wy-dropdown-menu {
 	right:0;
 	left:auto;
-}
-:-moz-dir(ltr) .wy-dropdown.wy-dropdown-left .wy-dropdown-menu {
 	text-align:right
 }
 :-moz-dir(rtl) .wy-dropdown.wy-dropdown-left .wy-dropdown-menu {
@@ -2797,8 +2793,6 @@ button[disabled] {
 	display:inline-block;
 	vertical-align:middle;
 	width:10em;
-}
-:-moz-dir(ltr) .wy-form-aligned .wy-control-group>label {
 	float:left;
 	margin:6px 12px 0 0
 }
@@ -2806,7 +2800,7 @@ button[disabled] {
 	float:right;
 	margin:6px 0 0 12px;
 }
-:-moz-dir(ltr) .wy-form-aligned .wy-control {
+.wy-form-aligned .wy-control {
 	float:left
 }
 :-moz-dir(rtl) .wy-form-aligned .wy-control {
@@ -2881,48 +2875,48 @@ input,select,textarea {
 	width:100%
 }
 .wy-control-group .wy-form-full {
+	float:left;
+	margin-right:2.35765%;
+	margin-right:0;
 	display:block;
 	width:100%
 }
-:-moz-dir(ltr) .wy-control-group .wy-form-full {
-	float:left;
-	margin-right:2.35765%;
-	margin-right:0
-}
 :-moz-dir(rtl) .wy-control-group .wy-form-full {
-	float: right'
+	float: right;
 	margin-left:2.35765%;
-	margin-left:0
+	margin-left:0;
+	margin-right:inherit
 }
-:-moz-dir(ltr) .wy-control-group .wy-form-full:last-child {
+.wy-control-group .wy-form-full:last-child {
 	margin-right:0
 }
 :-moz-dir(rtl) .wy-control-group .wy-form-full:last-child {
-	margin-left:0
+	margin-left:0;
+	margin-right:inherit;
 }
 .wy-control-group .wy-form-halves {
+	float:left;
 	display:block;
 	width:48.82117%
-}
-:-moz-dir(ltr) .wy-control-group .wy-form-halves {
-	float:left
 }
 :-moz-dir(rtl) .wy-control-group .wy-form-halves {
 	float:right
 }
-:-moz-dir(ltr) .wy-control-group .wy-form-halves:last-child {
+.wy-control-group .wy-form-halves:last-child {
 	margin-right:0
 }
 :-moz-dir(rtl) .wy-control-group .wy-form-halves:last-child {
-	margin-left:0
+	margin-left:0;
+	margin-right:inherit
 }
-:-moz-dir(ltr) .wy-control-group .wy-form-halves:nth-of-type(2n) {
+.wy-control-group .wy-form-halves:nth-of-type(2n) {
 	margin-right:0
 }
 :-moz-dir(rtl) .wy-control-group .wy-form-halves:nth-of-type(2n) {
-	margin-left:0
+	margin-left:0;
+	margin-right:inherit
 }
-:-moz-dir(ltr) .wy-control-group .wy-form-halves:nth-of-type(2n+1) {
+.wy-control-group .wy-form-halves:nth-of-type(2n+1) {
 	clear:left
 }
 :-moz-dir(rtl) .wy-control-group .wy-form-halves:nth-of-type(2n+1) {
@@ -2932,25 +2926,28 @@ input,select,textarea {
 	display:block;
 	width:31.76157%
 }
-:-moz-dir(ltr) .wy-control-group .wy-form-thirds {
+.wy-control-group .wy-form-thirds {
 	float:left;
 	margin-right:2.35765%
 }
 :-moz-dir(rtl) .wy-control-group .wy-form-thirds {
 	float:right;
-	margin-left:2.35765%
+	margin-left:2.35765%;
+	margin-right:inherit
 }
-:-moz-dir(ltr) .wy-control-group .wy-form-thirds:last-child {
+.wy-control-group .wy-form-thirds:last-child {
 	margin-right:0
 }
-:-moz-dir(ltr) .wy-control-group .wy-form-thirds:nth-of-type(3n) {
+.wy-control-group .wy-form-thirds:nth-of-type(3n) {
 	margin-right:0
 }
 :-moz-dir(rtl) .wy-control-group .wy-form-thirds:last-child {
-	margin-left:0
+	margin-left:0;
+	margin-right:inherit
 }
 :-moz-dir(rtl) .wy-control-group .wy-form-thirds:nth-of-type(3n) {
-	margin-left:0
+	margin-left:0;
+	margin-right:inherit
 }
 .wy-control-group .wy-form-thirds:nth-of-type(3n+1) {
 	clear:left
@@ -2971,10 +2968,8 @@ input,select,textarea {
 	display:inline-block;
 	color:#666;
 	vertical-align:middle;
+	padding-left:0.3em;
 	font-size:90%
-}
-:-moz-dir(ltr) .wy-form-message-inline {
-	padding-left:0.3em
 }
 :-moz-dir(rtl) .wy-form-message-inline {
 	padding-right:0.3em
@@ -3030,11 +3025,12 @@ input[type="checkbox"],input[type="radio"] {
 	*height:13px;
 	*width:13px
 }
-:-moz-dir(ltr) input[type="checkbox"],:-moz-dir(ltr) input[type="radio"] {
+input[type="checkbox"],input[type="radio"] {
 	margin-right:.3125em;
 }
-:-moz-dir(rtl) input[type="checkbox"],:-moz-dir(ltr) input[type="radio"] {
+:-moz-dir(rtl) input[type="checkbox"],:-moz-dir(rtl) input[type="radio"] {
 	margin-left:.3125em;
+	margin-right:inherit
 }
 input[type="search"] {
 	-webkit-box-sizing:border-box;
@@ -3134,17 +3130,19 @@ input[type="radio"][disabled],input[type="checkbox"][disabled] {
 	border:solid 1px #ccc;
 	color:#999
 }
-:-moz-dir(ltr) .wy-input-suffix .wy-input-context {
+.wy-input-suffix .wy-input-context {
 	border-left:0
 }
 :-moz-dir(rtl) .wy-input-suffix .wy-input-context {
-	border-right:0
+	border-right:0;
+	border-left:inherit;
 }
-:-moz-dir(ltr) .wy-input-prefix .wy-input-context {
+.wy-input-prefix .wy-input-context {
 	border-right:0
 }
 :-moz-dir(rtl) .wy-input-prefix .wy-input-context {
-	border-left:0
+	border-left:0;
+	border-right:inherit
 }
 .wy-switch {
 	width:36px;
@@ -3291,7 +3289,7 @@ input[type="radio"][disabled],input[type="checkbox"][disabled] {
 		display:block;
 		width:100%
 	}
-	:-moz-dir(ltr) .wy-form-aligned .wy-control-group label {
+	.wy-form-aligned .wy-control-group label {
 		text-align:left
 	}
 	:-moz-dir(rtl) .wy-form-aligned .wy-control-group label {
@@ -3343,21 +3341,22 @@ input[type="radio"][disabled],input[type="checkbox"][disabled] {
 	overflow:visible;
 	padding:8px 16px
 }
-:-moz-dir(ltr) .wy-table td:first-child,:-moz-dir(ltr) .rst-content table.docutils td:first-child,:-moz-dir(ltr) .rst-content table.field-list td:first-child,:-moz-dir(ltr) .wy-table th:first-child,:-moz-dir(ltr) .rst-content table.docutils th:first-child,:-moz-dir(ltr) .rst-content table.field-list th:first-child {
+.wy-table td:first-child,.rst-content table.docutils td:first-child,.rst-content table.field-list td:first-child,.wy-table th:first-child,.rst-content table.docutils th:first-child,.rst-content table.field-list th:first-child {
 	border-left-width:0
 }
 :-moz-dir(rtl) .wy-table td:first-child,:-moz-dir(rtl) .rst-content table.docutils td:first-child,:-moz-dir(rtl) .rst-content table.field-list td:first-child,:-moz-dir(rtl) .wy-table th:first-child,:-moz-dir(rtl) .rst-content table.docutils th:first-child,:-moz-dir(rtl) .rst-content table.field-list th:first-child {
-	border-right-width:0
+	border-right-width:0;
+	border-left-width:inherit
 }
 .wy-table thead,.rst-content table.docutils thead,.rst-content table.field-list thead {
 	color:#000;
 	vertical-align:bottom;
 	white-space:nowrap
 }
-:-moz-dir(ltr) .wy-table thead,.rst-content table.docutils thead,.rst-content table.field-list thead {
+.wy-table thead,.rst-content table.docutils thead,.rst-content table.field-list thead {
 	text-align:left
 }
-:-moz-dir(rtl) .wy-table thead,.rst-content table.docutils thead,.rst-content table.field-list thead {
+:-moz-dir(rtl) .wy-table thead,:-moz-dir(rtl) .rst-content table.docutils thead,:-moz-dir(rtl) .rst-content table.field-list thead {
 	text-align:right
 }
 .wy-table thead th,.rst-content table.docutils thead th,.rst-content table.field-list thead th {
@@ -3377,11 +3376,12 @@ input[type="radio"][disabled],input[type="checkbox"][disabled] {
 .wy-table .wy-table-cell-min,.rst-content table.docutils .wy-table-cell-min,.rst-content table.field-list .wy-table-cell-min {
 	width:1%
 }
-:-moz-dir(ltr) .wy-table .wy-table-cell-min,:-moz-dir(ltr) .rst-content table.docutils .wy-table-cell-min,:-moz-dir(ltr) .rst-content table.field-list .wy-table-cell-min {
+.wy-table .wy-table-cell-min,.rst-content table.docutils .wy-table-cell-min,.rst-content table.field-list .wy-table-cell-min {
 	padding-right:0
 }
 :-moz-dir(rtl) .wy-table .wy-table-cell-min,:-moz-dir(rtl) .rst-content table.docutils .wy-table-cell-min,:-moz-dir(rtl) .rst-content table.field-list .wy-table-cell-min {
-	padding-left:0
+	padding-left:0;
+	padding-right:inherit
 }
 .wy-table .wy-table-cell-min input[type=checkbox],.rst-content table.docutils .wy-table-cell-min input[type=checkbox],.rst-content table.field-list .wy-table-cell-min input[type=checkbox],.wy-table .wy-table-cell-min input[type=checkbox],.rst-content table.docutils .wy-table-cell-min input[type=checkbox],.rst-content table.field-list .wy-table-cell-min input[type=checkbox] {
 	margin:0
@@ -3406,11 +3406,12 @@ input[type="radio"][disabled],input[type="checkbox"][disabled] {
 .wy-table-bordered-all td,.rst-content table.docutils td {
 	border-bottom:1px solid #e1e4e5
 }
-:-moz-dir(ltr) .wy-table-bordered-all td,:-moz-dir(ltr) .rst-content table.docutils td {
+.wy-table-bordered-all td,.rst-content table.docutils td {
 	border-left:1px solid #e1e4e5
 }
 :-moz-dir(rtl) .wy-table-bordered-all td,:-moz-dir(rtl) .rst-content table.docutils td {
-	border-right:1px solid #e1e4e5
+	border-right:1px solid #e1e4e5;
+	border-left:inherit
 }
 .wy-table-bordered-all tbody>tr:last-child td,.rst-content table.docutils tbody>tr:last-child td {
 	border-bottom-width:0
@@ -3578,11 +3579,12 @@ code.code-large,.rst-content tt.code-large {
 .wy-plain-list-disc li,.rst-content .section ul li,.rst-content .toctree-wrapper ul li,article ul li {
 	list-style:disc
 }
-:-moz-dir(ltr) .wy-plain-list-disc li,:-moz-dir(ltr) .rst-content .section ul li,:-moz-dir(ltr) .rst-content .toctree-wrapper ul li,:-moz-dir(ltr) article ul li {
-	margin-left:24px
+.wy-plain-list-disc li,.rst-content .section ul li,.rst-content .toctree-wrapper ul li,article ul li {
+	margin-left: 24px
 }
 :-moz-dir(rtl) .wy-plain-list-disc li,:-moz-dir(rtl) .rst-content .section ul li,:-moz-dir(rtl) .rst-content .toctree-wrapper ul li,:-moz-dir(rtl) article ul li {
-	margin-right: 24px
+	margin-right: 24px;
+	margin-left:inherit
 }
 .wy-plain-list-disc li p:last-child,.rst-content .section ul li p:last-child,.rst-content .toctree-wrapper ul li p:last-child,article ul li p:last-child {
 	margin-bottom:0
@@ -3607,11 +3609,12 @@ code.code-large,.rst-content tt.code-large {
 .wy-plain-list-decimal li,.rst-content .section ol li,.rst-content ol.arabic li,article ol li {
 	list-style:decimal
 }
-:-moz-dir(ltr) .wy-plain-list-decimal li,:-moz-dir(ltr) .rst-content .section ol li,:-moz-dir(ltr) .rst-content ol.arabic li,:-moz-dir(ltr) article ol li {
+.wy-plain-list-decimal li,.rst-content .section ol li,.rst-content ol.arabic li,article ol li {
 	margin-left:24px
 }
 :-moz-dir(rtl) .wy-plain-list-decimal li,:-moz-dir(rtl) .rst-content .section ol li,:-moz-dir(rtl) .rst-content ol.arabic li,:-moz-dir(rtl) article ol li {
-	margin-right:24px
+	margin-right:24px;
+	margin-left:inherit;
 }
 .wy-plain-list-decimal li p:last-child,.rst-content .section ol li p:last-child,.rst-content ol.arabic li p:last-child,article ol li p:last-child {
 	margin-bottom:0
@@ -3667,11 +3670,12 @@ div[class^='highlight'] td.code {
 	line-height:1.5;
 	color:#d9d9d9
 }
-:-moz-dir(ltr) .linenodiv pre {
+.linenodiv pre {
 	border-right:solid 1px #e6e9ea;
 }
 :-moz-dir(rtl) .linenodiv pre {
 	border-left:solid 1px #e6e9ea;
+	border-right:inherit;
 }
 div[class^='highlight'] pre {
 	white-space:pre;
@@ -3901,7 +3905,7 @@ div[class^='highlight'] pre {
 .wy-breadcrumbs li {
 	display:inline-block
 }
-:-moz-dir(ltr) .wy-breadcrumbs li.wy-breadcrumbs-aside {
+.wy-breadcrumbs li.wy-breadcrumbs-aside {
 	float:right
 }
 :-moz-dir(rtl) .wy-breadcrumbs li.wy-breadcrumbs-aside {
@@ -3911,11 +3915,12 @@ div[class^='highlight'] pre {
 	display:inline-block;
 	padding:5px
 }
-:-moz-dir(ltr) .wy-breadcrumbs li a:first-child {
+.wy-breadcrumbs li a:first-child {
 	padding-left:0
 }
 :-moz-dir(rtl) .wy-breadcrumbs li a:first-child {
-	padding-right:0
+	padding-right:0;
+	padding-left:inherit
 }
 .wy-breadcrumbs li code,.wy-breadcrumbs li .rst-content tt,.rst-content .wy-breadcrumbs li tt {
 	padding:5px;
@@ -3967,17 +3972,19 @@ div[class^='highlight'] pre {
 .wy-menu-horiz li:hover {
 	background:rgba(255,255,255,0.1)
 }
-:-moz-dir(ltr) .wy-menu-horiz li.divide-left {
+.wy-menu-horiz li.divide-left {
 	border-left:solid 1px #404040
 }
 :-moz-dir(rtl) .wy-menu-horiz li.divide-left {
-	border-right:solid 1px #404040
+	border-right:solid 1px #404040;
+	border-left:inherit
 }
-:-moz-dir(ltr) .wy-menu-horiz li.divide-right {
+.wy-menu-horiz li.divide-right {
 	border-right:solid 1px #404040
 }
 :-moz-dir(rtl) .wy-menu-horiz li.divide-right {
-	border-left:solid 1px #404040
+	border-left:solid 1px #404040;
+	boder-right:inherit
 }
 .wy-menu-horiz a {
 	height:32px;
@@ -4017,11 +4024,12 @@ div[class^='highlight'] pre {
 	color:gray;
 	padding:.4045em 2.427em
 }
-:-moz-dir(ltr) .wy-menu-vertical li.current a {
+.wy-menu-vertical li.current a {
 	border-right:solid 1px #c9c9c9;
 }
 :-moz-dir(rtl) .wy-menu-vertical li.current a {
 	border-left:solid 1px #c9c9c9;
+	border-right:inherit
 }
 .wy-menu-vertical li.current a:hover {
 	background:#d6d6d6
@@ -4035,17 +4043,16 @@ div[class^='highlight'] pre {
 }
 .wy-menu-vertical li span.toctree-expand {
 	display:block;
+	float: left;
+	margin-left:-1.2em;
 	font-size:0.8em;
 	line-height:1.6em;
 	color:#4d4d4d
 }
-:-moz-dir(ltr) .wy-menu-vertical li span.toctree-expand {
-  float: left;
-	margin-left:-1.2em;
-}
 :-moz-dir(rtl) .wy-menu-vertical li span.toctree-expand {
-  float: right;
+	float: right;
 	margin-right:-1.2em;
+	margin-left:0
 }
 .wy-menu-vertical li.on a,.wy-menu-vertical li.current>a {
 	color:#404040;
@@ -4057,11 +4064,12 @@ div[class^='highlight'] pre {
 	border-bottom:solid 1px #c9c9c9;
 	border-top:solid 1px #c9c9c9
 }
-:-moz-dir(ltr) .wy-menu-vertical li.on a,:-moz-dir(ltr) .wy-menu-vertical li.current>a {
+.wy-menu-vertical li.on a,.wy-menu-vertical li.current>a {
 	padding-left:1.618em -4px
 }
 :-moz-dir(rtl) .wy-menu-vertical li.on a,:-moz-dir(rtl) .wy-menu-vertical li.current>a {
-	padding-right:1.618em -4px
+	padding-right:1.618em -4px;
+	padding-left:inherit
 }
 .wy-menu-vertical li.on a:hover,.wy-menu-vertical li.current>a:hover {
 	background:#fcfcfc
@@ -4271,10 +4279,11 @@ div[class^='highlight'] pre {
 	background:#343131;
 	z-index:200
 }
-:-moz-dir(ltr) .wy-nav-side {
+.wy-nav-side {
 	left:0
 }
 :-moz-dir(rtl) .wy-nav-side {
+	left:inherit;
 	right:0
 }
 .wy-side-scroll {
@@ -4313,18 +4322,19 @@ div[class^='highlight'] pre {
 	padding:5px;
 	border-radius:100%
 }
-:-moz-dir(ltr) .wy-nav-top img {
+.wy-nav-top img {
 	margin-right:12px;
 }
 :-moz-dir(rtl) .wy-nav-top img {
 	margin-left:12px;
+	margin-left:inherit
 }
 .wy-nav-top i {
 	font-size:30px;
 	cursor:pointer;
 	padding-top:inherit
 }
-:-moz-dir(ltr) .wy-nav-top i {
+.wy-nav-top i {
 	float:left
 }
 :-moz-dir(rtl) .wy-nav-top i {
@@ -4332,12 +4342,11 @@ div[class^='highlight'] pre {
 }
 .wy-nav-content-wrap {
 	background:#fcfcfc;
+	margin-left:300px;
 	min-height:100%
 }
-:-moz-dir(ltr) .wy-nav-content-wrap {
-	margin-left:300px;
-}
 :-moz-dir(rtl) .wy-nav-content-wrap {
+	margin-left:0;
 	margin-right:300px;
 }
 .wy-nav-content {
@@ -4475,11 +4484,12 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	font-family:"Lato","proxima-nova","Helvetica Neue",Arial,sans-serif;
 	z-index:400
 }
-:-moz-dir(ltr) .rst-versions {
+.rst-versions {
 	left:0
 }
 :-moz-dir(rtl) .rst-versions {
-	right:0
+	right:0;
+	left:inherit
 }
 .rst-versions a {
 	color:#2980B9;
@@ -4491,14 +4501,12 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 .rst-versions .rst-current-version {
 	padding:12px;
 	background-color:#272525;
+	text-align:right;
 	display:block;
 	font-size:90%;
 	cursor:pointer;
 	color:#27AE60;
 	*zoom:1
-}
-:-moz-dir(ltr) .rst-versions .rst-current-version {
-	text-align:right
 }
 :-moz-dir(rtl) .rst-versions .rst-current-version {
 	text-align:left
@@ -4511,18 +4519,10 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	clear:both
 }
 .rst-versions .rst-current-version .fa,.rst-versions .rst-current-version .wy-menu-vertical li span.toctree-expand,.wy-menu-vertical li .rst-versions .rst-current-version span.toctree-expand,.rst-versions .rst-current-version .rst-content .admonition-title,.rst-content .rst-versions .rst-current-version .admonition-title,.rst-versions .rst-current-version .rst-content h1 .headerlink,.rst-content h1 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content h2 .headerlink,.rst-content h2 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content h3 .headerlink,.rst-content h3 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content h4 .headerlink,.rst-content h4 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content h5 .headerlink,.rst-content h5 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content h6 .headerlink,.rst-content h6 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content dl dt .headerlink,.rst-content dl dt .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content p.caption .headerlink,.rst-content p.caption .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content tt.download span:first-child,.rst-content tt.download .rst-versions .rst-current-version span:first-child,.rst-versions .rst-current-version .rst-content code.download span:first-child,.rst-content code.download .rst-versions .rst-current-version span:first-child,.rst-versions .rst-current-version .icon {
-	color:#fcfcfc
-}
-:-moz-dir(ltr) .rst-versions .rst-current-version .fa-book,:-moz-dir(ltr) .rst-versions .rst-current-version .icon-book {
+	color:#fcfcfc;
 	float:left
 }
 :-moz-dir(rtl) .rst-versions .rst-current-version .fa-book,:-moz-dir(rtl) .rst-versions .rst-current-version .icon-book {
-	float:right
-}
-:-moz-dir(ltr) .rst-versions .rst-current-version .icon-book {
-	float:left
-}
-:-moz-dir(rtl) .rst-versions .rst-current-version .icon-book {
 	float:right
 }
 .rst-versions .rst-current-version.rst-out-of-date {
@@ -4573,19 +4573,19 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 .rst-versions.rst-badge .fa-book,.rst-versions.rst-badge .icon-book {
 	float:none
 }
-:-moz-dir(ltr) .rst-versions.rst-badge.shift-up .rst-current-version {
+.rst-versions.rst-badge.shift-up .rst-current-version {
 	text-align:right
 }
 :-moz-dir(rtl) .rst-versions.rst-badge.shift-up .rst-current-version {
 	text-align:left
 }
-:-moz-dir(ltr) .rst-versions.rst-badge.shift-up .rst-current-version .fa-book,:-moz-dir(ltr) .rst-versions.rst-badge.shift-up .rst-current-version .icon-book {
+.rst-versions.rst-badge.shift-up .rst-current-version .fa-book,.rst-versions.rst-badge.shift-up .rst-current-version .icon-book {
 	float:left
 }
 :-moz-dir(rtl) .rst-versions.rst-badge.shift-up .rst-current-version .fa-book,:-moz-dir(rtl) .rst-versions.rst-badge.shift-up .rst-current-version .icon-book {
 	float:right
 }
-:-moz-dir(ltr) .rst-versions.rst-badge.shift-up .rst-current-version .icon-book {
+.rst-versions.rst-badge.shift-up .rst-current-version .icon-book {
 	float:left
 }
 :-moz-dir(rtl) .rst-versions.rst-badge.shift-up .rst-current-version .icon-book {
@@ -4629,21 +4629,21 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 }
 .rst-content blockquote {
 	line-height:24px;
+	margin-left:24px;
 	margin-bottom:24px
 }
-:-moz-dir(ltr) .rst-content blockquote {
-	margin-left:24px;
-}
 :-moz-dir(rtl) .rst-content blockquote {
+	margin-left:inherit;
 	margin-right:24px;
 }
 .rst-content .note .last,.rst-content .attention .last,.rst-content .caution .last,.rst-content .danger .last,.rst-content .error .last,.rst-content .hint .last,.rst-content .important .last,.rst-content .tip .last,.rst-content .warning .last,.rst-content .seealso .last,.rst-content .admonition-todo .last {
 	margin-bottom:0
 }
-:-moz-dir(ltr) .rst-content .admonition-title:before {
+.rst-content .admonition-title:before {
 	margin-right:4px
 }
 :-moz-dir(rtl) .rst-content .admonition-title:before {
+	margin-right:inherit;
 	margin-left:4px
 }
 .rst-content .admonition table {
@@ -4662,10 +4662,11 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 .rst-content .section ol p,.rst-content .section ul p {
 	margin-bottom:12px
 }
-:-moz-dir(ltr) .rst-content .line-block {
+.rst-content .line-block {
 	margin-left:24px
 }
 :-moz-dir(rtl) .rst-content .line-block {
+	margin-right:inherit;
 	margin-right:24px
 }
 .rst-content .topic-title {
@@ -4708,7 +4709,7 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	background:#f3f6f6;
 	border:solid 1px #e1e4e5
 }
-:-moz-dir(ltr) .rst-content .sidebar {
+.rst-content .sidebar {
 	float:right;
 	margin:0 0 24px 24px
 }
@@ -4774,20 +4775,22 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 .rst-content table.field-list .field-name {
 	white-space:nowrap
 }
-:-moz-dir(ltr) .rst-content table.field-list .field-name {
+.rst-content table.field-list .field-name {
 	text-align:left;
 	padding-right:10px
 }
 :-moz-dir(rtl) .rst-content table.field-list .field-name {
 	text-align:right;
+	padding-right:inherit;
 	padding-left:10px
 }
-:-moz-dir(ltr) .rst-content table.field-list .field-body {
+.rst-content table.field-list .field-body {
 	text-align:left;
 	padding-left:0
 }
 :-moz-dir(rtl) .rst-content table.field-list .field-body {
 	text-align:right;
+	padding-left:inherit;
 	padding-right:0
 }
 .rst-content tt,.rst-content tt,.rst-content code {
@@ -4817,7 +4820,7 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 .rst-content dl p,.rst-content dl table,.rst-content dl ul,.rst-content dl ol {
 	margin-bottom:12px !important
 }
-:-moz-dir(ltr) .rst-content dl dd {
+.rst-content dl dd {
 	margin:0 0 12px 24px
 }
 :-moz-dir(rtl) .rst-content dl dd {
@@ -4850,11 +4853,12 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	background:#f0f0f0;
 	color:#555;
 }
-:-moz-dir(ltr) .rst-content dl:not(.docutils) dl dt {
+.rst-content dl:not(.docutils) dl dt {
 	border-left:solid 3px #ccc
 }
 :-moz-dir(rtl) .rst-content dl:not(.docutils) dl dt {
 	border-right:solid 3px #ccc;
+	border-left:inherit
 }
 .rst-content dl:not(.docutils) dl dt .headerlink {
 	color:#404040;
@@ -4882,29 +4886,27 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	font-weight:bold
 }
 .rst-content dl:not(.docutils) .property {
-	display:inline-block
-}
-:-moz-dir(ltr) .rst-content dl:not(.docutils) .property {
+	display:inline-block;
 	padding-right:8px
 }
-:-moz-dir(ltr) .rst-content dl:not(.docutils) .property {
-	padding-left:8px
+:-moz-dir(rtl) .rst-content dl:not(.docutils) .property {
+	padding-left:8px;
+	padding-right:inherit
 }
 .rst-content .viewcode-link,.rst-content .viewcode-back {
 	display:inline-block;
 	color:#27AE60;
 	font-size:80%;
 }
-:-moz-dir(ltr) .rst-content .viewcode-link,:-moz-dir(ltr) .rst-content .viewcode-back {
+.rst-content .viewcode-link,.rst-content .viewcode-back {
 	padding-left:24px
 }
 :-moz-dir(rtl) .rst-content .viewcode-link,:-moz-dir(rtl) .rst-content .viewcode-back {
-	padding-right:24px
+	padding-right:24px;
+	padding-left:inherit
 }
 .rst-content .viewcode-back {
-	display:block
-}
-:-moz-dir(ltr) .rst-content .viewcode-back {
+	display:block;
 	float:right
 }
 :-moz-dir(rtl) .rst-content .viewcode-back {
@@ -4927,11 +4929,12 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 .rst-content tt.download span:first-child,.rst-content code.download span:first-child {
 	-webkit-font-smoothing:subpixel-antialiased
 }
-:-moz-dir(ltr) .rst-content tt.download span:first-child:before,:-moz-dir(ltr) .rst-content code.download span:first-child:before {
+.rst-content tt.download span:first-child:before,.rst-content code.download span:first-child:before {
 	margin-right:4px
 }
 :-moz-dir(rtl) .rst-content tt.download span:first-child:before,:-moz-dir(rtl) .rst-content code.download span:first-child:before {
-	margin-left:4px
+	margin-left:4px;
+	margin-right:inherit;
 }
 .rst-content .guilabel {
 	border:1px solid #7fbbe3;
