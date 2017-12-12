@@ -10,8 +10,8 @@
 {%- set css_files = css_files + [ "_static/css/tema.css" ] %}
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="{{ lang_attr }}"  dir="auto"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="{{ lang_attr }}" dir="auto"> <!--<![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang="{{ lang_attr }}" dir="auto" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="{{ lang_attr }}" dir="auto" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   {{ metatags }}
@@ -163,7 +163,7 @@
 
       {# PAGE CONTENT #}
       <div class="wy-nav-content">
-        {% if (theme_style_external_links == 'True') %}
+        {% if theme_style_external_links|tobool %}
         <div class="rst-content style-external-links">
         {% else %}
         <div class="rst-content">
@@ -211,7 +211,7 @@
   {% endif %}
 
   {# STICKY NAVIGATION #}
-  {% if theme_sticky_navigation %}
+  {% if theme_sticky_navigation|tobool %}
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.StickyNav.enable();
