@@ -936,7 +936,7 @@ big,small {
 	content:""
 }
 .fa-arrow-circle-left:before,.icon-circle-arrow-left:before {
-	content:"•"
+	content:""
 }
 :-moz-dir(rtl) .fa-arrow-circle-left:before,:-moz-dir(rtl) .icon-circle-arrow-left:before {
 	content:""
@@ -948,10 +948,10 @@ big,small {
 	content:""
 }
 :-moz-dir(rtl) .fa-arrow-circle-right:before,:-moz-dir(rtl) .icon-circle-arrow-right:before {
-	content:"•"
+	content:""
 }
 : dir(rtl) .fa-arrow-circle-right:before,:dir(rtl) .icon-circle-arrow-right:before {
-	content:"•"
+	content:""
 }
 .fa-arrow-circle-up:before {
 	content:""
@@ -4598,9 +4598,27 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	.wy-nav-side {
 		left:-300px
 	}
+	:-moz-dir(rtl) .wy-nav-side {
+		left:inherit;
+		right:-300px
+	}
+	:dir(rtl) .wy-nav-side {
+		left:inherit;
+		right:-300px
+	}
 	.wy-nav-side.shift {
 		width:85%;
 		left:0
+	}
+	:-moz-dir(rtl) .wy-nav-side.shift {
+		width:85%;
+		left:inherit;
+		right:0
+	}
+	:dir(rtl) .wy-nav-side.shift {
+		width:85%;
+		left:inherit;
+		right:0
 	}
 	.wy-side-scroll {
 		width:auto
@@ -4614,6 +4632,14 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	.wy-nav-content-wrap {
 		margin-left:0
 	}
+	:-moz-dir(rtl) .wy-nav-content-wrap {
+		margin-left:inherit;
+		margin-right: 0
+	}
+	:dir(rtl) .wy-nav-content-wrap {
+		margin-left:inherit;
+		margin-right: 0
+	}
 	.wy-nav-content-wrap .wy-nav-content {
 		padding:1.618em
 	}
@@ -4624,6 +4650,14 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 		top:0;
 		height:100%;
 		overflow:hidden
+	}
+	:-moz-dir(rtl) .wy-nav-content-wrap.shift {
+		left:inherit;
+		right:85%
+	}
+	:dir(rtl) .wy-nav-content-wrap.shift {
+		left:inherit;
+		right:85%
 	}
 }
 @media screen and (min-width: 1400px) {
@@ -4641,6 +4675,14 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	}
 	.wy-nav-content-wrap {
 		margin-left:0
+	}
+	:-moz-dir(rtl) .wy-nav-content-wrap {
+		margin-left:inherit;
+		margin-right: 0
+	}
+	:dir(rtl) .wy-nav-content-wrap {
+		margin-left:inherit;
+		margin-right: 0
 	}
 }
 .rst-versions {
