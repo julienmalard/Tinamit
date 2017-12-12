@@ -30,7 +30,7 @@ Financiamiento
 Los organismos siguientes contribuyeron apoyo financiero a uno o más de los autores del código mientras trabajaban
 en el desarrollo de Tinamït:
 
-* `Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) <www.nserc-crsng.gc.ca>`_
+* `Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) <https://www.nserc-crsng.gc.ca>`_
 * `Centre de recherches pour le développement international du Canada (CRDI) <https://www.idrc.ca/fr>`_
 * `Fonds de recherche Nature et technologies du Québec (Canada) (FQRNT) <http://www.frqnt.gouv.qc.ca/accueil>`_
 

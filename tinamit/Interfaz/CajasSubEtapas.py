@@ -244,7 +244,13 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
         símismo.actualizar_menús()
 
     def quitar_conexión(símismo, conexión):
-        símismo.apli.Modelo.desconectar(var_mds=conexión['var_mds'])
+        if conexión['mds_fuente']:
+            var_fuente = conexión['var_mds']
+            modelo_fuente = 'mds'
+        else:
+            var_fuente = conexión['var_bf']
+            modelo_fuente = 'bf'
+        símismo.apli.Modelo.desconectar_vars(var_fuente=var_fuente, modelo_fuente=modelo_fuente)
         símismo.actualizar_menús()
 
     def verificar_completo(símismo):

@@ -363,5 +363,6 @@ class ItemaConexión(CtrG.ItemaEditable):
         super().añadir()
 
     def quitar(símismo):
+        print(símismo.receta)
         símismo.pariente.quitar_conexión(símismo.receta)
         super().quitar()
