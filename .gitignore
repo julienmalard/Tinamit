@@ -33,6 +33,7 @@ docs/.tx/*
 # Archivos de Tinamït #
 #######################
 *.tin
+Config.json
 
 # Archivos de SAHYSMOD #
 ########################
