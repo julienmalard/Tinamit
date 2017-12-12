@@ -936,7 +936,7 @@ big,small {
 	content:""
 }
 .fa-arrow-circle-left:before,.icon-circle-arrow-left:before {
-	content:"•"
+	content:""
 }
 :-moz-dir(rtl) .fa-arrow-circle-left:before,:-moz-dir(rtl) .icon-circle-arrow-left:before {
 	content:""
@@ -948,10 +948,10 @@ big,small {
 	content:""
 }
 :-moz-dir(rtl) .fa-arrow-circle-right:before,:-moz-dir(rtl) .icon-circle-arrow-right:before {
-	content:"•"
+	content:""
 }
 : dir(rtl) .fa-arrow-circle-right:before,:dir(rtl) .icon-circle-arrow-right:before {
-	content:"•"
+	content:""
 }
 .fa-arrow-circle-up:before {
 	content:""
