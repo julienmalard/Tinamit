@@ -1,0 +1,90 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamit 1.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-31 11:09-0400\n"
+"PO-Revision-Date: 2017-12-05 01:20-0500\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"Generated-By: Babel 2.3.4\n"
+"X-Generator: Zanata 3.9.6\n"
+
+#: ../../source/agradecimientos.rst:2
+msgid "Agradecimientos"
+msgstr "Remerciements"
+
+#: ../../source/agradecimientos.rst:4
+msgid ""
+"Tinamït es un proyecto de fuente abierta. Las personas e instituciones "
+"siguientes hicieron posible su desarrollo."
+msgstr ""
+
+#: ../../source/agradecimientos.rst:7
+msgid "Autores del código"
+msgstr "Autheurs du codes"
+
+#: ../../source/agradecimientos.rst:9
+msgid ""
+"Julien Malard (`Sitio internet "
+"<https://www.researchgate.net/profile/Julien_Malard>`_)"
+msgstr ""
+"Julien Malard (`Site web "
+"<https://www.researchgate.net/profile/Julien_Malard>`_)"
+
+#: ../../source/agradecimientos.rst:10
+msgid ""
+"محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig, `Sitio internet "
+"<https://www.researchgate.net/profile/Azhar_Baig>`_)"
+msgstr ""
+
+#: ../../source/agradecimientos.rst:14
+msgid "Autores de envolturas"
+msgstr ""
+
+#: ../../source/agradecimientos.rst:15
+msgid ""
+"Gracias a los siguientes por escribir envolturas específicas a los modelos "
+"biofísicos siguientes (nota: escribimos las *envolturas* para que estos "
+"modelos sean compatibles con Tinamït, ¡no escribimos los modelos sí mismos!)"
+msgstr ""
+
+#: ../../source/agradecimientos.rst:19
+msgid "SAHYSMOD"
+msgstr ""
+
+#: ../../source/agradecimientos.rst:20
+msgid "محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)"
+msgstr ""
+
+#: ../../source/agradecimientos.rst:21
+msgid "Julien Malard"
+msgstr ""
+
+#: ../../source/agradecimientos.rst:24
+msgid "Traductores"
+msgstr "Traducteurs"
+
+#: ../../source/agradecimientos.rst:25
+msgid ""
+"Cuando se habrán traducido Tinamït y su documentación, los agradecimientos "
+"irán aquí."
+msgstr ""
+
+#: ../../source/agradecimientos.rst:28
+msgid "Instituciones afiliadas"
+msgstr "Institutions affiliées"
+
+#: ../../source/agradecimientos.rst:30
+msgid ""
+"Los autores de Tinamït están afiliados con las instituciones siguientes:"
+msgstr ""

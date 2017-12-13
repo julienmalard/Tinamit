@@ -10,6 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-06 09:58-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2017\n"
 "Language-Team: Tamil (https://www.transifex.com/qatikon/teams/70565/ta/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,7 +24,7 @@ msgstr ""
 
 #: ../../source/ejemplos/salinidad_pk.rst:7
 msgid "Preparación"
-msgstr ""
+msgstr "தயாரிப்பு"
 
 #: ../../source/ejemplos/salinidad_pk.rst:8
 msgid ""
