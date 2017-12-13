@@ -18,14 +18,14 @@ msgstr ""
 msgid "BF (Modelos Biofísicos)"
 msgstr "BP (Modèles biophysiques)"
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF:1
 msgid ""
 "Esta clase ofrece una envoltura para **TODOS** tipos de modelos biofísicos."
 msgstr ""
 "Cette classe offre une couverture pour **TOUS** genres de modèles "
 "biophysiques."
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF:3
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF:3
 msgid ""
 "Modelos biofísicos específicos se implementan por crear una subclase de "
 "`~tinamit.BF.ClaseModeloBF` específica para ellos."
@@ -34,62 +34,62 @@ msgstr ""
 "classe de `~tinamit.BF.ClaseModeloBF` spécifique au modèle biophysique "
 "désiré."
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.EnvolturaBF.cambiar_vals_modelo_interno:1
 msgid "Esta función cambia el valor de variables en el modelo."
 msgstr "Cette fonction change les valeurs des variables dans le modèle."
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.EnvolturaBF.cambiar_vals_modelo_interno:0
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF.incrementar:0
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF.iniciar_modelo:0
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF.incrementar:0
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF.iniciar_modelo:0
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloBF.cambiar_vals_modelo_interno:0
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloFlexible.cambiar_vals_modelo_interno:0
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloFlexible.escribir_archivo_ingr:0
-#: ../../../tinamit/BF.pydocstring of
-#: tinamit.BF.ModeloFlexible.iniciar_modelo:0 ../../../tinamit/BF.pydocstring
+#: ../../../tinamit/BF.py:docstring of
+#: tinamit.BF.ModeloFlexible.iniciar_modelo:0 ../../../tinamit/BF.py:docstring
 #: of tinamit.BF.ModeloFlexible.leer_archivo_egr:0
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.act_vals_clima:0
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.cambiar_vals_modelo_interno:0
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.escribir_archivo_ingr:0
-#: ../../../tinamit/BF.pydocstring of
-#: tinamit.BF.ModeloImpaciente.incrementar:0 ../../../tinamit/BF.pydocstring
+#: ../../../tinamit/BF.py:docstring of
+#: tinamit.BF.ModeloImpaciente.incrementar:0 ../../../tinamit/BF.py:docstring
 #: of tinamit.BF.ModeloImpaciente.leer_archivo_egr:0
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloImpaciente.leer_egr:0
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.leer_egr:0
 msgid "Parámetros"
 msgstr "Paramètres"
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.EnvolturaBF.cambiar_vals_modelo_interno:3
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloBF.cambiar_vals_modelo_interno:3
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.cambiar_vals_modelo_interno:5
 msgid "Un diccionario de variables y valores para cambiar."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF.cerrar_modelo:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF.cerrar_modelo:1
 msgid "Cierre el modelo interno."
 msgstr "Ferme le modèle interne."
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF.incrementar:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF.incrementar:1
 msgid ""
 "Esta función avanza el modelo por un periodo de tiempo especificado en "
 "`paso`."
 msgstr ""
 "Cette fonction avance le modèle d'un laps de temps déterminé par `paso`."
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF.incrementar:3
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF.incrementar:3
 msgid "El paso."
 msgstr "Le pas."
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF.inic_vars:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF.inic_vars:1
 msgid ""
 "Inicializa los variables del modelo biofísico y los conecta al diccionario "
 "de variables del modelo."
@@ -97,61 +97,61 @@ msgstr ""
 "Inicialise les variables du modèle biophysique et les connecte avec le "
 "dictionnaire des variables du modèle."
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF.iniciar_modelo:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF.iniciar_modelo:1
 msgid ""
 "Inicializa el modelo biofísico interno, incluyendo la inicialización de "
 "variables."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF.iniciar_modelo:3
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF.iniciar_modelo:3
 msgid "Argumentos para pasar al modelo interno."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.EnvolturaBF.leer_vals:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF.leer_vals:1
 msgid ""
 "Esta función lee los valores del modelo y los escribe en el diccionario "
 "interno de variables."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.EnvolturaBF.obt_unidad_tiempo:1
 msgid "Esta función debe devolver la unidad de tiempo empleada por el modelo."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
-#: tinamit.BF.EnvolturaBF.obt_unidad_tiempo:0 ../../../tinamit/BF.pydocstring
-#: of tinamit.BF.ModeloBF.obt_unidad_tiempo:0 ../../../tinamit/BF.pydocstring
+#: ../../../tinamit/BF.py:docstring of
+#: tinamit.BF.EnvolturaBF.obt_unidad_tiempo:0 ../../../tinamit/BF.py:docstring
+#: of tinamit.BF.ModeloBF.obt_unidad_tiempo:0 ../../../tinamit/BF.py:docstring
 #: of tinamit.BF.ModeloFlexible.leer_archivo_egr:0
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloFlexible.mandar_simul:0
-#: ../../../tinamit/BF.pydocstring of
-#: tinamit.BF.ModeloFlexible.obt_unidad_tiempo:0
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
+#: tinamit.BF.ModeloFlexible.mandar_simul:0 ../../../tinamit/BF.py:docstring
+#: of tinamit.BF.ModeloFlexible.obt_unidad_tiempo:0
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.leer_archivo_egr:0
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.obt_unidad_tiempo:0
 msgid "Devuelve"
 msgstr "Retourne"
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.EnvolturaBF.obt_unidad_tiempo:3
 msgid "La unidad de tiempo (p. ejemplo, 'meses', 'مہینہ', etc."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
-#: tinamit.BF.EnvolturaBF.obt_unidad_tiempo:0 ../../../tinamit/BF.pydocstring
-#: of tinamit.BF.ModeloBF.obt_unidad_tiempo:0 ../../../tinamit/BF.pydocstring
+#: ../../../tinamit/BF.py:docstring of
+#: tinamit.BF.EnvolturaBF.obt_unidad_tiempo:0 ../../../tinamit/BF.py:docstring
+#: of tinamit.BF.ModeloBF.obt_unidad_tiempo:0 ../../../tinamit/BF.py:docstring
 #: of tinamit.BF.ModeloFlexible.leer_archivo_egr:0
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloFlexible.mandar_simul:0
-#: ../../../tinamit/BF.pydocstring of
-#: tinamit.BF.ModeloFlexible.obt_unidad_tiempo:0
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
+#: tinamit.BF.ModeloFlexible.mandar_simul:0 ../../../tinamit/BF.py:docstring
+#: of tinamit.BF.ModeloFlexible.obt_unidad_tiempo:0
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.leer_archivo_egr:0
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.obt_unidad_tiempo:0
 msgid "Tipo del valor devuelto"
 msgstr "Type de valeur retournée"
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloBF:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF:1
 msgid ""
 "Se debe desarrollar una subclase de esta clase para cada tipo modelo "
 "biofísico que se quiere volver compatible con Tinamit."
@@ -159,9 +159,9 @@ msgstr ""
 "Vous devrez développer une sous-classe de cette classe pour chaque genre de "
 "modèle biophysique que vous voulez rendre compatible avec Tinamit."
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloBF.cambiar_vals_modelo_interno:1
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloFlexible.cambiar_vals_modelo_interno:1
 msgid ""
 "Esta función debe cambiar el valor de variables en el modelo biofísico."
@@ -169,9 +169,9 @@ msgstr ""
 "Cette fonction doit changer les valeurs des variables dans le modèle "
 "biophysique."
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloBF.cerrar_modelo:1
-#: ../../../tinamit/BF.pydocstring of
-#: tinamit.BF.ModeloFlexible.cerrar_modelo:1 ../../../tinamit/BF.pydocstring
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.cerrar_modelo:1
+#: ../../../tinamit/BF.py:docstring of
+#: tinamit.BF.ModeloFlexible.cerrar_modelo:1 ../../../tinamit/BF.py:docstring
 #: of tinamit.BF.ModeloImpaciente.cerrar_modelo:1
 msgid ""
 "Esta función debe cerrar la simulación. No se aplica a todos los modelos "
@@ -180,56 +180,57 @@ msgstr ""
 "Cette fonction foit terminer la simulation. Ne s'applique pas à tous les "
 "modèles biophysiques (dans ce cas, utiliser ``pass`` )."
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloBF.incrementar:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.incrementar:1
 msgid ""
 "Esta función debe incrementar el modelo de `paso` unidades de tiempo. :param"
 " paso: El número de pasos :type paso: int"
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloBF.inic_vars:1
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloFlexible.inic_vars:1
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloImpaciente.inic_vars:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.inic_vars:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloFlexible.inic_vars:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.inic_vars:1
 msgid "Esta función debe iniciar el diccionario interno de variables."
 msgstr "Cette fonction doit initialiser le dictionnaire de variables interne."
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloBF.inic_vars:3
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloImpaciente.inic_vars:3
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.inic_vars:3
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.inic_vars:3
 msgid ""
 "MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe "
 "para símismo.variables, no crear un diccionario nuevo."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloBF.inic_vars:6
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloImpaciente.inic_vars:6
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.inic_vars:6
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.inic_vars:6
 msgid ""
 "Por ejemplo, NO HAGAS: ``símismo.variables = {var1: {...}, var2: {...}, "
 "...}``"
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloBF.inic_vars:8
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloImpaciente.inic_vars:8
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.inic_vars:8
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.inic_vars:8
 msgid ""
 "sino: ``símismo.variables[var1] = {...}``, ``símismo.variables[var2] = "
 "{...}``, etc."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloBF.inic_vars:10
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloImpaciente.inic_vars:10
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.inic_vars:10
+#: ../../../tinamit/BF.py:docstring of
+#: tinamit.BF.ModeloImpaciente.inic_vars:10
 msgid ""
 "Al no hacer esto, romperás la conección entre los diccionarios de variables "
 "de :class:`ModeloBF` y :class:`EnvolturaBF`, lo cual impedirá después la "
 "conexión de estos variables con el modelo DS."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloBF.iniciar_modelo:1
-#: ../../../tinamit/BF.pydocstring of
-#: tinamit.BF.ModeloFlexible.iniciar_modelo:1 ../../../tinamit/BF.pydocstring
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.iniciar_modelo:1
+#: ../../../tinamit/BF.py:docstring of
+#: tinamit.BF.ModeloFlexible.iniciar_modelo:1 ../../../tinamit/BF.py:docstring
 #: of tinamit.BF.ModeloImpaciente.iniciar_modelo:1
 msgid "Esta función debe preparar el modelo para una simulación."
 msgstr "Cette fonction doit préparer le modèle pour la simulation."
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloBF.leer_vals:1
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloFlexible.leer_vals:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.leer_vals:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloFlexible.leer_vals:1
 msgid ""
 "Esta función debe leer los variables del modelo desde el modelo externo y "
 "copiarlos al diccionario interno de variables. Asegúrese que esté "
@@ -241,27 +242,27 @@ msgstr ""
 "*d'actualiser* le dictionnaire interne, et non en train de le recréer, car "
 "cela brisera les connexions avec le modèle connecté."
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloBF.obt_unidad_tiempo:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.obt_unidad_tiempo:1
 msgid "Esta función debe devolver la unidad de tiempo del modelo biofísico."
 msgstr "Cette fonction doit rendre l'unité de temps du modèle biophysique."
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloBF.obt_unidad_tiempo:3
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.obt_unidad_tiempo:3
 msgid "La unidad de tiempo del modelo."
 msgstr "L'unité de temps du modèle."
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloFlexible:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloFlexible:1
 msgid ""
 "Esta clase permite desarrollar envolturas para modelos con pasos variables "
 "(por ejemplo, modelos de cultivos cuyas duraciones de simulación depienden "
 "del tiempo hasta la cosecha)."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloFlexible.cambiar_vals_modelo_interno:3
 msgid "Un diccionario de variables y valores para cambiar．"
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloFlexible.inic_vars:3
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloFlexible.inic_vars:3
 msgid ""
 "MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe "
 "para símismo.variables, no crear un diccionario nuevo. Por ejemplo, NO "
@@ -271,14 +272,14 @@ msgstr ""
 " de símismo.variables, et non créer un nouveau dictionnaire. Par exemple, "
 "*ne faites pas*  |  símismo.variables = {var1: {...}, var2: {...}, ...}"
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloFlexible.inic_vars:8
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloFlexible.inic_vars:8
 msgid ""
 "sino: |  símismo.variables[var1] = {...} |  símismo.variables[var2] = {...}"
 msgstr ""
 "mais plutôt : |  símismo.variables[var1] = {...} |  símismo.variables[var2] "
 "= {...}"
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloFlexible.inic_vars:12
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloFlexible.inic_vars:12
 msgid ""
 "Al no hacer esto, romperás la conección entre los diccionarios de variables "
 "de ClaseModeloBF y EnvolturaBF, lo cual impedirá después la conexión de "
@@ -288,18 +289,19 @@ msgstr ""
 " variable de ClaseModeloBF et de EnvolturaBF, ce qui empêchera ensuite la "
 "conection de ces variables avec le modèle DS."
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloFlexible.leer_archivo_vals_inic:1
 msgid ""
 "Esta función devuelve un diccionario con los valores leídos del archivo de "
 "valores iniciales. :return: :rtype: (dict, tuple)"
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloFlexible.mandar_simul:1
+#: ../../../tinamit/BF.py:docstring of
+#: tinamit.BF.ModeloFlexible.mandar_simul:1
 msgid "El número de pasos que avanzamos con esta simulación."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloFlexible.obt_unidad_tiempo:1
 msgid ""
 "**¡Cuidado!** Esta función debe devolver la unidad de tiempo del modelo **a "
@@ -309,14 +311,14 @@ msgid ""
 "\"año\"."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloFlexible.obt_unidad_tiempo:5
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.obt_unidad_tiempo:4
 msgid "La unidad de tiempo **deseada** del modelo."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloImpaciente:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente:1
 msgid ""
 "Esta clase ofrece una clase pariente muy útil para modelos biofísicos cuyos "
 "pasos mínimos de simulación quedan más pequeños que el nivel de detalle que "
@@ -328,22 +330,22 @@ msgid ""
 "mensuales para este tipo de modelo anual,　pero sin　el dolor de cabeza."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.act_vals_clima:1
 msgid "Actualiza los variables climáticos., según la estación."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.act_vals_clima:3
 msgid "El número de pasos para avanzar"
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.act_vals_clima:5
 msgid "La fecha actual."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.avanzar_modelo:1
 msgid ""
 "Esta función debe avanzar el modelo de ``n_paso_mín`` de paso mínimos de "
@@ -352,7 +354,7 @@ msgid ""
 "avanzar el modelo de `n_paso_mín` **años**."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.cambiar_vals_modelo_interno:1
 msgid ""
 "Solamente nos tenemos que asegurar que los اعداد_دن internos (para variables"
@@ -362,24 +364,24 @@ msgid ""
 "simulación."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.escribir_archivo_ingr:1
 msgid ""
 "Escribe un archivo de ingresos para el modelo, en un formato que lee el "
 "modelo externo."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.escribir_archivo_ingr:3
 msgid "El número de años para simular."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.escribir_archivo_ingr:5
 msgid "El diccionario de valores iniciales, por variable."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.escribir_ingr:1
 msgid ""
 "Escribe un archivo de ingresos del modelo en el formato que lee el modelo "
@@ -387,7 +389,7 @@ msgid ""
 "siguiente. :type n_años_simul: int"
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.incrementar:1
 msgid ""
 "Incrementa el modelo, tomando valores de variables desde el diccionario de "
@@ -395,12 +397,13 @@ msgid ""
 "lo hace ahora y después lee los resultados."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.incrementar:4
 msgid "El paso con cual avanzar la simulación."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloImpaciente.inic_vars:13
+#: ../../../tinamit/BF.py:docstring of
+#: tinamit.BF.ModeloImpaciente.inic_vars:13
 msgid ""
 "También debe actualizar ``símismo.tipos_vars``, poniendo en 'Ingresos' los "
 "nombres de todos los variables de ingreso, en 'Egresos' todos los variables "
@@ -408,22 +411,22 @@ msgid ""
 "estacionales, y en 'EgrEstacionales' los variables de egresos estacionales."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.leer_archivo_egr:1
 msgid "Lee un archivo de egresos del modelo."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.leer_archivo_egr:3
 msgid "El número de años en los egresos. Solamente leerá el último año."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.leer_archivo_egr:5
 msgid "Un diccionario de los resultados por variable."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.leer_archivo_vals_inic:1
 msgid ""
 "Esta función devuelve un diccionario con los valores leídos del archivo de "
@@ -433,23 +436,23 @@ msgid ""
 "tuple)"
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloImpaciente.leer_egr:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.leer_egr:1
 msgid ""
 "Lee los egresos del modelo y los guarda en los diccionarios internos "
 "apropiados."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloImpaciente.leer_egr:3
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.leer_egr:3
 msgid ""
 "El número de años que se corrió la última simulación. Solamente se leerá el "
 "último año"
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloImpaciente.leer_egr:4
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.leer_egr:4
 msgid "de egresos. :type n_años_egr: int"
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of tinamit.BF.ModeloImpaciente.leer_vals:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.leer_vals:1
 msgid ""
 "Empleamos :func:`ModeloImpaciente.leer_egr` en vez, lo cual lee los egresos "
 "de todas los pasos de la última simulación. "
@@ -457,12 +460,12 @@ msgid ""
 "de variables actuales a la estación apropiada."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.leer_vals_inic:1
 msgid "Esta función lee los valores iniciales del modelo."
 msgstr ""
 
-#: ../../../tinamit/BF.pydocstring of
+#: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.obt_unidad_tiempo:1
 msgid ""
 "**¡Cuidado!** Esta función devuelve la unidad de tiempo del modelo **a la "

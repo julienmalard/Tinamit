@@ -18,7 +18,7 @@ msgstr ""
 msgid "Modelo"
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of tinamit.Modelo.Modelo:1
+#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo:1
 msgid ""
 "Todas las cosas en Tinamit son instancias de `Modelo`, que sea un modelo de "
 "dinámicas de los sistemas, un modelo de cultivos o de suelos o de clima, o "
@@ -27,7 +27,7 @@ msgid ""
 "implementan de manera independiente en cada subclase de `Modelo`."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.act_vals_clima:1
 msgid ""
 "Actualiza los variables climáticos. Esta función es la automática para cada "
@@ -35,32 +35,34 @@ msgid ""
 "por estación), la puedes cambiar en tu subclase."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of
-#: tinamit.Modelo.Modelo.act_vals_clima:0 ../../../tinamit/Modelo.pydocstring
-#: of tinamit.Modelo.Modelo.cambiar_vals:0 ../../../tinamit/Modelo.pydocstring
-#: of tinamit.Modelo.Modelo.cambiar_vals_modelo_interno:0
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
+#: tinamit.Modelo.Modelo.act_vals_clima:0 ../../../tinamit/Modelo.py:docstring
+#: of tinamit.Modelo.Modelo.cambiar_vals:0
+#: ../../../tinamit/Modelo.py:docstring of
+#: tinamit.Modelo.Modelo.cambiar_vals_modelo_interno:0
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.conectar_var_clima:0
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.desconectar_var_clima:0
-#: ../../../tinamit/Modelo.pydocstring of tinamit.Modelo.Modelo.incrementar:0
-#: ../../../tinamit/Modelo.pydocstring of tinamit.Modelo.Modelo.inic_val:0
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.incrementar:0
+#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.inic_val:0
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.iniciar_modelo:0
 msgid "Parámetros"
 msgstr "پیرامیٹرز"
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.act_vals_clima:4
 msgid "El número de pasos para avanzar"
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.act_vals_clima:6
 msgid "La fecha actual."
 msgstr "موجودہ تاریخ"
 
-#: ../../../tinamit/Modelo.pydocstring of tinamit.Modelo.Modelo.cambiar_vals:1
+#: ../../../tinamit/Modelo.py:docstring of
+#: tinamit.Modelo.Modelo.cambiar_vals:1
 msgid ""
 "Esta función cambiar el calor de uno o más variables del modelo. Cambia "
 "primero el valor en el diccionario interno del :class:`Modelo`, y después "
@@ -68,13 +70,13 @@ msgid ""
 " necesario, los valores de los variables en el modelo externo."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of tinamit.Modelo.Modelo.cambiar_vals:5
-#: ../../../tinamit/Modelo.pydocstring of
-#: tinamit.Modelo.Modelo.cambiar_vals_modelo_interno:4
+#: ../../../tinamit/Modelo.py:docstring of
+#: tinamit.Modelo.Modelo.cambiar_vals:5 ../../../tinamit/Modelo.py:docstring
+#: of tinamit.Modelo.Modelo.cambiar_vals_modelo_interno:4
 msgid "Un diccionario de variables y sus valores para cambiar."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.cambiar_vals_modelo_interno:1
 msgid ""
 "Esta función debe cambiar el valor de variables en el :class:`Modelo`, "
@@ -85,66 +87,66 @@ msgstr ""
 " اس بات  کو یقینی بنا تا ہے کہ بیرونی ماڈل ميں متغیر کی قیمت  تبدیل ہو چکی "
 "تھی اگر اس کا اطلاق ہے تو"
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.cerrar_modelo:1
 msgid ""
 "Esta función debe tomar las acciones necesarias para terminar la simulación "
 "y cerrar el modelo, si aplica. Si no aplica, usar ``pass``."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.conectar_var_clima:1
 msgid "Conecta un variable climático."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.conectar_var_clima:3
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.desconectar_var_clima:3
 msgid "El nombre interno del variable en el modelo."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.conectar_var_clima:5
 msgid "El nombre oficial del variable climático."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.conectar_var_clima:7
 msgid ""
 "Si este variable se debe adicionar o tomar el promedio entre varios pasos."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.desconectar_var_clima:1
 msgid "Esta función desconecta un variable climático."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of tinamit.Modelo.Modelo.incrementar:1
+#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.incrementar:1
 msgid ""
 "Esta función debe avanzar el modelo por un periodo de tiempo especificado."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of tinamit.Modelo.Modelo.incrementar:3
+#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.incrementar:3
 msgid "El paso."
 msgstr "قدم"
 
-#: ../../../tinamit/Modelo.pydocstring of tinamit.Modelo.Modelo.inic_val:1
+#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.inic_val:1
 msgid ""
 "Est método cambia el valor inicial de un variable (antes de empezar la "
 "simulación). Se emplea principalmente para activar y desactivar políticas y "
 "para establecer parámetros y valores iniciales para simulaciones."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of tinamit.Modelo.Modelo.inic_val:4
+#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.inic_val:4
 msgid "El nombre del variable para cambiar."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of tinamit.Modelo.Modelo.inic_val:7
+#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.inic_val:7
 msgid "El nuevo valor del variable."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of tinamit.Modelo.Modelo.inic_vars:1
+#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.inic_vars:1
 msgid ""
 "Esta función debe poblar el diccionario de variables del modelo, según la "
 "forma siguiente: {'var1': {'val': 13, 'unidades': 'cm', 'ingreso': True, "
@@ -152,7 +154,7 @@ msgid ""
 " False, dims: (3,2), 'egreso': True}} }"
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.iniciar_modelo:1
 msgid ""
 "Esta función llama cualquier acción necesaria para preparar el modelo para "
@@ -162,45 +164,45 @@ msgid ""
 "dejamos a ti para implementar."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.iniciar_modelo:5
 msgid "El tiempo final de la simulación."
 msgstr "تخروپن کا آخری وقت."
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.iniciar_modelo:8
 msgid "El nombre de la corrida (generalmente para guardar resultados)."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of tinamit.Modelo.Modelo.leer_vals:1
+#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.leer_vals:1
 msgid ""
 "Esta función debe leer los valores del modelo y escribirlos en el "
 "diccionario interno de variables. Se implementa frequentement con modelos "
 "externos de cuyos egresos hay que leer los resultados de una corrida."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.limp_vals_inic:1
 msgid "Esta función limpa los valores iniciales especificados anteriormente."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.obt_unidad_tiempo:1
 msgid "Esta función debe devolver la unidad de tiempo empleada por el modelo."
 msgstr ""
 "اس فنکشن کو ماڈل کے ذریعہ استعمال کیا جاتا وقت کا یونٹ واپس جانا چاہئے"
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.obt_unidad_tiempo:0
 msgid "Devuelve"
 msgstr "واپسی"
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.obt_unidad_tiempo:3
 msgid "La unidad de tiempo (p. ejemplo, 'meses', 'مہینہ', etc."
 msgstr ""
 
-#: ../../../tinamit/Modelo.pydocstring of
+#: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.obt_unidad_tiempo:0
 msgid "Tipo del valor devuelto"
 msgstr "واپس قیمت کی قسم"
