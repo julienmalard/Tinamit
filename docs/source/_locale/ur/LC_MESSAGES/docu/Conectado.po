@@ -1,18 +1,22 @@
-# Azhar Inam <azharinam@gmail.com>, 2017. #zanata
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-05 12:49-0500\n"
-"PO-Revision-Date: 2017-12-08 02:50-0500\n"
-"Last-Translator: Azhar Inam <azharinam@gmail.com>\n"
-"Language-Team: Urdu\n"
-"Language: ur\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2017\n"
+"Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"X-Generator: Zanata 3.9.6\n"
+"Language: ur\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../source/docu/Conectado.rst:2
 msgid "Conectado"
@@ -65,8 +69,8 @@ msgid ""
 "Si ``True``, el modelo DS es el modelo fuente para la conexión. Sino, será "
 "el modelo biofísico."
 msgstr ""
-"ہے تو، متحرک نظام ماڈل کے کنکشن کے ذریعہ ماخذ ماڈل ہے. دوسری صورت میں، یہ "
-"بائیوفیکیکل ماڈل ہو گا  ``True``اگر "
+"اگر ``True`` ہے، تو متحرک نظام ماڈل کے کنکشن کے ذریعہ ماخذ ماڈل ہے. دوسری "
+"صورت میں، یہ بائیوفیکیکل ماڈل ہو گا۔"
 
 #: ../../docstring of tinamit.Conectado.Conectado.conectar:13
 msgid "El factor de conversión entre los variables."
@@ -86,9 +90,7 @@ msgstr "متغیر کا نام متحرک نظام ماڈل میں منسلک ہ
 
 #: ../../docstring of tinamit.Conectado.Conectado.estab_bf:1
 msgid "Establece el modelo biofísico (:class:`~tinamit.BF.EnvolturaBF`)."
-msgstr ""
-"بائیوفیسیکل ماڈل (:class:` ٹنامٹ۔ بی ایف ۔ انوالٹورا بی ایف "
-"<tinamit.BF.EnvolturaBF>`) قائم کرتا ہے۔"
+msgstr "بائیوفیسیکل ماڈل (`class:`tinamit.BF.EnvolturaBF:) قائم کرتا ہے۔"
 
 #: ../../docstring of tinamit.Conectado.Conectado.estab_bf:3
 msgid ""
@@ -151,12 +153,13 @@ msgid ""
 "(separados con un ``_``), para que Tinamit sepa en cuál submodelo se ubica "
 "cada variable."
 msgstr ""
-" متغیرات  تبدیل کرنے کے لئے متغیرکے ناموں کی لغت. آپ کو ہر متغیرکے نام کو ذيلی ماڈل کے نام کے(ایک`` _`` کی طرف سے علیحدہ) ساتھ پیش کرنا ہوگا جس میں وہ  موجود ہے ۔\n"
-" تاکہ ٹنامٹ جانتا ہو کہ ہر متغیر کہاں واقع ہے۔ "
+" متغیرات  تبدیل کرنے کے لئے متغیرکے ناموں کی لغت. آپ کو ہر متغیرکے نام کو "
+"ذيلی ماڈل کے نام کے(ایک`` _`` کی طرف سے علیحدہ) ساتھ پیش کرنا ہوگا جس میں وہ"
+"  موجود ہے۔  تاکہ ٹنامٹ جانتا ہو کہ ہر متغیر کہاں واقع ہے۔ "
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.cerrar_modelo:1
 msgid "Termina la simulación."
-msgstr "تخروپن ختم ہوتا ہے"
+msgstr "تخروپن کو ختم کرتا ہے۔"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.conectar_vars:1
 msgid "Conecta variables entre los submodelos."
@@ -292,9 +295,12 @@ msgid ""
 "meses con un modelo de unidad de año, se aplicará una unidad de tiempo de "
 "سال al modelo conectado."
 msgstr ""
-"  یہ فنکشن منسلک ماڈل کے وقت کے یونٹوں کوکنڑول کرے گا۔ یہ ذيلی ماڈلوں پر منحصر ہے۔ اگر  دونوں ذيلی ماڈلوں کے يونيٹ يکساں ھوں گے تو يہ يونيٹ ماڈلوں کو جوڑے گا اور  \n"
-" اگر  دونوں ذيلی ماڈلوں کے يونيٹ مختلف ھوں گے تو يہ ان کے ليے تبادلہ تلاش کرنے کی کوشش کرے گا اور بڑے يونٹ کو لے گا۔ مثال کے طور پر، اگر ایک سال کے ایک \n"
-" یونٹ کے ساتھ مہینے کے وقت کا یونٹ منسلک ہوتا ہے تو، سال کا ایک یونٹ منسلک ماڈل پر لاگو کیا جائے گا."
+"  یہ فنکشن منسلک ماڈل کے وقت کے یونٹوں کوکنڑول کرے گا۔ یہ ذيلی ماڈلوں پر "
+"منحصر ہے۔ اگر  دونوں ذيلی ماڈلوں کے يونيٹ يکساں ھوں گے تو يہ يونيٹ ماڈلوں کو"
+" جوڑے گا اور اگر  دونوں ذيلی ماڈلوں کے يونيٹ مختلف ھوں گے تو يہ ان کے ليے "
+"تبادلہ تلاش کرنے کی کوشش کرے گا اور بڑے يونٹ کو لے گا۔ مثال کے طور پر، اگر "
+"ایک سال کے ایک یونٹ کے ساتھ مہینے کے وقت کا یونٹ منسلک ہوتا ہے تو، سال کا "
+"ایک یونٹ منسلک ماڈل پر لاگو کیا جائے گا."
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:8
 msgid ""
@@ -317,7 +323,7 @@ msgstr "واپسی"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:13
 msgid "El tiempo de paso del modelo SuperConectado."
-msgstr "  ماڈل سپر منسلک کے قدم کا وقفہ"
+msgstr "ماڈل سپر منسلک کے قدم کا وقفہ"
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:0
 msgid "Tipo del valor devuelto"
@@ -357,7 +363,9 @@ msgstr "  تخروپن کا مقام"
 #: ../../docstring of tinamit.Conectado.SuperConectado.simular:18
 msgid ""
 "El escenario climático según el sistema de la IPCC (2.6, 4.5, 6.0, o 8.5)"
-msgstr "(2.6,  4.5,  6.0,  or  8.5) کے لحاظ سے آب و ہوا کے  منظر نامے IPCC "
+msgstr ""
+"آب و ہوا کے  منظر نامے، بین اقوامی موسمیاتی تبدیلی کی تنظیم کے لحاظ سے (٢.٦،"
+" ٤.٥، ٦.٠ یا ٨.٥)."
 
 #: ../../docstring of tinamit.Conectado.SuperConectado.simular:21
 msgid "Si quieres recalcular los datos climáticos, si ya existen."
