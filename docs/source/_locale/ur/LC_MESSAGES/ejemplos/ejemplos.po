@@ -1,21 +1,23 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
 # This file is distributed under the same license as the tinamit package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-05 12:43-0500\n"
+"POT-Creation-Date: 2017-12-13 12:24-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ur\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
 
 #: ../../source/ejemplos/ejemplos.rst:2
 msgid "Ejemplos"
@@ -23,14 +25,14 @@ msgstr ""
 
 #: ../../source/ejemplos/ejemplos.rst:3
 msgid ""
-"Aquí presentamos unos ejemplos del uso de Tinamït, más allá de lo presentado"
-" en la sección :ref:`Usar <uso/usar>`."
+"Aquí presentamos unos ejemplos del uso de Tinamït, más allá de lo "
+"presentado en la sección :ref:`Usar <uso>`."
 msgstr ""
 
 #: ../../source/ejemplos/ejemplos.rst:5
 msgid ""
-"El código y los modelos para estos ejemplos (y más) también se encuentra en "
-"el directorio `Ejemplos` de Tinamït, ordenado por lengua."
+"El código y los modelos para estos ejemplos (y más) también se encuentra "
+"en el directorio `Ejemplos` de Tinamït, ordenado por lengua."
 msgstr ""
 
 #: ../../source/ejemplos/ejemplos.rst:16
@@ -39,9 +41,9 @@ msgstr ""
 
 #: ../../source/ejemplos/ejemplos.rst:17
 msgid ""
-"Este es un :ref:`ejemplo <ejemplo_senc>` con un modelo biofísico irrealista "
-"pero escrito únicamente en Python, así que los puedes correr sin descargar "
-"nada. Ideal para hacer una prueba de Tinamït."
+"Este es un :ref:`ejemplo <ejemplo_senc>` con un modelo biofísico "
+"irrealista pero escrito únicamente en Python, así que los puedes correr "
+"sin descargar nada. Ideal para hacer una prueba de Tinamït."
 msgstr ""
 
 #: ../../source/ejemplos/ejemplos.rst:21
@@ -50,11 +52,11 @@ msgstr ""
 
 #: ../../source/ejemplos/ejemplos.rst:22
 msgid ""
-"Este :ref:`ejemplo <ejemplo_sal>`, un poco más realístico que el anterior, "
-"muestra cómo se pueden emplear y automatizar combinaciones complejas de "
-"varias políticas en un contexto de análisis de cambios climáticos, generando"
-" mapas de impactos de políticas para cada combinación de políticas y "
-"escenario climático."
+"Este :ref:`ejemplo <ejemplo_sal>`, un poco más realístico que el "
+"anterior, muestra cómo se pueden emplear y automatizar combinaciones "
+"complejas de varias políticas en un contexto de análisis de cambios "
+"climáticos, generando mapas de impactos de políticas para cada "
+"combinación de políticas y escenario climático."
 msgstr ""
 
 #: ../../source/ejemplos/ejemplos.rst:27
@@ -66,3 +68,18 @@ msgid ""
 "Este :ref:`ejemplo <ejemplo_segali>` analiza causas de inseguridad "
 "alimentaria en Guatemala a distintas escalas. Todavía en trabajo."
 msgstr ""
+
+#~ msgid ""
+#~ "Aquí presentamos unos ejemplos del uso"
+#~ " de Tinamït, más allá de lo "
+#~ "presentado en la sección :ref:`Usar "
+#~ "<uso/usar>`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Aquí presentamos unos ejemplos del uso"
+#~ " de Tinamït, más allá de lo "
+#~ "presentado en la sección :ref:`Usar "
+#~ "<../uso/usar>`."
+#~ msgstr ""
+

@@ -1,27 +1,24 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
-# This file is distributed under the same license as the tinamit package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
-#, fuzzy
+# Tobias Schönberg <tobias47n9e@gmail.com>, 2015. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-05 12:49-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Language-Team: Dutch (https://www.transifex.com/qatikon/teams/70565/nl/)\n"
+"POT-Creation-Date: 2017-12-13 12:24-0500\n"
+"PO-Revision-Date: 2015-10-27 07:01-0400\n"
+"Last-Translator: Tobias Schönberg <tobias47n9e@gmail.com>\n"
+"Language-Team: Dutch\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: nl\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"X-Generator: Zanata 3.9.6\n"
 
-#: ../../source/uso/uso.rst:2
+#: ../../source/uso/uso.rst:4
 msgid "Cómo se emplea Tinamït"
 msgstr ""
 
-#: ../../source/uso/uso.rst:4
+#: ../../source/uso/uso.rst:6
 msgid ""
 "Hay dos maneras de usar Tinamït. Si quieres hacerlo sin código cualquier, el"
 " IGU (Interfaz de Usuario Gráfico) es para ti. Si prefieres hacerlo con unas"
@@ -30,7 +27,7 @@ msgid ""
 "IPA (Interfaz de Programación de Aplicaciones) es la mejor opción."
 msgstr ""
 
-#: ../../source/uso/uso.rst:8
+#: ../../source/uso/uso.rst:10
 msgid ""
 "Al final, el IGU y el IPA hacen el mismo trabajo (el IGU tiene botones muy "
 "lindos para llamar las funciones del IPA de manera automática). No obstante,"
@@ -38,11 +35,11 @@ msgid ""
 "siento)."
 msgstr ""
 
-#: ../../source/uso/uso.rst:11
+#: ../../source/uso/uso.rst:13
 msgid "Para una introducción rápida, ver:"
 msgstr ""
 
-#: ../../source/uso/uso.rst:21
+#: ../../source/uso/uso.rst:23
 msgid "Funcionalidades actuales y futuras de Tinamït"
 msgstr ""
 
@@ -68,8 +65,9 @@ msgstr ""
 #: ../../source/uso/uso.rst:1 ../../source/uso/uso.rst:1
 #: ../../source/uso/uso.rst:1 ../../source/uso/uso.rst:1
 #: ../../source/uso/uso.rst:1
+#, fuzzy
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: ../../source/uso/uso.rst:1
 msgid "Conversión de unidades de variables"
@@ -127,26 +125,26 @@ msgstr ""
 msgid "Simulaciones en paralelo"
 msgstr ""
 
-#: ../../source/uso/uso.rst:40
+#: ../../source/uso/uso.rst:42
 msgid ""
 "¿? = En teoría, pero no hemos intendado. Por favor avísanos si te funciona."
 msgstr ""
 
-#: ../../source/uso/uso.rst:43
+#: ../../source/uso/uso.rst:45
 msgid "Preparación pre-uso"
 msgstr ""
 
-#: ../../source/uso/uso.rst:44
+#: ../../source/uso/uso.rst:46
 msgid ""
 "No importe cuál del IPA o el IGU eliges usar, hay unas acciones "
 "preparatorias de las cuales no podrás escaparte."
 msgstr ""
 
-#: ../../source/uso/uso.rst:47
+#: ../../source/uso/uso.rst:49
 msgid "Preparación del modelo DS"
 msgstr ""
 
-#: ../../source/uso/uso.rst:48
+#: ../../source/uso/uso.rst:50
 msgid ""
 "Tendrás que preparar el modelo de dinámicas de los sistemas antes de poder "
 "conectarlo. Para Vensim (por el momento, Tinamït funciona con Vensim "
@@ -156,11 +154,11 @@ msgid ""
 "formato .vpm."
 msgstr ""
 
-#: ../../source/uso/uso.rst:53
+#: ../../source/uso/uso.rst:55
 msgid "Preparación del modelo biofísico"
 msgstr ""
 
-#: ../../source/uso/uso.rst:54
+#: ../../source/uso/uso.rst:56
 msgid ""
 "Si ya existe una envoltura específica para el modelo biofísico, no tienes "
 "que hacer nada más. Si no está disponible ya, tendrás que escribir una (o "

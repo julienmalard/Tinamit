@@ -94,7 +94,7 @@ msgstr ""
 
 #: ../../source/instal.rst:38
 msgid ""
-"Descarga y corre :download:`este código <Escriptos/pre_instal.py>` en Python"
+"Descarga y corre :download:`este código <escriptos/pre_instal.py>` en Python"
 " 3.6. Instalará todos los otros requísitos de Tinamït automáticamente. "
 "Necesitarás buena conexión internet."
 msgstr ""

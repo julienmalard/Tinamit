@@ -1,6 +1,6 @@
 Ejemplos
 ========
-Aquí presentamos unos ejemplos del uso de Tinamït, más allá de lo presentado en la sección :ref:`Usar <uso/usar>`.
+Aquí presentamos unos ejemplos del uso de Tinamït, más allá de lo presentado en la sección :ref:`Usar <uso>`.
 
 El código y los modelos para estos ejemplos (y más) también se encuentra en el directorio `Ejemplos` de Tinamït,
 ordenado por lengua.
