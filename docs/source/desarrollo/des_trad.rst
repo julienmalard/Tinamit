@@ -8,7 +8,7 @@ El Interfaz
 ¡Siempre querremos traducciones para hacer de Tinamït una herramienta aún más accesible!
 El interfaz de Tinamït tiene funcionalidades para la traducción del interfaz sí mismo (el globo).
 
-.. image:: ../Imágenes/IGU/IGU_cabeza_globo.png
+.. image:: ../imágenes/IGU/IGU_cabeza_globo.png
    :scale: 100 %
    :align: center
    :alt: Icono de cambio de idiomas de Tinamït.

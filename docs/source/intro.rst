@@ -28,7 +28,7 @@ que volver a meterse de nuevo a descifrar todo el código. Lo que no es un punto
 una profesional en, digamos, agricultura o política que el modelo que vas a construir con ella será muy fácil
 utilizar después de que te vayas.
 
-.. figure:: Imágenes/Estructura_concep.png
+.. figure:: imágenes/Estructura_concep.png
    :align: center
    :alt: Diagrama de la estructura conceptual de Tinamït.
    

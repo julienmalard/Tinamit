@@ -39,12 +39,12 @@ Instituciones afiliadas
 
 Los autores de Tinamït están afiliados con las instituciones siguientes:
 
-.. image:: Imágenes/Logos_inst/Logo_McGill_IGFS.jpg
+.. image:: imágenes/Logos_inst/Logo_McGill_IGFS.jpg
    :width: 200
    :align: center
    :alt: Logo McGill
 
-.. image:: Imágenes/Logos_inst/Logo_IARNA.jpg
+.. image:: imágenes/Logos_inst/Logo_IARNA.jpg
    :width: 200
    :align: center
    :alt: Logo IARNA URL
