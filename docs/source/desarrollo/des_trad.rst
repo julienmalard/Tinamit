@@ -25,5 +25,5 @@ La Documentación
 ¿Quieres leer esta oración en tu propia lengua? La documentación de Tinamït se traduce de manera colaborativa. Puedes
 utilizar el servidor Transifex o Zanata (syncronisamos los dos, así que no hay problema cuál eliges):
 
-* Zanata: Da muchas recomendaciones muy útiles. `Empezar ahora <https://translate.zanata.org/iteration/view/tinamit/1.2/>`_.
-* Transifex: Interfaz bonito. `Empezar ahora <https://www.transifex.com/qatikon/tinamit_1_2>`_.
+* Zanata: Da muchas recomendaciones muy útiles. `Empezar ahora <https://translate.zanata.org/project/view/tinamit>`_.
+* Transifex: Interfaz bonito. `Empezar ahora <https://www.transifex.com/qatikon/tinamit>`_.
