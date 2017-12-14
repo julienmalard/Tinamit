@@ -63,11 +63,11 @@ msgstr ""
 #: ../../source/desarrollo/des_trad.rst:28
 msgid ""
 "Zanata: Da muchas recomendaciones muy útiles. `Empezar ahora "
-"<https://translate.zanata.org/iteration/view/tinamit/1.2/>`_."
+"<https://translate.zanata.org/project/view/tinamit>`_."
 msgstr ""
 
 #: ../../source/desarrollo/des_trad.rst:29
 msgid ""
 "Transifex: Interfaz bonito. `Empezar ahora "
-"<https://www.transifex.com/qatikon/tinamit_1_2>`_."
+"<https://www.transifex.com/qatikon/tinamit>`_."
 msgstr ""
