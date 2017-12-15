@@ -12,7 +12,7 @@ cuál es mejor.
 
 proyecto_transifex = 'tinamit'
 leng_orig = 'es'
-lenguas = ['es', 'ms', 'fr', 'ta', 'ur', 'nl']
+lenguas = ['ms', 'fr', 'ta', 'ur', 'nl']
 
 # El directorio de la documentación
 dir_docs = os.path.split(os.path.realpath(__file__))[0]
