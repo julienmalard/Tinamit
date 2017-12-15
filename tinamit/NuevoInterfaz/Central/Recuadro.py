@@ -1,3 +1,3 @@
-from Dibba import Caja, BotónImg
+from Dibba import Caja
 
 CjRecuadro = Caja()

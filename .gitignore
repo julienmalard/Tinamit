@@ -6,8 +6,8 @@
 *.tmp
 
 # Código compilado #
-###################
-*.py[ocd]
+####################
+__pycache__/
 
 # Archivos de Python #
 ######################
@@ -20,12 +20,32 @@ setup.cfg
 dist/
 build/
 
+# Documentación #
+#################
+docs/.tx/*
+
 # Archivos de VENSIM #
 ######################
 *.vdf
+*.2mdl
+*.3vm
+
+# Archivos de Tinamït #
+#######################
 *.tin
+Config.json
 
+# Archivos de SAHYSMOD #
+########################
+*.frq
+*.gwt
+*.out
+*.lst
+*SAHYSMOD.inp
+*/Ejemplos/**/*SAHYSMOD/NAME*
+*/Ejemplos/**/*SAHYSMOD/*.txt
+*/EnvolturaBF/**/*SAHYSMOD/*.txt
 
-docs/.tx/*
-__pycache__/
-docs/source/_static/
+# Archivos temporarios de Excel #
+#################################
+~$*.xlsx*

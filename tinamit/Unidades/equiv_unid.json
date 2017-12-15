@@ -44,15 +44,26 @@
         "m": ["mètre", "mètres"]
       }
     },
-    "English":{
+    "English": {
       "tiempo": {
-        "mes": ["month", "months"]
+        "mes": [
+          "month",
+          "months"
+        ]
       },
       "distancia": {
-        "m": ["metre", "metres", "meter", "meters"]
+        "m": [
+          "metre",
+          "metres",
+          "meter",
+          "meters"
+        ]
+      }
+    },
+    "اردو":{
+      "tiempo": {
+        "mes": ["مہینہ"]
       }
     }
-
   }
-
 }

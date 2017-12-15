@@ -1,5 +1,6 @@
 """
-Code from Jérôme Boisvert-Chouinard under the MIT license.
+Código modificado de Jérôme Boisvert-Chouinard bajo la licencia MIT.
+Code modified from Jérôme Boisvert-Chouinard under the MIT license.
 
 The MIT License (MIT)
 
@@ -26,6 +27,7 @@ SOFTWARE.
 
 # !/bin/python
 
+import itertools
 # mioparser.py
 #
 # This module can parse fixed format text files based on template files
@@ -48,8 +50,8 @@ SOFTWARE.
 #
 ##########
 import sys
-import itertools
 from ast import literal_eval
+
 import numpy as np
 
 
@@ -92,7 +94,7 @@ def parse_f_line(line, parameter_names, column_widths, parameter_dictionary):
     return parameter_dictionary
 
 
-def buildFLine(parameterNames, columnWidths, parameterDictionary):
+def build_f_line(parameterNames, columnWidths, parameterDictionary):
     lineOut = ''
     arrayParam = 0
     for i in range(len(columnWidths)):
@@ -112,7 +114,7 @@ def buildFLine(parameterNames, columnWidths, parameterDictionary):
     return lineOut + '  \n'
 
 
-def parseDLine(line, parameterNames, delim, parameterDictionary):
+def parse_d_line(line, parameterNames, delim, parameterDictionary):
     line = line.strip()
     if delim == 'W':
         values = line.split()
@@ -134,20 +136,16 @@ def parseDLine(line, parameterNames, delim, parameterDictionary):
     return parameterDictionary
 
 
-def buildDLine(parameterNames, delim, parameterDictionary):
+def build_d_line(parameterNames, delim, parameterDictionary):
     values = []
     # If the separator is whitespace (denotes by 'W'), use a space as separator
     delim = '  ' if delim == 'W' else delim
     for paramName in parameterNames:
         if paramName[0] != '*':
-            values.append(parameterDictionary[paramName])
+            values.append(str(parameterDictionary[paramName]))
         else:
-            if isinstance(parameterDictionary[paramName.strip('*')], list):
-                values += [str(x) for x in parameterDictionary[paramName.strip('*')]]
-            else:
-                values += str(parameterDictionary[paramName.strip('*')])
+            values += [str(x) for x in parameterDictionary[paramName.strip('*')]]
 
-            # print(values)
     return delim.join(values) + '  \n'
 
 
@@ -157,38 +155,51 @@ def parseLine(line, parameterNames, lineSpec, parameterDictionary):
     elif lineSpec[0] == 'F':
         parse_f_line(line, parameterNames, lineSpec[1], parameterDictionary)
     elif lineSpec[0] == 'D':
-        parseDLine(line, parameterNames, lineSpec[1], parameterDictionary)
+        parse_d_line(line, parameterNames, lineSpec[1], parameterDictionary)
     return parameterDictionary
 
 
-def buildLine(parameterNames, lineSpec, parameterDictionary, configDictionary):
+def buildLine(parameterNames, lineSpec, parameterDictionary, configDictionary, int_params):
+    if int_params is not None:
+        for p in parameterDictionary:
+            if p in int_params:
+                parameterDictionary[p] = parameterDictionary[p].astype(int)
     if lineSpec[0] == 'L':
         line = build_l_line(parameterNames, parameterDictionary)
     elif lineSpec[0] == 'F':
-        line = buildFLine(parameterNames, lineSpec[1], parameterDictionary)
+        line = build_f_line(parameterNames, lineSpec[1], parameterDictionary)
     elif lineSpec[0] == 'D':
-        line = buildDLine(parameterNames, lineSpec[1], parameterDictionary)
+        line = build_d_line(parameterNames, lineSpec[1], parameterDictionary)
     if 'CSVPAD' in configDictionary.keys():
         diff = configDictionary['CSVPAD'] - 1 - line.count(',')
         if diff > 0:
             line = line.strip() + ',' * diff + '\n'
     return line
 
-
-# This creates an array of zeros of dimensions i*j*... for arguments i,j,...
-# It is used to initialize arrays when parsing recursive for loops
-def recurseArrayOfZeros(*dims):
+def createArrayOfZeros(*dims):
     if len(dims) == 1:
-        return [0] * dims[0]
+        return [0]*dims[0]
     else:
         arr = []
         for i in range(dims[0]):
-            arr.append(recurseArrayOfZeros(*dims[1:]))
+            arr.append(createArrayOfZeros(*dims[1:]))
         return arr
 
 
-def readFile(contentFn, templateFn):
-    parameterDictionary = {'#': []}
+def read_file(contentFn, templateFn, int_params):
+    """
+    This function reads a SAHYSMOD input file (.inp or .csv format)
+    :param contentFn:
+    :type contentFn: str
+    :param templateFn:
+    :type templateFn: str
+    :param int_params: Integer variables
+    :type int_params: list
+    :return:
+    :rtype:
+    """
+
+    param_dictionary = {'#': []}
     configDictionary = {}
     with open(contentFn, 'r') as contentF, open(templateFn, 'r') as templateF:
         for templateLine in templateF:
@@ -200,37 +211,45 @@ def readFile(contentFn, templateFn):
                 templateTuple = literal_eval(templateLine.strip())
                 if templateTuple[0][0:4] != 'FOR[':
                     contentLine = contentF.readline().strip('\n')
-                    # print(contentLine)
-                    parseLine(contentLine, templateTuple[1], templateTuple[0], parameterDictionary)
+                    parseLine(contentLine, templateTuple[1], templateTuple[0], param_dictionary)
                 else:
                     dims = [i.strip(']') for i in templateTuple[0].split('[')][1:]
                     for i in range(len(dims)):
                         try:
                             dims[i] = int(dims[i])
                         except ValueError:
-                            dims[i] = int(parameterDictionary[dims[i]])
+                            dims[i] = int(param_dictionary[dims[i]])
                     lineSpecTuple = templateTuple[1]
                     for lineSpec in lineSpecTuple:
 
                         for paramName in lineSpec[1]:
                             paramName = paramName.strip('*')
-                            parameterDictionary[paramName] = recurseArrayOfZeros(*dims)
+                            param_dictionary[paramName] = createArrayOfZeros(*dims)
+
                     iterdims = [range(dim) for dim in dims]
                     for indices in itertools.product(*iterdims):
                         tempDict = {}
-                        indicesString = ''.join(['[{}]'.format(i) for i in indices])
                         for lineSpec in lineSpecTuple:
                             contentLine = contentF.readline().strip('\n')
-                            # pprint(contentLine)
                             parseLine(contentLine, lineSpec[1], lineSpec[0], tempDict)
-                            # pprint(tempDict)
                             for paramName in lineSpec[1]:
                                 paramName = paramName.strip("*")
-                                exec('parameterDictionary[paramName]' + indicesString + '= tempDict[paramName]')
-    return parameterDictionary
+                                d = param_dictionary[paramName]
+                                for i in indices[:-1]:
+                                    d = d[i]
+                                d[indices[-1]] = tempDict[paramName]
+
+    for k, v in param_dictionary.items():
+        if isinstance(v, list):
+            if k in int_params:
+                param_dictionary[k] = np.array(v).astype(int)
+            else:
+                param_dictionary[k] = np.array(v).astype(float)
+
+    return param_dictionary
 
 
-def writeFile(parameterDictionary, contentFn, templateFn):
+def write_file(parameterDictionary, contentFn, templateFn, int_params=None):
     # k=1
     configDictionary = {}
     with open(contentFn, 'w') as contentF, open(templateFn, 'r') as templateF:
@@ -243,7 +262,8 @@ def writeFile(parameterDictionary, contentFn, templateFn):
             elif templateLine[0] != '#':
                 templateTuple = literal_eval(templateLine.strip())
                 if templateTuple[0][0:4] != 'FOR[':
-                    contentF.write(buildLine(templateTuple[1], templateTuple[0], parameterDictionary, configDictionary))
+                    contentF.write(buildLine(templateTuple[1], templateTuple[0], parameterDictionary, configDictionary,
+                                             int_params))
                 else:
                     dims = [i.strip(']') for i in templateTuple[0].split('[')][1:]
                     for i in range(len(dims)):
@@ -255,26 +275,26 @@ def writeFile(parameterDictionary, contentFn, templateFn):
                     iterdims = [range(dim) for dim in dims]
                     for indices in itertools.product(*iterdims):
                         tempDict = {}
-                        indicesString = ''.join(['[{}]'.format(i) for i in indices])
                         for lineSpec in lineSpecTuple:
                             for paramName in lineSpec[1]:
                                 paramName = paramName.strip('*')
-                                try:
-                                    exec('tempDict[paramName] = parameterDictionary[paramName]' + indicesString)
-                                except IndexError:
-                                    array = np.array(parameterDictionary[paramName]).swapaxes(0, 1)
-                                    exec('tempDict[paramName] = list(array)' + indicesString)
-                            contentF.write(buildLine(lineSpec[1], lineSpec[0], tempDict, configDictionary))
+                                p_d = parameterDictionary[paramName]
+                                for i in indices:
+                                    p_d = p_d[i]
+
+                                tempDict[paramName] = p_d
+
+                            contentF.write(buildLine(lineSpec[1], lineSpec[0], tempDict, configDictionary, int_params))
     return contentFn
 
 
 def main(*args):
     if args[1] == '-r':
-        parameterDictionary = readFile(args[2], args[3])
+        parameterDictionary = read_file(args[2], args[3])
         print(parameterDictionary[args[4]])
     elif args[1] == '-c':
-        parameterDictionary = readFile(args[2], args[3])
-        writeFile(parameterDictionary, args[4], args[5])
+        parameterDictionary = read_file(args[2], args[3])
+        write_file(parameterDictionary, args[4], args[5])
     return 0
 
 

@@ -135,7 +135,7 @@ class Datos(object):
 
     def cargar_datos(símismo, archivo=None):
         """
-        Cargar los nombres de los variables y  el no. de observaciones, no los datos sí mismos.
+        Cargar los nombres de los variables y  el no. de observaciones, no los اعداد_دن sí mismos.
 
         :param archivo:
         :type archivo: str
@@ -198,7 +198,7 @@ class Datos(object):
 
     def datos_irreg(símismo, var):
         """
-        Identifica datos irregulares.
+        Identifica اعداد_دن irregulares.
 
         :param var:
         :type var: str
@@ -225,7 +225,7 @@ class Datos(object):
         try:
             símismo._cargar_datos(var=col)
         except ValueError:
-            raise ValueError('Nombre de columna de años "{}" erróneo.'.format(col))
+            raise ValueError('Nombre de columna de سال "{}" erróneo.'.format(col))
 
         símismo.años = símismo.datos[col]
 
@@ -286,8 +286,8 @@ class Datos(object):
                 if var not in dic:
                     dic[var] = {}
 
-                dic[var][l]['datos'] = símismo.datos[var][índ]
-                dic[var][l]['años'] = símismo.años[índ]
+                dic[var][l]['اعداد_دن'] = símismo.datos[var][índ]
+                dic[var][l]['سال'] = símismo.años[índ]
 
         return dic
 
@@ -306,7 +306,7 @@ class Datos(object):
 
             l = csv.reader(d)  # El lector de csv
 
-            valores = []  # Para guardar la lista de datos de cada línea
+            valores = []  # Para guardar la lista de اعداد_دن de cada línea
 
             # Saltar la primera fila como nombres de columnas
             next(l)
@@ -425,12 +425,12 @@ class BaseDeDatos(object):
         dic_datos = símismo.pedir_datos(l_vars=[var], escala=escala, años=años,
                                         cód_lugar=cód_lugar, lugar=lugar, datos=datos)
 
-        # El número máximo de años que tenga un lugar
-        n_años = max([len(x['años']) for x in dic_datos.values()])
+        # El número máximo de سال que tenga un lugar
+        n_años = max([len(x['سال']) for x in dic_datos.values()])
 
         if n_años > 1:
             for l in dic_datos:
-                x = dic_datos[l]['años']
+                x = dic_datos[l]['سال']
                 y = dic_datos[l][var]
 
                 q95, q75, q25, q05 = np.percentile(datos, [95, 75, 25, 5])
@@ -469,8 +469,8 @@ class BaseDeDatos(object):
         datos_y = np.array([])
 
         for l in d_datos:
-            datos_x = np.concatenate(datos_x, d_datos[l][var_x]['datos'])
-            datos_y = np.concatenate(datos_y, d_datos[l][var_y]['datos'])
+            datos_x = np.concatenate(datos_x, d_datos[l][var_x]['اعداد_دن'])
+            datos_y = np.concatenate(datos_y, d_datos[l][var_y]['اعداد_دن'])
 
         dib.plot(datos_x, datos_y)
 
@@ -541,7 +541,7 @@ class BaseDeDatos(object):
                     símismo.combinar_dics(dic_ind, d.buscar_datos(l_vars=l_vars, años=años, cód_lugar=c_l))
                 else:
                     if escala == 'individual':
-                        # Si la escala es individual, no podemos hacer nada con datos regionales
+                        # Si la escala es individual, no podemos hacer nada con اعداد_دن regionales
                         pass
                     else:
                         símismo.combinar_dics(dic, d.buscar_datos(l_vars=l_vars, años=años, cód_lugar=cód_lugar))
@@ -567,15 +567,15 @@ class BaseDeDatos(object):
 
     @staticmethod
     def combinar_por_año(d):
-        # Combina todos los datos del mismo año (tomando el promedio.
+        # Combina todos los اعداد_دن del mismo año (tomando el promedio.
         for l in d:
             for v in d[l]:
-                datos = d[l][v]['datos']
-                años = d[l][v]['años']
+                datos = d[l][v]['اعداد_دن']
+                años = d[l][v]['سال']
 
-                años_únicos = np.unique(d[l][v]['años']).sort()
+                años_únicos = np.unique(d[l][v]['سال']).sort()
                 datos_prom = np.array([np.nanmean(datos[np.where(años == x)]) for x in años_únicos])
-                d[l][v] = {'datos': datos_prom, 'años': años_únicos}
+                d[l][v] = {'اعداد_دن': datos_prom, 'سال': años_únicos}
         return d
 
     def guardar(símismo, archivo=None):

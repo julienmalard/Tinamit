@@ -1,6 +1,6 @@
-from dibba import Página, Caja, CajaCuad, Imagen, BotónImg
-from NuevoInterfaz.Trads import PáginaTrads
+from dibba import Caja, CajaCuad, Imagen, BotónImg
 
+from NuevoInterfaz.Trads import PáginaTrads
 
 Cabeza = Caja(tamaño=(0, 70), tmñ_rel=(1, 0))
 LogoCabeza = Imagen('LogoCabeza.png', tamaño=(None, 60))

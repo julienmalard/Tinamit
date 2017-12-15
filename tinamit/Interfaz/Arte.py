@@ -1,5 +1,5 @@
-import os
 import tkinter as tk
+
 import pkg_resources
 
 
@@ -97,7 +97,7 @@ def escalar_colores(color1, color2, n):
     return list(zip(r, v, a))
 
 
-def inter_color(colores, p, tipo='rgb'):
+def inter_color(colores, p, tipo='rva'):
 
     def interpol(val1, val2, u):
         return int(val1 + (val2 - val1)*u)
@@ -112,7 +112,7 @@ def inter_color(colores, p, tipo='rgb'):
         fin = len(colores) - 1
     col = interpol_col(colores[inic], colores[fin], u=pos)
 
-    if tipo == 'rgb':
+    if tipo == 'rva':
         col_final = col
     elif tipo == 'hex':
         col_final = '#%02x%02x%02x' % col

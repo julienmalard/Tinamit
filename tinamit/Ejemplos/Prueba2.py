@@ -1,7 +1,7 @@
 import ctypes
 import random
 import struct
-
+import os
 
 # Un ejemplo de base de como conectar e intercambiar valores con Vensim. Este se desarrolló como prueba y NO es
 # necesario para el funcionamiento del programa Tinamit.
@@ -9,6 +9,7 @@ import struct
 
 class Dll(object):
     def __init__(símismo, ubic_modelo):
+        símismo.nombre_corrida = None
         símismo.variables = None
 
         símismo.dll = ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
@@ -50,6 +51,7 @@ class Dll(object):
         símismo.verificar_estatus()
 
     def estab_nombre_corrida(símismo, nombre):
+        símismo.nombre_corrida = nombre
         resultado = símismo.dll.vensim_command(("SIMULATE>RUNNAME|%s" % nombre).encode())
         print('Estableciendo nombre de corrida... ', resultado)
         símismo.verificar_estatus()
@@ -119,9 +121,15 @@ class Dll(object):
         else:
             print('Tienes un problema.', estatus)
 
-ubicación_modelo = "E:\\PhD\\Modelos VENSIM\\Subscripts.vpm"
+    def guardar_csv(símismo, archivo):
+        archivo_csv = os.path.split(archivo)[1].replace('.vdf', '.csv')
+        símismo.dll.vensim_command('MENU>VDF2CSV|{vdffile}|{CSVfile}'.format(vdffile=archivo, CSVfile=archivo_csv)
+                                   .encode())
+
+
+ubicación_modelo = "C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\tinamit\\Ejemplos\\Subscripts.vpm"
 modelo = Dll(ubicación_modelo)
-# modelo.silenciar()
+modelo.silenciar()
 modelo.sacar_nombres_vars()
 
 modelo.estab_nombre_corrida('Corrida')
@@ -131,7 +139,7 @@ modelo.poner_val_var(120, 'FINAL TIME')  # Absolutamente necesario
 modelo.sacar_subscripto_var('Naher')
 modelo.sacar_subscripto_var('Barish')
 
-input()
+# input()
 
 modelo.empezar_juego()
 
@@ -155,9 +163,10 @@ for i in range(12):
     modelo.avanzar_juego()
     modelo.sacar_val_var('Time')
 
-    input('Presione "Intro" para seguir...')
+    # input('Presione "Intro" para seguir...')
 
 modelo.terminar_juego()
 
+modelo.guardar_csv(os.path.join(os.path.split(ubicación_modelo)[0], 'Corrida.vdf'))
 
 print('fin')

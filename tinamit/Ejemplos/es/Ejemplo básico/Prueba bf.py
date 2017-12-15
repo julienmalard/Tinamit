@@ -1,9 +1,9 @@
 import random
 
-from tinamit.BF import ClaseModeloBF
+from tinamit.BF import ModeloBF
 
 
-class Modelo(ClaseModeloBF):
+class Modelo(ModeloBF):
 
     def ejec(símismo):
         pass

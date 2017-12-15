@@ -1,0 +1,128 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamit 1.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-12-05 12:43-0500\n"
+"PO-Revision-Date: 2017-12-14 11:20-0500\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Arabic (https://www.transifex.com/qatikon/teams/70565/ar/)\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"X-Generator: Zanata 3.9.6\n"
+
+#: ../../source/desarrollo/des_mds.rst:4
+msgid "Agregar programas MDS"
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:5
+msgid ""
+"Para poder conectar modelos de dinámicas de sistemas (DS) en Tinamït, el "
+"programa DS debe ser compatible con Tinamït. Este se asegura por escribir "
+"una envoltura que controla el programa DS. Lo bueno es que las envolturas "
+"para programas DS en Tinamït funcionan para todos los modelos escritos con "
+"el programa. Por ejemplo, la envoltura :class:`~tinamit.MDS.ModeloVensim` "
+"permite conectar cualquier modelo escrito en Vensim con Tinamït."
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:11
+msgid "Cómo crear una nueva envoltura"
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:12
+msgid ""
+"Si quieres hacer una nueva envoltura para otro tipo de modelo DS, tendrás "
+"que hacer una subclase de :class:`~tinamit.MDS.EnvolturaMDS` e implementar "
+"las funciones siguientes:"
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:15
+msgid ""
+":func:`~tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo`: Devuelve la unidad de "
+"tiempo del modelo."
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:16
+msgid ""
+":func:`~tinamit.MDS.EnvolturaMDS.inic_vars`: Incializa el diccionario "
+"interno de variables disponibles."
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:17
+msgid ""
+":func:`~tinamit.MDS.EnvolturaMDS.iniciar_modelo`: Inicializa la simulación."
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:18
+msgid ""
+":func:`~tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo_interno`: Cambia los "
+"valores internos de los variables."
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:19
+msgid ":func:`~tinamit.MDS.EnvolturaMDS.incrementar`: Avanza el modelo."
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:20
+msgid ""
+":func:`~tinamit.MDS.EnvolturaMDS.leer_vals`: Lee los egresos del modelo."
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:21
+msgid ""
+":func:`~tinamit.MDS.EnvolturaMDS.cerrar_modelo`: Cierre el modelo al final "
+"de una simulación."
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:23
+msgid "Ver :class:`~tinamit.MDS.ModeloVensim` para un ejemplo."
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:26
+msgid "Cómo conectar tu envoltura con Tinamït"
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:27
+msgid ""
+"Para que Tinamït pueda automáticamente crear la envoltura apropiada cuando "
+"un usuario le pasa un archivo de modelo DS, tienes que decir a Tinamït cuál "
+"extensión tienen los archivos de modelo DS que se deben abrir con tu nueva "
+"envoltura. Tendrás que modificar la función :func:`~tinamit.MDS.generar_mds`"
+" para incluir la(s) extension(es) para tu nuevo programa DS. Por ejemplo, "
+"para agregar una envoltura para Stella (suponemos que las extensiones serán "
+"``.stmx`` o ``.stm``), cambiamos el código así::"
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:52
+msgid "Leer egresos"
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:53
+msgid ""
+"Si quieres poder generar mapas, etc. con el egreso de tu modelo DS, tendrás "
+"que decir a Tinamït cómo leer el archivo de egresos de tu modelo DS. Al "
+"momento puede leer archivos ``.vdf`` de Vensim y ``.csv``. Si tu modelo DS "
+"genera otro formato raro, puedes modificar el código de "
+":func:`~tinamit.MDS.leer_egr_mds` para que Tinamït lo pueda leer también."
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:58
+msgid "Cambios climáticos"
+msgstr ""
+
+#: ../../source/desarrollo/des_mds.rst:59
+msgid ""
+"Al contrario de envolturas de modelos biofísicos, modelos DS no necesitan "
+"cualquier modificación para poder conectar con variables climáticos. El "
+"usuario simplemente debe llamar la función "
+":func:`~tinamit.Modelo.Modelo.conectar_var_clima` con el nombre del variable"
+" climático en su modelo DS y el nombre estándar del variable climático "
+"correspondiente en Tinamït."
+msgstr ""

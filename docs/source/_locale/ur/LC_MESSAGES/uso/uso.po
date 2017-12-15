@@ -1,0 +1,170 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamit 1.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-12-13 12:24-0500\n"
+"PO-Revision-Date: 2017-12-14 11:24-0500\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
+"Language: ur\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 3.9.6\n"
+
+#: ../../source/uso/uso.rst:4
+msgid "Cómo se emplea Tinamït"
+msgstr ""
+
+#: ../../source/uso/uso.rst:6
+msgid ""
+"Hay dos maneras de usar Tinamït. Si quieres hacerlo sin código cualquier, el"
+" IGU (Interfaz de Usuario Gráfico) es para ti. Si prefieres hacerlo con unas"
+" pocas líneas de código (lo cual puede acelerar bastante tu trabajo si "
+"tienes muchas simulaciones diferentes que quieres automatizar), entonces el "
+"IPA (Interfaz de Programación de Aplicaciones) es la mejor opción."
+msgstr ""
+
+#: ../../source/uso/uso.rst:10
+msgid ""
+"Al final, el IGU y el IPA hacen el mismo trabajo (el IGU tiene botones muy "
+"lindos para llamar las funciones del IPA de manera automática). No obstante,"
+" nuevas funcionalidades divertidas siempre aparecen en el IPA primero (lo "
+"siento)."
+msgstr ""
+
+#: ../../source/uso/uso.rst:13
+msgid "Para una introducción rápida, ver:"
+msgstr ""
+
+#: ../../source/uso/uso.rst:23
+msgid "Funcionalidades actuales y futuras de Tinamït"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "Funcionalidad"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "IGU"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "IPA"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "Conectar modelos BF y DS"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1 ../../source/uso/uso.rst:1
+#: ../../source/uso/uso.rst:1 ../../source/uso/uso.rst:1
+#: ../../source/uso/uso.rst:1 ../../source/uso/uso.rst:1
+#: ../../source/uso/uso.rst:1 ../../source/uso/uso.rst:1
+#: ../../source/uso/uso.rst:1 ../../source/uso/uso.rst:1
+#: ../../source/uso/uso.rst:1
+msgid "X"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "Conversión de unidades de variables"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "Ajustar el paso y tiempo final"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "Simular modelos conectados"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "Traducciones"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid ":("
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "Escenarios de políticas"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "Cambios climáticos"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "Mapas espaciales"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "Conectar 3+ modelos"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "¿?"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "Análisis de sensibilidad"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "Análisis de incertidumbre"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "Calibración y validación"
+msgstr ""
+
+#: ../../source/uso/uso.rst:1
+msgid "Simulaciones en paralelo"
+msgstr ""
+
+#: ../../source/uso/uso.rst:42
+msgid ""
+"¿? = En teoría, pero no hemos intendado. Por favor avísanos si te funciona."
+msgstr ""
+
+#: ../../source/uso/uso.rst:45
+msgid "Preparación pre-uso"
+msgstr ""
+
+#: ../../source/uso/uso.rst:46
+msgid ""
+"No importe cuál del IPA o el IGU eliges usar, hay unas acciones "
+"preparatorias de las cuales no podrás escaparte."
+msgstr ""
+
+#: ../../source/uso/uso.rst:49
+msgid "Preparación del modelo DS"
+msgstr ""
+
+#: ../../source/uso/uso.rst:50
+msgid ""
+"Tendrás que preparar el modelo de dinámicas de los sistemas antes de poder "
+"conectarlo. Para Vensim (por el momento, Tinamït funciona con Vensim "
+"solamente), primero hay que ir a cada variable en tu modelo Vensim que "
+"quieres que pueda recibir valores desde el modelo biofísico y escoger "
+"“Gaming” como tipo de variable. Después, hay que publicar el modelo en "
+"formato .vpm."
+msgstr ""
+
+#: ../../source/uso/uso.rst:55
+msgid "Preparación del modelo biofísico"
+msgstr ""
+
+#: ../../source/uso/uso.rst:56
+msgid ""
+"Si ya existe una envoltura específica para el modelo biofísico, no tienes "
+"que hacer nada más. Si no está disponible ya, tendrás que escribir una (o "
+"convencer a alguien de hacerlo para ti). Ver la documentación de "
+":ref:`envolturas BF <des_bf>`."
+msgstr ""

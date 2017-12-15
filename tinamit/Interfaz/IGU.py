@@ -1,9 +1,9 @@
 ﻿import tkinter as tk
 
+from tinamit.Conectado import Conectado
 from tinamit.Interfaz import Cajas as Cj
 from tinamit.Interfaz import Formatos as Fm
 from tinamit.Interfaz import Traducciones as Trad
-from tinamit.Conectado import Conectado
 
 
 class Apli(tk.Frame):
@@ -41,6 +41,7 @@ def correr():
 
     raíz = tk.Tk()
     apli = Apli(raíz)
+    apli.lift()
     apli.mainloop()
 
 

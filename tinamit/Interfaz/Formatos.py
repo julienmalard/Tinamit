@@ -1,12 +1,18 @@
 import json
-import os
 import tkinter as tk
 
+import pkg_resources
+
+from tinamit.Interfaz import Traducciones as Trad
+
 # Una función para modificar los formatos según la dirección del texto de la lengua
-direc = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Trads.json')
+direc = pkg_resources.resource_filename('tinamit.Interfaz', 'Trads.json')
+arch_config = pkg_resources.resource_filename('tinamit.Interfaz', 'Config.json')
+Trad.Diccionario()
 with open(direc, encoding='utf8') as d:
     dic = json.load(d)
-leng = dic['Actual']
+with open(arch_config, encoding='utf8') as d:
+    leng = json.load(d)['leng_act']
 IzqaDerech = dic['Lenguas'][leng]['IzqaDerech']
 
 

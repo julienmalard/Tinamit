@@ -1,0 +1,146 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamit 1.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-12-05 12:49-0500\n"
+"PO-Revision-Date: 2017-12-14 11:24-0500\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Arabic (https://www.transifex.com/qatikon/teams/70565/ar/)\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"X-Generator: Zanata 3.9.6\n"
+
+#: ../../source/uso/avanzado.rst:4
+msgid "Uso avanzado de Tinamït"
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:5
+msgid ""
+"Aquí describimos unas funciones más avanzadas de Tinamït. Muchas de estas, "
+"por el momento, se puedes acceder únicamente por el IPA, y no el IGU."
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:11
+msgid "Mapas espaciales"
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:12
+msgid ""
+"Tinamït puede dibujar mapas sencillos de los resultados de modelos "
+"espaciales. Esto se hace por el objeto :class:`~tinamit.Geog.Geog.Geografía`"
+" de Tinamït."
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:15
+msgid "Primero, creamos el objeto de geografía::"
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:20
+msgid ""
+"Después, agregamos las regiones que corresponden con los subscriptos "
+"(matriz) de los variables espaciales en nuestro modelo DS con la función "
+"`~tinamit.Geog.Geog.Geografía.agregar_regiones`. Estas son las regiones que "
+"se colorarán según los resultados::"
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:27
+msgid ""
+"``col_orden`` debe ser un atributo numérico del archivo ``.shp``, donde cada"
+" número corresponde con el índice de esta región en la matriz (subscriptos) "
+"del modelo DS. La cuenta puede empezar en 0 o en 1. Si no se especifica "
+"``col_orden``, Tinamït supondrá que las regiones del archivo ``.shp`` están "
+"en el mismo orden que los índices en tu modelo DS, lo cual puede ser mala "
+"idea suponer."
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:32
+msgid ""
+"Ahora, agregamos otros objeto geográficos puramente estéticos con la función"
+" `~tinamit.Geog.Geog.Geografía.agregar_objeto`::"
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:42
+msgid ""
+"Puedes especificar el ``color`` y la transparencia (``alpha``) del objeto, "
+"tanto como si se debe llenar o simplemente dibujar el contorno. Para "
+"facilitarte la vida, hay unas opciones predeterminadas (``ciudad``, "
+"``calle``, ``agua``, ``bosque``) que puedes especificar con ``tipo``."
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:47
+msgid "Cambios climáticos"
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:48
+msgid ""
+"También podemos conectar nuestro modelos con observaciones y predicciones "
+"climáticas si nuetro modelo tiene variables climáticos. Esto se hace con la "
+"clase :class:`~tinamit.Geog.Geog.Lugar` de Tinamït."
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:55
+msgid ""
+"Primero, debemos crear la instancia de :class:`~tinamit.Geog.Geog.Lugar`, "
+"con sus coordenadas::"
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:60
+msgid ""
+"Visto que tenemos observaciones mensuales para unos años, los conectamos con"
+" la función :func:`~tinamit.Geog.Geog.Lugar.observar_mensuales`. ::"
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:66
+msgid ""
+"``archivo`` es el archivo con los datos, ``meses`` y ``años`` los nombres de"
+" las columnas con el mes y el año (¿¡verdad!?) y ``col_datos`` es un "
+"diccionario con la correspondencia de nombres de variables climáticos "
+"oficiales de Tinamït y el nombre actual de la columna en tu base de datos."
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:71
+msgid ""
+"Tambien se pueden :func:`~tinamit.Geog.Geog.Lugar.observar_diarios` y "
+":func:`~tinamit.Geog.Geog.Lugar.observar_mensuales`. Si tienes datos "
+"mensuales o anuales y un modelo necesita datos diarios, Tinamït dividirá la "
+"precipitación igualmente entre los días del mes o del año."
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:75
+msgid "La opciones actuales (y sus unidades) para variables climáticos son:"
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:77
+msgid "``Precipitación`` : mm"
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:78
+msgid "``Radiación solar`` : MJ / m2 / día"
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:79
+msgid "``Temperatura máxima`` : grados C"
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:80
+msgid "``Temperatura promedia`` : grados C"
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:81
+msgid "``Temperatura mínima`` : grados C"
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:84
+msgid ""
+"Tinamït puede leer archivos con datos numéricos guardaros en escrituras de "
+"la mayoría del mundo (por ejemplo, १२३, ௧௨௩, ೧೨೩, 一二三, ١٢٣, etc.) Chévere, "
+"¿no? (Yo sé, yo sé.)"
+msgstr ""

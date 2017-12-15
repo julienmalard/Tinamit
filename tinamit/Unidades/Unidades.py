@@ -1,6 +1,7 @@
 import json
-import pkg_resources
 import re
+
+import pkg_resources
 
 # Buscar el archivo de conversiones.
 archivo_json = pkg_resources.resource_filename('tinamit.Unidades', 'equiv_unid.json')
@@ -12,7 +13,7 @@ with open(archivo_json, 'r', encoding='utf8') as d:
     dic_equiv = dic_doc['equiv']
 
 
-def convertir(de, a,  val=1, clase=None, lengua=None):
+def convertir(de, a, val=1, clase=None, lengua=None):
     """
     Esta función convierte un valor de una unidad a otra.
 
@@ -61,20 +62,28 @@ def convertir(de, a,  val=1, clase=None, lengua=None):
         lenguas = [lengua]
 
     #
-    de = 'm2/s'
     re_unid = r'(?P<unid>[^\W\d]+)(?P<exp>\-?(?=\d)?[\d]*)'
-    regex = r'{}+(?P<oper>[\*\/]?)'.format(re_unid)
-    unidades_simp = re.finditer(regex, de)
-    lista = list(unidades_simp)
-    for l in lista:
-        print(l.group('unid'))
-        print(l.group('exp'))
-        print(l.group('oper'))
+    regex = r'(?P<oper>[\*\/]?){}+'.format(re_unid)
+    unidades_de = list(re.finditer(regex, de))
+    unidades_a = list(re.finditer(regex, a))
+    if len(unidades_de) != len(unidades_a):
+        raise ValueError('Unidades incompatibles: "{}" y "{}".'.format(de, a))
 
     factor = 1
-    for u in unidades_simp:
-        conv = convertir_unid_senc(de=u['de'], a=u['a'], clases=clases, lenguas=lenguas)
-        factor *= conv**u['exp']
+    for g_de, g_a in zip(unidades_de, unidades_a):
+        u_de = g_de.group('unid')
+        u_a = g_a.group('unid')
+        e_de = g_de.group('exp') if g_de.group('exp') != '' else 1
+        e_a = g_a.group('exp') if g_a.group('exp') != '' else 1
+        o_de = g_de.group('oper')
+        o_a = g_a.group('oper')
+        if e_de != e_a or o_de != o_a:
+            raise ValueError
+
+        conv = convertir_unid_senc(de=u_de, a=u_a, clases=clases, lenguas=lenguas)
+        if o_de == '/':
+            e_de *= -1
+        factor *= conv ** e_de
 
     return factor * val
 

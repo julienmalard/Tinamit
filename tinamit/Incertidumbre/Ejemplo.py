@@ -1,7 +1,5 @@
-from tinamit.Incertidumbre.Controles import Control
-from tinamit.Incertidumbre.Modelo import mds
-
 from tinamit.Incertidumbre.Datos import DatosIndividuales, DatosRegión, Geografía, BaseDeDatos
+from tinamit.Incertidumbre.Modelo import mds
 
 # MDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
 modelo = mds(archivo_mds='C:\\Users\\jmalar1\\Documents\\USB Julien\\USB après lavage août 2016\\PhD\\Iximulew\\'
@@ -53,7 +51,7 @@ bd.graficar(var='Población', años=None, cód_lugar=['0112', 1204])
 
 # Gráfico de un variable contra el otro
 bd.comparar(var_x='Sueldo', var_y='Educación', escala='individual', datos=None)
-# bd.comparar(var_x='Lluvia', var_y='Rendimiento', var_z='Suelo', escala='individual')
+# اعداد.comparar(var_x='Lluvia', var_y='Rendimiento', var_z='Suelo', escala='individual')
 
 raise SystemExit(0)
 
@@ -84,7 +82,7 @@ eq = control.eq(var='Sueldo')
 eq_var is eq
 eq.paráms()  # Dic de parám, distribución y valor
 control.calibrar_ec(var='', años=None, escala='Municipio', cód_lugar='0112')
-control.graficar_ec(var='', var_y=None, var_z=None, datos=None, años=None)  # Grafica los datos (bd.relación) y la línea, con incertdumbre, de la ecuación calibrada
+control.graficar_ec(var='', var_y=None, var_z=None, datos=None, años=None)  # Grafica los اعداد_دن (اعداد.relación) y la línea, con incertdumbre, de la ecuación calibrada
 
 
 control.guardar_incert_paráms(archivo='')  # Dic. de var, parám, y distribución

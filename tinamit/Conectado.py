@@ -1,10 +1,18 @@
+import datetime as ft
+import os
 import threading
 from warnings import warn as avisar
 
+import numpy as np
+from dateutil.relativedelta import relativedelta
+
 from tinamit.BF import EnvolturaBF
-from tinamit.Modelo import Modelo
 from tinamit.MDS import generar_mds
+from tinamit.Modelo import Modelo
 from tinamit.Unidades.Unidades import convertir
+from tinamit.Geog.Geog import Geografía, Lugar
+
+from taqdir.مقام import مقام
 
 
 class SuperConectado(Modelo):
@@ -78,8 +86,8 @@ class SuperConectado(Modelo):
 
     def inic_vars(símismo):
         """
-        Esta función no es necesaria, porque :func:`.estab_modelo` ya llama las funciones necesarias.
-        :func:`~tinamit.Modelo.inic_vars` de los submodelos.
+        Esta función no es necesaria, porque :func:`~tinamit.Conectado.Conectado.estab_modelo` ya llama las funciones
+        necesarias, :func:`~tinamit.Modelo.inic_vars` de los submodelos.
 
         """
         pass
@@ -90,7 +98,7 @@ class SuperConectado(Modelo):
         Si los dos submodelos tienen las mismas unidades, esta será la unidad del modelo conectado también.
         Si los dos tienen unidades distintas, intentaremos encontrar la conversión entre los dos y después se
         considerará como unidad de tiempo de base la más grande de los dos. Por ejemplo, si se conecta un modelo
-        con una unidad de tiempo de meses con un modelo de unidad de año, se aplicará una unidad de tiempo de años
+        con una unidad de tiempo de meses con un modelo de unidad de año, se aplicará una unidad de tiempo de سال
         al modelo conectado.
 
         Después se actualiza el variable símismo.conv_tiempo para guardar en memoria la conversión necesaria entre
@@ -139,8 +147,10 @@ class SuperConectado(Modelo):
             except ValueError:
                 # Si no lo logramos, hay un error.
                 avisar('No se pudo inferir la conversión de unidades de tiempo entre {} y {}.'
-                       'Especificarla con la función .estab_conv_tiempo().'.format(unid_mod_1, unid_mod_2))
-                return None
+                       'Especificarla con la función .estab_conv_tiempo().\n'
+                       'Por el momento pusimos el factor de conversión a 1, pero probablemente no es lo que quieres.'
+                       .format(unid_mod_1, unid_mod_2))
+                factor_conv = 1
 
             if factor_conv > 1:
                 # Si la unidad de tiempo del primer modelo es más grande que la del otro...
@@ -188,7 +198,7 @@ class SuperConectado(Modelo):
 
         # Identificar el modelo que no sirve de referencia para la unidad de tiempo
         l_mod = list(símismo.modelos)
-        mod_otro = l_mod[(l_mod.index(mod_base)+1) % 2]
+        mod_otro = l_mod[(l_mod.index(mod_base) + 1) % 2]
 
         # Establecer las conversiones
         símismo.conv_tiempo[mod_base] = 1
@@ -203,9 +213,8 @@ class SuperConectado(Modelo):
         vuelve recursiva.
 
         :param valores: El diccionario de nombres de variables para cambiar. Hay que prefijar cada nombre de variable
-        con el nombre del submodelo en en cual se ubica (separados con un ``_``), para que Tinamit sepa en cuál
-        submodelo se ubica cada variable.
-
+          con el nombre del submodelo en en cual se ubica (separados con un ``_``), para que Tinamit sepa en cuál
+          submodelo se ubica cada variable.
         :type valores: dict
 
         """
@@ -219,7 +228,78 @@ class SuperConectado(Modelo):
             # Ahora, pedimos a los submodelos de hacer los cambios en los modelos externos, si hay.
             símismo.modelos[nombre_mod].cambiar_vals(valores={var: val})
 
-    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamit'):
+    def _conectar_clima(símismo, n_pasos, lugar, fecha_inic, tcr, recalc):
+        """
+        Esta función conecta el clima de un lugar con el modelo Conectado.
+
+        :param  n_pasos: El número de pasos para la simulación.
+        :type n_pasos: int
+        :param lugar: El lugar.
+        :type lugar: Lugar
+        :param fecha_inic: La fecha inicial de la simulación.
+        :type fecha_inic: ft.date | ft.datetime | str | int
+        :param tcr: El escenario climático según el sistema de la IPCC (2.6, 4.5, 6.0, o 8.5)
+        :type tcr: str | float
+
+        """
+
+        # Conectar el lugar
+        símismo.lugar = lugar
+        for m in símismo.modelos.values():
+            m.lugar = lugar
+
+        # Calcular la fecha final
+        fecha_final = None
+        n_días = None
+        try:
+            n_días = convertir(de=símismo.unidad_tiempo, a='días', val=n_pasos)
+        except ValueError:
+            for m in símismo.modelos.values():
+                try:
+                    n_días = convertir(de=m.unidad_tiempo, a='días', val=símismo.conv_tiempo[m.nombre]*n_pasos)
+                    continue
+                except ValueError:
+                    pass
+
+        if n_días is not None:
+            fecha_final = fecha_inic + ft.timedelta(int(n_días))
+
+        else:
+            n_meses = None
+            try:
+                n_meses = convertir(de=símismo.unidad_tiempo, a='meses', val=n_pasos)
+            except ValueError:
+                for m in símismo.modelos.values():
+                    try:
+                        n_meses = convertir(de=m.unidad_tiempo, a='meses', val=símismo.conv_tiempo[m.nombre]*n_pasos)
+                        continue
+                    except ValueError:
+                        pass
+            if n_meses is not None:
+                fecha_final = fecha_inic + relativedelta(months=int(n_meses) + 1)
+
+        if fecha_final is None:
+            raise ValueError
+
+        # Obtener los اعداد_دن de lugar
+        lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=tcr, regenerar=recalc)
+
+    def act_vals_clima(símismo, n_paso, f):
+        """
+        Actualiza los variables climáticos según la fecha.
+
+        :param n_paso: El número de pasos en adelante para cuales tenemos que obtener predicciones.
+        :type n_paso: int
+        :param f: La fecha actual.
+        :type f: ft.datetime | ft.date
+
+        """
+
+        for nombre, mod in símismo.modelos.items():
+            mod.act_vals_clima(n_paso=símismo.conv_tiempo[nombre] * n_paso, f=f)
+
+    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None, tcr=None,
+                recalc=True, clima=False):
         """
         Simula el modelo :class:`~tinamit.Conectado.SuperConectado`.
 
@@ -232,6 +312,21 @@ class SuperConectado(Modelo):
         :param nombre_corrida: El nombre de la corrida.  El valor automático es ``Corrida Tinamit``.
         :type nombre_corrida: str
 
+        :param fecha_inic: La fecha inicial de la simulación. Necesaria para simulaciones con cambios climáticos.
+        :type fecha_inic: ft.datetime | ft.date | int | str
+
+        :param lugar: El lugar de la simulación.
+        :type lugar: Lugar
+
+        :param tcr: El escenario climático según el sistema de la IPCC (2.6, 4.5, 6.0, o 8.5)
+        :type tcr: str | float
+
+        :param recalc: Si quieres recalcular los datos climáticos, si ya existen.
+        :type recalc: bool
+
+        :param clima: Si es una simulación de cambios climáticos o no.
+        :type clima: bool
+
         """
 
         # ¡No se puede simular con menos (o más) de dos modelos!
@@ -243,11 +338,53 @@ class SuperConectado(Modelo):
             raise ValueError('Hay que especificar la conversión de unidades de tiempo con '
                              '.estab_conv_tiempo() antes de correr la simulación.')
 
+        # Calcular el número de pasos necesario
+        n_pasos = int(tiempo_final / paso)
+
+        # Conectar el clima, si necesario
+        if clima:
+            if lugar is None:
+                raise ValueError('Hay que especificar un lugar para incorporar el clima.')
+            else:
+                if fecha_inic is None:
+                    raise ValueError('Hay que especificar la fecha inicial para simulaciones de clima')
+                elif isinstance(fecha_inic, ft.date):
+                    # Formatear la fecha inicial
+                    pass
+                elif isinstance(fecha_inic, ft.datetime):
+                    fecha_inic = fecha_inic.date()
+                elif isinstance(fecha_inic, int):
+                    año = fecha_inic
+                    día = mes = 1
+                    fecha_inic = ft.date(year=año, month=mes, day=día)
+                elif isinstance(fecha_inic, str):
+                    try:
+                        fecha_inic = ft.datetime.strptime(fecha_inic, '%d/%m/%Y')
+                    except ValueError:
+                        raise ValueError('La fecha inicial debe ser en formato "día/mes/año", por ejemplo "24/12/2017".')
+
+                if tcr is None:
+                    tcr = 8.5
+                símismo._conectar_clima(n_pasos=n_pasos, lugar=lugar, fecha_inic=fecha_inic, tcr=tcr, recalc=recalc)
+
         # Iniciamos el modelo.
         símismo.iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
 
+        # Si hay fecha inicial, tenemos que guardar cuenta de donde estamos en el calendario
+        if fecha_inic is not None:
+            fecha_act = fecha_inic
+        else:
+            fecha_act = None
+
         # Hasta llegar al tiempo final, incrementamos el modelo.
-        for i in range(int(tiempo_final/paso)):
+        for i in range(n_pasos):
+
+            # Actualizar variables de clima, si necesario
+            if clima:
+                símismo.act_vals_clima(n_paso=paso, f=fecha_act)
+                fecha_act += ft.timedelta(paso)  # Avanzar la fecha
+
+            # Incrementar el modelo
             símismo.incrementar(paso)
 
         # Después de la simulación, cerramos el modelo.
@@ -263,9 +400,32 @@ class SuperConectado(Modelo):
 
         """
 
+        # Una función independiente para controlar cada modelo
+        def incr_mod(mod, nombre, d, args):
+            """
+            Esta función intenta incrementar un modelo y nos dice si hubo un error.
+
+            :param mod: El modelo para incrementar
+            :type mod: Modelo
+            :param nombre: El nombre del modelo (para el diccionario de errores).
+            :type nombre: str
+            :param d: El diccionario en el cual cuardar información de errores.
+            :type d: dict
+            :param args: Los argumentos para el modelo
+            :type args: tuple
+            """
+            try:
+                mod.incrementar(*args)
+            except:
+                d[nombre] = True
+                raise
+
+        # Un diccionario para comunicar errores
+        dic_err = {x: False for x in símismo.modelos}
+
         # Un hilo para cada modelo
         l_hilo = [threading.Thread(name='hilo_%s' % nombre,
-                                   target=mod.incrementar, args=(símismo.conv_tiempo[nombre] * paso,))
+                                   target=incr_mod, args=(mod, nombre, dic_err, (símismo.conv_tiempo[nombre] * paso,)))
                   for nombre, mod in símismo.modelos.items()]
 
         # Empezar los dos hilos al mismo tiempo
@@ -275,6 +435,11 @@ class SuperConectado(Modelo):
         # Esperar que los dos hilos hayan terminado
         for hilo in l_hilo:
             hilo.join()
+
+        # Verificar si hubo error
+        for m, e in dic_err.items():
+            if e:
+                raise ChildProcessError('Hubo error en modelo "{}"'.format(m))
 
         # Leer egresos
         for mod in símismo.modelos.values():
@@ -308,6 +473,7 @@ class SuperConectado(Modelo):
         modelos.
 
         Se organiza este diccionario por modelo fuente. Tendrá la forma general:
+
         { modelo1: {var_fuente: {'var': var_recipiente_del_otro_modelo, 'conv': factor_conversión}, ...}, ...}
 
         """
@@ -338,7 +504,7 @@ class SuperConectado(Modelo):
 
         # Iniciar los submodelos también.
         for mod in símismo.modelos.values():
-            mod.iniciar_modelo(**kwargs)
+            mod.iniciar_modelo(**kwargs)  # Iniciar el modelo
 
     def cerrar_modelo(símismo):
         """
@@ -359,13 +525,13 @@ class SuperConectado(Modelo):
         :param modelo_fuente: El nombre del modelo fuente.
         :type modelo_fuente: str
 
-        :param conv: La conversión entre las unidades de ambos modelos. En el caso ``None``, se intentará
-        adivinar la conversión con el módulo `~tinamit.Unidades`.
+        :param conv: La conversión entre las unidades de ambos modelos. En el caso ``None``, se intentará adivinar la
+          conversión con el módulo `~tinamit.Unidades`.
 
         :type conv: float
 
         """
-        
+
         # Una lista de los submodelos.
         l_mods = list(símismo.modelos)
 
@@ -384,11 +550,11 @@ class SuperConectado(Modelo):
             if var in mod.vars_saliendo or var in mod.vars_entrando:
                 raise ValueError('El variable "{}" del modelo "{}" ya está conectado. '
                                  'Desconéctalo primero con .desconectar_vars().'.format(var, nombre_mod))
-                
+
         # Identificar el nombre del modelo recipiente también.
         n_mod_fuente = l_mods.index(modelo_fuente)
         modelo_recip = l_mods[(n_mod_fuente + 1) % 2]
-        
+
         # Identificar los nombres de los variables fuente y recipiente, tanto como sus unidades y dimensiones.
         var_fuente = dic_vars[modelo_fuente]
         var_recip = dic_vars[modelo_recip]
@@ -423,7 +589,7 @@ class SuperConectado(Modelo):
                               },
                      'conv': conv
                      }
-        
+
         # Agregar el diccionario de conexión a la lista de conexiones.
         símismo.conexiones.append(dic_conex)
 
@@ -537,7 +703,7 @@ class Conectado(SuperConectado):
         :type var_bf: str
 
         :param mds_fuente: Si ``True``, el modelo DS es el modelo fuente para la conexión. Sino, será el modelo
-        biofísico.
+          biofísico.
         :type mds_fuente: bool
 
         :param conv: El factor de conversión entre los variables.
@@ -569,3 +735,60 @@ class Conectado(SuperConectado):
 
         # Llamar la función apropiada de la clase superior.
         símismo.desconectar_vars(var_fuente=var_mds, modelo_fuente='mds')
+
+    def dibujar(símismo, geog, var, corrida, directorio, i_paso=None, colores=None, escala=None):
+        """
+
+        :param geog:
+        :type geog: Geografía
+        :param var:
+        :type var:
+        :param corrida:
+        :type corrida: str
+        :param directorio:
+        :type directorio:
+        :param i_paso:
+        :type i_paso: list | tuple | int
+        :param colores:
+        :type colores: tuple | list
+        :param escala:
+        :type escala: list | np.ndarray
+        """
+
+        def valid_nombre_arch(nombre):
+            for x in ['\\', '/', '\|', ':' '*', '?', '"', '>', '<']:
+                nombre = nombre.replace(x, '_')
+
+            return nombre
+
+        if os.path.split(directorio)[1] != corrida:
+            dir_corrida = corrida
+            directorio = os.path.join(directorio, dir_corrida)
+
+        if not os.path.isdir(directorio):
+            os.makedirs(directorio)
+
+        nombre_var = valid_nombre_arch(var)
+
+        bd = símismo.mds.leer_resultados_mds(corrida, var)
+
+        if isinstance(i_paso, tuple):
+            i_paso = list(i_paso)
+        if i_paso is None:
+            i_paso = [0, bd.shape[-1]]
+        if isinstance(i_paso, int):
+            i_paso = [i_paso, i_paso+1]
+        if i_paso[0] is None:
+            i_paso[0] = 0
+        if i_paso[1] is None:
+            i_paso[1] = bd.shape[-1]
+
+        unid = símismo.mds.variables[var]['unidades']
+        if escala is None:
+            escala = np.min(bd), np.max(bd)
+
+        for i in range(*i_paso):
+            valores = bd[..., i]
+            nombre_archivo = os.path.join(directorio, '{}, {}'.format(nombre_var, i))
+            geog.dibujar(archivo=nombre_archivo, valores=valores, título=var, unidades=unid,
+                         colores=colores, escala=escala)
