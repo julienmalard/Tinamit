@@ -25,7 +25,7 @@ l_lengs = '-l ' + ' -l '.join(lenguas)
 # Actualizamos traducciones ya hechas (documentos .po) con las nuevas cosas para traducir
 run('sphinx-intl update -p build/locale {}'.format(l_lengs), cwd=dir_docs)
 
-p = Popen('tx init',stdin=PIPE, cwd='C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\docs', shell=True)
+p = Popen('tx init',stdin=PIPE, cwd=dir_docs, shell=True)
 p.stdin.write(b'y\n')
 p.stdin.flush()
 p.stdin.write(b'\n')
