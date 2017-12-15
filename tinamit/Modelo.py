@@ -93,7 +93,7 @@ class Modelo(object):
 
     def cambiar_vals(símismo, valores):
         """
-        Esta función cambiar el calor de uno o más variables del modelo. Cambia primero el valor en el diccionario
+        Esta función cambiar el valor de uno o más variables del modelo. Cambia primero el valor en el diccionario
         interno del :class:`Modelo`, y después llama la función :func:`~Modelo.Modelo.cambiar_vals_modelo` para cambiar,
         si necesario, los valores de los variables en el modelo externo.
 

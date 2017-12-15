@@ -9,7 +9,7 @@ from tinamit.Modelo import Modelo
 class EnvolturaMDS(Modelo):
     """
     Esta clase sirve para representar modelo de dinámicas de los sistemas (MDS). Se debe crear una subclase para cada
-    tipo de MDS. Al moment, el único incluido es VENSIM.
+    tipo de MDS. Al momento, el único incluido es VENSIM.
     """
 
     def __init__(símismo):
@@ -27,7 +27,7 @@ class EnvolturaMDS(Modelo):
 
     def obt_unidad_tiempo(símismo):
         """
-        Cada envoltura de programa DS debe implementar eset metodo para devolver las unidades de tiempo del modelo DS
+        Cada envoltura de programa DS debe implementar este metodo para devolver las unidades de tiempo del modelo DS
         cargado.
 
         :return: Las unidades del modelo DS cargado.
@@ -91,7 +91,7 @@ class EnvolturaMDS(Modelo):
 
     def cambiar_var(símismo, var, val):
         """
-        Est método cambia el valor inicial de un variable (antes de empezar la simulación). Se emplea principalmente
+        Este método cambia el valor inicial de un variable (antes de empezar la simulación). Se emplea principalmente
         para activar y desactivar políticas.
 
         :param var: El nombre del variable para cambiar.
@@ -128,7 +128,7 @@ class ModeloVENSIM(EnvolturaMDS):
         La función de inicialización del modelo. Creamos el vínculo con el DLL de VENSIM y cargamos el modelo
         especificado.
 
-        :param archivo: El archivo del modelo que queieres cargar, en formato .vpm.
+        :param archivo: El archivo del modelo que quieres cargar en formato .vpm.
         :type archivo: str
         """
 
@@ -143,7 +143,7 @@ class ModeloVENSIM(EnvolturaMDS):
         # Cargar el modelo
         símismo.comanda_vensim(func=dll.vensim_command,
                                args='SPECIAL>LOADMODEL|%s' % archivo,
-                               mensaje_error='Eroor cargando el modelo de VENSIM.')
+                               mensaje_error='Error cargando el modelo de VENSIM.')
 
         # Parámetros estéticos de ejecución.
         símismo.comanda_vensim(func=dll.vensim_be_quiet, args=[2],
@@ -168,7 +168,7 @@ class ModeloVENSIM(EnvolturaMDS):
         # Verificar el tamaño necesario
         tamaño_nec = símismo.comanda_vensim(func=símismo.dll.vensim_get_varnames,
                                             args=['*', 0, mem, 0],
-                                            mensaje_error='Error obteniendo eñ tamaño de los variables VENSIM.',
+                                            mensaje_error='Error obteniendo el tamaño de los variables VENSIM.',
                                             val_error=-1, devolver=True
                                             )
 
@@ -372,7 +372,7 @@ class ModeloVENSIM(EnvolturaMDS):
 
     def leer_vals(símismo):
         """
-        Este método lee los valores intermediaros de los variables del modelo VENSIM. Para ahorar tiempo, únicamente
+        Este método lee los valores intermediaros de los variables del modelo VENSIM. Para ahorrar tiempo, únicamente
         lee esos variables que están en la lista de ``ModeloVENSIM.vars_saliendo``.
         """
 
