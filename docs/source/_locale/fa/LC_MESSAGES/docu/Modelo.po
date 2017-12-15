@@ -68,7 +68,7 @@ msgstr ""
 #: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.cambiar_vals:1
 msgid ""
-"Esta función cambiar el calor de uno o más variables del modelo. Cambia "
+"Esta función cambia el valor de uno o más variables del modelo. Cambia "
 "primero el valor en el diccionario interno del :class:`Modelo`, y después "
 "llama la función :func:`~Modelo.Modelo.cambiar_vals_modelo` para cambiar, si"
 " necesario, los valores de los variables en el modelo externo."
@@ -83,7 +83,7 @@ msgstr ""
 #: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.cambiar_vals_modelo_interno:1
 msgid ""
-"Esta función debe cambiar el valor de variables en el :class:`Modelo`, "
+"Esta función debe cambia el valor de variables en el :class:`Modelo`, "
 "incluso tomar acciones para asegurarse de que el cambio se hizo en el modelo"
 " externo, si aplica."
 msgstr ""
