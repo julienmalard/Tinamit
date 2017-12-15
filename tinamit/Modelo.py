@@ -177,7 +177,7 @@ class Modelo(object):
 
     def cambiar_vals(símismo, valores):
         """
-        Esta función cambiar el valor de uno o más variables del modelo. Cambia primero el valor en el diccionario
+        Esta función cambia el valor de uno o más variables del modelo. Cambia primero el valor en el diccionario
         interno del :class:`Modelo`, y después llama la función :func:`~Modelo.Modelo.cambiar_vals_modelo` para cambiar,
         si necesario, los valores de los variables en el modelo externo.
 
@@ -196,7 +196,7 @@ class Modelo(object):
 
     def cambiar_vals_modelo_interno(símismo, valores):
         """
-        Esta función debe cambiar el valor de variables en el :class:`Modelo`, incluso tomar acciones para asegurarse
+        Esta función debe cambia el valor de variables en el :class:`Modelo`, incluso tomar acciones para asegurarse
         de que el cambio se hizo en el modelo externo, si aplica.
 
         :param valores: Un diccionario de variables y sus valores para cambiar.

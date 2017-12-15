@@ -12,11 +12,7 @@ from tinamit.Modelo import Modelo
 class EnvolturaMDS(Modelo):
     """
     Esta clase sirve para representar modelo de dinámicas de los sistemas (MDS). Se debe crear una subclase para cada
-<<<<<<< HEAD
     tipo de MDS. Al momento, el único incluido es VENSIM.
-=======
-    tipo de MDS. Al moment, el único incluido es Vensim.
->>>>>>> origin/master
     """
 
     def __init__(símismo, archivo):
@@ -66,7 +62,7 @@ class EnvolturaMDS(Modelo):
 
         Ver :func:`Modelo.Modelo.iniciar_modelo` para más información.
 
-        :param nombre_corrida: El nombre de la corrida (útil para guardar اعداد_دن).
+        :param nombre_corrida: El nombre de la corrida (útil para guardar resultados).
         :type nombre_corrida: str
 
         :param tiempo_final: El tiempo final de la simulación.
@@ -126,12 +122,7 @@ class EnvolturaMDS(Modelo):
 
     def leer_resultados_mds(símismo, corrida, var):
         """
-<<<<<<< HEAD
-        Este método cambia el valor inicial de un variable (antes de empezar la simulación). Se emplea principalmente
-        para activar y desactivar políticas.
-=======
         Esta función lee los resultados desde un archivo de egresos del modelo DS.
->>>>>>> origin/master
 
         :param corrida: El nombre de la corrida. Debe corresponder al nombre del archivo de egresos.
         :type corrida: str
@@ -177,15 +168,10 @@ class ModeloVensim(EnvolturaMDS):
                        mensaje_error='Error iniciando VENSIM.')
 
         # Cargar el modelo
-<<<<<<< HEAD
-        símismo.comanda_vensim(func=dll.vensim_command,
-                               args='SPECIAL>LOADMODEL|%s' % archivo,
-                               mensaje_error='Error cargando el modelo de VENSIM.')
-=======
         comanda_vensim(func=dll.vensim_command,
                        args='SPECIAL>LOADMODEL|%s' % archivo,
                        mensaje_error='Eroor cargando el modelo de VENSIM.')
->>>>>>> origin/master
+
 
         # Parámetros estéticos de ejecución.
         comanda_vensim(func=dll.vensim_be_quiet, args=[2],
@@ -211,19 +197,11 @@ class ModeloVensim(EnvolturaMDS):
         mem = ctypes.create_string_buffer(0)  # Crear una memoria intermedia
 
         # Verificar el tamaño necesario
-<<<<<<< HEAD
-        tamaño_nec = símismo.comanda_vensim(func=símismo.dll.vensim_get_varnames,
-                                            args=['*', 0, mem, 0],
-                                            mensaje_error='Error obteniendo el tamaño de los variables VENSIM.',
-                                            val_error=-1, devolver=True
-                                            )
-=======
         tamaño_nec = comanda_vensim(func=símismo.dll.vensim_get_varnames,
                                     args=['*', 0, mem, 0],
                                     mensaje_error='Error obteniendo eñ tamaño de los variables VENSIM.',
                                     val_error=-1, devolver=True
                                     )
->>>>>>> origin/master
 
         mem = ctypes.create_string_buffer(tamaño_nec)  # Una memoria intermedia con el tamaño apropiado
 
