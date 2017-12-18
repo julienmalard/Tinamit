@@ -153,9 +153,9 @@ Ahora, corremos el modelo con el grupo de políticas que escogió el usuario::
         modelo.dibujar(geog=Rechna_Doab, corrida=nombre, var='Watertable depth Tinamit', directorio='Mapas')
         modelo.dibujar(geog=Rechna_Doab, corrida=nombre, var='Soil salinity Tinamit CropA', directorio='Mapas')
 
-Esto nos da mapas muy bonitas de los egresos del modelo a distintos pasos. Por ejemplo,
+Esto nos da mapas muy bonitos de los egresos del modelo a distintos pasos. Por ejemplo,
 
-.. figure:: ../imágenes/Ejemplos\Pakistán profundidad capa freática, paso 11.png
+.. figure:: ../imágenes/Ejemplos\Pakistán profundidad capa freática paso 11.png
    :align: center
    :alt: Mapa espacial de la profunididad de la capa fréatica después de 11 pasos de simulación.
 
