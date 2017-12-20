@@ -87,7 +87,7 @@ if use_simple:
 else:
     runs = runs_complex
 
-"""
+
 # Run the model for all desired runs
 for name, run in runs.items():
 
@@ -103,7 +103,7 @@ for name, run in runs.items():
     # Draw maps
     modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
     modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
-"""
+
 # Climate change runs
 location = Lugar(lat=32.178207, long=73.217391, elev=217)
 location.observar_mensuales('مشاہدہ بارش.csv', meses='مہینہ', años='سال',
@@ -120,8 +120,8 @@ for rcp in [2.6, 4.5, 6.0, 8.5]:
         for switch, val in run.items():
             modelo.mds.inic_val(var=switch, val=val)
 
-        # modelo.simular(paso=1, tiempo_final=100 * 2, fecha_inic=1990, lugar=location, tcr=rcp, clima=True, recalc=False,
-        #               nombre_corrida=nombre_corrida)
+        modelo.simular(paso=1, tiempo_final=100 * 2, fecha_inic=1990, lugar=location, tcr=rcp, clima=True, recalc=False,
+                       nombre_corrida=nombre_corrida)
 
         modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida, var='Watertable depth Tinamit',
                        directorio='Maps')
