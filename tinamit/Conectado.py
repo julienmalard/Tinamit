@@ -784,7 +784,7 @@ class Conectado(SuperConectado):
 
         # Incluir el nombre de la corrida en el directorio, si no es que ya esté allí.
         if os.path.split(directorio)[1] != corrida:
-            dir_corrida = corrida
+            dir_corrida = valid_nombre_arch(corrida)
             directorio = os.path.join(directorio, dir_corrida)
 
         # Preparar el nombre del variable para uso en el nombre del archivo.

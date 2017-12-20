@@ -15,6 +15,8 @@ class EnvolturaMDS(Modelo):
     tipo de MDS. Al momento, el único incluido es VENSIM.
     """
 
+    ext_arch_egr = '.csv'
+
     def __init__(símismo, archivo):
         """
         Iniciamos el modelo DS.
@@ -140,6 +142,8 @@ class EnvolturaMDS(Modelo):
         else:
             archivo = corrida
 
+        archivo += símismo.ext_arch_egr
+
         return leer_egr_mds(archivo, var)
 
 
@@ -149,6 +153,8 @@ class ModeloVensim(EnvolturaMDS):
     se pueda emplear en Tinamit.
     Necesitarás la versión DSS de VENSIM para que funcione en Tinamit.
     """
+
+    ext_arch_egr = '.vdf'
 
     def __init__(símismo, archivo):
         """
@@ -634,6 +640,6 @@ def leer_egr_mds(archivo, var):
             datos.append(f[1:])
 
     else:
-        raise ValueError('El formato de اعداد_دن "{}" no se puede leer al momento.'.format(ext))
+        raise ValueError('El formato de datos "{}" no se puede leer al momento.'.format(ext))
 
     return np.array(datos, dtype=float)

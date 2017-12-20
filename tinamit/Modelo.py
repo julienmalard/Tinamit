@@ -249,7 +249,8 @@ class Modelo(object):
             f_final = f + deltarelativo(months=n_meses)
 
         if n_meses > 1:
-            avisar('El paso ({} {}) es superior a 1 mes. Puede ser que las predicciones climáticas no sean confiables'
+            avisar('El paso ({} {}) es superior a 1 mes. Puede ser que las predicciones climáticas pierdan '
+                   'en precisión.'
                    .format(n_paso, símismo.unidad_tiempo))
 
         # Calcular los اعداد_دن
