@@ -272,19 +272,6 @@ class ModeloImpaciente(ModeloBF):
         """
         pass
 
-        """
-        ESTO NO ES NECESARIO DADO LOS ENLACES DINÁMICOS, YO PIENSO (VERIFICAR).
-
-        for var, val in valores.items():
-            # Para cada valor para cambiar...
-
-            if var in símismo.datos_internos:
-                # Si el variable queda presente en los اعداد_دن internos...
-
-                # Cambiar el valor del diccionario interno para la estación actual.
-                símismo.datos_internos[var][símismo.estación] = val
-        """
-
     def act_vals_clima(símismo, n_paso, f):
         """
         Actualiza los variables climáticos., según la estación.
@@ -412,11 +399,14 @@ class ModeloImpaciente(ModeloBF):
 
     def iniciar_modelo(símismo, **kwargs):
         """
-        Esta función debe preparar el modelo para una simulación.
+        Esta función debe preparar el modelo para una simulación. Si necesitas esta función para tu subclase,
+        no se te olvide llamar ``super().iniciar_modelo`` para no saltar la reinicialización de la estación y del mes.
 
         """
 
-        raise NotImplementedError
+        # Reestablecer el mes y la estación inicial
+        símismo.estación = 0
+        símismo.mes = 0
 
     def cerrar_modelo(símismo):
         """

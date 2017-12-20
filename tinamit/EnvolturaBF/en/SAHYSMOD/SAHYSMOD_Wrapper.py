@@ -91,7 +91,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         Nothing specific to do. Variables have already been read in func:`inic_vars`.
         """
 
-        pass
+        super().iniciar_modelo()
 
     def avanzar_modelo(self):
         """
