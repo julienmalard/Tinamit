@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-05 12:43-0500\n"
-"PO-Revision-Date: 2017-12-15 04:19-0500\n"
+"PO-Revision-Date: 2017-12-21 01:35-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (https://www.transifex.com/qatikon/teams/70565/ta/)\n"
 "Language: ta\n"
@@ -225,7 +225,7 @@ msgstr ""
 
 #: ../../source/desarrollo/des_bf.rst:84
 msgid "Plantilla ModeloFlexible"
-msgstr ""
+msgstr "நெகிழ்வான மாதிரி வார்ப்புரு (ModeloFlexible)"
 
 #: ../../source/desarrollo/des_bf.rst:85
 msgid ""
@@ -248,6 +248,8 @@ msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.cerrar_modelo`: Cierre el modelo al final "
 "de una simulación."
 msgstr ""
+":func:`~tinamit.BF.ModeloFlexible.cerrar_modelo`: பாவனை முடிக்கும் பொழுது "
+"மாதிரியையும் நிறுத்தும்."
 
 #: ../../source/desarrollo/des_bf.rst:93
 msgid ""
@@ -284,6 +286,8 @@ msgid ""
 "Un ejemplo sería la envoltura para DSSAT, "
 ":class:`~tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT`."
 msgstr ""
+"டீஸாட்டின் உறை, :class:`~tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT`, ஓர் "
+"உதாரணம்."
 
 #: ../../source/desarrollo/des_bf.rst:103
 msgid "Cambios climáticos"

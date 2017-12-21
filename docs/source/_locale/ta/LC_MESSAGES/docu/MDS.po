@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-05 12:49-0500\n"
-"PO-Revision-Date: 2017-12-15 03:51-0500\n"
+"PO-Revision-Date: 2017-12-21 01:36-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (https://www.transifex.com/qatikon/teams/70565/ta/)\n"
 "Language: ta\n"
@@ -122,7 +122,7 @@ msgstr ""
 #: tinamit.MDS.EnvolturaMDS.iniciar_modelo:9 ../../../tinamit/MDS.py:docstring
 #: of tinamit.MDS.ModeloVensim.iniciar_modelo:6
 msgid "El tiempo final de la simulación."
-msgstr ""
+msgstr "பாவணையின் கடைசியான நேரம்."
 
 #: ../../../tinamit/MDS.py:docstring of
 #: tinamit.MDS.EnvolturaMDS.leer_resultados_mds:1
@@ -170,7 +170,7 @@ msgstr ""
 #: ../../../tinamit/MDS.py:docstring of tinamit.MDS.generar_mds:0
 #: ../../../tinamit/MDS.py:docstring of tinamit.MDS.leer_egr_mds:0
 msgid "Tipo del valor devuelto"
-msgstr ""
+msgstr "திரும்பி எண் வகை"
 
 #: ../../../tinamit/MDS.py:docstring of tinamit.MDS.EnvolturaMDS.leer_vals:3
 msgid ""
@@ -314,7 +314,7 @@ msgstr ""
 
 #: ../../../tinamit/MDS.py:docstring of tinamit.MDS.generar_mds:4
 msgid "El archivo del modelo DS."
-msgstr ""
+msgstr "அமைப்பு இயக்கவியல் மாதிரியின் கோப்பு."
 
 #: ../../../tinamit/MDS.py:docstring of tinamit.MDS.generar_mds:7
 msgid "Un modelo DS."

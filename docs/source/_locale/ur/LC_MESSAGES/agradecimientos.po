@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-31 13:07-0400\n"
-"PO-Revision-Date: 2017-12-15 04:19-0500\n"
+"PO-Revision-Date: 2017-12-21 01:34-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Urdu\n"
 "Language: ur\n"
@@ -24,6 +24,8 @@ msgid ""
 "Tinamït es un proyecto de fuente abierta. Las personas e instituciones "
 "siguientes hicieron posible su desarrollo."
 msgstr ""
+"ٹنامٹ ایک کھلا ذریعہ منصوبہ ہے. مندرجہ ذیل لوگوں اور اداروں کی کاوشوں کی "
+"بدولت اس کی تخلیق ممکن ہو‏ ئی۔"
 
 #: ../../source/agradecimientos.rst:7
 msgid "Autores del código"
@@ -55,6 +57,10 @@ msgid ""
 "biofísicos siguientes (nota: escribimos las *envolturas* para que estos "
 "modelos sean compatibles con Tinamït, ¡no escribimos los modelos sí mismos!)"
 msgstr ""
+"مندرجہ ذیل حیاتی طبیعیات ماڈلز کےسانچےلکھنے لئے مندرجہ ذیل تخلیق کاروں کا "
+"شکریہ: (نوٹ: ہم نے ان حیاتی طبیعیات ماڈلز کو سماجی معاشی ماڈلز بذريعہ ٹینامٹ"
+" ) (جوڑنے کے لئے٭ سانچے٭ بناے ہیں۔ حیاتی طبیعیات ماڈلز کی تخلیق کار ی میں "
+"ھمارا کوی کردار نہيں ھے"
 
 #: ../../source/agradecimientos.rst:19
 msgid "SAHYSMOD"
@@ -77,6 +83,8 @@ msgid ""
 "Cuando se habrán traducido Tinamït y su documentación, los agradecimientos "
 "irán aquí."
 msgstr ""
+"ٹینامٹ اور اس کی دستاويز کا ترجمہ کرنے والوں کی خدمات کا يھاں اعتراف کیا جاۓ"
+" گا"
 
 #: ../../source/agradecimientos.rst:29
 #, fuzzy
@@ -88,24 +96,32 @@ msgid ""
 "Los organismos siguientes contribuyeron apoyo financiero a uno o más de los "
 "autores del código mientras trabajaban en el desarrollo de Tinamït:"
 msgstr ""
+"مندرجہ ذیل اداروں نے ٹنامیٹ کی تياری پر کام کرنے والے  مصنفین کو مالی امداد "
+"فراہم کی۔"
 
 #: ../../source/agradecimientos.rst:33
 msgid ""
 "`Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) "
 "<https://www.nserc-crsng.gc.ca>`_"
 msgstr ""
+"`قدرتی سائنس اور انجینئرنگ ریسرچ کونسل کینیڈا (این ایس سی آر سی) "
+"<https://www.nserc-crsng.gc.ca>` _"
 
 #: ../../source/agradecimientos.rst:34
 msgid ""
 "`Centre de recherches pour le développement international du Canada (CRDI) "
 "<https://www.idrc.ca/fr>`_"
 msgstr ""
+"`کینیڈا انٹرنیشنل ڈویلپمنٹ ریسرچ سینٹر (آئی ڈی آر سی) "
+"<https://www.idrc.ca/fr>` _"
 
 #: ../../source/agradecimientos.rst:35
 msgid ""
 "`Fonds de recherche Nature et technologies du Québec (Canada) (FQRNT) "
 "<http://www.frqnt.gouv.qc.ca/accueil>`_"
 msgstr ""
+"`قدرتی تحقيق اور ٹیکنالوجی  تحقيق فنڈ (کینیڈا) (FQRNT) "
+"<http://www.frqnt.gouv.qc.ca/accueil>` _"
 
 #: ../../source/agradecimientos.rst:38
 msgid "Instituciones afiliadas"
@@ -114,4 +130,4 @@ msgstr "منسلک ادارے"
 #: ../../source/agradecimientos.rst:40
 msgid ""
 "Los autores de Tinamït están afiliados con las instituciones siguientes:"
-msgstr ""
+msgstr "ٹینامٹ کے تخلیق کارمندرجہ ذیل اداروں سے منسلک ہیں"
