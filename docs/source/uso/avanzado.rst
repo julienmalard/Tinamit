@@ -43,6 +43,14 @@ Ahora, agregamos otros objeto geográficos puramente estéticos con la función 
    llenar o simplemente dibujar el contorno. Para facilitarte la vida, hay unas opciones predeterminadas
    (``ciudad``, ``calle``, ``agua``, ``bosque``) que puedes especificar con ``tipo``.
 
+Aquí tenemos un ejemplo del egreso:
+
+.. figure:: ../imágenes/Ejemplos/Ejemplo_mapa.png
+   :align: center
+   :alt: Mapa espacial de la profunididad de la capa fréatica después de 11 pasos de simulación.
+
+   Mapa espacial de la profunididad de la capa fréatica después de 11 pasos de simulación.
+
 Cambios climáticos
 ------------------
 También podemos conectar nuestro modelos con observaciones y predicciones climáticas si nuetro modelo tiene variables

@@ -80,4 +80,4 @@ de Tinamït en GitHub (así siempre tendrás la versión más recién). Contáct
        Tienes que instalarlos en el orden siguiente: `NumPy`, `SciPy`, y por fin `Matplotlib`, sino tendrás
        muchos muchos problemas. *Después* de eso, puedes instalar Tinamït con
 
-       :command:`pip install tikon`.
+       :command:`pip install tinamit`.
