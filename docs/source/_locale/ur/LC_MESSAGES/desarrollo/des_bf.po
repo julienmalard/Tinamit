@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-05 12:43-0500\n"
-"PO-Revision-Date: 2017-12-14 11:20-0500\n"
+"PO-Revision-Date: 2017-12-21 01:35-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
 "Language: ur\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: ../../source/desarrollo/des_bf.rst:4
 msgid "Agregar modelos biofísicos"
-msgstr ""
+msgstr "بائیو فیزیکل نمونے کی شموليت۔"
 
 #: ../../source/desarrollo/des_bf.rst:5
 msgid ""
@@ -37,7 +37,7 @@ msgstr ""
 
 #: ../../source/desarrollo/des_bf.rst:12
 msgid "Cómo crear una nueva envoltura"
-msgstr ""
+msgstr "نئی لپیٹ کیسے بنائیں۔"
 
 #: ../../source/desarrollo/des_bf.rst:13
 msgid ""
@@ -51,13 +51,15 @@ msgstr ""
 
 #: ../../source/desarrollo/des_bf.rst:19
 msgid "¿Cómo escojo la mejor plantilla?"
-msgstr ""
+msgstr "میں بہترین سانچہ کیسے منتخب کروں؟"
 
 #: ../../source/desarrollo/des_bf.rst:20
 msgid ""
 "Para ayudarte a decidir cuál plantilla es mejor para ti, consulta el "
 "cuestionario siguiente."
 msgstr ""
+"یہ فیصلہ کرنے کیلئے کہ آپکے لئے کون سا سانچے بہتر ہے، مندرجہ ذیل سوالنامہ "
+"دیکھیں."
 
 #: ../../source/desarrollo/des_bf.rst:22
 msgid ""
@@ -109,7 +111,7 @@ msgstr ""
 
 #: ../../source/desarrollo/des_bf.rst:50
 msgid "Plantilla estándar (ModeloBF)"
-msgstr ""
+msgstr "معیاری سانچے (آب و ہوا کا نمونہ)"
 
 #: ../../source/desarrollo/des_bf.rst:51
 msgid ""
@@ -117,46 +119,56 @@ msgid ""
 " Deberás implementar las funciones siguientes en una subclase de esta "
 "plantilla."
 msgstr ""
+"یہ سانچے آسان ہيں (اور باقی سب اس کے ذیلی ٹکڑے ہیں). آپ کو اس سانچے کی ذیلی "
+"درجے میں درج ذیل افعال کو لاگو کرنا ضروری ہے۔"
 
 #: ../../source/desarrollo/des_bf.rst:54
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.obt_unidad_tiempo`: Devuelve la unidad de tiempo"
 " del modelo."
 msgstr ""
+"ماڈل کا وقت یونٹ واپس کرتا ہے۔ "
+":func:`~tinamit.BF.ModeloBF.obt_unidad_tiempo`:"
 
 #: ../../source/desarrollo/des_bf.rst:55
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.inic_vars`: Incializa el diccionario interno de "
 "variables disponibles."
 msgstr ""
+"دستیاب متغیر کی اندرونی لغت کو شروع کریں۔ "
+":func:`~tinamit.BF.ModeloBF.inic_vars`: "
 
 #: ../../source/desarrollo/des_bf.rst:56
 msgid ":func:`~tinamit.BF.ModeloBF.iniciar_modelo`: Inicializa la simulación."
-msgstr ""
+msgstr "تخروپن کو شروع کریں۔ :func:`~tinamit.BF.ModeloBF.iniciar_modelo`: "
 
 #: ../../source/desarrollo/des_bf.rst:57
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.cambiar_vals_modelo_interno`: Cambia los valores"
 " internos de los variables."
 msgstr ""
+"متغیرات کی اندرونی اقدار کو تبدیل کریں۔ "
+":func:`~tinamit.BF.ModeloBF.cambiar_vals_modelo_interno`: "
 
 #: ../../source/desarrollo/des_bf.rst:58
 msgid ":func:`~tinamit.BF.ModeloBF.incrementar`: Avanza el modelo."
-msgstr ""
+msgstr "نمونے پیش کریں۔ :func:`~tinamit.BF.ModeloBF.incrementar`:"
 
 #: ../../source/desarrollo/des_bf.rst:59
 msgid ":func:`~tinamit.BF.ModeloBF.leer_vals`: Lee los egresos del modelo."
-msgstr ""
+msgstr "نمونے کا راستہ پڑھیں۔ :func:`~tinamit.BF.ModeloBF.leer_vals`: "
 
 #: ../../source/desarrollo/des_bf.rst:60
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.cerrar_modelo`: Cierre el modelo al final de una"
 " simulación."
 msgstr ""
+"تخروپن کے آخر میں نمونے کو بند کریں۔ "
+":func:`~tinamit.BF.ModeloBF.cerrar_modelo`:"
 
 #: ../../source/desarrollo/des_bf.rst:64
 msgid "Plantilla ModeloImpaciente"
-msgstr ""
+msgstr "بے معنی سانچہ"
 
 #: ../../source/desarrollo/des_bf.rst:65
 msgid ""
