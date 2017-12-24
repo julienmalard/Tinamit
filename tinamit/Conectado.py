@@ -1,5 +1,6 @@
 import datetime as ft
 import os
+import re
 import threading
 from warnings import warn as avisar
 
@@ -48,6 +49,7 @@ class SuperConectado(Modelo):
         # {'nombre_modelo_2': factor_conv}
         # Al menos uno de los dos factores siempre será = a 1.
         símismo.conv_tiempo = {}
+        símismo.conv_tiempo_dudoso = False  # Para acordarse si Tinamït tuvo que adivinar la conversión o no.
 
         # Inicializamos el SuperConectado como todos los Modelos.
         super().__init__(nombre=nombre)
@@ -146,10 +148,7 @@ class SuperConectado(Modelo):
 
             except ValueError:
                 # Si no lo logramos, hay un error.
-                avisar('No se pudo inferir la conversión de unidades de tiempo entre {} y {}.'
-                       'Especificarla con la función .estab_conv_tiempo().\n'
-                       'Por el momento pusimos el factor de conversión a 1, pero probablemente no es lo que quieres.'
-                       .format(unid_mod_1, unid_mod_2))
+                símismo.conv_tiempo_dudoso = True
                 factor_conv = 1
 
             if factor_conv > 1:
@@ -206,6 +205,9 @@ class SuperConectado(Modelo):
 
         # Y guardar la unidad de tiempo.
         símismo.unidad_tiempo = símismo.modelos[mod_base].unidad_tiempo
+
+        # Si había duda acerca de la conversión de tiempo, ya no hay.
+        símismo.conv_tiempo_dudoso = False
 
     def cambiar_vals_modelo_interno(símismo, valores):
         """
@@ -337,6 +339,16 @@ class SuperConectado(Modelo):
         if not len(símismo.conv_tiempo):
             raise ValueError('Hay que especificar la conversión de unidades de tiempo con '
                              '.estab_conv_tiempo() antes de correr la simulación.')
+
+        # Si no estamos seguro de la conversión de unidades de tiempo, decirlo aquí.
+        if símismo.conv_tiempo_dudoso:
+            l_mods = list(símismo.modelos)
+            unid_mod_1 = símismo.modelos[l_mods[0]].unidad_tiempo
+            unid_mod_2 = símismo.modelos[l_mods[1]].unidad_tiempo
+            avisar('\nNo se pudo inferir la conversión de unidades de tiempo entre {} y {}.\n'
+                   'Especificarla con la función .estab_conv_tiempo().\n'
+                   'Por el momento pusimos el factor de conversión a 1, pero probablemente no es lo que quieres.'
+                   .format(unid_mod_1, unid_mod_2))
 
         # Calcular el número de pasos necesario
         n_pasos = int(tiempo_final / paso)
@@ -738,37 +750,54 @@ class Conectado(SuperConectado):
 
     def dibujar(símismo, geog, var, corrida, directorio, i_paso=None, colores=None, escala=None):
         """
+        Dibuja mapas espaciales de los valores de un variable.
 
-        :param geog:
+        :param geog: La geografía del lugar.
         :type geog: Geografía
-        :param var:
-        :type var:
-        :param corrida:
+        :param var: El variable para dibujar.
+        :type var: str
+        :param corrida: El nombre de la corrida para dibujar.
         :type corrida: str
-        :param directorio:
-        :type directorio:
-        :param i_paso:
+        :param directorio: El directorio, relativo al archivo MDS, donde hay que poner los dibujos.
+        :type directorio: str
+        :param i_paso: Los pasos a los cuales quieres dibujar los egresos.
         :type i_paso: list | tuple | int
-        :param colores:
+        :param colores: La escala de colores para representar los valores del variable.
         :type colores: tuple | list
-        :param escala:
+        :param escala: La escala de valores para el dibujo. Si ``None``, será el rango del variable.
         :type escala: list | np.ndarray
         """
 
         def valid_nombre_arch(nombre):
+            """
+            Una función para validar un nombre de archivo.
+
+            :param nombre: El nombre propuesto para el archivo.
+            :type nombre: str
+            :return: Un nombre válido.
+            :rtype: str
+            """
             for x in ['\\', '/', '\|', ':' '*', '?', '"', '>', '<']:
                 nombre = nombre.replace(x, '_')
 
             return nombre
 
+        # Incluir el nombre de la corrida en el directorio, si no es que ya esté allí.
         if os.path.split(directorio)[1] != corrida:
-            dir_corrida = corrida
+            dir_corrida = valid_nombre_arch(corrida)
             directorio = os.path.join(directorio, dir_corrida)
 
+        # Preparar el nombre del variable para uso en el nombre del archivo.
+        nombre_var = valid_nombre_arch(var)
+
+        # Crear el directorio, si no existe ya.
         if not os.path.isdir(directorio):
             os.makedirs(directorio)
-
-        nombre_var = valid_nombre_arch(var)
+        else:
+            # Si ya existía el directorio, borrar dibujos ya existentes con este nombre (de corridas anteriores).
+            for arch in os.listdir(directorio):
+                if re.match(r'{}, [0-9]+'.format(nombre_var), arch):
+                    os.remove(os.path.join(directorio, arch))
 
         bd = símismo.mds.leer_resultados_mds(corrida, var)
 

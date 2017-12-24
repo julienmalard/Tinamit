@@ -181,7 +181,7 @@ def _instalar_taqdir():
     else:
         dir_creado = False
 
-    url = 'https://github.com/julienmalard/Taqdir/archive/master.zip'
+    url = 'https://github.com/julienmalard/taqdir/archive/master.zip'
     arch_zip = os.path.join(directorio_móds, 'taqdir.zip')
     dir_taqdir = os.path.join(directorio_móds, 'taqdir')
     urllib.request.urlretrieve(url, arch_zip)
@@ -189,7 +189,7 @@ def _instalar_taqdir():
         d.extractall(dir_taqdir)
 
     comanda = '{} setup.py install'.format(os.path.join(directorio_python, 'python'))
-    run(comanda, cwd=os.path.join(dir_taqdir, 'Taqdir-master'))
+    run(comanda, cwd=os.path.join(dir_taqdir, 'taqdir-master'))
 
     if dir_creado:
         shutil.rmtree(directorio_móds)

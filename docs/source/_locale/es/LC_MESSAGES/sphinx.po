@@ -1,40 +1,42 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
 # This file is distributed under the same license as the tinamit package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-13 12:07-0500\n"
-"PO-Revision-Date: 2017-12-21 01:37-0500\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
-"Language: ur\n"
+"POT-Creation-Date: 2017-12-14 10:23-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 3.9.6\n"
+"Generated-By: Babel 2.5.1\n"
 
 #: ../../source/_templates/footer.html:5
 msgid "Next"
-msgstr "اگلا۔"
+msgstr "Siguiente"
 
 #: ../../source/_templates/footer.html:8
 msgid "Previous"
-msgstr "پچھلا۔"
+msgstr "Anterior"
 
 #: ../../source/_templates/footer.html:19
+#, python-format
 msgid "&copy; <a href=\"%(path)s\">Copyright</a> %(copyright)s."
 msgstr ""
 
 #: ../../source/_templates/footer.html:21
+#, python-format
 msgid "&copy; Copyright %(copyright)s."
 msgstr ""
 
 #: ../../source/_templates/footer.html:26
+#, python-format
 msgid ""
 "\n"
 "        <span class=\"build\">\n"
@@ -45,6 +47,7 @@ msgid ""
 msgstr ""
 
 #: ../../source/_templates/footer.html:33
+#, python-format
 msgid ""
 "\n"
 "        <span class=\"commit\">\n"
@@ -54,32 +57,35 @@ msgid ""
 msgstr ""
 
 #: ../../source/_templates/footer.html:39
+#, python-format
 msgid "Last updated on %(last_updated)s."
-msgstr ""
+msgstr "Actualizado el %(last_updated)s."
 
 #: ../../source/_templates/footer.html:46
 msgid ""
 "Built with <a href=\"http://sphinx-doc.org/\">Sphinx</a> using a <a "
-"href=\"https://github.com/snide/sphinx_rtd_theme\">theme</a> provided by <a "
-"href=\"https://readthedocs.org\">Read the Docs</a>"
+"href=\"https://github.com/snide/sphinx_rtd_theme\">theme</a> provided by "
+"<a href=\"https://readthedocs.org\">Read the Docs</a>"
 msgstr ""
 
 #: ../../source/_templates/layout.html:37
+#, python-format
 msgid "Search within %(docstitle)s"
-msgstr "اندر تلاش کریں۔"
+msgstr ""
 
 #: ../../source/_templates/layout.html:62
 msgid "About these documents"
-msgstr "ان دستاویزات کے بارے میں۔"
+msgstr "Acerca de estos documentos"
 
 #: ../../source/_templates/layout.html:66
 msgid "Index"
-msgstr " فہرست۔"
+msgstr "Índice"
 
 #: ../../source/_templates/layout.html:70
 msgid "Search"
-msgstr "تلاش کریں۔"
+msgstr "Búsqueda"
 
 #: ../../source/_templates/layout.html:73
 msgid "Copyright"
-msgstr "حقوق۔"
+msgstr ""
+

@@ -12,20 +12,20 @@ cuál es mejor.
 
 proyecto_transifex = 'tinamit'
 leng_orig = 'es'
-lenguas = ['es', 'ms', 'fr', 'ta', 'ur', 'nl']
+lenguas = ['ms', 'fr', 'ta', 'ur', 'nl']
 
 # El directorio de la documentación
 dir_docs = os.path.split(os.path.realpath(__file__))[0]
 
 # Primero, actualizamos los archivos de documentos para traducir (.pot), basado en el código más recién del programa
 print('Actualizando el proyecto...')
-run('make gettext', cwd=dir_docs)
+run('make.bat gettext', cwd=dir_docs)
 l_lengs = '-l ' + ' -l '.join(lenguas)
 
 # Actualizamos traducciones ya hechas (documentos .po) con las nuevas cosas para traducir
 run('sphinx-intl update -p build/locale {}'.format(l_lengs), cwd=dir_docs)
 
-p = Popen('tx init',stdin=PIPE, cwd='C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\docs', shell=True)
+p = Popen('tx init', stdin=PIPE, cwd=dir_docs, shell=True)
 p.stdin.write(b'y\n')
 p.stdin.flush()
 p.stdin.write(b'\n')
