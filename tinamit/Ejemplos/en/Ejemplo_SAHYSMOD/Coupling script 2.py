@@ -87,7 +87,7 @@ if use_simple:
 else:
     runs = runs_complex
 
-
+"""
 # Run the model for all desired runs
 for name, run in runs.items():
 
@@ -103,7 +103,7 @@ for name, run in runs.items():
     # Draw maps
     modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
     modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
-
+"""
 # Climate change runs
 location = Lugar(lat=32.178207, long=73.217391, elev=217)
 location.observar_mensuales('مشاہدہ بارش.csv', meses='مہینہ', años='سال',
