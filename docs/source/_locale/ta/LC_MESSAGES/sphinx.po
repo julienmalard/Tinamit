@@ -19,26 +19,6 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Zanata 3.9.6\n"
 
-#: ../../source/_templates/layout.html:37
-msgid "Search within %(docstitle)s"
-msgstr "%(docstitle)s-இல் தேடு"
-
-#: ../../source/_templates/layout.html:62
-msgid "About these documents"
-msgstr "இந்த ஆவணங்களை பற்றி"
-
-#: ../../source/_templates/layout.html:66
-msgid "Index"
-msgstr "அட்டவணை"
-
-#: ../../source/_templates/layout.html:70
-msgid "Search"
-msgstr "தேடு"
-
-#: ../../source/_templates/layout.html:73
-msgid "Copyright"
-msgstr "காப்புரிமை"
-
 #: ../../source/_templates/footer.html:5
 msgid "Next"
 msgstr "முன்"
@@ -99,3 +79,23 @@ msgstr ""
 "href=\"https://readthedocs.org\">ரீட் த டாக்ஸால்</a> வழங்கப்படும் <a "
 "href=\"https://github.com/snide/sphinx_rtd_theme\">கருப்பொருளால்</a> "
 "தொகுப்பு செய்யப்பட்டது"
+
+#: ../../source/_templates/layout.html:37
+msgid "Search within %(docstitle)s"
+msgstr "%(docstitle)s-இல் தேடு"
+
+#: ../../source/_templates/layout.html:62
+msgid "About these documents"
+msgstr "இந்த ஆவணங்களை பற்றி"
+
+#: ../../source/_templates/layout.html:66
+msgid "Index"
+msgstr "அட்டவணை"
+
+#: ../../source/_templates/layout.html:70
+msgid "Search"
+msgstr "தேடு"
+
+#: ../../source/_templates/layout.html:73
+msgid "Copyright"
+msgstr "காப்புரிமை"

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-06 09:58-0500\n"
-"PO-Revision-Date: 2017-12-30 05:27-0500\n"
+"PO-Revision-Date: 2017-12-30 05:52-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
 "Language: ur\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: ../../source/ejemplos/salinidad_pk.rst:4
 msgid "Ejemplo de salinidad de suelos en Pakistán"
-msgstr "پاکستان میں مٹی کی نمکينی کی مثال۔"
+msgstr "پاکستان میں مٹی کی نمکينی کی مثال"
 
 #: ../../source/ejemplos/salinidad_pk.rst:7
 msgid "Preparación"
