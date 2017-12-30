@@ -7,6 +7,7 @@ import csv
 import numpy as np
 
 from tinamit.Modelo import Modelo
+from .Stella import ModeloStella
 
 
 class EnvolturaMDS(Modelo):
@@ -572,13 +573,16 @@ def comanda_vensim(func, args, mensaje_error=None, val_error=None, devolver=Fals
         return resultado
 
 
-def generar_mds(archivo):
+def generar_mds(archivo, interpret=None):
     """
     Esta función genera una instancia de modelo de DS. Identifica el tipo de archivo por su extensión (p. ej., .vpm) y
     después genera una instancia de la subclase apropiada de :class:`~tinamit.MDS.EnvolturaMDS`.
 
     :param archivo: El archivo del modelo DS.
     :type archivo: str
+
+    :param interpret: El interpretador para el modelo.
+    :type interpret: str
 
     :return: Un modelo DS.
     :rtype: tinamit.MDS.EnvolturaMDS
@@ -588,16 +592,28 @@ def generar_mds(archivo):
     # Identificar la extensión.
     ext = os.path.splitext(archivo)[1]
 
-    # Crear la instancia de modelo apropiada para la extensión del archivo.
-    if ext == '.vpm':
+    # Escoger el interpretador
+    if interpret is None:
+        if ext == '.vpm':
+            interpret = 'Vensim'
+        elif ext == '.stmx':
+            raise NotImplementedError
+        else:
+            raise ValueError('Para un archivo de formato "{}", '
+                             'debes especificar el intepretador de MDS apropiado.'.format(ext))
+
+    # Crear la instancia de modelo apropiada para el interpretador escogido.
+    if interpret.lower() == 'vensim':
         # Modelos VENSIM
         return ModeloVensim(archivo)
+    elif interpret.lower() == 'stellar':
+        return ModeloStella(archivo)
     else:
         # Agregar otros tipos de modelos DS aquí.
 
         # Mensaje para modelos todavía no incluidos en Tinamit.
-        raise ValueError('El tipo de modelo "{}" no se acepta como modelo DS en Tinamit al momento. Si piensas'
-                         'que podrías contribuir aquí, ¡contáctenos!'.format(ext))
+        raise ValueError('El intepretador "{}" no se acepta como modelo DS en Tinamït al momento. Si piensas'
+                         'que podrías contribuir aquí, ¡contáctenos!'.format(interpret))
 
 
 def leer_egr_mds(archivo, var):
