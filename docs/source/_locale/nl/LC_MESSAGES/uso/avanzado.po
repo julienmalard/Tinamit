@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-05 12:49-0500\n"
-"PO-Revision-Date: 2017-12-14 11:24-0500\n"
+"PO-Revision-Date: 2017-12-21 01:31-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (https://www.transifex.com/qatikon/teams/70565/nl/)\n"
 "Language: nl\n"
@@ -75,30 +75,40 @@ msgid ""
 "``calle``, ``agua``, ``bosque``) que puedes especificar con ``tipo``."
 msgstr ""
 
-#: ../../source/uso/avanzado.rst:47
+#: ../../source/uso/avanzado.rst:46
+msgid "Aquí tenemos un ejemplo del egreso:"
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:52
+msgid ""
+"Mapa espacial de la profunididad de la capa fréatica después de 11 pasos de "
+"simulación."
+msgstr ""
+
+#: ../../source/uso/avanzado.rst:55
 msgid "Cambios climáticos"
 msgstr ""
 
-#: ../../source/uso/avanzado.rst:48
+#: ../../source/uso/avanzado.rst:56
 msgid ""
 "También podemos conectar nuestro modelos con observaciones y predicciones "
 "climáticas si nuetro modelo tiene variables climáticos. Esto se hace con la "
 "clase :class:`~tinamit.Geog.Geog.Lugar` de Tinamït."
 msgstr ""
 
-#: ../../source/uso/avanzado.rst:55
+#: ../../source/uso/avanzado.rst:63
 msgid ""
 "Primero, debemos crear la instancia de :class:`~tinamit.Geog.Geog.Lugar`, "
 "con sus coordenadas::"
 msgstr ""
 
-#: ../../source/uso/avanzado.rst:60
+#: ../../source/uso/avanzado.rst:68
 msgid ""
 "Visto que tenemos observaciones mensuales para unos años, los conectamos con"
 " la función :func:`~tinamit.Geog.Geog.Lugar.observar_mensuales`. ::"
 msgstr ""
 
-#: ../../source/uso/avanzado.rst:66
+#: ../../source/uso/avanzado.rst:74
 msgid ""
 "``archivo`` es el archivo con los datos, ``meses`` y ``años`` los nombres de"
 " las columnas con el mes y el año (¿¡verdad!?) y ``col_datos`` es un "
@@ -106,7 +116,7 @@ msgid ""
 "oficiales de Tinamït y el nombre actual de la columna en tu base de datos."
 msgstr ""
 
-#: ../../source/uso/avanzado.rst:71
+#: ../../source/uso/avanzado.rst:79
 msgid ""
 "Tambien se pueden :func:`~tinamit.Geog.Geog.Lugar.observar_diarios` y "
 ":func:`~tinamit.Geog.Geog.Lugar.observar_mensuales`. Si tienes datos "
@@ -114,31 +124,31 @@ msgid ""
 "precipitación igualmente entre los días del mes o del año."
 msgstr ""
 
-#: ../../source/uso/avanzado.rst:75
+#: ../../source/uso/avanzado.rst:83
 msgid "La opciones actuales (y sus unidades) para variables climáticos son:"
 msgstr ""
 
-#: ../../source/uso/avanzado.rst:77
+#: ../../source/uso/avanzado.rst:85
 msgid "``Precipitación`` : mm"
 msgstr ""
 
-#: ../../source/uso/avanzado.rst:78
+#: ../../source/uso/avanzado.rst:86
 msgid "``Radiación solar`` : MJ / m2 / día"
 msgstr ""
 
-#: ../../source/uso/avanzado.rst:79
+#: ../../source/uso/avanzado.rst:87
 msgid "``Temperatura máxima`` : grados C"
 msgstr ""
 
-#: ../../source/uso/avanzado.rst:80
+#: ../../source/uso/avanzado.rst:88
 msgid "``Temperatura promedia`` : grados C"
 msgstr ""
 
-#: ../../source/uso/avanzado.rst:81
+#: ../../source/uso/avanzado.rst:89
 msgid "``Temperatura mínima`` : grados C"
 msgstr ""
 
-#: ../../source/uso/avanzado.rst:84
+#: ../../source/uso/avanzado.rst:92
 msgid ""
 "Tinamït puede leer archivos con datos numéricos guardaros en escrituras de "
 "la mayoría del mundo (por ejemplo, १२३, ௧௨௩, ೧೨೩, 一二三, ١٢٣, etc.) Chévere, "

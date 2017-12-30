@@ -77,8 +77,10 @@ msgstr ""
 
 #: ../../source/desarrollo/desarrollo.rst:29
 msgid ""
-"**SAHYSMOD**: Un modelo de salinidad de suelos. Ver la `documentación "
-"completa <https://www.waterlog.info /sahysmod.htm>`_ y la :mod:`envoltura "
+"**SAHYSMOD**: Un modelo de salinidad de suelos. Descargar el `ejecutable "
+"<https://github.com/AzharInam/Sahysmod-SourceCode/releases>`_ compatible con"
+" Tinamït, o ver la `documentación completa <https://www.waterlog.info "
+"/sahysmod.htm>`_ y la :mod:`envoltura "
 "<tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper>`."
 msgstr ""
 

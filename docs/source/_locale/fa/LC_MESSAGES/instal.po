@@ -190,5 +190,5 @@ msgid ""
 msgstr ""
 
 #: ../../source/instal.rst:83
-msgid ":command:`pip install tikon`."
+msgid ":command:`pip install tinamit`."
 msgstr ""

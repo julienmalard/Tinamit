@@ -90,11 +90,23 @@ msgstr ""
 
 #: ../../source/ejemplos/salinidad_pk.rst:156
 msgid ""
+"Esto nos da mapas muy bonitos de los egresos del modelo a distintos pasos. "
+"Por ejemplo,"
+msgstr ""
+
+#: ../../source/ejemplos/salinidad_pk.rst:162
+msgid ""
+"Mapa espacial de la profunididad de la capa fréatica después de 11 pasos de "
+"simulación."
+msgstr ""
+
+#: ../../source/ejemplos/salinidad_pk.rst:164
+msgid ""
 "Ahora, repetimos las corridas anteriores, pero con cambios climáticos. "
 "Primero, establecemos el lugar y sus observaciones::"
 msgstr ""
 
-#: ../../source/ejemplos/salinidad_pk.rst:163
+#: ../../source/ejemplos/salinidad_pk.rst:171
 msgid ""
 "Y corremos el modelo con combinaciones de cada política y escenario "
 "climático del IPCC::"

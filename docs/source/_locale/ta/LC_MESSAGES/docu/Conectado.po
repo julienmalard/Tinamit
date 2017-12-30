@@ -84,6 +84,41 @@ msgstr ""
 msgid "El nombre del variable conectado en el modelo DS."
 msgstr "அமைப்பு இயக்கவியல் மாதிரியில் இணைக்கப்பட்ட மாறியின் பெயர்."
 
+#: ../../docstring of tinamit.Conectado.Conectado.dibujar:1
+msgid "Dibuja mapas espaciales de los valores de un variable."
+msgstr ""
+
+#: ../../docstring of tinamit.Conectado.Conectado.dibujar:3
+msgid "La geografía del lugar."
+msgstr ""
+
+#: ../../docstring of tinamit.Conectado.Conectado.dibujar:5
+msgid "El variable para dibujar."
+msgstr ""
+
+#: ../../docstring of tinamit.Conectado.Conectado.dibujar:7
+msgid "El nombre de la corrida para dibujar."
+msgstr ""
+
+#: ../../docstring of tinamit.Conectado.Conectado.dibujar:9
+msgid ""
+"El directorio, relativo al archivo MDS, donde hay que poner los dibujos."
+msgstr ""
+
+#: ../../docstring of tinamit.Conectado.Conectado.dibujar:11
+msgid "Los pasos a los cuales quieres dibujar los egresos."
+msgstr ""
+
+#: ../../docstring of tinamit.Conectado.Conectado.dibujar:13
+msgid "La escala de colores para representar los valores del variable."
+msgstr ""
+
+#: ../../docstring of tinamit.Conectado.Conectado.dibujar:15
+msgid ""
+"La escala de valores para el dibujo. Si ``None``, será el rango del "
+"variable."
+msgstr ""
+
 #: ../../docstring of tinamit.Conectado.Conectado.estab_bf:1
 msgid "Establece el modelo biofísico (:class:`~tinamit.BF.EnvolturaBF`)."
 msgstr ""

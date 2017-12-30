@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-08 15:34-0500\n"
-"PO-Revision-Date: 2017-12-14 11:21-0500\n"
+"PO-Revision-Date: 2017-12-21 01:28-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (https://www.transifex.com/qatikon/teams/70565/nl/)\n"
 "Language: nl\n"
@@ -214,8 +214,7 @@ msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.iniciar_modelo:1
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloFlexible.iniciar_modelo:1 ../../../tinamit/BF.py:docstring
-#: of tinamit.BF.ModeloImpaciente.iniciar_modelo:1
+#: tinamit.BF.ModeloFlexible.iniciar_modelo:1
 msgid "Esta función debe preparar el modelo para una simulación."
 msgstr ""
 
@@ -387,6 +386,14 @@ msgid ""
 "nombres de todos los variables de ingreso, en 'Egresos' todos los variables "
 "de egreso, en 'IngrEstacionales' únicamente los variables de ingreso "
 "estacionales, y en 'EgrEstacionales' los variables de egresos estacionales."
+msgstr ""
+
+#: ../../../tinamit/BF.py:docstring of
+#: tinamit.BF.ModeloImpaciente.iniciar_modelo:1
+msgid ""
+"Esta función debe preparar el modelo para una simulación. Si necesitas esta "
+"función para tu subclase, no se te olvide llamar ``super().iniciar_modelo`` "
+"para no saltar la reinicialización de la estación y del mes."
 msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of
