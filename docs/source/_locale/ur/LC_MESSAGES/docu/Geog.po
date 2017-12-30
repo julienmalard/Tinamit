@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-05 12:43-0500\n"
-"PO-Revision-Date: 2017-12-14 11:22-0500\n"
+"PO-Revision-Date: 2017-12-30 05:26-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
 "Language: ur\n"
@@ -21,11 +21,11 @@ msgstr ""
 
 #: ../../source/docu/Geog.rst:2
 msgid "Geog (Geografía)"
-msgstr ""
+msgstr "جیوگ (جغرافیہ)."
 
 #: ../../docstring of tinamit.Geog.Geog.Lugar:1
 msgid "Esta clase conecta con la clase مقام, o Lugar, del paquete taqdir."
-msgstr ""
+msgstr "یہ طبقہ اس مقام، یا جگہ، سے طبقہ تقدير پیکج کے ساتھ جوڑتا ہے۔"
 
 #: ../../docstring of tinamit.Geog.Geog.Lugar.comb_datos:1
 msgid "Esta función combina datos climáticos entre dos fechas."
