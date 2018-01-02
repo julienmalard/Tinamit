@@ -4,12 +4,13 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Azhar Inam <azharinam@gmail.com>, 2017. #zanata
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+# Azhar Inam <azharinam@gmail.com>, 2018. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-05 12:49-0500\n"
-"PO-Revision-Date: 2017-12-30 05:28-0500\n"
+"PO-Revision-Date: 2018-01-01 08:36-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
 "Language: ur\n"
@@ -28,10 +29,12 @@ msgid ""
 "Aquí describimos unas funciones más avanzadas de Tinamït. Muchas de estas, "
 "por el momento, se puedes acceder únicamente por el IPA, y no el IGU."
 msgstr ""
+"یہاں ہم ٹنامٹ کے کچھ اعلی درجے کی افعال بیان کرتے ہیں۔ ان میں سے بہت سے، اس "
+"وقت کے لئے۔ صرف IPA کی طرف سے حاصل کیا جا سکتا ہے، اور آئی جی یو نہیں۔"
 
 #: ../../source/uso/avanzado.rst:11
 msgid "Mapas espaciales"
-msgstr ""
+msgstr "زمينی نقشے۔"
 
 #: ../../source/uso/avanzado.rst:12
 msgid ""
@@ -39,10 +42,12 @@ msgid ""
 "espaciales. Esto se hace por el objeto :class:`~tinamit.Geog.Geog.Geografía`"
 " de Tinamït."
 msgstr ""
+"ٹينامٹ زمينی نتائج کے سادہ نقشے بنا سکتا ہے. یہ اس طبقے کے ذريعے کيا جاتاہے "
+"۔ `class:`~tinamit.Geog.Geog.Geografía` de Tinamït:"
 
 #: ../../source/uso/avanzado.rst:15
 msgid "Primero, creamos el objeto de geografía::"
-msgstr ""
+msgstr "سب سے پہلے، ہم جغرافیائی:: چيزوں کو تشکیل دیتے ہیں۔"
 
 #: ../../source/uso/avanzado.rst:20
 msgid ""
@@ -135,7 +140,7 @@ msgstr "``Precipitación`` : mm"
 
 #: ../../source/uso/avanzado.rst:86
 msgid "``Radiación solar`` : MJ / m2 / día"
-msgstr "``Radiación solar`` : MJ / m2 / día"
+msgstr "``شمسی توانائی کی تابکاری`` : MJ / m2 / día"
 
 #: ../../source/uso/avanzado.rst:87
 msgid "``Temperatura máxima`` : grados C"

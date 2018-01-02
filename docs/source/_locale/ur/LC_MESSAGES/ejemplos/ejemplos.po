@@ -4,12 +4,13 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Azhar Inam <azharinam@gmail.com>, 2017. #zanata
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+# Azhar Inam <azharinam@gmail.com>, 2018. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-13 12:24-0500\n"
-"PO-Revision-Date: 2017-12-30 05:27-0500\n"
+"PO-Revision-Date: 2018-01-01 08:34-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
 "Language: ur\n"
@@ -28,16 +29,20 @@ msgid ""
 "Aquí presentamos unos ejemplos del uso de Tinamït, más allá de lo presentado"
 " en la sección :ref:`Usar <uso>`."
 msgstr ""
+"یہاں ہم سیکشن میں پیش کیا گیا ہے اس سے باہر، اس سے باہر Tinamtt کے کچھ "
+"مثالیں پیش کرتے ہیں: ریف: `` 1 استعمال کریں."
 
 #: ../../source/ejemplos/ejemplos.rst:5
 msgid ""
 "El código y los modelos para estos ejemplos (y más) también se encuentra en "
 "el directorio `Ejemplos` de Tinamït, ordenado por lengua."
 msgstr ""
+"ان مثالیں (اور اس سے زیادہ) کے کوڈ اور ماڈل بھی ٹنامٹ کے 'مثالیں' ڈائرکٹری "
+"میں بھی پایا جاتا ہے، زبان کی طرف سے."
 
 #: ../../source/ejemplos/ejemplos.rst:16
 msgid "Ejemplo muy sencillo"
-msgstr ""
+msgstr "بہت آسان مثال۔"
 
 #: ../../source/ejemplos/ejemplos.rst:17
 msgid ""

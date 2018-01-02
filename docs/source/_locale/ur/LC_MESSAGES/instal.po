@@ -4,12 +4,13 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
 # Azhar Inam <azharinam@gmail.com>, 2017. #zanata
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+# Azhar Inam <azharinam@gmail.com>, 2018. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-31 11:09-0400\n"
-"PO-Revision-Date: 2017-12-30 05:27-0500\n"
+"PO-Revision-Date: 2018-01-01 08:35-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ur\n"
@@ -33,14 +34,16 @@ msgid ""
 "¡Felicitaciones! Tinamït necesita Python 3.6+, NumPy, SciPy, y Matplotlib. "
 "Tinamït sí mismo es un paquete de Python que se puede conseguir con"
 msgstr ""
+"مبارک ہو! ٹنامیٹ کو پطرون 3.6+، نمیپی، سکسیپی اور Matplotlib کی ضرورت ہے. "
+"Tinamït خود ایک پجن پیکج ہے جو آپ کے ساتھ حاصل کر سکتے ہیں"
 
 #: ../../source/instal.rst:12 ../../source/instal.rst:42
 msgid ":command:`pip install tinamit`"
-msgstr ""
+msgstr ":کمانڈ: 'pip install tinamit`"
 
 #: ../../source/instal.rst:15
 msgid "Si no sabes lo que estás haciendo (para Windows)"
-msgstr ""
+msgstr "اگر آپ نہیں جانتے  آپ کیا کر رہے ہیں (ونڈوز کے لئے)۔"
 
 #: ../../source/instal.rst:16
 msgid ""
