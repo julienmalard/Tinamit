@@ -1,0 +1,17 @@
+{
+  "langue": "español",
+  "langues_cibles": [
+    "தமிழ்",
+    "اردو"
+  ],
+  "chemin_code_source": "C:\\Users\\USERS1\\PycharmProjects\\tinamit\\tinamit",
+  "chemin_trads": "C:\\Users\\USERS1\\PycharmProjects\\tinamit\\tinamit\\trads",
+  "ignore": [
+    "Interfaz",
+    "NuevoInterfaz",
+    "Incertidumbre",
+    "Ejemplos",
+    "Stella.py",
+    "trads"
+  ]
+}
