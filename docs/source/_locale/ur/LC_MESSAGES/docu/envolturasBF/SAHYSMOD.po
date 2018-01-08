@@ -4,12 +4,13 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Azhar Inam <azharinam@gmail.com>, 2017. #zanata
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+# Azhar Inam <azharinam@gmail.com>, 2018. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-06 09:58-0500\n"
-"PO-Revision-Date: 2017-12-14 11:21-0500\n"
+"PO-Revision-Date: 2018-01-01 08:32-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
 "Language: ur\n"
@@ -21,7 +22,7 @@ msgstr ""
 
 #: ../../source/docu/envolturasBF/SAHYSMOD.rst:4
 msgid "Envoltura SAHYSMOD"
-msgstr ""
+msgstr "SAHYSMOD نمونے کی جلد۔"
 
 #: ../../../tinamit/EnvolturaBF/en/SAHYSMOD/SAHYSMOD_Wrapper.py:docstring of
 #: tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper.ModeloSAHYSMOD:1
@@ -29,16 +30,18 @@ msgid ""
 "This is the wrapper for SAHYSMOD. At the moment, it only works for one "
 "polygon (no spatial models)."
 msgstr ""
+"یہ ساؤتھسمو کے لئے لپیٹ ہے۔ اس وقت، یہ صرف ایک کثیر قوون کے لئے کام کرتا ہے "
+"(کوئی مقامی ماڈل نہیں)۔"
 
 #: ../../../tinamit/EnvolturaBF/en/SAHYSMOD/SAHYSMOD_Wrapper.py:docstring of
 #: tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper.ModeloSAHYSMOD.avanzar_modelo:1
 msgid "This function advances the SAHYSMOD simulation."
-msgstr ""
+msgstr "یہ فنکشن ساؤسمسمی تخروپن کو پیش کرتا ہے."
 
 #: ../../../tinamit/EnvolturaBF/en/SAHYSMOD/SAHYSMOD_Wrapper.py:docstring of
 #: tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper.ModeloSAHYSMOD.cerrar_modelo:1
 msgid "No specific closing actions necessary."
-msgstr ""
+msgstr "کوئی مخصوص اختتامی کارروائی ضروری نہيں۔"
 
 #: ../../../tinamit/EnvolturaBF/en/SAHYSMOD/SAHYSMOD_Wrapper.py:docstring of
 #: tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper.ModeloSAHYSMOD.escribir_archivo_ingr:1
@@ -47,6 +50,9 @@ msgid ""
 "internal state (so that the simulation based on the input file will start "
 "with initial values corresponding to the model's present state)."
 msgstr ""
+"یہ فعل نمونے کی موجودہ حالت کے مطابقSAHYSMOD کی ایک  داخلی دستاويز لکھتا ہے "
+"(تاکہ داخلی دستاويز پر مبنی تخروپن نمونے کی موجودہ حالت کے مطابق ابتدائی "
+"اقدار کے ساتھ شروع ہو جائے)۔"
 
 #: ../../../tinamit/EnvolturaBF/en/SAHYSMOD/SAHYSMOD_Wrapper.py:docstring of
 #: tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper.ModeloSAHYSMOD.escribir_archivo_ingr:0
@@ -134,7 +140,7 @@ msgstr ""
 #: ../../../tinamit/EnvolturaBF/en/SAHYSMOD/SAHYSMOD_Wrapper.py:docstring of
 #: tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper.read_output_file:0
 msgid "Devuelve"
-msgstr "واپسی"
+msgstr "واپسی۔"
 
 #: ../../../tinamit/EnvolturaBF/en/SAHYSMOD/SAHYSMOD_Wrapper.py:docstring of
 #: tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper.read_output_file:11

@@ -4,12 +4,13 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Azhar Inam <azharinam@gmail.com>, 2017. #zanata
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+# Azhar Inam <azharinam@gmail.com>, 2018. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-05 12:43-0500\n"
-"PO-Revision-Date: 2017-12-14 11:22-0500\n"
+"PO-Revision-Date: 2018-01-01 08:32-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
 "Language: ur\n"
@@ -21,15 +22,15 @@ msgstr ""
 
 #: ../../source/docu/Geog.rst:2
 msgid "Geog (Geografía)"
-msgstr ""
+msgstr "جیوگ (جغرافیہ)."
 
 #: ../../docstring of tinamit.Geog.Geog.Lugar:1
 msgid "Esta clase conecta con la clase مقام, o Lugar, del paquete taqdir."
-msgstr ""
+msgstr "یہ طبقہ اس مقام، یا جگہ، سے طبقہ تقدير پیکج کے ساتھ جوڑتا ہے۔"
 
 #: ../../docstring of tinamit.Geog.Geog.Lugar.comb_datos:1
 msgid "Esta función combina datos climáticos entre dos fechas."
-msgstr ""
+msgstr "یہ تقریب دو تاریخوں کے درمیان موسمیاتی اعداد و شمار کو جوڑتا ہے."
 
 #: ../../docstring of tinamit.Geog.Geog.Lugar.comb_datos:0 ../../docstring of
 #: tinamit.Geog.Geog.Lugar.devolver_datos:0 ../../docstring of
@@ -116,7 +117,7 @@ msgstr ""
 #: ../../docstring of tinamit.Geog.Geog.Lugar.observar_anuales:10
 #: ../../docstring of tinamit.Geog.Geog.Lugar.observar_mensuales:13
 msgid "El nombre de la columna con los años de las observaciones."
-msgstr ""
+msgstr "مشاہدات کے سال کے ساتھ کالم کا نام۔"
 
 #: ../../docstring of tinamit.Geog.Geog.Lugar.observar_diarios:1
 msgid ""
