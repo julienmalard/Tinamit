@@ -31,3 +31,5 @@ setup(
         '': ['*.txt', '*.vpm', '*.json', '*.png', '*.jpg', '*.gif'],
     },
 )
+
+# lassi.gen_trads(__file__)  # para hacer: activar generación automática de traducciones con lassi

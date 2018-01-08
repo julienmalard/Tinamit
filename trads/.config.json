@@ -1,0 +1,18 @@
+{
+  "langue": "español",
+  "langues_cibles": [
+    "தமிழ்",
+    "اردو",
+    "Nederlands"
+  ],
+  "chemin_code_source": ".\\tinamit",
+  "chemin_trads": ".\\tinamit\\trads",
+  "ignore": [
+    "Interfaz",
+    "NuevoInterfaz",
+    "Incertidumbre",
+    "Ejemplos",
+    "Stella.py",
+    "trads"
+  ]
+}
