@@ -61,7 +61,7 @@ class Lugar(مقام):
 
         d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
 
-        obs = دن_مشا(مسل=archivo, ش_تاریخ=c_fecha, ش_اعداد=d_cols)
+        obs = دن_مشا(مسل=archivo, س_تاریخ=c_fecha, س_اعداد=d_cols)
 
         símismo.مشاہدہ_کرنا(مشاہد=obs)
 
@@ -108,7 +108,7 @@ class Lugar(مقام):
 
         d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
 
-        obs = سال_مشا(مسل=archivo, ش_اعداد=d_cols, ش_سال=años)
+        obs = سال_مشا(مسل=archivo, س_اعداد=d_cols, س_سال=años)
         símismo.مشاہدہ_کرنا(obs)
 
     def prep_datos(símismo, fecha_inic, fecha_final, tcr, prefs=None, lím_prefs=False, regenerar=False):
@@ -227,7 +227,7 @@ class Geografía(object):
             try:
                 orden = np.array([x.record[nombres_attr.index(col_orden)] for x in af.shapeRecords()])
             except ValueError:
-                raise ValueError('La columna "{}" no existe en la base de اعداد_دن.'.format(col_orden))
+                raise ValueError('La columna "{}" no existe en la base de datos.'.format(col_orden))
 
             orden -= np.min(orden)
 

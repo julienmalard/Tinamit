@@ -262,7 +262,7 @@ class ModeloImpaciente(ModeloBF):
 
     def cambiar_vals_modelo_interno(símismo, valores):
         """
-        Solamente nos tenemos que asegurar que los اعداد_دن internos (para variables estacionales) queda consistente
+        Solamente nos tenemos que asegurar que los datos internos (para variables estacionales) queda consistente
         con los nuevos valores cambiadas por la conexión con el modelo externo. La función `.avanzar_modelo()` debe
         utilizar este diccionario interno para mandar los nuevos valores a la próxima simulación.
 
@@ -287,7 +287,7 @@ class ModeloImpaciente(ModeloBF):
         if n_paso > 12:
             avisar('El paso es superior a 1 año (12 meses). Las predicciones climáticas perderán su precisión.')
 
-        # Solamante hay que cambiar los اعداد_دن si es el principio de un nuevo año.
+        # Solamante hay que cambiar los datos si es el principio de un nuevo año.
         if símismo.mes == 0 and símismo.estación == 0:
 
             # La lista de variables climáticos
@@ -306,7 +306,7 @@ class ModeloImpaciente(ModeloBF):
                 # La fecha final
                 f_final = f_inic + deltarelativo(months=+dur)
 
-                # Calcular los اعداد_دن
+                # Calcular los datos
                 datos = símismo.lugar.comb_datos(vars_clima=nombres_extrn, combin=combins,
                                                  f_inic=f_inic, f_final=f_final)
 

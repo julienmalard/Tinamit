@@ -82,7 +82,7 @@ eq = control.eq(var='Sueldo')
 eq_var is eq
 eq.paráms()  # Dic de parám, distribución y valor
 control.calibrar_ec(var='', años=None, escala='Municipio', cód_lugar='0112')
-control.graficar_ec(var='', var_y=None, var_z=None, datos=None, años=None)  # Grafica los اعداد_دن (اعداد.relación) y la línea, con incertdumbre, de la ecuación calibrada
+control.graficar_ec(var='', var_y=None, var_z=None, datos=None, años=None)  # Grafica los datos (اعداد.relación) y la línea, con incertdumbre, de la ecuación calibrada
 
 
 control.guardar_incert_paráms(archivo='')  # Dic. de var, parám, y distribución

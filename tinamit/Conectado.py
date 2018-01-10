@@ -283,7 +283,7 @@ class SuperConectado(Modelo):
         if fecha_final is None:
             raise ValueError
 
-        # Obtener los اعداد_دن de lugar
+        # Obtener los datos de lugar
         lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=tcr, regenerar=recalc)
 
     def act_vals_clima(símismo, n_paso, f):

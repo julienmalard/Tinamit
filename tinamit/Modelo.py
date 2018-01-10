@@ -1,8 +1,8 @@
+import datetime as ft
 from warnings import warn as avisar
 
-from dateutil.relativedelta import relativedelta as deltarelativo
-import datetime as ft
 import numpy as np
+from dateutil.relativedelta import relativedelta as deltarelativo
 
 import tinamit.Geog.Geog as Geog
 from tinamit.Unidades.Unidades import convertir
@@ -131,7 +131,7 @@ class Modelo(object):
         # de empezar la simulación.
         símismo.vals_inic[var] = val
 
-    def limp_vals_inic(símismo):
+    def _limp_vals_inic(símismo):
         """
         Esta función limpa los valores iniciales especificados anteriormente.
         """
@@ -253,7 +253,7 @@ class Modelo(object):
                    'en precisión.'
                    .format(n_paso, símismo.unidad_tiempo))
 
-        # Calcular los اعداد_دن
+        # Calcular los datos
         datos = símismo.lugar.comb_datos(vars_clima=nombres_extrn, combin=combins,
                                          f_inic=f, f_final=f_final)
 
