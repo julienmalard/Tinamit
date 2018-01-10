@@ -25,19 +25,13 @@ if sys.platform[:3] == 'win':
 
 class ModeloVensimMdl(EnvolturaMDS):
 
-    def __init__(símismo, archivo):
-
-        símismo.dic_doc = {}
-
-        super().__init__(archivo=archivo)
-
     def inic_vars(símismo):
+
+        doc = símismo.archivo
 
         # Borrar lo que podría haber allí desde antes.
         símismo.variables.clear()
         símismo.dic_doc.clear()
-
-        doc = símismo.dic_doc
 
         # Variables internos a VENSIM
         símismo.internos = ['FINAL TIME', 'TIME STEP', 'INITIAL TIME', 'SAVEPER', 'Time']
@@ -204,7 +198,7 @@ class ModeloVensim(EnvolturaMDS):
     """
     Esta es la envoltura para modelos de tipo VENSIM. Puede leer y controlar (casi) cualquier modelo VENSIM para que
     se pueda emplear en Tinamit.
-    Necesitarás la __versión__ DSS de VENSIM para que funcione en Tinamit.
+    Necesitarás la versión DSS de VENSIM para que funcione en Tinamit.
     """
 
     ext_arch_egr = '.vdf'

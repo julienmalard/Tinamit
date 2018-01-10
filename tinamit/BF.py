@@ -316,10 +316,10 @@ class ModeloImpaciente(ModeloBF):
 
             # La lista de maneras de combinar los valores diarios
             combins = [d['combin'] for d in símismo.vars_clima.values()]
-            
+
             # La lista de factores de conversiones de variables de clima
             convs = [d['conv'] for d in símismo.vars_clima.values()]
-            
+
             # La fecha inicial
             f_inic = f
 
@@ -339,7 +339,7 @@ class ModeloImpaciente(ModeloBF):
 
                     # El nombre oficial del variable de clima
                     var_clima = nombres_extrn[i]
-                    
+
                     # El factor de conversión
                     conv = convs[i]
 
