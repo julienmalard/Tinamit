@@ -936,7 +936,7 @@ big,small {
 	content:""
 }
 .fa-arrow-circle-left:before,.icon-circle-arrow-left:before {
-	content:"•"
+	content:""
 }
 :-moz-dir(rtl) .fa-arrow-circle-left:before,:-moz-dir(rtl) .icon-circle-arrow-left:before {
 	content:""
@@ -948,10 +948,10 @@ big,small {
 	content:""
 }
 :-moz-dir(rtl) .fa-arrow-circle-right:before,:-moz-dir(rtl) .icon-circle-arrow-right:before {
-	content:"•"
+	content:""
 }
 : dir(rtl) .fa-arrow-circle-right:before,:dir(rtl) .icon-circle-arrow-right:before {
-	content:"•"
+	content:""
 }
 .fa-arrow-circle-up:before {
 	content:""
@@ -4416,6 +4416,12 @@ div[class^='highlight'] pre {
 	background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDoxOERBMTRGRDBFMUUxMUUzODUwMkJCOThDMEVFNURFMCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDoxOERBMTRGRTBFMUUxMUUzODUwMkJCOThDMEVFNURFMCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjE4REExNEZCMEUxRTExRTM4NTAyQkI5OEMwRUU1REUwIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjE4REExNEZDMEUxRTExRTM4NTAyQkI5OEMwRUU1REUwIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+EwrlwAAAAA5JREFUeNpiMDU0BAgwAAE2AJgB9BnaAAAAAElFTkSuQmCC);
 	background-size:300px 1px
 }
+:-moz-dir(rtl) .wy-body-for-nav {
+	background:right repeat-y #fcfcfc;
+}
+:dir(rtl) .wy-body-for-nav {
+	background:right repeat-y #fcfcfc;
+}
 .wy-grid-for-nav {
 	position:absolute;
 	width:100%;
@@ -4598,9 +4604,27 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	.wy-nav-side {
 		left:-300px
 	}
+	:-moz-dir(rtl) .wy-nav-side {
+		left:inherit;
+		right:-300px
+	}
+	:dir(rtl) .wy-nav-side {
+		left:inherit;
+		right:-300px
+	}
 	.wy-nav-side.shift {
 		width:85%;
 		left:0
+	}
+	:-moz-dir(rtl) .wy-nav-side.shift {
+		width:85%;
+		left:inherit;
+		right:0
+	}
+	:dir(rtl) .wy-nav-side.shift {
+		width:85%;
+		left:inherit;
+		right:0
 	}
 	.wy-side-scroll {
 		width:auto
@@ -4614,6 +4638,14 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	.wy-nav-content-wrap {
 		margin-left:0
 	}
+	:-moz-dir(rtl) .wy-nav-content-wrap {
+		margin-left:inherit;
+		margin-right: 0
+	}
+	:dir(rtl) .wy-nav-content-wrap {
+		margin-left:inherit;
+		margin-right: 0
+	}
 	.wy-nav-content-wrap .wy-nav-content {
 		padding:1.618em
 	}
@@ -4624,6 +4656,14 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 		top:0;
 		height:100%;
 		overflow:hidden
+	}
+	:-moz-dir(rtl) .wy-nav-content-wrap.shift {
+		left:inherit;
+		right:85%
+	}
+	:dir(rtl) .wy-nav-content-wrap.shift {
+		left:inherit;
+		right:85%
 	}
 }
 @media screen and (min-width: 1400px) {
@@ -4641,6 +4681,14 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	}
 	.wy-nav-content-wrap {
 		margin-left:0
+	}
+	:-moz-dir(rtl) .wy-nav-content-wrap {
+		margin-left:inherit;
+		margin-right: 0
+	}
+	:dir(rtl) .wy-nav-content-wrap {
+		margin-left:inherit;
+		margin-right: 0
 	}
 }
 .rst-versions {
@@ -4695,13 +4743,24 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
 	clear:both
 }
 .rst-versions .rst-current-version .fa,.rst-versions .rst-current-version .wy-menu-vertical li span.toctree-expand,.wy-menu-vertical li .rst-versions .rst-current-version span.toctree-expand,.rst-versions .rst-current-version .rst-content .admonition-title,.rst-content .rst-versions .rst-current-version .admonition-title,.rst-versions .rst-current-version .rst-content h1 .headerlink,.rst-content h1 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content h2 .headerlink,.rst-content h2 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content h3 .headerlink,.rst-content h3 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content h4 .headerlink,.rst-content h4 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content h5 .headerlink,.rst-content h5 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content h6 .headerlink,.rst-content h6 .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content dl dt .headerlink,.rst-content dl dt .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content p.caption .headerlink,.rst-content p.caption .rst-versions .rst-current-version .headerlink,.rst-versions .rst-current-version .rst-content tt.download span:first-child,.rst-content tt.download .rst-versions .rst-current-version span:first-child,.rst-versions .rst-current-version .rst-content code.download span:first-child,.rst-content code.download .rst-versions .rst-current-version span:first-child,.rst-versions .rst-current-version .icon {
-	color:#fcfcfc;
+	color:#fcfcfc
+}
+.rst-versions .rst-current-version .fa-book,.rst-versions .rst-current-version .icon-book {
 	float:left
 }
 :-moz-dir(rtl) .rst-versions .rst-current-version .fa-book,:-moz-dir(rtl) .rst-versions .rst-current-version .icon-book {
 	float:right
 }
 :dir(rtl) .rst-versions .rst-current-version .fa-book,:dir(rtl) .rst-versions .rst-current-version .icon-book {
+	float:right
+}
+.rst-versions .rst-current-version .icon-book {
+	float:left
+}
+:-moz-dir(rtl): .rst-versions .rst-current-version .icon-book {
+	float:right
+}
+:dir(rtl): .rst-versions .rst-current-version .icon-book {
 	float:right
 }
 .rst-versions .rst-current-version.rst-out-of-date {

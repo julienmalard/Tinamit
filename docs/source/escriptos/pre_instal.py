@@ -5,7 +5,7 @@ import sys
 import urllib.request
 from subprocess import run
 from warnings import warn as avisar
-
+from zipfile import ZipFile as ArchZip
 
 """
 Esta parte instala todas las dependencias de Tinamit de manera automática. Al momento, funciona para Windows con
@@ -37,6 +37,10 @@ try:
 except ImportError:
     estad = None
 
+try:
+    import pandas
+except ImportError:
+    pandas = None
 
 info_paquetes = {'numpy': {'versión': '1.13.1',
                            'formato_archivo': 'numpy-{versión}+mkl-cp{v_py}-cp{v_py}m-{sis}.whl',
@@ -76,7 +80,7 @@ info_paquetes = {'numpy': {'versión': '1.13.1',
                                }
                            },
                            },
-                 'matplotlib': {'versión': '2.0.0',
+                 'matplotlib': {'versión': '2.0.2',
                                 'formato_archivo': 'matplotlib-{versión}-cp{v_py}-none-{sis}.whl',
                                 '35': {
                                     'Windows': {
@@ -88,13 +92,34 @@ info_paquetes = {'numpy': {'versión': '1.13.1',
                                 },
                                 '36': {
                                     'Windows': {
-                                        '32': {'id_google': '0B8RjC9bwyAOwRDlIU2x1YlY0U1U'
+                                        '32': {'id_google': '0B8RjC9bwyAOwRDlIU2x1YlY0U1U',
+                                               'id_dropbox': '0nto54jhq4iwgvm/matplotlib-2.0.2-cp36-cp36m-win32.whl'
                                                },
                                         '64': {'id_dropbox': 'ibq24o9299ij7ta/matplotlib-2.0.2-cp36-cp36m-win_amd64.whl'
                                                }
                                     }
                                 },
                                 },
+                 'pandas': {'versión': '0.21.1',
+                            'formato_archivo': 'pandas-{versión}-cp{v_py}-cp{v_py}m-{sis}.whl',
+                            '35': {
+                                'Windows': {
+                                    '32': {'id_google': None
+                                           },
+                                    '64': {'id_google': None
+                                           }
+                                }
+                            },
+                            '36': {
+                                'Windows': {
+                                    '32': {'id_google': None,
+                                           'id_dropbox': 'rjjupn6c0xyga1h/pandas-0.21.1-cp36-cp36m-win32.whl'
+                                           },
+                                    '64': {'id_dropbox': 'nn5o8cn9lf8cv0j/pandas-0.21.1-cp36-cp36m-win_amd64.whl'
+                                           }
+                                }
+                            },
+                            },
 
                  }
 
@@ -109,8 +134,9 @@ def _descargar_whl(nombre, v_py, sis, b):
     print('Descargando paquete "{}"...'.format(nombre))
     llave = url = None
 
-    repositorios = {'id_google': 'https://drive.google.com/uc?export=download&id={}',
-                    'id_dropbox': 'https://www.dropbox.com/s/{}?dl=1'}
+    repositorios = {'id_dropbox': 'https://www.dropbox.com/s/{}?dl=1',
+                    'id_google': 'https://drive.google.com/uc?export=download&id={}'
+                    }
 
     for r, u in repositorios.items():
         try:
@@ -148,6 +174,33 @@ def _instalar_whl(nombre):
         run(comanda)
 
 
+def _instalar_taqdir():
+    if not os.path.exists(directorio_móds):
+        os.makedirs(directorio_móds)
+        dir_creado = True
+    else:
+        dir_creado = False
+
+    url = 'https://github.com/julienmalard/taqdir/archive/master.zip'
+    arch_zip = os.path.join(directorio_móds, 'taqdir.zip')
+    dir_taqdir = os.path.join(directorio_móds, 'taqdir')
+    urllib.request.urlretrieve(url, arch_zip)
+    with ArchZip(arch_zip, 'r') as d:
+        d.extractall(dir_taqdir)
+
+    comanda = '{} setup.py install'.format(os.path.join(directorio_python, 'python'))
+    run(comanda, cwd=os.path.join(dir_taqdir, 'taqdir-master'))
+
+    if dir_creado:
+        shutil.rmtree(directorio_móds)
+
+
+def _instalar_de_pypi(paquetes):
+    for paq in paquetes:
+        comanda = '%s install %s' % (os.path.join(directorio_python, 'Scripts', 'pip'), paq)
+        run(comanda)
+
+
 def instalar_requísitos():
     print('Instalando paquetes requísitos...')
 
@@ -161,6 +214,9 @@ def instalar_requísitos():
 
     if estad is None:
         lista_paquetes.append('scipy')
+
+    if pandas is None:
+        lista_paquetes.append('pandas')
 
     if len(lista_paquetes):
 
@@ -178,13 +234,21 @@ def instalar_requísitos():
             _instalar_whl(paq)
 
         if dir_creado:
-            shutil.rmtree('Módulos')
+            shutil.rmtree(directorio_móds)
+
+    _instalar_taqdir()
+
+    _instalar_de_pypi(['pyshp', 'python_dateutil'])
 
     # Verificar que todo esté bien:
     try:
         import numpy as _
         import scipy as _
         import matplotlib as _
+        import taqdir as _
+        import pandas as _
+        import pyshp as _
+        import dateutil as _
     except ImportError:
         _ = None
         pass

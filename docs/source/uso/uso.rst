@@ -1,3 +1,5 @@
+.. _uso:
+
 Cómo se emplea Tinamït
 ======================
 

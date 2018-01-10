@@ -12,7 +12,7 @@ cuál es mejor.
 
 proyecto_transifex = 'tinamit'
 leng_orig = 'es'
-lenguas = ['ms', 'yo', 'fa', 'fr', 'ta', 'ur', 'nl']
+lenguas = ['ms', 'fr', 'ta', 'ur', 'nl']
 
 # El directorio de la documentación
 dir_docs = os.path.split(os.path.realpath(__file__))[0]
@@ -38,7 +38,7 @@ archivo_config_tx = os.path.join(dir_docs, '.tx', 'config')
 final = []
 with open(archivo_config_tx, mode='r') as d:
     for l in d.readlines():
-        if l == 'source_lang = en\n':
+        if l == 'source_lang = en\n' and leng_orig != 'en':
             final.append('source_lang = {}\n'.format(leng_orig))
         else:
             final.append(l)
@@ -47,25 +47,21 @@ with open(archivo_config_tx, mode='w') as d:
     d.truncate()
     d.writelines(final)
 
-
 # Mandar cambios locales al servidor Zanata
-print('Mandando los documentos de traducciones actualizados al servidor...')
-run('zanata po push --copytrans', input=b'y', cwd=dir_docs)
+print('Mandando traducciones actualizadas localmente a Zanata...')
+run('zanata po push --copytrans --import-po', input=b'y', cwd=dir_docs)
 
 # Traemos traducciones de Transifex y las mandamos a Zanata.
 print('Actualizando con Transifex...')
 run('tx pull -a', cwd=dir_docs)
+print('Mandando traducciones de Transifex a Zanata...')
 run('zanata po push --copytrans --import-po', input=b'y', cwd=dir_docs)
 
 # Traemos las traducciones más recientes de Zanata
 print('Verificando las traducciones más recientes en Zanata...')
 run('zanata po pull', cwd=dir_docs)
 
-# Mandar los documentos de traducciones actualizados al servidor Zanata
-print('Mandando los documentos de traducciones actualizados al servidor...')
-run('zanata po push --copytrans', input=b'y', cwd=dir_docs)
-
-# Mandar todo a Transifex también
+# Mandar los documentos de traducciones actualizados al servidor Transifex
 print('Mandando todo a Transifex también...')
 run('tx push -s -t', cwd=dir_docs)
 

@@ -17,6 +17,10 @@ Tinamït permite la conexión rápida, flexible y reproducible de modelos con:
 * Una estructura transparente para que todos puedan agregar modelos y recursos.
 * Apoyo multilingual en el IGU.
 
+.. note::
+   ¿Encontraste algún error en la documentación? Seguramente es culpa mía. Si es error de español, por favor tenga
+   la bondad de corregirlo en `GitHub <|GitHub|>`_. Si es en otro idioma, corrígelo :ref:`así <des_trad>`. ¡Gracias!
+
 ¿Quieres contribuir?
 --------------------
 Puedes **agregar modelos**, desarrollar **nuevas funcionalidades**, o ayudar a **traducir Tinamït** en tu lengua preferida.

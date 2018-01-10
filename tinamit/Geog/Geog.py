@@ -1,7 +1,9 @@
 import datetime as ft
 import os
 
-import matplotlib.pyplot as dib
+from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
+from matplotlib.figure import Figure as Figura
+
 from matplotlib import cm
 import matplotlib.colors as colors
 
@@ -59,7 +61,7 @@ class Lugar(مقام):
 
         d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
 
-        obs = دن_مشا(archivo=archivo, c_fecha=c_fecha, cols_datos=d_cols)
+        obs = دن_مشا(مسل=archivo, ش_تاریخ=c_fecha, ش_اعداد=d_cols)
 
         símismo.مشاہدہ_کرنا(مشاہد=obs)
 
@@ -84,7 +86,7 @@ class Lugar(مقام):
 
         d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
 
-        obs = مہنہ_مشا(archivo=archivo, cols_datos=d_cols, c_meses=meses, c_años=años)
+        obs = مہنہ_مشا(مسل=archivo, س_اعداد=d_cols, س_مہینہ=meses, س_سال=años)
 
         símismo.مشاہدہ_کرنا(obs)
 
@@ -106,7 +108,7 @@ class Lugar(مقام):
 
         d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
 
-        obs = سال_مشا(archivo=archivo, cols_datos=d_cols, c_años=años)
+        obs = سال_مشا(مسل=archivo, ش_اعداد=d_cols, ش_سال=años)
         símismo.مشاہدہ_کرنا(obs)
 
     def prep_datos(símismo, fecha_inic, fecha_final, tcr, prefs=None, lím_prefs=False, regenerar=False):
@@ -129,8 +131,8 @@ class Lugar(مقام):
         :type regenerar: bool
 
         """
-        super().اعداد_تیاری(fecha_inic, fecha_final, tcr, n_rep=1,
-                            ترجیحات=prefs, lím_prefs=lím_prefs, regenerar=regenerar)
+        super().اعداد_تیاری(fecha_inic, fecha_final, tcr, ش_ترکار=1, ترجیحات=prefs, ترجیحات_محدود=lím_prefs,
+                            دوبارہ_پیدا=regenerar)
 
     def devolver_datos(símismo, vars_clima, f_inic, f_final):
         """
@@ -261,8 +263,9 @@ class Geografía(object):
         elif isinstance(colores, tuple):
             colores = list(colores)
 
-        dib.figure()
-        ejes = dib.axes()
+        fig = Figura()
+        TelaFigura(fig)
+        ejes = fig.add_subplot(111)
         ejes.set_aspect('equal')
 
         if valores is not None:
@@ -288,12 +291,12 @@ class Geografía(object):
             cpick.set_array([])
 
             v_cols = mapa_color(vals_norm)
-            _dibujar_shp(regiones, orden=orden, colores=v_cols)
+            _dibujar_shp(ejes=ejes, frm=regiones, orden=orden, colores=v_cols)
 
             if unidades is not None:
-                dib.colorbar(cpick, label=unidades)
+                fig.colorbar(cpick, label=unidades)
             else:
-                dib.colorbar(cpick)
+                fig.colorbar(cpick)
 
         for nombre, d_obj in símismo.objetos.items():
 
@@ -307,22 +310,24 @@ class Geografía(object):
             llenar = d_obj['llenar']
             alpha = d_obj['alpha']
 
-            _dibujar_shp(frm=d_obj['obj'], colores=color, alpha=alpha, llenar=llenar)
+            _dibujar_shp(ejes=ejes, frm=d_obj['obj'], colores=color, alpha=alpha, llenar=llenar)
 
         if título is not None:
-            dib.title(título)
+            ejes.set_title(título)
 
-        dib.savefig(archivo, dpi=500)
-        dib.close()
+        fig.savefig(archivo, dpi=500)
 
 
-def _dibujar_shp(frm, colores, orden=None, alpha=1.0, llenar=True):
+def _dibujar_shp(ejes, frm, colores, orden=None, alpha=1.0, llenar=True):
     """
     Dibujar una forma geográfica.
 
     Basado en código de Chris Halvin: https://github.com/chrishavlin/learning_shapefiles/tree/master/src
 
-    :param frm: La forma
+    :param ejes: Los ejes de Matplotlib.
+    :type ejes: matplotlib.axes._subplots.Axes
+
+    :param frm: La forma.
     :type frm: sf.Reader
 
     :param colores: Los colores para dibujar.
@@ -362,9 +367,9 @@ def _dibujar_shp(frm, colores, orden=None, alpha=1.0, llenar=True):
                 x_lon[ip] = forma.points[ip][0]
                 y_lat[ip] = forma.points[ip][1]
             if llenar:
-                dib.fill(x_lon, y_lat, color=col, alpha=alpha)
+                ejes.fill(x_lon, y_lat, color=col, alpha=alpha)
             else:
-                dib.plot(x_lon, y_lat, color=col, alpha=alpha)
+                ejes.plot(x_lon, y_lat, color=col, alpha=alpha)
 
         else:
             for ip in range(n_partes):  # Para cada parte del imagen
@@ -382,9 +387,9 @@ def _dibujar_shp(frm, colores, orden=None, alpha=1.0, llenar=True):
                     y_lat[i] = seg[i][1]
 
                 if llenar:
-                    dib.fill(x_lon, y_lat, color=col, alpha=alpha)
+                    ejes.fill(x_lon, y_lat, color=col, alpha=alpha)
                 else:
-                    dib.plot(x_lon, y_lat, color=col, alpha=alpha)
+                    ejes.plot(x_lon, y_lat, color=col, alpha=alpha)
 
 
 def _hex_a_rva(hx):

@@ -8,7 +8,7 @@ El Interfaz
 ¡Siempre querremos traducciones para hacer de Tinamït una herramienta aún más accesible!
 El interfaz de Tinamït tiene funcionalidades para la traducción del interfaz sí mismo (el globo).
 
-.. image:: ../Imágenes/IGU/IGU_cabeza_globo.png
+.. image:: ../imágenes/IGU/IGU_cabeza_globo.png
    :scale: 100 %
    :align: center
    :alt: Icono de cambio de idiomas de Tinamït.
@@ -25,5 +25,5 @@ La Documentación
 ¿Quieres leer esta oración en tu propia lengua? La documentación de Tinamït se traduce de manera colaborativa. Puedes
 utilizar el servidor Transifex o Zanata (syncronisamos los dos, así que no hay problema cuál eliges):
 
-* Zanata: Da muchas recomendaciones muy útiles. `Empezar ahora <https://translate.zanata.org/iteration/view/tinamit/1.2/>`_.
-* Transifex: Interfaz bonito. `Empezar ahora <https://www.transifex.com/qatikon/tinamit_1_2>`_.
+* Zanata: Da muchas recomendaciones muy útiles. `Empezar ahora <https://translate.zanata.org/project/view/tinamit>`_.
+* Transifex: Interfaz bonito. `Empezar ahora <https://www.transifex.com/qatikon/tinamit>`_.

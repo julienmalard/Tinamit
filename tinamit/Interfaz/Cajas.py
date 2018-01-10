@@ -120,7 +120,7 @@ class CajaLeng(tk.Frame):
                 borr = False
 
             utilznd = False
-            if nombre == símismo.DicLeng.dic['Actual']:
+            if nombre == símismo.DicLeng.config['leng_act']:
                 utilznd = True
 
             Ctrl.ItemaLeng(símismo, lista=lista, nombre=nombre, lengua=leng, estado=leng['Estado'],
@@ -143,12 +143,12 @@ class CajaLeng(tk.Frame):
             else:
                 texto = símismo.DicLeng.lenguas[símismo.DicLeng.estándar]['Trads']['AvisoReinic']
             Ctrl.CajaAviso(texto=texto, apli=símismo.apli)
-            símismo.DicLeng.dic['Actual'] = nombre
+            símismo.DicLeng.config['leng_act'] = nombre
             símismo.DicLeng.guardar()
             símismo.refrescar()
 
     def editar(símismo, nombre):
-        leng_base = símismo.DicLeng.dic['Actual']
+        leng_base = símismo.DicLeng.config['leng_act']
         if leng_base == nombre:
             leng_base = símismo.DicLeng.estándar
         dic_leng_base = símismo.DicLeng.lenguas[leng_base]
@@ -164,8 +164,8 @@ class CajaLeng(tk.Frame):
 
     def borrar(símismo, nombre):
         símismo.DicLeng.lenguas.pop(nombre)
-        if símismo.DicLeng.dic['Actual'] == nombre:
-            símismo.DicLeng.dic['Actual'] = símismo.DicLeng.estándar
+        if símismo.DicLeng.config['leng_act'] == nombre:
+            símismo.DicLeng.config['leng_act'] = símismo.DicLeng.estándar
         símismo.DicLeng.guardar()
         símismo.refrescar()
 

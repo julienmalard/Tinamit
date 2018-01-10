@@ -19,7 +19,7 @@ se incluirán en paquetes distintos en revisiones futuras).
    Unidades
    Geog
 
-.. figure:: ../Imágenes/Estructura.jpg
+.. figure:: ../imágenes/Estructura.jpg
    :align: center
    :alt: Estructura del programa Tinamït.
 

@@ -30,7 +30,7 @@ Financiamiento
 Los organismos siguientes contribuyeron apoyo financiero a uno o más de los autores del código mientras trabajaban
 en el desarrollo de Tinamït:
 
-* `Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) <www.nserc-crsng.gc.ca>`_
+* `Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) <https://www.nserc-crsng.gc.ca>`_
 * `Centre de recherches pour le développement international du Canada (CRDI) <https://www.idrc.ca/fr>`_
 * `Fonds de recherche Nature et technologies du Québec (Canada) (FQRNT) <http://www.frqnt.gouv.qc.ca/accueil>`_
 
@@ -39,12 +39,12 @@ Instituciones afiliadas
 
 Los autores de Tinamït están afiliados con las instituciones siguientes:
 
-.. image:: Imágenes/Logos_inst/Logo_McGill_IGFS.jpg
+.. image:: imágenes/Logos_inst/Logo_McGill_IGFS.jpg
    :width: 200
    :align: center
    :alt: Logo McGill
 
-.. image:: Imágenes/Logos_inst/Logo_IARNA.jpg
+.. image:: imágenes/Logos_inst/Logo_IARNA.jpg
    :width: 200
    :align: center
    :alt: Logo IARNA URL

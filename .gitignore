@@ -33,6 +33,7 @@ docs/.tx/*
 # Archivos de Tinamït #
 #######################
 *.tin
+Config.json
 
 # Archivos de SAHYSMOD #
 ########################
@@ -44,6 +45,7 @@ docs/.tx/*
 */Ejemplos/**/*SAHYSMOD/NAME*
 */Ejemplos/**/*SAHYSMOD/*.txt
 */EnvolturaBF/**/*SAHYSMOD/*.txt
+*/Name0
 
 # Archivos temporarios de Excel #
 #################################

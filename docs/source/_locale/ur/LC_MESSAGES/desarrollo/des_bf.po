@@ -2,13 +2,14 @@
 # Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
 # This file is distributed under the same license as the tinamit package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Azhar Inam <azharinam@gmail.com>, 2017. #zanata
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-05 12:43-0500\n"
-"PO-Revision-Date: 2017-12-14 11:20-0500\n"
+"PO-Revision-Date: 2017-12-30 04:00-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
 "Language: ur\n"
@@ -20,7 +21,7 @@ msgstr ""
 
 #: ../../source/desarrollo/des_bf.rst:4
 msgid "Agregar modelos biofísicos"
-msgstr ""
+msgstr "بائیو فیزیکل نمونہ شامل کريں ۔"
 
 #: ../../source/desarrollo/des_bf.rst:5
 msgid ""
@@ -34,10 +35,20 @@ msgid ""
 " vas a tener que crear una nueva envoltura para ti, por favor no dudes en "
 "compartirla."
 msgstr ""
+"ٹينامٹ میں ہر حیاتیاتی ماڈل کے لئے مخصوص سانچھے کی ضرورت ہے. يہ سا نچھا اس "
+"ليے ضروری ہے کہ يہ حیاتیاتی ماڈل کا کنڑول ٹينامٹ کے ذريعے کرنے ميں مدد فراہم"
+" کرے گا۔ مثال کے طور پر اس کے اخراجات حیاتیاتی ماڈل  کے ا‍قدار کیسے پڑھتے "
+"ہیں اور ان کو متحرک ماڈل کی اقدار کے ساتھکیسے تاذہ کریں گے. اس بات کو تسلیم "
+"کیا گیا ہے کہحیاتیاتی ماڈلوں کی اکثریت کو غیر مرتب شدہ اور کبھی کبھی غیر "
+"واضح زبانوں میں لکھا جاتا ہے، یہ ٹينامٹ استعمال کرنے کا سب سے مشکل حصہ ہے. "
+"اچھی بات یہ ہے کہ یہ ایک حیاتیاتی ماڈل کی ايک  * قسم * کے لئے صرف ایک بار ہی"
+" کرنا ہوگا، اور یہ کہ یہ متحرک ماڈل کے ليےٹينامٹ ميں پہلے سے ہی  بنا دیا ہے."
+" اگر آپ کو آپ کے لئے ایک نيا سا نچھا بنانا ہے تو براہ مہربانی اس کے ليے ہم "
+"سے اشتراک کرنے میں ہچکچاہٹ محسوس نہ کريں."
 
 #: ../../source/desarrollo/des_bf.rst:12
 msgid "Cómo crear una nueva envoltura"
-msgstr ""
+msgstr "نئی لپیٹ کیسے بنائیں۔"
 
 #: ../../source/desarrollo/des_bf.rst:13
 msgid ""
@@ -48,16 +59,24 @@ msgid ""
 ":class:`~tinamit.BF.ModeloBF` que ya hemos escrito para para facilitarte la "
 "vida. (Fue un placer.)"
 msgstr ""
+"اصل میں یہ بہت آسان ہے. آپ کو صرف طبقے  کا ایک نیا ذیلی طبقہ بنانا ہوگا "
+":class:`~tinamit.BF.ModeloBF` اور پھر اس ميں لاپتہ افعال کو لاگو کرناہو گا۔ "
+"اگر آپ کے پاس ایک ایسا ماڈل ہے جس کے ساتھ------ تو  آپ ایک ذیلی کلاسک میں سے"
+" ایک کو ایک سانچے کے طور پر بھی استعمال کرسکتے ہیں۔ ہم نے طبقہ  "
+":class:`~tinamit.BF.ModeloB: آپکی آسانی  کے لئے پہلےسے ہی لکھا ہے۔ (یہ ایک "
+"اچھی خبر ہے) ۔ "
 
 #: ../../source/desarrollo/des_bf.rst:19
 msgid "¿Cómo escojo la mejor plantilla?"
-msgstr ""
+msgstr "میں بہترین سانچہ کیسے منتخب کروں؟"
 
 #: ../../source/desarrollo/des_bf.rst:20
 msgid ""
 "Para ayudarte a decidir cuál plantilla es mejor para ti, consulta el "
 "cuestionario siguiente."
 msgstr ""
+"یہ فیصلہ کرنے کیلئے کہ آپکے لئے کون سا سانچے بہتر ہے، مندرجہ ذیل سوالنامہ "
+"دیکھیں."
 
 #: ../../source/desarrollo/des_bf.rst:22
 msgid ""
@@ -67,6 +86,10 @@ msgid ""
 "utilizar la plantilla estándar :class:`~tinamit.BF.ModeloBF`. Más detalles "
 ":ref:`abajo <plantilla_modbf>`."
 msgstr ""
+"میرے ماڈل کی پیش رفت ٭٭ اغداد اور ‎‎‎‎‎‎‎شمار کی درستگی کے ليے ایک جيسا "
+"قدم٭٭۔ مثال کے طور پر، میرے پاس کیڑوں کی آبادی کا ایک نمونہ ہے جو ایک ماہ کے"
+" قدم سے آگے بڑھا اور مجھے آبادی دیتا ہے. پھر، معیاری سانچے کا استعمال کریں۔ "
+"'class:`~tinamit.BF.ModeloBF: مزید تفصیلات کے ليے 'ref:`abajo:"
 
 #: ../../source/desarrollo/des_bf.rst:26
 msgid ""
@@ -77,6 +100,11 @@ msgid ""
 ":class:`~tinamit.BF.ModeloImpaciente`. Más detalles :ref:`abajo "
 "<plantilla_modimp>`."
 msgstr ""
+"میرا نمونہمختلف قدم سے آگے چلتا ہے٭٭آپ کے اعداد و ‎‎‎‎شمار کی درستگی سے "
+"مختلف٭٭۔ مثال کے طور پر، میری زمین کے نمونے کی کم از کم  پیش رفت ايک سال "
+"کاقدم  ہے، لیکن اس کے بعد مجھے ايک سال میں چھ ماہ کے دوقدم درکار ہيں۔ اس "
+"صورت ميں استعمال کریں۔ 'class:`~tinamit.BF.ModeloImpaciente:۔ مزید تفصیلات "
+"کے ليے 'ref:`abajo:۔"
 
 #: ../../source/desarrollo/des_bf.rst:30
 msgid ""
@@ -85,12 +113,19 @@ msgid ""
 "Entonces, utilizar :class:`~tinamit.BF.ModeloFlexible`. Más detalles "
 ":ref:`abajo <plantilla_modflex>`."
 msgstr ""
+"میرا ماڈل ایک٭٭متغیر قدم٭٭  کے ساتھ پیش رفت کرتا ہے۔مثال کے طور پر، میری فصل"
+" کا نمونہ فصل سےفصل تک چلتا ہے، جس میں فصل اور آب و ہوا ميں فرق ہوتا ہے۔ اس "
+"صورت ميں استعمال کریں۔  'class:`~tinamit.BF.ModeloFlexible: مزید تفصیلات کے "
+"ليے 'ref:`abajo:۔"
 
 #: ../../source/desarrollo/des_bf.rst:34
 msgid ""
 "Si todavía no estás segura, empieza con :class:`~tinamit.BF.ModeloBF`. "
 "Saberás que no fue la buena decisión por quedarte muy confundida muy pronto."
 msgstr ""
+"اگر آپ ابھی تک بے یقینی ميں ہیں۔ تو شروع کریں۔ "
+"'class:`~tinamit.BF.ModeloBF:۔ آپ کو محسوس ہو گا کہ  الجھن میں رہنے کافیصلہ "
+"اچھا نہیں تھا."
 
 #: ../../source/desarrollo/des_bf.rst:39
 msgid ""
@@ -99,6 +134,10 @@ msgid ""
 "archivo, o su implementación final, **debe** llamarse ``Modelo``. Si se "
 "llama cualquier otra cosa, no funcionará."
 msgstr ""
+"آپ کسی بھی دستاويز میں اپنی جلد لکھ سکتے ہیں (ٹينامٹ  کے ذریعہ کوڈ میں ہونا "
+"ضروری نہیں ہے)۔ شامل ذیلی طبقہ یہ دستاويز ہو گی ، اس کا آخری عمل، ** debe **"
+" یا \"Modelo\" کہا جانا چاہیے. اگر آپ کچھ اور کہتے ہیں تو یہ کام نہیں کرے "
+"گا."
 
 #: ../../source/desarrollo/des_bf.rst:45
 msgid ""
@@ -106,10 +145,13 @@ msgid ""
 "(todas las otras son subclases de esta), pero las otras te ahorarán mucho "
 "tiempo para modelos con pasos complicados."
 msgstr ""
+"بنيادی طور پر آپ معیاری سانچے کے ساتھ کسی بھی ماڈل پر عمل درآمد کر سکتے ہیں "
+"(سب اس کے ليے آزمودہ ہیں) ۔ لیکن دوسروں کے ليے پیچیدہ اقدامات کے ساتھ نمونے "
+"تيار کرنے ميں  بہت وقت بچا ئے گا."
 
 #: ../../source/desarrollo/des_bf.rst:50
 msgid "Plantilla estándar (ModeloBF)"
-msgstr ""
+msgstr "معیاری سانچے (آب و ہوا کا نمونہ)"
 
 #: ../../source/desarrollo/des_bf.rst:51
 msgid ""
@@ -117,46 +159,56 @@ msgid ""
 " Deberás implementar las funciones siguientes en una subclase de esta "
 "plantilla."
 msgstr ""
+"یہ سانچے آسان ہيں (اور باقی سب اس کے ذیلی ٹکڑے ہیں). آپ کو اس سانچے کی ذیلی "
+"درجے میں درج ذیل افعال کو لاگو کرنا ضروری ہے۔"
 
 #: ../../source/desarrollo/des_bf.rst:54
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.obt_unidad_tiempo`: Devuelve la unidad de tiempo"
 " del modelo."
 msgstr ""
+"ماڈل کا وقت یونٹ واپس کرتا ہے۔ "
+":func:`~tinamit.BF.ModeloBF.obt_unidad_tiempo`:"
 
 #: ../../source/desarrollo/des_bf.rst:55
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.inic_vars`: Incializa el diccionario interno de "
 "variables disponibles."
 msgstr ""
+"دستیاب متغیر کی اندرونی لغت کو شروع کریں۔ "
+":func:`~tinamit.BF.ModeloBF.inic_vars`: "
 
 #: ../../source/desarrollo/des_bf.rst:56
 msgid ":func:`~tinamit.BF.ModeloBF.iniciar_modelo`: Inicializa la simulación."
-msgstr ""
+msgstr "تخروپن کو شروع کریں۔ :func:`~tinamit.BF.ModeloBF.iniciar_modelo`: "
 
 #: ../../source/desarrollo/des_bf.rst:57
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.cambiar_vals_modelo_interno`: Cambia los valores"
 " internos de los variables."
 msgstr ""
+"متغیرات کی اندرونی اقدار کو تبدیل کریں۔ "
+":func:`~tinamit.BF.ModeloBF.cambiar_vals_modelo_interno`: "
 
 #: ../../source/desarrollo/des_bf.rst:58
 msgid ":func:`~tinamit.BF.ModeloBF.incrementar`: Avanza el modelo."
-msgstr ""
+msgstr "نمونے پیش کریں۔ :func:`~tinamit.BF.ModeloBF.incrementar`:"
 
 #: ../../source/desarrollo/des_bf.rst:59
 msgid ":func:`~tinamit.BF.ModeloBF.leer_vals`: Lee los egresos del modelo."
-msgstr ""
+msgstr "نمونے کا راستہ پڑھیں۔ :func:`~tinamit.BF.ModeloBF.leer_vals`: "
 
 #: ../../source/desarrollo/des_bf.rst:60
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.cerrar_modelo`: Cierre el modelo al final de una"
 " simulación."
 msgstr ""
+"تخروپن کے آخر میں نمونے کو بند کریں۔ "
+":func:`~tinamit.BF.ModeloBF.cerrar_modelo`:"
 
 #: ../../source/desarrollo/des_bf.rst:64
 msgid "Plantilla ModeloImpaciente"
-msgstr ""
+msgstr "بے معنی سانچہ"
 
 #: ../../source/desarrollo/des_bf.rst:65
 msgid ""
@@ -166,24 +218,33 @@ msgid ""
 "para distintos meses o estaciones, de manera automática. Simplemente debes "
 "implementar las funciones siguientes en una subclase:"
 msgstr ""
+"اس سانچے کے استعمال کی ایک مثال مٹی ميں نمکينی حانچنے کے ليے نمونہ SAHYSMOD "
+"ہے. سانچہ نمونے کے تخروپن اور مختلف مہینوں یا موسموں کے لئے متغیر اقدار کے "
+"اعدادوشمار خود کار طریقے سے پڑھنے سمیتاسکا کنٹرول قائم کرتا ہے۔ آپ کواس ذیلی"
+" طبقے میں مندرجہ ذیل افعال کو لاگو کرنا ہوگا:"
 
 #: ../../source/desarrollo/des_bf.rst:69
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.iniciar_modelo`: Inicializa la "
 "simulación."
 msgstr ""
+"تخروپن کو شروع کریں۔ 'func:`~tinamit.BF.ModeloImpaciente.iniciar_modelo:"
 
 #: ../../source/desarrollo/des_bf.rst:70
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.cerrar_modelo`: Cierre el modelo al "
 "final de una simulación."
 msgstr ""
+"تخروپن کے اختتام پر ماڈل بند کریں۔ "
+"'func:`~tinamit.BF.ModeloImpaciente.cerrar_modelo:"
 
 #: ../../source/desarrollo/des_bf.rst:71
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.inic_vars`: Incializa el diccionario "
 "interno de variables disponibles."
 msgstr ""
+"دستیاب متغیر کی اندرونی لغت کو شروع کریں۔ "
+"'func:`~tinamit.BF.ModeloImpaciente.inic_vars`: "
 
 #: ../../source/desarrollo/des_bf.rst:72
 msgid ""
@@ -192,18 +253,25 @@ msgid ""
 "aunque este de resultados con una precisión de 1 mes). No te preoccupes, "
 "Tinamït arreglará todo."
 msgstr ""
+"نمونے کی پیش رفت کے کم از کم مرحلے کا تخروپن (مثال کے طور پر، 1 سال کے ليے "
+"سالانہ نمونہ آگے بڑھايا جائے گا، اگرچہ اس میں 1 مہینہ کی درستگیہو). پریشان "
+"نہ ہوں، ٹينامٹ  خود بخود سب کچھ  ٹھیک کرے گا."
 
 #: ../../source/desarrollo/des_bf.rst:75
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.leer_archivo_vals_inic`: Lee un archivo "
 "con valores inciales para la simulación."
 msgstr ""
+"تخروپن کے لئے ابتدائی اقدار کے ساتھ ایک دستاويز پڑھیں. "
+"'func:`~tinamit.BF.ModeloImpaciente.leer_archivo_vals_inic: "
 
 #: ../../source/desarrollo/des_bf.rst:76
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.leer_archivo_egr`: Le un archivo de los "
 "egresos de una simulación."
 msgstr ""
+"ایک تخروپن کے راستے کی ایک فائل۔ "
+"'func:`~tinamit.BF.ModeloImpaciente.leer_archivo_egr: "
 
 #: ../../source/desarrollo/des_bf.rst:77
 msgid ""
@@ -211,16 +279,20 @@ msgid ""
 "archivo de ingresos para el modelo, basado en los valores de los variables "
 "internos actuales."
 msgstr ""
+"موجودہ اندرونی متغیرات کے مطابق، ماڈل کے لئے ایک آمدنی  دستاويز لکھیں۔ "
+"'func:`~tinamit.BF.ModeloImpaciente.escribir_archivo_ingr:"
 
 #: ../../source/desarrollo/des_bf.rst:80
 msgid ""
 "Un ejemplo sería la envoltura para SAHYSMOD, "
 ":class:`~tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper`."
 msgstr ""
+"مثال کے طور پر يہ سانچہ SAHYSMOD کے ليے ہو گا۔ "
+"'class:`~tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper:"
 
 #: ../../source/desarrollo/des_bf.rst:84
 msgid "Plantilla ModeloFlexible"
-msgstr ""
+msgstr "سانچہ لچکدار۔"
 
 #: ../../source/desarrollo/des_bf.rst:85
 msgid ""
@@ -228,44 +300,55 @@ msgid ""
 "DSSAT. Simplemente debes implementar las funciones siguientes en una "
 "subclase:"
 msgstr ""
+"فصل کے نمونہ DSSAT کے لئے سانچنے کی ايک مثال۔ آپ کو ذیلی طبقے میں مندرجہ ذیل"
+" افعال کو لاگو کرنا ہوگا۔"
 
 #: ../../source/desarrollo/des_bf.rst:89
 msgid "Esta plantilla todavía está en desarrollo."
-msgstr ""
+msgstr "اس سانچےپر اب بھی کام ہو رھا  ہے."
 
 #: ../../source/desarrollo/des_bf.rst:91
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.iniciar_modelo`: Inicializa la simulación."
 msgstr ""
+"تخروپن کو شروع کریں۔ 'func:`~tinamit.BF.ModeloFlexible.iniciar_modelo: "
 
 #: ../../source/desarrollo/des_bf.rst:92
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.cerrar_modelo`: Cierre el modelo al final "
 "de una simulación."
 msgstr ""
+"تخروپن کے اختتام پر ماڈل بند کریں۔ "
+"'func:`~tinamit.BF.ModeloFlexible.cerrar_modelo: "
 
 #: ../../source/desarrollo/des_bf.rst:93
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.inic_vars`: Incializa el diccionario "
 "interno de variables disponibles."
 msgstr ""
+"دستیاب متغیر کی اندرونی لغت کو شروع کریں۔ "
+"'func:`~tinamit.BF.ModeloFlexible.inic_vars: "
 
 #: ../../source/desarrollo/des_bf.rst:94
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.mandar_modelo`: Avanza la simulación."
-msgstr ""
+msgstr "تخروپن کو فروغ دینا۔ 'func:`~tinamit.BF.ModeloFlexible.mandar_modelo:"
 
 #: ../../source/desarrollo/des_bf.rst:95
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.leer_archivo_vals_inic`: Lee un archivo "
 "con valores inciales para la simulación."
 msgstr ""
+"تخروپن کے لئے ابتدائی اقدار کے ساتھ ایک دستاويز پڑھیں۔ "
+"'func:`~tinamit.BF.ModeloFlexible.leer_archivo_vals_inic:"
 
 #: ../../source/desarrollo/des_bf.rst:96
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.leer_archivo_egr`: Le un archivo de los "
 "egresos de una simulación."
 msgstr ""
+" تخروپن کے راستے کی ایک دستاويز۔ "
+"'func:`~tinamit.BF.ModeloFlexible.leer_archivo_egr: "
 
 #: ../../source/desarrollo/des_bf.rst:97
 msgid ""
@@ -273,16 +356,20 @@ msgid ""
 " de ingresos para el modelo, basado en los valores de los variables internos"
 " actuales."
 msgstr ""
+"موجودہ اندرونی متغیرات کے مطابق، نمونے کے لئے ایک آمدنی کی دستاويز لکھیں۔ "
+"'func:`~tinamit.BF.ModeloFlexible.escribir_archivo_ingr:"
 
 #: ../../source/desarrollo/des_bf.rst:100
 msgid ""
 "Un ejemplo sería la envoltura para DSSAT, "
 ":class:`~tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT`."
 msgstr ""
+"DSSAT کی مثال کے ليے ايک جلد ہو گی۔ "
+"'class:`~tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT:"
 
 #: ../../source/desarrollo/des_bf.rst:103
 msgid "Cambios climáticos"
-msgstr ""
+msgstr "موسمیاتی تبدیلیاں۔"
 
 #: ../../source/desarrollo/des_bf.rst:104
 msgid ""
@@ -291,6 +378,10 @@ msgid ""
 "Tinamït. Esto permitirá que Tinamït actualize los valores de estos variables"
 " según el escenario climático escogido por el usuario."
 msgstr ""
+"اگر آپ کے نمونے میں موسمی متغیرات شامل ہیں تو آپ کو اسے لکھنے پر غور کرنا "
+"چاہیے تاکہ یہ ٹينامٹ آب و ہوا کی تبدیلی کی فعالیت کے ساتھ ردوبدل کرسکیں. یہ "
+"ٹينامٹ کے صارف کو  منتخب کردہ موسمی حالات کے مطابق ان متغیرات کی قیمتوں کو "
+"تاذہ کرنے کی اجازت دیتا ہے."
 
 #: ../../source/desarrollo/des_bf.rst:108
 msgid ""
@@ -302,6 +393,13 @@ msgid ""
 ":func:`~tinamit.BF.ModeloBF.__init__`. Por ejemplo, en la envoltura de "
 "SAHYSMOD::"
 msgstr ""
+"جب ایک صارف آب و ہوا کے منظر کے ساتھ نمونہ چلاے گا۔ ہر منسلک نمونہ اسے خود "
+"کار طریقے سے منسلک کرے گا، اس کے ليے يہ ``.lugar`` ذریعے کے طور پر استعمال "
+"کرے گا۔  'class:`~tinamit.Geog.Geog.Lugar: اگر آپ کو نمونے کے ساتھ آب و ہوا "
+"کے اعداد و شمار کی ضرورت ہے۔ ٭٭آپکے ‍‍‍قدم کے مطابق درستگی**.اس طریقہ کار "
+"میں آپ صرف فعل'func:`~tinamit.Modelo.Modelo.conectar_var_clima: کو کال "
+"کرسکتے ہیں.  مثال کے طور پر، '__SAHYSMOD :func:`~tinamit.BF.ModeloBF.__init "
+"کے سانچنے کے ليے۔ "
 
 #: ../../source/desarrollo/des_bf.rst:115
 msgid ""
@@ -310,6 +408,10 @@ msgid ""
 "actualizará este variable con el valor ``total`` de precipitación en cada "
 "paso de la simulación para el escenario climático apropiado. Chévere, ¿no?"
 msgstr ""
+"یہ حکم اندرونی متغیر جوڑتا ہے۔SAHYSMOD کے سانچے ميں متغیر ``Pp - Rainfall`` "
+"موسمی متغیر `Precipitación`` کے ساتھ۔ ٹينامٹ مناسب موسمی منظر کے لئے تخروپن "
+"کے ہر قدم میں قیمت `` کل`` کے ساتھ اس متغیر کو تاذہ کرےگا . ڈاؤن لوڈ نہیں "
+"کرے گا۔"
 
 #: ../../source/desarrollo/des_bf.rst:119
 msgid ""
@@ -317,26 +419,29 @@ msgid ""
 "ser lo que quieres, en el idioma que quieres. La opciones actuales para "
 "variables climáticos (``var_clima``) incluyen:"
 msgstr ""
+"يہ متغیر `` var`` آپکی جلد ميں اس اعداد و شمار کا نام ہے۔ جو آپ چاہتے ہیں "
+"اور جس ذبان ميں  چاہتے ہیں يہ وہ ہو سکتا ہے۔ موسمی متغیرات کے لئے موجودہ "
+"اختیار (`` var_clima``)شامل ہے۔"
 
 #: ../../source/desarrollo/des_bf.rst:122
 msgid "``Precipitación`` : mm"
-msgstr ""
+msgstr "Precipitación`` : mm'' بارش۔"
 
 #: ../../source/desarrollo/des_bf.rst:123
 msgid "``Radiación solar`` : MJ / m2 / día"
-msgstr ""
+msgstr "Radiación solar`` : MJ / m2 / día'' شمسی توانائی کی تابکاری۔"
 
 #: ../../source/desarrollo/des_bf.rst:124
 msgid "``Temperatura máxima`` : grados C"
-msgstr ""
+msgstr "Temperatura máxima`` : grados C'' زیادہ سے زیادہ درجہ حرارت۔"
 
 #: ../../source/desarrollo/des_bf.rst:125
 msgid "``Temperatura promedia`` : grados C"
-msgstr ""
+msgstr "Temperatura promedia`` : grados C'' اوسط درجہ حرارت"
 
 #: ../../source/desarrollo/des_bf.rst:126
 msgid "``Temperatura mínima`` : grados C"
-msgstr ""
+msgstr "Temperatura mínima`` : grados C'' کم از کم درجہ حرارت۔"
 
 #: ../../source/desarrollo/des_bf.rst:129
 msgid ""
@@ -345,6 +450,10 @@ msgid ""
 " lluvia). Si no se especifica, se supondrá ``total`` para ``Precipitación`` "
 "y ``prom`` para todos los otrs variables climáticos."
 msgstr ""
+"''prom'' ''Combin`` ہوسکتا ہے۔ (مطلوبہ مدت کے لئے اس موسمی متغیر کی اوسط کا "
+"حساب کرے گا) يا `` total`` (یہ بارش کے لئےکل کا حساب کرے گا)۔ اگر يہ مخصوص "
+"نہ ہو تو ،`` total`` بارش کے لئے اور `` prom`` دیگر تمام  متغیرات کے لئے "
+"سمجھا جا‏‏ئے گا۔"
 
 #: ../../source/desarrollo/des_bf.rst:133
 msgid ""
@@ -356,3 +465,9 @@ msgid ""
 "climáticos que quieres con el método "
 ":func:`~tinamit.Geog.Geog.Lugar.devolver_datos` de ``símismo.lugar``."
 msgstr ""
+"اگراس کے برعکس، آپ کا ماڈل موسمیاتی متغیرات کی ضرورت ہے ٭٭مختلف قدم سے٭٭ "
+"(مثال کے طور پر، ایک فصل نمونے کا تقاضا ہے کہ روزانہ موسمیاتی متغیر تخروپن "
+"شروع کرنے سے پہلے علیحدہ دستاويز میں لکھیں)۔آپ کو اس میں فغل "
+"'func:`~tinamit.BF.ModeloBF.iniciar_modelo: لاگو کرنا ہوگا۔ آپ ایسے متعدد "
+"متغیرات تک رسائی حاصل کرسکتے ہیں جو آپ چاہتے ہیں۔ "
+"'func:`~tinamit.Geog.Geog.Lugar.devolver_datos: ميں ``símismo.lugar``۔"

@@ -12,8 +12,10 @@ from tinamit.Modelo import Modelo
 class EnvolturaMDS(Modelo):
     """
     Esta clase sirve para representar modelo de dinámicas de los sistemas (MDS). Se debe crear una subclase para cada
-    tipo de MDS. Al moment, el único incluido es Vensim.
+    tipo de MDS. Al momento, el único incluido es VENSIM.
     """
+
+    ext_arch_egr = '.csv'
 
     def __init__(símismo, archivo):
         """
@@ -46,7 +48,7 @@ class EnvolturaMDS(Modelo):
 
     def obt_unidad_tiempo(símismo):
         """
-        Cada envoltura de programa DS debe implementar eset metodo para devolver las unidades de tiempo del modelo DS
+        Cada envoltura de programa DS debe implementar este metodo para devolver las unidades de tiempo del modelo DS
         cargado.
 
         :return: Las unidades del modelo DS cargado.
@@ -62,7 +64,7 @@ class EnvolturaMDS(Modelo):
 
         Ver :func:`Modelo.Modelo.iniciar_modelo` para más información.
 
-        :param nombre_corrida: El nombre de la corrida (útil para guardar اعداد_دن).
+        :param nombre_corrida: El nombre de la corrida (útil para guardar resultados).
         :type nombre_corrida: str
 
         :param tiempo_final: El tiempo final de la simulación.
@@ -140,6 +142,8 @@ class EnvolturaMDS(Modelo):
         else:
             archivo = corrida
 
+        archivo += símismo.ext_arch_egr
+
         return leer_egr_mds(archivo, var)
 
 
@@ -150,12 +154,14 @@ class ModeloVensim(EnvolturaMDS):
     Necesitarás la versión DSS de VENSIM para que funcione en Tinamit.
     """
 
+    ext_arch_egr = '.vdf'
+
     def __init__(símismo, archivo):
         """
         La función de inicialización del modelo. Creamos el vínculo con el DLL de VENSIM y cargamos el modelo
         especificado.
 
-        :param archivo: El archivo del modelo que queieres cargar, en formato .vpm.
+        :param archivo: El archivo del modelo que quieres cargar en formato .vpm.
         :type archivo: str
         """
 
@@ -171,6 +177,7 @@ class ModeloVensim(EnvolturaMDS):
         comanda_vensim(func=dll.vensim_command,
                        args='SPECIAL>LOADMODEL|%s' % archivo,
                        mensaje_error='Eroor cargando el modelo de VENSIM.')
+
 
         # Parámetros estéticos de ejecución.
         comanda_vensim(func=dll.vensim_be_quiet, args=[2],
@@ -435,7 +442,7 @@ class ModeloVensim(EnvolturaMDS):
 
     def leer_vals(símismo):
         """
-        Este método lee los valores intermediaros de los variables del modelo VENSIM. Para ahorar tiempo, únicamente
+        Este método lee los valores intermediaros de los variables del modelo VENSIM. Para ahorrar tiempo, únicamente
         lee esos variables que están en la lista de ``ModeloVENSIM.vars_saliendo``.
         """
 
@@ -633,6 +640,6 @@ def leer_egr_mds(archivo, var):
             datos.append(f[1:])
 
     else:
-        raise ValueError('El formato de اعداد_دن "{}" no se puede leer al momento.'.format(ext))
+        raise ValueError('El formato de datos "{}" no se puede leer al momento.'.format(ext))
 
     return np.array(datos, dtype=float)
