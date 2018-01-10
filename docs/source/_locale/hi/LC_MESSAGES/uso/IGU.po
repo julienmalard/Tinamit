@@ -1,0 +1,178 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamit 1.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-12-05 12:43-0500\n"
+"PO-Revision-Date: 2017-12-14 11:24-0500\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Hindi (https://www.transifex.com/qatikon/teams/70565/hi/)\n"
+"Language: hi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 3.9.6\n"
+
+#: ../../source/uso/IGU.rst:4
+msgid "El IGU"
+msgstr ""
+
+#: ../../source/uso/IGU.rst:5
+msgid ""
+"Para los que no quieren programar, el IGU ofrece una manera sencilla de "
+"acceder (casi) todas las funcionalidades del IPA Tinamït, y algunas "
+"adicionales."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:12
+msgid "Empezar el IGU"
+msgstr ""
+
+#: ../../source/uso/IGU.rst:13
+msgid "Se empieza el interfaz con la función ``correr`` del IGU::"
+msgstr ""
+
+#: ../../source/uso/IGU.rst:18
+msgid ""
+"También simplemente puedes directamente ejecutar el archivo "
+"``tinamit.Interfaz.IGU`` desde Python."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:21
+msgid "Cambiar idiomas"
+msgstr ""
+
+#: ../../source/uso/IGU.rst:22
+msgid ""
+"Bueno, primero, de pronto no hables español. O posiblemente trabajas con "
+"gente que no lo habla, y quieres hacerles la cortesía de trabajar en su "
+"idioma. O tal vez quieres practicar un idioma que no has hablado por mucho "
+"tiempo."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:25
+msgid ""
+"Mientras que el código de Tinamït sí mismo es en español, el interfaz de "
+"Tinamït está disponible en muchos idiomas (y siempre puedes agregar un "
+"nuevo)."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:28
+msgid "Para cambiar idiomas, hacer clic en el icono del globo terrestre."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:34
+msgid "Lo cual te dará..."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:40
+msgid ""
+"En el centro, tienes las lenguas ya traducidas. Puedes escoger una con la "
+"cajita verde a la izquierda, o pulsar en lapicito para hacer cambios a la "
+"traducción."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:43
+msgid ""
+"A la izquierda, tienes lenguas en progreso. La barra muestra el estado del "
+"progreso de la traducción. Puedes escoger una como lengua de interfaz; las "
+"traducciones que faltan aparecerán como espacios vacíos. También puedes "
+"hacer clic en el lapicito para contribuir a la traducción."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:47
+msgid ""
+"Y, por fin, a la derecha tienes lenguas que todavía no hemos empezado a "
+"traducir. Puedes hacer clic en el lápiz para empezar la traducción. También "
+"puedes hacer clic en la cruz arriba para agregar un nuevo idioma que no se "
+"encuentra en la lista ya (y también especificar si se escribe de la "
+"izquierda hacia la derecha o al revés)."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:51
+msgid ""
+"Todas las traducciones se guardan automáticamente en un documento llamado "
+"“Trads” en el directorio de Tinamït. Si contribuyes a unas traducciones, "
+"puedes compartir este documento (|correo|, o por `GitHub <|GitHub|>`_) para "
+"que todas tengan acceso a tu idioma favorito."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:56
+msgid "Cargar modelos (I)"
+msgstr ""
+
+#: ../../source/uso/IGU.rst:57
+msgid ""
+"El flujo de trabajo en Tinamït tiene cuatro etapas (en números mayas) y el "
+"interfaz desbloquea el acceso a cada etapa en cuanto termines la etapa "
+"precedente."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:60
+msgid ""
+"La primera etapa sería, por supuesto, de cargar los modelos biofísicos y DS "
+"con :guilabel:`Cargar MDS` y :guilabel:`Cargar modelo biofísico`."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:68
+msgid "Conectar modelos (II)"
+msgstr ""
+
+#: ../../source/uso/IGU.rst:69
+msgid ""
+"Después de eso, vamos a conectar los dos modelos por sus variables comunes. "
+"La flecha muestra la dirección de la conexión, y puedes especificar un "
+"factor de conversión, si quieres. Hay que hacer clic en :guilabel:`Guardar` "
+"cada vez que haces una conexión."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:76
+msgid ""
+"Si haces un error, puedes volver a editar una conexión ya hecha por hacer "
+"clic en el lapicito verde, o simplemente borrarla con la cruz roja. Nota que"
+" el interfaz no te dejará conectar un variable más que una vez al mismo "
+"tiempo (eso sería una falla lógica en la conexión de los dos modelos)."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:85
+msgid "Simular (III)"
+msgstr ""
+
+#: ../../source/uso/IGU.rst:86
+msgid ""
+"Ya puedes simular los modelos conectados. Puedes especificar el paso y el "
+"tiempo final de la simulación. Finalmente, puedes especificar un factor de "
+"conversión entre el paso de cada modelo si los dos modelos no tienen las "
+"mismas unidades para sus pasos de tiempo (por ejemplo, si tu modelo DS "
+"funciona en meses y tu modelo biofísico en años, lo cual sería una situación"
+" muy común)."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:92
+msgid "Incertidumbre (IV)"
+msgstr ""
+
+#: ../../source/uso/IGU.rst:93
+msgid ""
+"Un día, en el futuro, Tinamït tendrá unas funciones de autocalibración y de "
+"análisis de incertidumbre. Entre tanto, la página para esta cuarta etapa "
+"queda un blanco muy bonito."
+msgstr ""
+
+#: ../../source/uso/IGU.rst:97
+msgid "Guardar y cargar modelos conectados"
+msgstr ""
+
+#: ../../source/uso/IGU.rst:98
+msgid ""
+"Ah, sí, ¿qué pasa si no terminas todo antes del almuerzo? No te preocupes, "
+"que no vas a perder todo. Allí, arriba por a la izquierda del logo muy "
+"bonito de Tinamït, hay cuatro botones muy útiles. Uno guarda tu trabajo, uno"
+" lo guarda bajo un nuevo nombre, otro abre un trabajo ya guardado y el "
+"último borra todo y te deja empezar de cero. No te voy a decir cuál es cuál."
+msgstr ""
