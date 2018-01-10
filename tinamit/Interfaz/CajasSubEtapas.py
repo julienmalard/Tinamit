@@ -109,7 +109,7 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
 
         cj_ctrls = tk.Frame(cj_bajo, **Fm.formato_cajas)
         cj_izq = tk.Frame(cj_ctrls, **Fm.formato_cajas)
-        símismo.MnVarsMDS = CtrG.Menú(cj_izq, nombre=apli.Trads['MDS'], opciones='', ancho=Fm.ancho_MnVars,
+        símismo.MnVarsMDS = CtrG.Menú(cj_izq, nombre=apli.Trads['EnvolturaMDS'], opciones='', ancho=Fm.ancho_MnVars,
                                       ubicación=gf(Fm.ubic_CtrlsConectar), tipo_ubic='pack')
         símismo.EtiqUnidMDS = tk.Label(cj_izq, text='', **Fm.formato_EtiqsUnid)
         símismo.EtiqUnidMDS.pack(**gf(Fm.ubic_EtiqsUnid))
@@ -228,7 +228,7 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
 
         if 'modelo_fuente' in conexión:
             dic_conex = {
-                'mds_fuente': conexión['modelo_fuente'] == 'MDS',
+                'mds_fuente': conexión['modelo_fuente'] == 'EnvolturaMDS',
                 'var_mds': conexión['vars']['mds'],
                 'var_bf': conexión['vars']['bf'],
                 'conv': conexión['conv']

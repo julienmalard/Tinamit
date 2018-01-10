@@ -46,6 +46,7 @@ muy confundida muy pronto.
    pero las otras te ahorarán mucho tiempo para modelos con pasos complicados.
 
 .. _plantilla_modbf:
+
 Plantilla estándar (ModeloBF)
 -----------------------------
 Esta plantilla es la más sencilla (y todas las otras son subclases de esta). Deberás implementar las funciones
@@ -60,6 +61,7 @@ siguientes en una subclase de esta plantilla.
 * :func:`~tinamit.BF.ModeloBF.cerrar_modelo`: Cierre el modelo al final de una simulación.
 
 .. _plantilla_modimp:
+
 Plantilla ModeloImpaciente
 --------------------------
 Un ejemplo del uso de esta plantilla es la envoltura para el modelo de salinidad de suelos SAHYSMOD. La plantilla maneja el
@@ -80,6 +82,7 @@ estaciones, de manera automática. Simplemente debes implementar las funciones s
 Un ejemplo sería la envoltura para SAHYSMOD, :class:`~tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper`.
 
 .. _plantilla_modflex:
+
 Plantilla ModeloFlexible
 ------------------------
 Un ejemplo de esta plantilla sería la envoltura para el modelo de cultivos DSSAT. Simplemente debes implementar

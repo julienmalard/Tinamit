@@ -58,8 +58,8 @@ class Modelo(object):
     def inic_vars(símismo):
         """
         Esta función debe poblar el diccionario de variables del modelo, según la forma siguiente:
-        {'var1': {'val': 13, 'unidades': 'cm', 'ingreso': True, dims: (1,), 'egreso': True},
-        'var2': {'val': 2, 'unidades': 'cm', 'ingreso': False, dims: (3,2), 'egreso': True}}
+        {'var1': {'val': 13, 'unidades': 'cm', 'ingreso': True, dims: (1,), 'egreso': True, 'info': 'descripción'},
+        'var2': ...}
         }
 
         """

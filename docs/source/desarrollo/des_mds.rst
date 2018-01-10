@@ -5,7 +5,7 @@ Agregar programas MDS
 Para poder conectar modelos de dinámicas de sistemas (DS) en Tinamït, el programa DS debe ser compatible con Tinamït.
 Este se asegura por escribir una envoltura que controla el programa DS. Lo bueno es que las envolturas para programas
 DS en Tinamït funcionan para todos los modelos escritos con el programa. Por ejemplo, la envoltura
-:class:`~tinamit.MDS.ModeloVensim` permite conectar cualquier modelo escrito en Vensim con Tinamït.
+:class:`~tinamit.EnvolturaMDS.ModeloVensim` permite conectar cualquier modelo escrito en Vensim con Tinamït.
 
 Cómo crear una nueva envoltura
 ------------------------------
@@ -20,13 +20,13 @@ Si quieres hacer una nueva envoltura para otro tipo de modelo DS, tendrás que h
 * :func:`~tinamit.MDS.EnvolturaMDS.leer_vals`: Lee los egresos del modelo.
 * :func:`~tinamit.MDS.EnvolturaMDS.cerrar_modelo`: Cierre el modelo al final de una simulación.
 
-Ver :class:`~tinamit.MDS.ModeloVensim` para un ejemplo.
+Ver :class:`~tinamit.EnvolturaMDS.ModeloVensim` para un ejemplo.
 
 Cómo conectar tu envoltura con Tinamït
 --------------------------------------
 Para que Tinamït pueda automáticamente crear la envoltura apropiada cuando un usuario le pasa un archivo de modelo DS,
 tienes que decir a Tinamït cuál extensión tienen los archivos de modelo DS que se deben abrir con tu nueva envoltura.
-Tendrás que modificar la función :func:`~tinamit.MDS.generar_mds` para incluir la(s) extension(es) para tu nuevo
+Tendrás que modificar la función :func:`~tinamit.EnvolturaMDS.generar_mds` para incluir la(s) extension(es) para tu nuevo
 programa DS. Por ejemplo, para agregar una envoltura para Stella (suponemos que las extensiones serán
 ``.stmx`` o ``.stm``), cambiamos el código así::
 

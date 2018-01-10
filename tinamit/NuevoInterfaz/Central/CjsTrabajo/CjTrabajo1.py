@@ -12,7 +12,7 @@ def cargar_mds():
 
 
 CajaBtMDS = Caja()
-BtMDS = Botón('Cargar MDS', acción=cargar_mds)
+BtMDS = Botón('Cargar EnvolturaMDS', acción=cargar_mds)
 CjMensajeMDS = CjMensaje()
 
 CajaBtMDS.agregar((BtMDS, CjMensajeMDS), márgenes=40)

@@ -117,9 +117,11 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
     def cerrar_modelo(self):
         """
-        No specific closing actions necessary.
+        No specific closing actions necessary, but we will clean up the directory, just to be nice.
         """
-        pass
+        for f in os.listdir(self.working_dir):
+            if re.match('Name(0|[0-9]{2})$', f):
+                os.remove(f)
 
     def escribir_archivo_ingr(self, n_años_simul, dic_ingr):
         """

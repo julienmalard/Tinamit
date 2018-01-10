@@ -6,98 +6,6 @@ import math as mat
 import matplotlib.pyplot as dib
 import numpy as np
 
-
-class Geografía(object):
-    """
-    Esta clase representa la geografía de un lugar.
-    """
-    def __init__(símismo, archivo, orden, col_cód):
-        """
-
-        :param archivo:
-        :type archivo:
-        :param orden:
-        :type orden:
-        :param col_cód:
-        :type col_cód:
-        """
-
-        símismo.orden = orden
-
-        símismo.árbol = {}
-
-        símismo.árbol_inv = {}
-
-        símismo.cód_a_lugar = {}
-
-        símismo.leer_archivo(archivo=archivo, orden=orden, col_cód=col_cód)
-
-    def lugares_en(símismo, cód_lugar, escala=None):
-        """
-
-        :param cód_lugar:
-        :type cód_lugar:
-        :param escala:
-        :type escala:
-        :return:
-        :rtype: list[str]
-        """
-
-        d_lugar = símismo.cód_a_lugar[cód_lugar]
-        escala_lugar = d_lugar['escala']
-
-        if escala is None:
-            l_códs = [x for x, d in símismo.árbol_inv.items() if d[escala_lugar] == cód_lugar]
-        else:
-            l_códs = [x for x, d in símismo.árbol_inv.items()
-                      if d[escala_lugar] == cód_lugar and símismo.cód_a_lugar[x]['escala'] == escala]
-
-        return l_códs
-
-    def leer_archivo(símismo, archivo, orden, col_cód):
-
-        símismo.árbol = {}
-
-        with open(archivo, newline='') as d:
-
-            l = csv.reader(d)  # El lector de csv
-
-            # Guardar la primera fila como nombres de columnas
-            cols = next(l)
-
-            try:
-                i_cols = [cols.index(x) for x in orden]
-            except ValueError:
-                raise ValueError('Los nombres de las regiones en "orden" ({}) no concuerdan con los nombres en el'
-                                 ' archivo ({}).'.format(', '.join(orden), ', '.join(cols)))
-            try:
-                in_col_cód = cols.index(col_cód)
-            except ValueError:
-                raise ValueError('La columna de código de región especificada ({}) no concuerda con los nombres de '
-                                 'columnas del archivo ({}).'.format(col_cód, ', '.join(cols)))
-
-            # Para cada fila que sigue en el csv...
-            for f in l:
-                dic = símismo.árbol
-                cód = f[in_col_cód]
-
-                for i, n in enumerate(i_cols):
-
-                    if i == len(i_cols) - 1:
-                        dic[f[n]] = cód
-
-                    elif f[n] not in dic:
-                        dic[f[n]] = {}
-
-                    dic = dic[f[n]]
-
-                símismo.árbol_inv[cód] = dict([(orden[k], f[j]) for k, j in enumerate(i_cols)])
-
-                escala = orden[max([n for n, i in enumerate(i_cols) if f[i] != ''])]
-                nombre = f[cols.index(escala)]
-                símismo.cód_a_lugar[cód] = {'escala': escala, 'nombre': nombre}
-
-
 class Datos(object):
     def __init__(símismo, archivo_csv, año=None, cód_lugar=None, col_año=None, col_cód_lugar=None, cód_vacío=''):
         """
@@ -540,9 +448,9 @@ class BaseDeDatos(object):
             datos = [datos]
 
         if escala == 'individual':
-            lugares = símismo.geog.lugares_en(cód_lugar=cód_lugar, escala=None)
+            lugares = símismo.geog.obt_lugares_en(cód_lugar=cód_lugar, escala=None)
         else:
-            lugares = símismo.geog.lugares_en(cód_lugar=cód_lugar, escala=escala)
+            lugares = símismo.geog.obt_lugares_en(cód_lugar=cód_lugar, escala=escala)
 
         dic = {}
 
@@ -610,4 +518,3 @@ class BaseDeDatos(object):
 
 
 class ConexiónDatos(object):
-

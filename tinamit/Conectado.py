@@ -8,7 +8,7 @@ import numpy as np
 from dateutil.relativedelta import relativedelta
 
 from tinamit.BF import EnvolturaBF
-from tinamit.MDS import generar_mds
+from tinamit.EnvolturaMDS import generar_mds
 from tinamit.Modelo import Modelo
 from tinamit.Unidades.Unidades import convertir
 from tinamit.Geog.Geog import Geografía, Lugar
@@ -670,7 +670,7 @@ class Conectado(SuperConectado):
 
     def estab_mds(símismo, archivo_mds):
         """
-        Establecemos el modelo de dinámicas de los sistemas (:class:`~tinamit.MDS.EnvolturaMDS`).
+        Establecemos el modelo de dinámicas de los sistemas (:class:`~tinamit.EnvolturaMDS.EnvolturaMDS`).
 
         :param archivo_mds: El archivo del modelo DS.
         :type archivo_mds: str
@@ -758,7 +758,7 @@ class Conectado(SuperConectado):
         :type var: str
         :param corrida: El nombre de la corrida para dibujar.
         :type corrida: str
-        :param directorio: El directorio, relativo al archivo MDS, donde hay que poner los dibujos.
+        :param directorio: El directorio, relativo al archivo EnvolturaMDS, donde hay que poner los dibujos.
         :type directorio: str
         :param i_paso: Los pasos a los cuales quieres dibujar los egresos.
         :type i_paso: list | tuple | int
@@ -820,4 +820,4 @@ class Conectado(SuperConectado):
             valores = bd[..., i]
             nombre_archivo = os.path.join(directorio, '{}, {}'.format(nombre_var, i))
             geog.dibujar(archivo=nombre_archivo, valores=valores, título=var, unidades=unid,
-                         colores=colores, escala=escala)
+                         colores=colores, escala_num=escala)

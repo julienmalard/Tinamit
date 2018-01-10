@@ -41,7 +41,7 @@ class ItemaListaConex(ItemaLista):
         símismo.unid_bf.ponder_texto(info['unid_bf'])
 
 
-ListaConex = Lista(anchura_cols=[], cabeza=['Var MDS', 'Dirección', 'Var BF', None], itemas=ItemaListaConex)
+ListaConex = Lista(anchura_cols=[], cabeza=['Var EnvolturaMDS', 'Dirección', 'Var BF', None], itemas=ItemaListaConex)
 
 BtGuardar = Botón('Guardar', ayuda='Guardar la conexión')
 BtNoGuardar = Botón('No guardar', ayuda='Borrar los cambios')

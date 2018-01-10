@@ -16,7 +16,7 @@ Tinamït queda compatible con modelos escritos con los programas siguientes. Sie
 :ref:`escribir más <des_mds>`.
 
 * **Vensim**: Un programa de MDS bastante popular. Desafortunadamente, requiere la versión pagada (DSS) para conectar
-  con Tinamït. Ver su `página oficial <http://vensim.com/>`_ y la :class:`envoltura <tinamit.MDS.ModeloVensim>`.
+  con Tinamït. Ver su `página oficial <http://vensim.com/>`_ y la :class:`envoltura <tinamit.EnvolturaMDS.ModeloVensim>`.
 * **Stella**: Otro programa bastante popular. Ver su `página oficial <https://www.iseesystems.com/
   store/products/stella-architect.aspx>`_ aquí. Envoltura todavía en trabajo.
 

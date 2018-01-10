@@ -514,7 +514,7 @@ class ModeloImpaciente(ModeloBF):
         Lee los egresos del modelo y los guarda en los diccionarios internos apropiados.
 
         :param n_años_egr: El número de años que se corrió la última simulación. Solamente se leerá el último año
-        　　de egresos.
+        de egresos.
         :type n_años_egr: int
 
         """
