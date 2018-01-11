@@ -25,13 +25,19 @@ if sys.platform[:3] == 'win':
 
 class ModeloVensimMdl(EnvolturaMDS):
 
-    def inic_vars(símismo):
+    def __init__(símismo, archivo):
 
-        doc = símismo.archivo
+        símismo.dic_doc = {}
+
+        super().__init__(archivo=archivo)
+
+    def inic_vars(símismo):
 
         # Borrar lo que podría haber allí desde antes.
         símismo.variables.clear()
         símismo.dic_doc.clear()
+
+        doc = símismo.dic_doc
 
         # Variables internos a VENSIM
         símismo.internos = ['FINAL TIME', 'TIME STEP', 'INITIAL TIME', 'SAVEPER', 'Time']
