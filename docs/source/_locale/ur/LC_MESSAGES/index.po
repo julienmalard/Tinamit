@@ -5,12 +5,13 @@
 # Azhar Inam <azharinam@gmail.com>, 2017. #zanata
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
 # Azhar Inam <azharinam@gmail.com>, 2018. #zanata
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2018. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-31 11:09-0400\n"
-"PO-Revision-Date: 2018-01-01 08:35-0500\n"
+"PO-Revision-Date: 2018-01-12 01:53-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ur\n"
@@ -69,20 +70,27 @@ msgid "Apoyo multilingual en el IGU."
 msgstr ""
 
 #: ../../source/index.rst:21
+msgid ""
+"¿Encontraste algún error en la documentación? Seguramente es culpa mía. Si "
+"es error de español, por favor tenga la bondad de corregirlo en `GitHub`_. "
+"Si es en otro idioma, corrígelo :ref:`así <des_trad>`. ¡Gracias!"
+msgstr ""
+
+#: ../../source/index.rst:25
 msgid "¿Quieres contribuir?"
 msgstr ""
 
-#: ../../source/index.rst:22
+#: ../../source/index.rst:26
 msgid ""
 "Puedes **agregar modelos**, desarrollar **nuevas funcionalidades**, o ayudar"
 " a **traducir Tinamït** en tu lengua preferida. Lo explicamos todo "
 ":ref:`aquí <desarrollo>`."
 msgstr ""
 
-#: ../../source/index.rst:25
+#: ../../source/index.rst:29
 msgid "Contacto: |correo|"
 msgstr ""
 
-#: ../../source/index.rst:28
+#: ../../source/index.rst:32
 msgid "Índice:"
 msgstr ""

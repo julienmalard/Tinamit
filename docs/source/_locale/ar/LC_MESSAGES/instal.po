@@ -2,14 +2,13 @@
 # Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
 # This file is distributed under the same license as the tinamit package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# Azhar Inam <azharinam@gmail.com>, 2017. #zanata
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-20 22:09+0530\n"
-"PO-Revision-Date: 2017-12-30 05:22-0500\n"
+"PO-Revision-Date: 2017-12-13 01:10-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Arabic (https://www.transifex.com/qatikon/teams/70565/ar/)\n"
 "Language: ar\n"
@@ -34,6 +33,7 @@ msgid ""
 msgstr ""
 
 #: ../../source/instal.rst:12 ../../source/instal.rst:42
+#: ../../source/instal.rst:83
 msgid ":command:`pip install tinamit`"
 msgstr ""
 
@@ -180,7 +180,7 @@ msgstr ""
 #: ../../source/instal.rst:78
 msgid ""
 ":command:`pip install "
-"C:\\\\Users\\\\yo\\\\Downloads\\\\numpy‑1.11.3+mkl‑cp36‑cp36m‑win32.whl`."
+"C:\\\\Users\\\\yo\\\\Downloads\\\\numpy‑1.11.3+mkl‑cp36‑cp36m‑win32.whl`"
 msgstr ""
 
 #: ../../source/instal.rst:80
@@ -188,8 +188,4 @@ msgid ""
 "Tienes que instalarlos en el orden siguiente: `NumPy`, `SciPy`, y por fin "
 "`Matplotlib`, sino tendrás muchos muchos problemas. *Después* de eso, puedes"
 " instalar Tinamït con"
-msgstr ""
-
-#: ../../source/instal.rst:83
-msgid ":command:`pip install tinamit`."
 msgstr ""

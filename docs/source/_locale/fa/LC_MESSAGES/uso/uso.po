@@ -19,7 +19,7 @@ msgstr ""
 "X-Generator: Zanata 3.9.6\n"
 
 #: ../../source/uso/uso.rst:4
-msgid "Cómo se emplea Tinamït"
+msgid "Uso"
 msgstr ""
 
 #: ../../source/uso/uso.rst:6

@@ -5,6 +5,7 @@ from warnings import warn
 
 import numpy as np
 
+from tinamit import obt_val_config
 from tinamit.BF import ModeloImpaciente
 from tinamit.EnvolturaBF.en.SAHYSMOD.sahysmodIO import read_into_param_dic, write_from_param_dic
 
@@ -14,7 +15,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
     This is the wrapper for SAHYSMOD. At the moment, it only works for one polygon (no spatial models).
     """
 
-    def __init__(self, sayhsmod_exe, initial_data):
+    def __init__(self, initial_data, sayhsmod_exe=None):
         """
         Inicialises the SAHYSMOD wrapper. You must have SAHYSMOD already installed on your computer.
 
@@ -31,6 +32,10 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         """
 
         # The following attributes are specific to the SAHYSMOD wrapper, so edit them as you like.
+
+        # Find the SAHYSMOD executable path, if necessary.
+        if sayhsmod_exe is None:
+            sayhsmod_exe = obt_val_config('exe_sahysmod')
 
         # Number of (internal) polygons in the model
         self.n_poly = None

@@ -1,5 +1,8 @@
-MDS (Modelos de dinámicas de los sistemas)
-==========================================
+Modelos de dinámicas de los sistemas (``MDS``)
+==============================================
 
-.. automodule:: tinamit.MDS.MDS
+.. automodule:: tinamit.MDS
+   :members:
+
+.. automodule:: tinamit.EnvolturaMDS
    :members:

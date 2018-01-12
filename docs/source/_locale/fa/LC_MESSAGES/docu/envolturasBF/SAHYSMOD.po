@@ -36,7 +36,9 @@ msgstr ""
 
 #: ../../../tinamit/EnvolturaBF/en/SAHYSMOD/SAHYSMOD_Wrapper.py:docstring of
 #: tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper.ModeloSAHYSMOD.cerrar_modelo:1
-msgid "No specific closing actions necessary."
+msgid ""
+"No specific closing actions necessary, but we will clean up the directory, "
+"just to be nice."
 msgstr ""
 
 #: ../../../tinamit/EnvolturaBF/en/SAHYSMOD/SAHYSMOD_Wrapper.py:docstring of

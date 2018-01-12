@@ -1,7 +1,7 @@
 .. _uso:
 
-Cómo se emplea Tinamït
-======================
+Uso
+===
 
 Hay dos maneras de usar Tinamït. Si quieres hacerlo sin código cualquier, el IGU (Interfaz de Usuario Gráfico) es para ti.
 Si prefieres hacerlo con unas pocas líneas de código (lo cual puede acelerar bastante tu trabajo si tienes muchas simulaciones

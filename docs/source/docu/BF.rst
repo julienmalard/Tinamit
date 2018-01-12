@@ -1,5 +1,5 @@
-BF (Modelos Biofísicos)
-=======================
+Modelos Biofísicos (``BF``)
+===========================
 
 .. automodule:: tinamit.BF
    :members:

@@ -98,7 +98,8 @@ msgstr ""
 
 #: ../../docstring of tinamit.Conectado.Conectado.dibujar:9
 msgid ""
-"El directorio, relativo al archivo MDS, donde hay que poner los dibujos."
+"El directorio, relativo al archivo EnvolturaMDS, donde hay que poner los "
+"dibujos."
 msgstr ""
 
 #: ../../docstring of tinamit.Conectado.Conectado.dibujar:11
@@ -128,7 +129,7 @@ msgstr ""
 #: ../../docstring of tinamit.Conectado.Conectado.estab_mds:1
 msgid ""
 "Establecemos el modelo de dinámicas de los sistemas "
-"(:class:`~tinamit.MDS.EnvolturaMDS`)."
+"(:class:`~tinamit.EnvolturaMDS.EnvolturaMDS`)."
 msgstr ""
 
 #: ../../docstring of tinamit.Conectado.Conectado.estab_mds:3

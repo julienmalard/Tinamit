@@ -151,8 +151,7 @@ msgstr ""
 msgid ""
 "Esta función debe poblar el diccionario de variables del modelo, según la "
 "forma siguiente: {'var1': {'val': 13, 'unidades': 'cm', 'ingreso': True, "
-"dims: (1,), 'egreso': True}, 'var2': {'val': 2, 'unidades': 'cm', 'ingreso':"
-" False, dims: (3,2), 'egreso': True}} }"
+"dims: (1,), 'egreso': True, 'info': 'descripción'}, 'var2': ...} }"
 msgstr ""
 
 #: ../../../tinamit/Modelo.py:docstring of
@@ -180,11 +179,6 @@ msgid ""
 "Esta función debe leer los valores del modelo y escribirlos en el "
 "diccionario interno de variables. Se implementa frequentement con modelos "
 "externos de cuyos egresos hay que leer los resultados de una corrida."
-msgstr ""
-
-#: ../../../tinamit/Modelo.py:docstring of
-#: tinamit.Modelo.Modelo.limp_vals_inic:1
-msgid "Esta función limpa los valores iniciales especificados anteriormente."
 msgstr ""
 
 #: ../../../tinamit/Modelo.py:docstring of

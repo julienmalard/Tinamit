@@ -149,11 +149,11 @@ msgstr ""
 "(سب اس کے ليے آزمودہ ہیں) ۔ لیکن دوسروں کے ليے پیچیدہ اقدامات کے ساتھ نمونے "
 "تيار کرنے ميں  بہت وقت بچا ئے گا."
 
-#: ../../source/desarrollo/des_bf.rst:50
+#: ../../source/desarrollo/des_bf.rst:51
 msgid "Plantilla estándar (ModeloBF)"
 msgstr "معیاری سانچے (آب و ہوا کا نمونہ)"
 
-#: ../../source/desarrollo/des_bf.rst:51
+#: ../../source/desarrollo/des_bf.rst:52
 msgid ""
 "Esta plantilla es la más sencilla (y todas las otras son subclases de esta)."
 " Deberás implementar las funciones siguientes en una subclase de esta "
@@ -162,7 +162,7 @@ msgstr ""
 "یہ سانچے آسان ہيں (اور باقی سب اس کے ذیلی ٹکڑے ہیں). آپ کو اس سانچے کی ذیلی "
 "درجے میں درج ذیل افعال کو لاگو کرنا ضروری ہے۔"
 
-#: ../../source/desarrollo/des_bf.rst:54
+#: ../../source/desarrollo/des_bf.rst:55
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.obt_unidad_tiempo`: Devuelve la unidad de tiempo"
 " del modelo."
@@ -170,7 +170,7 @@ msgstr ""
 "ماڈل کا وقت یونٹ واپس کرتا ہے۔ "
 ":func:`~tinamit.BF.ModeloBF.obt_unidad_tiempo`:"
 
-#: ../../source/desarrollo/des_bf.rst:55
+#: ../../source/desarrollo/des_bf.rst:56
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.inic_vars`: Incializa el diccionario interno de "
 "variables disponibles."
@@ -178,11 +178,11 @@ msgstr ""
 "دستیاب متغیر کی اندرونی لغت کو شروع کریں۔ "
 ":func:`~tinamit.BF.ModeloBF.inic_vars`: "
 
-#: ../../source/desarrollo/des_bf.rst:56
+#: ../../source/desarrollo/des_bf.rst:57
 msgid ":func:`~tinamit.BF.ModeloBF.iniciar_modelo`: Inicializa la simulación."
 msgstr "تخروپن کو شروع کریں۔ :func:`~tinamit.BF.ModeloBF.iniciar_modelo`: "
 
-#: ../../source/desarrollo/des_bf.rst:57
+#: ../../source/desarrollo/des_bf.rst:58
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.cambiar_vals_modelo_interno`: Cambia los valores"
 " internos de los variables."
@@ -190,15 +190,15 @@ msgstr ""
 "متغیرات کی اندرونی اقدار کو تبدیل کریں۔ "
 ":func:`~tinamit.BF.ModeloBF.cambiar_vals_modelo_interno`: "
 
-#: ../../source/desarrollo/des_bf.rst:58
+#: ../../source/desarrollo/des_bf.rst:59
 msgid ":func:`~tinamit.BF.ModeloBF.incrementar`: Avanza el modelo."
 msgstr "نمونے پیش کریں۔ :func:`~tinamit.BF.ModeloBF.incrementar`:"
 
-#: ../../source/desarrollo/des_bf.rst:59
+#: ../../source/desarrollo/des_bf.rst:60
 msgid ":func:`~tinamit.BF.ModeloBF.leer_vals`: Lee los egresos del modelo."
 msgstr "نمونے کا راستہ پڑھیں۔ :func:`~tinamit.BF.ModeloBF.leer_vals`: "
 
-#: ../../source/desarrollo/des_bf.rst:60
+#: ../../source/desarrollo/des_bf.rst:61
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.cerrar_modelo`: Cierre el modelo al final de una"
 " simulación."
@@ -206,11 +206,11 @@ msgstr ""
 "تخروپن کے آخر میں نمونے کو بند کریں۔ "
 ":func:`~tinamit.BF.ModeloBF.cerrar_modelo`:"
 
-#: ../../source/desarrollo/des_bf.rst:64
+#: ../../source/desarrollo/des_bf.rst:66
 msgid "Plantilla ModeloImpaciente"
 msgstr "بے معنی سانچہ"
 
-#: ../../source/desarrollo/des_bf.rst:65
+#: ../../source/desarrollo/des_bf.rst:67
 msgid ""
 "Un ejemplo del uso de esta plantilla es la envoltura para el modelo de "
 "salinidad de suelos SAHYSMOD. La plantilla maneja el control del modelo, "
@@ -223,14 +223,14 @@ msgstr ""
 "اعدادوشمار خود کار طریقے سے پڑھنے سمیتاسکا کنٹرول قائم کرتا ہے۔ آپ کواس ذیلی"
 " طبقے میں مندرجہ ذیل افعال کو لاگو کرنا ہوگا:"
 
-#: ../../source/desarrollo/des_bf.rst:69
+#: ../../source/desarrollo/des_bf.rst:71
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.iniciar_modelo`: Inicializa la "
 "simulación."
 msgstr ""
 "تخروپن کو شروع کریں۔ 'func:`~tinamit.BF.ModeloImpaciente.iniciar_modelo:"
 
-#: ../../source/desarrollo/des_bf.rst:70
+#: ../../source/desarrollo/des_bf.rst:72
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.cerrar_modelo`: Cierre el modelo al "
 "final de una simulación."
@@ -238,7 +238,7 @@ msgstr ""
 "تخروپن کے اختتام پر ماڈل بند کریں۔ "
 "'func:`~tinamit.BF.ModeloImpaciente.cerrar_modelo:"
 
-#: ../../source/desarrollo/des_bf.rst:71
+#: ../../source/desarrollo/des_bf.rst:73
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.inic_vars`: Incializa el diccionario "
 "interno de variables disponibles."
@@ -246,7 +246,7 @@ msgstr ""
 "دستیاب متغیر کی اندرونی لغت کو شروع کریں۔ "
 "'func:`~tinamit.BF.ModeloImpaciente.inic_vars`: "
 
-#: ../../source/desarrollo/des_bf.rst:72
+#: ../../source/desarrollo/des_bf.rst:74
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.avanzar_modelo`: Avanza la simulación "
 "del paso mínimo del modelo (por ejemplo, avanzará un modelo anual de 1 año, "
@@ -257,7 +257,7 @@ msgstr ""
 "سالانہ نمونہ آگے بڑھايا جائے گا، اگرچہ اس میں 1 مہینہ کی درستگیہو). پریشان "
 "نہ ہوں، ٹينامٹ  خود بخود سب کچھ  ٹھیک کرے گا."
 
-#: ../../source/desarrollo/des_bf.rst:75
+#: ../../source/desarrollo/des_bf.rst:77
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.leer_archivo_vals_inic`: Lee un archivo "
 "con valores inciales para la simulación."
@@ -265,7 +265,7 @@ msgstr ""
 "تخروپن کے لئے ابتدائی اقدار کے ساتھ ایک دستاويز پڑھیں. "
 "'func:`~tinamit.BF.ModeloImpaciente.leer_archivo_vals_inic: "
 
-#: ../../source/desarrollo/des_bf.rst:76
+#: ../../source/desarrollo/des_bf.rst:78
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.leer_archivo_egr`: Le un archivo de los "
 "egresos de una simulación."
@@ -273,7 +273,7 @@ msgstr ""
 "ایک تخروپن کے راستے کی ایک فائل۔ "
 "'func:`~tinamit.BF.ModeloImpaciente.leer_archivo_egr: "
 
-#: ../../source/desarrollo/des_bf.rst:77
+#: ../../source/desarrollo/des_bf.rst:79
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.escribir_archivo_ingr`: Escribe un "
 "archivo de ingresos para el modelo, basado en los valores de los variables "
@@ -282,7 +282,7 @@ msgstr ""
 "موجودہ اندرونی متغیرات کے مطابق، ماڈل کے لئے ایک آمدنی  دستاويز لکھیں۔ "
 "'func:`~tinamit.BF.ModeloImpaciente.escribir_archivo_ingr:"
 
-#: ../../source/desarrollo/des_bf.rst:80
+#: ../../source/desarrollo/des_bf.rst:82
 msgid ""
 "Un ejemplo sería la envoltura para SAHYSMOD, "
 ":class:`~tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper`."
@@ -290,11 +290,11 @@ msgstr ""
 "مثال کے طور پر يہ سانچہ SAHYSMOD کے ليے ہو گا۔ "
 "'class:`~tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper:"
 
-#: ../../source/desarrollo/des_bf.rst:84
+#: ../../source/desarrollo/des_bf.rst:87
 msgid "Plantilla ModeloFlexible"
 msgstr "سانچہ لچکدار۔"
 
-#: ../../source/desarrollo/des_bf.rst:85
+#: ../../source/desarrollo/des_bf.rst:88
 msgid ""
 "Un ejemplo de esta plantilla sería la envoltura para el modelo de cultivos "
 "DSSAT. Simplemente debes implementar las funciones siguientes en una "
@@ -303,17 +303,17 @@ msgstr ""
 "فصل کے نمونہ DSSAT کے لئے سانچنے کی ايک مثال۔ آپ کو ذیلی طبقے میں مندرجہ ذیل"
 " افعال کو لاگو کرنا ہوگا۔"
 
-#: ../../source/desarrollo/des_bf.rst:89
+#: ../../source/desarrollo/des_bf.rst:92
 msgid "Esta plantilla todavía está en desarrollo."
 msgstr "اس سانچےپر اب بھی کام ہو رھا  ہے."
 
-#: ../../source/desarrollo/des_bf.rst:91
+#: ../../source/desarrollo/des_bf.rst:94
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.iniciar_modelo`: Inicializa la simulación."
 msgstr ""
 "تخروپن کو شروع کریں۔ 'func:`~tinamit.BF.ModeloFlexible.iniciar_modelo: "
 
-#: ../../source/desarrollo/des_bf.rst:92
+#: ../../source/desarrollo/des_bf.rst:95
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.cerrar_modelo`: Cierre el modelo al final "
 "de una simulación."
@@ -321,7 +321,7 @@ msgstr ""
 "تخروپن کے اختتام پر ماڈل بند کریں۔ "
 "'func:`~tinamit.BF.ModeloFlexible.cerrar_modelo: "
 
-#: ../../source/desarrollo/des_bf.rst:93
+#: ../../source/desarrollo/des_bf.rst:96
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.inic_vars`: Incializa el diccionario "
 "interno de variables disponibles."
@@ -329,12 +329,12 @@ msgstr ""
 "دستیاب متغیر کی اندرونی لغت کو شروع کریں۔ "
 "'func:`~tinamit.BF.ModeloFlexible.inic_vars: "
 
-#: ../../source/desarrollo/des_bf.rst:94
+#: ../../source/desarrollo/des_bf.rst:97
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.mandar_modelo`: Avanza la simulación."
 msgstr "تخروپن کو فروغ دینا۔ 'func:`~tinamit.BF.ModeloFlexible.mandar_modelo:"
 
-#: ../../source/desarrollo/des_bf.rst:95
+#: ../../source/desarrollo/des_bf.rst:98
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.leer_archivo_vals_inic`: Lee un archivo "
 "con valores inciales para la simulación."
@@ -342,7 +342,7 @@ msgstr ""
 "تخروپن کے لئے ابتدائی اقدار کے ساتھ ایک دستاويز پڑھیں۔ "
 "'func:`~tinamit.BF.ModeloFlexible.leer_archivo_vals_inic:"
 
-#: ../../source/desarrollo/des_bf.rst:96
+#: ../../source/desarrollo/des_bf.rst:99
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.leer_archivo_egr`: Le un archivo de los "
 "egresos de una simulación."
@@ -350,7 +350,7 @@ msgstr ""
 " تخروپن کے راستے کی ایک دستاويز۔ "
 "'func:`~tinamit.BF.ModeloFlexible.leer_archivo_egr: "
 
-#: ../../source/desarrollo/des_bf.rst:97
+#: ../../source/desarrollo/des_bf.rst:100
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.escribir_archivo_ingr`: Escribe un archivo"
 " de ingresos para el modelo, basado en los valores de los variables internos"
@@ -359,7 +359,7 @@ msgstr ""
 "موجودہ اندرونی متغیرات کے مطابق، نمونے کے لئے ایک آمدنی کی دستاويز لکھیں۔ "
 "'func:`~tinamit.BF.ModeloFlexible.escribir_archivo_ingr:"
 
-#: ../../source/desarrollo/des_bf.rst:100
+#: ../../source/desarrollo/des_bf.rst:103
 msgid ""
 "Un ejemplo sería la envoltura para DSSAT, "
 ":class:`~tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT`."
@@ -367,11 +367,11 @@ msgstr ""
 "DSSAT کی مثال کے ليے ايک جلد ہو گی۔ "
 "'class:`~tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT:"
 
-#: ../../source/desarrollo/des_bf.rst:103
+#: ../../source/desarrollo/des_bf.rst:106
 msgid "Cambios climáticos"
 msgstr "موسمیاتی تبدیلیاں۔"
 
-#: ../../source/desarrollo/des_bf.rst:104
+#: ../../source/desarrollo/des_bf.rst:107
 msgid ""
 "Si tu modelo incluye variables climáticos, deberías considerar escribirlo "
 "para que pueda comunicar con las funcionalidades de cambios climáticos de "
@@ -383,7 +383,7 @@ msgstr ""
 "ٹينامٹ کے صارف کو  منتخب کردہ موسمی حالات کے مطابق ان متغیرات کی قیمتوں کو "
 "تاذہ کرنے کی اجازت دیتا ہے."
 
-#: ../../source/desarrollo/des_bf.rst:108
+#: ../../source/desarrollo/des_bf.rst:111
 msgid ""
 "Cuando un usuario corre un modelo con un escenario climático, cada modelo "
 "conectado se conectará automáticamente, por su atributo ``.lugar``, con un "
@@ -401,7 +401,7 @@ msgstr ""
 "کرسکتے ہیں.  مثال کے طور پر، '__SAHYSMOD :func:`~tinamit.BF.ModeloBF.__init "
 "کے سانچنے کے ليے۔ "
 
-#: ../../source/desarrollo/des_bf.rst:115
+#: ../../source/desarrollo/des_bf.rst:118
 msgid ""
 "Esta comanda conecta el variable interno ``Pp - Rainfall`` de la envoltura "
 "SAHYSMOD con el variable climático ``Precipitación``. En cada paso, Tinamït "
@@ -413,7 +413,7 @@ msgstr ""
 "کے ہر قدم میں قیمت `` کل`` کے ساتھ اس متغیر کو تاذہ کرےگا . ڈاؤن لوڈ نہیں "
 "کرے گا۔"
 
-#: ../../source/desarrollo/des_bf.rst:119
+#: ../../source/desarrollo/des_bf.rst:122
 msgid ""
 "El parámetro ``var`` es el nombre de este variable en tu envoltura. Puede "
 "ser lo que quieres, en el idioma que quieres. La opciones actuales para "
@@ -423,27 +423,27 @@ msgstr ""
 "اور جس ذبان ميں  چاہتے ہیں يہ وہ ہو سکتا ہے۔ موسمی متغیرات کے لئے موجودہ "
 "اختیار (`` var_clima``)شامل ہے۔"
 
-#: ../../source/desarrollo/des_bf.rst:122
+#: ../../source/desarrollo/des_bf.rst:125
 msgid "``Precipitación`` : mm"
 msgstr "Precipitación`` : mm'' بارش۔"
 
-#: ../../source/desarrollo/des_bf.rst:123
+#: ../../source/desarrollo/des_bf.rst:126
 msgid "``Radiación solar`` : MJ / m2 / día"
 msgstr "Radiación solar`` : MJ / m2 / día'' شمسی توانائی کی تابکاری۔"
 
-#: ../../source/desarrollo/des_bf.rst:124
+#: ../../source/desarrollo/des_bf.rst:127
 msgid "``Temperatura máxima`` : grados C"
 msgstr "Temperatura máxima`` : grados C'' زیادہ سے زیادہ درجہ حرارت۔"
 
-#: ../../source/desarrollo/des_bf.rst:125
+#: ../../source/desarrollo/des_bf.rst:128
 msgid "``Temperatura promedia`` : grados C"
 msgstr "Temperatura promedia`` : grados C'' اوسط درجہ حرارت"
 
-#: ../../source/desarrollo/des_bf.rst:126
+#: ../../source/desarrollo/des_bf.rst:129
 msgid "``Temperatura mínima`` : grados C"
 msgstr "Temperatura mínima`` : grados C'' کم از کم درجہ حرارت۔"
 
-#: ../../source/desarrollo/des_bf.rst:129
+#: ../../source/desarrollo/des_bf.rst:132
 msgid ""
 "``Combin`` puede ser ``prom`` (calculará el promedio de este variable "
 "climático por el periodo deseado) o ``total`` (calculará el total, como para"
@@ -455,7 +455,7 @@ msgstr ""
 "نہ ہو تو ،`` total`` بارش کے لئے اور `` prom`` دیگر تمام  متغیرات کے لئے "
 "سمجھا جا‏‏ئے گا۔"
 
-#: ../../source/desarrollo/des_bf.rst:133
+#: ../../source/desarrollo/des_bf.rst:136
 msgid ""
 "Si, al contrario, tu modelo necesita variables climáticos **con un paso "
 "distinto del suyo** (por ejemplo, un modelo de cultivos necesita que los "

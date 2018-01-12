@@ -20,7 +20,7 @@ msgstr ""
 "X-Generator: Zanata 3.9.6\n"
 
 #: ../../source/docu/BF.rst:2
-msgid "BF (Modelos Biofísicos)"
+msgid "Modelos Biofísicos (``BF``)"
 msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF:1
@@ -335,8 +335,8 @@ msgstr ""
 #: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.cambiar_vals_modelo_interno:1
 msgid ""
-"Solamente nos tenemos que asegurar que los اعداد_دن internos (para variables"
-" estacionales) queda consistente con los nuevos valores cambiadas por la "
+"Solamente nos tenemos que asegurar que los datos internos (para variables "
+"estacionales) queda consistente con los nuevos valores cambiadas por la "
 "conexión con el modelo externo. La función `.avanzar_modelo()` debe utilizar"
 " este diccionario interno para mandar los nuevos valores a la próxima "
 "simulación."
@@ -431,11 +431,7 @@ msgstr ""
 #: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.leer_egr:3
 msgid ""
 "El número de años que se corrió la última simulación. Solamente se leerá el "
-"último año"
-msgstr ""
-
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.leer_egr:4
-msgid "de egresos. :type n_años_egr: int"
+"último año de egresos."
 msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.leer_vals:1

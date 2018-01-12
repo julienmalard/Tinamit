@@ -19,7 +19,7 @@ msgstr ""
 "X-Generator: Zanata 3.9.6\n"
 
 #: ../../source/docu/docu.rst:2
-msgid "Documentación completa"
+msgid "Documentación"
 msgstr ""
 
 #: ../../source/docu/docu.rst:4

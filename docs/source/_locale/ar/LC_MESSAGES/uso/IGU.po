@@ -98,8 +98,8 @@ msgstr ""
 msgid ""
 "Todas las traducciones se guardan automáticamente en un documento llamado "
 "“Trads” en el directorio de Tinamït. Si contribuyes a unas traducciones, "
-"puedes compartir este documento (|correo|, o por `GitHub <|GitHub|>`_) para "
-"que todas tengan acceso a tu idioma favorito."
+"puedes compartir este documento (|correo|, o por `GitHub`_) para que todas "
+"tengan acceso a tu idioma favorito."
 msgstr ""
 
 #: ../../source/uso/IGU.rst:56

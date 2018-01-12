@@ -1,7 +1,7 @@
 .. _desarrollo:
 
-Desarrollo de Tinamït
-=====================
+Desarrollo
+==========
 Tinamït tiene una estructura modular, así que es muy fácil agregar más funcionalidades. En particular, por el desarrollo
 de envolturas específicas, se puede agregar compatibilidad con varios programas de modelos
 **de dinámicas de sistemas (DS)** y modelos **biofísicos (BF)**. También se pueden contribuir **traducciones** del

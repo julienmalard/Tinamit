@@ -4,12 +4,13 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Azhar Inam <azharinam@gmail.com>, 2017. #zanata
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2018. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-05 12:43-0500\n"
-"PO-Revision-Date: 2017-12-30 04:00-0500\n"
+"PO-Revision-Date: 2018-01-12 01:58-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (https://www.transifex.com/qatikon/teams/70565/ta/)\n"
 "Language: ta\n"
@@ -35,6 +36,10 @@ msgid ""
 " vas a tener que crear una nueva envoltura para ti, por favor no dudes en "
 "compartirla."
 msgstr ""
+"தீனாமித்தில் ஒவ்வொரு  உயிர் இயற்பியல் மாதிரி வகைக்கு சொந்த உறை தேவை. இந்த "
+"மாதிரியை எப்படி கட்டப்படுத்தலாம், அதின் வெளியீடுகளை எப்படி படிக்கலாம், அதின்"
+" மாறி மதிப்புகளை அமைப்பு இயக்கவியல் மாதிரி மாறி மதிப்பால் எப்படி "
+"புதுப்பிக்கலாம் என்று எல்லாம் இந்த உறையால் தீனாமித்துக்கு தெரிய விடும்."
 
 #: ../../source/desarrollo/des_bf.rst:12
 msgid "Cómo crear una nueva envoltura"
@@ -49,6 +54,11 @@ msgid ""
 ":class:`~tinamit.BF.ModeloBF` que ya hemos escrito para para facilitarte la "
 "vida. (Fue un placer.)"
 msgstr ""
+"இது சுலபமாக இருக்கட்டும். :class:`~tinamit.BF.ModeloBF` என்று உறையின் நகல் "
+"எடுத்து அதில் தவறிய செயல்பாடுகளை செயல்படுத்தவும். சுலபமான மாதிரியுடன் வேலை "
+"செய்து கொண்டு இருந்தால், உங்களால் :class:`~tinamit.BF.ModeloBF` என்று "
+"வகையின் எங்களால் ஏற்கனவே எழுதி விட்ட துணைவ் வகைகளில் ஒன்று வார்ப்பரால் பயன் "
+"செய்யலாம்."
 
 #: ../../source/desarrollo/des_bf.rst:19
 msgid "¿Cómo escojo la mejor plantilla?"
@@ -59,6 +69,8 @@ msgid ""
 "Para ayudarte a decidir cuál plantilla es mejor para ti, consulta el "
 "cuestionario siguiente."
 msgstr ""
+"எநத் வார்ப்புரு உங்களுக்கு நன்றாக இருக்கும் என்று முடிவி எடுக்கிறதற்கு, இந்த"
+" கேள்வித்தாளைக்கு பதில் கொடுங்கள்."
 
 #: ../../source/desarrollo/des_bf.rst:22
 msgid ""
@@ -68,6 +80,12 @@ msgid ""
 "utilizar la plantilla estándar :class:`~tinamit.BF.ModeloBF`. Más detalles "
 ":ref:`abajo <plantilla_modbf>`."
 msgstr ""
+"என் மாதிரியின் பாவனை நேரம் படியும், அதின் வெளியீடு மற்றும் உள்ளீடு படியும் "
+"ஒரே தான். உதாரணத்துக்கு, என் பூச்சி எண்ணிக்கை மாதிரியின் நேரம் படி ௧ மாதம் "
+"இருக்கிறது, மேலும் எனக்கு பூச்சி எண்ணிக்கை கணிப்புகள் ஒவ்வொரு மாதம் "
+"கொடுக்கும். இப்படி இருந்தால், :class:`~tinamit.BF.ModeloBF` என்று சாதாரண "
+"வார்ப்புரை பயன் செய்யவும். மேல் தகவல்கள் :ref:`கீழே <plantilla_modbf>` "
+"உள்ளன."
 
 #: ../../source/desarrollo/des_bf.rst:26
 msgid ""
@@ -78,6 +96,12 @@ msgid ""
 ":class:`~tinamit.BF.ModeloImpaciente`. Más detalles :ref:`abajo "
 "<plantilla_modimp>`."
 msgstr ""
+"என் மாதிரியின் பாவனை நேரம் படி மாதிரி வெளியீடுகள் மற்றும் உள்ளீடுகள் படியை "
+"விட பெரியது. உதாரணத்துக்கு, என் மண் உப்புத்தன்மை மாதிரி குறைந்துக்கு ஒரு "
+"வருதத்துக்கு பாவனை செய்யும், ஆனால் பாவனையுக்கு பின் உப்புத்தன்மை கணிப்புகள் "
+"ஒவ்வொரு ௬ மாதங்களுக்கு கொடுக்கும். இப்படி இருந்தால், "
+":class:`~tinamit.BF.ModeloImpaciente` என்று வார்ப்புரை பயன் செய்யவும். மேல் "
+"தகவல்கள் :ref:`கீழே <plantilla_modimp>` கிடைக்கும்."
 
 #: ../../source/desarrollo/des_bf.rst:30
 msgid ""
@@ -86,12 +110,20 @@ msgid ""
 "Entonces, utilizar :class:`~tinamit.BF.ModeloFlexible`. Más detalles "
 ":ref:`abajo <plantilla_modflex>`."
 msgstr ""
+"என் மாதிரி மாறுபடும் நேரம் படியுடன் பாவனை செய்கிறது. உதாரணத்துக்கு, என் "
+"பயிர் மாதிரி அறுவடை வரை பாவனை செய்யும். ஆனால் வெவ்வேறு பயிர் மற்றும் "
+"பருவனிலையில் இந்த தேதி மாறும். இப்படி இருந்தால், "
+":class:`~tinamit.BF.ModeloFlexible` என்று வார்ப்புரை பயன் செய்யவும். மேல் "
+"தகவல்கள் :ref:`கீழே <plantilla_modflex>` கிடைக்கும்."
 
 #: ../../source/desarrollo/des_bf.rst:34
 msgid ""
 "Si todavía no estás segura, empieza con :class:`~tinamit.BF.ModeloBF`. "
 "Saberás que no fue la buena decisión por quedarte muy confundida muy pronto."
 msgstr ""
+"இன்னும் சரியாக தெரியாவிட்டால் :class:`~tinamit.BF.ModeloBF` என்றும் "
+"வார்ப்புரை பயன் செய்யுங்கள். நீங்கள் சில்ல நேரத்துக்குள் முழுமையாக "
+"குழப்பவிட்டால், இது தப்பான  முடிவு இருந்தது என்று தெரிய விடும்."
 
 #: ../../source/desarrollo/des_bf.rst:39
 msgid ""
@@ -100,6 +132,10 @@ msgid ""
 "archivo, o su implementación final, **debe** llamarse ``Modelo``. Si se "
 "llama cualquier otra cosa, no funcionará."
 msgstr ""
+"உங்கள் உறை எதாவது கோப்பில் எழுதட்டும். வேண்டும் என்றால், தீனாமித்தின் "
+"கோப்பகளுக்கு வெளியேயும் எழுதட்டும். ஆனால் உங்கள் உறையின் கோப்பில், அல்லது "
+"அதின் கடைசியான செயலாக்கத்தில், இருக்கிற துணைவ் வகை பெயர் ``Modelo`` என்று "
+"இருக்க தேவை. அதுக்கு வேற பெயர் கொடுத்தால், சரியாக வேலை செய்யாது."
 
 #: ../../source/desarrollo/des_bf.rst:45
 msgid ""
@@ -107,50 +143,63 @@ msgid ""
 "(todas las otras son subclases de esta), pero las otras te ahorarán mucho "
 "tiempo para modelos con pasos complicados."
 msgstr ""
+"கோட்பாட்டில், எதாவது மாதிரியின் உறை சாதாரண வார்ப்புரால் செய்யப்படலாம். வேறு "
+"வாருப்புருகள் எல்லாம் இந்த சாதாரண வார்ப்புரின் துணைவ் வகை இருக்கின்றன. ஆனால்"
+" சிக்கலான படி உள்ள மாதிரிகளுக்கு இந்த குறிப்பிட வார்ப்புருகள் உங்களுக்கு "
+"ரொம்ப உதவியாக ஆகும்."
 
-#: ../../source/desarrollo/des_bf.rst:50
+#: ../../source/desarrollo/des_bf.rst:51
 msgid "Plantilla estándar (ModeloBF)"
 msgstr "சாதாரண் வார்ப்புரு (ModeloBF)"
 
-#: ../../source/desarrollo/des_bf.rst:51
+#: ../../source/desarrollo/des_bf.rst:52
 msgid ""
 "Esta plantilla es la más sencilla (y todas las otras son subclases de esta)."
 " Deberás implementar las funciones siguientes en una subclase de esta "
 "plantilla."
 msgstr ""
+"இந்த வார்ப்புரு எல்லோரை விட சுலபமானது. வேறு வார்ப்புருகள் எல்லாம் இந்த "
+"வார்ப்புரின் துணைவ் வகை இருக்கும். இந்த வார்ப்புரால் மாதிரி உறை எழுத "
+"விரும்பினால், இந்த செயல்பாடுகளை செயல்படுத்தவும்."
 
-#: ../../source/desarrollo/des_bf.rst:54
+#: ../../source/desarrollo/des_bf.rst:55
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.obt_unidad_tiempo`: Devuelve la unidad de tiempo"
 " del modelo."
 msgstr ""
+":func:`~tinamit.BF.ModeloBF.obt_unidad_tiempo`: மாதிரியின் நேரம் அலகு "
+"திரும்பி கொடுக்கும்."
 
-#: ../../source/desarrollo/des_bf.rst:55
+#: ../../source/desarrollo/des_bf.rst:56
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.inic_vars`: Incializa el diccionario interno de "
 "variables disponibles."
 msgstr ""
+":func:`~tinamit.BF.ModeloBF.inic_vars`: மாதிரியில் கிடக்க கூறிய மாறி "
+"அகராதியை தொடங்கும்."
 
-#: ../../source/desarrollo/des_bf.rst:56
+#: ../../source/desarrollo/des_bf.rst:57
 msgid ":func:`~tinamit.BF.ModeloBF.iniciar_modelo`: Inicializa la simulación."
 msgstr ":func:`~tinamit.BF.ModeloBF.iniciar_modelo`: பாவனையை ஆரம்புகிறது."
 
-#: ../../source/desarrollo/des_bf.rst:57
+#: ../../source/desarrollo/des_bf.rst:58
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.cambiar_vals_modelo_interno`: Cambia los valores"
 " internos de los variables."
 msgstr ""
-
-#: ../../source/desarrollo/des_bf.rst:58
-msgid ":func:`~tinamit.BF.ModeloBF.incrementar`: Avanza el modelo."
-msgstr ""
+":func:`~tinamit.BF.ModeloBF.cambiar_vals_modelo_interno`: மாதிரியின் "
+"மாறிகளின் உள் மதிப்புகளை மாற்றும்."
 
 #: ../../source/desarrollo/des_bf.rst:59
+msgid ":func:`~tinamit.BF.ModeloBF.incrementar`: Avanza el modelo."
+msgstr ":func:`~tinamit.BF.ModeloBF.incrementar`: மாதிரியை முன்னெடுக்கும்."
+
+#: ../../source/desarrollo/des_bf.rst:60
 msgid ":func:`~tinamit.BF.ModeloBF.leer_vals`: Lee los egresos del modelo."
 msgstr ""
 ":func:`~tinamit.BF.ModeloBF.leer_vals`: மாதிரியின் வெளியிடுகளை படிக்கிறது."
 
-#: ../../source/desarrollo/des_bf.rst:60
+#: ../../source/desarrollo/des_bf.rst:61
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.cerrar_modelo`: Cierre el modelo al final de una"
 " simulación."
@@ -158,11 +207,11 @@ msgstr ""
 ":func:`~tinamit.BF.ModeloBF.cerrar_modelo`: பாவனை முடிக்கும் பொழுது "
 "மாதிரியையும் நிறுத்தும்."
 
-#: ../../source/desarrollo/des_bf.rst:64
+#: ../../source/desarrollo/des_bf.rst:66
 msgid "Plantilla ModeloImpaciente"
 msgstr "பொறுமையற்ற மாதிரி வார்ப்புரு (ModeloImpaciente)"
 
-#: ../../source/desarrollo/des_bf.rst:65
+#: ../../source/desarrollo/des_bf.rst:67
 msgid ""
 "Un ejemplo del uso de esta plantilla es la envoltura para el modelo de "
 "salinidad de suelos SAHYSMOD. La plantilla maneja el control del modelo, "
@@ -171,14 +220,14 @@ msgid ""
 "implementar las funciones siguientes en una subclase:"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:69
+#: ../../source/desarrollo/des_bf.rst:71
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.iniciar_modelo`: Inicializa la "
 "simulación."
 msgstr ""
 ":func:`~tinamit.BF.ModeloImpaciente.iniciar_modelo`: பாவனையை ஆரம்புகிறது."
 
-#: ../../source/desarrollo/des_bf.rst:70
+#: ../../source/desarrollo/des_bf.rst:72
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.cerrar_modelo`: Cierre el modelo al "
 "final de una simulación."
@@ -186,13 +235,15 @@ msgstr ""
 ":func:`~tinamit.BF.ModeloImpaciente.cerrar_modelo`: பாவனை முடிக்கும் பொழுது "
 "மாதிரியையும் நிறுத்தும்."
 
-#: ../../source/desarrollo/des_bf.rst:71
+#: ../../source/desarrollo/des_bf.rst:73
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.inic_vars`: Incializa el diccionario "
 "interno de variables disponibles."
 msgstr ""
+":func:`~tinamit.BF.ModeloImpaciente.inic_vars`: மாதிரியில் கிடக்க கூறிய மாறி"
+" அகராதியை தொடங்கும்."
 
-#: ../../source/desarrollo/des_bf.rst:72
+#: ../../source/desarrollo/des_bf.rst:74
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.avanzar_modelo`: Avanza la simulación "
 "del paso mínimo del modelo (por ejemplo, avanzará un modelo anual de 1 año, "
@@ -200,52 +251,52 @@ msgid ""
 "Tinamït arreglará todo."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:75
+#: ../../source/desarrollo/des_bf.rst:77
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.leer_archivo_vals_inic`: Lee un archivo "
 "con valores inciales para la simulación."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:76
+#: ../../source/desarrollo/des_bf.rst:78
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.leer_archivo_egr`: Le un archivo de los "
 "egresos de una simulación."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:77
+#: ../../source/desarrollo/des_bf.rst:79
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.escribir_archivo_ingr`: Escribe un "
 "archivo de ingresos para el modelo, basado en los valores de los variables "
 "internos actuales."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:80
+#: ../../source/desarrollo/des_bf.rst:82
 msgid ""
 "Un ejemplo sería la envoltura para SAHYSMOD, "
 ":class:`~tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper`."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:84
+#: ../../source/desarrollo/des_bf.rst:87
 msgid "Plantilla ModeloFlexible"
 msgstr "நெகிழ்வான மாதிரி வார்ப்புரு (ModeloFlexible)"
 
-#: ../../source/desarrollo/des_bf.rst:85
+#: ../../source/desarrollo/des_bf.rst:88
 msgid ""
 "Un ejemplo de esta plantilla sería la envoltura para el modelo de cultivos "
 "DSSAT. Simplemente debes implementar las funciones siguientes en una "
 "subclase:"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:89
+#: ../../source/desarrollo/des_bf.rst:92
 msgid "Esta plantilla todavía está en desarrollo."
-msgstr ""
+msgstr "இந்த உறை இன்னும் வளர்ச்சியில் உள்ளது. "
 
-#: ../../source/desarrollo/des_bf.rst:91
+#: ../../source/desarrollo/des_bf.rst:94
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.iniciar_modelo`: Inicializa la simulación."
-msgstr ""
+msgstr ":func:`~tinamit.BF.ModeloFlexible.iniciar_modelo`: பாவனையை தொடங்கும்."
 
-#: ../../source/desarrollo/des_bf.rst:92
+#: ../../source/desarrollo/des_bf.rst:95
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.cerrar_modelo`: Cierre el modelo al final "
 "de una simulación."
@@ -253,37 +304,40 @@ msgstr ""
 ":func:`~tinamit.BF.ModeloFlexible.cerrar_modelo`: பாவனை முடிக்கும் பொழுது "
 "மாதிரியையும் நிறுத்தும்."
 
-#: ../../source/desarrollo/des_bf.rst:93
+#: ../../source/desarrollo/des_bf.rst:96
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.inic_vars`: Incializa el diccionario "
 "interno de variables disponibles."
 msgstr ""
+":func:`~tinamit.BF.ModeloFlexible.inic_vars`: மாதிரியில் கிடக்க கூறிய மாறி "
+"அகராதியை தொடங்கும்."
 
-#: ../../source/desarrollo/des_bf.rst:94
+#: ../../source/desarrollo/des_bf.rst:97
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.mandar_modelo`: Avanza la simulación."
 msgstr ""
+":func:`~tinamit.BF.ModeloFlexible.iniciar_modelo`: பாவனையை முன்னெட்டும்."
 
-#: ../../source/desarrollo/des_bf.rst:95
+#: ../../source/desarrollo/des_bf.rst:98
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.leer_archivo_vals_inic`: Lee un archivo "
 "con valores inciales para la simulación."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:96
+#: ../../source/desarrollo/des_bf.rst:99
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.leer_archivo_egr`: Le un archivo de los "
 "egresos de una simulación."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:97
+#: ../../source/desarrollo/des_bf.rst:100
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.escribir_archivo_ingr`: Escribe un archivo"
 " de ingresos para el modelo, basado en los valores de los variables internos"
 " actuales."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:100
+#: ../../source/desarrollo/des_bf.rst:103
 msgid ""
 "Un ejemplo sería la envoltura para DSSAT, "
 ":class:`~tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT`."
@@ -291,11 +345,11 @@ msgstr ""
 "டீஸாட்டின் உறை, :class:`~tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT`, ஓர் "
 "உதாரணம்."
 
-#: ../../source/desarrollo/des_bf.rst:103
+#: ../../source/desarrollo/des_bf.rst:106
 msgid "Cambios climáticos"
 msgstr "பருவநிலை மாற்றம்"
 
-#: ../../source/desarrollo/des_bf.rst:104
+#: ../../source/desarrollo/des_bf.rst:107
 msgid ""
 "Si tu modelo incluye variables climáticos, deberías considerar escribirlo "
 "para que pueda comunicar con las funcionalidades de cambios climáticos de "
@@ -303,7 +357,7 @@ msgid ""
 " según el escenario climático escogido por el usuario."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:108
+#: ../../source/desarrollo/des_bf.rst:111
 msgid ""
 "Cuando un usuario corre un modelo con un escenario climático, cada modelo "
 "conectado se conectará automáticamente, por su atributo ``.lugar``, con un "
@@ -314,7 +368,7 @@ msgid ""
 "SAHYSMOD::"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:115
+#: ../../source/desarrollo/des_bf.rst:118
 msgid ""
 "Esta comanda conecta el variable interno ``Pp - Rainfall`` de la envoltura "
 "SAHYSMOD con el variable climático ``Precipitación``. En cada paso, Tinamït "
@@ -322,34 +376,34 @@ msgid ""
 "paso de la simulación para el escenario climático apropiado. Chévere, ¿no?"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:119
+#: ../../source/desarrollo/des_bf.rst:122
 msgid ""
 "El parámetro ``var`` es el nombre de este variable en tu envoltura. Puede "
 "ser lo que quieres, en el idioma que quieres. La opciones actuales para "
 "variables climáticos (``var_clima``) incluyen:"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:122
+#: ../../source/desarrollo/des_bf.rst:125
 msgid "``Precipitación`` : mm"
-msgstr ""
+msgstr "``Precipitación``: படிவுவீழ்ச்சி, மி மீ"
 
-#: ../../source/desarrollo/des_bf.rst:123
+#: ../../source/desarrollo/des_bf.rst:126
 msgid "``Radiación solar`` : MJ / m2 / día"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:124
+#: ../../source/desarrollo/des_bf.rst:127
 msgid "``Temperatura máxima`` : grados C"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:125
+#: ../../source/desarrollo/des_bf.rst:128
 msgid "``Temperatura promedia`` : grados C"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:126
+#: ../../source/desarrollo/des_bf.rst:129
 msgid "``Temperatura mínima`` : grados C"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:129
+#: ../../source/desarrollo/des_bf.rst:132
 msgid ""
 "``Combin`` puede ser ``prom`` (calculará el promedio de este variable "
 "climático por el periodo deseado) o ``total`` (calculará el total, como para"
@@ -357,7 +411,7 @@ msgid ""
 "y ``prom`` para todos los otrs variables climáticos."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:133
+#: ../../source/desarrollo/des_bf.rst:136
 msgid ""
 "Si, al contrario, tu modelo necesita variables climáticos **con un paso "
 "distinto del suyo** (por ejemplo, un modelo de cultivos necesita que los "
