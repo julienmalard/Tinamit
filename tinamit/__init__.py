@@ -2,6 +2,7 @@ from pkg_resources import resource_filename
 import os
 import json
 
+
 __author__ = 'Julien Malard'
 
 __notes__ = 'Contacto: julien.malard@mail.mcgill.ca'
