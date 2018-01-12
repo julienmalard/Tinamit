@@ -102,6 +102,31 @@ las funciones siguientes en una subclase:
 
 Un ejemplo sería la envoltura para DSSAT, :class:`~tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT`.
 
+Modelos externos
+----------------
+La casi totalidad de las envolturas BF van a necesitar un modelo externo a Tinamït. Se recomienda incluir un enlace
+al donde se puede descargar el modelo externo en los comentarios, si posible.
+
+Otro asunto es que cada usuario de tu envoltura estará utilizando una computadora diferente, con el modelo externo
+guardado en lugar distinto. Por eso no te recomiendo hacer algo así::
+
+    class MiEnvoltura(EnvolturaBF):
+         ubic_modelo = 'C:\Yo\MisDocumentos\MisPropiasCarpetas\Que\Tú\No\Tienes\Modelo.exe'
+         def init(símismo):
+            ...
+
+Por razones obvias, aunque todo funcione bien para ti, otros posiblemente tendrán dificultades con tu envoltura.
+Por eso Tinamït te propone una función especial, ``tinamit.obt_val_config()``, que pide al usuario el directorio
+del modelo en *su* computadora la primera vez que emplea tu envoltura y despúes lo guarda en un archivo local para uso
+futuro. Se emplea así::
+
+    from tinamit import obt_val_config
+    class MiEnvoltura(EnvolturaBF):
+         ubic_modelo = obt_val_config('exe_sahysmod')
+
+         def init(símismo):
+            ...
+
 Cambios climáticos
 ------------------
 Si tu modelo incluye variables climáticos, deberías considerar escribirlo para que pueda comunicar con las

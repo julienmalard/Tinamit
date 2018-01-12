@@ -57,9 +57,9 @@ La manera más fácil para ti es probablemente mandarme tu nuevo código por cor
 
 Unos apuntos para cuándo vas a compartir una nueva envoltura:
 
-* Incluir instrucciones, si necesario, para que tus usuarios puedan conseguir el modelo biofísico correspondiente.
-* Incluir tantos comentarios como posible en tu envoltura (el código fuente de Tinamït es un ejemplo).
-* Se recomienda escribir envolturas en castellano, pero aceptamos envolturas escritas en todos idiomas. Apoyamos
+* Incluir instrucciones, si necesario, para que tus usuarios puedan conseguir modelos externos necesarios, si hay.
+* Incluir tantos comentarios como posible en tu código (el código fuente de Tinamït es un ejemplo).
+* Se recomienda escribir nuevas envolturas en castellano, pero aceptamos envolturas escritas en todos idiomas. Apoyamos
   particularmente esfuerzos para escribir el código en el idioma nativo del lugar donde estás trabajando.
 
 
