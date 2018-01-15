@@ -24,3 +24,26 @@ for l in lengs_ya:
     run('python setup.py update_catalog -l {}'.format(l), cwd=dir_base)
 
 run('python setup.py compile_catalog', cwd=dir_base)
+
+
+# Mandar cambios locales al servidor Zanata
+print('Mandando traducciones actualizadas localmente a Zanata...')
+run('zanata po push --copytrans --import-po', input=b'y', cwd=dir_local)
+
+# Traemos traducciones de Transifex y las mandamos a Zanata.
+# print('Actualizando con Transifex...')
+# run('tx pull -a', cwd=dir_fuente)
+# print('Mandando traducciones de Transifex a Zanata...')
+# run('zanata po push --copytrans --import-po', input=b'y', cwd=dir_local)
+
+# Traemos las traducciones más recientes de Zanata
+print('Verificando las traducciones más recientes en Zanata...')
+run('zanata po pull', cwd=dir_local)
+
+# Mandar los documentos de traducciones actualizados al servidor Transifex
+# print('Mandando todo a Transifex también...')
+# run('tx push -s -t', cwd=dir_local)
+
+# Ver las estadísticas
+print('Pidiendo estadísticas recientes de traducción (de Zanata)...')
+run('zanata stats', cwd=dir_local)
