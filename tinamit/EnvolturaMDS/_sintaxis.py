@@ -63,19 +63,19 @@ def sacar_arg(ec, regex_var, regex_fun, i=None):
     """
 
     # El principio de la función
-    princ_fun = re.match(regex_fun, ec).end()
+    princ_fun = regex.match(regex_fun, ec).end()
 
     # El fin de la función
-    fin_fun = re.search(r' *\) *\n?$', ec).start()
+    fin_fun = regex.search(r' *\) *\n?$', ec).start()
 
     # La parte de la ecuación con los argumentos de la función
     sec_args = ec[princ_fun:fin_fun]
 
     # Una lista de tuples con los índices de las ubicaciones de los variables
-    pos_vars = [m.span() for m in re.finditer(regex_var, sec_args)]
+    pos_vars = [m.span() for m in regex.finditer(regex_var, sec_args)]
 
     # Una lista de las ubicaciones de TODAS las comas en el ecuación
-    pos_comas = [m.start() for m in re.finditer(r',', sec_args)]
+    pos_comas = [m.start() for m in regex.finditer(r',', sec_args)]
 
     # Las índes de separación de argumentos de la función. Solo miramos las comas que NO hagan parte de un variable,
     # y agregamos un 0 al principio, y el último índice del texto al final.
@@ -111,9 +111,9 @@ def juntar_líns(l, cabeza=None, cola=None):
 
     # Quitar text no deseado del principio y del final
     if cabeza is not None:
-        l[0] = re.sub(r'^({})'.format(cabeza), '', l[0])
+        l[0] = regex.sub(r'^({})'.format(cabeza), '', l[0])
     if cola is not None:
-        l[-1] = re.sub(r'{}$'.format(cola), '', l[-1])
+        l[-1] = regex.sub(r'{}$'.format(cola), '', l[-1])
 
     # Quitar tabulaciones y símbolos de final de línea
     l = [x.lstrip('\t').rstrip('\n').rstrip('\\') for x in l]
@@ -135,7 +135,7 @@ def cortar_líns(texto, máx_car, lín_1=None, lín_otras=None):
         else:
             dif = máx_car - texto
 
-            l = re.search(r'(.*)\W.[%s,]' % dif, texto).groups()[0]
+            l = regex.search(r'(.*)\W.[%s,]' % dif, texto).groups()[0]
 
         lista.append(l)
         texto = texto[len(l):]

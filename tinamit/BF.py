@@ -1,3 +1,4 @@
+import datetime as ft
 import math as mat
 import os
 import sys
@@ -5,9 +6,9 @@ from importlib import import_module as importar_mod
 from warnings import warn as avisar
 
 import numpy as np
-import datetime as ft
 from dateutil.relativedelta import relativedelta as deltarelativo
 
+from tinamit import _
 from tinamit.Modelo import Modelo
 from .Unidades.Unidades import convertir
 
@@ -37,7 +38,8 @@ class EnvolturaBF(Modelo):
         try:
             modelo = módulo.Modelo  # type: ModeloBF
         except AttributeError:
-            raise AttributeError('El archivo especificado ({}) no contiene una clase llamada Modelo.'.format(archivo))
+            raise AttributeError(_('El archivo especificado ({}) no contiene una clase llamada Modelo.')
+                                 .format(archivo))
 
         if callable(modelo):
             símismo.modelo = modelo()
@@ -45,8 +47,8 @@ class EnvolturaBF(Modelo):
             símismo.modelo = modelo
 
         if not isinstance(símismo.modelo, ModeloBF):
-            raise TypeError('El archivo especificado ("{}") contiene una clase llamada Modelo, pero'
-                            'esta clase no es una subclase de ClaseModeloBF.'.format(archivo))
+            raise TypeError(_('El archivo especificado ("{}") contiene una clase llamada Modelo, pero'
+                            'esta clase no es una subclase de ClaseModeloBF.').format(archivo))
 
         super().__init__(nombre='bf')
 
@@ -361,7 +363,7 @@ class ModeloImpaciente(ModeloBF):
 
         # No podemos tener pasos fraccionales
         if int(paso) != paso:
-            raise ValueError('El paso debe ser un número entero.')
+            raise ValueError(_('El paso debe ser un número entero.'))
 
         # Para simplificar el código un poco.
         m = símismo.mes

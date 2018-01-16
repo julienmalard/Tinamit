@@ -1,6 +1,6 @@
 import os
 
-
+from babel.messages import frontend as babel
 from setuptools import setup, find_packages
 
 directorio = os.path.split(os.path.realpath(__file__))[0]
@@ -23,6 +23,8 @@ setup(
                      'en proyectos de manejo del ambiente. El interaz gráfico traducible facilita la adopción por'
                      'comunidades en cualquier parte del mundo.',
     requires=['numpy', 'matplotlib', 'scipy', 'taqdir', 'python_dateutil', 'pyshp', 'pandas'],
+    setup_requires=['Babel'],
+    zip_safe=False,
     classifiers=[
         'Programming Language :: Python :: 3.6',
     ],
@@ -30,6 +32,10 @@ setup(
         # Incluir estos documentos de los paquetes:
         '': ['*.txt', '*.vpm', '*.json', '*.png', '*.jpg', '*.gif'],
     },
+    cmdclass={'compile_catalog': babel.compile_catalog,
+              'extract_messages': babel.extract_messages,
+              'init_catalog': babel.init_catalog,
+              'update_catalog': babel.update_catalog}
 )
 
 # lassi.gen_trads(__file__)  # para hacer: activar generación automática de traducciones con lassi

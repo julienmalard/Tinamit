@@ -107,7 +107,7 @@ for name, run in runs.items():
 # Climate change runs
 location = Lugar(lat=32.178207, long=73.217391, elev=217)
 location.observar_mensuales('مشاہدہ بارش.csv', meses='مہینہ', años='سال',
-                            cols_datos={'Precipitación': 'بارش (میٹر)'})
+                            cols_datos={'Precipitación': 'بارش (میلیمیٹر)'})
 for rcp in [2.6, 4.5, 6.0, 8.5]:
     print('Runing with rcp {}\n************'.format(rcp))
 

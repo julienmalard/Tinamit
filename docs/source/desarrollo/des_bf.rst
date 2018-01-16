@@ -122,10 +122,15 @@ futuro. Se emplea así::
 
     from tinamit import obt_val_config
     class MiEnvoltura(EnvolturaBF):
-         ubic_modelo = obt_val_config('exe_sahysmod')
 
-         def init(símismo):
-            ...
+         def __init__(símismo, ubic_modelo=None):
+             if ubic_modelo is None:
+                 ubic_modelo = obt_val_config('exe_dssat', mnsj='Especificar la ubicación de la instalación de'
+                                              'tu modelo "DSSAT".')
+             ...
+
+Así, si ya existe un valor para ``exe_dssat`` en la configuración local de Tinamït, tomará este valor. Sino, pedirá
+al usuario que se lo entregue.
 
 Cambios climáticos
 ------------------

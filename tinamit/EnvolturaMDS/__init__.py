@@ -1,5 +1,6 @@
 import os
 
+from tinamit import _
 from tinamit.EnvolturaMDS.Vensim import ModeloVensim, ModeloVensimMdl
 
 
@@ -29,5 +30,5 @@ def generar_mds(archivo):
         # Agregar otros tipos de modelos DS aquí.
 
         # Mensaje para modelos todavía no incluidos en Tinamit.
-        raise ValueError('El tipo de modelo "{}" no se acepta como modelo DS en Tinamit al momento. Si piensas'
-                         'que podrías contribuir aquí, ¡contáctenos!'.format(ext))
+        raise ValueError(_('El tipo de modelo "{}" no se acepta como modelo DS en Tinamit al momento. Si piensas'
+                         'que podrías contribuir aquí, ¡contáctenos!').format(ext))

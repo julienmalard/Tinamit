@@ -5,6 +5,7 @@ import numpy as np
 from dateutil.relativedelta import relativedelta as deltarelativo
 
 import tinamit.Geog.Geog as Geog
+from tinamit import _
 from tinamit.Unidades.Unidades import convertir
 
 
@@ -123,9 +124,9 @@ class Modelo(object):
 
         # Primero, asegurarse que el variable existe.
         if var not in símismo.variables:
-            raise ValueError('El variable inicializado "{}" no existe en los variables del modelo.\n'
-                             'Pero antes de quejarte al gerente, sería buena idea verificar '
-                             'si lo escrbiste bien.'.format(var))  # Sí, lo "escrbí" así por propósito. :)
+            raise ValueError(_('El variable inicializado "{}" no existe en los variables del modelo.\n'
+                               'Pero antes de quejarte al gerente, sería buena idea verificar '
+                               'si lo escrbiste bien.').format(var))  # Sí, lo "escrbí" así por propósito. :)
 
         # Guardamos el valor en el diccionario `vals_inic`. Se aplicarán los valores iniciales únicamente al momento
         # de empezar la simulación.
@@ -155,13 +156,13 @@ class Modelo(object):
 
         """
         if var not in símismo.variables:
-            raise ValueError('El variable "{}" no existe en este modelo. ¿De pronto lo escribiste mal?'.format(var))
+            raise ValueError(_('El variable "{}" no existe en este modelo. ¿De pronto lo escribiste mal?').format(var))
         if var_clima not in Geog.conv_vars:
-            raise ValueError('El variable climático "{}" no es una posibilidad. Debe ser uno de:\n'
-                             '\t{}'.format(var_clima, ', '.join(Geog.conv_vars)))
+            raise ValueError(_('El variable climático "{}" no es una posibilidad. Debe ser uno de:\n'
+                               '\t{}').format(var_clima, ', '.join(Geog.conv_vars)))
 
         if combin not in ['prom', 'total', None]:
-            raise ValueError('"Combin" debe ser "prom", "total", o None, no "{}".'.format(combin))
+            raise ValueError(_('"Combin" debe ser "prom", "total", o None, no "{}".').format(combin))
 
         símismo.vars_clima[var] = {'nombre_extrn': var_clima,
                                    'combin': combin,
@@ -250,7 +251,7 @@ class Modelo(object):
                     avisar('Tuvimos que redondear la unidad de tiempo, {} {}, a {} meses'.
                            format(n_meses, símismo.unidad_tiempo, int(n_meses)))
             except ValueError:
-                raise ValueError('La unidad de tiempo "{}" no se pudo convertir a meses.')
+                raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a meses.'))
 
             f_final = f + deltarelativo(months=n_meses)
 

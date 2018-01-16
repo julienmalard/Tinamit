@@ -35,7 +35,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
         # Find the SAHYSMOD executable path, if necessary.
         if sayhsmod_exe is None:
-            sayhsmod_exe = obt_val_config('exe_sahysmod')
+            sayhsmod_exe = obt_val_config('exe_sahysmod', mnsj='Especificar la ubicación de tu modelo SAHYSMOD.')
 
         # Number of (internal) polygons in the model
         self.n_poly = None

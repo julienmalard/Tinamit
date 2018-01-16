@@ -12,8 +12,10 @@ from matplotlib.figure import Figure as Figura
 
 from taqdir.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
 from taqdir.مقام import مقام
+from tinamit import _
 
 # Ofrecemos la oportunidad de utilizar تقدیر, taqdir, en español
+
 conv_vars = {
     'Precipitación': 'بارش',
     'Radiación solar': 'شمسی_تابکاری',
@@ -151,8 +153,8 @@ class Lugar(مقام):
 
         for v in vars_clima:
             if v not in conv_vars:
-                raise ValueError('El variable "{}" está erróneo. Debe ser uno de:\n'
-                                 '\t{}'.format(v, ', '.join(conv_vars)))
+                raise ValueError(_('El variable "{}" está erróneo. Debe ser uno de:\n'
+                                 '\t{}').format(v, ', '.join(conv_vars)))
 
         v_conv = [conv_vars[v] for v in vars_clima]
 
@@ -182,8 +184,8 @@ class Lugar(مقام):
             try:
                 v_conv = conv_vars[v]
             except KeyError:
-                raise ValueError('El variable "{}" está erróneo. Debe ser uno de:\n'
-                                 '\t{}'.format(v, ', '.join(conv_vars)))
+                raise ValueError(_('El variable "{}" está erróneo. Debe ser uno de:\n'
+                                 '\t{}').format(v, ', '.join(conv_vars)))
             if c is None:
                 if v in ['درجہ_حرارت_زیادہ', 'درجہ_حرارت_کم', 'درجہ_حرارت_اوسط']:
                     c = 'prom'
@@ -247,7 +249,7 @@ class Geografía(object):
             try:
                 orden = np.array([x.record[nombres_attr.index(col_orden)] for x in af.shapeRecords()])
             except ValueError:
-                raise ValueError('La columna "{}" no existe en la base de datos.'.format(col_orden))
+                raise ValueError(_('La columna "{}" no existe en la base de datos.').format(col_orden))
 
             orden -= np.min(orden)
 
@@ -258,7 +260,7 @@ class Geografía(object):
             try:
                 ids = np.array([x.record[nombres_attr.index(col_orden)] for x in af.shapeRecords()])
             except ValueError:
-                raise ValueError('La columna "{}" no existe en la base de datos.'.format(col_orden))
+                raise ValueError(_('La columna "{}" no existe en la base de datos.').format(col_orden))
         else:
             ids = None
 
@@ -293,13 +295,13 @@ class Geografía(object):
             try:
                 i_cols = [cols.index(x) for x in orden_jer]
             except ValueError:
-                raise ValueError('Los nombres de las regiones en "orden_jer" ({}) no concuerdan con los nombres en el'
-                                 ' archivo ({}).'.format(', '.join(orden_jer), ', '.join(cols)))
+                raise ValueError(_('Los nombres de las regiones en "orden_jer" ({}) no concuerdan con los nombres en el'
+                                 ' archivo ({}).').format(', '.join(orden_jer), ', '.join(cols)))
             try:
                 in_col_cód = cols.index(col_cód)
             except ValueError:
-                raise ValueError('La columna de código de región especificada ({}) no concuerda con los nombres de '
-                                 'columnas del archivo ({}).'.format(col_cód, ', '.join(cols)))
+                raise ValueError(_('La columna de código de región especificada ({}) no concuerda con los nombres de '
+                                 'columnas del archivo ({}).').format(col_cód, ', '.join(cols)))
 
             # Para cada fila que sigue en el csv...
             for f in l:
@@ -382,7 +384,7 @@ class Geografía(object):
 
             n_regiones = len(regiones.shapes())
             if len(valores) != n_regiones:
-                raise ValueError('El número de regiones no corresponde con el tamñao de los valores.')
+                raise ValueError(_('El número de regiones no corresponde con el tamñao de los valores.'))
 
             if escala_num is None:
                 escala_num = (np.min(valores), np.max(valores))

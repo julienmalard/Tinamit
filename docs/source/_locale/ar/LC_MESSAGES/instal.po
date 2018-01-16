@@ -3,12 +3,13 @@
 # This file is distributed under the same license as the tinamit package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2018. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-20 22:09+0530\n"
-"PO-Revision-Date: 2017-12-13 01:10-0500\n"
+"PO-Revision-Date: 2018-01-15 02:13-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Arabic (https://www.transifex.com/qatikon/teams/70565/ar/)\n"
 "Language: ar\n"
@@ -28,8 +29,9 @@ msgstr ""
 
 #: ../../source/instal.rst:9
 msgid ""
-"¡Felicitaciones! Tinamït necesita Python 3.6+, NumPy, SciPy, y Matplotlib. "
-"Tinamït sí mismo es un paquete de Python que se puede conseguir con"
+"¡Felicitaciones! Tinamït necesita Python 3.6+, ``NumPy``, ``SciPy``, "
+"``Matplotlib``, ``Pandas`` y unas cositas más. Tinamït sí mismo es un "
+"paquete de Python que se puede conseguir con"
 msgstr ""
 
 #: ../../source/instal.rst:12 ../../source/instal.rst:42
@@ -185,7 +187,7 @@ msgstr ""
 
 #: ../../source/instal.rst:80
 msgid ""
-"Tienes que instalarlos en el orden siguiente: `NumPy`, `SciPy`, y por fin "
-"`Matplotlib`, sino tendrás muchos muchos problemas. *Después* de eso, puedes"
-" instalar Tinamït con"
+"Tienes que instalarlos en el orden siguiente: ``NumPy``, ``SciPy``, "
+"``Matplotlib`` y por fin ``Pandas``, sino tendrás muchos muchos problemas. "
+"**Después** de eso, puedes instalar Tinamït con"
 msgstr ""

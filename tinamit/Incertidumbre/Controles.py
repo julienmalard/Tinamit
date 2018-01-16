@@ -5,7 +5,7 @@ import re
 import numpy as np
 from scipy.optimize import minimize
 
-from tinamit.Incertidumbre.Datos import BaseDeDatos
+from tinamit.Incertidumbre.Datos import SuperBD
 
 
 class Control(object):
@@ -14,7 +14,7 @@ class Control(object):
         """
 
         :param bd:
-        :type bd: BaseDeDatos
+        :type bd: ConexiónVars
 
         :param modelo:
         :type modelo: ModeloMDS

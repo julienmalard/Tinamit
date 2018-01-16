@@ -7,13 +7,12 @@ from warnings import warn as avisar
 import numpy as np
 from dateutil.relativedelta import relativedelta
 
+from tinamit import _
 from tinamit.BF import EnvolturaBF
 from tinamit.EnvolturaMDS import generar_mds
+from tinamit.Geog.Geog import Lugar
 from tinamit.Modelo import Modelo
 from tinamit.Unidades.Unidades import convertir
-from tinamit.Geog.Geog import Geografía, Lugar
-
-from taqdir.مقام import مقام
 
 
 class SuperConectado(Modelo):
@@ -66,12 +65,12 @@ class SuperConectado(Modelo):
 
         # Si ya hay dos modelos conectados, no podemos conectar un modelo más.
         if len(símismo.modelos) >= 2:
-            raise ValueError('Ya hay dos modelo conectados. Desconecta uno primero o emplea una instancia de'
-                             'SuperConectado para conectar más que 2 modelos.')
+            raise ValueError(_('Ya hay dos modelo conectados. Desconecta uno primero o emplea una instancia de'
+                             'SuperConectado para conectar más que 2 modelos.'))
 
         # Si ya se conectó otro modelo con el mismo nombre, avisarlo al usuario.
         if modelo.nombre in símismo.modelos:
-            avisar('El modelo {} ya existe. El nuevo modelo reemplazará el modelo anterior.'.format(modelo.nombre))
+            avisar(_('El modelo {} ya existe. El nuevo modelo reemplazará el modelo anterior.').format(modelo.nombre))
 
         # Agregar el nuevo modelo al diccionario de modelos.
         símismo.modelos[modelo.nombre] = modelo
@@ -193,7 +192,7 @@ class SuperConectado(Modelo):
 
         # Veryficar que el modelo de base es un nombre de modelo válido.
         if mod_base not in símismo.modelos:
-            raise ValueError('El modelo "{}" no existe en este modelo conectado.'.format(mod_base))
+            raise ValueError(_('El modelo "{}" no existe en este modelo conectado.').format(mod_base))
 
         # Identificar el modelo que no sirve de referencia para la unidad de tiempo
         l_mod = list(símismo.modelos)
@@ -333,21 +332,21 @@ class SuperConectado(Modelo):
 
         # ¡No se puede simular con menos (o más) de dos modelos!
         if len(símismo.modelos) < 2:
-            raise ValueError('Hay que conectar dos modelos antes de empezar una simulación.')
+            raise ValueError(_('Hay que conectar dos modelos antes de empezar una simulación.'))
 
         # Si no hay conversión de tiempo entre los dos modelos, no se puede simular nada.
         if not len(símismo.conv_tiempo):
-            raise ValueError('Hay que especificar la conversión de unidades de tiempo con '
-                             '.estab_conv_tiempo() antes de correr la simulación.')
+            raise ValueError(_('Hay que especificar la conversión de unidades de tiempo con '
+                             '.estab_conv_tiempo() antes de correr la simulación.'))
 
         # Si no estamos seguro de la conversión de unidades de tiempo, decirlo aquí.
         if símismo.conv_tiempo_dudoso:
             l_mods = list(símismo.modelos)
             unid_mod_1 = símismo.modelos[l_mods[0]].unidad_tiempo
             unid_mod_2 = símismo.modelos[l_mods[1]].unidad_tiempo
-            avisar('\nNo se pudo inferir la conversión de unidades de tiempo entre {} y {}.\n'
+            avisar(_('\nNo se pudo inferir la conversión de unidades de tiempo entre {} y {}.\n'
                    'Especificarla con la función .estab_conv_tiempo().\n'
-                   'Por el momento pusimos el factor de conversión a 1, pero probablemente no es lo que quieres.'
+                   'Por el momento pusimos el factor de conversión a 1, pero probablemente no es lo que quieres.')
                    .format(unid_mod_1, unid_mod_2))
 
         # Calcular el número de pasos necesario
@@ -356,10 +355,10 @@ class SuperConectado(Modelo):
         # Conectar el clima, si necesario
         if clima:
             if lugar is None:
-                raise ValueError('Hay que especificar un lugar para incorporar el clima.')
+                raise ValueError(_('Hay que especificar un lugar para incorporar el clima.'))
             else:
                 if fecha_inic is None:
-                    raise ValueError('Hay que especificar la fecha inicial para simulaciones de clima')
+                    raise ValueError(_('Hay que especificar la fecha inicial para simulaciones de clima'))
                 elif isinstance(fecha_inic, ft.date):
                     # Formatear la fecha inicial
                     pass
@@ -373,7 +372,8 @@ class SuperConectado(Modelo):
                     try:
                         fecha_inic = ft.datetime.strptime(fecha_inic, '%d/%m/%Y')
                     except ValueError:
-                        raise ValueError('La fecha inicial debe ser en formato "día/mes/año", por ejemplo "24/12/2017".')
+                        raise ValueError(_('La fecha inicial debe ser en formato "día/mes/año", por ejemplo '
+                                           '"24/12/2017".'))
 
                 if tcr is None:
                     tcr = 8.5
@@ -451,7 +451,7 @@ class SuperConectado(Modelo):
         # Verificar si hubo error
         for m, e in dic_err.items():
             if e:
-                raise ChildProcessError('Hubo error en modelo "{}"'.format(m))
+                raise ChildProcessError(_('Hubo error en modelo "{}"').format(m))
 
         # Leer egresos
         for mod in símismo.modelos.values():
@@ -550,18 +550,18 @@ class SuperConectado(Modelo):
         # Asegurarse de que modelos y variables especificados sí existan.
         for nombre_mod in dic_vars:
             if nombre_mod not in símismo.modelos:
-                raise ValueError('Nombre de modelo "{}" erróneo.'.format(nombre_mod))
+                raise ValueError(_('Nombre de modelo "{}" erróneo.').format(nombre_mod))
 
             mod = símismo.modelos[nombre_mod]
             var = dic_vars[nombre_mod]
 
             if var not in mod.variables:
-                raise ValueError('El variable "{}" no existe en el modelo "{}".'.format(var, nombre_mod))
+                raise ValueError(_('El variable "{}" no existe en el modelo "{}".').format(var, nombre_mod))
 
             # Y también asegurarse de que el variable no a sido conectado ya.
             if var in mod.vars_saliendo or var in mod.vars_entrando:
-                raise ValueError('El variable "{}" del modelo "{}" ya está conectado. '
-                                 'Desconéctalo primero con .desconectar_vars().'.format(var, nombre_mod))
+                raise ValueError(_('El variable "{}" del modelo "{}" ya está conectado. '
+                                 'Desconéctalo primero con .desconectar_vars().').format(var, nombre_mod))
 
         # Identificar el nombre del modelo recipiente también.
         n_mod_fuente = l_mods.index(modelo_fuente)
@@ -578,7 +578,7 @@ class SuperConectado(Modelo):
 
         # Verificar que las dimensiones sean compatibles
         if dims_fuente != dims_recip:
-            raise ValueError('Las dimensiones de los dos variables ({}: {}; {}: {}) no son compatibles.'
+            raise ValueError(_('Las dimensiones de los dos variables ({}: {}; {}: {}) no son compatibles.')
                              .format(var_fuente, dims_fuente, var_recip, dims_recip))
 
         if conv is None:
@@ -589,8 +589,8 @@ class SuperConectado(Modelo):
                 conv = convertir(de=unid_fuente, a=unid_recip)
             except ValueError:
                 # Si eso no funcionó, suponer una conversión de 1.
-                avisar('No se pudo identificar una conversión automática para las unidades de los variables'
-                       '"{}" (unidades: {}) y "{}" (unidades: {}). Se está suponiendo un factor de conversión de 1.'
+                avisar(_('No se pudo identificar una conversión automática para las unidades de los variables'
+                       '"{}" (unidades: {}) y "{}" (unidades: {}). Se está suponiendo un factor de conversión de 1.')
                        .format(var_fuente, unid_fuente, var_recip, unid_recip))
                 conv = 1
 
@@ -647,7 +647,7 @@ class SuperConectado(Modelo):
                 return
 
         # Si no encontramos la conexión, hay un error.
-        raise ValueError('La conexión especificada no existe.')
+        raise ValueError(_('La conexión especificada no existe.'))
 
 
 class Conectado(SuperConectado):

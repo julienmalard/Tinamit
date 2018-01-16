@@ -15,7 +15,6 @@ __pycache__/
 *.egg-info
 # configuración distutils
 site.cfg
-setup.cfg
 
 dist/
 build/

@@ -1,19 +1,31 @@
 import csv
-import io
+import datetime as ft
 import json
 import math as mat
+import os
 
 import matplotlib.pyplot as dib
 import numpy as np
+import pandas as pd
+
+from Incertidumbre.Números import tx_a_núm
+from tinamit import _
+
 
 class Datos(object):
-    def __init__(símismo, archivo_csv, año=None, cód_lugar=None, col_año=None, col_cód_lugar=None, cód_vacío=''):
+    def __init__(símismo, nombre, archivo, fecha, lugar, cód_vacío=''):
         """
 
-        :param archivo_csv:
-        :type archivo_csv: str
+        :param nombre:
+        :type nombre: str
 
-        :param año:
+        :param archivo:
+        :type archivo: str
+
+        :param fecha:
+        :type fecha: str | ft.date | ft.datetime | int
+
+        :param ar:
         :type año: int | float
 
         :param cód_lugar:
@@ -24,16 +36,28 @@ class Datos(object):
 
         """
 
-        símismo.archivo_datos = archivo_csv
+        símismo.nombre = nombre
 
-        símismo.datos = {}
-        símismo.años = None  # type: np.array
-        símismo.lugares = None  # type: np.array
+        símismo.archivo_datos = archivo
+        símismo.bd = _gen_bd(archivo)
 
-        símismo.vars = []
-        símismo.n_obs = None
+        símismo.cols = símismo.bd.obt_nombres_cols()
 
-        if type(cód_vacío) is list:
+        if fecha in símismo.cols:
+            símismo.fechas = símismo.bd.obt_fechas(fecha)
+        elif isinstance(fecha, ft.date) or isinstance(fecha, ft.datetime):
+            símismo.fechas = fecha
+        elif isinstance(fecha, int):
+            símismo.fechas = ft.date(year=fecha, month=1, day=1)
+        else:
+            raise TypeError('')
+
+        if lugar in símismo.cols:
+            símismo.lugar = símismo.bd.obt_datos_tx(cols=lugar)
+        else:
+            símismo.lugar = str(lugar)
+
+        if isinstance(cód_vacío, list):
             símismo.cod_vacío = cód_vacío
         else:
             símismo.cod_vacío = [cód_vacío]
@@ -41,227 +65,22 @@ class Datos(object):
         if '' not in símismo.cod_vacío:
             símismo.cod_vacío.append('')
 
-        símismo.cargar_datos()
+        símismo.años = None  # type: np.array
+        símismo.lugares = None  # type: np.array
 
-        if año is not None:
-            símismo.años = np.full(símismo.n_obs, año, dtype=float)
-        elif col_año is not None:
-            símismo.estab_col_año(col=col_año)
+        símismo.n_obs = símismo.bd.n_obs
 
-        if cód_lugar is not None:
-            símismo.lugares = np.array([cód_lugar] * símismo.n_obs)
-        elif col_cód_lugar is not None:
-            símismo.estab_col_lugar(col=col_cód_lugar)
-
-    def cargar_datos(símismo, archivo=None):
-        """
-        Cargar los nombres de los variables y  el no. de observaciones, no los datos sí mismos.
-
-        :param archivo:
-        :type archivo: str
-
-        :return:
-        :rtype: list
-        """
-
-        if archivo is not None:
-            símismo.archivo_datos = archivo
-        else:
-            archivo = símismo.archivo_datos
-
-        with open(archivo, newline='') as d:
-
-            l = csv.reader(d)  # El lector de csv
-
-            # Guardar la primera fila como nombres de columnas
-            símismo.vars = next(l)
-
-            símismo.n_obs = len(list(l))
-
-        for var in símismo.vars:
-            símismo.datos[var] = None
-
-    def limpiar(símismo, var, rango, tipo='percentil'):
-        """
-
-        :param var:
-        :type var: str
-
-        :param rango:
-        :type rango: tuple
-
-        :param tipo:
-        :type tipo: str
-
-        """
-
-        try:
-            if símismo.datos[var] is None:
-                símismo._cargar_datos(var=var)
-        except KeyError:
-            raise ValueError('Nombre de variable "{}" erróneo.'.format(var))
-
-        datos = símismo.datos[var]
-
-        if tipo == 'percentil':
-            lím = (np.percentile(datos, rango[0]), np.percentile(datos, rango[1]))
-        elif tipo == 'valor':
-            lím = rango
-        else:
-            raise ValueError
-
-        índ_errores = np.where(np.logical_or(datos < lím[0], datos > lím[1]))
-
-        datos[índ_errores] = np.nan
-
-        return len(índ_errores)
-
-    def datos_irreg(símismo, var):
-        """
-        Identifica datos irregulares.
-
-        :param var:
-        :type var: str
-
-        :return:
-        :rtype: np.ndarray
-        """
-
-        try:
-            if símismo.datos[var] is None:
-                símismo._cargar_datos(var=var)
-        except KeyError:
-            raise ValueError('Nombre de variable "{}" erróneo.'.format(var))
-
-        datos = símismo.datos[var]
-
-        q75, q25 = np.percentile(datos, [75, 25])
-        riq = q75 - q25
-
-        return datos[(datos < q25 - 1.5 * riq) | (datos > q75 + 1.5 * riq)]
-
-    def estab_col_año(símismo, col):
-
-        try:
-            símismo._cargar_datos(var=col)
-        except ValueError:
-            raise ValueError('Nombre de columna de سال "{}" erróneo.'.format(col))
-
-        símismo.años = símismo.datos[col]
-
-    def estab_col_lugar(símismo, col):
-        try:
-            símismo._cargar_datos(var=col)
-        except ValueError:
-            raise ValueError('Nombre de columna de códigos del lugar "{}" erróneo.'.format(col))
-        símismo.lugares = símismo.datos[col]
-
-    def buscar_datos(símismo, l_vars, años=None, cód_lugar=None):
+    def obt_datos(símismo, l_vars):
         """
 
         :param l_vars:
         :type l_vars: list
-
-        :param años:
-        :type años: tuple
-
-        :param cód_lugar:
-        :type cód_lugar: list
-
         :return:
         :rtype: dict
 
         """
 
-        # Si no se especificó lugar, tomar todos los lugares disponibles
-        if cód_lugar is None:
-            cód_lugar = set(símismo.lugares)
-
-        if años is None:
-            años = (-np.inf, np.inf)
-
-        if años[0] is None:
-            años = (-np.inf, años[1])
-        if años[1] is None:
-            años = (años[0], np.inf)
-
-        if type(l_vars) is not list:
-            l_vars = [l_vars]
-
-        for var in l_vars:
-            if símismo.datos[var] is None:
-                símismo._cargar_datos(var)
-
-        dic = {}
-
-        for l in cód_lugar:
-            dic[l] = {}
-
-            disp = [np.where((símismo.lugares == l) & (símismo.años >= años[0]) & (símismo.años <= años[1])
-                             & (símismo.datos[v] != np.nan))
-                    for v in l_vars]
-            índ = np.all(disp, axis=0)
-
-            for var in l_vars:
-                if var not in dic:
-                    dic[var] = {}
-
-                dic[var][l]['datos'] = símismo.datos[var][índ]
-                dic[var][l]['سال'] = símismo.años[índ]
-
-        return dic
-
-    def _cargar_datos(símismo, var):
-        """
-
-        :param var:
-        :type var: str | list
-
-        """
-
-        if type(var) is str:
-            var = [var]
-
-        with open(símismo.archivo_datos, newline='') as d:
-
-            l = csv.reader(d)  # El lector de csv
-
-            valores = []  # Para guardar la lista de datos de cada línea
-
-            # Saltar la primera fila como nombres de columnas
-            next(l)
-
-            # Para cada fila que sigue en el csv...
-            for f in l:
-                valores.append(f)
-
-        for v in var:
-            n = símismo.vars.index(v)
-
-            # Poner np.nan donde faltan observaciones y convertir a una matriz numpy
-            matr = np.array([x[n] if x[n] not in símismo.cod_vacío else np.nan for x in valores], dtype=np.str)
-
-            símismo.datos[v] = matr.astype(np.float)
-
-    def guardar_datos(símismo, archivo=None):
-        """
-
-        """
-
-        if archivo is None:
-            archivo = símismo.archivo_datos
-        else:
-            símismo.archivo_datos = archivo
-
-        for var in símismo.vars:
-            if símismo.datos[var] is None:
-                símismo._cargar_datos(var)
-
-        with open(símismo.archivo_datos, 'w', newline='') as d:
-            e = csv.writer(d)
-            e.writerow(símismo.vars)
-            for i in range(símismo.n_obs):
-                e.writerow([símismo.datos[x] for x in símismo.vars])
+        return símismo.bd.obt_datos(l_vars)
 
 
 class DatosIndividuales(Datos):
@@ -270,43 +89,75 @@ class DatosIndividuales(Datos):
 
 class DatosRegión(Datos):
 
-    def __init__(símismo, archivo_csv, año=None, cód_lugar=None, col_año=None, col_cód_lugar=None, cód_vacío='',
-                 col_tmñ_muestra=None, col_error_est=None):
+    def __init__(símismo, nombre, archivo, fecha, lugar, cód_vacío='', col_tmñ_muestra=None):
 
-        super().__init__(archivo_csv, año, cód_lugar, col_año, col_cód_lugar, cód_vacío)
+        super().__init__(nombre=nombre, archivo=archivo, fecha=fecha, lugar=lugar, cód_vacío=cód_vacío)
 
-        símismo.tmñ_muestra = None
-
-        símismo.error_est = None
-
-        if col_tmñ_muestra is not None:
-            símismo.estab_col_año(col=col_tmñ_muestra)
-
-        if col_error_est is not None:
-            símismo.estab_col_error(col=col_error_est)
-
-    def estab_col_tmñ(símismo, col):
-
-        try:
-            símismo._cargar_datos(var=col)
-        except ValueError:
-            raise ValueError('Nombre de columna de tamaños de muestra "{}" erróneo.'.format(col))
-
-        símismo.tmñ_muestra = símismo.datos[col]
-
-    def estab_col_error(símismo, col):
-
-        try:
-            símismo._cargar_datos(var=col)
-        except ValueError:
-            raise ValueError('Nombre de columna de errores estándardes "{}" erróneo.'.format(col))
-
-        símismo.error_est = símismo.datos[col]
+        if col_tmñ_muestra in símismo.cols:
+            símismo.col_tmñ_muestra = col_tmñ_muestra
+        else:
+            raise ValueError(_('Nombre de columna de tamaños de muestra "{}" erróneo.').format(col_tmñ_muestra))
 
 
-class BaseDeDatos(object):
+class SuperBD(object):
 
-    def __init__(símismo, datos, geog, fuente=None):
+    def __init__(símismo, nombre, bds=None):
+        """
+
+        :param nombre:
+        :type nombre: str
+        :param bds:
+        :type bds: list | Datos
+        """
+
+        símismo.nombre = nombre
+
+        if bds is None:
+            símismo.bds = {}
+        else:
+            if isinstance(bds, Datos):
+                bds = [Datos]
+            if isinstance(bds, list):
+                símismo.bds = {d.nombre: d for d in bds}
+            else:
+                raise TypeError('')
+
+        símismo.vars = {}
+
+        símismo.datos_reg = pd.DataFrame()
+        símismo.datos_ind = pd.DataFrame()
+
+    def agregar_datos(símismo, bd, como=None, auto=True):
+        """
+
+        :param bd:
+        :type bd: Datos
+        :param como:
+        :type como:
+        :param auto:
+        :type auto: bool
+
+        """
+
+        símismo.bds[bd.nombre] = bd
+
+        if auto:
+
+    def espec_var(símismo, var, var_bd=None, bd=None, cód_vacío=None):
+
+        if var_bd is None:
+            var_bd = var
+        if bd is None:
+            bd = list(símismo.bds)
+        if not is
+
+
+class _dinausorio(object):
+    """
+    En caso que haya algo interesante aquí.
+    """
+
+    def __init__(símismo, datos, geog=None, fuente=None):
         """
 
         :param datos:
@@ -413,7 +264,7 @@ class BaseDeDatos(object):
         :type lugar: list
 
         :param datos:
-        :type datos: list
+        :type datos: Datos | list[Datos]
 
         :return:
         :rtype: dict
@@ -438,13 +289,13 @@ class BaseDeDatos(object):
 
             cód_lugar = dic
 
-        if type(cód_lugar) is not list:
+        if not isinstance(cód_lugar, list):
             cód_lugar = [cód_lugar]
 
         if datos is None:
             datos = símismo.datos
 
-        if type(datos) is not list:
+        if not isinstance(datos, list):
             datos = [datos]
 
         if escala == 'individual':
@@ -478,9 +329,9 @@ class BaseDeDatos(object):
         for ll, v in d2.items():
             if ll not in d1:
                 d1[ll] = v
-            elif type(v) is dict:
+            elif isinstance(v, dict):
                 símismo.combinar_dics(d1=d1[ll], d2=v)
-            elif type(v) is np.ndarray():
+            elif isinstance(v, np.ndarray):
                 d1[ll].concatenate(v)
             else:
                 raise TypeError
@@ -503,7 +354,7 @@ class BaseDeDatos(object):
         if archivo is None:
             archivo = símismo.fuente
 
-        with io.open(archivo, 'w', encoding='utf8') as d:
+        with open(archivo, 'w', encoding='utf8') as d:
             json.dump(símismo.receta, d, ensure_ascii=False, sort_keys=True, indent=2)  # Guardar todo
 
     def cargar(símismo, fuente):
@@ -517,4 +368,295 @@ class BaseDeDatos(object):
         símismo.fuente = fuente
 
 
-class ConexiónDatos(object):
+def _gen_bd(archivo):
+    """
+
+    :param archivo:
+    :type archivo: str
+    :return:
+    :rtype: BD
+    """
+    ext = os.path.splitext(archivo)[1]
+    if ext == '.txt' or ext == '.csv':
+        return BDtexto(archivo)
+    elif ext == '.sql':
+        return BDsql(archivo)
+    else:
+        raise ValueError
+
+
+class BD(object):
+    """
+    Una superclase para lectores de bases de datos.
+    """
+
+    def __init__(símismo, archivo):
+        símismo.archivo = archivo
+
+        if not os.path.isfile(archivo):
+            raise FileNotFoundError
+
+        símismo.n_obs = símismo.calc_n_obs()
+
+    def obt_nombres_cols(símismo):
+        """
+
+        :return:
+        :rtype: list[str]
+        """
+        raise NotImplementedError
+
+    def obt_datos(símismo, cols, prec_dec=None):
+        """
+
+        :param cols:
+        :type cols: list[str] | str
+        :param prec_dec:
+        :type prec_dec: int
+        :return:
+        :rtype: np.ndarray
+        """
+        raise NotImplementedError
+
+    def obt_datos_tx(símismo, cols):
+        """
+
+        :param cols:
+        :type cols: list[str] | str
+        :return:
+        :rtype: list
+        """
+        raise NotImplementedError
+
+    def obt_fechas(símismo, cols):
+        """
+
+        :param cols:
+        :type cols: str
+        :return:
+        :rtype: (ft.date, np.ndarray)
+        """
+
+        # Sacar la lista de fechas en formato texto
+        fechas_tx = símismo.obt_datos_tx(cols=cols)
+
+        # Procesar la lista de fechas
+        fch_inic_datos, v_núm = símismo._leer_fechas(lista_fechas=fechas_tx)
+
+        # Devolver información importante
+        return fch_inic_datos, v_núm
+
+    def calc_n_obs(símismo):
+        """
+
+        :return:
+        :rtype: int
+        """
+        raise NotImplementedError
+
+    @staticmethod
+    def _leer_fechas(lista_fechas):
+        """
+        Esta función toma una lista de datos de fecha en formato de texto y detecta 1) la primera fecha de la lista,
+        y 2) la posición relativa de cada fecha a esta.
+
+        :param lista_fechas: Una lista con las fechas en formato de texto
+        :type lista_fechas: list
+
+        :return: Un tuple de la primera fecha y del vector numpy de la posición de cada fecha relativa a la primera.
+        :rtype: (ft.date, np.ndarray)
+
+        """
+
+        # Una lista de lso formatos de fecha posibles. Esta función intentará de leer los datos de fechas con cada
+        # formato en esta lista y, si encuentra un que funciona, parará allí.
+        separadores = ['-', '/', ' ', '.']
+
+        f = ['%d{0}%m{0}%y', '%m{0}%d{0}%y', '%d{0}%m{0}%Y', '%m{0}%d{0}%Y',
+             '%d{0}%b{0}%y', '%m{0}%b{0}%y', '%d{0}%b{0}%Y', '%b{0}%d{0}%Y',
+             '%d{0}%B{0}%y', '%m{0}%B{0}%y', '%d{0}%B{0}%Y', '%m{0}%B{0}%Y',
+             '%y{0}%m{0}%d', '%y{0}%d{0}%m', '%Y{0}%m{0}%d', '%Y{0}%d{0}%m',
+             '%y{0}%b{0}%d', '%y{0}%d{0}%b', '%Y{0}%b{0}%d', '%Y{0}%d{0}%b',
+             '%y{0}%B{0}%d', '%y{0}%d{0}%B', '%Y{0}%B{0}%d', '%Y{0}%d{0}%B']
+
+        formatos_posibles = [x.format(s) for s in separadores for x in f]
+
+        # Primero, si los datos de fechas están en formato simplemente numérico...
+        if all([x.isdigit() for x in lista_fechas]):
+
+            # Entonces, no conocemos la fecha inicial
+            fecha_inic_datos = None
+
+            # Convertir a vector Numpy
+            vec_fch_núm = np.array(lista_fechas, dtype=int)
+
+        else:
+            # Sino, intentar de leer el formato de fecha
+            fechas = None
+
+            # Intentar con cada formato en la lista de formatos posibles
+            for formato in formatos_posibles:
+
+                try:
+                    # Intentar de convertir todas las fechas a objetos ft.datetime
+                    fechas = [ft.datetime.strptime(x, formato).date() for x in lista_fechas]
+
+                    # Si funcionó, parar aquí
+                    break
+
+                except ValueError:
+                    # Si no funcionó, intentar el próximo formato
+                    continue
+
+            # Si todavía no lo hemos logrado, tenemos un problema.
+            if fechas is None:
+                raise ValueError(
+                    'No puedo leer los datos de fechas. ¿Mejor le eches un vistazo a tu base de datos?')
+
+            else:
+                # Pero si está bien, ya tenemos que encontrar la primera fecha y calcular la posición relativa de las
+                # otras con referencia en esta.
+
+                # La primera fecha de la base de datos. Este paso se queda un poco lento, así que para largas bases de
+                # datos podría ser útil suponer que la primera fila también contiene la primera fecha.
+                fecha_inic_datos = min(fechas)
+
+                # Si tenemos prisa, mejor lo hagamos así:
+                # fecha_inic_datos = min(fechas[0], fechas[-1])
+
+                # La posición relativa de todas las fechas a esta
+                lista_fechas = [(x - fecha_inic_datos).days for x in fechas]
+
+                # Convertir a vector Numpy
+                vec_fch_núm = np.array(lista_fechas, dtype=int)
+
+        return fecha_inic_datos, vec_fch_núm
+
+
+class BDtexto(BD):
+    """
+    Una clase para leer bases de datos en formato texto delimitado por comas (.csv).
+    """
+
+    def calc_n_obs(símismo):
+        """
+
+        :rtype: int
+        """
+        with open(símismo.archivo, encoding='UTF8') as d:
+            n_filas = sum(1 for f in d if len(f)) - 1  # Sustrayemos la primera fila
+
+        return n_filas
+
+    def obt_datos(símismo, cols, prec_dec=None):
+        """
+
+        :param cols:
+        :type cols: str | list[str]
+        :param prec_dec:
+        :type prec_dec: int
+        :return:
+        :rtype: np.ndarray
+        """
+        if not isinstance(cols, list):
+            cols = [cols]
+
+        m_datos = np.empty((len(cols), símismo.n_obs))
+
+        with open(símismo.archivo, encoding='UTF8') as d:
+            lector = csv.DictReader(d)
+            for n_f, f in enumerate(lector):
+                m_datos[:, n_f] = [tx_a_núm(f[c]) if f[c] != '' else np.nan for c in cols]
+
+        if len(cols) == 1:
+            m_datos = m_datos[0]
+
+        if prec_dec is not None:
+            if prec_dec == 0:
+                m_datos = m_datos.astype(int)
+            else:
+                m_datos.round(prec_dec, out=m_datos)
+
+        return m_datos
+
+    def obt_datos_tx(símismo, cols):
+        """
+
+        :param cols:
+        :type cols: list[str] | str
+        :return:
+        :rtype: list
+        """
+        if not isinstance(cols, list):
+            cols = [cols]
+
+        l_datos = [[''] * símismo.n_obs] * len(cols)
+
+        with open(símismo.archivo, encoding='UTF8') as d:
+            lector = csv.DictReader(d)
+            for n_f, f in enumerate(lector):
+                for i_c, c in enumerate(cols):
+                    l_datos[i_c][n_f] = f[c]
+
+        if len(cols) == 1:
+            l_datos = l_datos[0]
+
+        return l_datos
+
+    def obt_nombres_cols(símismo):
+        """
+
+        :return:
+        :rtype: list[str]
+        """
+
+        with open(símismo.archivo, encoding='UTF8') as d:
+            lector = csv.reader(d)
+
+            nombres_cols = next(lector)
+
+        return nombres_cols
+
+
+class BDsql(BD):
+    """
+    Una clase para leer bases de datos en formato SQL.
+    """
+
+    def calc_n_obs(símismo):
+        """
+
+        :return:
+        :rtype:
+        """
+        raise NotImplementedError
+
+    def obt_datos(símismo, cols, prec_dec=None):
+        """
+
+        :param cols:
+        :type cols:
+        :param prec_dec:
+        :type prec_dec:
+        :return:
+        :rtype:
+        """
+        raise NotImplementedError
+
+    def obt_datos_tx(símismo, cols):
+        """
+
+        :param cols:
+        :type cols:
+        :return:
+        :rtype:
+        """
+        raise NotImplementedError
+
+    def obt_nombres_cols(símismo):
+        """
+
+        :return:
+        :rtype:
+        """
+        raise NotImplementedError

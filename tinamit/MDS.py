@@ -5,6 +5,7 @@ import csv
 
 import numpy as np
 
+from tinamit import _
 from tinamit.Modelo import Modelo
 
 
@@ -143,7 +144,7 @@ class EnvolturaMDS(Modelo):
         """
 
         if var not in símismo.variables:
-            raise ValueError('El variable "{}" no existe.'.format(var))
+            raise ValueError(_('El variable "{}" no existe.').format(var))
 
         if os.path.splitdrive(corrida)[0] == '':
             archivo = os.path.join(os.path.split(símismo.archivo)[0], corrida)
@@ -153,6 +154,10 @@ class EnvolturaMDS(Modelo):
         archivo += símismo.ext_arch_egr
 
         return leer_egr_mds(archivo, var)
+
+
+class MDSEditable(EnvolturaMDS):
+    pass
 
 
 def leer_egr_mds(archivo, var):
@@ -195,6 +200,6 @@ def leer_egr_mds(archivo, var):
             datos.append(f[1:])
 
     else:
-        raise ValueError('El formato de datos "{}" no se puede leer al momento.'.format(ext))
+        raise ValueError(_('El formato de datos "{}" no se puede leer al momento.').format(ext))
 
     return np.array(datos, dtype=float)

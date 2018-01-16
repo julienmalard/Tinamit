@@ -1,4 +1,4 @@
-from tinamit.Incertidumbre.Datos import DatosIndividuales, DatosRegión, BaseDeDatos
+from tinamit.Incertidumbre.Datos import DatosIndividuales, DatosRegión, SuperBD
 from EnvolturaMDS import generar_mds
 from tinamit.Geog.Geog import Geografía
 
@@ -26,17 +26,19 @@ geog.agregar_info_regiones(archivo='Geografía Iximulew.csv',
 
 
 print(datos_ind.datos_irreg(var='Inseguridad.alimentaria'))
-print(datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(1, 4), tipo='valor'))  # Hace cambios al csv
-datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(0, 0.90))
+# print(datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(1, 4), tipo='valor'))  # Hace cambios al csv
+# datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(0, 0.90))
 
 # datos_ind.guardar_datos(archivo='ENCOVI_hog_2011_limp.csv')  # Guarda el csv
 
 datos_muni = DatosRegión(archivo_csv='Desnutrición_muni.csv', col_año='Año', col_cód_lugar='Código_lugar',
                          col_tmñ_muestra='Tamaño_muestra')
 
-bd = BaseDeDatos(datos=[datos_ind, datos_muni], geog=geog)
+bd = SuperBD(datos=[datos_ind, datos_muni], geog=geog)
 
 bd.renombrar_var(datos=datos_ind, var='P01221', nuevo_nombre='Insegurdad Alimentaria')  # puro ejemplo
+
+bd.a
 
 # Gráfico de "caja" con incertidumbre
 bd.graficar(var='Inseguridad Alimentaria', años=2011, cód_lugar='0708', datos=None)

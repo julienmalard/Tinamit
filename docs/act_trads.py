@@ -12,10 +12,12 @@ cuál es mejor.
 
 proyecto_transifex = 'tinamit'
 leng_orig = 'es'
-lenguas = ['ms', 'fr', 'ta', 'ur', 'nl', 'tzj', 'quc', 'cak']
+lenguas = {'ms', 'fr', 'ta', 'ur', 'nl', 'tzj', 'quc', 'cak'}
 
 # El directorio de la documentación
 dir_docs = os.path.split(os.path.realpath(__file__))[0]
+
+lenguas.update(os.listdir(os.path.join(dir_docs, 'source', '_locale')))
 
 # Primero, actualizamos los archivos de documentos para traducir (.pot), basado en el código más recién del programa
 print('Actualizando el proyecto...')

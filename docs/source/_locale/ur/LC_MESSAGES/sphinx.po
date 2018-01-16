@@ -18,6 +18,26 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Zanata 3.9.6\n"
 
+#: ../../source/_templates/layout.html:37
+msgid "Search within %(docstitle)s"
+msgstr "اندر تلاش کریں۔"
+
+#: ../../source/_templates/layout.html:62
+msgid "About these documents"
+msgstr "ان دستاویزات کے بارے میں۔"
+
+#: ../../source/_templates/layout.html:66
+msgid "Index"
+msgstr " فہرست۔"
+
+#: ../../source/_templates/layout.html:70
+msgid "Search"
+msgstr "تلاش کریں۔"
+
+#: ../../source/_templates/layout.html:73
+msgid "Copyright"
+msgstr "حقوق۔"
+
 #: ../../source/_templates/footer.html:5
 msgid "Next"
 msgstr "اگلا۔"
@@ -63,23 +83,3 @@ msgid ""
 "href=\"https://github.com/snide/sphinx_rtd_theme\">theme</a> provided by <a "
 "href=\"https://readthedocs.org\">Read the Docs</a>"
 msgstr ""
-
-#: ../../source/_templates/layout.html:37
-msgid "Search within %(docstitle)s"
-msgstr "اندر تلاش کریں۔"
-
-#: ../../source/_templates/layout.html:62
-msgid "About these documents"
-msgstr "ان دستاویزات کے بارے میں۔"
-
-#: ../../source/_templates/layout.html:66
-msgid "Index"
-msgstr " فہرست۔"
-
-#: ../../source/_templates/layout.html:70
-msgid "Search"
-msgstr "تلاش کریں۔"
-
-#: ../../source/_templates/layout.html:73
-msgid "Copyright"
-msgstr "حقوق۔"
