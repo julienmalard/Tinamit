@@ -140,7 +140,7 @@ class Modelo(object):
         for v in símismo.vals_inic.values():
             v.clear()
 
-    def conectar_var_clima(símismo, var, var_clima, combin=None):
+    def conectar_var_clima(símismo, var, var_clima, conv, combin=None):
         """
         Conecta un variable climático.
 
@@ -148,6 +148,8 @@ class Modelo(object):
         :type var: str
         :param var_clima: El nombre oficial del variable climático.
         :type var_clima: str
+        :param conv: La conversión entre el variable clima en Tinamït y el variable correspondiente en el modelo.
+        :type conv: int | float
         :param combin: Si este variable se debe adicionar o tomar el promedio entre varios pasos.
         :type combin: str
 
@@ -162,7 +164,8 @@ class Modelo(object):
             raise ValueError('"Combin" debe ser "prom", "total", o None, no "{}".'.format(combin))
 
         símismo.vars_clima[var] = {'nombre_extrn': var_clima,
-                                   'combin': combin}
+                                   'combin': combin,
+                                   'conv': conv}
 
     def desconectar_var_clima(símismo, var):
         """
@@ -232,7 +235,10 @@ class Modelo(object):
 
         # La lista de maneras de combinar los valores diarios
         combins = [d['combin'] for d in símismo.vars_clima.values()]
-
+        
+        # La lista de factores de conversión
+        convs = [d['conv'] for d in símismo.vars_clima.values()]
+        
         # La fecha final
         if símismo.unidad_tiempo == 'Días':
             f_final = f + deltarelativo(days=+n_paso)
@@ -253,7 +259,7 @@ class Modelo(object):
                    'en precisión.'
                    .format(n_paso, símismo.unidad_tiempo))
 
-        # Calcular los اعداد_دن
+        # Calcular los datos
         datos = símismo.lugar.comb_datos(vars_clima=nombres_extrn, combin=combins,
                                          f_inic=f, f_final=f_final)
 
@@ -263,6 +269,9 @@ class Modelo(object):
 
             # El nombre oficial del variable de clima
             var_clima = nombres_extrn[i]
-
+            
+            # El factor de conversión de unidades
+            conv = convs[i]
+            
             # Aplicar el cambio
-            símismo.cambiar_vals(valores={var: datos[var_clima]})
+            símismo.cambiar_vals(valores={var: datos[var_clima] * conv})
