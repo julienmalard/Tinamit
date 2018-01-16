@@ -4,7 +4,7 @@ import pkg_resources
 
 
 def imagen(nombre):
-    archivo = pkg_resources.resource_filename('tinamit.Interfaz.Imágenes', archivos_imgs[nombre])
+    archivo = pkg_resources.resource_filename('tinamit.Interfaz.imágenes', archivos_imgs[nombre])
     img = tk.PhotoImage(file=archivo)
     return img
 

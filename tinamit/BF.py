@@ -103,6 +103,17 @@ class EnvolturaBF(Modelo):
         """
         símismo.modelo.leer_vals()
 
+    def act_vals_clima(símismo, n_paso, f):
+        """
+
+        :param n_paso:
+        :type n_paso: int
+        :param f:
+        :type f:
+
+        """
+        símismo.modelo.act_vals_clima(n_paso=n_paso, f=f)
+
     def iniciar_modelo(símismo, **kwargs):
         """
         Inicializa el modelo biofísico interno, incluyendo la inicialización de variables.
@@ -116,6 +127,7 @@ class EnvolturaBF(Modelo):
         símismo.cambiar_vals(símismo.vals_inic)
 
         # ...y inicializar el modelo.
+        símismo.modelo.lugar = símismo.lugar
         símismo.modelo.iniciar_modelo(**kwargs)
 
     def cerrar_modelo(símismo):
@@ -172,7 +184,7 @@ class ModeloBF(Modelo):
 
         """
 
-        raise NotImplementedError
+        símismo.leer_vals_inic()
 
     def cerrar_modelo(símismo):
         """
@@ -203,6 +215,14 @@ class ModeloBF(Modelo):
 
         Al no hacer esto, romperás la conección entre los diccionarios de variables de :class:`ModeloBF` y
         :class:`EnvolturaBF`, lo cual impedirá después la conexión de estos variables con el modelo DS.
+
+        """
+
+        raise NotImplementedError
+
+    def leer_vals_inic(símismo):
+        """
+        Lee los valores iniciales de los variables.
 
         """
 
@@ -408,6 +428,8 @@ class ModeloImpaciente(ModeloBF):
         símismo.estación = 0
         símismo.mes = 0
 
+        super().iniciar_modelo(**kwargs)
+
     def cerrar_modelo(símismo):
         """
         Esta función debe cerrar la simulación. No se aplica a todos los modelos biofísicos (en ese caso, usar ``pass``
@@ -530,7 +552,7 @@ class ModeloImpaciente(ModeloBF):
                 else:
                     dic_ingr[var] = símismo.datos_internos[var][-1, ...]
             else:
-                dic_ingr[var] =  símismo.variables[var]['val']
+                dic_ingr[var] = símismo.variables[var]['val']
 
         símismo.escribir_archivo_ingr(n_años_simul=n_años_simul, dic_ingr=dic_ingr)
 
@@ -645,6 +667,12 @@ class ModeloFlexible(ModeloBF):
 
         """
 
+        raise NotImplementedError
+
+    def leer_vals_inic(símismo):
+        """
+
+        """
         raise NotImplementedError
 
     def leer_archivo_vals_inic(símismo):
