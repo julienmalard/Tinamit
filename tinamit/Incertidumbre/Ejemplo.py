@@ -47,7 +47,7 @@ bd.graficar(var='Inseguridad Alimentaria', años=2011, lugar=['Iximulew', "Tz'ol
 # Gráfico de línea con tiempo en el eje x e incertidumbre mostrada
 bd.graficar(var='Población', años=(2000, None), cód_lugar='0112')
 
-# Varias "cajas" en el mismo gráfico (eje x = lugar)
+# Varias "cajas" en el mismo gráfico (eje x = lugares)
 bd.graficar(var='Población', años=2011, cód_lugar=['0112', 1204])
 
 # Varias líneas en el mismo gráfico (eje x = tiempo)

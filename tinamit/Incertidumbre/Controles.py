@@ -56,7 +56,7 @@ class Control(object):
                                                    'máx': est['máx'],
                                                    'escala': escala,
                                                    'سال': años,
-                                                   'lugar': lugar,
+                                                   'lugares': lugar,
                                                    'cód_lugar': cód_lugar}
 
         símismo.modelo.vars['ec'] = est['máx']
@@ -173,7 +173,7 @@ class Control(object):
         dic_ec['párams'] = calibrados
         dic_ec['escala'] = escala
         dic_ec['سال'] = años
-        dic_ec['lugar'] = lugar
+        dic_ec['lugares'] = lugar
         dic_ec['cód_lugar'] = cód_lugar
 
         símismo.modelo.vars[var]['ec'] = ec_desparám.format(p=calibrados)
@@ -209,7 +209,7 @@ class Control(object):
 
             años = dic['سال']
             escala = dic['escala']
-            lugar = dic['lugar']
+            lugar = dic['lugares']
 
             if lugar == '':
                 lugar = None
@@ -224,7 +224,7 @@ class Control(object):
 
             años = dic['سال']
             escala = dic['escala']
-            lugar = dic['lugar']
+            lugar = dic['lugares']
 
             if lugar == '':
                 lugar = None

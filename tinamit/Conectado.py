@@ -231,11 +231,11 @@ class SuperConectado(Modelo):
 
     def _conectar_clima(símismo, n_pasos, lugar, fecha_inic, tcr, recalc):
         """
-        Esta función conecta el clima de un lugar con el modelo Conectado.
+        Esta función conecta el clima de un lugares con el modelo Conectado.
 
         :param  n_pasos: El número de pasos para la simulación.
         :type n_pasos: int
-        :param lugar: El lugar.
+        :param lugar: El lugares.
         :type lugar: Lugar
         :param fecha_inic: La fecha inicial de la simulación.
         :type fecha_inic: ft.date | ft.datetime | str | int
@@ -244,7 +244,7 @@ class SuperConectado(Modelo):
 
         """
 
-        # Conectar el lugar
+        # Conectar el lugares
         símismo.lugar = lugar
         for m in símismo.modelos.values():
             m.lugar = lugar
@@ -282,7 +282,7 @@ class SuperConectado(Modelo):
         if fecha_final is None:
             raise ValueError
 
-        # Obtener los datos de lugar
+        # Obtener los datos de lugares
         lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=tcr, regenerar=recalc)
 
     def act_vals_clima(símismo, n_paso, f):
@@ -316,7 +316,7 @@ class SuperConectado(Modelo):
         :param fecha_inic: La fecha inicial de la simulación. Necesaria para simulaciones con cambios climáticos.
         :type fecha_inic: ft.datetime | ft.date | int | str
 
-        :param lugar: El lugar de la simulación.
+        :param lugar: El lugares de la simulación.
         :type lugar: Lugar
 
         :param tcr: El escenario climático según el sistema de la IPCC (2.6, 4.5, 6.0, o 8.5)
@@ -355,7 +355,7 @@ class SuperConectado(Modelo):
         # Conectar el clima, si necesario
         if clima:
             if lugar is None:
-                raise ValueError(_('Hay que especificar un lugar para incorporar el clima.'))
+                raise ValueError(_('Hay que especificar un lugares para incorporar el clima.'))
             else:
                 if fecha_inic is None:
                     raise ValueError(_('Hay que especificar la fecha inicial para simulaciones de clima'))
@@ -752,7 +752,7 @@ class Conectado(SuperConectado):
         """
         Dibuja mapas espaciales de los valores de un variable.
 
-        :param geog: La geografía del lugar.
+        :param geog: La geografía del lugares.
         :type geog: Geografía
         :param var: El variable para dibujar.
         :type var: str

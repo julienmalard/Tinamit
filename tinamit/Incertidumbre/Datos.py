@@ -54,9 +54,9 @@ class Datos(object):
             raise TypeError('')
 
         if lugar in símismo.cols:
-            símismo.lugar = símismo.bd.obt_datos_tx(cols=lugar)
+            símismo.lugares = símismo.bd.obt_datos_tx(cols=lugar)
         else:
-            símismo.lugar = str(lugar)
+            símismo.lugares = str(lugar)
 
         if isinstance(cód_vacío, list):
             símismo.cod_vacío = set(cód_vacío)
@@ -64,9 +64,6 @@ class Datos(object):
             símismo.cod_vacío = {cód_vacío}
 
         símismo.cod_vacío.add('')
-
-        símismo.años = None  # type: np.array
-        símismo.lugares = None  # type: np.array
 
         símismo.n_obs = símismo.bd.n_obs
 
@@ -281,28 +278,51 @@ class SuperBD(object):
     def _gen_bd_intern(símismo):
 
         símismo._limp_vars()
+        símismo.datos_ind = símismo.datos_reg = None
 
-        # Agregar datos individuales
-        vars_ind = [v for v, d_v in símismo.vars.items() if
-                    any(isinstance(símismo.bds[bd], DatosIndividuales) for bd in d_v['fuente'])]
+        # Agregar datos
+        for nb, bd in símismo.bds.items():
+            # Datos individuales
+            if isinstance(bd, DatosIndividuales):
+                vars_interés = [it for it in símismo.vars.items() if nb in it[1]['fuente']]
+                datos_bd = np.array([bd.obt_datos(d_v['fuente'][nb]['var'], cód_vacío=d_v['fuente'][nb]['cód_vacío'])
+                                     for v, d_v in vars_interés]).T
 
-        símismo.datos_ind = pd.DataFrame(columns=['bd', 'fecha', 'lugar'])
+                bd_pds_temp = pd.DataFrame(datos_bd, columns=[it[0] for it in vars_interés])
 
+                bd_pds_temp['bd'] = nb
+                bd_pds_temp['lugar'] = bd.lugares
 
+                if isinstance(bd.fechas, tuple):
+                    bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas[0]) + pd.to_timedelta([1,2,3], unit='day')
+                else:
+                    bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas)
 
+                if símismo.datos_ind is None:
+                    símismo.datos_ind = bd_pds_temp
+                else:
+                    símismo.datos_ind.append(bd_pds_temp, ignore_index=True)
 
-        vars_ reg = [v for v, d_v in símismo.vars.items() if
-                    any(isinstance(símismo.bds[bd], DatosRegión) for bd in d_v['fuente'])]
+            # Datos regionales
+            else:
+                vars_interés = [it for it in símismo.vars.items() if nb in it[1]['fuente']]
+                datos_bd = np.array([bd.obt_datos(d_v['fuente'][nb]['var'], cód_vacío=d_v['fuente'][nb]['cód_vacío'])
+                                     for v, d_v in vars_interés]).T
 
-        for v, d_v in símismo.vars.items():
-            datos_ind[v] = np.nan
-            for bd, d_bd in d_v['fuente']:
-                obj_bd = símismo.bds[bd]
+                bd_pds_temp = pd.DataFrame(datos_bd, columns=[it[0] for it in vars_interés])
 
-                if isinstance(obj_bd, DatosIndividuales):
-                    símismo.datos_ind[v] =
+                bd_pds_temp['bd'] = nb
+                bd_pds_temp['lugar'] = bd.lugares
 
+                if isinstance(bd.fechas, tuple):
+                    bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas[0]) + pd.to_timedelta([1,2,3], unit='day')
+                else:
+                    bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas)
 
+                if símismo.datos_reg is None:
+                    símismo.datos_reg = bd_pds_temp
+                else:
+                    símismo.datos_reg.append(bd_pds_temp, ignore_index=True)
 
 
 class _dinausorio(object):
@@ -349,7 +369,7 @@ class _dinausorio(object):
         dic_datos = símismo.pedir_datos(l_vars=[var], escala=escala, años=años,
                                         cód_lugar=cód_lugar, lugar=lugar, datos=datos)
 
-        # El número máximo de سال que tenga un lugar
+        # El número máximo de سال que tenga un lugares
         n_años = max([len(x['سال']) for x in dic_datos.values()])
 
         if n_años > 1:
@@ -428,10 +448,10 @@ class _dinausorio(object):
             raise ValueError
 
         if cód_lugar is not None and lugar is not None:
-            raise ValueError('No se puede especificar y un código de lugar, y el lugar. Hay que usar o el uno,'
-                             'o el otro para identificar el lugar.')
+            raise ValueError('No se puede especificar y un código de lugares, y el lugares. Hay que usar o el uno,'
+                             'o el otro para identificar el lugares.')
 
-        # Convertir una ubicación de lugar (lista) a código de lugar
+        # Convertir una ubicación de lugares (lista) a código de lugares
         if lugar is not None:
             dic = símismo.geog.árbol
             dif = len(símismo.geog.órden) - len(lugar)

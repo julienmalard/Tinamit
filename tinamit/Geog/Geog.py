@@ -35,11 +35,11 @@ class Lugar(مقام):
         """
         Inciamos el :class:`Lugar` con sus coordenadas.
 
-        :param lat: La latitud del lugar.
+        :param lat: La latitud del lugares.
         :type lat: float | int
-        :param long: La longitud del lugar.
+        :param long: La longitud del lugares.
         :type long: float | int
-        :param elev: La elevación del lugar, en metros.
+        :param elev: La elevación del lugares, en metros.
         :type elev: float | int
         """
 
@@ -248,7 +248,7 @@ class Lugar(مقام):
 
 class Geografía(object):
     """
-    Esta clase representa la geografía de un lugar.
+    Esta clase representa la geografía de un lugares.
     """
     def __init__(símismo, nombre):
 
