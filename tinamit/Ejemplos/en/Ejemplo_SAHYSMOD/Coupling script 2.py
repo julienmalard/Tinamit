@@ -87,7 +87,7 @@ if use_simple:
 else:
     runs = runs_complex
 
-"""
+
 # Run the model for all desired runs
 for name, run in runs.items():
 
@@ -128,3 +128,4 @@ for rcp in [2.6, 4.5, 6.0, 8.5]:
                        directorio='Maps')
         modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida, var='Soil salinity Tinamit CropA',
                        directorio='Maps')
+"""

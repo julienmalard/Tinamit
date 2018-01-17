@@ -139,8 +139,9 @@ class SuperBD(object):
 
         símismo.vars = {}
 
-        símismo.datos_reg = pd.DataFrame()
-        símismo.datos_ind = pd.DataFrame()
+        símismo.datos_reg = None  # type: pd.DataFrame
+        símismo.datos_ind = None  # type: pd.DataFrame
+        símismo._gen_bd_intern()
 
     def agregar_datos(símismo, bd, como=None, auto_llenar=True):
         """
@@ -182,7 +183,7 @@ class SuperBD(object):
                     else:
                         avisar(_('El variable existente "{}" no existe en la nueva base de datos "{}". No'
                                  'lo podremos copiar.').format(var_bd, bd.nombre))
-        símismo._limp_vars()
+        símismo._gen_bd_intern()
 
     def desconectar_datos(símismo, bd):
 
@@ -236,6 +237,8 @@ class SuperBD(object):
             símismo.vars[var] = {'fuente': {}, 'limp': {}}
         símismo.vars[var] = {'fuente': {bd.nombre: {'var': var_bd, 'cód_vacío': cód_vacío} for bd in bds}}
 
+        símismo._gen_bd_intern()
+
     def borrar_var(símismo, var, bds=None):
 
         if var not in símismo.vars:
@@ -251,11 +254,6 @@ class SuperBD(object):
                     bd = bd.nombre
                 símismo.vars[var]['fuente'].pop(bd)
 
-        símismo._limp_vars()
-
-    def reinic_bd(símismo):
-        símismo.datos_reg = pd.DataFrame()
-        símismo.datos_ind = pd.DataFrame()
         símismo._limp_vars()
 
     def _limp_vars(símismo):
@@ -280,14 +278,29 @@ class SuperBD(object):
         símismo.datos_ind = datos_ind[datos_ind['bd'].isin(símismo.bds)]
         símismo.datos_reg = datos_reg[datos_reg['bd'].isin(símismo.bds)]
 
-        # Agregar datos que faltan
-        for nm_bd, obj_bd in símismo.bds.items():
+    def _gen_bd_intern(símismo):
 
-            for v, d_v in símismo.vars.items():
-                d_bd = d_v['fuente'][nm_bd]
+        símismo._limp_vars()
 
+        # Agregar datos individuales
+        vars_ind = [v for v, d_v in símismo.vars.items() if
+                    any(isinstance(símismo.bds[bd], DatosIndividuales) for bd in d_v['fuente'])]
+
+        símismo.datos_ind = pd.DataFrame(columns=['bd', 'fecha', 'lugar'])
+
+
+
+
+        vars_ reg = [v for v, d_v in símismo.vars.items() if
+                    any(isinstance(símismo.bds[bd], DatosRegión) for bd in d_v['fuente'])]
+
+        for v, d_v in símismo.vars.items():
+            datos_ind[v] = np.nan
+            for bd, d_bd in d_v['fuente']:
                 obj_bd = símismo.bds[bd]
+
                 if isinstance(obj_bd, DatosIndividuales):
+                    símismo.datos_ind[v] =
 
 
 
