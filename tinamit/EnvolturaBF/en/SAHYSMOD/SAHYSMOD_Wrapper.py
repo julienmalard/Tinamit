@@ -54,7 +54,8 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         super().__init__()
 
         # Set climatic variables. Actually, "variable" for the moment.
-        self.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total')
+        self.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total',
+                                conv=0.001)
 
     def inic_vars(self):
         """
