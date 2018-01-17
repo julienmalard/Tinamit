@@ -107,7 +107,8 @@ for name, run in runs.items():
 # Climate change runs
 location = Lugar(lat=32.178207, long=73.217391, elev=217)
 location.observar_mensuales('مشاہدہ بارش.csv', meses='مہینہ', años='سال',
-                            cols_datos={'Precipitación': 'بارش (میلیمیٹر)'})
+                            cols_datos={'Precipitación': 'بارش (ملیمیٹر)'},
+                            conv={'Precipitación': 1})
 for rcp in [2.6, 4.5, 6.0, 8.5]:
     print('Runing with rcp {}\n************'.format(rcp))
 
@@ -120,8 +121,8 @@ for rcp in [2.6, 4.5, 6.0, 8.5]:
         for switch, val in run.items():
             modelo.mds.inic_val(var=switch, val=val)
 
-        modelo.simular(paso=1, tiempo_final=100 * 2, fecha_inic=1990, lugar=location, tcr=rcp, clima=True, recalc=False,
-                       nombre_corrida=nombre_corrida)
+        modelo.simular(paso=1, tiempo_final=100 * 2, fecha_inic='01/11/1989', lugar=location, tcr=rcp, clima=True,
+                       recalc=False, nombre_corrida=nombre_corrida)
 
         modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida, var='Watertable depth Tinamit',
                        directorio='Maps')

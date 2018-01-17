@@ -3,6 +3,7 @@ import datetime as ft
 import json
 import math as mat
 import os
+from warnings import warn as avisar
 
 import matplotlib.pyplot as dib
 import numpy as np
@@ -58,29 +59,43 @@ class Datos(object):
             símismo.lugar = str(lugar)
 
         if isinstance(cód_vacío, list):
-            símismo.cod_vacío = cód_vacío
+            símismo.cod_vacío = set(cód_vacío)
         else:
-            símismo.cod_vacío = [cód_vacío]
+            símismo.cod_vacío = {cód_vacío}
 
-        if '' not in símismo.cod_vacío:
-            símismo.cod_vacío.append('')
+        símismo.cod_vacío.add('')
 
         símismo.años = None  # type: np.array
         símismo.lugares = None  # type: np.array
 
         símismo.n_obs = símismo.bd.n_obs
 
-    def obt_datos(símismo, l_vars):
+    def obt_datos(símismo, l_vars, cód_vacío=None):
         """
 
         :param l_vars:
         :type l_vars: list
+
+        :param cód_vacío:
+        :type cód_vacío: str | int | float | list | set
+
         :return:
         :rtype: dict
 
         """
+        datos = símismo.bd.obt_datos(l_vars)
 
-        return símismo.bd.obt_datos(l_vars)
+        códs_vacío = símismo.cod_vacío.copy()
+        if cód_vacío is not None:
+            if isinstance(cód_vacío, list) or isinstance(cód_vacío, set):
+                códs_vacío.update(cód_vacío)
+            else:
+                códs_vacío.add(cód_vacío)
+
+        for c in códs_vacío:
+            datos[datos==c] = np.nan
+
+        return datos
 
 
 class DatosIndividuales(Datos):
@@ -113,12 +128,12 @@ class SuperBD(object):
         símismo.nombre = nombre
 
         if bds is None:
-            símismo.bds = {}
+            símismo.bds = {}  # type: dict[Datos]
         else:
             if isinstance(bds, Datos):
-                bds = [Datos]
+                bds = [bds]
             if isinstance(bds, list):
-                símismo.bds = {d.nombre: d for d in bds}
+                símismo.bds = {d.nombre: d for d in bds}  # type: dict[Datos]
             else:
                 raise TypeError('')
 
@@ -127,29 +142,154 @@ class SuperBD(object):
         símismo.datos_reg = pd.DataFrame()
         símismo.datos_ind = pd.DataFrame()
 
-    def agregar_datos(símismo, bd, como=None, auto=True):
+    def agregar_datos(símismo, bd, como=None, auto_llenar=True):
         """
 
         :param bd:
         :type bd: Datos
         :param como:
-        :type como:
-        :param auto:
-        :type auto: bool
+        :type como: str | list[str] | Datos
+        :param auto_llenar:
+        :type auto_llenar: bool
 
         """
 
+        if bd in símismo.bds:
+            avisar(_('Ya existía la base de datos "{}". Borramos la que estaba antes.').format(bd))
+
         símismo.bds[bd.nombre] = bd
 
-        if auto:
+        if auto_llenar:
+            símismo.auto_llenar(bd=bd, como=como)
 
-    def espec_var(símismo, var, var_bd=None, bd=None, cód_vacío=None):
+    def auto_llenar(símismo, bd, como):
+        if como is None:
+            como = [x for x in símismo.bds if x != bd]
+        if not isinstance(como, list):
+            como = [como]
+
+        for var, d_var in símismo.vars.items():
+            for b in d_var['fuente']:
+                if b in como:
+                    if isinstance(b, Datos):
+                        b = b.nombre
+                    var_bd = d_var['fuente'][b]['var_bd']
+                    cód_vacío = d_var['fuente'][b]['cód_vacío']
+                    if var_bd in bd.cols:
+                        d_var['fuente'][bd.nombre] = {'var_bd': var_bd, 'cód_vacío': cód_vacío}
+                        continue
+
+                    else:
+                        avisar(_('El variable existente "{}" no existe en la nueva base de datos "{}". No'
+                                 'lo podremos copiar.').format(var_bd, bd.nombre))
+        símismo._limp_vars()
+
+    def desconectar_datos(símismo, bd):
+
+        if isinstance(bd, Datos):
+            bd = bd.nombre
+
+        if bd not in símismo.bds:
+            raise ValueError('')
+
+        símismo.bds.pop(bd)
+        for var, d_var in símismo.vars.items():
+            try:
+                d_var['fuente'].pop(bd)
+            except KeyError:
+                pass
+
+        símismo._limp_vars()
+
+    def espec_var(símismo, var, var_bd=None, bds=None, cód_vacío=''):
 
         if var_bd is None:
             var_bd = var
-        if bd is None:
-            bd = list(símismo.bds)
-        if not is
+
+        if bds is None:
+            bds = list(símismo.bds)
+        if not isinstance(bds, list):
+            bds = [bds]
+        for í, bd in enumerate(bds.copy()):
+            if isinstance(bd, Datos):
+                bds[í] = bd.nombre
+            elif isinstance(bd, str):
+                pass
+            else:
+                raise TypeError
+
+        for nm_bd in bds:
+            bd = símismo.bds[nm_bd]
+
+            if var_bd not in bd.cols():
+                avisar(_('"{}" no existe en base de datos "{}".').format(var_bd, nm_bd))
+
+            datos = bd.obt_datos(l_vars=var, cód_vacío=cód_vacío)
+            if isinstance(bd, DatosIndividuales):
+                datos_ind = símismo.datos_ind
+                datos_ind[var][datos_ind['bd'] == nm_bd] = datos
+            else:
+                datos_reg = símismo.datos_reg
+                datos_reg[var][datos_reg['bd'] == nm_bd] = datos
+
+        if var not in símismo.vars:
+            símismo.vars[var] = {'fuente': {}, 'limp': {}}
+        símismo.vars[var] = {'fuente': {bd.nombre: {'var': var_bd, 'cód_vacío': cód_vacío} for bd in bds}}
+
+    def borrar_var(símismo, var, bds=None):
+
+        if var not in símismo.vars:
+            raise ValueError('')
+
+        if bds is None:
+            símismo.vars.pop(var)
+        else:
+            if not isinstance(bds, list):
+                bds = [bds]
+            for bd in bds:
+                if isinstance(bd, Datos):
+                    bd = bd.nombre
+                símismo.vars[var]['fuente'].pop(bd)
+
+        símismo._limp_vars()
+
+    def reinic_bd(símismo):
+        símismo.datos_reg = pd.DataFrame()
+        símismo.datos_ind = pd.DataFrame()
+        símismo._limp_vars()
+
+    def _limp_vars(símismo):
+
+        # Asegurarse que no queden variables si bases de datos en símismo.vars
+        for v in list(símismo.vars.keys()):
+            d_v = símismo.vars[v]
+            if len(d_v['fuente']) == 0:
+                símismo.vars.pop(v)
+
+        datos_ind = símismo.datos_ind
+        datos_reg = símismo.datos_reg
+
+        # Asegurarse que no queden variables (columas) en las bases de datos que no estén en símismo.vars
+        for bd_pd in [datos_ind, datos_reg]:
+            cols = list(bd_pd)
+            for c in cols:
+                if c not in símismo.vars:
+                    bd_pd.drop(c, axis=1, inplace=True)
+
+        # Quitar observaciones en bases de datos que ya no están vinculadas
+        símismo.datos_ind = datos_ind[datos_ind['bd'].isin(símismo.bds)]
+        símismo.datos_reg = datos_reg[datos_reg['bd'].isin(símismo.bds)]
+
+        # Agregar datos que faltan
+        for nm_bd, obj_bd in símismo.bds.items():
+
+            for v, d_v in símismo.vars.items():
+                d_bd = d_v['fuente'][nm_bd]
+
+                obj_bd = símismo.bds[bd]
+                if isinstance(obj_bd, DatosIndividuales):
+
+
 
 
 class _dinausorio(object):

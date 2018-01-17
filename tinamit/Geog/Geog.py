@@ -46,27 +46,43 @@ class Lugar(مقام):
         # Iniciamos como مقام
         super().__init__(چوڑائی=lat, طول=long, بلندی=elev)
 
-    def observar_diarios(símismo, archivo, cols_datos, c_fecha):
+    def observar_diarios(símismo, archivo, cols_datos, conv, c_fecha):
         """
         Esta función permite conectar observaciones diarias de datos climáticos.
 
         :param archivo: El archivo con la base de datos.
         :type archivo: str
+
         :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y
           el valor es el nombre de la columna en la base de datos.
-        :type cols_datos: dict
+        :type cols_datos: dict[str, str]
+
+        :param conv: Diccionario de factores de conversión para cada variable. Las llaves deben ser el nombre del
+          variable **en Tinamït**.
+        :type conv: dict[str, int | float]
+
         :param c_fecha: El nombre de la columna con las fechas de las observaciones.
         :type c_fecha: str
 
         """
 
-        d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
+        for v in cols_datos:
+            if v not in conv_vars:
+                raise KeyError(_('Error en observaciones diarias: "{}" no es variable climático reconocido en Tinamït. '
+                                 'Debe ser uno de: {}').format(v, ', '.join(conv_vars)))
+        for v in conv:
+            if v not in conv_vars:
+                raise KeyError(_('Error en factores de conversión: "{}" no es variable climático reconocido en '
+                                 'Tinamït. Debe ser uno de: {}').format(v, ', '.join(conv_vars)))
 
-        obs = دن_مشا(مسل=archivo, س_تاریخ=c_fecha, س_اعداد=d_cols)
+        d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
+        d_conv = {conv_vars[v]: c for v, c in conv.items()}
+
+        obs = دن_مشا(مسل=archivo, تبادلوں=d_conv, س_تاریخ=c_fecha, س_اعداد=d_cols)
 
         símismo.مشاہدہ_کرنا(مشاہد=obs)
 
-    def observar_mensuales(símismo, archivo, cols_datos, meses, años):
+    def observar_mensuales(símismo, archivo, cols_datos, conv, meses, años):
         """
         Esta función permite conectar observaciones mensuales de datos climáticos.
 
@@ -75,7 +91,11 @@ class Lugar(مقام):
 
         :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y el valor es
           el nombre de la columna en la base de datos.
-        :type cols_datos: dict
+        :type cols_datos: dict[str, str]
+
+        :param conv: Diccionario de factores de conversión para cada variable. Las llaves deben ser el nombre del
+          variable **en Tinamït**.
+        :type conv: dict[str, int | float]
 
         :param meses: El nombre de la columna con los meses de las observaciones.
         :type meses: str
@@ -85,13 +105,23 @@ class Lugar(مقام):
 
         """
 
-        d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
+        for v in cols_datos:
+            if v not in conv_vars:
+                raise KeyError(_('Error en observaciones mensuales: "{}" no es variable climático reconocido en '
+                                 'Tinamït. Debe ser uno de: {}').format(v, ', '.join(conv_vars)))
+        for v in conv:
+            if v not in conv_vars:
+                raise KeyError(_('Error en factores de conversión: "{}" no es variable climático reconocido en '
+                                 'Tinamït. Debe ser uno de:\t\n{}').format(v, ', '.join(conv_vars)))
 
-        obs = مہنہ_مشا(مسل=archivo, س_اعداد=d_cols, س_مہینہ=meses, س_سال=años)
+        d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
+        d_conv = {conv_vars[v]: c for v, c in conv.items()}
+
+        obs = مہنہ_مشا(مسل=archivo, س_اعداد=d_cols, تبادلوں=d_conv, س_مہینہ=meses, س_سال=años)
 
         símismo.مشاہدہ_کرنا(obs)
 
-    def observar_anuales(símismo, archivo, cols_datos, años):
+    def observar_anuales(símismo, archivo, cols_datos, conv, años):
         """
         Esta función permite conectar observaciones anuales de datos climáticos.
 
@@ -100,16 +130,30 @@ class Lugar(مقام):
 
         :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y el valor es
           el nombre de la columna en la base de datos.
+        :type cols_datos: dict[str, str]
 
-        :type cols_datos: dict
+        :param conv: Diccionario de factores de conversión para cada variable. Las llaves deben ser el nombre del
+          variable **en Tinamït**.
+        :type conv: dict[str, int | float]
+
         :param años: El nombre de la columna con los años de las observaciones.
         :type años: str
 
         """
 
-        d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
+        for v in cols_datos:
+            if v not in conv_vars:
+                raise KeyError(_('Error en observaciones anuales: "{}" no es variable climático reconocido en Tinamït. '
+                                 'Debe ser uno de: {}').format(v, ', '.join(conv_vars)))
+        for v in conv:
+            if v not in conv_vars:
+                raise KeyError(_('Error en factores de conversión: "{}" no es variable climático reconocido en '
+                                 'Tinamït. Debe ser uno de: {}').format(v, ', '.join(conv_vars)))
 
-        obs = سال_مشا(مسل=archivo, س_اعداد=d_cols, س_سال=años)
+        d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
+        d_conv = {conv_vars[v]: c for v, c in conv.items()}
+
+        obs = سال_مشا(مسل=archivo, س_اعداد=d_cols, تبادلوں=d_conv, س_سال=años)
         símismo.مشاہدہ_کرنا(obs)
 
     def prep_datos(símismo, fecha_inic, fecha_final, tcr, prefs=None, lím_prefs=False, regenerar=False):

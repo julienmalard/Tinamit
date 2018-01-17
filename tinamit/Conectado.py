@@ -370,7 +370,7 @@ class SuperConectado(Modelo):
                     fecha_inic = ft.date(year=año, month=mes, day=día)
                 elif isinstance(fecha_inic, str):
                     try:
-                        fecha_inic = ft.datetime.strptime(fecha_inic, '%d/%m/%Y')
+                        fecha_inic = ft.datetime.strptime(fecha_inic, '%d/%m/%Y').date()
                     except ValueError:
                         raise ValueError(_('La fecha inicial debe ser en formato "día/mes/año", por ejemplo '
                                            '"24/12/2017".'))
@@ -451,7 +451,7 @@ class SuperConectado(Modelo):
         # Verificar si hubo error
         for m, e in dic_err.items():
             if e:
-                raise ChildProcessError(_('Hubo error en modelo "{}"').format(m))
+                raise ChildProcessError(_('Hubo error en el modelo "{}".').format(m))
 
         # Leer egresos
         for mod in símismo.modelos.values():

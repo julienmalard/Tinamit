@@ -101,6 +101,8 @@ def poner_val_config(llave, val):
 _dir_local = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'local')
 dic_trads = {'es': gettext.translation(__name__, _dir_local, fallback=True, languages=['es'])}
 
+_leng = [_configs['leng']]
+
 
 def obt_trads():
     """
@@ -109,20 +111,25 @@ def obt_trads():
     :rtype:
     """
 
-    leng = _configs['leng']
-    return dic_trads[leng]
+    return dic_trads[_leng[0]]
 
 
-def cambiar_leng(leng):
+def cambiar_leng(leng, temp=False):
     """
     Cambia la lengua de Tinamït.
 
     :param leng:
     :type leng: str
 
+    :param temp: Si el cambio es temporario (esta sesión) o el nuevo normal.
+    :type temp: bool
+
     """
 
-    _configs['leng'] = leng
+    _leng[0] = leng
+    if not temp:
+        poner_val_config('leng', leng)
+
     if leng not in dic_trads:
         dic_trads[leng] = gettext.translation(__name__, _dir_local, fallback=True, languages=[leng])
 
