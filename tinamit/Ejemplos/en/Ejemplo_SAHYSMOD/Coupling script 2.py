@@ -112,6 +112,8 @@ for rcp in [2.6, 4.5, 6.0, 8.5]:
     print('Runing with rcp {}\n************'.format(rcp))
 
     for name, run in runs.items():
+        name = 'CL'
+        run = runs[name]
 
         print('\tRuning model {}.\n\t-----------------'.format(name))
 
@@ -123,7 +125,9 @@ for rcp in [2.6, 4.5, 6.0, 8.5]:
         modelo.simular(paso=1, tiempo_final=100 * 2, fecha_inic=1990, lugar=location, tcr=rcp, clima=True, recalc=False,
                        nombre_corrida=nombre_corrida)
 
-        modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida, var='Watertable depth Tinamit',
+        modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida,  var='Watertable depth Tinamit',
                        directorio='Maps')
-        modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida, var='Soil salinity Tinamit CropA',
+        modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida, colores=['#00CC66', '##FFCC66', '#FF6666'], var='Soil salinity Tinamit CropA',
                        directorio='Maps')
+
+        raise SystemExit(0)
