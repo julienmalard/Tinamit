@@ -5,6 +5,7 @@ from warnings import warn
 
 import numpy as np
 
+from tinamit import obt_val_config
 from tinamit.BF import ModeloImpaciente
 from tinamit.EnvolturaBF.en.SAHYSMOD.sahysmodIO import read_into_param_dic, write_from_param_dic
 
@@ -14,7 +15,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
     This is the wrapper for SAHYSMOD. At the moment, it only works for one polygon (no spatial models).
     """
 
-    def __init__(self, sayhsmod_exe, initial_data):
+    def __init__(self, initial_data, sayhsmod_exe=None):
         """
         Inicialises the SAHYSMOD wrapper. You must have SAHYSMOD already installed on your computer.
 
@@ -31,6 +32,10 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         """
 
         # The following attributes are specific to the SAHYSMOD wrapper, so edit them as you like.
+
+        # Find the SAHYSMOD executable path, if necessary.
+        if sayhsmod_exe is None:
+            sayhsmod_exe = obt_val_config('exe_sahysmod', mnsj='Especificar la ubicación de tu modelo SAHYSMOD.')
 
         # Number of (internal) polygons in the model
         self.n_poly = None
@@ -54,7 +59,8 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         super().__init__()
 
         # Set climatic variables. Actually, "variable" for the moment.
-        self.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total')
+        self.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total',
+                                conv=0.001)
 
     def inic_vars(self):
         """
@@ -116,9 +122,11 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
     def cerrar_modelo(self):
         """
-        No specific closing actions necessary.
+        No specific closing actions necessary, but we will clean up the directory, just to be nice.
         """
-        pass
+        for f in os.listdir(self.working_dir):
+            if re.match('Name(0|[0-9]{2})$', f):
+                os.remove(f)
 
     def escribir_archivo_ingr(self, n_años_simul, dic_ingr):
         """

@@ -1,10 +1,11 @@
+import datetime as ft
 from warnings import warn as avisar
 
-from dateutil.relativedelta import relativedelta as deltarelativo
-import datetime as ft
 import numpy as np
+from dateutil.relativedelta import relativedelta as deltarelativo
 
 import tinamit.Geog.Geog as Geog
+from tinamit import _
 from tinamit.Unidades.Unidades import convertir
 
 
@@ -58,8 +59,8 @@ class Modelo(object):
     def inic_vars(símismo):
         """
         Esta función debe poblar el diccionario de variables del modelo, según la forma siguiente:
-        {'var1': {'val': 13, 'unidades': 'cm', 'ingreso': True, dims: (1,), 'egreso': True},
-        'var2': {'val': 2, 'unidades': 'cm', 'ingreso': False, dims: (3,2), 'egreso': True}}
+        {'var1': {'val': 13, 'unidades': 'cm', 'ingreso': True, dims: (1,), 'egreso': True, 'info': 'descripción'},
+        'var2': ...}
         }
 
         """
@@ -123,15 +124,15 @@ class Modelo(object):
 
         # Primero, asegurarse que el variable existe.
         if var not in símismo.variables:
-            raise ValueError('El variable inicializado "{}" no existe en los variables del modelo.\n'
-                             'Pero antes de quejarte al gerente, sería buena idea verificar '
-                             'si lo escrbiste bien.'.format(var))  # Sí, lo "escrbí" así por propósito. :)
+            raise ValueError(_('El variable inicializado "{}" no existe en los variables del modelo.\n'
+                               'Pero antes de quejarte al gerente, sería buena idea verificar '
+                               'si lo escrbiste bien.').format(var))  # Sí, lo "escrbí" así por propósito. :)
 
         # Guardamos el valor en el diccionario `vals_inic`. Se aplicarán los valores iniciales únicamente al momento
         # de empezar la simulación.
         símismo.vals_inic[var] = val
 
-    def limp_vals_inic(símismo):
+    def _limp_vals_inic(símismo):
         """
         Esta función limpa los valores iniciales especificados anteriormente.
         """
@@ -140,7 +141,7 @@ class Modelo(object):
         for v in símismo.vals_inic.values():
             v.clear()
 
-    def conectar_var_clima(símismo, var, var_clima, combin=None):
+    def conectar_var_clima(símismo, var, var_clima, conv, combin=None):
         """
         Conecta un variable climático.
 
@@ -148,21 +149,24 @@ class Modelo(object):
         :type var: str
         :param var_clima: El nombre oficial del variable climático.
         :type var_clima: str
+        :param conv: La conversión entre el variable clima en Tinamït y el variable correspondiente en el modelo.
+        :type conv: int | float
         :param combin: Si este variable se debe adicionar o tomar el promedio entre varios pasos.
         :type combin: str
 
         """
         if var not in símismo.variables:
-            raise ValueError('El variable "{}" no existe en este modelo. ¿De pronto lo escribiste mal?'.format(var))
+            raise ValueError(_('El variable "{}" no existe en este modelo. ¿De pronto lo escribiste mal?').format(var))
         if var_clima not in Geog.conv_vars:
-            raise ValueError('El variable climático "{}" no es una posibilidad. Debe ser uno de:\n'
-                             '\t{}'.format(var_clima, ', '.join(Geog.conv_vars)))
+            raise ValueError(_('El variable climático "{}" no es una posibilidad. Debe ser uno de:\n'
+                               '\t{}').format(var_clima, ', '.join(Geog.conv_vars)))
 
         if combin not in ['prom', 'total', None]:
-            raise ValueError('"Combin" debe ser "prom", "total", o None, no "{}".'.format(combin))
+            raise ValueError(_('"Combin" debe ser "prom", "total", o None, no "{}".').format(combin))
 
         símismo.vars_clima[var] = {'nombre_extrn': var_clima,
-                                   'combin': combin}
+                                   'combin': combin,
+                                   'conv': conv}
 
     def desconectar_var_clima(símismo, var):
         """
@@ -232,7 +236,10 @@ class Modelo(object):
 
         # La lista de maneras de combinar los valores diarios
         combins = [d['combin'] for d in símismo.vars_clima.values()]
-
+        
+        # La lista de factores de conversión
+        convs = [d['conv'] for d in símismo.vars_clima.values()]
+        
         # La fecha final
         if símismo.unidad_tiempo == 'Días':
             f_final = f + deltarelativo(days=+n_paso)
@@ -244,7 +251,7 @@ class Modelo(object):
                     avisar('Tuvimos que redondear la unidad de tiempo, {} {}, a {} meses'.
                            format(n_meses, símismo.unidad_tiempo, int(n_meses)))
             except ValueError:
-                raise ValueError('La unidad de tiempo "{}" no se pudo convertir a meses.')
+                raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a meses.'))
 
             f_final = f + deltarelativo(months=n_meses)
 
@@ -253,7 +260,7 @@ class Modelo(object):
                    'en precisión.'
                    .format(n_paso, símismo.unidad_tiempo))
 
-        # Calcular los اعداد_دن
+        # Calcular los datos
         datos = símismo.lugar.comb_datos(vars_clima=nombres_extrn, combin=combins,
                                          f_inic=f, f_final=f_final)
 
@@ -263,6 +270,9 @@ class Modelo(object):
 
             # El nombre oficial del variable de clima
             var_clima = nombres_extrn[i]
-
+            
+            # El factor de conversión de unidades
+            conv = convs[i]
+            
             # Aplicar el cambio
-            símismo.cambiar_vals(valores={var: datos[var_clima]})
+            símismo.cambiar_vals(valores={var: datos[var_clima] * conv})

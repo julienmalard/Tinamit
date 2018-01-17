@@ -9,14 +9,14 @@ use_simple = True
 Rechna_Doab = Geografía(nombre='Rechna Doab')
 
 base_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Shape_files')
-Rechna_Doab.agregar_regiones(os.path.join(base_dir, 'Internal_Polygon.shp'), col_orden='Polygon_ID')
+Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir, 'Internal_Polygon.shp'), col_orden='Polygon_ID')
 
-Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'External_Polygon.shp'), color='#edf4da')
-Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'RIVR.shp'), tipo='agua')
-Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'CNL_Arc.shp'), tipo='agua', llenar=False)
-Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'Forst_polygon.shp'), tipo='bosque')
-Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'buildup_Polygon.shp'), tipo='ciudad')
-Rechna_Doab.agregar_objeto(os.path.join(base_dir, 'road.shp'), tipo='calle')
+Rechna_Doab.agregar_forma(os.path.join(base_dir, 'External_Polygon.shp'), color='#edf4da')
+Rechna_Doab.agregar_forma(os.path.join(base_dir, 'RIVR.shp'), tipo='agua')
+Rechna_Doab.agregar_forma(os.path.join(base_dir, 'CNL_Arc.shp'), tipo='agua', llenar=False)
+Rechna_Doab.agregar_forma(os.path.join(base_dir, 'Forst_polygon.shp'), tipo='bosque')
+Rechna_Doab.agregar_forma(os.path.join(base_dir, 'buildup_Polygon.shp'), tipo='ciudad')
+Rechna_Doab.agregar_forma(os.path.join(base_dir, 'road.shp'), tipo='calle')
 
 # 1. Simple runs
 runs_simple = {'CWU': {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,
@@ -107,7 +107,8 @@ for name, run in runs.items():
 # Climate change runs
 location = Lugar(lat=32.178207, long=73.217391, elev=217)
 location.observar_mensuales('مشاہدہ بارش.csv', meses='مہینہ', años='سال',
-                            cols_datos={'Precipitación': 'بارش (میٹر)'})
+                            cols_datos={'Precipitación': 'بارش (ملیمیٹر)'},
+                            conv={'Precipitación': 1})
 for rcp in [2.6, 4.5, 6.0, 8.5]:
     print('Runing with rcp {}\n************'.format(rcp))
 
@@ -117,13 +118,13 @@ for rcp in [2.6, 4.5, 6.0, 8.5]:
 
         print('\tRuning model {}.\n\t-----------------'.format(name))
 
-        nombre_corrida = '{}, {}'.format(rcp, name)
+        nombre_corrida = '{}, {}'.format(str(rcp).replace('.', '_'), name)
         # Set appropriate switches for policy analysis
         for switch, val in run.items():
             modelo.mds.inic_val(var=switch, val=val)
 
-        modelo.simular(paso=1, tiempo_final=100 * 2, fecha_inic=1990, lugar=location, tcr=rcp, clima=True, recalc=False,
-                       nombre_corrida=nombre_corrida)
+        modelo.simular(paso=1, tiempo_final=100 * 2, fecha_inic='01/11/1989', lugar=location, tcr=rcp, clima=True,
+                       recalc=False, nombre_corrida=nombre_corrida)
 
         modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida,  var='Watertable depth Tinamit',
                        directorio='Maps')

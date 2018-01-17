@@ -42,8 +42,8 @@ try:
 except ImportError:
     pandas = None
 
-info_paquetes = {'numpy': {'versión': '1.13.1',
-                           'formato_archivo': 'numpy-{versión}+mkl-cp{v_py}-cp{v_py}m-{sis}.whl',
+info_paquetes = {'numpy': {'__versión__': '1.13.1',
+                           'formato_archivo': 'numpy-{__versión__}+mkl-cp{v_py}-cp{v_py}m-{sis}.whl',
                            '35': {
                                'Windows': {
                                    '32': {'id_dropbox': None
@@ -61,8 +61,8 @@ info_paquetes = {'numpy': {'versión': '1.13.1',
                                }
                            },
                            },
-                 'scipy': {'versión': '0.19.1',
-                           'formato_archivo': 'scipy-{versión}-cp{v_py}-cp{v_py}m-{sis}.whl',
+                 'scipy': {'__versión__': '0.19.1',
+                           'formato_archivo': 'scipy-{__versión__}-cp{v_py}-cp{v_py}m-{sis}.whl',
                            '35': {
                                'Windows': {
                                    '32': {'id_google': None
@@ -80,8 +80,8 @@ info_paquetes = {'numpy': {'versión': '1.13.1',
                                }
                            },
                            },
-                 'matplotlib': {'versión': '2.0.2',
-                                'formato_archivo': 'matplotlib-{versión}-cp{v_py}-none-{sis}.whl',
+                 'matplotlib': {'__versión__': '2.0.2',
+                                'formato_archivo': 'matplotlib-{__versión__}-cp{v_py}-none-{sis}.whl',
                                 '35': {
                                     'Windows': {
                                         '32': {'id_google': None
@@ -100,8 +100,8 @@ info_paquetes = {'numpy': {'versión': '1.13.1',
                                     }
                                 },
                                 },
-                 'pandas': {'versión': '0.21.1',
-                            'formato_archivo': 'pandas-{versión}-cp{v_py}-cp{v_py}m-{sis}.whl',
+                 'pandas': {'__versión__': '0.21.1',
+                            'formato_archivo': 'pandas-{__versión__}-cp{v_py}-cp{v_py}m-{sis}.whl',
                             '35': {
                                 'Windows': {
                                     '32': {'id_google': None
@@ -260,7 +260,7 @@ def instalar_requísitos():
 
     except ImportError:
         _ = None
-        avisar('¡Error! Por experencia personal, probablemente es porque no instalaste la versión del'
+        avisar('¡Error! Por experencia personal, probablemente es porque no instalaste la __versión__ del'
                '"Microsoft C++ 2015 redistributable" {}.\n'
                'Lo puedes conseguir de "https://www.microsoft.com/es-ES/download/details.aspx?id=48145".'
                .format('x86' if bits == '32' else 'x64')
@@ -277,7 +277,7 @@ if so == 'Windows':
         raise ValueError('Número de bits "{}" no reconocido.'.format(bits))
 
     for paquete, dic_paq in info_paquetes.items():
-        v = dic_paq['versión']
+        v = dic_paq['__versión__']
         dic_paq['formato_archivo'] = dic_paq['formato_archivo'].format(versión=v, v_py=versión_python, sis=sistema)
 
     instalar_requísitos()

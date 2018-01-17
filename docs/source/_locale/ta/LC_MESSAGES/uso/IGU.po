@@ -3,12 +3,13 @@
 # This file is distributed under the same license as the tinamit package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2018. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-05 12:43-0500\n"
-"PO-Revision-Date: 2017-12-14 11:24-0500\n"
+"PO-Revision-Date: 2018-01-15 01:38-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (https://www.transifex.com/qatikon/teams/70565/ta/)\n"
 "Language: ta\n"
@@ -28,20 +29,27 @@ msgid ""
 "acceder (casi) todas las funcionalidades del IPA Tinamït, y algunas "
 "adicionales."
 msgstr ""
+"கணினி நிரல் எழுதவேண்டாதவர்களுக்கு, வரைகலை இடைமுகத்தால் தீனாமித்தின் "
+"செயல்பாடு நிரலாக்க இடைமுகத்தின் பல்வேறு செயல்பாடு பெரும்பான்மையை பயன் "
+"செய்யலாம். மேலும், சில்ல கூடுதல் செயல்பாடுகள் இடைமுகத்தில் மற்றுமே "
+"கிடைக்கும்."
 
 #: ../../source/uso/IGU.rst:12
 msgid "Empezar el IGU"
-msgstr ""
+msgstr "வரைகலை இடைமுகம் தொடங்குதல்"
 
 #: ../../source/uso/IGU.rst:13
 msgid "Se empieza el interfaz con la función ``correr`` del IGU::"
 msgstr ""
+"வரைகலை இடைமுகத்தின் ``correr`` என்று செயல்பாட்டால் இடைமுகத்தை தொடங்கட்டும்::"
 
 #: ../../source/uso/IGU.rst:18
 msgid ""
 "También simplemente puedes directamente ejecutar el archivo "
 "``tinamit.Interfaz.IGU`` desde Python."
 msgstr ""
+"இல்லாவிட்டால், ``tinamit.Interfaz.IGU`` என்று கோப்பை பைத்தானில் இயக்கினால் "
+"பொதும்."
 
 #: ../../source/uso/IGU.rst:21
 msgid "Cambiar idiomas"
@@ -54,6 +62,10 @@ msgid ""
 "idioma. O tal vez quieres practicar un idioma que no has hablado por mucho "
 "tiempo."
 msgstr ""
+"சரி. உங்குளுக்கு ஸ்பானிய மொழி தெரியாது என்று இருக்கட்டும். தெரிந்தாலும், "
+"உங்களுடன் வேலை செய்யும் மக்களுக்கு தெரியாது என்று இருக்கட்டும். "
+"இல்லாவிட்டால், நீங்கள் ரொம்ப நாள் ஆத்து பேசின எதோ வேறு ஒரு மொழியின் "
+"பயிர்சியை செய்ய விரும்புகிறீர்கள் என்று இருக்கட்டும்."
 
 #: ../../source/uso/IGU.rst:25
 msgid ""
@@ -61,6 +73,9 @@ msgid ""
 "Tinamït está disponible en muchos idiomas (y siempre puedes agregar un "
 "nuevo)."
 msgstr ""
+"தீனாமித்தின் கணினி குறியீட ஸ்பானிய மொழியில் எழுதி விட்டுது என்றாலும், அதின் "
+"இடைமுகம் பல்வேறு மொழிகளில் கிடைக்கும். மேலும், இன்னும் கிடைக்காத மொழி "
+"எப்பொழுமை சேர்க்கப்படலாம்."
 
 #: ../../source/uso/IGU.rst:28
 msgid "Para cambiar idiomas, hacer clic en el icono del globo terrestre."
@@ -98,13 +113,13 @@ msgstr ""
 msgid ""
 "Todas las traducciones se guardan automáticamente en un documento llamado "
 "“Trads” en el directorio de Tinamït. Si contribuyes a unas traducciones, "
-"puedes compartir este documento (|correo|, o por `GitHub <|GitHub|>`_) para "
-"que todas tengan acceso a tu idioma favorito."
+"puedes compartir este documento (|correo|, o por `GitHub`_) para que todas "
+"tengan acceso a tu idioma favorito."
 msgstr ""
 
 #: ../../source/uso/IGU.rst:56
 msgid "Cargar modelos (I)"
-msgstr ""
+msgstr "௧. மாதிரி ஏற்றல்"
 
 #: ../../source/uso/IGU.rst:57
 msgid ""
@@ -141,7 +156,7 @@ msgstr ""
 
 #: ../../source/uso/IGU.rst:85
 msgid "Simular (III)"
-msgstr ""
+msgstr "௩. பாவனை"
 
 #: ../../source/uso/IGU.rst:86
 msgid ""
@@ -155,7 +170,7 @@ msgstr ""
 
 #: ../../source/uso/IGU.rst:92
 msgid "Incertidumbre (IV)"
-msgstr ""
+msgstr "௪. உறுதியின்மை"
 
 #: ../../source/uso/IGU.rst:93
 msgid ""

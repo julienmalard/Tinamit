@@ -3,6 +3,8 @@ import re
 
 import pkg_resources
 
+from tinamit import _
+
 # Buscar el archivo de conversiones.
 archivo_json = pkg_resources.resource_filename('tinamit.Unidades', 'equiv_unid.json')
 
@@ -67,7 +69,7 @@ def convertir(de, a, val=1, clase=None, lengua=None):
     unidades_de = list(re.finditer(regex, de))
     unidades_a = list(re.finditer(regex, a))
     if len(unidades_de) != len(unidades_a):
-        raise ValueError('Unidades incompatibles: "{}" y "{}".'.format(de, a))
+        raise ValueError(_('Unidades incompatibles: "{}" y "{}".').format(de, a))
 
     factor = 1
     for g_de, g_a in zip(unidades_de, unidades_a):

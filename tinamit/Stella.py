@@ -1,4 +1,4 @@
-from .MDS import EnvolturaMDS
+from .EnvolturaMDS import EnvolturaMDS
 
 
 class modelo_Stella(EnvolturaMDS):
@@ -36,7 +36,7 @@ class modelo_Stella(EnvolturaMDS):
 
         # paso para incrementar
 
-        # iniciar modelo como una envoltura MDS
+        # iniciar modelo como una envoltura EnvolturaMDS
         super().__init__()
 
     def inic_vars(símismo):

@@ -5,7 +5,7 @@ import re
 import numpy as np
 from scipy.optimize import minimize
 
-from tinamit.Incertidumbre.Datos import BaseDeDatos
+from tinamit.Incertidumbre.Datos import SuperBD
 
 
 class Control(object):
@@ -14,7 +14,7 @@ class Control(object):
         """
 
         :param bd:
-        :type bd: BaseDeDatos
+        :type bd: ConexiónVars
 
         :param modelo:
         :type modelo: ModeloMDS
@@ -35,7 +35,7 @@ class Control(object):
 
     def conectar_var_ind(símismo, datos, var_bd, var_modelo, transformación):
 
-        símismo.receta['conexiones'][var_modelo] = {'var_bd': var_bd, 'اعداد_دن': datos, 'trans': transformación}
+        símismo.receta['conexiones'][var_modelo] = {'var_bd': var_bd, 'datos': datos, 'trans': transformación}
 
     def comparar(símismo, var_mod_x, var_mod_y, escala='individual'):
         var_bd_x = símismo.receta['conexiones'][var_mod_x]
@@ -48,7 +48,7 @@ class Control(object):
         try:
             var_bd = símismo.receta['conexiones'][constante]
         except KeyError:
-            raise ValueError('No hay اعداد_دن vinculados con este variable (%s).' % constante)
+            raise ValueError('No hay datos vinculados con este variable (%s).' % constante)
 
         est = símismo.bd.estimar(var=var_bd, escala=escala, años=años, lugar=lugar, cód_lugar=cód_lugar)
 
@@ -56,7 +56,7 @@ class Control(object):
                                                    'máx': est['máx'],
                                                    'escala': escala,
                                                    'سال': años,
-                                                   'lugar': lugar,
+                                                   'lugares': lugar,
                                                    'cód_lugar': cód_lugar}
 
         símismo.modelo.vars['ec'] = est['máx']
@@ -173,7 +173,7 @@ class Control(object):
         dic_ec['párams'] = calibrados
         dic_ec['escala'] = escala
         dic_ec['سال'] = años
-        dic_ec['lugar'] = lugar
+        dic_ec['lugares'] = lugar
         dic_ec['cód_lugar'] = cód_lugar
 
         símismo.modelo.vars[var]['ec'] = ec_desparám.format(p=calibrados)
@@ -209,7 +209,7 @@ class Control(object):
 
             años = dic['سال']
             escala = dic['escala']
-            lugar = dic['lugar']
+            lugar = dic['lugares']
 
             if lugar == '':
                 lugar = None
@@ -224,7 +224,7 @@ class Control(object):
 
             años = dic['سال']
             escala = dic['escala']
-            lugar = dic['lugar']
+            lugar = dic['lugares']
 
             if lugar == '':
                 lugar = None

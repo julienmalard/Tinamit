@@ -2,12 +2,12 @@ Instalación
 ===========
 
 .. contents:: Contenido
-   :depth: 3
+    :depth: 3
 
 Si sabes lo que estás haciendo
 ------------------------------
-¡Felicitaciones! Tinamït necesita Python 3.6+, NumPy, SciPy, y Matplotlib. Tinamït sí mismo es un paquete de Python
-que se puede conseguir con
+¡Felicitaciones! Tinamït necesita Python 3.6+, ``NumPy``, ``SciPy``, ``Matplotlib``, ``Pandas`` y unas cositas más.
+Tinamït sí mismo es un paquete de Python que se puede conseguir con
 
    :command:`pip install tinamit`
 
@@ -75,9 +75,9 @@ de Tinamït en GitHub (así siempre tendrás la versión más recién). Contáct
        (por ejemplo, `scipy-0.18.1-cp36-cp36m-win32.whl` para SciPy en Python 3.6 de 32 bits) y después instalarlos
        directamente de tu directorio local con pip así como en el ejemplo:
 
-       :command:`pip install C:\\Users\\yo\\Downloads\\numpy‑1.11.3+mkl‑cp36‑cp36m‑win32.whl`.
+       :command:`pip install C:\\Users\\yo\\Downloads\\numpy‑1.11.3+mkl‑cp36‑cp36m‑win32.whl`
 
-       Tienes que instalarlos en el orden siguiente: `NumPy`, `SciPy`, y por fin `Matplotlib`, sino tendrás
-       muchos muchos problemas. *Después* de eso, puedes instalar Tinamït con
+       Tienes que instalarlos en el orden siguiente: ``NumPy``, ``SciPy``, ``Matplotlib`` y por fin ``Pandas``, sino
+       tendrás muchos muchos problemas. **Después** de eso, puedes instalar Tinamït con
 
-       :command:`pip install tinamit`.
+       :command:`pip install tinamit`

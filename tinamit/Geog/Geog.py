@@ -1,20 +1,21 @@
+import csv
 import datetime as ft
 import os
 
-from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
-from matplotlib.figure import Figure as Figura
-
-from matplotlib import cm
 import matplotlib.colors as colors
-
 import numpy as np
 import pandas as pd
 import shapefile as sf
+from matplotlib import cm
+from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
+from matplotlib.figure import Figure as Figura
 
-from taqdir.مقام import مقام
 from taqdir.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
+from taqdir.مقام import مقام
+from tinamit import _
 
 # Ofrecemos la oportunidad de utilizar تقدیر, taqdir, en español
+
 conv_vars = {
     'Precipitación': 'بارش',
     'Radiación solar': 'شمسی_تابکاری',
@@ -34,38 +35,54 @@ class Lugar(مقام):
         """
         Inciamos el :class:`Lugar` con sus coordenadas.
 
-        :param lat: La latitud del lugar.
+        :param lat: La latitud del lugares.
         :type lat: float | int
-        :param long: La longitud del lugar.
+        :param long: La longitud del lugares.
         :type long: float | int
-        :param elev: La elevación del lugar, en metros.
+        :param elev: La elevación del lugares, en metros.
         :type elev: float | int
         """
 
         # Iniciamos como مقام
         super().__init__(چوڑائی=lat, طول=long, بلندی=elev)
 
-    def observar_diarios(símismo, archivo, cols_datos, c_fecha):
+    def observar_diarios(símismo, archivo, cols_datos, conv, c_fecha):
         """
         Esta función permite conectar observaciones diarias de datos climáticos.
 
         :param archivo: El archivo con la base de datos.
         :type archivo: str
+
         :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y
           el valor es el nombre de la columna en la base de datos.
-        :type cols_datos: dict
+        :type cols_datos: dict[str, str]
+
+        :param conv: Diccionario de factores de conversión para cada variable. Las llaves deben ser el nombre del
+          variable **en Tinamït**.
+        :type conv: dict[str, int | float]
+
         :param c_fecha: El nombre de la columna con las fechas de las observaciones.
         :type c_fecha: str
 
         """
 
-        d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
+        for v in cols_datos:
+            if v not in conv_vars:
+                raise KeyError(_('Error en observaciones diarias: "{}" no es variable climático reconocido en Tinamït. '
+                                 'Debe ser uno de: {}').format(v, ', '.join(conv_vars)))
+        for v in conv:
+            if v not in conv_vars:
+                raise KeyError(_('Error en factores de conversión: "{}" no es variable climático reconocido en '
+                                 'Tinamït. Debe ser uno de: {}').format(v, ', '.join(conv_vars)))
 
-        obs = دن_مشا(مسل=archivo, ش_تاریخ=c_fecha, ش_اعداد=d_cols)
+        d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
+        d_conv = {conv_vars[v]: c for v, c in conv.items()}
+
+        obs = دن_مشا(مسل=archivo, تبادلوں=d_conv, س_تاریخ=c_fecha, س_اعداد=d_cols)
 
         símismo.مشاہدہ_کرنا(مشاہد=obs)
 
-    def observar_mensuales(símismo, archivo, cols_datos, meses, años):
+    def observar_mensuales(símismo, archivo, cols_datos, conv, meses, años):
         """
         Esta función permite conectar observaciones mensuales de datos climáticos.
 
@@ -74,7 +91,11 @@ class Lugar(مقام):
 
         :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y el valor es
           el nombre de la columna en la base de datos.
-        :type cols_datos: dict
+        :type cols_datos: dict[str, str]
+
+        :param conv: Diccionario de factores de conversión para cada variable. Las llaves deben ser el nombre del
+          variable **en Tinamït**.
+        :type conv: dict[str, int | float]
 
         :param meses: El nombre de la columna con los meses de las observaciones.
         :type meses: str
@@ -84,13 +105,23 @@ class Lugar(مقام):
 
         """
 
-        d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
+        for v in cols_datos:
+            if v not in conv_vars:
+                raise KeyError(_('Error en observaciones mensuales: "{}" no es variable climático reconocido en '
+                                 'Tinamït. Debe ser uno de: {}').format(v, ', '.join(conv_vars)))
+        for v in conv:
+            if v not in conv_vars:
+                raise KeyError(_('Error en factores de conversión: "{}" no es variable climático reconocido en '
+                                 'Tinamït. Debe ser uno de:\t\n{}').format(v, ', '.join(conv_vars)))
 
-        obs = مہنہ_مشا(مسل=archivo, س_اعداد=d_cols, س_مہینہ=meses, س_سال=años)
+        d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
+        d_conv = {conv_vars[v]: c for v, c in conv.items()}
+
+        obs = مہنہ_مشا(مسل=archivo, س_اعداد=d_cols, تبادلوں=d_conv, س_مہینہ=meses, س_سال=años)
 
         símismo.مشاہدہ_کرنا(obs)
 
-    def observar_anuales(símismo, archivo, cols_datos, años):
+    def observar_anuales(símismo, archivo, cols_datos, conv, años):
         """
         Esta función permite conectar observaciones anuales de datos climáticos.
 
@@ -99,16 +130,30 @@ class Lugar(مقام):
 
         :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y el valor es
           el nombre de la columna en la base de datos.
+        :type cols_datos: dict[str, str]
 
-        :type cols_datos: dict
+        :param conv: Diccionario de factores de conversión para cada variable. Las llaves deben ser el nombre del
+          variable **en Tinamït**.
+        :type conv: dict[str, int | float]
+
         :param años: El nombre de la columna con los años de las observaciones.
         :type años: str
 
         """
 
-        d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
+        for v in cols_datos:
+            if v not in conv_vars:
+                raise KeyError(_('Error en observaciones anuales: "{}" no es variable climático reconocido en Tinamït. '
+                                 'Debe ser uno de: {}').format(v, ', '.join(conv_vars)))
+        for v in conv:
+            if v not in conv_vars:
+                raise KeyError(_('Error en factores de conversión: "{}" no es variable climático reconocido en '
+                                 'Tinamït. Debe ser uno de: {}').format(v, ', '.join(conv_vars)))
 
-        obs = سال_مشا(مسل=archivo, ش_اعداد=d_cols, ش_سال=años)
+        d_cols = {conv_vars[x]: cols_datos[x] for x in cols_datos}
+        d_conv = {conv_vars[v]: c for v, c in conv.items()}
+
+        obs = سال_مشا(مسل=archivo, س_اعداد=d_cols, تبادلوں=d_conv, س_سال=años)
         símismo.مشاہدہ_کرنا(obs)
 
     def prep_datos(símismo, fecha_inic, fecha_final, tcr, prefs=None, lím_prefs=False, regenerar=False):
@@ -152,8 +197,8 @@ class Lugar(مقام):
 
         for v in vars_clima:
             if v not in conv_vars:
-                raise ValueError('El variable "{}" está erróneo. Debe ser uno de:\n'
-                                 '\t{}'.format(v, ', '.join(conv_vars)))
+                raise ValueError(_('El variable "{}" está erróneo. Debe ser uno de:\n'
+                                 '\t{}').format(v, ', '.join(conv_vars)))
 
         v_conv = [conv_vars[v] for v in vars_clima]
 
@@ -183,8 +228,8 @@ class Lugar(مقام):
             try:
                 v_conv = conv_vars[v]
             except KeyError:
-                raise ValueError('El variable "{}" está erróneo. Debe ser uno de:\n'
-                                 '\t{}'.format(v, ', '.join(conv_vars)))
+                raise ValueError(_('El variable "{}" está erróneo. Debe ser uno de:\n'
+                                 '\t{}').format(v, ', '.join(conv_vars)))
             if c is None:
                 if v in ['درجہ_حرارت_زیادہ', 'درجہ_حرارت_کم', 'درجہ_حرارت_اوسط']:
                     c = 'prom'
@@ -202,12 +247,21 @@ class Lugar(مقام):
 
 
 class Geografía(object):
+    """
+    Esta clase representa la geografía de un lugares.
+    """
     def __init__(símismo, nombre):
+
         símismo.nombre = nombre
         símismo.regiones = {}
         símismo.objetos = {}
 
-    def agregar_objeto(símismo, archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=None):
+        símismo.orden_esc_geog = None
+        símismo.árbol_geog = {}
+        símismo.árbol_geog_inv = {}
+        símismo.cód_a_lugar = {}
+
+    def agregar_forma(símismo, archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=None):
         if nombre is None:
             nombre = os.path.splitext(os.path.split(archivo)[1])[0]
 
@@ -217,26 +271,126 @@ class Geografía(object):
                                    'alpha': alpha,
                                    'tipo': tipo}
 
-    def agregar_regiones(símismo, archivo, col_orden=None):
+    def agregar_frm_regiones(símismo, archivo, col_id=None, col_orden=None, escala_geog=None):
+        """
+
+        :param archivo:
+        :type archivo:
+        :param col_id:
+        :type col_id:
+        :param col_orden:
+        :type col_orden:
+        :return:
+        :rtype:
+        """
 
         af = sf.Reader(archivo)
 
+        attrs = af.fields[1:]
+        nombres_attr = [field[0] for field in attrs]
+
         if col_orden is not None:
-            attrs = af.fields[1:]
-            nombres_attr = [field[0] for field in attrs]
             try:
                 orden = np.array([x.record[nombres_attr.index(col_orden)] for x in af.shapeRecords()])
             except ValueError:
-                raise ValueError('La columna "{}" no existe en la base de اعداد_دن.'.format(col_orden))
+                raise ValueError(_('La columna "{}" no existe en la base de datos.').format(col_orden))
 
             orden -= np.min(orden)
 
         else:
             orden = range(len(af.records()))
 
-        símismo.regiones = {'af': af, 'orden': orden}
+        if col_id is not None:
+            try:
+                ids = np.array([x.record[nombres_attr.index(col_orden)] for x in af.shapeRecords()])
+            except ValueError:
+                raise ValueError(_('La columna "{}" no existe en la base de datos.').format(col_orden))
+        else:
+            ids = None
 
-    def dibujar(símismo, archivo, valores=None, título=None, unidades=None, colores=None, escala=None):
+        símismo.regiones = {'af': af, 'orden_jer': orden, 'id': ids}
+
+    def agregar_info_regiones(símismo, archivo, col_cód, orden_jer=None):
+        """
+
+        :param archivo:
+        :type archivo:
+        :param orden_jer:
+        :type orden_jer:
+        :param col_cód:
+        :type col_cód:
+        """
+
+        símismo.orden_jer = orden_jer
+
+        símismo.leer_archivo_info_reg(archivo=archivo, orden_jer=orden_jer, col_cód=col_cód)
+
+    def leer_archivo_info_reg(símismo, archivo, orden_jer, col_cód):
+
+        símismo.árbol_geog.clear()
+
+        with open(archivo, newline='') as d:
+
+            l = csv.reader(d)  # El lector de csv
+
+            # Guardar la primera fila como nombres de columnas
+            cols = next(l)
+
+            try:
+                i_cols = [cols.index(x) for x in orden_jer]
+            except ValueError:
+                raise ValueError(_('Los nombres de las regiones en "orden_jer" ({}) no concuerdan con los nombres en el'
+                                 ' archivo ({}).').format(', '.join(orden_jer), ', '.join(cols)))
+            try:
+                in_col_cód = cols.index(col_cód)
+            except ValueError:
+                raise ValueError(_('La columna de código de región especificada ({}) no concuerda con los nombres de '
+                                 'columnas del archivo ({}).').format(col_cód, ', '.join(cols)))
+
+            # Para cada fila que sigue en el csv...
+            for f in l:
+                dic = símismo.árbol_geog
+                cód = f[in_col_cód]
+
+                for i, n in enumerate(i_cols):
+
+                    if i == len(i_cols) - 1:
+                        dic[f[n]] = cód
+
+                    elif f[n] not in dic:
+                        dic[f[n]] = {}
+
+                    dic = dic[f[n]]
+
+                símismo.árbol_geog_inv[cód] = dict([(orden_jer[k], f[j]) for k, j in enumerate(i_cols)])
+
+                escala = orden_jer[max([n for n, i in enumerate(i_cols) if f[i] != ''])]
+                nombre = f[cols.index(escala)]
+                símismo.cód_a_lugar[cód] = {'escala': escala, 'nombre': nombre}
+
+    def obt_lugares_en(símismo, cód_lugar, escala=None):
+        """
+
+        :param cód_lugar:
+        :type cód_lugar:
+        :param escala:
+        :type escala:
+        :return:
+        :rtype: list[str]
+        """
+
+        escala_lugar = símismo.cód_a_lugar[cód_lugar]['escala']
+
+        if escala is None:
+            l_códs = [x for x, d in símismo.árbol_geog_inv.items() if d[escala_lugar] == cód_lugar]
+        else:
+            l_códs = [x for x, d in símismo.árbol_geog_inv.items()
+                      if d[escala_lugar] == cód_lugar and símismo.cód_a_lugar[x]['escala'] == escala]
+
+        return l_códs
+
+    def dibujar(símismo, archivo, valores=None, título=None, unidades=None, colores=None, escala_num=None,
+                escala_geog=None):
         """
         Dibuja la Geografía.
 
@@ -250,8 +404,8 @@ class Geografía(object):
         :type unidades: str
         :param colores: Los colores para dibujar.
         :type colores: str | list | tuple
-        :param escala: La escala numérica para los colores.
-        :type escala: tuple
+        :param escala_num: La escala numérica para los colores.
+        :type escala_num: tuple
 
         """
 
@@ -270,23 +424,23 @@ class Geografía(object):
 
         if valores is not None:
             regiones = símismo.regiones['af']
-            orden = símismo.regiones['orden']
+            orden = símismo.regiones['orden_jer']
 
             n_regiones = len(regiones.shapes())
             if len(valores) != n_regiones:
-                raise ValueError('El número de regiones no corresponde con el tamñao de los valores.')
+                raise ValueError(_('El número de regiones no corresponde con el tamñao de los valores.'))
 
-            if escala is None:
-                escala = (np.min(valores), np.max(valores))
-            if len(escala) != 2:
+            if escala_num is None:
+                escala_num = (np.min(valores), np.max(valores))
+            if len(escala_num) != 2:
                 raise ValueError
 
-            vals_norm = (valores - escala[0]) / (escala[1] - escala[0])
+            vals_norm = (valores - escala_num[0]) / (escala_num[1] - escala_num[0])
 
             d_clrs = _gen_d_mapacolores(colores=colores)
 
             mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs)
-            norm = colors.Normalize(vmin=escala[0], vmax=escala[1])
+            norm = colors.Normalize(vmin=escala_num[0], vmax=escala_num[1])
             cpick = cm.ScalarMappable(norm=norm, cmap=mapa_color)
             cpick.set_array([])
 

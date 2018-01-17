@@ -1,3 +1,4 @@
+import datetime as ft
 import math as mat
 import os
 import sys
@@ -5,9 +6,9 @@ from importlib import import_module as importar_mod
 from warnings import warn as avisar
 
 import numpy as np
-import datetime as ft
 from dateutil.relativedelta import relativedelta as deltarelativo
 
+from tinamit import _
 from tinamit.Modelo import Modelo
 from .Unidades.Unidades import convertir
 
@@ -37,7 +38,8 @@ class EnvolturaBF(Modelo):
         try:
             modelo = módulo.Modelo  # type: ModeloBF
         except AttributeError:
-            raise AttributeError('El archivo especificado ({}) no contiene una clase llamada Modelo.'.format(archivo))
+            raise AttributeError(_('El archivo especificado ({}) no contiene una clase llamada Modelo.')
+                                 .format(archivo))
 
         if callable(modelo):
             símismo.modelo = modelo()
@@ -45,8 +47,8 @@ class EnvolturaBF(Modelo):
             símismo.modelo = modelo
 
         if not isinstance(símismo.modelo, ModeloBF):
-            raise TypeError('El archivo especificado ("{}") contiene una clase llamada Modelo, pero'
-                            'esta clase no es una subclase de ClaseModeloBF.'.format(archivo))
+            raise TypeError(_('El archivo especificado ("{}") contiene una clase llamada Modelo, pero'
+                            'esta clase no es una subclase de ClaseModeloBF.').format(archivo))
 
         super().__init__(nombre='bf')
 
@@ -282,7 +284,7 @@ class ModeloImpaciente(ModeloBF):
 
     def cambiar_vals_modelo_interno(símismo, valores):
         """
-        Solamente nos tenemos que asegurar que los اعداد_دن internos (para variables estacionales) queda consistente
+        Solamente nos tenemos que asegurar que los datos internos (para variables estacionales) queda consistente
         con los nuevos valores cambiadas por la conexión con el modelo externo. La función `.avanzar_modelo()` debe
         utilizar este diccionario interno para mandar los nuevos valores a la próxima simulación.
 
@@ -307,7 +309,7 @@ class ModeloImpaciente(ModeloBF):
         if n_paso > 12:
             avisar('El paso es superior a 1 año (12 meses). Las predicciones climáticas perderán su precisión.')
 
-        # Solamante hay que cambiar los اعداد_دن si es el principio de un nuevo año.
+        # Solamante hay que cambiar los datos si es el principio de un nuevo año.
         if símismo.mes == 0 and símismo.estación == 0:
 
             # La lista de variables climáticos
@@ -316,6 +318,9 @@ class ModeloImpaciente(ModeloBF):
 
             # La lista de maneras de combinar los valores diarios
             combins = [d['combin'] for d in símismo.vars_clima.values()]
+
+            # La lista de factores de conversiones de variables de clima
+            convs = [d['conv'] for d in símismo.vars_clima.values()]
 
             # La fecha inicial
             f_inic = f
@@ -326,7 +331,7 @@ class ModeloImpaciente(ModeloBF):
                 # La fecha final
                 f_final = f_inic + deltarelativo(months=+dur)
 
-                # Calcular los اعداد_دن
+                # Calcular los datos
                 datos = símismo.lugar.comb_datos(vars_clima=nombres_extrn, combin=combins,
                                                  f_inic=f_inic, f_final=f_final)
 
@@ -337,8 +342,11 @@ class ModeloImpaciente(ModeloBF):
                     # El nombre oficial del variable de clima
                     var_clima = nombres_extrn[i]
 
+                    # El factor de conversión
+                    conv = convs[i]
+
                     # Guardar el valor para esta estación
-                    símismo.datos_internos[var][e, ...] = datos[var_clima]
+                    símismo.datos_internos[var][e, ...] = datos[var_clima] * conv
 
                 # Avanzar la fecha
                 f_inic = f_final
@@ -355,7 +363,7 @@ class ModeloImpaciente(ModeloBF):
 
         # No podemos tener pasos fraccionales
         if int(paso) != paso:
-            raise ValueError('El paso debe ser un número entero.')
+            raise ValueError(_('El paso debe ser un número entero.'))
 
         # Para simplificar el código un poco.
         m = símismo.mes
@@ -508,7 +516,7 @@ class ModeloImpaciente(ModeloBF):
         Lee los egresos del modelo y los guarda en los diccionarios internos apropiados.
 
         :param n_años_egr: El número de años que se corrió la última simulación. Solamente se leerá el último año
-        　　de egresos.
+          de egresos.
         :type n_años_egr: int
 
         """

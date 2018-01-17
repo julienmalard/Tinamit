@@ -6,6 +6,7 @@ from tkinter import filedialog as diálogo
 
 from tinamit.Conectado import Conectado
 from tinamit.definiciones import dir_raíz
+from tinamit import cambiar_leng
 from . import CajasGenéricas as CjG
 from . import CajasSubEtapas as CjSE
 from . import Controles as Ctrl
@@ -145,6 +146,7 @@ class CajaLeng(tk.Frame):
             Ctrl.CajaAviso(texto=texto, apli=símismo.apli)
             símismo.DicLeng.config['leng_act'] = nombre
             símismo.DicLeng.guardar()
+            cambiar_leng('nombre')
             símismo.refrescar()
 
     def editar(símismo, nombre):

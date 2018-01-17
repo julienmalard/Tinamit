@@ -19,7 +19,7 @@ Tinamït permite la conexión rápida, flexible y reproducible de modelos con:
 
 .. note::
    ¿Encontraste algún error en la documentación? Seguramente es culpa mía. Si es error de español, por favor tenga
-   la bondad de corregirlo en `GitHub <|GitHub|>`_. Si es en otro idioma, corrígelo :ref:`así <des_trad>`. ¡Gracias!
+   la bondad de corregirlo en `GitHub`_. Si es en otro idioma, corrígelo :ref:`así <des_trad>`. ¡Gracias!
 
 ¿Quieres contribuir?
 --------------------
@@ -35,11 +35,11 @@ Contacto: |correo|
    :maxdepth: 1
    :titlesonly:
 
-   Introducción <intro>
-   Instalar <instal>
-   Usar <uso/uso>
-   Desarrollo <desarrollo/desarrollo>
-   Ejemplos <ejemplos/ejemplos>
-   Publicaciones <pubs>
-   Documentación <docu/docu>
-   Agradecimientos <agradecimientos>
+   intro
+   instal
+   uso/uso
+   desarrollo/desarrollo
+   ejemplos/ejemplos
+   pubs
+   docu/docu
+   agradecimientos

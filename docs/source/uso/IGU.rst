@@ -49,7 +49,7 @@ la traducción. También puedes hacer clic en la cruz arriba para agregar un nue
 también especificar si se escribe de la izquierda hacia la derecha o al revés).
 
 Todas las traducciones se guardan automáticamente en un documento llamado “Trads” en el directorio de Tinamït. Si contribuyes
-a unas traducciones, puedes compartir este documento (|correo|, o por `GitHub <|GitHub|>`_) para que todas tengan acceso
+a unas traducciones, puedes compartir este documento (|correo|, o por `GitHub`_) para que todas tengan acceso
 a tu idioma favorito.
 
 Cargar modelos (I)

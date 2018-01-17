@@ -1,0 +1,349 @@
+# Malay translations for tinamit.
+# Copyright (C) 2018 ORGANIZATION
+# This file is distributed under the same license as the tinamit project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2018. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamit 1.3.1\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2018-01-15 14:17-0500\n"
+"PO-Revision-Date: 2018-01-15 02:17-0500\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: ms <LL@li.org>\n"
+"Language: ms\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Generated-By: Babel 2.5.1\n"
+"X-Generator: Zanata 3.9.6\n"
+
+#: tinamit/BF.py:41
+msgid "El archivo especificado ({}) no contiene una clase llamada Modelo."
+msgstr ""
+
+#: tinamit/BF.py:50
+msgid ""
+"El archivo especificado (\"{}\") contiene una clase llamada Modelo, peroesta"
+" clase no es una subclase de ClaseModeloBF."
+msgstr ""
+
+#: tinamit/BF.py:340
+msgid "El paso debe ser un número entero."
+msgstr ""
+
+#: tinamit/Conectado.py:68
+msgid ""
+"Ya hay dos modelo conectados. Desconecta uno primero o emplea una instancia "
+"deSuperConectado para conectar más que 2 modelos."
+msgstr ""
+
+#: tinamit/Conectado.py:73
+msgid ""
+"El modelo {} ya existe. El nuevo modelo reemplazará el modelo anterior."
+msgstr ""
+
+#: tinamit/Conectado.py:195
+msgid "El modelo \"{}\" no existe en este modelo conectado."
+msgstr ""
+
+#: tinamit/Conectado.py:335
+msgid "Hay que conectar dos modelos antes de empezar una simulación."
+msgstr ""
+
+#: tinamit/Conectado.py:339
+msgid ""
+"Hay que especificar la conversión de unidades de tiempo con "
+".estab_conv_tiempo() antes de correr la simulación."
+msgstr ""
+
+#: tinamit/Conectado.py:347
+msgid ""
+"\n"
+"No se pudo inferir la conversión de unidades de tiempo entre {} y {}.\n"
+"Especificarla con la función .estab_conv_tiempo().\n"
+"Por el momento pusimos el factor de conversión a 1, pero probablemente no es lo que quieres."
+msgstr ""
+
+#: tinamit/Conectado.py:358
+msgid "Hay que especificar un lugar para incorporar el clima."
+msgstr ""
+
+#: tinamit/Conectado.py:361
+msgid "Hay que especificar la fecha inicial para simulaciones de clima"
+msgstr ""
+
+#: tinamit/Conectado.py:375
+msgid ""
+"La fecha inicial debe ser en formato \"día/mes/año\", por ejemplo "
+"\"24/12/2017\"."
+msgstr ""
+
+#: tinamit/Conectado.py:454
+msgid "Hubo error en modelo \"{}\""
+msgstr ""
+
+#: tinamit/Conectado.py:553
+msgid "Nombre de modelo \"{}\" erróneo."
+msgstr ""
+
+#: tinamit/Conectado.py:559
+msgid "El variable \"{}\" no existe en el modelo \"{}\"."
+msgstr ""
+
+#: tinamit/Conectado.py:563
+msgid ""
+"El variable \"{}\" del modelo \"{}\" ya está conectado. Desconéctalo primero"
+" con .desconectar_vars()."
+msgstr ""
+
+#: tinamit/Conectado.py:581
+msgid ""
+"Las dimensiones de los dos variables ({}: {}; {}: {}) no son compatibles."
+msgstr ""
+
+#: tinamit/Conectado.py:592
+msgid ""
+"No se pudo identificar una conversión automática para las unidades de los "
+"variables\"{}\" (unidades: {}) y \"{}\" (unidades: {}). Se está suponiendo "
+"un factor de conversión de 1."
+msgstr ""
+
+#: tinamit/Conectado.py:650
+msgid "La conexión especificada no existe."
+msgstr ""
+
+#: tinamit/MDS.py:147
+msgid "El variable \"{}\" no existe."
+msgstr ""
+
+#: tinamit/MDS.py:203
+msgid "El formato de datos \"{}\" no se puede leer al momento."
+msgstr ""
+
+#: tinamit/Modelo.py:127
+msgid ""
+"El variable inicializado \"{}\" no existe en los variables del modelo.\n"
+"Pero antes de quejarte al gerente, sería buena idea verificar si lo escrbiste bien."
+msgstr ""
+
+#: tinamit/Modelo.py:157
+msgid "El variable \"{}\" no existe en este modelo. ¿De pronto lo escribiste mal?"
+msgstr ""
+
+#: tinamit/Modelo.py:159
+msgid ""
+"El variable climático \"{}\" no es una posibilidad. Debe ser uno de:\n"
+"\t{}"
+msgstr ""
+
+#: tinamit/Modelo.py:163
+msgid "\"Combin\" debe ser \"prom\", \"total\", o None, no \"{}\"."
+msgstr ""
+
+#: tinamit/Modelo.py:248
+msgid "La unidad de tiempo \"{}\" no se pudo convertir a meses."
+msgstr ""
+
+#: tinamit/__init__.py:77
+msgid "Entregar el valor para {}"
+msgstr ""
+
+#: tinamit/__init__.py:80
+msgid ""
+"\"{}\" no es un valor aceptable para \"{}\".\n"
+"\tIntente de nuevo:"
+msgstr ""
+
+#: tinamit/__init__.py:88
+msgid "El archivo \"\" no existe."
+msgstr ""
+
+#: tinamit/__init__.py:90
+msgid "Tinamït no tiene variable \"{}\" de configuración."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:224
+msgid "Esta computadora no tiene el DLL de Vensim DSS."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:231
+msgid "Error iniciando VENSIM."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:236
+msgid "Error cargando el modelo de VENSIM."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:240
+msgid "Error en la comanda \"vensim_be_quiet\"."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:276
+msgid "Error obteniendo eñ tamaño de los variables VENSIM."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:285
+msgid "Error obteniendo los nombres de los variables de VENSIM."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:298
+msgid ""
+"Error obteniendo los nombres de los variables editables (\"Gaming\") de "
+"VENSIM."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:406
+msgid "Error iniciando la corrida VENSIM."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:411
+msgid "Error estableciendo el tiempo final para VENSIM."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:417
+msgid "Error inicializando el juego VENSIM."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:442 tinamit/EnvolturaMDS/Vensim.py:459
+#, python-format
+msgid "Error cambiando el variable %s."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:474
+msgid "Error estableciendo el paso de VENSIM."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:479
+msgid "Error para incrementar VENSIM."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:499 tinamit/EnvolturaMDS/Vensim.py:514
+msgid "Error con VENSIM para leer variables."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:530
+msgid "Error para terminar la simulación VENSIM."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:553
+msgid ""
+"Error verificando el estatus de VENSIM. De verdad, la cosate va muy mal."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:576
+msgid ""
+"Código \"{}\" no reconocido para la comanda Vensim de obtener atributos de "
+"variables."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:580
+msgid "las unidades"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:580
+msgid "la descipción"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:580
+msgid "la ecuación"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:580
+msgid "las causas"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:580
+msgid "las consecuencias"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:581
+msgid "la causas iniciales"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:581
+msgid "las causas activas"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:581
+msgid "los subscriptos"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:582
+msgid "las combinaciones de subscriptos"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:582
+msgid "los subscriptos de gráfico"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:582
+msgid "el mínimo"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:583
+msgid "el máximo"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:583
+msgid "el rango"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:583
+msgid "el tipo"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:584
+msgid ""
+"Error leyendo el tamaño de memoria para obtener {} del variable \"{}\" en "
+"Vensim"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:586
+msgid "Error leyendo {} del variable \"{}\" en Vensim."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:652
+msgid "Error con la comanda VENSIM."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:654
+msgid " Código de error {}."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/__init__.py:33
+msgid ""
+"El tipo de modelo \"{}\" no se acepta como modelo DS en Tinamit al momento. "
+"Si piensasque podrías contribuir aquí, ¡contáctenos!"
+msgstr ""
+
+#: tinamit/Geog/Geog.py:156 tinamit/Geog/Geog.py:187
+msgid ""
+"El variable \"{}\" está erróneo. Debe ser uno de:\n"
+"\t{}"
+msgstr ""
+
+#: tinamit/Geog/Geog.py:252 tinamit/Geog/Geog.py:263
+msgid "La columna \"{}\" no existe en la base de datos."
+msgstr ""
+
+#: tinamit/Geog/Geog.py:298
+msgid ""
+"Los nombres de las regiones en \"orden_jer\" ({}) no concuerdan con los "
+"nombres en el archivo ({})."
+msgstr ""
+
+#: tinamit/Geog/Geog.py:303
+msgid ""
+"La columna de código de región especificada ({}) no concuerda con los "
+"nombres de columnas del archivo ({})."
+msgstr ""
+
+#: tinamit/Geog/Geog.py:387
+msgid "El número de regiones no corresponde con el tamñao de los valores."
+msgstr ""
+
+#: tinamit/Unidades/Unidades.py:72
+msgid "Unidades incompatibles: \"{}\" y \"{}\"."
+msgstr ""

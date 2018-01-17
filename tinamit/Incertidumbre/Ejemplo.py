@@ -1,11 +1,12 @@
-from tinamit.Incertidumbre.Datos import DatosIndividuales, DatosRegión, Geografía, BaseDeDatos
-from tinamit.Incertidumbre.Modelo import mds
+from tinamit.Incertidumbre.Datos import DatosIndividuales, DatosRegión, SuperBD
+from EnvolturaMDS import generar_mds
+from tinamit.Geog.Geog import Geografía
 
-# MDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
-modelo = mds(archivo_mds='C:\\Users\\jmalar1\\Documents\\USB Julien\\USB après lavage août 2016\\PhD\\Iximulew\\'
-                         'MDS 2015\\Tz\'olöj Ya\'\\Taller 12\\Para Tinamit.mdl')
-print('vars', modelo.vars)
-print('internos', modelo.internos)  # variables internos al MDS (p. ej., TIMESTEP y TIME en VENSIM)
+# EnvolturaMDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
+modelo = generar_mds(archivo='C:\\Users\\jmalar1\\Documents\\USB Julien\\USB après lavage août 2016\\PhD\\Iximulew\\'
+                             'EnvolturaMDS 2015\\Tz\'olöj Ya\'\\Taller 12\\Para Tinamit.mdl')
+print('vars', modelo.variables.keys())
+print('internos', modelo.internos)  # variables internos al EnvolturaMDS (p. ej., TIMESTEP y TIME en VENSIM)
 print('auxiliares', modelo.auxiliares)
 print('flujos', modelo.flujos)
 print('niveles', modelo.niveles)
@@ -18,23 +19,26 @@ datos_ind = DatosIndividuales(archivo_csv='ENCOVI_hog_2011.csv', año=2011, col_
 # datos_ind = DatosIndividuales(fuente='')
 # datos_ind.estab_col_año(col='año')
 
-geog = Geografía(archivo='Geografía Iximulew.csv',
-                 orden=['Departamento', 'Municipio'],
-                 col_cód='Código')
+geog = Geografía('Iximulew')
+geog.agregar_info_regiones(archivo='Geografía Iximulew.csv',
+                           orden_jer=['Departamento', 'Municipio'],
+                           col_cód='Código')
 
 
 print(datos_ind.datos_irreg(var='Inseguridad.alimentaria'))
-print(datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(1, 4), tipo='valor'))  # Hace cambios al csv
-datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(0, 0.90))
+# print(datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(1, 4), tipo='valor'))  # Hace cambios al csv
+# datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(0, 0.90))
 
 # datos_ind.guardar_datos(archivo='ENCOVI_hog_2011_limp.csv')  # Guarda el csv
 
 datos_muni = DatosRegión(archivo_csv='Desnutrición_muni.csv', col_año='Año', col_cód_lugar='Código_lugar',
                          col_tmñ_muestra='Tamaño_muestra')
 
-bd = BaseDeDatos(datos=[datos_ind, datos_muni], geog=geog)
+bd = SuperBD(datos=[datos_ind, datos_muni], geog=geog)
 
 bd.renombrar_var(datos=datos_ind, var='P01221', nuevo_nombre='Insegurdad Alimentaria')  # puro ejemplo
+
+bd.a
 
 # Gráfico de "caja" con incertidumbre
 bd.graficar(var='Inseguridad Alimentaria', años=2011, cód_lugar='0708', datos=None)
@@ -43,7 +47,7 @@ bd.graficar(var='Inseguridad Alimentaria', años=2011, lugar=['Iximulew', "Tz'ol
 # Gráfico de línea con tiempo en el eje x e incertidumbre mostrada
 bd.graficar(var='Población', años=(2000, None), cód_lugar='0112')
 
-# Varias "cajas" en el mismo gráfico (eje x = lugar)
+# Varias "cajas" en el mismo gráfico (eje x = lugares)
 bd.graficar(var='Población', años=2011, cód_lugar=['0112', 1204])
 
 # Varias líneas en el mismo gráfico (eje x = tiempo)
@@ -82,7 +86,7 @@ eq = control.eq(var='Sueldo')
 eq_var is eq
 eq.paráms()  # Dic de parám, distribución y valor
 control.calibrar_ec(var='', años=None, escala='Municipio', cód_lugar='0112')
-control.graficar_ec(var='', var_y=None, var_z=None, datos=None, años=None)  # Grafica los اعداد_دن (اعداد.relación) y la línea, con incertdumbre, de la ecuación calibrada
+control.graficar_ec(var='', var_y=None, var_z=None, datos=None, años=None)  # Grafica los datos (اعداد.relación) y la línea, con incertdumbre, de la ecuación calibrada
 
 
 control.guardar_incert_paráms(archivo='')  # Dic. de var, parám, y distribución
@@ -91,7 +95,7 @@ control.gen_doc_incert(fuente='')  # Formato de especicificaciones de corridas d
 
 control.escribir_modelo(archivo='')
 control.correr(nombre_corrida='')
-control.analizar_incert(nombre_corrida='', manera='natural')  # Utilizando la función de incertidumbre del programa de MDS
+control.analizar_incert(nombre_corrida='', manera='natural')  # Utilizando la función de incertidumbre del programa de EnvolturaMDS
 control.visualizar_corrida(var='')
 
 control.validar_MDS(año_inic=None, cód_lugar=['0112'], n_reps=100)  # Genera los análises de Barlas, gráficos, etc.

@@ -1,0 +1,8 @@
+[main]
+host = https://www.transifex.com
+type = PO
+
+[codigo-tinamit.tinamit]
+file_filter = _fuente/<lang>/LC_MESSAGES/tinamit.po
+source_file = _constr/tinamit.pot
+source_lang = es

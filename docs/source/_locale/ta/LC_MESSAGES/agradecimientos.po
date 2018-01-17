@@ -3,12 +3,13 @@
 # This file is distributed under the same license as the tinamit package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2018. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-29 15:34-0400\n"
-"PO-Revision-Date: 2017-12-21 01:34-0500\n"
+"PO-Revision-Date: 2018-01-12 01:58-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (https://www.transifex.com/qatikon/teams/70565/ta/)\n"
 "Language: ta\n"
@@ -96,25 +97,31 @@ msgstr "நிதிகள்..."
 msgid ""
 "Los organismos siguientes contribuyeron apoyo financiero a uno o más de los "
 "autores del código mientras trabajaban en el desarrollo de Tinamït:"
-msgstr ""
+msgstr "இந்த நிலையங்களால் தீனாமித் எழுத்தாளர்களுக்கு நிதி கிடைத்தவிட்டது."
 
 #: ../../source/agradecimientos.rst:33
 msgid ""
 "`Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) "
 "<https://www.nserc-crsng.gc.ca>`_"
 msgstr ""
+"`கனடா அரசங்க இற்கை அறிவியல் மற்றும் பொறியியல் ஆராய்ச்சி சபை (CRSNG) "
+"<https://www.nserc-crsng.gc.ca>`_"
 
 #: ../../source/agradecimientos.rst:34
 msgid ""
 "`Centre de recherches pour le développement international du Canada (CRDI) "
 "<https://www.idrc.ca/fr>`_"
 msgstr ""
+"`கனடா அரசங்க சர்வதேச வளர்ச்சி ஆராய்ச்சி மையம் (CRDI) "
+"<https://www.idrc.ca/fr>`_"
 
 #: ../../source/agradecimientos.rst:35
 msgid ""
 "`Fonds de recherche Nature et technologies du Québec (Canada) (FQRNT) "
 "<http://www.frqnt.gouv.qc.ca/accueil>`_"
 msgstr ""
+"`கிபெக் அரச்ங்கம் இற்கை மற்றும் தொழில்நுட்ப ஆராய்ச்சி நிதி மையம் (கனடா) "
+"(FQRNT) <http://www.frqnt.gouv.qc.ca/accueil>`_"
 
 #: ../../source/agradecimientos.rst:38
 msgid "Instituciones afiliadas"
@@ -123,4 +130,4 @@ msgstr "சேர்க்கப்பெற்ற நிலையங்கள�
 #: ../../source/agradecimientos.rst:40
 msgid ""
 "Los autores de Tinamït están afiliados con las instituciones siguientes:"
-msgstr ""
+msgstr "தீநாமித்தின் எழத்துவர்கள் இந்த நிறுவனங்களுடுன் இணைந்துள்ளன."

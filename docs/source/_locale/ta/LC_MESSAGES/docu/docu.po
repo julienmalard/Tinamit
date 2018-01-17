@@ -3,12 +3,13 @@
 # This file is distributed under the same license as the tinamit package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2018. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-05 12:43-0500\n"
-"PO-Revision-Date: 2017-12-14 11:21-0500\n"
+"PO-Revision-Date: 2018-01-15 01:36-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (https://www.transifex.com/qatikon/teams/70565/ta/)\n"
 "Language: ta\n"
@@ -19,7 +20,8 @@ msgstr ""
 "X-Generator: Zanata 3.9.6\n"
 
 #: ../../source/docu/docu.rst:2
-msgid "Documentación completa"
+#, fuzzy
+msgid "Documentación"
 msgstr "முழு ஆவணங்கள்"
 
 #: ../../source/docu/docu.rst:4
@@ -38,9 +40,15 @@ msgid ""
 " de esta estructura (y posiblemente se incluirán en paquetes distintos en "
 "revisiones futuras)."
 msgstr ""
+"தீனாமித்தின் முழு மற்றும் சிக்கலான மையமைப்பு கீழே உள்ள விளக்கப்படத்தில் "
+"காணலாம். :mod:`~tinamit.Unidades.Unidades` மற்றும் :mod:`~tinamit.Geog.Geog`"
+" என்று துணை தொகுதிகள் இந்த அமைப்புக்கு வெளியே உள்ளன, எதிர்காலத்தின் "
+"பதிப்புகளில் தனி தொகுதிகளால் இருக்கட்டும்."
 
 #: ../../source/docu/docu.rst:26
 msgid ""
 "Diagrama de la estructura del programa de Tinamït. Cajas en gris indican "
 "componentes en trabajo."
 msgstr ""
+"தீனாமித்தின் அமைப்பு விளக்கப்படம். சாம்பல் நிறம் பெட்டிகளில் உள்ள கூறுகள் "
+"இன்னும் வளர்ச்சியில் உள்ளன."

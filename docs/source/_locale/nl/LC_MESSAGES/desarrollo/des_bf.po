@@ -3,12 +3,13 @@
 # This file is distributed under the same license as the tinamit package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2018. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-05 12:43-0500\n"
-"PO-Revision-Date: 2017-12-14 11:20-0500\n"
+"PO-Revision-Date: 2018-01-15 02:11-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (https://www.transifex.com/qatikon/teams/70565/nl/)\n"
 "Language: nl\n"
@@ -107,58 +108,58 @@ msgid ""
 "tiempo para modelos con pasos complicados."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:50
+#: ../../source/desarrollo/des_bf.rst:51
 msgid "Plantilla estándar (ModeloBF)"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:51
+#: ../../source/desarrollo/des_bf.rst:52
 msgid ""
 "Esta plantilla es la más sencilla (y todas las otras son subclases de esta)."
 " Deberás implementar las funciones siguientes en una subclase de esta "
 "plantilla."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:54
+#: ../../source/desarrollo/des_bf.rst:55
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.obt_unidad_tiempo`: Devuelve la unidad de tiempo"
 " del modelo."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:55
+#: ../../source/desarrollo/des_bf.rst:56
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.inic_vars`: Incializa el diccionario interno de "
 "variables disponibles."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:56
+#: ../../source/desarrollo/des_bf.rst:57
 msgid ":func:`~tinamit.BF.ModeloBF.iniciar_modelo`: Inicializa la simulación."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:57
+#: ../../source/desarrollo/des_bf.rst:58
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.cambiar_vals_modelo_interno`: Cambia los valores"
 " internos de los variables."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:58
+#: ../../source/desarrollo/des_bf.rst:59
 msgid ":func:`~tinamit.BF.ModeloBF.incrementar`: Avanza el modelo."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:59
+#: ../../source/desarrollo/des_bf.rst:60
 msgid ":func:`~tinamit.BF.ModeloBF.leer_vals`: Lee los egresos del modelo."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:60
+#: ../../source/desarrollo/des_bf.rst:61
 msgid ""
 ":func:`~tinamit.BF.ModeloBF.cerrar_modelo`: Cierre el modelo al final de una"
 " simulación."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:64
+#: ../../source/desarrollo/des_bf.rst:66
 msgid "Plantilla ModeloImpaciente"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:65
+#: ../../source/desarrollo/des_bf.rst:67
 msgid ""
 "Un ejemplo del uso de esta plantilla es la envoltura para el modelo de "
 "salinidad de suelos SAHYSMOD. La plantilla maneja el control del modelo, "
@@ -167,25 +168,25 @@ msgid ""
 "implementar las funciones siguientes en una subclase:"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:69
+#: ../../source/desarrollo/des_bf.rst:71
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.iniciar_modelo`: Inicializa la "
 "simulación."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:70
+#: ../../source/desarrollo/des_bf.rst:72
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.cerrar_modelo`: Cierre el modelo al "
 "final de una simulación."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:71
+#: ../../source/desarrollo/des_bf.rst:73
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.inic_vars`: Incializa el diccionario "
 "interno de variables disponibles."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:72
+#: ../../source/desarrollo/des_bf.rst:74
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.avanzar_modelo`: Avanza la simulación "
 "del paso mínimo del modelo (por ejemplo, avanzará un modelo anual de 1 año, "
@@ -193,98 +194,132 @@ msgid ""
 "Tinamït arreglará todo."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:75
+#: ../../source/desarrollo/des_bf.rst:77
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.leer_archivo_vals_inic`: Lee un archivo "
 "con valores inciales para la simulación."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:76
+#: ../../source/desarrollo/des_bf.rst:78
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.leer_archivo_egr`: Le un archivo de los "
 "egresos de una simulación."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:77
+#: ../../source/desarrollo/des_bf.rst:79
 msgid ""
 ":func:`~tinamit.BF.ModeloImpaciente.escribir_archivo_ingr`: Escribe un "
 "archivo de ingresos para el modelo, basado en los valores de los variables "
 "internos actuales."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:80
+#: ../../source/desarrollo/des_bf.rst:82
 msgid ""
 "Un ejemplo sería la envoltura para SAHYSMOD, "
 ":class:`~tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper`."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:84
+#: ../../source/desarrollo/des_bf.rst:87
 msgid "Plantilla ModeloFlexible"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:85
+#: ../../source/desarrollo/des_bf.rst:88
 msgid ""
 "Un ejemplo de esta plantilla sería la envoltura para el modelo de cultivos "
 "DSSAT. Simplemente debes implementar las funciones siguientes en una "
 "subclase:"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:89
+#: ../../source/desarrollo/des_bf.rst:92
 msgid "Esta plantilla todavía está en desarrollo."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:91
+#: ../../source/desarrollo/des_bf.rst:94
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.iniciar_modelo`: Inicializa la simulación."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:92
+#: ../../source/desarrollo/des_bf.rst:95
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.cerrar_modelo`: Cierre el modelo al final "
 "de una simulación."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:93
+#: ../../source/desarrollo/des_bf.rst:96
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.inic_vars`: Incializa el diccionario "
 "interno de variables disponibles."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:94
+#: ../../source/desarrollo/des_bf.rst:97
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.mandar_modelo`: Avanza la simulación."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:95
+#: ../../source/desarrollo/des_bf.rst:98
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.leer_archivo_vals_inic`: Lee un archivo "
 "con valores inciales para la simulación."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:96
+#: ../../source/desarrollo/des_bf.rst:99
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.leer_archivo_egr`: Le un archivo de los "
 "egresos de una simulación."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:97
+#: ../../source/desarrollo/des_bf.rst:100
 msgid ""
 ":func:`~tinamit.BF.ModeloFlexible.escribir_archivo_ingr`: Escribe un archivo"
 " de ingresos para el modelo, basado en los valores de los variables internos"
 " actuales."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:100
+#: ../../source/desarrollo/des_bf.rst:103
 msgid ""
 "Un ejemplo sería la envoltura para DSSAT, "
 ":class:`~tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT`."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:103
+#: ../../source/desarrollo/des_bf.rst:106
+msgid "Modelos externos"
+msgstr ""
+
+#: ../../source/desarrollo/des_bf.rst:107
+msgid ""
+"La casi totalidad de las envolturas BF van a necesitar un modelo externo a "
+"Tinamït. Se recomienda incluir un enlace al donde se puede descargar el "
+"modelo externo en los comentarios, si posible."
+msgstr ""
+
+#: ../../source/desarrollo/des_bf.rst:110
+msgid ""
+"Otro asunto es que cada usuario de tu envoltura estará utilizando una "
+"computadora diferente, con el modelo externo guardado en lugar distinto. Por"
+" eso no te recomiendo hacer algo así::"
+msgstr ""
+
+#: ../../source/desarrollo/des_bf.rst:118
+msgid ""
+"Por razones obvias, aunque todo funcione bien para ti, otros posiblemente "
+"tendrán dificultades con tu envoltura. Por eso Tinamït te propone una "
+"función especial, ``tinamit.obt_val_config()``, que pide al usuario el "
+"directorio del modelo en *su* computadora la primera vez que emplea tu "
+"envoltura y despúes lo guarda en un archivo local para uso futuro. Se emplea"
+" así::"
+msgstr ""
+
+#: ../../source/desarrollo/des_bf.rst:132
+msgid ""
+"Así, si ya existe un valor para ``exe_dssat`` en la configuración local de "
+"Tinamït, tomará este valor. Sino, pedirá al usuario que se lo entregue."
+msgstr ""
+
+#: ../../source/desarrollo/des_bf.rst:136
 msgid "Cambios climáticos"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:104
+#: ../../source/desarrollo/des_bf.rst:137
 msgid ""
 "Si tu modelo incluye variables climáticos, deberías considerar escribirlo "
 "para que pueda comunicar con las funcionalidades de cambios climáticos de "
@@ -292,7 +327,7 @@ msgid ""
 " según el escenario climático escogido por el usuario."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:108
+#: ../../source/desarrollo/des_bf.rst:141
 msgid ""
 "Cuando un usuario corre un modelo con un escenario climático, cada modelo "
 "conectado se conectará automáticamente, por su atributo ``.lugar``, con un "
@@ -303,7 +338,7 @@ msgid ""
 "SAHYSMOD::"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:115
+#: ../../source/desarrollo/des_bf.rst:148
 msgid ""
 "Esta comanda conecta el variable interno ``Pp - Rainfall`` de la envoltura "
 "SAHYSMOD con el variable climático ``Precipitación``. En cada paso, Tinamït "
@@ -311,34 +346,34 @@ msgid ""
 "paso de la simulación para el escenario climático apropiado. Chévere, ¿no?"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:119
+#: ../../source/desarrollo/des_bf.rst:152
 msgid ""
 "El parámetro ``var`` es el nombre de este variable en tu envoltura. Puede "
 "ser lo que quieres, en el idioma que quieres. La opciones actuales para "
 "variables climáticos (``var_clima``) incluyen:"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:122
+#: ../../source/desarrollo/des_bf.rst:155
 msgid "``Precipitación`` : mm"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:123
+#: ../../source/desarrollo/des_bf.rst:156
 msgid "``Radiación solar`` : MJ / m2 / día"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:124
+#: ../../source/desarrollo/des_bf.rst:157
 msgid "``Temperatura máxima`` : grados C"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:125
+#: ../../source/desarrollo/des_bf.rst:158
 msgid "``Temperatura promedia`` : grados C"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:126
+#: ../../source/desarrollo/des_bf.rst:159
 msgid "``Temperatura mínima`` : grados C"
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:129
+#: ../../source/desarrollo/des_bf.rst:162
 msgid ""
 "``Combin`` puede ser ``prom`` (calculará el promedio de este variable "
 "climático por el periodo deseado) o ``total`` (calculará el total, como para"
@@ -346,7 +381,7 @@ msgid ""
 "y ``prom`` para todos los otrs variables climáticos."
 msgstr ""
 
-#: ../../source/desarrollo/des_bf.rst:133
+#: ../../source/desarrollo/des_bf.rst:166
 msgid ""
 "Si, al contrario, tu modelo necesita variables climáticos **con un paso "
 "distinto del suyo** (por ejemplo, un modelo de cultivos necesita que los "

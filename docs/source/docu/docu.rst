@@ -1,5 +1,5 @@
-Documentación completa
-======================
+Documentación
+=============
 
 Aquí tenemos la documentación completa de Tinamït. Mejor empezar con la introducción y los ejemplos si es tu primera
 vez aquí.

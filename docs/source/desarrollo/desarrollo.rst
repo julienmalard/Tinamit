@@ -1,7 +1,7 @@
 .. _desarrollo:
 
-Desarrollo de Tinamït
-=====================
+Desarrollo
+==========
 Tinamït tiene una estructura modular, así que es muy fácil agregar más funcionalidades. En particular, por el desarrollo
 de envolturas específicas, se puede agregar compatibilidad con varios programas de modelos
 **de dinámicas de sistemas (DS)** y modelos **biofísicos (BF)**. También se pueden contribuir **traducciones** del
@@ -16,7 +16,7 @@ Tinamït queda compatible con modelos escritos con los programas siguientes. Sie
 :ref:`escribir más <des_mds>`.
 
 * **Vensim**: Un programa de MDS bastante popular. Desafortunadamente, requiere la versión pagada (DSS) para conectar
-  con Tinamït. Ver su `página oficial <http://vensim.com/>`_ y la :class:`envoltura <tinamit.MDS.ModeloVensim>`.
+  con Tinamït. Ver su `página oficial <http://vensim.com/>`_ y la :class:`envoltura <tinamit.EnvolturaMDS.ModeloVensim>`.
 * **Stella**: Otro programa bastante popular. Ver su `página oficial <https://www.iseesystems.com/
   store/products/stella-architect.aspx>`_ aquí. Envoltura todavía en trabajo.
 
@@ -57,9 +57,9 @@ La manera más fácil para ti es probablemente mandarme tu nuevo código por cor
 
 Unos apuntos para cuándo vas a compartir una nueva envoltura:
 
-* Incluir instrucciones, si necesario, para que tus usuarios puedan conseguir el modelo biofísico correspondiente.
-* Incluir tantos comentarios como posible en tu envoltura (el código fuente de Tinamït es un ejemplo).
-* Se recomienda escribir envolturas en castellano, pero aceptamos envolturas escritas en todos idiomas. Apoyamos
+* Incluir instrucciones, si necesario, para que tus usuarios puedan conseguir modelos externos necesarios, si hay.
+* Incluir tantos comentarios como posible en tu código (el código fuente de Tinamït es un ejemplo).
+* Se recomienda escribir nuevas envolturas en castellano, pero aceptamos envolturas escritas en todos idiomas. Apoyamos
   particularmente esfuerzos para escribir el código en el idioma nativo del lugar donde estás trabajando.
 
 

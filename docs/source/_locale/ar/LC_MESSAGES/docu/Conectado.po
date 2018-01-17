@@ -4,12 +4,13 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Azhar Inam <azharinam@gmail.com>, 2017. #zanata
 # Julien Malard <julien.malard@mail.mcgill.ca>, 2017. #zanata
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2018. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-05 12:49-0500\n"
-"PO-Revision-Date: 2017-12-30 05:20-0500\n"
+"PO-Revision-Date: 2018-01-15 01:28-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Arabic (https://www.transifex.com/qatikon/teams/70565/ar/)\n"
 "Language: ar\n"
@@ -23,146 +24,183 @@ msgstr ""
 msgid "Conectado"
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado:1
+#: ../../../tinamit/Conectado.py:docstring of tinamit.Conectado.Conectado:1
 msgid ""
 "Esta clase representa un tipo especial de modelo "
 ":class:`~tinamit.Conectado.SuperConectado`: la conexión entre un modelo "
 "biofísico y un modelo DS."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.conectar:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.conectar:1
 msgid ""
 "Una función para conectar variables entre el modelo biofísico y el modelo "
 "DS."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.conectar:0 ../../docstring
-#: of tinamit.Conectado.Conectado.desconectar:0 ../../docstring of
-#: tinamit.Conectado.Conectado.dibujar:0 ../../docstring of
-#: tinamit.Conectado.Conectado.estab_bf:0 ../../docstring of
-#: tinamit.Conectado.Conectado.estab_mds:0 ../../docstring of
-#: tinamit.Conectado.SuperConectado.act_vals_clima:0 ../../docstring of
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.conectar:0
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.desconectar:0
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.dibujar:0
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.estab_bf:0
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.estab_mds:0
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.act_vals_clima:0
+#: ../../../tinamit/Conectado.py:docstring of
 #: tinamit.Conectado.SuperConectado.cambiar_vals_modelo_interno:0
-#: ../../docstring of tinamit.Conectado.SuperConectado.conectar_vars:0
-#: ../../docstring of tinamit.Conectado.SuperConectado.desconectar_vars:0
-#: ../../docstring of tinamit.Conectado.SuperConectado.estab_conv_tiempo:0
-#: ../../docstring of tinamit.Conectado.SuperConectado.estab_modelo:0
-#: ../../docstring of tinamit.Conectado.SuperConectado.incrementar:0
-#: ../../docstring of tinamit.Conectado.SuperConectado.simular:0
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.conectar_vars:0
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.desconectar_vars:0
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.estab_conv_tiempo:0
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.estab_modelo:0
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.incrementar:0
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.simular:0
 msgid "Parámetros"
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.conectar:3
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.conectar:3
 msgid "El nombre del variable en el modelo DS."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.conectar:6
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.conectar:6
 msgid "El nombre del variable correspondiente en el modelo biofísico."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.conectar:9
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.conectar:9
 msgid ""
 "Si ``True``, el modelo DS es el modelo fuente para la conexión. Sino, será "
 "el modelo biofísico."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.conectar:13
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.conectar:13
 msgid "El factor de conversión entre los variables."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.desconectar:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.desconectar:1
 msgid ""
 "Esta función deshacer una conexión entre el modelo biofísico y el modelo DS."
 " Se especifica la conexión por el nombre del variable en el modelo DS."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.desconectar:4
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.desconectar:4
 msgid "El nombre del variable conectado en el modelo DS."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.dibujar:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.dibujar:1
 msgid "Dibuja mapas espaciales de los valores de un variable."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.dibujar:3
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.dibujar:3
 msgid "La geografía del lugar."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.dibujar:5
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.dibujar:5
 msgid "El variable para dibujar."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.dibujar:7
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.dibujar:7
 msgid "El nombre de la corrida para dibujar."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.dibujar:9
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.dibujar:9
 msgid ""
-"El directorio, relativo al archivo MDS, donde hay que poner los dibujos."
+"El directorio, relativo al archivo EnvolturaMDS, donde hay que poner los "
+"dibujos."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.dibujar:11
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.dibujar:11
 msgid "Los pasos a los cuales quieres dibujar los egresos."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.dibujar:13
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.dibujar:13
 msgid "La escala de colores para representar los valores del variable."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.dibujar:15
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.dibujar:15
 msgid ""
 "La escala de valores para el dibujo. Si ``None``, será el rango del "
 "variable."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.estab_bf:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.estab_bf:1
 msgid "Establece el modelo biofísico (:class:`~tinamit.BF.EnvolturaBF`)."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.estab_bf:3
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.estab_bf:3
 msgid ""
 "El archivo con la clase del modelo biofísico. **Debe** ser un archivo de "
 "Python."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.estab_mds:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.estab_mds:1
 msgid ""
 "Establecemos el modelo de dinámicas de los sistemas "
-"(:class:`~tinamit.MDS.EnvolturaMDS`)."
+"(:class:`~tinamit.EnvolturaMDS.EnvolturaMDS`)."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.Conectado.estab_mds:3
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.Conectado.estab_mds:3
 msgid "El archivo del modelo DS."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado:1
 msgid ""
 "Esta clase representa el más alto nivel posible de modelo conectado. Tiene "
 "la función muy útil de poder conectar instancias de sí misma, así "
 "permitiendo la conexión de números arbitrarios de modelos."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.act_vals_clima:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.act_vals_clima:1
 msgid "Actualiza los variables climáticos según la fecha."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.act_vals_clima:3
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.act_vals_clima:3
 msgid ""
 "El número de pasos en adelante para cuales tenemos que obtener predicciones."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.act_vals_clima:5
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.act_vals_clima:5
 msgid "La fecha actual."
 msgstr ""
 
-#: ../../docstring of
+#: ../../../tinamit/Conectado.py:docstring of
 #: tinamit.Conectado.SuperConectado.cambiar_vals_modelo_interno:1
 msgid ""
 "Esta función cambia los valores del modelo. A través de la función "
 ":func:`~tinamit.Conectado.cambiar_vals`, se vuelve recursiva."
 msgstr ""
 
-#: ../../docstring of
+#: ../../../tinamit/Conectado.py:docstring of
 #: tinamit.Conectado.SuperConectado.cambiar_vals_modelo_interno:4
 msgid ""
 "El diccionario de nombres de variables para cambiar. Hay que prefijar cada "
@@ -171,106 +209,127 @@ msgid ""
 "cada variable."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.cerrar_modelo:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.cerrar_modelo:1
 msgid "Termina la simulación."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.conectar_vars:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.conectar_vars:1
 msgid "Conecta variables entre los submodelos."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.conectar_vars:3
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.conectar_vars:3
 msgid ""
 "Un diccionario especificando los variables de cada modelo en el formato "
 "{mod1: var, mod2: var}."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.conectar_vars:6
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.conectar_vars:6
 msgid "El nombre del modelo fuente."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.conectar_vars:9
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.conectar_vars:9
 msgid ""
 "La conversión entre las unidades de ambos modelos. En el caso ``None``, se "
 "intentará adivinar la conversión con el módulo `~tinamit.Unidades`."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.desconectar_vars:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.desconectar_vars:1
 msgid "Esta función desconecta variables."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.desconectar_vars:3
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.desconectar_vars:3
 msgid "El variable fuente de la conexión."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.desconectar_vars:6
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.desconectar_vars:6
 msgid "El modelo fuente de la conexión."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.estab_conv_tiempo:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.estab_conv_tiempo:1
 msgid ""
 "Esta función establece la conversión de tiempo entre los dos modelos (útil "
 "para unidades que Tinamit no reconoce)."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.estab_conv_tiempo:4
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.estab_conv_tiempo:4
 msgid "El modelo con la unidad de tiempo mayor."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.estab_conv_tiempo:7
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.estab_conv_tiempo:7
 msgid "El factor de conversión con la unidad de tiempo del otro modelo."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.estab_modelo:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.estab_modelo:1
 msgid ""
 "Esta función agrega un modelo al SuperConectado. Una vez que dos modelos "
 "estén agregados, se pueden conectar y simular juntos."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.estab_modelo:4
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.estab_modelo:4
 msgid "El modelo para agregar."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.incrementar:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.incrementar:1
 msgid ""
 "Esta función avanza los dos submodelos conectados de intervalo de tiempo "
 "``paso``. Emplea el módulo :py:mod:`threading` para correr los dos "
 "submodelos en paralelo, así ahorando tiempo."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.incrementar:4
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.incrementar:4
 msgid "El intervalo de tiempo."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.inic_vars:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.inic_vars:1
 msgid ""
 "Esta función no es necesaria, porque "
 ":func:`~tinamit.Conectado.Conectado.estab_modelo` ya llama las funciones "
 "necesarias, :func:`~tinamit.Modelo.inic_vars` de los submodelos."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.iniciar_modelo:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.iniciar_modelo:1
 msgid "Inicia el modelo en preparación para una simulación."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.iniciar_modelo:3
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.iniciar_modelo:3
 msgid ""
 "Actualizamos el diccionario de cconexiones rápidas para facilitar el "
 "intercambio eventual de valores entre los modelos."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.iniciar_modelo:6
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.iniciar_modelo:6
 msgid ""
 "Se organiza este diccionario por modelo fuente. Tendrá la forma general:"
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.iniciar_modelo:8
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.iniciar_modelo:8
 msgid ""
 "{ modelo1: {var_fuente: {'var': var_recipiente_del_otro_modelo, 'conv': "
 "factor_conversión}, ...}, ...}"
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.leer_vals:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.leer_vals:1
 msgid ""
 "Leamos los valores de los variables de los dos submodelos. Por la conexión "
 "entre los diccionarios de variables de los submodelos y del "
@@ -278,7 +337,8 @@ msgid ""
 "el diccionario del :class:`~tinamit.Modelo.SuperConectado` sí mismo."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.obt_unidad_tiempo:1
 msgid ""
 "Esta función devolverá las unidades de tiempo del modelo conectado. "
 "Dependerá de los submodelos. Si los dos submodelos tienen las mismas "
@@ -290,65 +350,79 @@ msgid ""
 "سال al modelo conectado."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:8
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.obt_unidad_tiempo:8
 msgid ""
 "Después se actualiza el variable símismo.conv_tiempo para guardar en memoria"
 " la conversión necesaria entre los pasos de los dos submodelos."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:11
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.obt_unidad_tiempo:11
 msgid ""
 "Se emplea las clase `~tinamit.Unidades.Unidades` para convertir unidades."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:0
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.obt_unidad_tiempo:0
 msgid "Devuelve"
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:13
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.obt_unidad_tiempo:13
 msgid "El tiempo de paso del modelo SuperConectado."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:0
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.obt_unidad_tiempo:0
 msgid "Tipo del valor devuelto"
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.simular:1
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.simular:1
 msgid "Simula el modelo :class:`~tinamit.Conectado.SuperConectado`."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.simular:3
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.simular:3
 msgid "El tiempo final de la simulación."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.simular:6
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.simular:6
 msgid ""
 "El paso (intervalo de intercambio de valores entre los dos submodelos)."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.simular:9
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.simular:9
 msgid "El nombre de la corrida.  El valor automático es ``Corrida Tinamit``."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.simular:12
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.simular:12
 msgid ""
 "La fecha inicial de la simulación. Necesaria para simulaciones con cambios "
 "climáticos."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.simular:15
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.simular:15
 msgid "El lugar de la simulación."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.simular:18
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.simular:18
 msgid ""
 "El escenario climático según el sistema de la IPCC (2.6, 4.5, 6.0, o 8.5)"
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.simular:21
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.simular:21
 msgid "Si quieres recalcular los datos climáticos, si ya existen."
 msgstr ""
 
-#: ../../docstring of tinamit.Conectado.SuperConectado.simular:24
+#: ../../../tinamit/Conectado.py:docstring of
+#: tinamit.Conectado.SuperConectado.simular:24
 msgid "Si es una simulación de cambios climáticos o no."
 msgstr ""
