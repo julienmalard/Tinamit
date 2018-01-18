@@ -28,6 +28,8 @@ class ModeloVensimMdl(EnvolturaMDS):
 
     def __init__(símismo, archivo):
 
+        with open(archivo) as d:
+
         símismo.dic_doc = {}
 
         super().__init__(archivo=archivo)

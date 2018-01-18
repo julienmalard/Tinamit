@@ -11,9 +11,9 @@ print('auxiliares', modelo.auxiliares)
 print('flujos', modelo.flujos)
 print('niveles', modelo.niveles)
 print('constantes', modelo.constantes)
-print('vacíos', modelo.vacíos())
+# print('vacíos', modelo.vacíos())
 
-datos_ind = DatosIndividuales(archivo_csv='ENCOVI_hog_2011.csv', año=2011, col_cód_lugar='Código_lugar',
+datos_ind = DatosIndividuales('ENCOVI 2011', archivo='ENCOVI_hog_2011.csv', fecha=2011, lugar='Código_lugar',
                               cód_vacío=['NA', 'na', 'Na'])
 
 # datos_ind = DatosIndividuales(fuente='')
