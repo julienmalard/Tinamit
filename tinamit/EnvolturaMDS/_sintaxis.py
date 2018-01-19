@@ -195,7 +195,8 @@ for op, d_op in dic_ops.items():
 if __name__ == '__main__':
     from lark import Lark
 
-    ecs = ['1', 'a', 'abv', "ab c", 'MIN(a[poli, canal],3)', '"abs()(\"#$0978"', '0.004/(5*12)', 'MIN(2+ 3, abc d + 4) * 1 + 3', '1 + 2 * 3']
+    ecs = ['1', 'aª', 'abv', "ab c", 'MIN(a[poli, canal],3)', '"abs()(\"#$0978"', '0.004/(5*12)', 'MIN(2+ 3, abc d + 4) * 1 + 3', '1 + 2 * 3',
+           'வண்க்கம்']
 
     with open('C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\tinamit\\EnvolturaMDS\\gram_Vensim.g') as gm:
         anlzdr = Lark(gm, parser='lalr', start='ec')
