@@ -763,7 +763,7 @@ class Conectado(SuperConectado):
         :param i_paso: Los pasos a los cuales quieres dibujar los egresos.
         :type i_paso: list | tuple | int
         :param colores: La escala de colores para representar los valores del variable.
-        :type colores: tuple | list
+        :type colores: tuple | list | int
         :param escala: La escala de valores para el dibujo. Si ``None``, será el rango del variable.
         :type escala: list | np.ndarray
         """

@@ -3,8 +3,7 @@ from EnvolturaMDS import generar_mds
 from tinamit.Geog.Geog import Geografía
 
 # EnvolturaMDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
-modelo = generar_mds(archivo='C:\\Users\\jmalar1\\Documents\\USB Julien\\USB après lavage août 2016\\PhD\\Iximulew\\'
-                             'EnvolturaMDS 2015\\Tz\'olöj Ya\'\\Taller 12\\Para Tinamit.mdl')
+modelo = generar_mds(archivo='C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\tinamit\\Incertidumbre\\Para Tinamit.mdl')
 print('vars', modelo.variables.keys())
 print('internos', modelo.internos)  # variables internos al EnvolturaMDS (p. ej., TIMESTEP y TIME en VENSIM)
 print('auxiliares', modelo.auxiliares)
@@ -25,20 +24,17 @@ geog.agregar_info_regiones(archivo='Geografía Iximulew.csv',
                            col_cód='Código')
 
 
-print(datos_ind.datos_irreg(var='Inseguridad.alimentaria'))
+# print(datos_ind.datos_irreg(var='Inseguridad.alimentaria'))
 # print(datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(1, 4), tipo='valor'))  # Hace cambios al csv
 # datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(0, 0.90))
 
 # datos_ind.guardar_datos(archivo='ENCOVI_hog_2011_limp.csv')  # Guarda el csv
 
-datos_muni = DatosRegión(archivo_csv='Desnutrición_muni.csv', col_año='Año', col_cód_lugar='Código_lugar',
+datos_muni = DatosRegión('Desnutrición municipal', archivo='Desnutrición_muni.csv', fecha='Año', lugar='Código_lugar',
                          col_tmñ_muestra='Tamaño_muestra')
 
-bd = SuperBD(datos=[datos_ind, datos_muni], geog=geog)
+bd = SuperBD('BD Iximulew', bds=[datos_ind, datos_muni], geog=geog)
 
-bd.renombrar_var(datos=datos_ind, var='P01221', nuevo_nombre='Insegurdad Alimentaria')  # puro ejemplo
-
-bd.a
 
 # Gráfico de "caja" con incertidumbre
 bd.graficar(var='Inseguridad Alimentaria', años=2011, cód_lugar='0708', datos=None)

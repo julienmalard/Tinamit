@@ -127,4 +127,4 @@ for rcp in [2.6, 4.5, 6.0, 8.5]:
         modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida, var='Watertable depth Tinamit',
                        directorio='Maps')
         modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida, var='Soil salinity Tinamit CropA',
-                       directorio='Maps')
+                       directorio='Maps', colores=-1)

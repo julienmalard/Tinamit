@@ -198,7 +198,7 @@ class ModeloVENSIMmdl(ModeloMDS):
     #      'வணக்கம்', 'a3b', '"5a"']
     regex_var = r'[^\W\d][\w\d_ ்्੍્]*(?![\w\d_ ்्੍્ ]*\()|\".*?(?<!\\)\"'
     # for i in l:
-    #     print(re.findall(regex_var, i))
+    #     print(re.findall(_regex_var, i))
 
     regex_fun = r'([^\W\d]+[\w\d_ ்्੍્]*)(?= *\()'
     regex_op = r'(?<= *)[\^\*\-\+/\(\)]'

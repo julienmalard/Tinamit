@@ -29,10 +29,10 @@ def sacar_variables(texto, rgx, n=None, excluir=None):
         excluir = [excluir]
 
     # Buscar los nombres
-    b = regex.findall(rgx, texto)
+    b = regex.finditer(rgx, texto)
 
     # Quitar espacios extras
-    b = [x.strip(' ') for x in b]
+    b = [x.groupdict()['var'].strip(' ') for x in b]
 
     # Devolver una lista de nombres de variables únicos.
     if n is None:
@@ -151,28 +151,28 @@ def cortar_líns(texto, máx_car, lín_1=None, lín_otras=None):
 
 
 dic_funs = {
-    'min(': {'VENSIM': 'MIN('},
-    'max(': {'VENSIM': 'MAX('},
-    'abs(': {'VENSIM': 'ABS('},
-    'math.exp(': {'VENSIM': 'EXP('},
-    'int(': {'VENSIM': 'INTEGER('},
-    'math.log(': {'VENSIM': 'LN('},
-    'math.sin(': {'VENSIM': 'SIN('},
-    'math.cos(': {'VENSIM': 'COS('},
-    'math.tan(': {'VENSIM': 'TAN('},
-    'math.asin(': {'VENSIM': 'ARCSIN('},
-    'math.acos(': {'VENSIM': 'ARCCOS('},
-    'math.atan(': {'VENSIM': 'ARCTAN('},
-    'math.log10(': {'VENSIM': 'LOG('},
+    'min': {'Vensim': 'MIN('},
+    'max': {'Vensim': 'MAX('},
+    'abs': {'Vensim': 'ABS('},
+    'math.exp': {'Vensim': 'EXP('},
+    'int': {'Vensim': 'INTEGER('},
+    'math.log': {'Vensim': 'LN('},
+    'math.sin': {'Vensim': 'SIN('},
+    'math.cos': {'Vensim': 'COS('},
+    'math.tan': {'Vensim': 'TAN('},
+    'math.asin': {'Vensim': 'ARCSIN('},
+    'math.acos': {'Vensim': 'ARCCOS('},
+    'math.atan': {'Vensim': 'ARCTAN('},
+    'math.log10': {'Vensim': 'LOG('},
 
 }
 
 
 dic_ops = {
-    '+': {'VENSIM': '+'},
-    '-': {'VENSIM': '-'},
-    '*': {'VENSIM': '*'},
-    '/': {'VENSIM': '/'}
+    '+': {'Vensim': '+'},
+    '-': {'Vensim': '-'},
+    '*': {'Vensim': '*'},
+    '/': {'Vensim': '/'}
 }
 
 
@@ -190,3 +190,18 @@ for op, d_op in dic_ops.items():
         if tipo not in dic_ops_inv:
             dic_ops_inv[tipo] = {}
         dic_ops_inv[tipo][v] = op
+
+
+if __name__ == '__main__':
+    from lark import Lark
+
+    ecs = ['1', 'a', 'abv', "ab c", 'MIN(a[poli, canal],3)', '"abs()(\"#$0978"', '0.004/(5*12)', 'MIN(2+ 3, abc d + 4) * 1 + 3', '1 + 2 * 3']
+
+    with open('C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\tinamit\\EnvolturaMDS\\gram_Vensim.g') as gm:
+        anlzdr = Lark(gm, parser='lalr', start='ec')
+
+    for ec in ecs:
+        print('=============')
+        print(ec)
+        árbol = anlzdr.parse(ec)
+        print(árbol)

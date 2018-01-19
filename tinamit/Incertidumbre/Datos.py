@@ -29,8 +29,8 @@ class Datos(object):
         :param ar:
         :type año: int | float
 
-        :param cód_lugar:
-        :type cód_lugar: str
+        :param lugar:
+        :type lugar: str
 
         :param cód_vacío:
         :type cód_vacío: list[int | float | str] | int | float | str
@@ -113,7 +113,7 @@ class DatosRegión(Datos):
 
 class SuperBD(object):
 
-    def __init__(símismo, nombre, bds=None):
+    def __init__(símismo, nombre, bds=None, geog=None):
         """
 
         :param nombre:
@@ -123,6 +123,7 @@ class SuperBD(object):
         """
 
         símismo.nombre = nombre
+        símismo.geog = geog
 
         if bds is None:
             símismo.bds = {}  # type: dict[Datos]
@@ -135,6 +136,7 @@ class SuperBD(object):
                 raise TypeError('')
 
         símismo.vars = {}
+        símismo.ind_a_reg = {}
 
         símismo.datos_reg = None  # type: pd.DataFrame
         símismo.datos_ind = None  # type: pd.DataFrame
@@ -253,9 +255,35 @@ class SuperBD(object):
 
         símismo._limp_vars()
 
+    def renombrar_var(símismo, var, nuevo_nombre):
+
+        if var not in símismo.vars:
+            raise ValueError('')
+        if nuevo_nombre in símismo.vars:
+            raise ValueError(_('El variable "{}" ya existe. Hay que borrarlo primero.').format(nuevo_nombre))
+
+        símismo.vars[nuevo_nombre] = símismo.vars.pop(var)
+
+        if var in símismo.datos_ind:
+            símismo.datos_ind[nuevo_nombre] = símismo.datos_ind[var]
+            símismo.datos_ind.drop(var, axis=1)
+
+        if var in símismo.datos_reg:
+            símismo.datos_reg[nuevo_nombre] = símismo.datos_reg[var]
+            símismo.datos_reg.drop(var, axis=1)
+
+    def espec_ind_a_reg(símismo, var, combin='prom'):
+
+        if combin.lower() not in ['prom', 'suma']:
+            raise ValueError('')
+        
+        símismo.ind_a_reg[var] = {'combin': combin}
+
+        símismo._gen_bd_intern()
+
     def _limp_vars(símismo):
 
-        # Asegurarse que no queden variables si bases de datos en símismo.vars
+        # Asegurarse que no queden variables sin bases de datos en símismo.vars
         for v in list(símismo.vars.keys()):
             d_v = símismo.vars[v]
             if len(d_v['fuente']) == 0:
@@ -266,14 +294,17 @@ class SuperBD(object):
 
         # Asegurarse que no queden variables (columas) en las bases de datos que no estén en símismo.vars
         for bd_pd in [datos_ind, datos_reg]:
-            cols = list(bd_pd)
-            for c in cols:
-                if c not in símismo.vars:
-                    bd_pd.drop(c, axis=1, inplace=True)
+            if bd_pd:
+                cols = list(bd_pd)
+                for c in cols:
+                    if c not in símismo.vars:
+                        bd_pd.drop(c, axis=1, inplace=True)
 
         # Quitar observaciones en bases de datos que ya no están vinculadas
-        símismo.datos_ind = datos_ind[datos_ind['bd'].isin(símismo.bds)]
-        símismo.datos_reg = datos_reg[datos_reg['bd'].isin(símismo.bds)]
+        if símismo.datos_ind:
+            símismo.datos_ind = datos_ind[datos_ind['bd'].isin(símismo.bds)]
+        if símismo.datos_reg:
+            símismo.datos_reg = datos_reg[datos_reg['bd'].isin(símismo.bds)]
 
     def _gen_bd_intern(símismo):
 
@@ -285,44 +316,158 @@ class SuperBD(object):
             # Datos individuales
             if isinstance(bd, DatosIndividuales):
                 vars_interés = [it for it in símismo.vars.items() if nb in it[1]['fuente']]
-                datos_bd = np.array([bd.obt_datos(d_v['fuente'][nb]['var'], cód_vacío=d_v['fuente'][nb]['cód_vacío'])
-                                     for v, d_v in vars_interés]).T
+                if len(vars_interés):
+                    datos_bd = np.array([bd.obt_datos(d_v['fuente'][nb]['var'], cód_vacío=d_v['fuente'][nb]['cód_vacío'])
+                                         for v, d_v in vars_interés]).T
 
-                bd_pds_temp = pd.DataFrame(datos_bd, columns=[it[0] for it in vars_interés])
+                    bd_pds_temp = pd.DataFrame(datos_bd, columns=[it[0] for it in vars_interés])
 
-                bd_pds_temp['bd'] = nb
-                bd_pds_temp['lugar'] = bd.lugares
+                    bd_pds_temp['bd'] = nb
+                    bd_pds_temp['lugar'] = bd.lugares
 
-                if isinstance(bd.fechas, tuple):
-                    bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas[0]) + pd.to_timedelta([1,2,3], unit='day')
-                else:
-                    bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas)
+                    if isinstance(bd.fechas, tuple):
+                        bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas[0]) + pd.to_timedelta([1,2,3], unit='day')
+                    else:
+                        bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas)
 
-                if símismo.datos_ind is None:
-                    símismo.datos_ind = bd_pds_temp
-                else:
-                    símismo.datos_ind.append(bd_pds_temp, ignore_index=True)
+                    if símismo.datos_ind is None:
+                        símismo.datos_ind = bd_pds_temp
+                    else:
+                        símismo.datos_ind.append(bd_pds_temp, ignore_index=True)
 
             # Datos regionales
             else:
                 vars_interés = [it for it in símismo.vars.items() if nb in it[1]['fuente']]
-                datos_bd = np.array([bd.obt_datos(d_v['fuente'][nb]['var'], cód_vacío=d_v['fuente'][nb]['cód_vacío'])
-                                     for v, d_v in vars_interés]).T
+                if len(vars_interés):
+                    datos_bd = np.array(
+                        [bd.obt_datos(d_v['fuente'][nb]['var'], cód_vacío=d_v['fuente'][nb]['cód_vacío'])
+                         for v, d_v in vars_interés]
+                    ).T
 
-                bd_pds_temp = pd.DataFrame(datos_bd, columns=[it[0] for it in vars_interés])
+                    bd_pds_temp = pd.DataFrame(datos_bd, columns=[it[0] for it in vars_interés])
 
-                bd_pds_temp['bd'] = nb
-                bd_pds_temp['lugar'] = bd.lugares
+                    bd_pds_temp['bd'] = nb
+                    bd_pds_temp['lugar'] = bd.lugares
 
-                if isinstance(bd.fechas, tuple):
-                    bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas[0]) + pd.to_timedelta([1,2,3], unit='day')
-                else:
-                    bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas)
+                    if isinstance(bd.fechas, tuple):
+                        bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas[0]) + pd.to_timedelta([1,2,3], unit='day')
+                    else:
+                        bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas)
 
-                if símismo.datos_reg is None:
-                    símismo.datos_reg = bd_pds_temp
-                else:
-                    símismo.datos_reg.append(bd_pds_temp, ignore_index=True)
+                    if símismo.datos_reg is None:
+                        símismo.datos_reg = bd_pds_temp
+                    else:
+                        símismo.datos_reg.append(bd_pds_temp, ignore_index=True)
+
+        # Generar datos regionales derivados de datos individuales
+        símismo._gen_datos_reg()
+
+    def _gen_datos_reg(símismo):
+
+        datos_reg = símismo.datos_reg
+        datos_ind = símismo.datos_ind
+
+        nuevos = {v: [] for v in símismo.ind_a_reg}
+
+        for v, d_v in símismo.ind_a_reg.items():
+
+            combin = d_v['combin']
+            if combin == 'prom':
+                datos = datos_ind.groupby(['fecha', 'lugar']).mean()
+            elif combin == 'suma':
+                datos = datos_ind.groupby(['fecha', 'lugar']).sum()
+            else:
+                raise ValueError
+
+            for i in datos.index:
+                nuevos[v].append(datos.loc[i])
+                nuevos['bd'].append('auto_gen')
+                nuevos['fecha'].append(i[0])
+                nuevos['lugar'].append(i[1])
+
+        datos_reg.append(nuevos, ignore_index=True)
+
+    def obt_datos(símismo, l_vars, lugar=None, cód_lugar=None, datos=None, fechas=None, escala=None):
+
+        # Formatear la lista de variables deseados
+        if not isinstance(l_vars, list):
+            l_vars = [l_vars]
+        if any(v not in símismo.vars for v in l_vars):
+            raise ValueError(_('Variable no válido.'))
+
+        # Formatear el código de lugar
+        if cód_lugar is not None and not isinstance(cód_lugar, list):
+                cód_lugar = [cód_lugar]
+
+        # Obtener código de lugar, si necesario
+        if lugar is not None:
+            # para hacer
+            if not isinstance(lugar, list):
+                lugar = [lugar]
+
+            if cód_lugar is None:
+
+                cód_lugar = []
+                for l in lugar:
+                    dic = símismo.geog.árbol
+                    dif = len(símismo.geog.orden_esc_geog) - len(l)
+                    l += [''] * dif
+
+                    for k in l:
+                        dic = dic[k]
+
+                    cód_lugar.append(dic)
+
+            else:
+                avisar(_('Lugar y código de lugar ambos especificados. Tomaremos el código.'))
+
+        # Formatear los datos
+        if datos is not None and not isinstance(datos, list):
+            datos = [datos]
+
+        # Preparar las fechas
+        if fechas is not None:
+            if not isinstance(fechas, list):
+                fechas = [fechas]
+            for í, f in enumerate(fechas):
+                if isinstance(f, ft.date) or isinstance(f, ft.datetime):
+                    pass
+                elif isinstance(f, int):
+                    fechas[í] = ft.date(year=f, month=1, day=1)
+
+        egr = [None, None]
+        for í, bd in enumerate([símismo.datos_reg, símismo.datos_ind]):
+            l_vars_disp = [v for v in l_vars if v in bd]
+            bd_sel = bd[l_vars_disp]
+
+            if datos is not None:
+                bd_sel = bd_sel[bd_sel['bd'].isin(datos)]
+
+            if fechas is not None:
+                bd_sel = bd_sel[bd_sel['fecha'].isin(fechas)]
+
+            if cód_lugar is not None:
+                bd_sel = bd_sel[bd_sel['lugar'].isin(cód_lugar)]
+
+            egr[í] = bd_sel
+
+        return {'regional': egr[0], 'individual': egr[1]}
+
+    def graficar(símismo, var, fechas=None, cód_lugar=None, lugar=None, datos=None, escala=None):
+
+        dic_datos = símismo.obt_datos(l_vars=var, fechas=fechas, cód_lugar=cód_lugar, lugar=lugar, datos=datos,
+                                      escala=escala)
+
+        if escala.lower()=='individual':
+            d_ind = dic_datos['individual']
+
+        else:
+            d_reg = dic_datos['regional']
+            n_fechas = d_reg['fecha'].nunique()
+            n_lugares = d_reg['lugar'].nunique()
+
+            if n_fechas > 1:
+                pass
 
 
 class _dinausorio(object):
@@ -351,30 +496,19 @@ class _dinausorio(object):
 
         símismo.fuente = fuente
 
-    def renombrar_var(símismo, var, nuevo_nombre, datos=None):
 
-        if datos is None:
-            datos = símismo.datos
-
-        if type(datos) is not list:
-            datos = [datos]
-
-        for d in datos:
-            d.vars[d.vars.index(var)] = nuevo_nombre
-            d.datos[nuevo_nombre] = d.datos[var]
-            d.datos.pop(var)
 
     def graficar(símismo, var, escala='individual', años=None, cód_lugar=None, lugar=None, datos=None):
 
         dic_datos = símismo.pedir_datos(l_vars=[var], escala=escala, años=años,
                                         cód_lugar=cód_lugar, lugar=lugar, datos=datos)
 
-        # El número máximo de سال que tenga un lugares
-        n_años = max([len(x['سال']) for x in dic_datos.values()])
+        # El número máximo de años que tenga un lugares
+        n_años = max([len(x['años']) for x in dic_datos.values()])
 
         if n_años > 1:
             for l in dic_datos:
-                x = dic_datos[l]['سال']
+                x = dic_datos[l]['años']
                 y = dic_datos[l][var]
 
                 q95, q75, q25, q05 = np.percentile(datos, [95, 75, 25, 5])
@@ -515,11 +649,11 @@ class _dinausorio(object):
         for l in d:
             for v in d[l]:
                 datos = d[l][v]['datos']
-                años = d[l][v]['سال']
+                años = d[l][v]['años']
 
-                años_únicos = np.unique(d[l][v]['سال']).sort()
+                años_únicos = np.unique(d[l][v]['años']).sort()
                 datos_prom = np.array([np.nanmean(datos[np.where(años == x)]) for x in años_únicos])
-                d[l][v] = {'datos': datos_prom, 'سال': años_únicos}
+                d[l][v] = {'datos': datos_prom, 'años': años_únicos}
         return d
 
     def guardar(símismo, archivo=None):
@@ -716,7 +850,7 @@ class BDtexto(BD):
 
         :rtype: int
         """
-        with open(símismo.archivo, encoding='UTF8') as d:
+        with open(símismo.archivo) as d:
             n_filas = sum(1 for f in d if len(f)) - 1  # Sustrayemos la primera fila
 
         return n_filas
@@ -765,7 +899,7 @@ class BDtexto(BD):
 
         l_datos = [[''] * símismo.n_obs] * len(cols)
 
-        with open(símismo.archivo, encoding='UTF8') as d:
+        with open(símismo.archivo) as d:
             lector = csv.DictReader(d)
             for n_f, f in enumerate(lector):
                 for i_c, c in enumerate(cols):
@@ -783,7 +917,7 @@ class BDtexto(BD):
         :rtype: list[str]
         """
 
-        with open(símismo.archivo, encoding='UTF8') as d:
+        with open(símismo.archivo) as d:
             lector = csv.reader(d)
 
             nombres_cols = next(lector)

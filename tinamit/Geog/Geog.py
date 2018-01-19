@@ -380,12 +380,13 @@ class Geografía(object):
         """
 
         escala_lugar = símismo.cód_a_lugar[cód_lugar]['escala']
+        nombre_lugar = símismo.cód_a_lugar[cód_lugar]['nombre']
 
         if escala is None:
-            l_códs = [x for x, d in símismo.árbol_geog_inv.items() if d[escala_lugar] == cód_lugar]
+            l_códs = [x for x, d in símismo.árbol_geog_inv.items() if d[escala_lugar] == nombre_lugar]
         else:
             l_códs = [x for x, d in símismo.árbol_geog_inv.items()
-                      if d[escala_lugar] == cód_lugar and símismo.cód_a_lugar[x]['escala'] == escala]
+                      if d[escala_lugar] == nombre_lugar and símismo.cód_a_lugar[x]['escala'] == escala]
 
         return l_códs
 
@@ -403,14 +404,16 @@ class Geografía(object):
         :param unidades: Las unidades de los valores.
         :type unidades: str
         :param colores: Los colores para dibujar.
-        :type colores: str | list | tuple
+        :type colores: str | list | tuple | int
         :param escala_num: La escala numérica para los colores.
         :type escala_num: tuple
 
         """
 
         if colores is None:
-            colores = ['#FF6666', '##FFCC66', '#00CC66']
+            colores = ['#FF6666', '#FFCC66', '#00CC66']
+        if colores == -1:
+            colores = ['#00CC66', '#FFCC66','#FF6666']
 
         if isinstance(colores, str):
             colores = ['#FFFFFF', colores]
