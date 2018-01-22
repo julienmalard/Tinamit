@@ -363,6 +363,7 @@ class SuperBD(object):
         símismo._gen_datos_reg()
 
     def _gen_datos_reg(símismo):
+        return
 
         datos_reg = símismo.datos_reg
         datos_ind = símismo.datos_ind

@@ -1,14 +1,20 @@
 import ctypes
-import regex
 import struct
 import sys
 from warnings import warn as avisar
 
 import numpy as np
+import regex
 
+import tinamit.Incertidumbre.ConexDatos as Clb
 from tinamit import _
 from tinamit.MDS import EnvolturaMDS
-from ._sintaxis import sacar_arg, sacar_variables, juntar_líns, cortar_líns
+from ._sintaxis import sacar_arg, sacar_variables, juntar_líns, cortar_líns, Ecuación
+
+try:
+    import pymc3 as pm
+except ImportError:
+    pm = None
 
 if sys.platform[:3] == 'win':
     try:
@@ -145,7 +151,7 @@ class ModeloVensimMdl(EnvolturaMDS):
         dic_var = {'val': None,
                    'unidades': '',
                    'ingreso': None,
-                   'dims': None,
+                   'dims': (1,),  # Para hacer
                    'subscriptos': subs,
                    'egreso': None,
                    'hijos': [],
@@ -193,17 +199,31 @@ class ModeloVensimMdl(EnvolturaMDS):
         :rtype: str
         """
 
-        dic_var = símismo.var[var]
+        dic_var = símismo.variables[var]
 
         if dic_var['ec'] == '':
             dic_var['ec'] = 'A FUNCTION OF (%s)' % ', '.join(dic_var['parientes'])
+        lím_línea = 80
 
         texto = [var + '=\n',
-                 cortar_líns(dic_var['ec'], símismo.lím_línea, lín_1='\t', lín_otras='\t\t'),
-                 cortar_líns(dic_var['unidades'], símismo.lím_línea, lín_1='\t', lín_otras='\t\t'),
-                 cortar_líns(dic_var['comentarios'], símismo.lím_línea, lín_1='\t~\t', lín_otras='\t\t'), '\t' + '|']
+                 cortar_líns(dic_var['ec'], lím_línea, lín_1='\t', lín_otras='\t\t'),
+                 cortar_líns(dic_var['unidades'], lím_línea, lín_1='\t', lín_otras='\t\t'),
+                 cortar_líns(dic_var['comentarios'], lím_línea, lín_1='\t~\t', lín_otras='\t\t'), '\t' + '|']
 
         return texto
+
+    def calib_ec(símismo, var, ec=None, paráms=None, método=None):
+
+        if símismo.bd is None:
+            raise ValueError('')
+        if símismo.conex_datos is None:
+            símismo.conex_datos = ConexDatos(bd=símismo.bd, modelo=símismo)
+
+        símismo.conex_datos.calib_ec(var=var, ec=ec, paráms=paráms, método=método)
+
+
+
+
 
     def obt_unidad_tiempo(símismo):
         pass
@@ -660,7 +680,7 @@ def comanda_vensim(func, args, mensaje_error=None, val_error=None, devolver=Fals
         if type(a) is str:
             args[n] = a.encode()
 
-    # Llamar la función VENSIM y guardar el resultado.
+    # Llamar la función Vensim y guardar el resultado.
     resultado = func(*args)
 
     # Verificar su hubo un error.
@@ -672,12 +692,12 @@ def comanda_vensim(func, args, mensaje_error=None, val_error=None, devolver=Fals
     # Si hubo un error, avisar el usuario.
     if error:
         if mensaje_error is None:
-            mensaje_error = _('Error con la comanda VENSIM.')
+            mensaje_error = _('Error con la comanda Vensim.')
 
         mensaje_error += _(' Código de error {}.').format(resultado)
 
         raise OSError(mensaje_error)
 
-    # Devolver el valor devuelto por la función VENSIM, si aplica.
+    # Devolver el valor devuelto por la función Vensim, si aplica.
     if devolver:
         return resultado

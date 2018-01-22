@@ -1,4 +1,15 @@
+import numpy as np
 import regex
+from lark import Lark, Transformer
+from pkg_resources import resource_filename
+import math as mat
+
+from tinamit import _
+
+try:
+    import pymc3 as pm
+except ImportError:
+    pm = None
 
 
 def sacar_variables(texto, rgx, n=None, excluir=None):
@@ -82,7 +93,7 @@ def sacar_arg(ec, regex_var, regex_fun, i=None):
     sep_args = [0] + [j for j in pos_comas if not any([p[0] <= j < p[1] for p in pos_vars])] + [len(sec_args)]
 
     # Dividimos la ecuación en argumentos
-    args = [sec_args[p:sep_args[j+1]] for j, p in enumerate(sep_args[:-1])]
+    args = [sec_args[p:sep_args[j + 1]] for j, p in enumerate(sep_args[:-1])]
 
     # Y devolvemos el argumento pedido.
     if i is None:
@@ -126,7 +137,6 @@ def juntar_líns(l, cabeza=None, cola=None):
 
 
 def cortar_líns(texto, máx_car, lín_1=None, lín_otras=None):
-
     lista = []
 
     while len(texto):
@@ -150,59 +160,219 @@ def cortar_líns(texto, máx_car, lín_1=None, lín_otras=None):
     return lista
 
 
+class _Transformador(Transformer):
+    @staticmethod
+    def num(x):
+        return float(x[0])
+
+    @staticmethod
+    def var(x):
+        return {'var': x[0]}
+
+    @staticmethod
+    def nombre(x):
+        return str(x[0])
+
+    @staticmethod
+    def cadena(x):
+        return str(x[0])
+
+    @staticmethod
+    def func(x):
+        return {'func': x}
+
+    @staticmethod
+    def mul(x):
+        return {'func': ['*', x]}
+
+    @staticmethod
+    def div(x):
+        return {'func': ['/', x]}
+
+    @staticmethod
+    def suma(x):
+        return {'func': ['+', x]}
+
+    @staticmethod
+    def sub(x):
+        return {'func': ['-', x]}
+
+    args = list
+    ec = list
+
+
+class Ecuación(object):
+    def __init__(símismo, ec, dialecto):
+        símismo.ec = ec
+        símismo.dialecto = dialecto.lower()
+
+        if dialecto.lower() == 'vensim':
+            gramática = resource_filename('tinamit.EnvolturaMDS', 'gram_Vensim.g')
+        else:
+            raise ValueError('')
+
+        with open(gramática) as gm:
+            anlzdr = Lark(gm, parser='lalr', start='ec')
+
+        símismo.árbol = _Transformador().transform(anlzdr.parse(ec))
+
+    def gen_mod_bayes(símismo, paráms, líms_paráms, obs_x, obs_y):
+
+        if pm is None:
+            return ImportError(_('Hay que instalar PyMC3 para poder utilizar modelos bayesianos.'))
+
+        dialecto = símismo.dialecto
+
+        def _a_bayes(á):
+
+            if isinstance(á, dict):
+
+                for ll, v in á.items():
+
+                    if ll == 'func':
+
+                        if v[0] == '+':
+                            return _a_bayes(v[1][0]) + _a_bayes(v[1][1])
+                        elif [1] == '/':
+                            _a_bayes(v[0]) / _a_bayes(v[1])
+                        elif v[0] == '-':
+                            return _a_bayes(v[1][0]) - _a_bayes(v[1][1])
+                        elif v[0] == '*':
+                            return _a_bayes(v[1][0]) * _a_bayes(v[1][1])
+                        else:
+                            return conv_fun(v[0], dialecto, 'pymc3')(*_a_bayes(v[1][1]))
+
+                    elif ll == 'var':
+                        try:
+                            í_var = paráms.index(v)
+                            líms = líms_paráms[í_var]
+                            nmbr = 'v{}'.format(í_var)
+                            if líms[0] == -np.inf:
+                                if líms[1] == np.inf:
+                                    return pm.Flat(nmbr)
+                                else:
+                                    return líms[1] - pm.HalfFlat(nmbr)
+                            else:
+                                if líms[1] == np.inf:
+                                    return líms[0] + pm.HalfFlat(nmbr)
+                                else:
+                                    return pm.Uniform(name=nmbr, lower=líms[0], upper=líms[1])
+
+                        except ValueError:
+
+                            # Si el variable no es un parámetro calibrable, debe ser un valor observado
+                            return obs_x[v]
+                    else:
+                        raise TypeError('')
+
+            elif isinstance(á, list):
+                return [_a_bayes(x) for x in á]
+            elif isinstance(á, int) or isinstance(á, float):
+                return á
+            else:
+                raise TypeError('')
+
+        modelo = pm.Model()
+        with modelo:
+            mu = _a_bayes(símismo.árbol)
+            sigma = pm.HalfNormal(name='sigma', sd=1)
+
+            pm.Normal(name='Y_obs', mu=mu, sigma=sigma, observed=obs_y)
+
+        return modelo
+
+    def gen_texto(símismo, vars_paráms=None):
+
+        dialecto = símismo.dialecto
+        if vars_paráms is None:
+            vars_paráms = []
+
+        def _a_tx(á, d_v):
+
+            if isinstance(á, dict):
+                for ll, v in á.items():
+                    if ll == 'func':
+                        if v[0] == '+':
+                            return '({} + {})'.format(_a_tx(v[1][0], d_v=d_v), _a_tx(v[1][1], d_v=d_v))
+                        elif v[0] == '/':
+                            return '({} / {})'.format(_a_tx(v[1][0], d_v=d_v), _a_tx(v[1][1], d_v=d_v))
+                        elif v[0] == '-':
+                            return '({} - {})'.format(_a_tx(v[1][0], d_v=d_v), _a_tx(v[1][1], d_v=d_v))
+                        elif v[0] == '*':
+                            return '({} * {})'.format(_a_tx(v[1][0], d_v=d_v), _a_tx(v[1][1], d_v=d_v))
+                        else:
+                            return '{nombre}({args})'.format(nombre=dic_funs_inv[dialecto][v[0]],
+                                                             args=_a_tx(v[1], d_v=d_v))
+                    elif ll == 'var':
+                        try:
+                            nmbr = 'p[{}]'.format(vars_paráms.index(v))
+                        except ValueError:
+                            if v in d_v:
+                                return d_v[v]
+                            else:
+                                nmbr = 'v{}'.format(len(d_v))
+
+                        d_v[v] = nmbr
+                        return "d_x['{}']".format(nmbr)
+                    else:
+                        raise TypeError('')
+
+            elif isinstance(á, list):
+                return ', '.join([_a_tx(x, d_v=d_v) for x in á])
+            elif isinstance(á, int) or isinstance(á, float):
+                return str(á)
+            else:
+                raise TypeError('')
+
+        d_vars = {}
+        return _a_tx(símismo.árbol, d_v=d_vars), d_vars
+
+
 dic_funs = {
-    'min': {'Vensim': 'MIN('},
-    'max': {'Vensim': 'MAX('},
-    'abs': {'Vensim': 'ABS('},
-    'math.exp': {'Vensim': 'EXP('},
-    'int': {'Vensim': 'INTEGER('},
-    'math.log': {'Vensim': 'LN('},
-    'math.sin': {'Vensim': 'SIN('},
-    'math.cos': {'Vensim': 'COS('},
-    'math.tan': {'Vensim': 'TAN('},
-    'math.asin': {'Vensim': 'ARCSIN('},
-    'math.acos': {'Vensim': 'ARCCOS('},
-    'math.atan': {'Vensim': 'ARCTAN('},
-    'math.log10': {'Vensim': 'LOG('},
-
+    'min': {'vensim': 'MIN', 'pm': min, 'python': min},
+    'max': {'vensim': 'MAX', 'pm': max, 'python': max},
+    'abs': {'vensim': 'ABS', 'pm': pm.math.abs_, 'python': abs},
+    'math.exp': {'vensim': 'EXP', 'pm': pm.math.exp, 'python': mat.exp},
+    'int': {'vensim': 'INTEGER', 'pm': pm.math.floor, 'python': int},
+    'math.log': {'vensim': 'LN', 'pm': pm.math.log, 'python': mat.log},
+    'math.sin': {'vensim': 'SIN', 'pm': pm.math.sin},
+    'math.cos': {'vensim': 'COS', 'pm': pm.math.cos},
+    'math.tan': {'vensim': 'TAN', 'pm': pm.math.tan},
+    'math.asin': {'vensim': 'ARCSIN'},
+    'math.acos': {'vensim': 'ARCCOS'},
+    'math.atan': {'vensim': 'ARCTAN'},
+    'math.log10': {'vensim': 'LOG', 'pm': lambda x: pm.math.log(x) / mat.log(10), 'python': mat.log10},
+    '+': {'vensim': '+'},
+    '-': {'vensim': '-'},
+    '*': {'vensim': '*'},
+    '/': {'vensim': '/'}
 }
-
-
-dic_ops = {
-    '+': {'Vensim': '+'},
-    '-': {'Vensim': '-'},
-    '*': {'Vensim': '*'},
-    '/': {'Vensim': '/'}
-}
-
 
 dic_funs_inv = {}
-for fun, d_fun in dic_funs.items():
-    for tipo, v in d_fun.items():
+for f, d_fun in dic_funs.items():
+    for tipo, d in d_fun.items():
         if tipo not in dic_funs_inv:
             dic_funs_inv[tipo] = {}
-        dic_funs_inv[tipo][v] = fun
+        dic_funs_inv[tipo][d] = f
 
 
-dic_ops_inv = {}
-for op, d_op in dic_ops.items():
-    for tipo, v in d_op.items():
-        if tipo not in dic_ops_inv:
-            dic_ops_inv[tipo] = {}
-        dic_ops_inv[tipo][v] = op
+def conv_fun(fun, dialecto_0, dialecto_1):
+    return dic_funs[dic_funs_inv[dialecto_0][fun]][dialecto_1]
 
 
 if __name__ == '__main__':
-    from lark import Lark
 
-    ecs = ['1', 'aª', 'abv', "ab c", 'MIN(a[poli, canal],3)', '"abs()(\"#$0978"', '0.004/(5*12)', 'MIN(2+ 3, abc d + 4) * 1 + 3', '1 + 2 * 3',
+    ecs = ['1', 'a', 'abv', "ab c", 'MIN(a[poli, canal],3)', '"abs()(\"#$0978"', '0.004/(5*12)',
+           'MIN(2+ 3, abc d + 4) * 1 + 3', '1 + 2 * 3',
            'வண்க்கம்']
 
-    with open('C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\tinamit\\EnvolturaMDS\\gram_Vensim.g') as gm:
-        anlzdr = Lark(gm, parser='lalr', start='ec')
+    with open('C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\tinamit\\EnvolturaMDS\\gram_Vensim.g') as grm:
+        analizador = Lark(grm, parser='lalr', start='ec')
 
-    for ec in ecs:
+    for Ec in ecs:
         print('=============')
-        print(ec)
-        árbol = anlzdr.parse(ec)
-        print(árbol)
+        print(Ec)
+        árbol = analizador.parse(Ec)
+        print(árbol.pretty())
+        print(_Transformador().transform(árbol))
+        print(Ecuación(Ec, dialecto='Vensim').gen_texto())
