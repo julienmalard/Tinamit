@@ -9,7 +9,7 @@ import regex
 import tinamit.Incertidumbre.ConexDatos as Clb
 from tinamit import _
 from tinamit.MDS import EnvolturaMDS
-from ._sintaxis import sacar_arg, sacar_variables, juntar_líns, cortar_líns, Ecuación
+from .sintaxis import sacar_arg, sacar_variables, juntar_líns, cortar_líns, Ecuación
 
 try:
     import pymc3 as pm

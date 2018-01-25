@@ -284,6 +284,9 @@ class Geografía(object):
         :rtype:
         """
 
+        if escala_geog is None:
+            escala_geog = 'Principal'
+
         af = sf.Reader(archivo)
 
         attrs = af.fields[1:]
@@ -308,7 +311,7 @@ class Geografía(object):
         else:
             ids = None
 
-        símismo.regiones = {'af': af, 'orden_jer': orden, 'id': ids}
+        símismo.regiones[escala_geog] = {'af': af, 'orden_regs': orden, 'id': ids}
 
     def agregar_info_regiones(símismo, archivo, col_cód, orden_jer=None):
         """
@@ -390,8 +393,7 @@ class Geografía(object):
 
         return l_códs
 
-    def dibujar(símismo, archivo, valores=None, título=None, unidades=None, colores=None, escala_num=None,
-                escala_geog=None):
+    def dibujar(símismo, archivo, valores=None, título=None, unidades=None, colores=None, escala_num=None):
         """
         Dibuja la Geografía.
 
@@ -426,8 +428,17 @@ class Geografía(object):
         ejes.set_aspect('equal')
 
         if valores is not None:
-            regiones = símismo.regiones['af']
-            orden = símismo.regiones['orden_jer']
+            d_regiones = None
+            for escala, d_reg in símismo.regiones.items():
+                if len(d_reg['orden']) == valores.shape[0]:
+                    d_regiones = d_reg
+                    continue
+
+            if d_regiones is None:
+                raise ValueError(_('El número de regiones en los datos no concuerdan con la geografía del lugar.'))
+
+            regiones = d_regiones['af']
+            orden = d_regiones['orden_regs']
 
             n_regiones = len(regiones.shapes())
             if len(valores) != n_regiones:
@@ -588,7 +599,7 @@ def _gen_d_mapacolores(colores):
 
 def _formatos_auto(a, tipo):
     """
-    Formatos automáticos.
+    Formatos automáticos para objetos en mapas.
 
     :param a: El atributo.
     :type a: str

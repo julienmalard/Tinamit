@@ -3,7 +3,7 @@ import numpy as np
 from scipy.stats.kde import gaussian_kde
 from scipy.optimize import minimize
 
-from EnvolturaMDS._sintaxis import Ecuación
+from EnvolturaMDS.sintaxis import Ecuación
 
 
 class ConexDatos(object):
@@ -14,6 +14,7 @@ class ConexDatos(object):
     def calib_ec(símismo, var, ec=None, paráms=None, método=None):
 
         mod = símismo.modelo
+
         d_var = mod.variables[var]
 
         if paráms is None:

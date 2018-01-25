@@ -31,26 +31,26 @@ geog.agregar_info_regiones(archivo='Geografía Iximulew.csv',
 # datos_ind.guardar_datos(archivo='ENCOVI_hog_2011_limp.csv')  # Guarda el csv
 
 datos_muni = DatosRegión('Desnutrición municipal', archivo='Desnutrición_muni.csv', fecha='Año', lugar='Código_lugar',
-                         col_tmñ_muestra='Tamaño_muestra')
+                         tmñ_muestra='Tamaño_muestra')
 
 bd = SuperBD('BD Iximulew', bds=[datos_ind, datos_muni], geog=geog)
 
 
 # Gráfico de "caja" con incertidumbre
-bd.graficar(var='Inseguridad Alimentaria', años=2011, cód_lugar='0708', datos=None)
-bd.graficar(var='Inseguridad Alimentaria', años=2011, lugar=['Iximulew', "Tz'olöj Ya'", 'Concepción'])  # Da lo mismo al antecedente
+bd.graficar(var='Inseguridad Alimentaria', fechas=2011, cód_lugar='0708', datos=None)
+bd.graficar(var='Inseguridad Alimentaria', fechas=2011, lugar=['Iximulew', "Tz'olöj Ya'", 'Concepción'])  # Da lo mismo al antecedente
 
 # Gráfico de línea con tiempo en el eje x e incertidumbre mostrada
 bd.graficar(var='Población', años=(2000, None), cód_lugar='0112')
 
 # Varias "cajas" en el mismo gráfico (eje x = lugares)
-bd.graficar(var='Población', años=2011, cód_lugar=['0112', 1204])
+bd.graficar(var='Población', fechas=2011, cód_lugar=['0112', 1204])
 
 # Varias líneas en el mismo gráfico (eje x = tiempo)
-bd.graficar(var='Población', años=None, cód_lugar=['0112', 1204])
+bd.graficar(var='Población', fechas=None, cód_lugar=['0112', 1204])
 
 # Gráfico de un variable contra el otro
-bd.comparar(var_x='Sueldo', var_y='Educación', escala='individual', datos=None)
+bd.graf_comparar(var_x='Sueldo', var_y='Educación', escala='individual', datos=None)
 # اعداد.comparar(var_x='Lluvia', var_y='Rendimiento', var_z='Suelo', escala='individual')
 
 raise SystemExit(0)
