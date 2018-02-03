@@ -39,7 +39,7 @@ class ModeloStella(EnvolturaMDS):
 
     def __init__(símismo, archivo):
 
-        # Primero tenemos que crear el modelo en R a base del archivo.
+        # Primero tenemos que crear el modelo en R a base del archivo. Para que funcione StellaR no deben haber tildes
         direc, arch = os.path.split(archivo)
         nombre_mod = os.path.splitext(arch)[0]
         dir_egr = os.path.join(direc, nombre_mod)
@@ -59,7 +59,30 @@ class ModeloStella(EnvolturaMDS):
         # identificar las unidades y dimensiones de las variables, y las constantes
         # guardar las constantes en una lista
 
+        variables = {}
+        # este es el diccionario con los distintos tipos de variables
+        flujos = []
+        # flujos y otras variables dinámicas los lee igual R creo
+
+        unidades = []
+        constantes = []
+        # las constantes, o parámetros los lee en: parms <- c()
+
+        niveles = []
+        # stocks están en la lista Y <- ()
+
         # Aquí puedes leer símismo.mod_txt para
+        for line in símismo.mod_txt:
+            if "parms <-" in line:
+                constantes.append(line)
+            elif "Y <-" in line:
+                niveles.append(line)
+            else:
+                flujos.append(line)
+
+        # también podrían leerse las líneas del modelo en R(que son variables, algunas repetidas) como objetos R,
+        # tal vez se pueden leer mejor
+
         pass
 
     def obt_unidad_tiempo(símismo):
@@ -103,6 +126,8 @@ class ModeloStella(EnvolturaMDS):
 
     def cerrar_modelo(símismo):
         # cerrar la simulación
+
+
         pass
 
 
