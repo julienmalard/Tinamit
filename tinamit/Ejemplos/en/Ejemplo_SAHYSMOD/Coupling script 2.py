@@ -65,15 +65,18 @@ for cp in ops['Capacity per tubewell']:
 modelo = Conectado()
 
 # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
-modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Tinamit_sub_v4.vpm'))
+modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Tinamit_sub_v5.vpm'))
 modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'SAHYSMOD.py'))
 modelo.estab_conv_tiempo(mod_base='mds', conv=6)
 
 # Couple models(Change variable names as needed)
 modelo.conectar(var_mds='Soil salinity Tinamit CropA', mds_fuente=False, var_bf="CrA - Root zone salinity crop A")
 modelo.conectar(var_mds='Soil salinity Tinamit CropB', mds_fuente=False, var_bf="CrB - Root zone salinity crop B")
+modelo.conectar(var_mds='Area fraction Tinamit CropA', mds_fuente=False, var_bf="Area A - Seasonal fraction area crop A")
+modelo.conectar(var_mds='Area fraction Tinamit CropB', mds_fuente=False, var_bf="Area B - Seasonal fraction area crop B")
 modelo.conectar(var_mds='Watertable depth Tinamit', mds_fuente=False, var_bf="Dw - Groundwater depth")
 modelo.conectar(var_mds='ECdw Tinamit', mds_fuente=False, var_bf='Cqf - Aquifer salinity')
+modelo.conectar(var_mds='Rainfall Tinamit', mds_fuente=False, var_bf='Pp - Rainfall')
 modelo.conectar(var_mds='Lc', mds_fuente=True, var_bf='Lc - Canal percolation')
 modelo.conectar(var_mds='Ia CropA', mds_fuente=True, var_bf='IaA - Crop A field irrigation')
 modelo.conectar(var_mds='Ia CropB', mds_fuente=True, var_bf='IaB - Crop B field irrigation')
