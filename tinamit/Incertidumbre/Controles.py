@@ -55,7 +55,7 @@ class Control(object):
         símismo.receta['constantes'][constante] = {'distr': est['distr'],
                                                    'máx': est['máx'],
                                                    'escala': escala,
-                                                   'سال': años,
+                                                   'años': años,
                                                    'lugares': lugar,
                                                    'cód_lugar': cód_lugar}
 
@@ -172,7 +172,7 @@ class Control(object):
         dic_ec = símismo.receta['ecs'][var]
         dic_ec['párams'] = calibrados
         dic_ec['escala'] = escala
-        dic_ec['سال'] = años
+        dic_ec['años'] = años
         dic_ec['lugares'] = lugar
         dic_ec['cód_lugar'] = cód_lugar
 
@@ -207,7 +207,7 @@ class Control(object):
 
             dic['cód_lugar'] = cód_lugar
 
-            años = dic['سال']
+            años = dic['años']
             escala = dic['escala']
             lugar = dic['lugares']
 
@@ -222,7 +222,7 @@ class Control(object):
 
             dic['cód_lugar'] = cód_lugar
 
-            años = dic['سال']
+            años = dic['años']
             escala = dic['escala']
             lugar = dic['lugares']
 

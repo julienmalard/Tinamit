@@ -284,6 +284,9 @@ class Geografía(object):
         :rtype:
         """
 
+        if escala_geog is None:
+            escala_geog = 'Principal'
+
         af = sf.Reader(archivo)
 
         attrs = af.fields[1:]
@@ -308,7 +311,7 @@ class Geografía(object):
         else:
             ids = None
 
-        símismo.regiones = {'af': af, 'orden_jer': orden, 'id': ids}
+        símismo.regiones[escala_geog] = {'af': af, 'orden_regs': orden, 'id': ids}
 
     def agregar_info_regiones(símismo, archivo, col_cód, orden_jer=None):
         """
@@ -380,17 +383,17 @@ class Geografía(object):
         """
 
         escala_lugar = símismo.cód_a_lugar[cód_lugar]['escala']
+        nombre_lugar = símismo.cód_a_lugar[cód_lugar]['nombre']
 
         if escala is None:
-            l_códs = [x for x, d in símismo.árbol_geog_inv.items() if d[escala_lugar] == cód_lugar]
+            l_códs = [x for x, d in símismo.árbol_geog_inv.items() if d[escala_lugar] == nombre_lugar]
         else:
             l_códs = [x for x, d in símismo.árbol_geog_inv.items()
-                      if d[escala_lugar] == cód_lugar and símismo.cód_a_lugar[x]['escala'] == escala]
+                      if d[escala_lugar] == nombre_lugar and símismo.cód_a_lugar[x]['escala'] == escala]
 
         return l_códs
 
-    def dibujar(símismo, archivo, valores=None, título=None, unidades=None, colores=None, escala_num=None,
-                escala_geog=None):
+    def dibujar(símismo, archivo, valores=None, título=None, unidades=None, colores=None, escala_num=None):
         """
         Dibuja la Geografía.
 
@@ -403,14 +406,16 @@ class Geografía(object):
         :param unidades: Las unidades de los valores.
         :type unidades: str
         :param colores: Los colores para dibujar.
-        :type colores: str | list | tuple
+        :type colores: str | list | tuple | int
         :param escala_num: La escala numérica para los colores.
         :type escala_num: tuple
 
         """
 
         if colores is None:
-            colores = ['#FF6666', '##FFCC66', '#00CC66']
+            colores = ['#FF6666', '#FFCC66', '#00CC66']
+        if colores == -1:
+            colores = ['#00CC66', '#FFCC66','#FF6666']
 
         if isinstance(colores, str):
             colores = ['#FFFFFF', colores]
@@ -423,8 +428,17 @@ class Geografía(object):
         ejes.set_aspect('equal')
 
         if valores is not None:
-            regiones = símismo.regiones['af']
-            orden = símismo.regiones['orden_jer']
+            d_regiones = None
+            for escala, d_reg in símismo.regiones.items():
+                if len(d_reg['orden']) == valores.shape[0]:
+                    d_regiones = d_reg
+                    continue
+
+            if d_regiones is None:
+                raise ValueError(_('El número de regiones en los datos no concuerdan con la geografía del lugar.'))
+
+            regiones = d_regiones['af']
+            orden = d_regiones['orden_regs']
 
             n_regiones = len(regiones.shapes())
             if len(valores) != n_regiones:
@@ -585,7 +599,7 @@ def _gen_d_mapacolores(colores):
 
 def _formatos_auto(a, tipo):
     """
-    Formatos automáticos.
+    Formatos automáticos para objetos en mapas.
 
     :param a: El atributo.
     :type a: str

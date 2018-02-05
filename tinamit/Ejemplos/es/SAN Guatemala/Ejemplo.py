@@ -3,17 +3,16 @@ from EnvolturaMDS import generar_mds
 from tinamit.Geog.Geog import Geografía
 
 # EnvolturaMDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
-modelo = generar_mds(archivo='C:\\Users\\jmalar1\\Documents\\USB Julien\\USB après lavage août 2016\\PhD\\Iximulew\\'
-                             'EnvolturaMDS 2015\\Tz\'olöj Ya\'\\Taller 12\\Para Tinamit.mdl')
+modelo = generar_mds(archivo='C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\tinamit\\Incertidumbre\\Para Tinamit.mdl')
 print('vars', modelo.variables.keys())
 print('internos', modelo.internos)  # variables internos al EnvolturaMDS (p. ej., TIMESTEP y TIME en VENSIM)
 print('auxiliares', modelo.auxiliares)
 print('flujos', modelo.flujos)
 print('niveles', modelo.niveles)
 print('constantes', modelo.constantes)
-print('vacíos', modelo.vacíos())
+# print('vacíos', modelo.vacíos())
 
-datos_ind = DatosIndividuales(archivo_csv='ENCOVI_hog_2011.csv', año=2011, col_cód_lugar='Código_lugar',
+datos_ind = DatosIndividuales('ENCOVI 2011', archivo='ENCOVI_hog_2011.csv', fecha=2011, lugar='Código_lugar',
                               cód_vacío=['NA', 'na', 'Na'])
 
 # datos_ind = DatosIndividuales(fuente='')
@@ -25,36 +24,33 @@ geog.agregar_info_regiones(archivo='Geografía Iximulew.csv',
                            col_cód='Código')
 
 
-print(datos_ind.datos_irreg(var='Inseguridad.alimentaria'))
+# print(datos_ind.datos_irreg(var='Inseguridad.alimentaria'))
 # print(datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(1, 4), tipo='valor'))  # Hace cambios al csv
 # datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(0, 0.90))
 
 # datos_ind.guardar_datos(archivo='ENCOVI_hog_2011_limp.csv')  # Guarda el csv
 
-datos_muni = DatosRegión(archivo_csv='Desnutrición_muni.csv', col_año='Año', col_cód_lugar='Código_lugar',
-                         col_tmñ_muestra='Tamaño_muestra')
+datos_muni = DatosRegión('Desnutrición municipal', archivo='Desnutrición_muni.csv', fecha='Año', lugar='Código_lugar',
+                         tmñ_muestra='Tamaño_muestra')
 
-bd = SuperBD(datos=[datos_ind, datos_muni], geog=geog)
+bd = SuperBD('BD Iximulew', bds=[datos_ind, datos_muni], geog=geog)
 
-bd.renombrar_var(datos=datos_ind, var='P01221', nuevo_nombre='Insegurdad Alimentaria')  # puro ejemplo
-
-bd.a
 
 # Gráfico de "caja" con incertidumbre
-bd.graficar(var='Inseguridad Alimentaria', años=2011, cód_lugar='0708', datos=None)
-bd.graficar(var='Inseguridad Alimentaria', años=2011, lugar=['Iximulew', "Tz'olöj Ya'", 'Concepción'])  # Da lo mismo al antecedente
+bd.graficar(var='Inseguridad Alimentaria', fechas=2011, cód_lugar='0708', datos=None)
+bd.graficar(var='Inseguridad Alimentaria', fechas=2011, lugar=['Iximulew', "Tz'olöj Ya'", 'Concepción'])  # Da lo mismo al antecedente
 
 # Gráfico de línea con tiempo en el eje x e incertidumbre mostrada
 bd.graficar(var='Población', años=(2000, None), cód_lugar='0112')
 
 # Varias "cajas" en el mismo gráfico (eje x = lugares)
-bd.graficar(var='Población', años=2011, cód_lugar=['0112', 1204])
+bd.graficar(var='Población', fechas=2011, cód_lugar=['0112', 1204])
 
 # Varias líneas en el mismo gráfico (eje x = tiempo)
-bd.graficar(var='Población', años=None, cód_lugar=['0112', 1204])
+bd.graficar(var='Población', fechas=None, cód_lugar=['0112', 1204])
 
 # Gráfico de un variable contra el otro
-bd.comparar(var_x='Sueldo', var_y='Educación', escala='individual', datos=None)
+bd.graf_comparar(var_x='Sueldo', var_y='Educación', escala='individual', datos=None)
 # اعداد.comparar(var_x='Lluvia', var_y='Rendimiento', var_z='Suelo', escala='individual')
 
 raise SystemExit(0)
