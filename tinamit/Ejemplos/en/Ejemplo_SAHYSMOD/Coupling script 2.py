@@ -65,7 +65,7 @@ for cp in ops['Capacity per tubewell']:
 modelo = Conectado()
 
 # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
-modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Tinamit_sub_v5.vpm'))
+modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Tinamit_sub_v4.vpm'))
 modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'SAHYSMOD.py'))
 modelo.estab_conv_tiempo(mod_base='mds', conv=6)
 
@@ -81,6 +81,8 @@ modelo.conectar(var_mds='Lc', mds_fuente=True, var_bf='Lc - Canal percolation')
 modelo.conectar(var_mds='Ia CropA', mds_fuente=True, var_bf='IaA - Crop A field irrigation')
 modelo.conectar(var_mds='Ia CropB', mds_fuente=True, var_bf='IaB - Crop B field irrigation')
 modelo.conectar(var_mds='Gw', mds_fuente=True, var_bf='Gw - Groundwater extraction')
+modelo.conectar(var_mds='EpA', mds_fuente=True, var_bf='EpA - Potential ET crop A')
+modelo.conectar(var_mds='EpB', mds_fuente=True, var_bf='EpB - Potential ET crop B')
 modelo.conectar(var_mds='Irrigation efficiency', mds_fuente=True, var_bf='FsA - Water storage efficiency crop A')
 modelo.conectar(var_mds='Fw', mds_fuente=True, var_bf='Fw - Fraction well water to irrigation')
 
@@ -110,8 +112,18 @@ for name, run in runs.items():
 # Climate change runs
 location = Lugar(lat=32.178207, long=73.217391, elev=217)
 location.observar_mensuales('مشاہدہ بارش.csv', meses='مہینہ', años='سال',
-                            cols_datos={'Precipitación': 'بارش (ملیمیٹر)'},
-                            conv={'Precipitación': 1})
+                            cols_datos={'Precipitación': 'بارش (ملیمیٹر)',
+                                        'Temperatura mínima': 'درجہ_حرارت_کم',
+                                        'Temperatura máxima': 'درجہ_حرارت_زیادہ'
+                                        },
+                            conv={'Precipitación': 1,
+                                  'Temperatura mínima': 1,
+                                  'Temperatura máxima': 1})
+
+modelo.mds.conectar_var_clima(var='Tmin', var_clima='Temperatura mínima', conv=1)
+modelo.mds.conectar_var_clima(var='Tmax', var_clima='Temperatura máxima', conv=1)
+modelo.estab_conv_meses(6)
+
 for rcp in [2.6, 4.5, 6.0, 8.5]:
     print('Runing with rcp {}\n************'.format(rcp))
 

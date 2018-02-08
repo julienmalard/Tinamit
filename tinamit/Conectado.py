@@ -649,6 +649,13 @@ class SuperConectado(Modelo):
         # Si no encontramos la conexión, hay un error.
         raise ValueError(_('La conexión especificada no existe.'))
 
+    def estab_conv_meses(símismo, conv):
+
+        super().estab_conv_meses(conv)
+        for mod in símismo.modelos.values():
+            if mod.unidad_tiempo == símismo.unidad_tiempo:
+                mod.estab_conv_meses(conv)
+
 
 class Conectado(SuperConectado):
     """

@@ -3,7 +3,7 @@ import numpy as np
 from scipy.stats.kde import gaussian_kde
 from scipy.optimize import minimize
 
-from EnvolturaMDS.sintaxis import Ecuación
+from tinamit.EnvolturaMDS.sintaxis import Ecuación
 
 
 class ConexDatos(object):

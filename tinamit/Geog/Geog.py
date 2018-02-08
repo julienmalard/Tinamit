@@ -20,8 +20,8 @@ conv_vars = {
     'Precipitación': 'بارش',
     'Radiación solar': 'شمسی_تابکاری',
     'Temperatura máxima': 'درجہ_حرارت_زیادہ',
-    'Temperatura promedia': 'درجہ_حرارت_کم',
-    'Temperatura mínima': 'درجہ_حرارت_اوسط'
+    'Temperatura mínima': 'درجہ_حرارت_کم',
+    'Temperatura promedia': 'درجہ_حرارت_اوسط'
 }
 
 
@@ -430,7 +430,7 @@ class Geografía(object):
         if valores is not None:
             d_regiones = None
             for escala, d_reg in símismo.regiones.items():
-                if len(d_reg['orden']) == valores.shape[0]:
+                if len(d_reg['orden_regs']) == valores.shape[0]:
                     d_regiones = d_reg
                     continue
 

@@ -56,6 +56,9 @@ class Modelo(object):
         # Las unidades de tiempo del modelo.
         símismo.unidad_tiempo = símismo.obt_unidad_tiempo()
 
+        #
+        símismo.unidad_tiempo_meses = None
+
     def inic_vars(símismo):
         """
         Esta función debe poblar el diccionario de variables del modelo, según la forma siguiente:
@@ -245,13 +248,19 @@ class Modelo(object):
             f_final = f + deltarelativo(days=+n_paso)
             n_meses = n_paso / 30
         else:
-            try:
-                n_meses = convertir(de=símismo.unidad_tiempo, a='Mes', val=n_paso)
-                if int(n_meses) != n_meses:
-                    avisar('Tuvimos que redondear la unidad de tiempo, {} {}, a {} meses'.
-                           format(n_meses, símismo.unidad_tiempo, int(n_meses)))
-            except ValueError:
-                raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a meses.'))
+            if símismo.unidad_tiempo_meses is None:
+
+                try:
+                    símismo.unidad_tiempo_meses = convertir(de=símismo.unidad_tiempo, a='Mes', val=1)
+
+                except ValueError:
+                    raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a meses. Tienes que especificar'
+                                       'el factor de conversión manualmente con ".estab_conv_meses(conv)".'))
+
+            n_meses = n_paso * símismo.unidad_tiempo_meses
+            if int(n_meses) != n_meses:
+                avisar('Tuvimos que redondear la unidad de tiempo, {} {}, a {} meses'.
+                       format(n_meses, símismo.unidad_tiempo, int(n_meses)))
 
             f_final = f + deltarelativo(months=n_meses)
 
@@ -276,3 +285,15 @@ class Modelo(object):
             
             # Aplicar el cambio
             símismo.cambiar_vals(valores={var: datos[var_clima] * conv})
+
+    def estab_conv_meses(símismo, conv):
+        """
+        Establece, manualmente, el factor de conversión para convertir la unidad de tiempo del modelo a meses.
+        Únicamente necesario si Tinamït no logra inferir este factor por sí mismo.
+
+        :param conv: El factor de conversión entre la unidad de tiempo del modelo y un mes.
+        :type: float | int
+
+        """
+
+        símismo.unidad_tiempo_meses = conv
