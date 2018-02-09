@@ -128,8 +128,6 @@ for rcp in [2.6, 4.5, 6.0, 8.5]:
     print('Runing with rcp {}\n************'.format(rcp))
 
     for name, run in runs.items():
-        name = 'CL'
-        run = runs[name]
 
         print('\tRuning model {}.\n\t-----------------'.format(name))
 
