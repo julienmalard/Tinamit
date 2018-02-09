@@ -7,6 +7,7 @@ from warnings import warn as avisar
 import numpy as np
 from dateutil.relativedelta import relativedelta
 
+from MDS import EnvolturaMDS
 from tinamit import _
 from tinamit.BF import EnvolturaBF
 from tinamit.EnvolturaMDS import generar_mds
@@ -679,13 +680,18 @@ class Conectado(SuperConectado):
         """
         Establecemos el modelo de dinámicas de los sistemas (:class:`~tinamit.EnvolturaMDS.EnvolturaMDS`).
 
-        :param archivo_mds: El archivo del modelo DS.
-        :type archivo_mds: str
+        :param archivo_mds: El archivo del modelo DS, o el modelo sí mismo.
+        :type archivo_mds: str | EnvolturaMDS
 
         """
 
         # Generamos un objeto de modelo DS.
-        modelo_mds = generar_mds(archivo=archivo_mds)
+        if isinstance(archivo_mds, str):
+            modelo_mds = generar_mds(archivo=archivo_mds)
+        elif isinstance(archivo_mds, EnvolturaMDS):
+            modelo_mds = archivo_mds
+        else:
+            raise TypeError(_('Debes dar o un modelo DS, o la dirección hacia el archivo de uno.'))
 
         # Conectamos el modelo DS.
         símismo.estab_modelo(modelo=modelo_mds)
@@ -703,7 +709,12 @@ class Conectado(SuperConectado):
         """
 
         # Creamos una instancia de la Envoltura BF con este modelo.
-        modelo_bf = EnvolturaBF(archivo=archivo_bf)
+        if isinstance(archivo_bf, str):
+            modelo_bf = EnvolturaBF(archivo=archivo_bf)
+        elif isinstance(archivo_bf, EnvolturaBF):
+            modelo_bf = archivo_bf
+        else:
+            raise TypeError(_('Debes dar o un modelo BF, o la dirección hacia el archivo de uno.'))
 
         # Conectamos el modelo biofísico.
         símismo.estab_modelo(modelo=modelo_bf)
