@@ -7,7 +7,7 @@ from warnings import warn as avisar
 import numpy as np
 from dateutil.relativedelta import relativedelta
 
-from MDS import EnvolturaMDS
+from tinamit.MDS import EnvolturaMDS
 from tinamit import _
 from tinamit.BF import EnvolturaBF
 from tinamit.EnvolturaMDS import generar_mds
