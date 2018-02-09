@@ -1,4 +1,8 @@
-import pymc3 as pm
+try:
+    import pymc3 as pm
+except ImportError:
+    pm = None
+
 import numpy as np
 from scipy.stats.kde import gaussian_kde
 from scipy.optimize import minimize
