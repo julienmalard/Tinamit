@@ -231,7 +231,7 @@ class Lugar(مقام):
                 raise ValueError(_('El variable "{}" está erróneo. Debe ser uno de:\n'
                                  '\t{}').format(v, ', '.join(conv_vars)))
             if c is None:
-                if v in ['درجہ_حرارت_زیادہ', 'درجہ_حرارت_کم', 'درجہ_حرارت_اوسط']:
+                if v in ['Temperatura máxima', 'Temperatura mínima', 'Temperatura promedia']:
                     c = 'prom'
                 else:
                     c = 'total'
