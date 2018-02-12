@@ -4,6 +4,7 @@ from tinamit.Conectado import Conectado
 from tinamit.Geog.Geog import Lugar, Geografía
 
 use_simple = True
+climate_change = True
 
 # 0. Site geography
 Rechna_Doab = Geografía(nombre='Rechna Doab')
@@ -92,56 +93,54 @@ if use_simple:
 else:
     runs = runs_complex
 
-"""
-# Run the model for all desired runs
-for name, run in runs.items():
-
-    print('Runing model {}.\n-----------------'.format(name))
-
-    # Set appropriate switches for policy analysis
-    for switch, val in run.items():
-        modelo.mds.inic_val(var=switch, val=val)
-
-    # Simulate the coupled model
-    modelo.simular(paso=1, tiempo_final=20, nombre_corrida=name)  # time step and final time are in months
-
-    # Draw maps
-    modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
-    modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
-"""
-# Climate change runs
-location = Lugar(lat=32.178207, long=73.217391, elev=217)
-location.observar_mensuales('مشاہدہ بارش.csv', meses='مہینہ', años='سال',
-                            cols_datos={'Precipitación': 'بارش (ملیمیٹر)',
-                                        'Temperatura mínima': 'درجہ_حرارت_کم',
-                                        'Temperatura máxima': 'درجہ_حرارت_زیادہ'
-                                        },
-                            conv={'Precipitación': 1,
-                                  'Temperatura mínima': 1,
-                                  'Temperatura máxima': 1})
-
-modelo.mds.conectar_var_clima(var='Tmin', var_clima='Temperatura mínima', conv=1)
-modelo.mds.conectar_var_clima(var='Tmax', var_clima='Temperatura máxima', conv=1)
-modelo.estab_conv_meses(6)
-
-for rcp in [2.6, 4.5, 6.0, 8.5]:
-    print('Runing with rcp {}\n************'.format(rcp))
-
+if not climate_change:
+    # Run the model for all desired runs
     for name, run in runs.items():
 
-        print('\tRuning model {}.\n\t-----------------'.format(name))
+        print('Runing model {}.\n-----------------'.format(name))
 
-        nombre_corrida = '{}, {}'.format(str(rcp).replace('.', '_'), name)
         # Set appropriate switches for policy analysis
         for switch, val in run.items():
             modelo.mds.inic_val(var=switch, val=val)
 
-        modelo.simular(paso=1, tiempo_final=100 * 2, fecha_inic='01/11/1989', lugar=location, tcr=rcp, clima=True,
-                       recalc=False, nombre_corrida=nombre_corrida)
+        # Simulate the coupled model
+        modelo.simular(paso=1, tiempo_final=20, nombre_corrida=name)  # time step and final time are in months
 
-        modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida,  var='Watertable depth Tinamit',
-                       directorio='Maps')
-        modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida, colores=['#00CC66', '##FFCC66', '#FF6666'], var='Soil salinity Tinamit CropA',
-                       directorio='Maps')
+        # Draw maps
+        modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
+        modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
+else:
+    # Climate change runs
+    location = Lugar(lat=32.178207, long=73.217391, elev=217)
+    location.observar_mensuales('مشاہدہ بارش.csv', meses='مہینہ', años='سال',
+                                cols_datos={'Precipitación': 'بارش (ملیمیٹر)',
+                                            'Temperatura mínima': 'درجہ_حرارت_کم',
+                                            'Temperatura máxima': 'درجہ_حرارت_زیادہ'
+                                            },
+                                conv={'Precipitación': 1,
+                                      'Temperatura mínima': 1,
+                                      'Temperatura máxima': 1})
 
-        raise SystemExit(0)
+    modelo.mds.conectar_var_clima(var='Tmin', var_clima='Temperatura mínima', conv=1)
+    modelo.mds.conectar_var_clima(var='Tmax', var_clima='Temperatura máxima', conv=1)
+    modelo.estab_conv_meses(6)
+
+    for rcp in [0, 2.6, 4.5, 6.0, 8.5]:
+        print('Runing with rcp {}\n************'.format(rcp))
+
+        for name, run in runs.items():
+
+            print('\tRuning model {}.\n\t-----------------'.format(name))
+
+            nombre_corrida = '{}, {}'.format(str(rcp).replace('.', '_'), name)
+            # Set appropriate switches for policy analysis
+            for switch, val in run.items():
+                modelo.mds.inic_val(var=switch, val=val)
+
+            modelo.simular(paso=1, tiempo_final=3, fecha_inic='01/11/1989', lugar=location, tcr=rcp, clima=True,
+                           recalc=False, nombre_corrida=nombre_corrida)
+
+            modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida,  var='Watertable depth Tinamit',
+                           directorio='Maps')
+            modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida, colores=-1, var='Soil salinity Tinamit CropA',
+                           directorio='Maps')

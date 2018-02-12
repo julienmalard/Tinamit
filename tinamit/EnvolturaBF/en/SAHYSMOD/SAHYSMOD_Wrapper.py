@@ -15,12 +15,12 @@ class ModeloSAHYSMOD(ModeloImpaciente):
     This is the wrapper for SAHYSMOD. At the moment, it only works for one polygon (no spatial models).
     """
 
-    def __init__(self, initial_data, sayhsmod_exe=None):
+    def __init__(self, initial_data, sahysmod_exe=None):
         """
         Inicialises the SAHYSMOD wrapper. You must have SAHYSMOD already installed on your computer.
 
-        :param sayhsmod_exe: The path to the SAHYSMOD executable.
-        :type sayhsmod_exe: str
+        :param sahysmod_exe: The path to the SAHYSMOD executable.
+        :type sahysmod_exe: str
 
         :param initial_data: The path to the initial data file. Create a SAHYSMOD input file set to run for one year
         according to the initial conditions for your model. As of now, Tinamit (and this wrapper) do not have spatial
@@ -34,8 +34,9 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # The following attributes are specific to the SAHYSMOD wrapper, so edit them as you like.
 
         # Find the SAHYSMOD executable path, if necessary.
-        if sayhsmod_exe is None:
-            sayhsmod_exe = obt_val_config('exe_sahysmod', mnsj='Especificar la ubicación de tu modelo SAHYSMOD.')
+        if sahysmod_exe is None:
+            sahysmod_exe = obt_val_config('exe_sahysmod', mnsj='Especificar la ubicación de tu modelo SAHYSMOD.')
+        self.SAHYSMOD_exe = sahysmod_exe
 
         # Number of (internal) polygons in the model
         self.n_poly = None
@@ -49,11 +50,10 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
         # Set the working directory to write model output, and remember where the initial data is stored.
         self.working_dir, self.initial_data = os.path.split(initial_data)
-        self.output = os.path.join(self.working_dir, 'SAHYSMOD.out')
+        self.output = None  # type: str
 
         # Prepare the command to the SAHYSMOD executable
-        args = dict(SAHYSMOD=sayhsmod_exe, input=self.input, output=self.output)
-        self.command = '{SAHYSMOD} {input} {output}'.format(**args)
+        self.command = None
 
         # Inicialise as the parent class.
         super().__init__()
@@ -92,12 +92,16 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         self.tipos_vars['IngrEstacionales'] = [codes_to_vars[x] for x in seasonal_inputs]
         self.tipos_vars['EgrEstacionales'] = [codes_to_vars[x] for x in seasonal_outputs]
 
-    def iniciar_modelo(self, **kwargs):
+    def iniciar_modelo(self, tiempo_final, nombre_corrida):
         """
         Nothing specific to do. Variables have already been read in func:`inic_vars`.
         """
+        self.output = os.path.join(self.working_dir, 'SAHYSMOD_{}.out'.format(nombre_corrida))
 
-        super().iniciar_modelo()
+        args = dict(SAHYSMOD=self.SAHYSMOD_exe, input=self.input, output=self.output)
+        self.command = '"{SAHYSMOD}" "{input}" "{output}"'.format(**args)
+
+        super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
 
     def avanzar_modelo(self):
         """

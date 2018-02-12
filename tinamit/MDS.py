@@ -178,6 +178,7 @@ def leer_egr_mds(archivo, var):
         archivo += ext
 
     datos = []
+    final = None
 
     if ext == '.vdf':
         ext = '.csv'
@@ -189,6 +190,7 @@ def leer_egr_mds(archivo, var):
                        .format(vdffile=archivo, CSVfile=archivo_csv).encode())
 
         archivo = archivo.replace('.vdf', '.csv')
+        final = -1
 
     if ext == '.csv':
 
@@ -202,4 +204,4 @@ def leer_egr_mds(archivo, var):
     else:
         raise ValueError(_('El formato de datos "{}" no se puede leer al momento.').format(ext))
 
-    return np.array(datos, dtype=float)
+    return np.array(datos, dtype=float)[..., :final]

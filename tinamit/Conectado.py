@@ -320,8 +320,9 @@ class SuperConectado(Modelo):
         :param lugar: El lugares de la simulación.
         :type lugar: Lugar
 
-        :param tcr: El escenario climático según el sistema de la IPCC (2.6, 4.5, 6.0, o 8.5)
-        :type tcr: str | float
+        :param tcr: El escenario climático según el sistema de la IPCC (``2.6``, ``4.5``, ``6.0``, o ``8.5``). ``0`` da
+          el clima histórico.
+        :type tcr: str | float | int
 
         :param recalc: Si quieres recalcular los datos climáticos, si ya existen.
         :type recalc: bool
@@ -402,6 +403,23 @@ class SuperConectado(Modelo):
 
         # Después de la simulación, cerramos el modelo.
         símismo.cerrar_modelo()
+
+    def simular_paralelo(símismo, vals_inic, paso, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None,
+                         tcr=None, recalc=True, clima=False):
+
+        mod = símismo.copy()
+
+        for vals in vals_inic:
+            for var, val in vals:
+                mod.inic_val(var=var, val=val)
+
+        # Empezar los hilos al mismo tiempo
+        for hilo in l_hilo:
+            hilo.start()
+
+        # Esperar que los hilos hayan terminado
+        for hilo in l_hilo:
+            hilo.join()
 
     def incrementar(símismo, paso):
         """

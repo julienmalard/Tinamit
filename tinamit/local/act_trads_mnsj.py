@@ -32,7 +32,7 @@ run('zanata po push --copytrans --import-po', input=b'y', cwd=dir_local)
 
 # Traemos traducciones de Transifex y las mandamos a Zanata.
 print('Actualizando con Transifex...')
-run('tx pull -a', cwd=dir_fuente)
+run('tx pull -a -f', cwd=dir_fuente)
 print('Mandando traducciones de Transifex a Zanata...')
 run('zanata po push --copytrans --import-po', input=b'y', cwd=dir_local)
 

@@ -450,7 +450,7 @@ class ModeloVensim(EnvolturaMDS):
 
         # Establecer el tiempo final.
         comanda_vensim(func=símismo.dll.vensim_command,
-                       args='SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', tiempo_final),
+                       args='SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', tiempo_final+1),
                        mensaje_error=_('Error estableciendo el tiempo final para VENSIM.'))
 
         # Iniciar la simulación en modo juego ("Game"). Esto permitirá la actualización de los valores de los variables
@@ -459,7 +459,7 @@ class ModeloVensim(EnvolturaMDS):
                        args="MENU>GAME",
                        mensaje_error=_('Error inicializando el juego VENSIM.'))
 
-        # Aplicar los valores iniciales de variables editables (los cuales no se pueden cambiar después)
+        # Aplicar los valores iniciales de variables editables
         símismo.cambiar_vals({var: val for var, val in símismo.vals_inic.items()
                               if var not in símismo.constantes})
 
@@ -566,6 +566,11 @@ class ModeloVensim(EnvolturaMDS):
         """
         Cierre la simulación Vensim.
         """
+
+        # Necesario para guardar los últimos valores de los variables conectados. (Muy incómodo, yo sé.)
+        comanda_vensim(func=símismo.dll.vensim_command,
+                       args="GAME>GAMEON",
+                       mensaje_error=_('Error para terminar la simulación VENSIM.'))
 
         # Llamar la comanda para terminar la simulación.
         comanda_vensim(func=símismo.dll.vensim_command,

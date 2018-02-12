@@ -180,7 +180,7 @@ class ModeloBF(Modelo):
         """
         raise NotImplementedError
 
-    def iniciar_modelo(símismo, **kwargs):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
         Esta función debe preparar el modelo para una simulación.
 
@@ -382,7 +382,7 @@ class ModeloImpaciente(ModeloBF):
             # Si es la primera estación del año, también hay que correr una simulación del modelo externo.
             if e == 0:
 
-                # El número de سال para simular
+                # El número de años para simular
                 a = mat.ceil(paso / 12)  # type: int
 
                 # Escribir el archivo de ingresos
@@ -425,7 +425,7 @@ class ModeloImpaciente(ModeloBF):
         """
         return "Mes"
 
-    def iniciar_modelo(símismo, **kwargs):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
         Esta función debe preparar el modelo para una simulación. Si necesitas esta función para tu subclase,
         no se te olvide llamar ``super().iniciar_modelo`` para no saltar la reinicialización de la estación y del mes.
@@ -436,7 +436,7 @@ class ModeloImpaciente(ModeloBF):
         símismo.estación = 0
         símismo.mes = 0
 
-        super().iniciar_modelo(**kwargs)
+        super().iniciar_modelo(tiempo_final, nombre_corrida)
 
     def cerrar_modelo(símismo):
         """
