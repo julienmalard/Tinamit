@@ -1,17 +1,19 @@
 import datetime as ft
 import os
+import pickle
 import re
 import threading
+from copy import copy as copiar
 from warnings import warn as avisar
 
 import numpy as np
 from dateutil.relativedelta import relativedelta
 
-from tinamit.MDS import EnvolturaMDS
 from tinamit import _
 from tinamit.BF import EnvolturaBF
 from tinamit.EnvolturaMDS import generar_mds
 from tinamit.Geog.Geog import Lugar
+from tinamit.MDS import EnvolturaMDS
 from tinamit.Modelo import Modelo
 from tinamit.Unidades.Unidades import convertir
 
@@ -35,7 +37,7 @@ class SuperConectado(Modelo):
         # Un diccionario de los modelos que se van a conectar en este modelo. Tiene la forma general
         # {'nombre_modelo': objecto_modelo,
         #  'nombre_modelo_2': objecto_modelo_2}
-        símismo.modelos = {}
+        símismo.modelos = {}  # type: dict[str, Modelo]
 
         # Una lista de las conexiones entre los modelos.
         símismo.conexiones = []
@@ -67,7 +69,7 @@ class SuperConectado(Modelo):
         # Si ya hay dos modelos conectados, no podemos conectar un modelo más.
         if len(símismo.modelos) >= 2:
             raise ValueError(_('Ya hay dos modelo conectados. Desconecta uno primero o emplea una instancia de'
-                             'SuperConectado para conectar más que 2 modelos.'))
+                               'SuperConectado para conectar más que 2 modelos.'))
 
         # Si ya se conectó otro modelo con el mismo nombre, avisarlo al usuario.
         if modelo.nombre in símismo.modelos:
@@ -223,7 +225,6 @@ class SuperConectado(Modelo):
 
         # Para cada nombre de variable...
         for nombre_var, val in valores.items():
-
             # Primero, vamos a sacar el nombre del variable y el nombre del submodelo.
             nombre_mod, var = nombre_var.split('_', 1)
 
@@ -258,7 +259,7 @@ class SuperConectado(Modelo):
         except ValueError:
             for m in símismo.modelos.values():
                 try:
-                    n_días = convertir(de=m.unidad_tiempo, a='días', val=símismo.conv_tiempo[m.nombre]*n_pasos)
+                    n_días = convertir(de=m.unidad_tiempo, a='días', val=símismo.conv_tiempo[m.nombre] * n_pasos)
                     continue
                 except ValueError:
                     pass
@@ -273,7 +274,7 @@ class SuperConectado(Modelo):
             except ValueError:
                 for m in símismo.modelos.values():
                     try:
-                        n_meses = convertir(de=m.unidad_tiempo, a='meses', val=símismo.conv_tiempo[m.nombre]*n_pasos)
+                        n_meses = convertir(de=m.unidad_tiempo, a='meses', val=símismo.conv_tiempo[m.nombre] * n_pasos)
                         continue
                     except ValueError:
                         pass
@@ -299,6 +300,16 @@ class SuperConectado(Modelo):
 
         for nombre, mod in símismo.modelos.items():
             mod.act_vals_clima(n_paso=símismo.conv_tiempo[nombre] * n_paso, f=f)
+
+    def paralelizable(símismo):
+        """
+        Un modelo :class:`SuperConectado` es paralelizable si todos sus submodelos lo son.
+
+        :return: Si todos los submodelos de este modelo son paralelizables.
+        :rtype: bool
+        """
+
+        return all(mod.paralelizable() for mod in símismo.modelos.values())
 
     def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None, tcr=None,
                 recalc=True, clima=False):
@@ -339,7 +350,7 @@ class SuperConectado(Modelo):
         # Si no hay conversión de tiempo entre los dos modelos, no se puede simular nada.
         if not len(símismo.conv_tiempo):
             raise ValueError(_('Hay que especificar la conversión de unidades de tiempo con '
-                             '.estab_conv_tiempo() antes de correr la simulación.'))
+                               '.estab_conv_tiempo() antes de correr la simulación.'))
 
         # Si no estamos seguro de la conversión de unidades de tiempo, decirlo aquí.
         if símismo.conv_tiempo_dudoso:
@@ -347,8 +358,8 @@ class SuperConectado(Modelo):
             unid_mod_1 = símismo.modelos[l_mods[0]].unidad_tiempo
             unid_mod_2 = símismo.modelos[l_mods[1]].unidad_tiempo
             avisar(_('\nNo se pudo inferir la conversión de unidades de tiempo entre {} y {}.\n'
-                   'Especificarla con la función .estab_conv_tiempo().\n'
-                   'Por el momento pusimos el factor de conversión a 1, pero probablemente no es lo que quieres.')
+                     'Especificarla con la función .estab_conv_tiempo().\n'
+                     'Por el momento pusimos el factor de conversión a 1, pero probablemente no es lo que quieres.')
                    .format(unid_mod_1, unid_mod_2))
 
         # Calcular el número de pasos necesario
@@ -404,22 +415,189 @@ class SuperConectado(Modelo):
         # Después de la simulación, cerramos el modelo.
         símismo.cerrar_modelo()
 
-    def simular_paralelo(símismo, vals_inic, paso, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None,
-                         tcr=None, recalc=True, clima=False):
+    def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
+                         fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True):
 
-        mod = símismo.copy()
+        #
+        if isinstance(vals_inic, dict):
+            if all(x in símismo.modelos for x in vals_inic):
+                vals_inic = [vals_inic]
 
-        for vals in vals_inic:
-            for var, val in vals:
-                mod.inic_val(var=var, val=val)
+        # Poner las opciones de simulación en un diccionario.
+        opciones = {'paso': paso, 'fecha_inic': fecha_inic, 'lugar': lugar, 'vals_inic': vals_inic,
+                    'tcr': tcr, 'recalc': recalc, 'clima': clima}
 
-        # Empezar los hilos al mismo tiempo
-        for hilo in l_hilo:
-            hilo.start()
+        # Verificar llaves consistentes
+        for op in opciones.values():
+            lls_dics = next((d.keys() for d in opciones.values() if isinstance(d, dict)), None)  # Las llaves
+            if isinstance(op, dict) and op.keys() != lls_dics:
+                raise ValueError(_('Las llaves de diccionario de cada opción deben ser iguales.'))
 
-        # Esperar que los hilos hayan terminado
-        for hilo in l_hilo:
-            hilo.join()
+        # Generar el diccionario de corridas
+        l_n_ops = np.array([len(x) for x in opciones.values() if isinstance(x, list) or isinstance(x, dict)
+                            and len(x) > 1])
+        l_nmbs_ops_var = [ll for ll, v in opciones.items() if isinstance(v, list) or isinstance(v, dict)
+                          and len(v) > 1]
+        if combinar:
+            n_corridas = int(np.prod(l_n_ops))
+
+            if isinstance(nombre_corrida, list):
+                raise TypeError('')
+
+            dic_ops = {}  # Un diccionario de nombres de simulación y sus opciones de corrida
+
+            # Poblar el diccionario de opciones iniciales
+            ops = {}
+            nombre = []
+            for ll, op in opciones.items():
+                if not isinstance(op, dict) and not isinstance(op, list):
+                    ops[ll] = op
+                else:
+                    if isinstance(op, dict):
+
+                        id_op = list(op)[0]
+                        ops[ll] = op[id_op]
+
+                        if len(op) > 1:
+                            nombre.append(id_op)
+                    else:
+                        ops[ll] = op[0]
+
+                        if len(op) > 1:
+                            nombre.append(str(op[0]))
+            l_n_ops_cum = np.roll(l_n_ops.cumprod(), 1)
+            l_n_ops_cum[0] = 1
+
+            for i in range(n_corridas):
+                í_ops = [int(np.floor(i / l_n_ops_cum[n]) % l_n_ops[n]) for n in range(l_n_ops.shape[0])]
+                for í, n in enumerate(í_ops):
+                    nmb_op = l_nmbs_ops_var[í]
+                    op = opciones[nmb_op]
+
+                    if isinstance(op, list):
+                        ops[nmb_op] = op[n]
+                        nombre[í] = str(op[n])
+                    elif isinstance(op, dict):
+                        id_op = list(op)[n]
+                        ops[nmb_op] = op[id_op]
+                        nombre[í] = id_op
+                    else:
+                        raise TypeError(_('Tipo de variable "{}" erróneo. Debería ser imposible llegar hasta este '
+                                          'error.'.format(type(op))))
+                dic_ops[' '.join(nombre)] = ops.copy()
+
+            corridas = {'{}{}'.format('nombre_corrida' + '_' if nombre_corrida else '', ll): ops
+                        for ll, ops in dic_ops.items()}
+
+        else:
+            # Si no estamos haciendo todas las combinaciones posibles de opciones, es un poco más fácil.
+
+            n_corridas = np.max(l_n_ops)  # El número de corridas
+
+            # Asegurarse de que todas las opciones tengan el mismo número de opciones.
+            if np.any(np.not_equal(l_n_ops, n_corridas)):
+                raise ValueError(_('Si combinar == False, todas las opciones en forma de lista deben tener el mismo '
+                                   'número de opciones.'))
+
+            # Convertir diccionarios a listas
+            for ll, op in opciones.items():
+                if isinstance(op, dict):
+                    opciones[ll] = [op[x] for x in sorted(op)]
+
+            #
+            if isinstance(nombre_corrida, str):
+                if any(isinstance(op, dict) for op in opciones.values()):
+                    l_nombres = next(isinstance(op, dict) for op in opciones.values())
+                else:
+                    l_nombres = range(n_corridas)
+                l_nombres = sorted(l_nombres)
+
+                corridas = {'{}_{}'.format(nombre_corrida, l_nombres[i]): {
+                    ll: op[i] if isinstance(op, list) else op for ll, op in opciones.items()
+                } for i in range(n_corridas)}
+
+            else:
+                corridas = {nmb: {
+                    ll: op[i] if isinstance(op, list) else op for ll, op in opciones.items()
+                } for i, nmb in enumerate(nombre_corrida)}
+
+        # Sacar los valores iniciales del diccionario de opciones de corridas
+        d_vals_inic = {ll: v.pop('vals_inic') for ll, v in corridas.items()}
+
+        # Detectar si el modelo y todos sus submodelos son paralelizables
+        if símismo.paralelizable():
+            # ...si lo son...
+
+            # Empezar las simulaciones en paralelo
+            l_hilos = []  # type: list[threading.Thread]
+
+            for corr, d_prms_corr in corridas.items():
+
+                def correr_modelo(mod, vls_inic, d_args):
+                    """
+                    Función para inicializar y correr un modelo :class:`SuperConectado`.
+
+                    :param mod: El modelo.
+                    :type mod: SuperConectado
+
+                    :param vls_inic: Diccionario de valores iniciales. El primer nivel de llaves es el nombre del
+                      submodelo y el segundo los nombres de los variables con sus valores iniciales.
+                    :type vls_inic: dict[str, dict[str, float | int | np.ndarray]]
+
+                    :param d_args: Diccionario de argumentos para pasar al modelo.
+                    :type d_args: dict
+                    """
+
+                    mod = copiar(mod)
+
+                    # Inicializar los variables y valores iniciales. Esto debe ser adentro de la función llamada por
+                    # Proceso, para que los valores iniciales se apliquen en su propio proceso (y no en el modelo
+                    # original).
+                    for m, d_inic in vls_inic:
+                        # Para cada submodelo...
+
+                        # Iniciar los valores iniciales
+                        mod.modelos[m].inic_vals(dic_vals=d_inic)
+
+                    # Después, simular el modelo
+                    mod.simular(**d_args)
+
+                l_hilos.append(
+                    threading.Thread(name=corr, target=correr_modelo,
+                                     kwargs={
+                                         'mod': símismo, 'vls_inic': d_vals_inic[corr],
+                                         'd_args': d_prms_corr
+                                     })
+                )
+
+            # Empezar los procesos al mismo tiempo
+            for hilo in l_hilos:
+                hilo.start()
+
+            # Esperar que todos los procesos hayan terminado
+            for hilo in l_hilos:
+                hilo.join()
+
+        else:
+            # Sino simplemente correrlas una tras otra con símismo.simular()
+
+            avisar(_('No todos los submodelos del modelo conectado "{}" son paralelizable. Para evitar el riesgo'
+                     'de errores de paralelización, correremos las corridas como simulaciones secuenciales normales. '
+                     'Si tus modelos sí son paralelizable, poner el atributo ".paralelizable = True" para activar la '
+                     'paralelización.').format(símismo.nombre))
+
+            # Para cada corrida...
+            for corr, d_prms_corr in corridas.items():
+
+                # Implementar los valores iniciales
+                for m, d_vals in d_vals_inic[corr].items():
+                    # Para cada submodelo...
+
+                    # Implementar sus valores iniciales.
+                    símismo.inic_vals(dic_vals=d_vals)
+
+                # Después, simular el modelo.
+                símismo.simular(**d_prms_corr)
 
     def incrementar(símismo, paso):
         """
@@ -523,8 +701,8 @@ class SuperConectado(Modelo):
             mod_recip = l_mod[(l_mod.index(mod_fuente) + 1) % 2]
 
             # Identificar el variable fuente y el variable recipiente de la conexión.
-            var_fuente = conex['vars'][mod_fuente]
-            var_recip = conex['vars'][mod_recip]
+            var_fuente = conex['dic_vars'][mod_fuente]
+            var_recip = conex['dic_vars'][mod_recip]
 
             # Si el modelo fuente todavía no existe en el diccionario, agregarlo.
             if mod_fuente not in símismo.conex_rápida:
@@ -580,7 +758,7 @@ class SuperConectado(Modelo):
             # Y también asegurarse de que el variable no a sido conectado ya.
             if var in mod.vars_saliendo or var in mod.vars_entrando:
                 raise ValueError(_('El variable "{}" del modelo "{}" ya está conectado. '
-                                 'Desconéctalo primero con .desconectar_vars().').format(var, nombre_mod))
+                                   'Desconéctalo primero con .desconectar_vars().').format(var, nombre_mod))
 
         # Identificar el nombre del modelo recipiente también.
         n_mod_fuente = l_mods.index(modelo_fuente)
@@ -609,15 +787,13 @@ class SuperConectado(Modelo):
             except ValueError:
                 # Si eso no funcionó, suponer una conversión de 1.
                 avisar(_('No se pudo identificar una conversión automática para las unidades de los variables'
-                       '"{}" (unidades: {}) y "{}" (unidades: {}). Se está suponiendo un factor de conversión de 1.')
+                         '"{}" (unidades: {}) y "{}" (unidades: {}). Se está suponiendo un factor de conversión de 1.')
                        .format(var_fuente, unid_fuente, var_recip, unid_recip))
                 conv = 1
 
         # Crear el diccionario de conexión.
         dic_conex = {'modelo_fuente': modelo_fuente,
-                     'vars': {modelo_recip: var_recip,
-                              modelo_fuente: var_fuente
-                              },
+                     'dic_vars': dic_vars,
                      'conv': conv
                      }
 
@@ -647,12 +823,12 @@ class SuperConectado(Modelo):
         for n, conex in enumerate(símismo.conexiones):
             # Para cada conexión existente...
 
-            if conex['modelo_fuente'] == modelo_fuente and conex['vars'][modelo_fuente] == var_fuente:
+            if conex['modelo_fuente'] == modelo_fuente and conex['dic_vars'][modelo_fuente] == var_fuente:
                 # Si el modelo y variable fuente corresponden...
 
                 # Identificar el modelo recipiente.
                 mod_recip = l_mod[(l_mod.index(modelo_fuente) + 1) % 2]
-                var_recipiente = conex['vars'][mod_recip]
+                var_recipiente = conex['dic_vars'][mod_recip]
 
                 # Quitar la conexión.
                 símismo.conexiones.pop(n)
@@ -674,6 +850,36 @@ class SuperConectado(Modelo):
         for mod in símismo.modelos.values():
             if mod.unidad_tiempo == símismo.unidad_tiempo:
                 mod.estab_conv_meses(conv)
+
+    def __copy__(símismo):
+        copia = símismo.__class__(símismo.nombre)
+
+
+    def __getstate__(símismo):
+        d = {
+            'modelos': {n: pickle.dumps(m) for n, m in símismo.modelos.items()},
+            'conexiones': símismo.conexiones,
+            'conv_tiempo': símismo.conv_tiempo,
+            'conv_tiempo_dudoso': símismo.conv_tiempo_dudoso,
+
+
+        }
+
+        d.update(super().__getstate__())
+
+        return d
+
+    def __setstate__(símismo, estado):
+
+        super().__setstate__(estado)
+
+        for m in estado['modelos']:
+            símismo.estab_modelo(pickle.loads(m))
+        for c in símismo.conexiones:
+            símismo.conectar_vars(**c)
+        símismo.conv_tiempo = estado['conv_tiempo']
+        símismo.conv_tiempo_dudoso = estado['conv_tiempo_dudoso']
+        símismo.vars_clima = estado['vars_clima']
 
 
 class Conectado(SuperConectado):
@@ -842,7 +1048,7 @@ class Conectado(SuperConectado):
         if i_paso is None:
             i_paso = [0, bd.shape[-1]]
         if isinstance(i_paso, int):
-            i_paso = [i_paso, i_paso+1]
+            i_paso = [i_paso, i_paso + 1]
         if i_paso[0] is None:
             i_paso[0] = 0
         if i_paso[1] is None:
@@ -857,3 +1063,10 @@ class Conectado(SuperConectado):
             nombre_archivo = os.path.join(directorio, '{}, {}'.format(nombre_var, i))
             geog.dibujar(archivo=nombre_archivo, valores=valores, título=var, unidades=unid,
                          colores=colores, escala_num=escala)
+
+    def __setstate__(símismo, estado):
+
+        super().__setstate__(estado)
+
+        símismo.bf = símismo.modelos['bf']
+        símismo.mds = símismo.modelos['mds']

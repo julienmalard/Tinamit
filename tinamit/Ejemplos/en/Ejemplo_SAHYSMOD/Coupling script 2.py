@@ -125,6 +125,11 @@ else:
     modelo.mds.conectar_var_clima(var='Tmax', var_clima='Temperatura máxima', conv=1)
     modelo.estab_conv_meses(6)
 
+    vals_inic = {x: {'mds': v} for x, v in runs.items()}
+    modelo.simular_paralelo(paso=1, tiempo_final=3, fecha_inic='01/11/1989', lugar=location, clima=True, recalc=False,
+                            tcr=[0, 2.6, 4.5, 6.0, 8.5], vals_inic=vals_inic, combinar=True,
+                            nombre_corrida='')
+
     for rcp in [0, 2.6, 4.5, 6.0, 8.5]:
         print('Runing with rcp {}\n************'.format(rcp))
 

@@ -121,7 +121,7 @@ class Modelo(object):
         :type var: str
 
         :param val: El nuevo valor del variable.
-        :type val: float
+        :type val: float | np.ndarray
 
         """
 
@@ -134,6 +134,18 @@ class Modelo(object):
         # Guardamos el valor en el diccionario `vals_inic`. Se aplicarán los valores iniciales únicamente al momento
         # de empezar la simulación.
         símismo.vals_inic[var] = val
+
+    def inic_vals(símismo, dic_vals):
+        """
+        Una función más cómoda para inicializar muchos variables al mismo tiempo.
+
+        :param dic_vals:
+        :type dic_vals: dict[str, float | int | np.ndarray]
+
+        """
+
+        for var, val in dic_vals.items():
+            símismo.inic_val(var=var, val=val)
 
     def _limp_vals_inic(símismo):
         """
@@ -297,3 +309,33 @@ class Modelo(object):
         """
 
         símismo.unidad_tiempo_meses = conv
+
+    def paralelizable(símismo):
+        """
+        Indica si el modelo actual se puede paralelizar de manera segura o no. Si implementas una subclase
+        paralelizable, reimplementar esta función para devolver ``True``.
+
+        :return: Si el modelo se puede paralelizar (con corridas de nombres distintos) sin encontrar dificultades
+          técnicas (por ejemplo, si hay riesgo que las corridas paralelas terminen escribiendo en los mismos
+          documents de egresos).
+        :rtype: bool
+        """
+        return False
+
+    def __str__(símismo):
+        return símismo.nombre
+
+    def __getstate__(símismo):
+        d = {
+            'nombre': símismo.nombre,
+            'vals_inic': símismo.vals_inic,
+            'vars_clima': símismo.vars_clima
+        }
+        return d
+
+    def __getnewargs__(símismo):
+        return (símismo.nombre, )
+
+    def __setstate__(símismo, estado):
+        símismo.nombre = estado['nombre']
+        símismo.vals_inic = estado['vals_inic']

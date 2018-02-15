@@ -6,10 +6,9 @@ from warnings import warn as avisar
 import numpy as np
 import regex
 
-import tinamit.Incertidumbre.ConexDatos as Clb
 from tinamit import _
 from tinamit.MDS import EnvolturaMDS
-from .sintaxis import sacar_arg, sacar_variables, juntar_líns, cortar_líns, Ecuación
+from .sintaxis import sacar_arg, sacar_variables, juntar_líns, cortar_líns
 
 try:
     import pymc3 as pm
@@ -31,7 +30,6 @@ if sys.platform[:3] == 'win':
 
 
 class ModeloVensimMdl(EnvolturaMDS):
-
     rgx_var_base = r'([\p{l}\p{m}]+[\p{l}\p{m}\p{n} ]*(?![\p{l}\p{m}\p{n} ]*\())|(".+"(?<!\\))'
     _regex_var = r'(?<var>{var})(\[(?<subs>{var})\])?'.format(var=rgx_var_base)
     regex_fun = r'[\p{l}\p{m}]+[\p{l}\p{m}\p{n} ]*(?= *\()'
@@ -54,7 +52,6 @@ class ModeloVensimMdl(EnvolturaMDS):
 
         # Leer las tres secciones generales del archivo
         with open(archivo, encoding='UTF-8') as d:
-
             # La primera línea del documento, con {UTF-8}
             símismo.dic_doc['cabeza'] = d.readline()
 
@@ -221,10 +218,6 @@ class ModeloVensimMdl(EnvolturaMDS):
 
         símismo.conex_datos.calib_ec(var=var, ec=ec, paráms=paráms, método=método)
 
-
-
-
-
     def obt_unidad_tiempo(símismo):
         pass
 
@@ -283,6 +276,9 @@ class ModeloVensim(EnvolturaMDS):
                        mensaje_error=_('Error en la comanda "vensim_be_quiet".'),
                        val_error=-1)
 
+        # Para guardar referencias futuras a nombres de corrida
+        símismo.nombre_corrida = None
+
         # El paso para incrementar
         símismo.paso = 1
 
@@ -339,7 +335,7 @@ class ModeloVensim(EnvolturaMDS):
         comanda_vensim(func=símismo.dll.vensim_get_varnames,
                        args=['*', 12, mem, tamaño_nec],
                        mensaje_error=_('Error obteniendo los nombres de los variables editables ("Gaming") de '
-                                     'VENSIM.'),
+                                       'VENSIM.'),
                        val_error=-1
                        )
 
@@ -439,6 +435,9 @@ class ModeloVensim(EnvolturaMDS):
 
         """
 
+        # Guardar una referencia al nombre de la corrida.
+        símismo.nombre_corrida = nombre_corrida
+
         # En Vensim, tenemos que incializar los valores de variables constantes antes de empezar la simulación.
         símismo.cambiar_vals({var: val for var, val in símismo.vals_inic.items()
                               if var in símismo.constantes})
@@ -450,7 +449,7 @@ class ModeloVensim(EnvolturaMDS):
 
         # Establecer el tiempo final.
         comanda_vensim(func=símismo.dll.vensim_command,
-                       args='SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', tiempo_final+1),
+                       args='SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', tiempo_final + 1),
                        mensaje_error=_('Error estableciendo el tiempo final para VENSIM.'))
 
         # Iniciar la simulación en modo juego ("Game"). Esto permitirá la actualización de los valores de los variables
@@ -572,10 +571,23 @@ class ModeloVensim(EnvolturaMDS):
                        args="GAME>GAMEON",
                        mensaje_error=_('Error para terminar la simulación VENSIM.'))
 
-        # Llamar la comanda para terminar la simulación.
+        # Leer el tiempo final
+        mem_inter = ctypes.create_string_buffer(4)
+        comanda_vensim(func=símismo.dll.vensim_get_val,
+                       args=['FINAL TIME', mem_inter],
+                       mensaje_error=_('Error con VENSIM para leer variables.'))
+        # Decodar
+        tiempo_final = struct.unpack('f', mem_inter)[0]
+
+        # ¡Por fin! Llamar la comanda para terminar la simulación.
         comanda_vensim(func=símismo.dll.vensim_command,
                        args="GAME>ENDGAME",
                        mensaje_error=_('Error para terminar la simulación VENSIM.'))
+
+        #
+        comanda_vensim(func=símismo.dll.vensim_command,
+                       args="MENU>VDF2CSV|!|!|||||{}|".format(tiempo_final-1))
+        comanda_vensim(func=símismo.dll.vensim_command, args="MENU>CSV2VDF|!|!")
 
     def verificar_vensim(símismo):
         """
@@ -598,8 +610,8 @@ class ModeloVensim(EnvolturaMDS):
         # Obtener el estatus.
         estatus = comanda_vensim(func=símismo.dll.vensim_check_status,
                                  args=[],
-                                 mensaje_error=_('Error verificando el estatus de VENSIM. De verdad, la cosa'
-                                               'te va muy mal.'),
+                                 mensaje_error=_('Error verificando el estatus de VENSIM. De verdad, la cosa '
+                                                 'te va muy mal.'),
                                  val_error=-1, devolver=True)
         return int(estatus)
 
@@ -629,7 +641,7 @@ class ModeloVensim(EnvolturaMDS):
                       _('la causas iniciales'), _('las causas activas'), _('los subscriptos'),
                       _('las combinaciones de subscriptos'), _('los subscriptos de gráfico'), _('el mínimo'),
                       _('el máximo'), _('el rango'), _('el tipo')]
-            mns_error1 = _('Error leyendo el tamaño de memoria para obtener {} del variable "{}" en Vensim')\
+            mns_error1 = _('Error leyendo el tamaño de memoria para obtener {} del variable "{}" en Vensim') \
                 .format(l_atrs[cód_attrib - 1], var)
             mns_error2 = _('Error leyendo {} del variable "{}" en Vensim.').format(l_atrs[cód_attrib - 1], var)
         else:
@@ -652,6 +664,19 @@ class ModeloVensim(EnvolturaMDS):
             return [x for x in mem.raw.decode().split('\x00') if x]
         else:
             return mem.value.decode()
+
+    def paralelizable(símismo):
+        """
+        Modelos en VENSIM sí deberían ser paralelizables.
+
+        :return:
+        :rtype:
+        """
+        return True
+
+    def __setstate__(símismo, estado):
+        super().__setstate__(estado)
+        símismo.__init__(archivo=estado['archivo'])
 
 
 def comanda_vensim(func, args, mensaje_error=None, val_error=None, devolver=False):

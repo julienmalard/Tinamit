@@ -155,6 +155,17 @@ class EnvolturaMDS(Modelo):
 
         return leer_egr_mds(archivo, var)
 
+    def __getstate__(símismo):
+        d = {
+            'archivo': símismo.archivo
+        }
+        d.update(super().__getstate__())
+        return d
+
+    def __setstate__(símismo, estado):
+        super().__setstate__(estado)
+        símismo.__init__(archivo=estado['archivo'])
+
 
 class MDSEditable(EnvolturaMDS):
     pass
@@ -178,7 +189,6 @@ def leer_egr_mds(archivo, var):
         archivo += ext
 
     datos = []
-    final = None
 
     if ext == '.vdf':
         ext = '.csv'
@@ -190,7 +200,6 @@ def leer_egr_mds(archivo, var):
                        .format(vdffile=archivo, CSVfile=archivo_csv).encode())
 
         archivo = archivo.replace('.vdf', '.csv')
-        final = -1
 
     if ext == '.csv':
 
@@ -204,4 +213,4 @@ def leer_egr_mds(archivo, var):
     else:
         raise ValueError(_('El formato de datos "{}" no se puede leer al momento.').format(ext))
 
-    return np.array(datos, dtype=float)[..., :final]
+    return np.array(datos, dtype=float)

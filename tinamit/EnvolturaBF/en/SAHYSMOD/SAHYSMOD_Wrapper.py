@@ -259,6 +259,16 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
         return dic_final, (self.n_poly,)
 
+    def paralelizable(símismo):
+        """
+        El modelo SAHYSMOD sí es paralelizable si las corridas tienen nombres distintos.
+
+        :return: Verdadero.
+        :rtype: bool
+        """
+
+        return True
+
 
 # A dictionary of SAHYSMOD variables. See the SAHYSMOD documentation for more details.
 vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp': True, 'out': False},

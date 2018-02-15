@@ -139,6 +139,16 @@ class EnvolturaBF(Modelo):
 
         símismo.modelo.cerrar_modelo()
 
+    def paralelizable(símismo):
+        """
+        Un modelo BF es paralelizable si su modelo externo lo es.
+
+        :return: La paralelizabilidad del modelo externo.
+        :rtype: bool
+        """
+
+        return símismo.modelo.paralelizable()
+
 
 class ModeloBF(Modelo):
     """

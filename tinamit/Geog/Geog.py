@@ -485,6 +485,9 @@ class Geografía(object):
 
         fig.savefig(archivo, dpi=500)
 
+    def __str__(símismo):
+        return símismo.nombre
+
 
 def _dibujar_shp(ejes, frm, colores, orden=None, alpha=1.0, llenar=True):
     """
