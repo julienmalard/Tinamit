@@ -159,12 +159,16 @@ class EnvolturaMDS(Modelo):
 
         return símismo.archivo,
 
+    def __copy__(símismo):
+        copia = super().__copy__()
+        return copia
+
 
 class MDSEditable(EnvolturaMDS):
     pass
 
 
-def leer_egr_mds(archivo, var):
+def leer_egr_mds(archivo, var, saltar_última=True):
     """
     Lee archivos de egresos de simulaciones EnvolturaMDS.
 
@@ -182,6 +186,7 @@ def leer_egr_mds(archivo, var):
         archivo += ext
 
     datos = []
+    final = None
 
     if ext == '.vdf':
         ext = '.csv'
@@ -193,6 +198,8 @@ def leer_egr_mds(archivo, var):
                        .format(vdffile=archivo, CSVfile=archivo_csv).encode())
 
         archivo = archivo.replace('.vdf', '.csv')
+        if saltar_última:
+            final = -1
 
     if ext == '.csv':
 
@@ -206,4 +213,4 @@ def leer_egr_mds(archivo, var):
     else:
         raise ValueError(_('El formato de datos "{}" no se puede leer al momento.').format(ext))
 
-    return np.array(datos, dtype=float)
+    return np.array(datos, dtype=float)[..., :final]
