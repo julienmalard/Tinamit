@@ -674,10 +674,6 @@ class ModeloVensim(EnvolturaMDS):
         """
         return True
 
-    def __setstate__(símismo, estado):
-        super().__setstate__(estado)
-        símismo.__init__(archivo=estado['archivo'])
-
 
 def comanda_vensim(func, args, mensaje_error=None, val_error=None, devolver=False):
     """
@@ -711,7 +707,13 @@ def comanda_vensim(func, args, mensaje_error=None, val_error=None, devolver=Fals
             args[n] = a.encode()
 
     # Llamar la función Vensim y guardar el resultado.
-    resultado = func(*args)
+    try:
+        resultado = func(*args)
+    except OSError as e:
+        try:
+            resultado = func(*args)
+        except OSError as e:
+            raise OSError(e)
 
     # Verificar su hubo un error.
     if val_error is None:

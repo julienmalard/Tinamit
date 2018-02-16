@@ -3,7 +3,8 @@ import os
 import pickle
 import re
 import threading
-from copy import copy as copiar
+from copy import copy as copiar, deepcopy as copiar_profundo
+from multiprocessing import Process as Proceso, Pool as Reserva
 from warnings import warn as avisar
 
 import numpy as np
@@ -416,7 +417,8 @@ class SuperConectado(Modelo):
         símismo.cerrar_modelo()
 
     def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
-                         fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True):
+                         fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True,
+                         dibujar=None):
 
         #
         if isinstance(vals_inic, dict):
@@ -425,7 +427,7 @@ class SuperConectado(Modelo):
 
         # Poner las opciones de simulación en un diccionario.
         opciones = {'paso': paso, 'fecha_inic': fecha_inic, 'lugar': lugar, 'vals_inic': vals_inic,
-                    'tcr': tcr, 'recalc': recalc, 'clima': clima}
+                    'tcr': tcr, 'recalc': recalc, 'clima': clima, 'tiempo_final': tiempo_final}
 
         # Verificar llaves consistentes
         for op in opciones.values():
@@ -434,10 +436,10 @@ class SuperConectado(Modelo):
                 raise ValueError(_('Las llaves de diccionario de cada opción deben ser iguales.'))
 
         # Generar el diccionario de corridas
-        l_n_ops = np.array([len(x) for x in opciones.values() if isinstance(x, list) or isinstance(x, dict)
-                            and len(x) > 1])
-        l_nmbs_ops_var = [ll for ll, v in opciones.items() if isinstance(v, list) or isinstance(v, dict)
-                          and len(v) > 1]
+        l_n_ops = np.array([len(x) for x in opciones.values() if ((isinstance(x, list) or isinstance(x, dict))
+                                                                  and (len(x) > 1))])
+        l_nmbs_ops_var = [ll for ll, v in opciones.items() if ((isinstance(v, list) or isinstance(v, dict))
+                                                               and (len(v) > 1))]
         if combinar:
             n_corridas = int(np.prod(l_n_ops))
 
@@ -466,7 +468,10 @@ class SuperConectado(Modelo):
                         if len(op) > 1:
                             nombre.append(str(op[0]))
             l_n_ops_cum = np.roll(l_n_ops.cumprod(), 1)
-            l_n_ops_cum[0] = 1
+            if len(l_n_ops_cum):
+                l_n_ops_cum[0] = 1
+            else:
+                l_n_ops_cum = [1]
 
             for i in range(n_corridas):
                 í_ops = [int(np.floor(i / l_n_ops_cum[n]) % l_n_ops[n]) for n in range(l_n_ops.shape[0])]
@@ -484,10 +489,13 @@ class SuperConectado(Modelo):
                     else:
                         raise TypeError(_('Tipo de variable "{}" erróneo. Debería ser imposible llegar hasta este '
                                           'error.'.format(type(op))))
-                dic_ops[' '.join(nombre)] = ops.copy()
+                dic_ops[' '.join(x.replace(',', '_') for x in nombre)] = ops.copy()
 
             corridas = {'{}{}'.format('nombre_corrida' + '_' if nombre_corrida else '', ll): ops
                         for ll, ops in dic_ops.items()}
+
+            if len(corridas) == 1 and list(corridas)[0] == '':
+                corridas['Corrida Tinamït'] = corridas.pop('')
 
         else:
             # Si no estamos haciendo todas las combinaciones posibles de opciones, es un poco más fácil.
@@ -521,6 +529,8 @@ class SuperConectado(Modelo):
                     ll: op[i] if isinstance(op, list) else op for ll, op in opciones.items()
                 } for i, nmb in enumerate(nombre_corrida)}
 
+        for nmb in list(corridas.keys()):
+            corridas[nmb.replace('.', '_')] = corridas.pop(nmb)
         # Sacar los valores iniciales del diccionario de opciones de corridas
         d_vals_inic = {ll: v.pop('vals_inic') for ll, v in corridas.items()}
 
@@ -529,54 +539,17 @@ class SuperConectado(Modelo):
             # ...si lo son...
 
             # Empezar las simulaciones en paralelo
-            l_hilos = []  # type: list[threading.Thread]
+            l_trabajos = []  # type: list[tuple]
 
             for corr, d_prms_corr in corridas.items():
 
-                def correr_modelo(mod, vls_inic, d_args):
-                    """
-                    Función para inicializar y correr un modelo :class:`SuperConectado`.
+                d_args = {ll: copiar_profundo(v) for ll, v in d_prms_corr.items()}
+                d_args['nombre_corrida'] = corr
 
-                    :param mod: El modelo.
-                    :type mod: SuperConectado
+                l_trabajos.append((pickle.dumps(símismo), copiar_profundo(d_vals_inic[corr]), d_args))
 
-                    :param vls_inic: Diccionario de valores iniciales. El primer nivel de llaves es el nombre del
-                      submodelo y el segundo los nombres de los variables con sus valores iniciales.
-                    :type vls_inic: dict[str, dict[str, float | int | np.ndarray]]
-
-                    :param d_args: Diccionario de argumentos para pasar al modelo.
-                    :type d_args: dict
-                    """
-
-                    mod = copiar(mod)
-
-                    # Inicializar los variables y valores iniciales. Esto debe ser adentro de la función llamada por
-                    # Proceso, para que los valores iniciales se apliquen en su propio proceso (y no en el modelo
-                    # original).
-                    for m, d_inic in vls_inic:
-                        # Para cada submodelo...
-
-                        # Iniciar los valores iniciales
-                        mod.modelos[m].inic_vals(dic_vals=d_inic)
-
-                    # Después, simular el modelo
-                    mod.simular(**d_args)
-
-                l_hilos.append(
-                    threading.Thread(name=corr, target=correr_modelo,
-                                     kwargs={
-                                         'mod': símismo, 'vls_inic': d_vals_inic[corr],
-                                         'd_args': d_prms_corr
-                                     })
-                )
-
-            # Empezar los procesos al mismo tiempo
-            for hilo in l_hilos:
-                hilo.start()
-
-            # Esperar que todos los procesos hayan terminado
-            for hilo in l_hilos:
-                hilo.join()
+            with Reserva() as r:
+                r.map(_correr_modelo, l_trabajos)
 
         else:
             # Sino simplemente correrlas una tras otra con símismo.simular()
@@ -598,6 +571,15 @@ class SuperConectado(Modelo):
 
                 # Después, simular el modelo.
                 símismo.simular(**d_prms_corr)
+
+        if dibujar is not None:
+            if isinstance(símismo, Conectado):
+                if not isinstance(dibujar, list):
+                    dibujar = [dibujar]
+
+                for dib in dibujar:
+                    for corr in corridas:
+                        símismo.dibujar(corrida=corr, **dib)
 
     def incrementar(símismo, paso):
         """
@@ -851,35 +833,46 @@ class SuperConectado(Modelo):
             if mod.unidad_tiempo == símismo.unidad_tiempo:
                 mod.estab_conv_meses(conv)
 
-    def __copy__(símismo):
-        copia = símismo.__class__(símismo.nombre)
+    def __getinitargs__(símismo):
+        return símismo.nombre,
 
+    def __copy__(símismo):
+        copia = super().__copy__()
+        for m in símismo.modelos.values():
+            copia.estab_modelo(copiar(m))
+        for c in símismo.conexiones:
+            copia.conectar_vars(**c)
+
+        copia.unidad_tiempo = símismo.unidad_tiempo
+        copia.conv_tiempo = símismo.conv_tiempo
+        copia.conv_tiempo_dudoso = símismo.conv_tiempo_dudoso
+        copia.vars_clima = símismo.vars_clima
+
+        return copia
 
     def __getstate__(símismo):
-        d = {
-            'modelos': {n: pickle.dumps(m) for n, m in símismo.modelos.items()},
-            'conexiones': símismo.conexiones,
-            'conv_tiempo': símismo.conv_tiempo,
-            'conv_tiempo_dudoso': símismo.conv_tiempo_dudoso,
-
-
-        }
-
-        d.update(super().__getstate__())
-
+        d = super().__getstate__()
+        d.update(
+            {
+                'conv_tiempo': símismo.conv_tiempo,
+                'conv_tiempo_dudoso': símismo.conv_tiempo_dudoso,
+                'conexiones': símismo.conexiones,
+                'modelos': [pickle.dumps(m) for m in símismo.modelos.values()]
+            }
+        )
         return d
 
     def __setstate__(símismo, estado):
-
         super().__setstate__(estado)
 
         for m in estado['modelos']:
             símismo.estab_modelo(pickle.loads(m))
-        for c in símismo.conexiones:
+        for c in estado['conexiones']:
             símismo.conectar_vars(**c)
+
         símismo.conv_tiempo = estado['conv_tiempo']
         símismo.conv_tiempo_dudoso = estado['conv_tiempo_dudoso']
-        símismo.vars_clima = estado['vars_clima']
+        símismo.unidad_tiempo = estado['unidad_tiempo']  # Necesario después de estab_modelo()
 
 
 class Conectado(SuperConectado):
@@ -1064,9 +1057,50 @@ class Conectado(SuperConectado):
             geog.dibujar(archivo=nombre_archivo, valores=valores, título=var, unidades=unid,
                          colores=colores, escala_num=escala)
 
+    def __getinitargs__(símismo):
+        return tuple()
+
+    def __copy__(símismo):
+
+        copia = super().__copy__()
+
+        copia.bf = símismo.modelos['bf']
+        copia.mds = símismo.modelos['mds']
+
+        return copia
+
     def __setstate__(símismo, estado):
-
         super().__setstate__(estado)
-
         símismo.bf = símismo.modelos['bf']
         símismo.mds = símismo.modelos['mds']
+
+
+def _correr_modelo(x):
+    """
+    Función para inicializar y correr un modelo :class:`SuperConectado`.
+
+    :param mod: El modelo.
+    :type mod: SuperConectado
+
+    :param vls_inic: Diccionario de valores iniciales. El primer nivel de llaves es el nombre del
+      submodelo y el segundo los nombres de los variables con sus valores iniciales.
+    :type vls_inic: dict[str, dict[str, float | int | np.ndarray]]
+
+    :param d_args: Diccionario de argumentos para pasar al modelo.
+    :type d_args: dict
+    """
+    estado_mod, vls_inic, d_args = x
+
+    mod = pickle.loads(estado_mod)
+
+    # Inicializar los variables y valores iniciales. Esto debe ser adentro de la función llamada por
+    # Proceso, para que los valores iniciales se apliquen en su propio proceso (y no en el modelo
+    # original).
+    for m, d_inic in vls_inic.items():
+        # Para cada submodelo...
+
+        # Iniciar los valores iniciales
+        mod.modelos[m].inic_vals(dic_vals=d_inic)
+
+    # Después, simular el modelo
+    mod.simular(**d_args)

@@ -155,16 +155,9 @@ class EnvolturaMDS(Modelo):
 
         return leer_egr_mds(archivo, var)
 
-    def __getstate__(símismo):
-        d = {
-            'archivo': símismo.archivo
-        }
-        d.update(super().__getstate__())
-        return d
+    def __getinitargs__(símismo):
 
-    def __setstate__(símismo, estado):
-        super().__setstate__(estado)
-        símismo.__init__(archivo=estado['archivo'])
+        return símismo.archivo,
 
 
 class MDSEditable(EnvolturaMDS):

@@ -4,6 +4,7 @@ from subprocess import run
 from warnings import warn
 
 import numpy as np
+import shutil
 
 from tinamit import obt_val_config
 from tinamit.BF import ModeloImpaciente
@@ -31,6 +32,8 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
         """
 
+        self.initargs = (initial_data, sahysmod_exe)
+
         # The following attributes are specific to the SAHYSMOD wrapper, so edit them as you like.
 
         # Find the SAHYSMOD executable path, if necessary.
@@ -41,16 +44,16 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # Number of (internal) polygons in the model
         self.n_poly = None
 
-        # Set the path from which to read input data.
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        self.input = os.path.join(current_dir, 'SAHYSMOD.inp')
-
         # Empty dictionary to store input data later on
         self.dic_input = {}
 
         # Set the working directory to write model output, and remember where the initial data is stored.
-        self.working_dir, self.initial_data = os.path.split(initial_data)
+        self.base_dir, self.initial_data = os.path.split(initial_data)
+
+        # The path from which to read and write input and output data will be set later on according to the run name
+        self.input = None  # type: str
         self.output = None  # type: str
+        self.working_dir = None  # type: str
 
         # Prepare the command to the SAHYSMOD executable
         self.command = None
@@ -76,7 +79,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
                                     'unidades': dic['units'],
                                     'ingreso': dic['inp'],
                                     'egreso': dic['out'],
-                                    'dims': (1, )  # This will be changed later for multidimensional variables.
+                                    'dims': (1,)  # This will be changed later for multidimensional variables.
                                     }
 
         # Set seasonal outputs and inputs
@@ -94,10 +97,19 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
     def iniciar_modelo(self, tiempo_final, nombre_corrida):
         """
-        Nothing specific to do. Variables have already been read in func:`inic_vars`.
+        Nothing specific to do apart from inicialising working and I/O directories.
+        Variables have already been read in func:`inic_vars`.
         """
-        self.output = os.path.join(self.working_dir, 'SAHYSMOD_{}.out'.format(nombre_corrida))
 
+        # Create run-specific working directories and input and ouput paths.
+        self.working_dir = os.path.join(self.base_dir, '_temp', nombre_corrida)
+        if os.path.isdir(self.working_dir):
+            shutil.rmtree(self.working_dir)
+        os.makedirs(self.working_dir)
+        self.output = os.path.join(self.working_dir, 'SAHYSMOD.out')
+        self.input = os.path.join(self.working_dir, 'SAHYSMOD.inp')
+
+        # Create the run command (for later use)
         args = dict(SAHYSMOD=self.SAHYSMOD_exe, input=self.input, output=self.output)
         self.command = '"{SAHYSMOD}" "{input}" "{output}"'.format(**args)
 
@@ -268,6 +280,9 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         """
 
         return True
+
+    def __getinitargs__(self):
+        return self.initargs
 
 
 # A dictionary of SAHYSMOD variables. See the SAHYSMOD documentation for more details.
@@ -487,6 +502,7 @@ def read_output_file(file_path, n_s, n_p, n_y):
 
 if __name__ == '__main__':
     from pprint import pprint
+
     pprint(read_output_file(
         'C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\tinamit\\Ejemplos\\en\\Ejemplo_SAHYSMOD\\test.out',
         n_s=2, n_p=214, n_y=5))

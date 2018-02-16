@@ -325,17 +325,31 @@ class Modelo(object):
     def __str__(símismo):
         return símismo.nombre
 
+    def __getinitargs__(símismo):
+        return símismo.nombre,
+
+    def __copy__(símismo):
+        copia = símismo.__class__(*símismo.__getinitargs__())
+        copia.vals_inic = símismo.vals_inic
+        copia.vars_clima = símismo.vars_clima
+        copia.unidad_tiempo = símismo.unidad_tiempo
+        copia.unidad_tiempo_meses = símismo.unidad_tiempo_meses
+
+        return copia
+
     def __getstate__(símismo):
         d = {
-            'nombre': símismo.nombre,
+            'args_inic': símismo.__getinitargs__(),
             'vals_inic': símismo.vals_inic,
-            'vars_clima': símismo.vars_clima
+            'vars_clima': símismo.vars_clima,
+            'unidad_tiempo': símismo.unidad_tiempo,
+            'unidad_tiempo_meses': símismo.unidad_tiempo_meses
         }
         return d
 
-    def __getnewargs__(símismo):
-        return (símismo.nombre, )
-
     def __setstate__(símismo, estado):
-        símismo.nombre = estado['nombre']
+        símismo.__init__(*estado['args_inic'])
         símismo.vals_inic = estado['vals_inic']
+        símismo.vars_clima = estado['vars_clima']
+        símismo.unidad_tiempo = estado['unidad_tiempo']
+        símismo.unidad_tiempo_meses = estado['unidad_tiempo_meses']

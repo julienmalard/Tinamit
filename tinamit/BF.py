@@ -2,6 +2,7 @@ import datetime as ft
 import math as mat
 import os
 import sys
+from copy import copy as copiar
 from importlib import import_module as importar_mod
 from warnings import warn as avisar
 
@@ -35,6 +36,8 @@ class EnvolturaBF(Modelo):
 
         módulo = importar_mod(os.path.splitext(nombre_mod)[0])
 
+        símismo.archivo = archivo
+
         try:
             modelo = módulo.Modelo  # type: ModeloBF
         except AttributeError:
@@ -44,11 +47,11 @@ class EnvolturaBF(Modelo):
         if callable(modelo):
             símismo.modelo = modelo()
         else:
-            símismo.modelo = modelo
+            símismo.modelo = copiar(modelo)
 
         if not isinstance(símismo.modelo, ModeloBF):
             raise TypeError(_('El archivo especificado ("{}") contiene una clase llamada Modelo, pero'
-                            'esta clase no es una subclase de ClaseModeloBF.').format(archivo))
+                              'esta clase no es una subclase de ClaseModeloBF.').format(archivo))
 
         super().__init__(nombre='bf')
 
@@ -149,6 +152,9 @@ class EnvolturaBF(Modelo):
 
         return símismo.modelo.paralelizable()
 
+    def __getinitargs__(símismo):
+        return símismo.archivo,
+
 
 class ModeloBF(Modelo):
     """
@@ -239,6 +245,9 @@ class ModeloBF(Modelo):
         """
 
         raise NotImplementedError
+
+    def __getinitargs__(símismo):
+        return tuple()
 
 
 class ModeloImpaciente(ModeloBF):
@@ -391,7 +400,6 @@ class ModeloImpaciente(ModeloBF):
 
             # Si es la primera estación del año, también hay que correr una simulación del modelo externo.
             if e == 0:
-
                 # El número de años para simular
                 a = mat.ceil(paso / 12)  # type: int
 
@@ -599,6 +607,9 @@ class ModeloImpaciente(ModeloBF):
 
         raise NotImplementedError
 
+    def __getinitargs__(símismo):
+        return tuple()
+
 
 class ModeloFlexible(ModeloBF):
     """
@@ -732,3 +743,6 @@ class ModeloFlexible(ModeloBF):
         """
 
         raise NotImplementedError
+
+    def __getinitargs__(símismo):
+        return tuple()
