@@ -4,11 +4,11 @@ import pickle
 import re
 import threading
 from copy import copy as copiar, deepcopy as copiar_profundo
-from multiprocessing import Process as Proceso, Pool as Reserva
+from multiprocessing import Pool as Reserva
 from warnings import warn as avisar
 
 import numpy as np
-from dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import relativedelta as deltarelativo
 
 from tinamit import _
 from tinamit.BF import EnvolturaBF
@@ -234,11 +234,11 @@ class SuperConectado(Modelo):
 
     def _conectar_clima(símismo, n_pasos, lugar, fecha_inic, tcr, recalc):
         """
-        Esta función conecta el clima de un lugares con el modelo Conectado.
+        Esta función conecta el clima de un lugar con el modelo Conectado.
 
         :param  n_pasos: El número de pasos para la simulación.
         :type n_pasos: int
-        :param lugar: El lugares.
+        :param lugar: El lugar.
         :type lugar: Lugar
         :param fecha_inic: La fecha inicial de la simulación.
         :type fecha_inic: ft.date | ft.datetime | str | int
@@ -247,7 +247,7 @@ class SuperConectado(Modelo):
 
         """
 
-        # Conectar el lugares
+        # Conectar el lugar
         símismo.lugar = lugar
         for m in símismo.modelos.values():
             m.lugar = lugar
@@ -280,7 +280,7 @@ class SuperConectado(Modelo):
                     except ValueError:
                         pass
             if n_meses is not None:
-                fecha_final = fecha_inic + relativedelta(months=int(n_meses) + 1)
+                fecha_final = fecha_inic + deltarelativo(months=int(n_meses) + 1)
 
         if fecha_final is None:
             raise ValueError
@@ -363,58 +363,9 @@ class SuperConectado(Modelo):
                      'Por el momento pusimos el factor de conversión a 1, pero probablemente no es lo que quieres.')
                    .format(unid_mod_1, unid_mod_2))
 
-        # Calcular el número de pasos necesario
-        n_pasos = int(tiempo_final / paso)
-
-        # Conectar el clima, si necesario
-        if clima:
-            if lugar is None:
-                raise ValueError(_('Hay que especificar un lugares para incorporar el clima.'))
-            else:
-                if fecha_inic is None:
-                    raise ValueError(_('Hay que especificar la fecha inicial para simulaciones de clima'))
-                elif isinstance(fecha_inic, ft.date):
-                    # Formatear la fecha inicial
-                    pass
-                elif isinstance(fecha_inic, ft.datetime):
-                    fecha_inic = fecha_inic.date()
-                elif isinstance(fecha_inic, int):
-                    año = fecha_inic
-                    día = mes = 1
-                    fecha_inic = ft.date(year=año, month=mes, day=día)
-                elif isinstance(fecha_inic, str):
-                    try:
-                        fecha_inic = ft.datetime.strptime(fecha_inic, '%d/%m/%Y').date()
-                    except ValueError:
-                        raise ValueError(_('La fecha inicial debe ser en formato "día/mes/año", por ejemplo '
-                                           '"24/12/2017".'))
-
-                if tcr is None:
-                    tcr = 8.5
-                símismo._conectar_clima(n_pasos=n_pasos, lugar=lugar, fecha_inic=fecha_inic, tcr=tcr, recalc=recalc)
-
-        # Iniciamos el modelo.
-        símismo.iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
-
-        # Si hay fecha inicial, tenemos que guardar cuenta de donde estamos en el calendario
-        if fecha_inic is not None:
-            fecha_act = fecha_inic
-        else:
-            fecha_act = None
-
-        # Hasta llegar al tiempo final, incrementamos el modelo.
-        for i in range(n_pasos):
-
-            # Actualizar variables de clima, si necesario
-            if clima:
-                símismo.act_vals_clima(n_paso=paso, f=fecha_act)
-                fecha_act += ft.timedelta(paso)  # Avanzar la fecha
-
-            # Incrementar el modelo
-            símismo.incrementar(paso)
-
-        # Después de la simulación, cerramos el modelo.
-        símismo.cerrar_modelo()
+        # Todo el restode la simulación se hace como en la clase pariente
+        super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, fecha_inic=fecha_inic,
+                        lugar=lugar, tcr=tcr, recalc=recalc, clima=clima)
 
     def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
                          fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True,

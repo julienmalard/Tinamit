@@ -159,10 +159,6 @@ class EnvolturaMDS(Modelo):
 
         return símismo.archivo,
 
-    def __copy__(símismo):
-        copia = super().__copy__()
-        return copia
-
 
 class MDSEditable(EnvolturaMDS):
     pass
