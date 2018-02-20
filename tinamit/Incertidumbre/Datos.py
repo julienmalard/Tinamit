@@ -1,7 +1,6 @@
 import csv
 import datetime as ft
 import json
-import math as mat
 import os
 from warnings import warn as avisar
 
@@ -11,7 +10,7 @@ import pandas as pd
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
 
-from Incertidumbre.Números import tx_a_núm
+from tinamit.Incertidumbre.Números import tx_a_núm
 from tinamit import _
 
 
@@ -144,6 +143,8 @@ class SuperBD(object):
         :type nombre: str
         :param bds:
         :type bds: list | Datos
+        :param geog:
+        :type geog: Geografía
         """
 
         símismo.nombre = nombre

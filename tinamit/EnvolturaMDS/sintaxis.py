@@ -247,13 +247,13 @@ class Ecuación(object):
                             í_var = paráms.index(v)
                             líms = líms_paráms[í_var]
                             nmbr = 'v{}'.format(í_var)
-                            if líms[0] == -np.inf:
-                                if líms[1] == np.inf:
+                            if líms[0] is None:
+                                if líms[1] is None:
                                     return pm.Flat(nmbr)
                                 else:
                                     return líms[1] - pm.HalfFlat(nmbr)
                             else:
-                                if líms[1] == np.inf:
+                                if líms[1] is None:
                                     return líms[0] + pm.HalfFlat(nmbr)
                                 else:
                                     return pm.Uniform(name=nmbr, lower=líms[0], upper=líms[1])
@@ -281,11 +281,11 @@ class Ecuación(object):
 
         return modelo
 
-    def gen_texto(símismo, vars_paráms=None):
+    def gen_texto(símismo, paráms=None):
 
         dialecto = símismo.dialecto
-        if vars_paráms is None:
-            vars_paráms = []
+        if paráms is None:
+            paráms = []
 
         def _a_tx(á, d_v):
 
@@ -305,7 +305,7 @@ class Ecuación(object):
                                                              args=_a_tx(v[1], d_v=d_v))
                     elif ll == 'var':
                         try:
-                            nmbr = 'p[{}]'.format(vars_paráms.index(v))
+                            nmbr = 'p[{}]'.format(paráms.index(v))
                         except ValueError:
                             if v in d_v:
                                 return d_v[v]

@@ -1030,16 +1030,13 @@ def _correr_modelo(x):
     """
     Función para inicializar y correr un modelo :class:`SuperConectado`.
 
-    :param mod: El modelo.
-    :type mod: SuperConectado
+    :param x: Los parámetros. El primero es el modelo, el segundo el diccionario de valores iniciales (El primer
+      nivel de llaves es el nombre del submodelo y el segundo los nombres de los variables con sus valores
+      iniciales), y el tercero es el diccionario de argumentos para pasar al modelo.
+    :type x: tuple[SuperConectado, dict[str, dict[str, float | int | np.ndarray]], dict]
 
-    :param vls_inic: Diccionario de valores iniciales. El primer nivel de llaves es el nombre del
-      submodelo y el segundo los nombres de los variables con sus valores iniciales.
-    :type vls_inic: dict[str, dict[str, float | int | np.ndarray]]
-
-    :param d_args: Diccionario de argumentos para pasar al modelo.
-    :type d_args: dict
     """
+
     estado_mod, vls_inic, d_args = x
 
     mod = pickle.loads(estado_mod)

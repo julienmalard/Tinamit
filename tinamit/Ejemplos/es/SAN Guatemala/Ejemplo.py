@@ -1,5 +1,5 @@
 from tinamit.Incertidumbre.Datos import DatosIndividuales, DatosRegión, SuperBD
-from EnvolturaMDS import generar_mds
+from tinamit.EnvolturaMDS import generar_mds
 from tinamit.Geog.Geog import Geografía
 
 # EnvolturaMDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
