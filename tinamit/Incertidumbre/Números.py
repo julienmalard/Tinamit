@@ -12,6 +12,11 @@ def tx_a_núm(texto):
     :rtype: float
 
     """
+    if texto[0] == '-':
+        neg = -1
+        texto = texto[1:]
+    else:
+        neg = 1
 
     for lengua, d_l in dic_trads.items():
         # Intentar cada lengua disponible.
@@ -33,7 +38,7 @@ def tx_a_núm(texto):
             try:
                 núm = _trad_texto(texto=texto, núms=l_núms, sep_dec=sep_dec)
                 # ¿Funcionó? ¡Perfecto!
-                return núm if sep_dec in texto else int(núm)
+                return núm * neg if sep_dec in texto else int(núm)*neg
             except ValueError:
                 pass  # ¿No funcionó? Qué pena. Ahora tenemos que trabajar.
 
@@ -93,7 +98,7 @@ def tx_a_núm(texto):
                     # ... si no había decimal, no hay nada más que hacer
                     núm = int(val_entero)
 
-                return núm  # Devolver el número
+                return núm * neg # Devolver el número
 
             except (KeyError, ValueError):
                 # Si no funcionó, intentemos otra lengua

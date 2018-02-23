@@ -81,7 +81,6 @@ class Datos(object):
         :rtype: dict
 
         """
-        datos = símismo.bd.obt_datos(l_vars)
 
         códs_vacío = símismo.cod_vacío.copy()
         if cód_vacío is not None:
@@ -90,8 +89,7 @@ class Datos(object):
             else:
                 códs_vacío.add(cód_vacío)
 
-        for c in códs_vacío:
-            datos[datos == c] = np.nan
+        datos = símismo.bd.obt_datos(l_vars, cód_vacío=códs_vacío)
 
         return datos
 
@@ -167,15 +165,15 @@ class SuperBD(object):
         símismo.datos_reg = None  # type: pd.DataFrame
         símismo.datos_reg_err = None  # type: pd.DataFrame
         símismo.datos_ind = None  # type: pd.DataFrame
-        símismo._gen_bd_intern()
+        símismo.bd_lista = False
 
-    def agregar_datos(símismo, bd, como=None, auto_llenar=True):
+    def agregar_datos(símismo, bd, bd_plantilla=None, auto_llenar=True):
         """
 
         :param bd:
         :type bd: Datos
-        :param como:
-        :type como: str | list[str] | Datos
+        :param bd_plantilla:
+        :type bd_plantilla: str | list[str] | Datos
         :param auto_llenar:
         :type auto_llenar: bool
 
@@ -188,17 +186,19 @@ class SuperBD(object):
        #  símismo.receta['bds'].append(bd.archivo_datos)
 
         if auto_llenar:
-            símismo.auto_llenar(bd=bd, como=como)
+            símismo.auto_llenar(bd=bd, bd_plantilla=bd_plantilla)
 
-    def auto_llenar(símismo, bd, como):
-        if como is None:
-            como = [x for x in símismo.bds if x != bd]
-        if not isinstance(como, list):
-            como = [como]
+        símismo.bd_lista = False
+
+    def auto_llenar(símismo, bd, bd_plantilla):
+        if bd_plantilla is None:
+            bd_plantilla = [x for x in símismo.bds if x != bd]
+        if not isinstance(bd_plantilla, list):
+            bd_plantilla = [bd_plantilla]
 
         for var, d_var in símismo.vars.items():
             for b in d_var['fuente']:
-                if b in como:
+                if b in bd_plantilla:
                     if isinstance(b, Datos):
                         b = b.nombre
                     var_bd = d_var['fuente'][b]['var_bd']
@@ -210,7 +210,8 @@ class SuperBD(object):
                     else:
                         avisar(_('El variable existente "{}" no existe en la nueva base de datos "{}". No'
                                  'lo podremos copiar.').format(var_bd, bd.nombre))
-        símismo._gen_bd_intern()
+
+        símismo.bd_lista = False
 
     def desconectar_datos(símismo, bd):
 
@@ -227,7 +228,7 @@ class SuperBD(object):
             except KeyError:
                 pass
 
-        símismo._limp_vars()
+        símismo.bd_lista = False
 
     def espec_var(símismo, var, var_bd=None, bds=None, cód_vacío='', var_err=None):
 
@@ -248,20 +249,20 @@ class SuperBD(object):
 
         for nm_bd in bds.copy():
 
-            if var_bd not in símismo.bds[nm_bd].cols():
+            if var_bd not in símismo.bds[nm_bd].cols:
                 avisar(_('"{}" no existe en base de datos "{}".').format(var_bd, nm_bd))
                 bds.remove(nm_bd)
 
         if var not in símismo.vars:
             símismo.vars[var] = {'fuente': {}, 'limp': {}}
-        símismo.vars[var] = {'fuente': {bd.nombre: {'var': var_bd, 'cód_vacío': cód_vacío} for bd in bds}}
+        símismo.vars[var] = {'fuente': {bd: {'var': var_bd, 'cód_vacío': cód_vacío} for bd in bds}}
 
         # Agregar información de error para bases de datos regionales
         for bd in bds:
             if isinstance(símismo.bds[bd], DatosRegión):
-                símismo.vars[var]['fuente'][bd.nombre]['col_error'] = var_err
+                símismo.vars[var]['fuente'][bd]['col_error'] = var_err
 
-        símismo._gen_bd_intern()
+        símismo.bd_lista = False
 
     def borrar_var(símismo, var, bds=None):
 
@@ -278,7 +279,7 @@ class SuperBD(object):
                     bd = bd.nombre
                 símismo.vars[var]['fuente'].pop(bd)
 
-        símismo._limp_vars()
+        símismo.bd_lista = False
 
     def renombrar_var(símismo, var, nuevo_nombre):
 
@@ -289,13 +290,7 @@ class SuperBD(object):
 
         símismo.vars[nuevo_nombre] = símismo.vars.pop(var)
 
-        if var in símismo.datos_ind:
-            símismo.datos_ind[nuevo_nombre] = símismo.datos_ind[var]
-            símismo.datos_ind.drop(var, axis=1)
-
-        if var in símismo.datos_reg:
-            símismo.datos_reg[nuevo_nombre] = símismo.datos_reg[var]
-            símismo.datos_reg.drop(var, axis=1)
+        símismo.bd_lista = False
 
     def espec_ind_a_reg(símismo, var):
 
@@ -303,13 +298,15 @@ class SuperBD(object):
             raise ValueError('')
         símismo.ind_a_reg.append(var)
 
-        símismo._gen_bd_intern()
+        símismo.bd_lista = False
 
     def borrar_ind_a_reg(símismo, var):
         try:
             símismo.ind_a_reg.pop(var)
         except KeyError:
             raise KeyError('')
+
+        símismo.bd_lista = False
 
     def _limp_vars(símismo):
 
@@ -324,16 +321,16 @@ class SuperBD(object):
 
         # Asegurarse que no queden variables (columas) en las bases de datos que no estén en símismo.vars
         for bd_pd in [datos_ind, datos_reg]:
-            if bd_pd:
+            if bd_pd is not None:
                 cols = list(bd_pd)
                 for c in cols:
-                    if c not in símismo.vars:
+                    if c not in list(símismo.vars) + ['bd', 'lugar', 'fecha']:
                         bd_pd.drop(c, axis=1, inplace=True)
 
         # Quitar observaciones en bases de datos que ya no están vinculadas
-        if símismo.datos_ind:
+        if símismo.datos_ind is not None:
             símismo.datos_ind = datos_ind[datos_ind['bd'].isin(símismo.bds)]
-        if símismo.datos_reg:
+        if símismo.datos_reg is not None:
             símismo.datos_reg = datos_reg[datos_reg['bd'].isin(símismo.bds)]
 
     def _gen_bd_intern(símismo):
@@ -393,6 +390,8 @@ class SuperBD(object):
 
         # Generar datos regionales derivados de datos individuales
         símismo._gen_datos_reg()
+
+        símismo.bd_lista = True
 
     def _gen_datos_reg(símismo):
 
@@ -497,6 +496,10 @@ class SuperBD(object):
                 elif isinstance(f, int):
                     fechas[í] = ft.date(year=f, month=1, day=1)
 
+        # Actualizar las bases de datos, si necesario
+        if not símismo.bd_lista:
+            símismo._gen_bd_intern()
+
         egr = [None, None, None]
         for í, bd in enumerate([símismo.datos_reg, símismo.datos_ind, símismo.datos_reg_err]):
             l_vars_disp = [v for v in l_vars if v in bd]
@@ -593,6 +596,10 @@ class SuperBD(object):
         if archivo is None:
             raise NotImplementedError  # para hacer
 
+        # Actualizar las bases de datos, si necesario
+        if not símismo.bd_lista:
+            símismo._gen_bd_intern()
+
         dic = {'ind': símismo.datos_ind.to_json(), 'reg': símismo.datos_reg.to_json(),
                'err': símismo.datos_reg_err.to_json()}
 
@@ -613,6 +620,10 @@ class SuperBD(object):
     def exportar_datos(símismo, directorio=None):
         if directorio is None:
             raise NotImplementedError  # para hacer
+
+        # Actualizar las bases de datos, si necesario
+        if not símismo.bd_lista:
+            símismo._gen_bd_intern()
 
         for nmb, bd_pd in {'ind': símismo.datos_ind, 'reg': símismo.datos_reg, 'error_reg': símismo.datos_reg_err}:
             archivo = os.path.join(directorio, nmb + '.csv')
@@ -692,7 +703,7 @@ class BD(object):
         """
         raise NotImplementedError
 
-    def obt_datos(símismo, cols, prec_dec=None):
+    def obt_datos(símismo, cols, prec_dec=None, cód_vacío=None):
         """
 
         :param cols:
@@ -834,7 +845,7 @@ class BDtexto(BD):
 
         return n_filas
 
-    def obt_datos(símismo, cols, prec_dec=None):
+    def obt_datos(símismo, cols, prec_dec=None, cód_vacío=None):
         """
 
         :param cols:
@@ -847,12 +858,17 @@ class BDtexto(BD):
         if not isinstance(cols, list):
             cols = [cols]
 
+        if cód_vacío is None:
+            cód_vacío = ['']
+        elif not isinstance(cód_vacío, set):
+            cód_vacío = set(cód_vacío)
+
         m_datos = np.empty((len(cols), símismo.n_obs))
 
-        with open(símismo.archivo, encoding='UTF8') as d:
+        with open(símismo.archivo) as d:
             lector = csv.DictReader(d)
             for n_f, f in enumerate(lector):
-                m_datos[:, n_f] = [tx_a_núm(f[c]) if f[c] != '' else np.nan for c in cols]
+                m_datos[:, n_f] = [tx_a_núm(f[c]) if f[c] not in cód_vacío else np.nan for c in cols]
 
         if len(cols) == 1:
             m_datos = m_datos[0]

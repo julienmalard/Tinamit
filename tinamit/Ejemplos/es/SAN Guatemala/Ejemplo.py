@@ -1,9 +1,10 @@
 from tinamit.Incertidumbre.Datos import DatosIndividuales, DatosRegión, SuperBD
 from tinamit.EnvolturaMDS import generar_mds
 from tinamit.Geog.Geog import Geografía
+from tinamit.Incertidumbre.ConexDatos import ConexDatos
 
 # EnvolturaMDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
-modelo = generar_mds(archivo='C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\tinamit\\Incertidumbre\\Para Tinamit.mdl')
+modelo = generar_mds(archivo='Para Tinamit.mdl')
 print('vars', modelo.variables.keys())
 print('internos', modelo.internos)  # variables internos al EnvolturaMDS (p. ej., TIMESTEP y TIME en VENSIM)
 print('auxiliares', modelo.auxiliares)
@@ -12,33 +13,42 @@ print('niveles', modelo.niveles)
 print('constantes', modelo.constantes)
 # print('vacíos', modelo.vacíos())
 
-datos_ind = DatosIndividuales('ENCOVI 2011', archivo='ENCOVI_hog_2011.csv', fecha=2011, lugar='Código_lugar',
-                              cód_vacío=['NA', 'na', 'Na'])
+ENCOVI_2011 = DatosIndividuales('ENCOVI 2011', archivo='ENCOVI_hog_2011.csv', fecha=2011, lugar='Código_lugar',
+                                cód_vacío=['NA', 'na', 'Na'])
 
-# datos_ind = DatosIndividuales(fuente='')
-# datos_ind.estab_col_año(col='año')
+# ENCOVI_2011 = DatosIndividuales(fuente='')
+# ENCOVI_2011.estab_col_año(col='año')
 
 geog = Geografía('Iximulew')
 geog.agregar_info_regiones(archivo='Geografía Iximulew.csv',
                            orden_jer=['Departamento', 'Municipio'],
                            col_cód='Código')
 
-
-# print(datos_ind.datos_irreg(var='Inseguridad.alimentaria'))
-# print(datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(1, 4), tipo='valor'))  # Hace cambios al csv
-# datos_ind.limpiar(var='Inseguridad.alimentaria', rango=(0, 0.90))
-
-# datos_ind.guardar_datos(archivo='ENCOVI_hog_2011_limp.csv')  # Guarda el csv
-
 datos_muni = DatosRegión('Desnutrición municipal', archivo='Desnutrición_muni.csv', fecha='Año', lugar='Código_lugar',
                          tmñ_muestra='Tamaño_muestra')
 
-bd = SuperBD('BD Iximulew', bds=[datos_ind, datos_muni], geog=geog)
+bd = SuperBD('BD Iximulew', bds=[ENCOVI_2011, datos_muni], geog=geog)
+bd.espec_var('ISA', var_bd='Inseguridad.alimentaria', cód_vacío='NA')
+bd.espec_var('Educación formal', var_bd='Educación', cód_vacío='NA')
+bd.espec_var('Ingresos salarial', var_bd='Ingresos.de.salario', cód_vacío='NA')
+bd.espec_var('Ingresos agrícolas', var_bd='Ingresos.agrícolas', cód_vacío='NA')
+bd.espec_var('Ingresos familiares', var_bd='Ingresos', cód_vacío='NA')
+bd.espec_var('% tierras uso comercial', var_bd='Porcentaje.tierras.producción.comercial', cód_vacío='NA')
+bd.espec_var('Producción autoconsumo', var_bd='Producción.autoconsumo', cód_vacío='NA')
+bd.espec_var('Tamaño familias', var_bd='Tamaño.de.las.familias', cód_vacío='NA')
+bd.espec_var('Repetición escolar', var_bd='Repetición.escolar', cód_vacío='NA')
+bd.espec_var('Enfermedades infantilies', var_bd='Enfermedades.infantiles', cód_vacío='NA')
+# bd.espec_var('Población', var_bd='Población')
+bd.espec_var('Desnutrición crónica infantil', var_bd='Desntr_crón_inft')
 
 
+conex = ConexDatos(bd=bd, modelo=modelo)
+conex.no_calibrados()
+
+conex.calib_ec()
 # Gráfico de "caja" con incertidumbre
-bd.graficar(var='Inseguridad Alimentaria', fechas=2011, cód_lugar='0708', datos=None)
-bd.graficar(var='Inseguridad Alimentaria', fechas=2011, lugar=['Iximulew', "Tz'olöj Ya'", 'Concepción'])  # Da lo mismo al antecedente
+bd.graficar(var='ISA', fechas=2011, cód_lugar='0708', datos=None)
+bd.graficar(var='ISA', fechas=2011, lugar=['Iximulew', "Tz'olöj Ya'", 'Concepción'])  # Da lo mismo al antecedente
 
 # Gráfico de línea con tiempo en el eje x e incertidumbre mostrada
 bd.graficar(var='Población', años=(2000, None), cód_lugar='0112')
@@ -61,8 +71,8 @@ bd.cambiar_datos(nombre_datos, nueva_ubic)
 
 control = Control(bd=bd, modelo=modelo, fuente='')
 
-control.conectar_var_ind(datos=datos_ind, var_bd='', var_modelo='', transformación='promedio')
-control.conectar_var_ind(datos=datos_ind, var_bd='', var_modelo='', transformación='máximo')
+control.conectar_var_ind(datos=ENCOVI_2011, var_bd='', var_modelo='', transformación='promedio')
+control.conectar_var_ind(datos=ENCOVI_2011, var_bd='', var_modelo='', transformación='máximo')
 control.conectar_var_reg(datos=datos_muni, var_bd='Desnutr_crón_inft', var_modelo='', calc_error='porcentaje')
 
 control.comparar(var_mod_x='', var_mod_y='', escala='individual')  # llama BasedeDatos.comparar()

@@ -114,6 +114,8 @@ class ConexDatos(object):
             elif método.lower() == 'Optimizar':
                 resultados = optimizar(obj_ec, paráms, líms_paráms, obs_x, obs_y, **ops_método)
 
+            elif método.lower() == 'Regresión':
+                resultados = regresión(obj_ec, paráms, líms_paráms, obs_x, obs_y, **ops_método)
             else:
                 raise ValueError('')
 
