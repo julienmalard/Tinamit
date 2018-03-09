@@ -206,7 +206,9 @@ class Ecuación(object):
         símismo.ec = ec
         símismo.dialecto = dialecto.lower()
 
-        if dialecto.lower() == 'vensim':
+        if símismo.dialecto == 'tinamït':
+            gramática = resource_filename('tinamit.EnvolturaMDS', 'gram_ec_tinamït.g')
+        elif símismo.dialecto == 'vensim':
             gramática = resource_filename('tinamit.EnvolturaMDS', 'gram_Vensim.g')
         else:
             raise ValueError('')
@@ -214,7 +216,95 @@ class Ecuación(object):
         with open(gramática) as gm:
             anlzdr = Lark(gm, parser='lalr', start='ec')
 
-        símismo.árbol = _Transformador().transform(anlzdr.parse(ec))
+        símismo.árbol = _Transformador().transform(anlzdr.parse(ec))[0]
+
+    def variables(símismo):
+
+        def _obt_vars(á):
+            if isinstance(á, dict):
+
+                for ll, v in á.items():
+
+                    if ll == 'func':
+                        if v[0] in ['+', '-', '/', '*']:
+                            vrs = _obt_vars(v[1][0])
+                            vrs.update(_obt_vars(v[1][1]))
+
+                            return vrs
+
+                        else:
+                            return _obt_vars(v[1][1])
+
+                    elif ll == 'var':
+                        return {v}
+
+                    else:
+                        raise TypeError('')
+
+            elif isinstance(á, list):
+                return {z for x in á for z in _obt_vars(x)}
+            elif isinstance(á, int) or isinstance(á, float):
+                return {}
+            else:
+                raise TypeError('{}'.format(type(á)))
+
+        return _obt_vars(símismo.árbol)
+
+    def gen_func_python(símismo, paráms):
+
+        dialecto = símismo.dialecto
+
+        def _a_python(á, l_prms=paráms):
+
+            if isinstance(á, dict):
+
+                for ll, v in á.items():
+
+                    if ll == 'func':
+
+                        if v[0] == '+':
+                            comp_1 = _a_python(v[1][0], l_prms=l_prms)
+                            comp_2 = _a_python(v[1][1], l_prms=l_prms)
+                            return lambda p, vr: comp_1(p=p, vr=vr) + comp_2(p=p, vr=vr)
+                        elif v[0] == '/':
+                            comp_1 = _a_python(v[1][0], l_prms=l_prms)
+                            comp_2 = _a_python(v[1][1], l_prms=l_prms)
+                            return lambda p, vr: comp_1(p=p, vr=vr) / comp_2(p=p, vr=vr)
+                        elif v[0] == '-':
+                            comp_1 = _a_python(v[1][0], l_prms=l_prms)
+                            comp_2 = _a_python(v[1][1], l_prms=l_prms)
+                            return lambda p, vr: comp_1(p=p, vr=vr) - comp_2(p=p, vr=vr)
+                        elif v[0] == '*':
+                            comp_1 = _a_python(v[1][0], l_prms=l_prms)
+                            comp_2 = _a_python(v[1][1], l_prms=l_prms)
+                            return lambda p, vr: comp_1(p=p, vr=vr) * comp_2(p=p, vr=vr)
+                        else:
+                            fun = conv_fun(v[0], dialecto, 'python')
+                            comp = _a_python(v[1][1], l_prms=l_prms)
+
+                            return lambda p, vr: fun(*comp(p=p, vr=vr))
+
+                    elif ll == 'var':
+                        try:
+
+                            í_var = l_prms.index(v)
+
+                            return lambda p, vr: p[í_var]
+
+                        except ValueError:
+                            # Si el variable no es un parámetro calibrable, debe ser un valor observado
+                            return lambda p, vr: vr[v]
+                    else:
+                        raise TypeError('')
+
+            elif isinstance(á, list):
+                return [_a_python(x) for x in á]
+            elif isinstance(á, int) or isinstance(á, float):
+                return lambda p, vr: á
+            else:
+                raise TypeError('{}'.format(type(á)))
+
+        return _a_python(símismo.árbol)
 
     def gen_mod_bayes(símismo, paráms, líms_paráms, obs_x, obs_y):
 
@@ -233,14 +323,14 @@ class Ecuación(object):
 
                         if v[0] == '+':
                             return _a_bayes(v[1][0]) + _a_bayes(v[1][1])
-                        elif [1] == '/':
-                            _a_bayes(v[0]) / _a_bayes(v[1])
+                        elif v[0] == '/':
+                            return _a_bayes(v[1][0]) / _a_bayes(v[1][1])
                         elif v[0] == '-':
                             return _a_bayes(v[1][0]) - _a_bayes(v[1][1])
                         elif v[0] == '*':
                             return _a_bayes(v[1][0]) * _a_bayes(v[1][1])
                         else:
-                            return conv_fun(v[0], dialecto, 'pymc3')(*_a_bayes(v[1][1]))
+                            return conv_fun(v[0], dialecto, 'pm')(*_a_bayes(v[1][1]))
 
                     elif ll == 'var':
                         try:
@@ -277,7 +367,7 @@ class Ecuación(object):
             mu = _a_bayes(símismo.árbol)
             sigma = pm.HalfNormal(name='sigma', sd=1)
 
-            pm.Normal(name='Y_obs', mu=mu, sigma=sigma, observed=obs_y)
+            pm.Normal(name='Y_obs', mu=mu, sd=sigma, observed=obs_y)
 
         return modelo
 
@@ -329,19 +419,24 @@ class Ecuación(object):
 
 
 dic_funs = {
-    'min': {'vensim': 'MIN', 'pm': min, 'python': min},
-    'max': {'vensim': 'MAX', 'pm': max, 'python': max},
+    'mín': {'vensim': 'MIN', 'pm': min, 'python': min},
+    'máx': {'vensim': 'MAX', 'pm': max, 'python': max},
     'abs': {'vensim': 'ABS', 'pm': pm.math.abs_, 'python': abs},
-    'math.exp': {'vensim': 'EXP', 'pm': pm.math.exp, 'python': mat.exp},
-    'int': {'vensim': 'INTEGER', 'pm': pm.math.floor, 'python': int},
-    'math.log': {'vensim': 'LN', 'pm': pm.math.log, 'python': mat.log},
-    'math.sin': {'vensim': 'SIN', 'pm': pm.math.sin},
-    'math.cos': {'vensim': 'COS', 'pm': pm.math.cos},
-    'math.tan': {'vensim': 'TAN', 'pm': pm.math.tan},
-    'math.asin': {'vensim': 'ARCSIN'},
-    'math.acos': {'vensim': 'ARCCOS'},
-    'math.atan': {'vensim': 'ARCTAN'},
-    'math.log10': {'vensim': 'LOG', 'pm': lambda x: pm.math.log(x) / mat.log(10), 'python': mat.log10},
+    'exp': {'vensim': 'EXP', 'pm': pm.math.exp, 'python': mat.exp},
+    'ent': {'vensim': 'INTEGER', 'pm': pm.math.floor, 'python': int},
+    'rcd': {'vensim': 'SQRT', 'pm': pm.math.sqrt, 'python': mat.sqrt},
+    'ln': {'vensim': 'LN', 'pm': pm.math.log, 'python': mat.log},
+    'log': {'vensim': 'LOG', 'pm': lambda x: pm.math.log(x) / mat.log(10), 'python': mat.log10},
+    'sin': {'vensim': 'SIN', 'pm': pm.math.sin, 'python': mat.sin},
+    'cos': {'vensim': 'COS', 'pm': pm.math.cos, 'python': mat.cos},
+    'tan': {'vensim': 'TAN', 'pm': pm.math.tan, 'python': mat.tan},
+    'sinh': {'vensim': 'SINH', 'pm': pm.math.sinh, 'python': mat.sinh},
+    'cosh': {'vensim': 'COSH', 'pm': pm.math.cosh, 'python': mat.cosh},
+    'tanh': {'vensim': 'TANH', 'pm': pm.math.tanh, 'python': mat.tanh},
+    'asin': {'vensim': 'ARCSIN', 'python': mat.asin},
+    'acos': {'vensim': 'ARCCOS', 'python': mat.acos},
+    'atan': {'vensim': 'ARCTAN', 'python': mat.atan},
+
     '+': {'vensim': '+'},
     '-': {'vensim': '-'},
     '*': {'vensim': '*'},
@@ -371,8 +466,15 @@ if __name__ == '__main__':
 
     for Ec in ecs:
         print('=============')
+        Ec = 'b/(educación+a)+c'
         print(Ec)
         árbol = analizador.parse(Ec)
         print(árbol.pretty())
         print(_Transformador().transform(árbol))
-        print(Ecuación(Ec, dialecto='Vensim').gen_texto())
+        e = Ecuación(Ec, dialecto='Vensim')
+        print(e.gen_texto(paráms=['a', 'b', 'c']))
+
+        m = e.gen_mod_bayes(paráms=['a', 'b', 'c'], líms_paráms=[(None, None), (None, None), (None, None)],
+                            obs_x={'educación': np.array([1, 2, 3])}, obs_y=np.array([0, 0, 1]))
+        with m:
+            pm.sample()

@@ -177,3 +177,7 @@ def optimizar(obj_ec, paráms, líms_paráms, obs_x, obs_y, **ops):
         avisar(_('Error de optimización.'))
 
     return {p: {'val': opt.x[i]} for i, p in enumerate(paráms)}
+
+
+def regresión(obj_ec, paráms, líms_paráms, obs_x, obs_y, **ops):
+    raise NotImplementedError
