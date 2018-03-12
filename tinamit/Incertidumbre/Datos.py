@@ -253,6 +253,9 @@ class SuperBD(object):
                 avisar(_('"{}" no existe en base de datos "{}".').format(var_bd, nm_bd))
                 bds.remove(nm_bd)
 
+        if not len(bds):
+            raise ValueError('El variable "{}" no existe en cualquier base de datos.'.format(var_bd))
+
         if var not in símismo.vars:
             símismo.vars[var] = {'fuente': {}, 'limp': {}}
         símismo.vars[var] = {'fuente': {bd: {'var': var_bd, 'cód_vacío': cód_vacío} for bd in bds}}
@@ -502,19 +505,21 @@ class SuperBD(object):
 
         egr = [None, None, None]
         for í, bd in enumerate([símismo.datos_reg, símismo.datos_ind, símismo.datos_reg_err]):
-            l_vars_disp = [v for v in l_vars if v in bd]
-            bd_sel = bd[l_vars_disp]
 
-            if datos is not None:
-                bd_sel = bd_sel[bd_sel['bd'].isin(datos)]
+            if bd is not None:
+                l_vars_disp = [v for v in l_vars if v in bd]
+                bd_sel = bd[l_vars_disp]
 
-            if fechas is not None:
-                bd_sel = bd_sel[bd_sel['fecha'].isin(fechas)]
+                if datos is not None:
+                    bd_sel = bd_sel[bd_sel['bd'].isin(datos)]
 
-            if cód_lugar is not None:
-                bd_sel = bd_sel[bd_sel['lugar'].isin(cód_lugar)]
+                if fechas is not None:
+                    bd_sel = bd_sel[bd_sel['fecha'].isin(fechas)]
 
-            egr[í] = bd_sel
+                if cód_lugar is not None:
+                    bd_sel = bd_sel[bd_sel['lugar'].isin(cód_lugar)]
+
+                egr[í] = bd_sel
 
         return {'regional': egr[0], 'error_regional': egr[2], 'individual': egr[1]}
 

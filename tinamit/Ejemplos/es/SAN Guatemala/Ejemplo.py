@@ -13,23 +13,41 @@ print('niveles', modelo.niveles)
 print('constantes', modelo.constantes)
 # print('vacíos', modelo.vacíos())
 
-ENCOVI_2011 = DatosIndividuales('ENCOVI 2011', archivo='ENCOVI_hog_2011.csv', fecha=2011, lugar='Código_lugar',
-                                cód_vacío=['NA', 'na', 'Na'])
+ENCOVI_hog_2011 = DatosIndividuales('ENCOVI hog 2011', archivo='Datos\\ENCOVI_hog_2011.csv', fecha=2011,
+                                    lugar='Código_lugar', cód_vacío=['NA', 'na', 'Na'])
+ENCOVI_ind_2011 = DatosIndividuales('ENCOVI ind 2011', archivo='Datos\\ENCOVI_ind_2011.csv', fecha=2011,
+                                    lugar='Código_lugar', cód_vacío=['NA', 'na', 'Na'])
 
-# ENCOVI_2011 = DatosIndividuales(fuente='')
-# ENCOVI_2011.estab_col_año(col='año')
+# ENCOVI_hog_2011 = DatosIndividuales(fuente='')
+# ENCOVI_hog_2011.estab_col_año(col='año')
 
 geog = Geografía('Iximulew')
 geog.agregar_info_regiones(archivo='Geografía Iximulew.csv',
                            orden_jer=['Departamento', 'Municipio'],
                            col_cód='Código')
 
-datos_muni = DatosRegión('Desnutrición municipal', archivo='Desnutrición_muni.csv', fecha='Año', lugar='Código_lugar',
-                         tmñ_muestra='Tamaño_muestra')
+datos_desnutr = DatosRegión('Desnutrición municipal', archivo='Datos\\Desnutrición_muni.csv', fecha='Año',
+                            lugar='Código_lugar', tmñ_muestra='Tamaño_muestra')
+ENCOVI_reg_2011 = DatosRegión('ENCOVI reg 2011', archivo='Datos\\ENCOVI_reg_2011.csv', fecha=2011,
+                              lugar='Código_lugar', cód_vacío=['NA', 'na', 'Na'])
 
-bd = SuperBD('BD Iximulew', bds=[ENCOVI_2011, datos_muni], geog=geog)
-bd.espec_var('ISA', var_bd='Inseguridad.alimentaria', cód_vacío='NA')
-bd.espec_var('Educación formal', var_bd='Educación', cód_vacío='NA')
+bd = SuperBD('BD Iximulew', bds=[ENCOVI_hog_2011, datos_desnutr], geog=geog)
+bd.espec_var('ISA', var_bd='ISA_23', cód_vacío='NA')
+bd.espec_var('Educación formal', var_bd='educación', cód_vacío='NA')
+bd.espec_var('Educación sexual', var_bd='educación.sexual', cód_vacío='NA')
+x = bd.obt_datos('Educación formal')['individual']
+x1 = bd.obt_datos('Educación sexual')['individual']
+y = bd.obt_datos('ISA')['individual']
+
+from tinamit.EnvolturaMDS.sintaxis import Ecuación
+import numpy as np
+ec = Ecuación(ec='b/(x+a)+c', dialecto='tinamït')
+tx = ec.gen_texto(paráms=['a', 'b', 'c'])
+f = ec.gen_func_python(paráms=['a', 'b', 'c'])
+f([1,2,2], {'x': np.array([0,0,1,2,3,4,5,6,7,8,9,10,15,20])})
+m = ec.gen_mod_bayes(paráms=['a', 'b', 'c'], líms_paráms=[(0, None), (0, None), (0, None)],
+                     obs_x={'x': x}, obs_y=y)
+
 bd.espec_var('Ingresos salarial', var_bd='Ingresos.de.salario', cód_vacío='NA')
 bd.espec_var('Ingresos agrícolas', var_bd='Ingresos.agrícolas', cód_vacío='NA')
 bd.espec_var('Ingresos familiares', var_bd='Ingresos', cód_vacío='NA')
@@ -44,6 +62,10 @@ bd.espec_var('Desnutrición crónica infantil', var_bd='Desntr_crón_inft')
 
 conex = ConexDatos(bd=bd, modelo=modelo)
 conex.no_calibrados()
+from tinamit.EnvolturaMDS.sintaxis import Ecuación
+ec = Ecuación(ec='b/(x+a)+c', dialecto='tinamït')
+m = ec.gen_mod_bayes(paráms=['a', 'b', 'c'], líms_paráms=[(0, None), (0, None), (0, None)],
+                     obs_x=bd.obt_datos('Educación formal'))
 
 conex.calib_ec()
 # Gráfico de "caja" con incertidumbre
@@ -71,9 +93,9 @@ bd.cambiar_datos(nombre_datos, nueva_ubic)
 
 control = Control(bd=bd, modelo=modelo, fuente='')
 
-control.conectar_var_ind(datos=ENCOVI_2011, var_bd='', var_modelo='', transformación='promedio')
-control.conectar_var_ind(datos=ENCOVI_2011, var_bd='', var_modelo='', transformación='máximo')
-control.conectar_var_reg(datos=datos_muni, var_bd='Desnutr_crón_inft', var_modelo='', calc_error='porcentaje')
+control.conectar_var_ind(datos=ENCOVI_hog_2011, var_bd='', var_modelo='', transformación='promedio')
+control.conectar_var_ind(datos=ENCOVI_hog_2011, var_bd='', var_modelo='', transformación='máximo')
+control.conectar_var_reg(datos=datos_desnutr, var_bd='Desnutr_crón_inft', var_modelo='', calc_error='porcentaje')
 
 control.comparar(var_mod_x='', var_mod_y='', escala='individual')  # llama BasedeDatos.comparar()
 control.estimar(constante='Desnutrición', escala='individual')  # Mal ejemplo

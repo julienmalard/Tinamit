@@ -400,10 +400,10 @@ class Ecuación(object):
                             if v in d_v:
                                 return d_v[v]
                             else:
-                                nmbr = 'v{}'.format(len(d_v))
+                                nmbr = "d_x['v{}']".format(len(d_v))
 
                         d_v[v] = nmbr
-                        return "d_x['{}']".format(nmbr)
+                        return nmbr
                     else:
                         raise TypeError('')
 
