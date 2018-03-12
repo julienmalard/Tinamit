@@ -145,7 +145,7 @@ def _trad_texto(texto, núms, sep_dec, txt=False):
         raise ValueError('Texto "{}" no reconocido.'.format(texto))
 
 
-dic_trads = {'Latino': {'núms': ('1', '2', '3', '4', '5', '6', '7', '8', '9', '0'),
+dic_trads = {'Latino': {'núms': ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9'),
                         'sep_dec': ['.', ',']},
              'हिंदी': {'núms': ('०', '१', '२', '३', '४', '५', '६', '७', '८', '९'),
                        'sep_dec': ['.', ',']},
