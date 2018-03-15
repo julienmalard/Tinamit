@@ -77,7 +77,7 @@ def sacar_arg(ec, regex_var, regex_fun, i=None):
     princ_fun = regex.match(regex_fun, ec).end()
 
     # El fin de la función
-    fin_fun = regex.search(r' *\) *\n?$', ec).start()
+    fin_fun = regex.search(r' *\).*$', ec).start()
 
     # La parte de la ecuación con los argumentos de la función
     sec_args = ec[princ_fun:fin_fun]
@@ -208,7 +208,7 @@ class Ecuación(object):
 
         if símismo.dialecto == 'tinamït':
             gramática = resource_filename('tinamit.EnvolturaMDS', 'gram_ec_tinamït.g')
-        elif símismo.dialecto == 'vensim':
+        elif símismo.dialecto in ['modelovensimmdl', 'modelovensim']:
             gramática = resource_filename('tinamit.EnvolturaMDS', 'gram_Vensim.g')
         else:
             raise ValueError('')
@@ -306,7 +306,7 @@ class Ecuación(object):
 
         return _a_python(símismo.árbol)
 
-    def gen_mod_bayes(símismo, paráms, líms_paráms, obs_x, obs_y):
+    def gen_mod_bayes(símismo, paráms, líms_paráms, obs_x, obs_y, aprioris=None):
 
         if pm is None:
             return ImportError(_('Hay que instalar PyMC3 para poder utilizar modelos bayesianos.'))
@@ -336,17 +336,25 @@ class Ecuación(object):
                         try:
                             í_var = paráms.index(v)
                             líms = líms_paráms[í_var]
-                            nmbr = 'v{}'.format(í_var)
-                            if líms[0] is None:
-                                if líms[1] is None:
-                                    return pm.Flat(nmbr)
+
+                            if aprioris is None:
+                                if líms[0] is None:
+                                    if líms[1] is None:
+                                        return pm.Flat(v)
+                                    else:
+                                        return líms[1] - pm.HalfFlat(v)
                                 else:
-                                    return líms[1] - pm.HalfFlat(nmbr)
+                                    if líms[1] is None:
+                                        return líms[0] + pm.HalfFlat(v)
+                                    else:
+                                        return pm.Uniform(name=v, lower=líms[0], upper=líms[1])
                             else:
-                                if líms[1] is None:
-                                    return líms[0] + pm.HalfFlat(nmbr)
+                                dist, prms = aprioris[í_var]
+                                if líms[0] is not None or líms[1] is not None:
+                                    acotada = pm.Bound(dist, lower=líms[0], upper=líms[1])
+                                    return acotada(v, **prms)
                                 else:
-                                    return pm.Uniform(name=nmbr, lower=líms[0], upper=líms[1])
+                                    return dist(v, **prms)
 
                         except ValueError:
 
@@ -416,6 +424,9 @@ class Ecuación(object):
 
         d_vars = {}
         return _a_tx(símismo.árbol, d_v=d_vars), d_vars
+
+    def __str__(símismo):
+        return símismo.gen_texto()[0]
 
 
 dic_funs = {

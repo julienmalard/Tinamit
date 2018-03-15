@@ -1,7 +1,7 @@
 import os
 
 from tinamit import _
-from tinamit.EnvolturaMDS.Vensim import ModeloVensim, ModeloVensimMdl
+from tinamit.EnvolturaMDS.Vensim import ModeloVensim, ModeloVensimMdl, dll_Vensim
 
 
 def generar_mds(archivo):
@@ -22,10 +22,15 @@ def generar_mds(archivo):
 
     # Crear la instancia de modelo apropiada para la extensión del archivo.
     if ext == '.vpm':
-        # Modelos VENSIM
-        return ModeloVensim(archivo)
-    if ext == '.mdl':
+        if dll_Vensim:
+            # Modelos VENSIM
+            return ModeloVensim(archivo)
+        else:
+            raise OSError('')
+    elif ext == '.mdl':
         return ModeloVensimMdl(archivo)
+    elif ext == '.xml':
+        raise NotImplementedError
     else:
         # Agregar otros tipos de modelos DS aquí.
 

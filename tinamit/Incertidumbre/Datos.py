@@ -15,7 +15,7 @@ from tinamit import _
 
 
 class Datos(object):
-    def __init__(símismo, nombre, archivo, fecha, lugar, cód_vacío=''):
+    def __init__(símismo, nombre, archivo, fecha, lugar, cód_vacío=None):
         """
 
         :param nombre:
@@ -59,12 +59,15 @@ class Datos(object):
         else:
             símismo.lugares = str(lugar)
 
-        if isinstance(cód_vacío, list):
-            símismo.cod_vacío = set(cód_vacío)
+        if cód_vacío is None:
+            cód_vacío = {'', 'NA', 'na', 'Na', 'nan', 'NaN'}
         else:
-            símismo.cod_vacío = {cód_vacío}
+            if isinstance(cód_vacío, list):
+                símismo.cod_vacío = set(cód_vacío)
+            else:
+                símismo.cod_vacío = {cód_vacío}
 
-        símismo.cod_vacío.add('')
+            símismo.cod_vacío.add('')
 
         símismo.n_obs = símismo.bd.n_obs
 
@@ -369,7 +372,7 @@ class SuperBD(object):
                     if símismo.datos_ind is None:
                         símismo.datos_ind = bd_pds_temp
                     else:
-                        símismo.datos_ind.append(bd_pds_temp, ignore_index=True)
+                        símismo.datos_ind = pd.concat([bd_pds_temp, símismo.datos_ind], ignore_index=True)
 
                 # Datos regionales
                 else:
@@ -439,7 +442,7 @@ class SuperBD(object):
         else:
             símismo.datos_reg_err.append(pd_err_nuevos, ignore_index=True)
 
-    def obt_datos(símismo, l_vars, lugar=None, cód_lugar=None, datos=None, fechas=None, escala=None):
+    def obt_datos(símismo, l_vars, lugar=None, datos=None, fechas=None):
 
         # Formatear la lista de variables deseados
         if not isinstance(l_vars, list):
@@ -448,42 +451,8 @@ class SuperBD(object):
             raise ValueError(_('Variable no válido.'))
 
         # Formatear el código de lugar
-        if cód_lugar is not None and not isinstance(cód_lugar, list):
-            cód_lugar = [cód_lugar]
-
-        # Obtener código de lugar, si necesario
-        if lugar is not None:
-            if not isinstance(lugar, list):
-                lugar = [lugar]
-
-            if cód_lugar is None:
-
-                cód_lugar = []
-                for l in lugar:
-                    dic = símismo.geog.árbol
-                    dif = len(símismo.geog.orden_esc_geog) - len(l)
-                    l += [''] * dif
-
-                    for k in l:
-                        try:
-                            dic = dic[k]
-                        except KeyError:
-                            raise KeyError(_('El lugar "{}" no existe en la Geografía actual.').format(k))
-
-                    cód_lugar.append(dic)
-
-            else:
-                avisar(_('Lugar y código de lugar ambos especificados. Tomaremos el código.'))
-
-        # Convertir los códigos de lugar a la escala pedida, si necesario.
-        if escala is not None:
-            if escala not in (símismo.geog.órden + ['individual']):
-                raise ValueError('')
-
-            códs_nuevos = []
-            for c in cód_lugar:
-                códs_nuevos.append(símismo.geog.obt_lugares_en(c, escala))
-            cód_lugar = códs_nuevos
+        if lugar is not None and not isinstance(lugar, list):
+            lugar = [lugar]
 
         # Formatear los datos
         if datos is not None and not isinstance(datos, list):
@@ -508,7 +477,7 @@ class SuperBD(object):
 
             if bd is not None:
                 l_vars_disp = [v for v in l_vars if v in bd]
-                bd_sel = bd[l_vars_disp]
+                bd_sel = bd[l_vars_disp + ['bd', 'fecha', 'lugar']]
 
                 if datos is not None:
                     bd_sel = bd_sel[bd_sel['bd'].isin(datos)]
@@ -516,8 +485,8 @@ class SuperBD(object):
                 if fechas is not None:
                     bd_sel = bd_sel[bd_sel['fecha'].isin(fechas)]
 
-                if cód_lugar is not None:
-                    bd_sel = bd_sel[bd_sel['lugar'].isin(cód_lugar)]
+                if lugar is not None:
+                    bd_sel = bd_sel[bd_sel['lugar'].isin(lugar)]
 
                 egr[í] = bd_sel
 

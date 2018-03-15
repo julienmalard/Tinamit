@@ -24,7 +24,7 @@ class Diccionario(object):
 
         if símismo.config is None or \
                 'leng_act' not in símismo.config or símismo.config['leng_act'] not in símismo.lenguas:
-            config = {'leng_act': símismo.estándar}
+            config = {'leng_act': 'Kaqchikel'}
             símismo.config = config
             with open(símismo.arch_config, encoding='utf8', mode='w') as d:
                 json.dump(config, d, ensure_ascii=False, sort_keys=True, indent=2)

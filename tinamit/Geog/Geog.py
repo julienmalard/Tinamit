@@ -260,6 +260,7 @@ class Geografía(object):
         símismo.árbol_geog = {}
         símismo.árbol_geog_inv = {}
         símismo.cód_a_lugar = {}
+        símismo.grupos = []
 
     def agregar_forma(símismo, archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=None):
         if nombre is None:
@@ -313,7 +314,7 @@ class Geografía(object):
 
         símismo.regiones[escala_geog] = {'af': af, 'orden_regs': orden, 'id': ids}
 
-    def agregar_info_regiones(símismo, archivo, col_cód, orden_jer=None):
+    def agregar_info_regiones(símismo, archivo, col_cód, orden_jer=None, grupos=None):
         """
 
         :param archivo:
@@ -326,11 +327,17 @@ class Geografía(object):
 
         símismo.orden_jer = orden_jer
 
-        símismo.leer_archivo_info_reg(archivo=archivo, orden_jer=orden_jer, col_cód=col_cód)
+        símismo.leer_archivo_info_reg(archivo=archivo, orden_jer=orden_jer, col_cód=col_cód, grupos=grupos)
 
-    def leer_archivo_info_reg(símismo, archivo, orden_jer, col_cód):
+    def leer_archivo_info_reg(símismo, archivo, orden_jer, col_cód, grupos=None):
 
         símismo.árbol_geog.clear()
+        símismo.grupos.clear()
+
+        if grupos is None:
+            grupos = []
+        if not isinstance(grupos, list):
+            grupos = [grupos]
 
         with open(archivo, newline='') as d:
 
@@ -350,14 +357,21 @@ class Geografía(object):
                 raise ValueError(_('La columna de código de región especificada ({}) no concuerda con los nombres de '
                                  'columnas del archivo ({}).').format(col_cód, ', '.join(cols)))
 
+            try:
+                í_g = [cols.index(x) for x in grupos]
+                símismo.grupos.extend(grupos)
+            except ValueError:
+                raise ValueError(_('Una o más de las columnas de grupo especificadas ({}) no concuerda con los nombres '
+                                   'de columnas del archivo ({}).').format(grupos, ', '.join(cols)))
+
             # Para cada fila que sigue en el csv...
             for f in l:
                 dic = símismo.árbol_geog
                 cód = f[in_col_cód]
 
-                for i, n in enumerate(i_cols):
+                for í, n in enumerate(i_cols):
 
-                    if i == len(i_cols) - 1:
+                    if í == len(i_cols) - 1:
                         dic[f[n]] = cód
 
                     elif f[n] not in dic:
@@ -367,31 +381,69 @@ class Geografía(object):
 
                 símismo.árbol_geog_inv[cód] = dict([(orden_jer[k], f[j]) for k, j in enumerate(i_cols)])
 
+                for í, g in zip(í_g, grupos):
+                    símismo.árbol_geog_inv[cód][g] = f[í]
+
                 escala = orden_jer[max([n for n, i in enumerate(i_cols) if f[i] != ''])]
                 nombre = f[cols.index(escala)]
                 símismo.cód_a_lugar[cód] = {'escala': escala, 'nombre': nombre}
 
-    def obt_lugares_en(símismo, cód_lugar, escala=None):
-        """
-
-        :param cód_lugar:
-        :type cód_lugar:
-        :param escala:
-        :type escala:
-        :return:
-        :rtype: list[str]
-        """
-
-        escala_lugar = símismo.cód_a_lugar[cód_lugar]['escala']
-        nombre_lugar = símismo.cód_a_lugar[cód_lugar]['nombre']
+    def obt_lugares_en(símismo, escala=None, en=None, por=None):
+        """"""
 
         if escala is None:
-            l_códs = [x for x, d in símismo.árbol_geog_inv.items() if d[escala_lugar] == nombre_lugar]
+            escala = símismo.orden_jer[-1]
+        if en is None:
+            regiones = [x for x, d in símismo.árbol_geog_inv.items() if símismo.cód_a_lugar[x]['escala'] == escala]
         else:
-            l_códs = [x for x, d in símismo.árbol_geog_inv.items()
-                      if d[escala_lugar] == nombre_lugar and símismo.cód_a_lugar[x]['escala'] == escala]
+            if isinstance(en, dict):
+                # Grupos
+                escala_en = list(en)[0]
+                nombres_en = en[escala_en]
+                if not isinstance(nombres_en, list):
+                    nombres_en = [nombres_en]
+            else:
+                if not isinstance(en, list):
+                    en = [en]
+                escala_en = símismo.cód_a_lugar[en[0]]['escala']
+                if not all(símismo.cód_a_lugar[x]['escala'] == escala_en for x in en):
+                    raise ValueError('')
 
-        return l_códs
+                nombres_en = [símismo.cód_a_lugar[x]['nombre'] for x in en]
+
+            nombres_en = [str(x) for x in nombres_en]
+            regiones = [x for x, d in símismo.árbol_geog_inv.items() if d[escala_en] in nombres_en and
+                        símismo.cód_a_lugar[x]['escala'] == escala]
+
+        if por is None:
+            return regiones
+        else:
+            categs = {}
+            for r in regiones:
+                try:
+                    cat = símismo.árbol_geog_inv[r][por]
+                    if por in símismo.grupos:
+                        cat = '{} {}'.format(por, cat)
+                except KeyError:
+                    cat = ''
+
+                if cat in categs:
+                    categs[cat].append(r)
+                else:
+                    categs[cat] = [r]
+
+            return categs
+
+    def obt_en_grupo(símismo, tipo_grupo, grupos):
+
+        if not isinstance(grupos, list) and not isinstance(grupos, tuple) and not isinstance(grupos, set):
+            grupos = [grupos]
+        grupos = [str(x) for x in grupos]
+
+        if tipo_grupo not in símismo.grupos:
+            raise ValueError('')
+
+        return [x for x, d in símismo.árbol_geog_inv.items() if str(d[tipo_grupo]) in grupos]
 
     def dibujar(símismo, archivo, valores=None, título=None, unidades=None, colores=None, escala_num=None):
         """
