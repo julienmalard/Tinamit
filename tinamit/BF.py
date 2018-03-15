@@ -127,13 +127,13 @@ class EnvolturaBF(Modelo):
 
         """
 
-        # Aplicar valores iniciales antes de la inicialización del modelo. Simplemente llamamos la función
-        # símismo.cambiar_vals() con el diccionario de valores iniciales.
-        símismo.cambiar_vals(símismo.vals_inic)
-
-        # ...y inicializar el modelo.
+        # Inicializar el modelo.
         símismo.modelo.lugar = símismo.lugar
         símismo.modelo.iniciar_modelo(**kwargs)
+
+        # Aplicar valores iniciales después de la inicialización del modelo. Simplemente llamamos la función
+        # símismo.cambiar_vals() con el diccionario de valores iniciales.
+        símismo.cambiar_vals(símismo.vals_inic)
 
     def cerrar_modelo(símismo):
         """
