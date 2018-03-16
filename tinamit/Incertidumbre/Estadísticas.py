@@ -9,31 +9,30 @@ from scipy.stats import gaussian_kde
 from tinamit import _
 
 
-def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, info_gen_aprioris=None, **ops):
-    if info_gen_aprioris is not None:
-        dists_potenciales = {'Exponencial': estad.expon, 'Gamma': estad.gamma,
-                             'Normal': estad.norm, 'T': estad.t, 'Uniforme': estad.uniform}
-        dists_pm = {'Exponencial': pm.Normal, 'Gamma': pm.Gamma, 'Laplace': pm.Laplace,
-                    'Normal': pm.Normal, 'T': pm.StudentT, 'Uniforme': pm.Uniform}
+def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=None, **ops):
 
+    if dists_aprioris is not None:
         aprioris = []
-        for d in info_gen_aprioris:
-            ajust_sp = ajust_dist(datos=d, dists_potenciales=dists_potenciales)
-            dist = dists_pm[ajust_sp['tipo']]
-            prms_sp = ajust_sp['prms']
-            if dist == 'Exponencial':
-                prms = {'lam': 1/prms_sp[1]}
-            elif dist == 'Gamma':
-                prms = {'alpha': prms_sp[0], 'beta': prms_sp[2]}
-            elif dist == 'Normal':
-                prms = {'mu': prms_sp[0], 'sd': prms_sp[1]}
-            elif dist == 'T':
-                prms = {'nu': prms_sp[0], 'mu': prms_sp[1], 'sd': prms_sp[2]}
-            elif dist == 'Uniforme':
-                prms = {'lower': prms_sp[0], 'upper': prms_sp[0] + prms_sp[1]}
+        for p, dic in dists_aprioris.items():
+            pts = dic['dist']
+            escl = np.max(pts)
+            if escl < 10e10:
+                escl = 1
+            fdp = gaussian_kde(pts / escl)
+            x = np.linspace(pts.min() / escl - 1, pts.max() / escl + 1, np.size(pts))
+
+            pts_fdp = fdp.evaluate(x) * escl
+
+            if p == 'a':
+                apriori = (pm.Normal, {'sd': 1, 'mu': 14.5})
+            elif p == 'b':
+                apriori = (pm.Normal, {'sd': .5, 'mu': 1})
             else:
-                raise ValueError
-            aprioris.append((dist, prms))
+                apriori = (pm.Gamma, {'alpha': 1, 'beta': 1})
+            apriori = (pm.Interpolated, {
+                'x_points': x[np.where(pts_fdp!=0)], 'pdf_points': pts_fdp[np.where(pts_fdp!=0)], 'testval': 2
+            })
+            aprioris.append(apriori)
     else:
         aprioris = None
 
@@ -99,45 +98,3 @@ def optimizar(obj_ec, paráms, líms_paráms, obs_x, obs_y, **ops):
 
 def regresión(obj_ec, paráms, líms_paráms, obs_x, obs_y, **ops):
     raise NotImplementedError
-
-
-def ajust_dist(datos, dists_potenciales):
-    mejor_ajuste = {'p':0, 'tipo':None}
-
-    for nombre_dist, dist_sp in dists_potenciales.items():
-
-        if nombre_dist == 'Exponencial':
-            restric = {'floc': 0}
-        elif nombre_dist == 'Gamma':
-            restric = {'floc': 0}
-        elif nombre_dist == 'Normal':
-            restric = {}
-        elif nombre_dist == 'T':
-            restric = {}
-        elif nombre_dist == 'Uniforme':
-            restric = {}
-        else:
-            raise ValueError
-
-        try:
-            tupla_prms = dist_sp.fit(datos, **restric)
-        except:
-            tupla_prms = None
-
-        if tupla_prms is not None:
-            # Medir el ajuste de la distribución
-            p = estad.kstest(rvs=datos, cdf=dist_sp(**tupla_prms).cdf)[1]
-
-            # Si el ajuste es mejor que el mejor ajuste anterior...
-            if p > mejor_ajuste['p'] or mejor_ajuste['tipo'] == '':
-                # Guardarlo
-                mejor_ajuste['p'] = p
-                mejor_ajuste['prms'] = tupla_prms
-                mejor_ajuste['tipo'] = nombre_dist
-
-    # Si no logramos un buen aujste, avisar al usuario.
-    if mejor_ajuste['p'] <= 0.10:
-        avisar('El ajuste de la mejor distribución quedó muy mal (p = %f).' % round(mejor_ajuste['p'], 4))
-
-    # Devolver la distribución con el mejor ajuste, tanto como el valor de su ajuste.
-    return mejor_ajuste
