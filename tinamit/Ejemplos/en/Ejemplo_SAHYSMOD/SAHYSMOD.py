@@ -2,6 +2,9 @@ import os
 
 from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import ModeloSAHYSMOD
 
+# Path to SAHYSMOD executable. Change as needed on your computer.
+SAHYSMOD = 'D:\\Sahysmod\\SahysModConsole.exe'
+# path of the Julien's computer
 
 # Path to the SAHYSMOD input file with the initial data. Change as needed on your computer.
 directory = os.path.dirname(__file__)
@@ -12,3 +15,4 @@ initial_data = os.path.join(directory, '459anew1.inp')
 class Modelo(ModeloSAHYSMOD):
     def __init__(self):
         super().__init__(initial_data=initial_data)
+

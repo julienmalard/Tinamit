@@ -21,15 +21,17 @@ def run_model(name, switches):
     modelo = Conectado()
 
     # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
-    modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Tinamit_sub_v2.vpm'))
+    modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Tinamit_sub_v4.vpm'))
 
     modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'SAHYSMOD.py'))
 
     # Set appropriate switches for policy analysis
     for switch, val in switches.items():
         modelo.mds.inic_val(var=switch, val=val)
+        print(switch, val)
 
     # Couple models(Change variable names as needed)
+    '''
     modelo.conectar(var_mds='Soil salinity Tinamit CropA', mds_fuente=False, var_bf="Cr4 - Fully rotated land irrigated root zone salinity")
     modelo.conectar(var_mds='Soil salinity Tinamit CropB', mds_fuente=False, var_bf="Cr4 - Fully rotated land irrigated root zone salinity")
     modelo.conectar(var_mds='Watertable depth Tinamit', mds_fuente=False, var_bf="Dw - Groundwater depth")
@@ -40,9 +42,22 @@ def run_model(name, switches):
     modelo.conectar(var_mds='Gw', mds_fuente=True, var_bf='Gw - Groundwater extraction')
     modelo.conectar(var_mds='Irrigation efficiency', mds_fuente=True, var_bf='FsA - Water storage efficiency crop A')
     modelo.conectar(var_mds='Fw', mds_fuente=True, var_bf='Fw - Fraction well water to irrigation')
+    '''
+
+    # Couple models(Change variable names as needed)
+    modelo.conectar(var_mds='Soil salinity Tinamit CropA', mds_fuente=False, var_bf="CrA - Root zone salinity crop A")
+    modelo.conectar(var_mds='Soil salinity Tinamit CropB', mds_fuente=False, var_bf="CrB - Root zone salinity crop B")
+    modelo.conectar(var_mds='Watertable depth Tinamit', mds_fuente=False, var_bf="Dw - Groundwater depth")
+    modelo.conectar(var_mds='ECdw Tinamit', mds_fuente=False, var_bf='Cqf - Aquifer salinity')
+    modelo.conectar(var_mds='Lc', mds_fuente=True, var_bf='Lc - Canal percolation')
+    modelo.conectar(var_mds='Ia CropA', mds_fuente=True, var_bf='IaA - Crop A field irrigation')
+    modelo.conectar(var_mds='Ia CropB', mds_fuente=True, var_bf='IaB - Crop B field irrigation')
+    modelo.conectar(var_mds='Gw', mds_fuente=True, var_bf='Gw - Groundwater extraction')
+    modelo.conectar(var_mds='Irrigation efficiency', mds_fuente=True, var_bf='FsA - Water storage efficiency crop A')
+    modelo.conectar(var_mds='Fw', mds_fuente=True, var_bf='Fw - Fraction well water to irrigation')
 
     # Simulate the coupled model
-    modelo.simular(paso=1, tiempo_final=240, nombre_corrida=name)  # time step and final time are in months
+    modelo.simular(paso=1, tiempo_final=5, nombre_corrida=name)  # time step and final time are in months
 
 
 # Run the model for all desired runs

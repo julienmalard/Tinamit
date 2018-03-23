@@ -19,7 +19,7 @@ setup(
     author_email='julien.malard@mail.mcgill.ca',
     description='Conexión de modelos socioeconómicos (dinámicas de los sistemas) con modelos biofísicos.',
     long_description='Tinamït permite conectar modelos biofísicos con modelos socioeconómicos de dinámicas de los'
-                     'sistemas (EnvolturaMDS). Es muy útil para proyectos de modelización participativa, especialmente'
+                     'sistemas (MDS). Es muy útil para proyectos de modelización participativa, especialmente'
                      'en proyectos de manejo del ambiente. El interaz gráfico traducible facilita la adopción por'
                      'comunidades en cualquier parte del mundo.',
     requires=['numpy', 'matplotlib', 'scipy', 'taqdir', 'python_dateutil', 'pyshp', 'pandas', 'lark'],

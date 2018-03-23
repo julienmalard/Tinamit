@@ -85,16 +85,12 @@ class ModeloVensimMdl(EnvolturaMDS):
             # Extraer la información del variable
             nombre, dic_var = símismo._leer_var(l_texto=cuerpo[ubic_var[0]:ubic_var[1]])
 
-            if nombre not in símismo.variables:
-                símismo.variables[nombre] = dic_var
+            símismo.variables[nombre] = dic_var
 
         # Transferir los nombres de los variables parientes a los diccionarios de sus hijos correspondientes
         for var, d_var in símismo.variables.items():
             for pariente in d_var['parientes']:
-                try:
-                    símismo.variables[pariente]['hijos'].append(var)
-                except KeyError:
-                    pass
+                símismo.variables[pariente]['hijos'].append(var)
 
         # Borrar lo que había antes en las listas siguientes:
         símismo.flujos.clear()
@@ -153,7 +149,6 @@ class ModeloVensimMdl(EnvolturaMDS):
                    'unidades': '',
                    'ingreso': None,
                    'dims': (1,),  # Para hacer
-                   'líms': (),
                    'subscriptos': subs,
                    'egreso': None,
                    'hijos': [],
@@ -161,7 +156,7 @@ class ModeloVensimMdl(EnvolturaMDS):
                    'info': ''}
 
         # Sacar el inicio de la ecuación que puede empezar después del signo de igualdad.
-        m = regex.search(r'( *=)(.*)$', l_texto[0][len(nombre):])
+        m = regex.match(r'( *=)(.*)$', l_texto[0][len(nombre):])
         princ_ec = m.groups()[1]
 
         # El principio de las unidades
@@ -171,14 +166,10 @@ class ModeloVensimMdl(EnvolturaMDS):
         prim_com = next(n + (prim_unid + 1) for n, l in enumerate(l_texto[prim_unid + 1:]) if regex.match(r'\t~\t', l))
 
         # Combinar las líneas de texto de la ecuación
-        try:
-            fin_ec = next(n for n, l in enumerate(l_texto) if regex.match(r'.*~~|\n$', l))
-            ec = juntar_líns([princ_ec] + l_texto[1:fin_ec+1])
-        except StopIteration:
-            ec = juntar_líns([princ_ec] + l_texto[1:prim_unid])
+        ec = juntar_líns([princ_ec] + l_texto[1:prim_unid])
 
         # Extraer los nombre de los variables parientes
-        dic_var['parientes'] = sacar_variables(texto=ec, rgx=símismo._regex_var, excluir=símismo.internos + [nombre])
+        dic_var['parientes'] = sacar_variables(texto=ec, rgx=símismo._regex_var, excluir=símismo.internos)
 
         # Si no hay ecuación especificada, dar una ecuación vacía.
         if regex.match(r'A FUNCTION OF *\(', ec) is not None:
@@ -186,15 +177,8 @@ class ModeloVensimMdl(EnvolturaMDS):
         else:
             dic_var['ec'] = ec
 
-        # Ahora sacamos las unidades y los límites.
-        l_unidades = juntar_líns(l_texto[prim_unid:prim_com], cabeza=r'\t~?\t')
-        unid_líms = l_unidades.split('[')
-        dic_var['unidades'] = unid_líms[0].strip()
-        try:
-            líms = unid_líms[1].strip(']').split(',')
-            dic_var['líms'] = tuple(float(l) if l.strip() != '?' else None for l in líms)
-        except IndexError:
-            dic_var['líms'] = (None, None)
+        # Ahora sacamos las unidades.
+        dic_var['unidades'] = juntar_líns(l_texto[prim_unid:prim_com], cabeza=r'\t~?\t')
 
         # Y ahora agregamos todas las líneas que quedan para la sección de comentarios
         dic_var['info'] = juntar_líns(l_texto[prim_com:], cabeza=r'\t~?\t', cola=r'\t\|')
@@ -232,7 +216,7 @@ class ModeloVensimMdl(EnvolturaMDS):
         if símismo.conex_datos is None:
             símismo.conex_datos = ConexDatos(bd=símismo.bd, modelo=símismo)
 
-        símismo.conex_datos.calib_var(var=var, ec=ec, paráms=paráms, método=método)
+        símismo.conex_datos.calib_ec(var=var, ec=ec, paráms=paráms, método=método)
 
     def obt_unidad_tiempo(símismo):
         pass
@@ -389,10 +373,6 @@ class ModeloVensim(EnvolturaMDS):
                 dims = (1,)
                 nombres_subs = None
 
-            # Sacar los límites del variable
-            rango = (símismo.obt_atrib_var(var, cód_attrib=11), símismo.obt_atrib_var(var, cód_attrib=12))
-            rango = tuple(float(l) if l != '?' else None for l in rango)
-
             # Leer la descripción del variable.
             info = símismo.obt_atrib_var(var, 2)
 
@@ -406,7 +386,6 @@ class ModeloVensim(EnvolturaMDS):
                        'dims': dims,
                        'subscriptos': nombres_subs,
                        'egreso': var not in constantes,
-                       'líms': rango,
                        'info': info}
 
             # Guadar el diccionario del variable en el diccionario general de variables.

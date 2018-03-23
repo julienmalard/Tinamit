@@ -233,6 +233,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # Return the final dictionary
         return dic_final
 
+    # read the initial variables
     def leer_archivo_vals_inic(self):
         """
         This function will read the initial values for the model from a SAHYSMOD input (.inp) file and save the
@@ -286,6 +287,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
 
 # A dictionary of SAHYSMOD variables. See the SAHYSMOD documentation for more details.
+# true is the input, creat my dictionary for this, this one getting the value from output,
 vars_SAHYSMOD = {'Pp - Rainfall': {'code': 'Pp#', 'units': 'm3/season/m2', 'inp': True, 'out': False},
                  'Ci - Incoming canal salinity': {'code': 'Ci#', 'units': 'dS/m', 'inp': True, 'out': True},
                  'Cinf - Aquifer inflow salinity': {'code': 'Cinf', 'units': 'dS/m', 'inp': True, 'out': False},

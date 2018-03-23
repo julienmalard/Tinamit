@@ -62,7 +62,7 @@ def parse_l_line(line, parameter_names, parameter_dictionary):
         parameter_dictionary[parameter_names[0]] = line.strip()
     return parameter_dictionary
 
-
+# build the
 def build_l_line(parameter_names, parameter_dictionary):
     if parameter_names[0] == '#':
         try:
@@ -198,7 +198,6 @@ def read_file(contentFn, templateFn, int_params):
     :return:
     :rtype:
     """
-
     param_dictionary = {'#': []}
     configDictionary = {}
     with open(contentFn, 'r') as contentF, open(templateFn, 'r') as templateF:
@@ -302,3 +301,4 @@ def main(*args):
 # That way main is run when the file is ran from command line but not when it is imported
 if __name__ == '__main__':
     main(*sys.argv)
+

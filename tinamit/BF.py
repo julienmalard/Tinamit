@@ -30,8 +30,11 @@ class EnvolturaBF(Modelo):
         :type archivo: str
 
         """
-
+        # path of the model, and name of the model
         dir_mod, nombre_mod = os.path.split(archivo)
+
+        print('This is inside EnvolturaBF of BF: ', dir_mod, nombre_mod)
+
         sys.path.append(dir_mod)
 
         módulo = importar_mod(os.path.splitext(nombre_mod)[0])
@@ -92,9 +95,9 @@ class EnvolturaBF(Modelo):
 
     def incrementar(símismo, paso):
         """
-        Esta función avanza el modelo por un periodo de tiempo especificado en `paso`.
+        Esta función avanza el modelo por un periodo de tiempo especificado en `paso`.// 这个功能在模型中指定的一段时间
 
-        :param paso: El paso.
+        :param paso: El paso.// steps
         :type paso: int
 
         """
@@ -104,7 +107,6 @@ class EnvolturaBF(Modelo):
     def leer_vals(símismo):
         """
         Esta función lee los valores del modelo y los escribe en el diccionario interno de variables.
-
         """
         símismo.modelo.leer_vals()
 
@@ -127,13 +129,13 @@ class EnvolturaBF(Modelo):
 
         """
 
-        # Inicializar el modelo.
-        símismo.modelo.lugar = símismo.lugar
-        símismo.modelo.iniciar_modelo(**kwargs)
-
-        # Aplicar valores iniciales después de la inicialización del modelo. Simplemente llamamos la función
+        # Aplicar valores iniciales antes de la inicialización del modelo. Simplemente llamamos la función
         # símismo.cambiar_vals() con el diccionario de valores iniciales.
         símismo.cambiar_vals(símismo.vals_inic)
+
+        # ...y inicializar el modelo.
+        símismo.modelo.lugar = símismo.lugar
+        símismo.modelo.iniciar_modelo(**kwargs)
 
     def cerrar_modelo(símismo):
         """
