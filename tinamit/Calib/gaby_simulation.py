@@ -16,7 +16,7 @@ def setup_parameters(sampling_parameters=[]):
     modelo = Conectado()
 
     # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
-    modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Tinamit_sub_v4.vpm'))
+    modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Tinamit.vpm'))
     modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'SAHYSMOD.py'))
     modelo.estab_conv_tiempo(mod_base='mds', conv=6)
 
