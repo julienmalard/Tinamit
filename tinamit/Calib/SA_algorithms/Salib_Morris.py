@@ -450,6 +450,7 @@ class MorrisSA(object):
                                     print_to_console=False,
                                     num_levels=self.n_level, grid_jump=self.n_level / 2,
                                     num_resamples=self.n_sampling)
+
                 dict_Si_var = dict_Si[var] = {}
                 for k, v in Si.items():
                     if isinstance(v, np.ndarray):
