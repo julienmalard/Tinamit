@@ -35,7 +35,7 @@ import sys
 import numpy as np
 from pkg_resources import resource_filename
 
-from . import mioparser
+from tinamit.EnvolturaBF.en.SAHYSMOD import mioparser
 
 CSVTEMPLATE = resource_filename(__name__, 'sahysmod.csv.tmpl')
 INPTEMPLATE = resource_filename(__name__, 'sahysmod.inp.tmpl')

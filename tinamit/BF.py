@@ -30,10 +30,7 @@ class EnvolturaBF(Modelo):
         :type archivo: str
 
         """
-        # path of the model, and name of the model
         dir_mod, nombre_mod = os.path.split(archivo)
-
-        print('This is inside EnvolturaBF of BF: ', dir_mod, nombre_mod)
 
         sys.path.append(dir_mod)
 
@@ -129,13 +126,14 @@ class EnvolturaBF(Modelo):
 
         """
 
-        # Aplicar valores iniciales antes de la inicialización del modelo. Simplemente llamamos la función
-        # símismo.cambiar_vals() con el diccionario de valores iniciales.
-        símismo.cambiar_vals(símismo.vals_inic)
-
-        # ...y inicializar el modelo.
+        # Inicializar el modelo.
         símismo.modelo.lugar = símismo.lugar
         símismo.modelo.iniciar_modelo(**kwargs)
+
+
+        #...y simplemente llamamos la función
+        # símismo.cambiar_vals() con el diccionario de valores iniciales.
+        símismo.cambiar_vals(símismo.vals_inic)
 
     def cerrar_modelo(símismo):
         """

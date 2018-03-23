@@ -75,7 +75,6 @@ def build_l_line(parameter_names, parameter_dictionary):
         line = parameter_dictionary[parameter_names[0]]
     return line + '\n'
 
-
 def parse_f_line(line, parameter_names, column_widths, parameter_dictionary):
     cursor = 0
     arrayParam = 0

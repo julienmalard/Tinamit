@@ -260,7 +260,6 @@ class Geografía(object):
         símismo.árbol_geog = {}
         símismo.árbol_geog_inv = {}
         símismo.cód_a_lugar = {}
-        símismo.grupos = []
 
     def agregar_forma(símismo, archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=None):
         if nombre is None:
@@ -314,7 +313,7 @@ class Geografía(object):
 
         símismo.regiones[escala_geog] = {'af': af, 'orden_regs': orden, 'id': ids}
 
-    def agregar_info_regiones(símismo, archivo, col_cód, orden_jer=None, grupos=None):
+    def agregar_info_regiones(símismo, archivo, col_cód, orden_jer=None):
         """
 
         :param archivo:
@@ -327,17 +326,11 @@ class Geografía(object):
 
         símismo.orden_jer = orden_jer
 
-        símismo.leer_archivo_info_reg(archivo=archivo, orden_jer=orden_jer, col_cód=col_cód, grupos=grupos)
+        símismo.leer_archivo_info_reg(archivo=archivo, orden_jer=orden_jer, col_cód=col_cód)
 
-    def leer_archivo_info_reg(símismo, archivo, orden_jer, col_cód, grupos=None):
+    def leer_archivo_info_reg(símismo, archivo, orden_jer, col_cód):
 
         símismo.árbol_geog.clear()
-        símismo.grupos.clear()
-
-        if grupos is None:
-            grupos = []
-        if not isinstance(grupos, list):
-            grupos = [grupos]
 
         with open(archivo, newline='') as d:
 
@@ -346,113 +339,14 @@ class Geografía(object):
             # Guardar la primera fila como nombres de columnas
             cols = next(l)
 
-            try:
-                i_cols = [cols.index(x) for x in orden_jer]
-            except ValueError:
-                raise ValueError(_('Los nombres de las regiones en "orden_jer" ({}) no concuerdan con los nombres en el'
-                                 ' archivo ({}).').format(', '.join(orden_jer), ', '.join(cols)))
-            try:
-                in_col_cód = cols.index(col_cód)
-            except ValueError:
-                raise ValueError(_('La columna de código de región especificada ({}) no concuerda con los nombres de '
-                                 'columnas del archivo ({}).').format(col_cód, ', '.join(cols)))
-
-            try:
-                í_g = [cols.index(x) for x in grupos]
-                símismo.grupos.extend(grupos)
-            except ValueError:
-                raise ValueError(_('Una o más de las columnas de grupo especificadas ({}) no concuerda con los nombres '
-                                   'de columnas del archivo ({}).').format(grupos, ', '.join(cols)))
-
-            # Para cada fila que sigue en el csv...
-            for f in l:
-                dic = símismo.árbol_geog
-                cód = f[in_col_cód]
-
-                for í, n in enumerate(i_cols):
-
-                    if í == len(i_cols) - 1:
-                        dic[f[n]] = cód
-
-                    elif f[n] not in dic:
-                        dic[f[n]] = {}
-
-                    dic = dic[f[n]]
-
-                símismo.árbol_geog_inv[cód] = dict([(orden_jer[k], f[j]) for k, j in enumerate(i_cols)])
-
-                for í, g in zip(í_g, grupos):
-                    símismo.árbol_geog_inv[cód][g] = f[í]
-
-                escala = orden_jer[max([n for n, i in enumerate(i_cols) if f[i] != ''])]
-                nombre = f[cols.index(escala)]
-                símismo.cód_a_lugar[cód] = {'escala': escala, 'nombre': nombre}
-
-    def obt_lugares_en(símismo, escala=None, en=None, por=None):
-        """"""
-
-        if escala is None:
-            escala = símismo.orden_jer[-1]
-        if en is None:
-            regiones = [x for x, d in símismo.árbol_geog_inv.items() if símismo.cód_a_lugar[x]['escala'] == escala]
-        else:
-            if isinstance(en, dict):
-                # Grupos
-                escala_en = list(en)[0]
-                nombres_en = en[escala_en]
-                if not isinstance(nombres_en, list):
-                    nombres_en = [nombres_en]
-            else:
-                if not isinstance(en, list):
-                    en = [en]
-                escala_en = símismo.cód_a_lugar[en[0]]['escala']
-                if not all(símismo.cód_a_lugar[x]['escala'] == escala_en for x in en):
-                    raise ValueError('')
-
-                nombres_en = [símismo.cód_a_lugar[x]['nombre'] for x in en]
-
-            nombres_en = [str(x) for x in nombres_en]
-            regiones = [x for x, d in símismo.árbol_geog_inv.items() if d[escala_en] in nombres_en and
-                        símismo.cód_a_lugar[x]['escala'] == escala]
-
-        if por is None:
-            return regiones
-        else:
-            categs = {}
-            for r in regiones:
-                try:
-                    cat = símismo.árbol_geog_inv[r][por]
-                    if por in símismo.grupos:
-                        cat = '{} {}'.format(por, cat)
-                except KeyError:
-                    cat = ''
-
-                if cat in categs:
-                    categs[cat].append(r)
-                else:
-                    categs[cat] = [r]
-
-            return categs
-
-    def obt_en_grupo(símismo, tipo_grupo, grupos):
-
-        if not isinstance(grupos, list) and not isinstance(grupos, tuple) and not isinstance(grupos, set):
-            grupos = [grupos]
-        grupos = [str(x) for x in grupos]
-
-        if tipo_grupo not in símismo.grupos:
-            raise ValueError('')
-
-        return [x for x, d in símismo.árbol_geog_inv.items() if str(d[tipo_grupo]) in grupos]
-
-    def dibujar(símismo, archivo, valores=None, título=None, unidades=None, colores=None, escala_num=None):
+    def dibujar(símismo, archivo, valores=None, título=None, unidades=None, colores=None, escala_num=None, categs=None):
         """
         Dibuja la Geografía.
 
         :param archivo: Dónde hay que guardar el mapa.
         :type archivo: str
         :param valores: Los valores para dibujar.
-        :type valores: np.ndarray
+        :type valores: np.ndarray | list
         :param título: El título del mapa.
         :type título: str
         :param unidades: Las unidades de los valores.
@@ -461,13 +355,14 @@ class Geografía(object):
         :type colores: str | list | tuple | int
         :param escala_num: La escala numérica para los colores.
         :type escala_num: tuple
-
+        :param categs:
+        :type categs: tuple | list
         """
 
         if colores is None:
             colores = ['#FF6666', '#FFCC66', '#00CC66']
         if colores == -1:
-            colores = ['#00CC66', '#FFCC66','#FF6666']
+            colores = ['#00CC66', '#FFCC66', '#FF6666']
 
         if isinstance(colores, str):
             colores = ['#FFFFFF', colores]
@@ -482,7 +377,11 @@ class Geografía(object):
         if valores is not None:
             d_regiones = None
             for escala, d_reg in símismo.regiones.items():
-                if len(d_reg['orden_regs']) == valores.shape[0]:
+                if isinstance(valores, np.ndarray):
+                    n_vals = valores.shape[0]
+                else:
+                    n_vals = len(valores)
+                if len(d_reg['orden_regs']) == n_vals:
                     d_regiones = d_reg
                     continue
 
@@ -505,7 +404,13 @@ class Geografía(object):
 
             d_clrs = _gen_d_mapacolores(colores=colores)
 
-            mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs)
+            if categs is not None:
+                n_categs = len(categs)
+                mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs, N=n_categs)
+
+            else:
+                mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs)
+
             norm = colors.Normalize(vmin=escala_num[0], vmax=escala_num[1])
             cpick = cm.ScalarMappable(norm=norm, cmap=mapa_color)
             cpick.set_array([])
@@ -514,9 +419,14 @@ class Geografía(object):
             _dibujar_shp(ejes=ejes, frm=regiones, orden=orden, colores=v_cols)
 
             if unidades is not None:
-                fig.colorbar(cpick, label=unidades)
+                escl_col = fig.colorbar(cpick, label=unidades)
             else:
-                fig.colorbar(cpick)
+                escl_col = fig.colorbar(cpick)
+
+            if categs is not None:
+                escl_col.set_label(_('Parámetro'))
+                escl_col.set_ticks(np.linspace(escala_num[0], escala_num[1], escala_num[1] - escala_num[0] + 1))
+                escl_col.set_ticklabels(categs)
 
         for nombre, d_obj in símismo.objetos.items():
 
@@ -536,6 +446,28 @@ class Geografía(object):
             ejes.set_title(título)
 
         fig.savefig(archivo, dpi=500)
+
+    def obt_lugares_en(símismo, cód_lugar, escala=None):
+        """
+
+        :param cód_lugar:
+        :type cód_lugar:
+        :param escala:
+        :type escala:
+        :return:
+        :rtype: list[str]
+        """
+
+        escala_lugar = símismo.cód_a_lugar[cód_lugar]['escala']
+        nombre_lugar = símismo.cód_a_lugar[cód_lugar]['nombre']
+
+        if escala is None:
+            l_códs = [x for x, d in símismo.árbol_geog_inv.items() if d[escala_lugar] == nombre_lugar]
+        else:
+            l_códs = [x for x, d in símismo.árbol_geog_inv.items()
+                      if d[escala_lugar] == nombre_lugar and símismo.cód_a_lugar[x]['escala'] == escala]
+
+        return l_códs
 
     def __str__(símismo):
         return símismo.nombre

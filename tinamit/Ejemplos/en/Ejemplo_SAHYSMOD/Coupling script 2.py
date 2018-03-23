@@ -5,7 +5,7 @@ from tinamit.Geog.Geog import Lugar, Geografía
 
 if __name__ == '__main__':
     use_simple = True
-    climate_change = True
+    climate_change = False
 
     # 0. Site geography
     Rechna_Doab = Geografía(nombre='Rechna Doab')
@@ -107,6 +107,7 @@ if __name__ == '__main__':
                 modelo.mds.inic_val(var=switch, val=val)
 
             # Simulate the coupled model
+            #modelo.simular_paralelo(paso=1, tiempo_final=20, nombre_corrida=name)  # time step and final time are in months
             modelo.simular(paso=1, tiempo_final=20, nombre_corrida=name)  # time step and final time are in months
 
             # Draw maps
