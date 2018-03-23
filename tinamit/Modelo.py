@@ -735,6 +735,7 @@ class Modelo(object):
 
         # Guardamos el valor en el diccionario `vals_inic`. Se aplicarán los valores iniciales únicamente al momento
         # de empezar la simulación.
+
         símismo.vals_inic[var] = val
 
         # Aplicar los valores iniciales al diccionario de valores actuales también.
