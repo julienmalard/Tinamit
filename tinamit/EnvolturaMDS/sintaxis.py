@@ -186,6 +186,10 @@ class _Transformador(Transformer):
         return {'func': x}
 
     @staticmethod
+    def pod(x):
+        return {'func': ['^', x]}
+
+    @staticmethod
     def mul(x):
         return {'func': ['*', x]}
 
@@ -230,7 +234,7 @@ class Ecuación(object):
                 for ll, v in á.items():
 
                     if ll == 'func':
-                        if v[0] in ['+', '-', '/', '*']:
+                        if v[0] in ['+', '-', '/', '*', '^']:
                             vrs = _obt_vars(v[1][0])
                             vrs.update(_obt_vars(v[1][1]))
 
@@ -285,6 +289,10 @@ class Ecuación(object):
                             comp_1 = _a_python(v[1][0], l_prms=l_prms)
                             comp_2 = _a_python(v[1][1], l_prms=l_prms)
                             return lambda p, vr: comp_1(p=p, vr=vr) * comp_2(p=p, vr=vr)
+                        elif v[0] == '^':
+                            comp_1 = _a_python(v[1][0], l_prms=l_prms)
+                            comp_2 = _a_python(v[1][1], l_prms=l_prms)
+                            return lambda p, vr: comp_1(p=p, vr=vr) ** comp_2(p=p, vr=vr)
                         else:
                             fun = conv_fun(v[0], dialecto, 'python')
                             comp = _a_python(v[1][1], l_prms=l_prms)
@@ -341,6 +349,8 @@ class Ecuación(object):
                             return _a_bayes(v[1][0], d_pm=d_pm) - _a_bayes(v[1][1], d_pm=d_pm)
                         elif v[0] == '*':
                             return _a_bayes(v[1][0], d_pm=d_pm) * _a_bayes(v[1][1], d_pm=d_pm)
+                        elif v[0] == '^':
+                            return _a_bayes(v[1][0], d_pm=d_pm) ** _a_bayes(v[1][1], d_pm=d_pm)
                         else:
                             return conv_fun(v[0], 'tinamït', 'pm')(*_a_bayes(v[1], d_pm=d_pm))  # para hacer: arreglar dialecto
 
@@ -421,6 +431,8 @@ class Ecuación(object):
                             return '({} - {})'.format(_a_tx(v[1][0], d_v=d_v), _a_tx(v[1][1], d_v=d_v))
                         elif v[0] == '*':
                             return '({} * {})'.format(_a_tx(v[1][0], d_v=d_v), _a_tx(v[1][1], d_v=d_v))
+                        elif v[0] == '^':
+                            return '({} ^ {})'.format(_a_tx(v[1][0], d_v=d_v), _a_tx(v[1][1], d_v=d_v))
                         else:
                             return '{nombre}({args})'.format(nombre=dic_funs_inv[dialecto][v[0]],
                                                              args=_a_tx(v[1], d_v=d_v))
@@ -476,6 +488,7 @@ dic_funs = {
     '+': {'vensim': '+'},
     '-': {'vensim': '-'},
     '*': {'vensim': '*'},
+    '^': {'vensim': '^'},
     '/': {'vensim': '/'}
 }
 

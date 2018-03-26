@@ -6,6 +6,8 @@ ec: suma
 ?prod: atom
     | prod "*" atom  -> mul
     | prod "/" atom  -> div
+?prod: pod
+    | pod "^" atom -> pod
 ?atom: NUM           -> num
      | "-" atom         -> neg
      | var
