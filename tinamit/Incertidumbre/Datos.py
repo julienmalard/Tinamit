@@ -257,7 +257,8 @@ class SuperBD(object):
                 bds.remove(nm_bd)
 
         if not len(bds):
-            raise ValueError('El variable "{}" no existe en cualquier base de datos.'.format(var_bd))
+            raise ValueError('El variable "{}" no existe en cualquiera de las base de datos especificadas.'
+                             .format(var_bd))
 
         if var not in símismo.vars:
             símismo.vars[var] = {'fuente': {}, 'limp': {}}
