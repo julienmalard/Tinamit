@@ -145,7 +145,7 @@ class ModeloVensimMdl(EnvolturaMDS):
 
         # Identificar el nombre del variable
         d_rgx = regex.match(símismo._regex_var, l_texto[0]).groupdict()
-        nombre = d_rgx['var']
+        nombre = d_rgx['var'].strip()
         subs = d_rgx['subs']
 
         # El diccionario en el cual guardar todo
