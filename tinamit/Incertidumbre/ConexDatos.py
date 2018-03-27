@@ -1,6 +1,6 @@
 from warnings import warn as avisar
 
-from Incertidumbre.Estadísticas import calib_bayes, optimizar, regresión
+from tinamit.Incertidumbre.Estadísticas import calib_bayes, optimizar, regresión
 from tinamit import _
 from tinamit.EnvolturaMDS.sintaxis import Ecuación
 from tinamit.Incertidumbre.Datos import SuperBD
