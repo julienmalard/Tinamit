@@ -261,6 +261,7 @@ class Geografía(object):
         símismo.árbol_geog_inv = {}
         símismo.cód_a_lugar = {}
         símismo.grupos = []
+        símismo.orden_jer = []
 
     def agregar_forma(símismo, archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=None):
         if nombre is None:

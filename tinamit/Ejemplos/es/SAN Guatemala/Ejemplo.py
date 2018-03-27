@@ -32,10 +32,13 @@ datos_desnutr = DatosRegión('Desnutrición municipal', archivo='Datos\\Desnutri
 #                               lugar='Código_lugar', cód_vacío=['NA', 'na', 'Na'])
 
 bd = SuperBD('BD Iximulew', bds=[ENCOVI_hog_2011, ENCOVI_ind_2011, datos_desnutr], geog=geog)
-bd.espec_var('ISA', var_bd='ISA_23', bds='ENCOVI hog 2011')
+bd.espec_var('Seguridad alimentaria', var_bd='ISA_23', bds='ENCOVI hog 2011')
 bd.espec_var('Educación formal', var_bd='educación', bds='ENCOVI ind 2011')
 bd.espec_var('Educación sexual', var_bd='educación.sexual', bds='ENCOVI ind 2011')
 bd.espec_var('Fertilidad', var_bd='fertilidad', bds='ENCOVI ind 2011')
+bd.espec_var('Calidad de la dieta', var_bd='défic.shannon.calidad.dieta', bds='ENCOVI hog 2011')
+bd.espec_var('Calidad de la dieta', var_bd='défic.shannon.calidad.dieta', bds='ENCOVI hog 2011')
+bd.espec_var('Calidad de la dieta', var_bd='défic.shannon.calidad.dieta', bds='ENCOVI hog 2011')
 
 # bd.espec_var('Ingresos salarial', var_bd='Ingresos.de.salario', cód_vacío='NA')
 # bd.espec_var('Ingresos agrícolas', var_bd='Ingresos.agrícolas', cód_vacío='NA')
@@ -44,42 +47,31 @@ bd.espec_var('Fertilidad', var_bd='fertilidad', bds='ENCOVI ind 2011')
 # bd.espec_var('Producción autoconsumo', var_bd='Producción.autoconsumo', cód_vacío='NA')
 # bd.espec_var('Tamaño familias', var_bd='Tamaño.de.las.familias', cód_vacío='NA')
 # bd.espec_var('Repetición escolar', var_bd='Repetición.escolar', cód_vacío='NA')
-# bd.espec_var('Enfermedades infantilies', var_bd='Enfermedades.infantiles', cód_vacío='NA')
+bd.espec_var('Enfermedades infantiles', var_bd='enfermedades.infantiles', bds=ENCOVI_hog_2011, cód_vacío='NA')
+bd.espec_var('Calidad del agua', var_bd='disponibilidad.agua', bds=ENCOVI_hog_2011, cód_vacío='NA')
+bd.espec_var('Consumo leña por hogar', var_bd='talla.árb', bds=ENCOVI_hog_2011)
 # # bd.espec_var('Población', var_bd='Población')
 # bd.espec_var('Desnutrición crónica infantil', var_bd='Desntr_crón_inft')
 
 conex = ConexDatos(bd=bd, modelo=modelo)
 conex.no_calibrados()
 
-datos = bd.obt_datos(['Educación formal', 'Educación sexual', 'Fertilidad'])['individual'].dropna()
-x = datos['Educación formal'].values
-x1 = datos['Educación sexual'].values
-y = datos['Fertilidad'].values
 
-from tinamit.EnvolturaMDS.sintaxis import Ecuación
-import numpy as np, pymc3 as pm
-ec = Ecuación(ec='b/(x+a)+c', dialecto='tinamït')
-tx = ec.gen_texto(paráms=['a', 'b', 'c'])
-f = ec.gen_func_python(paráms=['a', 'b', 'c'])
-f([1,2,2], {'x': np.array([0,0,1,2,3,4,5,6,7,8,9,10,15,20])})
-d_calib = conex.calib_var('Fertilidad', ec='b/(Educación formal+a)+c', paráms=['a', 'b', 'c'],
-                          líms_paráms=[(0, None), None, (0, None)], por='Territorio', aprioris=True)
+_ = conex.estim_constante(const='Consumo leña por hogar', líms=(0, None), por='Territorio')
+_ = conex.estim_constante(const='Consumo leña por hogar', líms=(0, None), por='Territorio')
+_ = conex.estim_constante(const='Consumo leña por hogar', líms=(0, None), por='Territorio')
+_ = conex.estim_constante(const='Consumo leña por hogar', líms=(0, None), por='Territorio')
+_ = conex.estim_constante(const='Consumo leña por hogar', líms=(0, None), por='Territorio')
 
-m = ec.gen_mod_bayes(paráms=['a', 'b', 'c'], líms_paráms=[(0, None), (0, None), (0, None)],
-                     obs_x={'x': x}, obs_y=y)
-with m:
-    t = pm.sample()
-pm.traceplot(t)
+_ = conex.calib_var('Enfermedades infantiles', ec='1/(-b*Calidad del agua-a)+c', paráms=['a', 'b', 'c'],
+                    líms_paráms=[(0, None), (0, 50), (0, None)], por='Territorio', aprioris=True)
 
-ec2 = Ecuación(ec='b/(x+a) + b1*x1 + c', dialecto='tinamït')
-m2 = ec2.gen_mod_bayes(paráms=['a', 'b', 'b1', 'c'], líms_paráms=[(0, None)]*4,
-                       obs_x={'x': x, 'x1': x1}, obs_y=y)
-with m2:
-    t2 = pm.sample()
-pm.traceplot(t2)
+_ = conex.calib_var('Fertilidad', ec='1/(b*Educación formal+b2*Educación sexual+a)+c', paráms=['a', 'b', 'b2', 'c'],
+                              líms_paráms=[(0, None), (0, 50), (0, 50), (0, None)], por='Territorio', aprioris=True)
 
-
-
+d_calib2 = conex.calib_var('Seguridad alimentaria', ec='1/(1 + a*exp(-b*Calidad de la dieta))', paráms=['a', 'b'],
+                           líms_paráms=[(0, None), (0, None)],
+                           por='Territorio', aprioris=True, indiv=False)
 
 conex.calib_var('Fertilidad')
 

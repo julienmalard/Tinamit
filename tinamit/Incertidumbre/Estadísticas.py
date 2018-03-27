@@ -1,45 +1,69 @@
 from warnings import warn as avisar
 
 import numpy as np
-import pymc3 as pm
+try:
+    import pymc3 as pm
+except ImportError:
+    pm = None
 from scipy.optimize import minimize
 import scipy.stats as estad
 from scipy.stats import gaussian_kde
 
 from tinamit import _
 
+if pm is not None:
+    dists = {'Beta': {'sp': estad.beta, 'pm': pm.Beta,
+                      'sp_a_pm': lambda p: {'alpha': p[0], 'beta': p[1]}},
+             'Cauchy': {'sp': estad.cauchy, 'pm': pm.Cauchy,
+                        'sp_a_pm': lambda p: {'alpha': p[0], 'beta': p[1]}},
+             'Chi2': {'sp': estad.chi2, 'pm': pm.ChiSquared,
+                      'sp_a_pm': lambda p: {'df': p[0]}},
+             'Exponencial': {'sp': estad.expon, 'pm': pm.Exponential,
+                             'sp_a_pm': lambda p: {'lam': 1/p[1]}},
+             'Gamma': {'sp': estad.gamma, 'pm': pm.Gamma,
+                       'sp_a_pm': lambda p: {'alpha': p[0], 'beta': 1/p[2]}},
+             'Laplace': {'sp': estad.laplace, 'pm': pm.Laplace,
+                         'sp_a_pm': lambda p: {'mu': p[0], 'b': p[1]}},
+             'LogNormal': {'sp': estad.lognorm, 'pm': pm.Lognormal,
+                           'sp_a_pm': lambda p: {'mu': p[1], 'sd': p[2]}},
+             'MitadCauchy': {'sp': estad.halfcauchy, 'pm': pm.HalfCauchy,
+                             'sp_a_pm': lambda p: {'beta': p[1]}},
+             'MitadNormal': {'sp': estad.halfnorm, 'pm': pm.HalfNormal,
+                             'sp_a_pm': lambda p: {'sd': p[1]}},
+             'Normal': {'sp': estad.norm, 'pm': pm.Normal,
+                        'sp_a_pm': lambda p: {'mu': p[0], 'sd': p[1]}},
+             'T': {'sp': estad.t, 'pm': pm.StudentT,
+                   'sp_a_pm': lambda p: {'nu': p[0], 'mu': p[1], 'sd': p[2]}},
+             'Uniforme': {'sp': estad.uniform, 'pm': pm.Uniform,
+                          'sp_a_pm': lambda p: {'lower': p[0], 'upper': p[0] + p[1]}},
+             'Weibull': {'sp': estad.weibull_min, 'pm': pm.Weibull,
+                         'sp_a_pm': lambda p: {'alpha': p[0], 'beta': p[2]}},
+             }
 
-def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, info_gen_aprioris=None, **ops):
-    if info_gen_aprioris is not None:
-        dists_potenciales = {'Exponencial': estad.expon, 'Gamma': estad.gamma,
-                             'Normal': estad.norm, 'T': estad.t, 'Uniforme': estad.uniform}
-        dists_pm = {'Exponencial': pm.Normal, 'Gamma': pm.Gamma, 'Laplace': pm.Laplace,
-                    'Normal': pm.Normal, 'T': pm.StudentT, 'Uniforme': pm.Uniform}
+
+def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=None, **ops):
+    if pm is None:
+        raise ImportError('')
+    if dists_aprioris is not None:
 
         aprioris = []
-        for d in info_gen_aprioris:
-            ajust_sp = ajust_dist(datos=d, dists_potenciales=dists_potenciales)
-            dist = dists_pm[ajust_sp['tipo']]
+        for p, dic in dists_aprioris.items():
+            ajust_sp = ajust_dist(datos=dic['dist'], dists_potenciales={ll: v['sp'] for ll, v in dists.items()})
+            nombre = ajust_sp['tipo']
+            dist_pm = dists[nombre]['pm']
+
             prms_sp = ajust_sp['prms']
-            if dist == 'Exponencial':
-                prms = {'lam': 1/prms_sp[1]}
-            elif dist == 'Gamma':
-                prms = {'alpha': prms_sp[0], 'beta': prms_sp[2]}
-            elif dist == 'Normal':
-                prms = {'mu': prms_sp[0], 'sd': prms_sp[1]}
-            elif dist == 'T':
-                prms = {'nu': prms_sp[0], 'mu': prms_sp[1], 'sd': prms_sp[2]}
-            elif dist == 'Uniforme':
-                prms = {'lower': prms_sp[0], 'upper': prms_sp[0] + prms_sp[1]}
-            else:
-                raise ValueError
-            aprioris.append((dist, prms))
+            prms_pm = dists[nombre]['sp_a_pm'](prms_sp)
+
+            aprioris.append((dist_pm, prms_pm))
     else:
         aprioris = None
 
     mod_bayes = obj_ec.gen_mod_bayes(paráms, líms_paráms, obs_x, obs_y, aprioris)
     with mod_bayes:
-        t = pm.sample(**ops)
+        ops_auto = {'tune': 1000}
+        ops_auto.update(ops)
+        t = pm.sample(**ops_auto)
 
     d_máx = {}
     for p in paráms:
@@ -100,15 +124,28 @@ def optimizar(obj_ec, paráms, líms_paráms, obs_x, obs_y, **ops):
 def regresión(obj_ec, paráms, líms_paráms, obs_x, obs_y, **ops):
     raise NotImplementedError
 
-
 def ajust_dist(datos, dists_potenciales):
     mejor_ajuste = {'p':0, 'tipo':None}
 
     for nombre_dist, dist_sp in dists_potenciales.items():
 
-        if nombre_dist == 'Exponencial':
+        if nombre_dist == 'Beta':
+            restric = {'floc': 0, 'fscale': 1}
+        elif nombre_dist == 'Cauchy':
+            restric = {}
+        elif nombre_dist == 'Chi2':
+            restric = {'floc': 0, 'fscale': 1}
+        elif nombre_dist == 'Exponencial':
             restric = {'floc': 0}
         elif nombre_dist == 'Gamma':
+            restric = {'floc': 0}
+        elif nombre_dist == 'Laplace':
+            restric = {}
+        elif nombre_dist == 'LogNormal':
+            restric = {'fs': 1}
+        elif nombre_dist == 'MitadCauchy':
+            restric = {'floc': 0}
+        elif nombre_dist == 'MitadNormal':
             restric = {'floc': 0}
         elif nombre_dist == 'Normal':
             restric = {}
@@ -116,6 +153,8 @@ def ajust_dist(datos, dists_potenciales):
             restric = {}
         elif nombre_dist == 'Uniforme':
             restric = {}
+        elif nombre_dist == 'Weibull':
+            restric = {'floc': 0}
         else:
             raise ValueError
 
@@ -126,7 +165,7 @@ def ajust_dist(datos, dists_potenciales):
 
         if tupla_prms is not None:
             # Medir el ajuste de la distribución
-            p = estad.kstest(rvs=datos, cdf=dist_sp(**tupla_prms).cdf)[1]
+            p = estad.kstest(rvs=datos, cdf=dist_sp(*tupla_prms).cdf)[1]
 
             # Si el ajuste es mejor que el mejor ajuste anterior...
             if p > mejor_ajuste['p'] or mejor_ajuste['tipo'] == '':
@@ -137,7 +176,7 @@ def ajust_dist(datos, dists_potenciales):
 
     # Si no logramos un buen aujste, avisar al usuario.
     if mejor_ajuste['p'] <= 0.10:
-        avisar('El ajuste de la mejor distribución quedó muy mal (p = %f).' % round(mejor_ajuste['p'], 4))
+        avisar('El ajuste de la mejor distribución quedó muy mal (p = {}).'.format(round(mejor_ajuste['p'], 4)))
 
     # Devolver la distribución con el mejor ajuste, tanto como el valor de su ajuste.
     return mejor_ajuste

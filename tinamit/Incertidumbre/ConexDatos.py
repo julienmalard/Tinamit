@@ -4,7 +4,7 @@ from tinamit.Incertidumbre.Estadísticas import calib_bayes, optimizar, regresi�
 from tinamit import _
 from tinamit.EnvolturaMDS.sintaxis import Ecuación
 from tinamit.Incertidumbre.Datos import SuperBD
-from tinamit.Modelo import Modelo
+from tinamit.MDS import EnvolturaMDS
 
 try:
     import pymc3 as pm
@@ -19,28 +19,29 @@ class ConexDatos(object):
         :param bd:
         :type bd: SuperBD
         :param modelo:
-        :type modelo: Modelo
+        :type modelo: EnvolturaMDS
         """
 
         símismo.bd = bd
         símismo.modelo = modelo
         símismo.dic_info_calib = {}
+        símismo.dic_info_const = {}
 
     def estab_calib_var(símismo, var, ec=None, líms_paráms=None, paráms=None,
-                        método=None, ops_método=None, regional=True):
+                        método=None, ops_método=None, indiv=True):
         símismo.dic_info_calib[var] = {
             'ec': ec,
             'paráms': paráms,
             'líms_paráms': líms_paráms,
             'método': método,
             'ops_método': ops_método,
-            'regional': regional
+            'indiv': indiv
         }
 
     def borrar_calib_ec(símismo, var):
         símismo.dic_info_calib.pop(var)
 
-    def calib_ecs(símismo, lugar=None, escala=None, fechas=None, bds=None, nombre='Calib Tinamït'):
+    def calib_ecs(símismo, en=None, escala=None, por=None, fechas=None, bds=None, nombre='Calib Tinamït'):
 
         mod = símismo.modelo
         if nombre not in mod.calibs:
@@ -49,21 +50,67 @@ class ConexDatos(object):
         for var, d_info in símismo.dic_info_calib.items():
 
             if var not in símismo.modelo.variables:
-                avisar(_('El variable "{}" no existe en modelo "{}" y por tanto no se pudo calibrar.')
+                avisar(_('El variable "{}" no existe en modelo "{}" y por lo tanto no se pudo calibrar.')
                        .format(var, símismo.modelo))
                 continue
 
-            calibración = símismo.calib_var(var=var, lugar=lugar, escala=escala, fechas=fechas, bds=bds, **d_info)
+            calibración = símismo.calib_var(var=var, en=en, escala=escala, fechas=fechas, bds=bds, **d_info)
             for lg, clb_lg in calibración.items():
                 if lg not in mod.calibs[nombre]:
                     mod.calibs[nombre][lg] = {}
                 mod.calibs[nombre][lg][var] = clb_lg
 
+        for const, d_info in símismo.dic_info_const.items():
+            if var not in símismo.modelo.variables:
+                avisar(_('El variable "{}" no existe en modelo "{}" y por lo tanto no se pudo estimar.')
+                       .format(var, símismo.modelo))
+                continue
+
+            estimo = símismo.estim_constante(const=const, en=en, escala=escala, fechas=fechas, bds=bds, **d_info)
+            for lg, est_lg in estimo.items():
+                if lg not in mod.calibs[nombre]:
+                    mod.calibs[nombre][lg] = {}
+                mod.calibs[nombre][lg][var] = est_lg
+
+    def estab_estim_const(símismo, const, líms=None, en=None, escala=None, por=None, fechas=None, bds=None, indiv=None):
+        símismo.dic_info_const[const] = {
+            'líms': líms,
+            'en': en,
+            'escala': escala,
+            'por': por,
+            'fechas': fechas,
+            'bds': bds,
+            'indiv': indiv
+        }
+
+    def estim_constante(símismo, const, líms=None, en=None, escala=None, por=None, fechas=None, bds=None, indiv=True):
+
+        símismo.estab_estim_const(const=const, líms=líms, en=en, escala=escala, por=por, fechas=fechas, bds=bds,
+                                  indiv=indiv)
+
+        geog = símismo.bd.geog
+        lugares = geog.obt_lugares_en(escala=escala, en=en, por=por)
+
+        obs = [símismo.bd.obt_datos(l_vars=const, lugar=v, datos=bds, fechas=fechas)
+               ['individual' if indiv else 'regional'][const].dropna() for v in lugares.values()]
+
+        d_calib = {}
+        for lg, x in zip(lugares, obs):
+            import numpy as np
+
+            resultados = {'val': np.mean(x), 'ES': np.std(x) / np.sqrt(x.size)}
+
+            d_calib[lg] = resultados
+
+        return d_calib
+
     def calib_var(símismo, var, ec=None, paráms=None, líms_paráms=None, método=None, ops_método=None,
-                  en=None, escala=None, por=None, fechas=None, aprioris=True, aprioris_por=None, bds=None):
+                  en=None, escala=None, por=None, fechas=None, bds=None, aprioris=True, aprioris_por=None, indiv=False):
+
+        geog = símismo.bd.geog
 
         símismo.estab_calib_var(var=var, ec=ec, paráms=paráms, líms_paráms=líms_paráms, método=método,
-                                ops_método=ops_método, regional=escala != 'individual')
+                                ops_método=ops_método, indiv=indiv)
 
         mod = símismo.modelo
         try:
@@ -111,45 +158,73 @@ class ConexDatos(object):
                 método = 'Inf Bayes'
             else:
                 método = 'Optimizar'
+        método = método.lower()
 
         obj_ec = Ecuación(ec=ec, dialecto=símismo.modelo.__class__.__name__)
         vars_x = [x for x in obj_ec.variables() if x not in paráms]
         l_vars = vars_x + [var]
 
         if isinstance(lugares, dict):
-            obs = [símismo.bd.obt_datos(l_vars=l_vars, lugar=v, datos=bds, fechas=fechas)['individual'].dropna()  # Arreglarme
-                   for v in lugares.values()]
+            obs = [símismo.bd.obt_datos(l_vars=l_vars, lugar=v, datos=bds, fechas=fechas)
+                   ['individual' if indiv else 'regional'].dropna() for v in lugares.values()]
         else:
-            obs = [símismo.bd.obt_datos(l_vars=l_vars, lugar=lugares, datos=bds, fechas=fechas)['individual'].dropna()] # Arreglarme
+            obs = [símismo.bd.obt_datos(l_vars=l_vars, lugar=lugares, datos=bds, fechas=fechas)
+                   ['individual' if indiv else 'regional'].dropna()]
 
         obs_y = [l[var].values for l in obs]
         obs_x = [{x: l[x].values for x in vars_x} for l in obs]
 
+        # Calcular a prioris
+        if aprioris and método == 'inf bayes':
+            if aprioris_por is None:
+                aprioris_por = []
+            if not isinstance(aprioris_por, list):
+                aprioris_por = [aprioris_por]
+
+            def calib_bayes_en(en_=None, escl=None, apr=None, **ops):
+                lgs = geog.obt_lugares_en(en=en_, escala=escl)
+                obs_ap = símismo.bd.obt_datos(l_vars=l_vars, lugar=lgs, datos=bds, fechas=fechas) \
+                    ['individual' if indiv else 'regional'].dropna()
+
+                obs_y_ap = obs_ap[var].values
+                obs_x_ap = {x: obs_ap[x].values for x in vars_x}
+                return calib_bayes(obj_ec, paráms, líms_paráms, obs_x_ap, obs_y_ap, apr, **ops)
+
+            # Ordenar aprioris_por
+            if not all(x in geog.orden_jer or x in geog.grupos for x in aprioris_por):
+                raise ValueError('')
+            aprioris_por.sort(key=lambda x: geog.orden_jer.index(x))  # Grande a pequeño
+
+            if len(aprioris_por):
+                avisar('¡Código experimental!')  # Para hacer: terminar
+                dic_lg_pariente = {en: {x: geog.árbol_geog_inv[x][aprioris_por[-1]] for x in lugares}}
+                nivel_inf = en
+                for n, e in enumerate(reversed(aprioris_por)):
+                    try:
+                        nivel_sup = list(reversed(aprioris_por))[n+1]
+                    except IndexError:
+                        nivel_sup = None
+                    dic_lg_pariente[e] = {x: geog.árbol_geog_inv[x][nivel_sup] if nivel_sup is not None else None
+                                          for x in dic_lg_pariente[nivel_inf].values()}
+                    nivel_inf = e
+
+            # Para hacer: terminar para casis cib aprioris_por
+            dic_aprioris = {None: calib_bayes_en(o_ec=obj_ec, prms=paráms, líms_prms=líms_paráms, **ops_método)}
+            dists_aprioris = [dic_aprioris[None] for _ in lugares]
+
+        else:
+            dists_aprioris = [None]*len(lugares)
+
         d_calib = {}
-        for lg, x, y in zip(lugares, obs_x, obs_y):
+        for lg, x, y, ap in zip(lugares, obs_x, obs_y, dists_aprioris):
 
-            if método.lower() == 'inf bayes':
-                if aprioris:
-                    if aprioris_por is None:
-                        lgs_apriosis = símismo.bd.geog.obt_lugares_en()
-                    else:
-                        raise NotImplementedError
-                    obs_ap = símismo.bd.obt_datos(l_vars=l_vars, lugar=lgs_apriosis, datos=bds, fechas=fechas)[
-                                  'individual'].dropna()  # Arreglarme
+            if método == 'inf bayes':
+                resultados = calib_bayes(obj_ec, paráms, líms_paráms, x, y, dists_aprioris=ap, **ops_método)
 
-                    obs_y_ap = obs_ap[var].values
-                    obs_x_ap = {x: obs_ap[x].values for x in vars_x}
-                    res_ap = calib_bayes(obj_ec, paráms, líms_paráms, obs_x_ap, obs_y_ap, **ops_método)
-                    info_gen_aprioris = [res_ap[p]['dist'] for p in res_ap]
-
-                else:
-                    info_gen_aprioris = None
-                resultados = calib_bayes(obj_ec, paráms, líms_paráms, x, y, info_gen_aprioris, **ops_método)
-
-            elif método.lower() == 'optimizar':
+            elif método == 'optimizar':
                 resultados = optimizar(obj_ec, paráms, líms_paráms, x, y, **ops_método)
 
-            elif método.lower() == 'regresión':
+            elif método == 'regresión':
                 resultados = regresión(obj_ec, paráms, líms_paráms, x, y, **ops_método)
             else:
                 raise ValueError('')

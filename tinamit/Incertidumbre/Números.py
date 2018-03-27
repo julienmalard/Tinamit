@@ -18,6 +18,12 @@ def tx_a_núm(texto):
     else:
         neg = 1
 
+    if 'e' in texto:
+        texto, exp = texto.split('e')
+        exp = tx_a_núm(exp)
+    else:
+        exp = None
+
     for lengua, d_l in dic_trads.items():
         # Intentar cada lengua disponible.
 
@@ -97,6 +103,9 @@ def tx_a_núm(texto):
                 else:
                     # ... si no había decimal, no hay nada más que hacer
                     núm = int(val_entero)
+
+                if exp is not None:
+                    núm *= 10 ** exp
 
                 return núm * neg # Devolver el número
 

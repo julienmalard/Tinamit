@@ -166,6 +166,10 @@ class _Transformador(Transformer):
         return float(x[0])
 
     @staticmethod
+    def neg(x):
+        return {'neg': x[0]}
+
+    @staticmethod
     def var(x):
         return {'var': x[0]}
 
@@ -180,6 +184,10 @@ class _Transformador(Transformer):
     @staticmethod
     def func(x):
         return {'func': x}
+
+    @staticmethod
+    def pod(x):
+        return {'func': ['^', x]}
 
     @staticmethod
     def mul(x):
@@ -226,17 +234,20 @@ class Ecuación(object):
                 for ll, v in á.items():
 
                     if ll == 'func':
-                        if v[0] in ['+', '-', '/', '*']:
+                        if v[0] in ['+', '-', '/', '*', '^']:
                             vrs = _obt_vars(v[1][0])
                             vrs.update(_obt_vars(v[1][1]))
 
                             return vrs
 
                         else:
-                            return _obt_vars(v[1][1])
+                            return set([i for x in v[1] for i in _obt_vars(x) ])
 
                     elif ll == 'var':
                         return {v}
+
+                    elif ll == 'neg':
+                        return set()
 
                     else:
                         raise TypeError('')
@@ -244,7 +255,7 @@ class Ecuación(object):
             elif isinstance(á, list):
                 return {z for x in á for z in _obt_vars(x)}
             elif isinstance(á, int) or isinstance(á, float):
-                return {}
+                return set()
             else:
                 raise TypeError('{}'.format(type(á)))
 
@@ -278,6 +289,10 @@ class Ecuación(object):
                             comp_1 = _a_python(v[1][0], l_prms=l_prms)
                             comp_2 = _a_python(v[1][1], l_prms=l_prms)
                             return lambda p, vr: comp_1(p=p, vr=vr) * comp_2(p=p, vr=vr)
+                        elif v[0] == '^':
+                            comp_1 = _a_python(v[1][0], l_prms=l_prms)
+                            comp_2 = _a_python(v[1][1], l_prms=l_prms)
+                            return lambda p, vr: comp_1(p=p, vr=vr) ** comp_2(p=p, vr=vr)
                         else:
                             fun = conv_fun(v[0], dialecto, 'python')
                             comp = _a_python(v[1][1], l_prms=l_prms)
@@ -294,6 +309,9 @@ class Ecuación(object):
                         except ValueError:
                             # Si el variable no es un parámetro calibrable, debe ser un valor observado
                             return lambda p, vr: vr[v]
+                    elif ll == 'neg':
+                        comp = _a_python(v[1][1], l_prms=l_prms)
+                        return lambda p, vr: -comp(p=p, vr=vr)
                     else:
                         raise TypeError('')
 
@@ -313,7 +331,9 @@ class Ecuación(object):
 
         dialecto = símismo.dialecto
 
-        def _a_bayes(á):
+        def _a_bayes(á, d_pm=None):
+            if d_pm is None:
+                d_pm = {}
 
             if isinstance(á, dict):
 
@@ -322,49 +342,62 @@ class Ecuación(object):
                     if ll == 'func':
 
                         if v[0] == '+':
-                            return _a_bayes(v[1][0]) + _a_bayes(v[1][1])
+                            return _a_bayes(v[1][0], d_pm=d_pm) + _a_bayes(v[1][1], d_pm=d_pm)
                         elif v[0] == '/':
-                            return _a_bayes(v[1][0]) / _a_bayes(v[1][1])
+                            return _a_bayes(v[1][0], d_pm=d_pm) / _a_bayes(v[1][1], d_pm=d_pm)
                         elif v[0] == '-':
-                            return _a_bayes(v[1][0]) - _a_bayes(v[1][1])
+                            return _a_bayes(v[1][0], d_pm=d_pm) - _a_bayes(v[1][1], d_pm=d_pm)
                         elif v[0] == '*':
-                            return _a_bayes(v[1][0]) * _a_bayes(v[1][1])
+                            return _a_bayes(v[1][0], d_pm=d_pm) * _a_bayes(v[1][1], d_pm=d_pm)
+                        elif v[0] == '^':
+                            return _a_bayes(v[1][0], d_pm=d_pm) ** _a_bayes(v[1][1], d_pm=d_pm)
                         else:
-                            return conv_fun(v[0], dialecto, 'pm')(*_a_bayes(v[1][1]))
+                            return conv_fun(v[0], 'tinamït', 'pm')(*_a_bayes(v[1], d_pm=d_pm))  # para hacer: arreglar dialecto
 
                     elif ll == 'var':
                         try:
-                            í_var = paráms.index(v)
-                            líms = líms_paráms[í_var]
-
-                            if aprioris is None:
-                                if líms[0] is None:
-                                    if líms[1] is None:
-                                        return pm.Flat(v)
-                                    else:
-                                        return líms[1] - pm.HalfFlat(v)
-                                else:
-                                    if líms[1] is None:
-                                        return líms[0] + pm.HalfFlat(v)
-                                    else:
-                                        return pm.Uniform(name=v, lower=líms[0], upper=líms[1])
+                            if v in d_pm:
+                                return d_pm[v]
                             else:
-                                dist, prms = aprioris[í_var]
-                                if líms[0] is not None or líms[1] is not None:
-                                    acotada = pm.Bound(dist, lower=líms[0], upper=líms[1])
-                                    return acotada(v, **prms)
+                                í_var = paráms.index(v)
+                                líms = líms_paráms[í_var]
+
+                                if aprioris is None:
+                                    if líms[0] is None:
+                                        if líms[1] is None:
+                                            dist_pm = pm.Flat(v, testval=0)
+                                        else:
+                                            dist_pm = líms[1] - pm.HalfFlat(v, testval=1)
+                                    else:
+                                        if líms[1] is None:
+                                            dist_pm = líms[0] + pm.HalfFlat(v, testval=1)
+                                        else:
+                                            dist_pm = pm.Uniform(name=v, lower=líms[0], upper=líms[1])
                                 else:
-                                    return dist(v, **prms)
+                                    dist, prms = aprioris[í_var]
+                                    if líms[0] is not None or líms[1] is not None and dist != pm.Uniform:
+                                        acotada = pm.Bound(dist, lower=líms[0], upper=líms[1])
+                                        dist_pm = acotada(v, **prms)
+                                    else:
+                                        if dist == pm.Uniform:
+                                            prms['lower'] = max(prms['lower'], líms[0])
+                                            prms['upper'] = min(prms['upper'], líms[1])
+                                        dist_pm = dist(v, **prms)
+
+                                d_pm[v] = dist_pm
+                                return dist_pm
 
                         except ValueError:
 
                             # Si el variable no es un parámetro calibrable, debe ser un valor observado
                             return obs_x[v]
+                    elif ll == 'neg':
+                        return -_a_bayes(v, d_pm=d_pm)
                     else:
                         raise TypeError('')
 
             elif isinstance(á, list):
-                return [_a_bayes(x) for x in á]
+                return [_a_bayes(x, d_pm=d_pm) for x in á]
             elif isinstance(á, int) or isinstance(á, float):
                 return á
             else:
@@ -398,6 +431,8 @@ class Ecuación(object):
                             return '({} - {})'.format(_a_tx(v[1][0], d_v=d_v), _a_tx(v[1][1], d_v=d_v))
                         elif v[0] == '*':
                             return '({} * {})'.format(_a_tx(v[1][0], d_v=d_v), _a_tx(v[1][1], d_v=d_v))
+                        elif v[0] == '^':
+                            return '({} ^ {})'.format(_a_tx(v[1][0], d_v=d_v), _a_tx(v[1][1], d_v=d_v))
                         else:
                             return '{nombre}({args})'.format(nombre=dic_funs_inv[dialecto][v[0]],
                                                              args=_a_tx(v[1], d_v=d_v))
@@ -412,6 +447,8 @@ class Ecuación(object):
 
                         d_v[v] = nmbr
                         return nmbr
+                    elif ll == 'neg':
+                        return '-{}'.format(_a_tx(v, d_v=d_v))
                     else:
                         raise TypeError('')
 
@@ -451,6 +488,7 @@ dic_funs = {
     '+': {'vensim': '+'},
     '-': {'vensim': '-'},
     '*': {'vensim': '*'},
+    '^': {'vensim': '^'},
     '/': {'vensim': '/'}
 }
 
@@ -463,7 +501,10 @@ for f, d_fun in dic_funs.items():
 
 
 def conv_fun(fun, dialecto_0, dialecto_1):
-    return dic_funs[dic_funs_inv[dialecto_0][fun]][dialecto_1]
+    if dialecto_0 == 'tinamït':
+        return dic_funs[fun][dialecto_1]
+    else:
+        return dic_funs[dic_funs_inv[dialecto_0][fun]][dialecto_1]
 
 
 if __name__ == '__main__':
