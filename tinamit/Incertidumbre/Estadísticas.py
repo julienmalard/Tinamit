@@ -41,7 +41,7 @@ if pm is not None:
              }
 
 
-def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=None, **ops):
+def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=None, binario=False, *ops):
     if pm is None:
         raise ImportError('')
     if dists_aprioris is not None:
@@ -59,7 +59,7 @@ def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=Non
     else:
         aprioris = None
 
-    mod_bayes = obj_ec.gen_mod_bayes(paráms, líms_paráms, obs_x, obs_y, aprioris)
+    mod_bayes = obj_ec.gen_mod_bayes(paráms, líms_paráms, obs_x, obs_y, aprioris, binario=binario)
     with mod_bayes:
         ops_auto = {'tune': 1000}
         ops_auto.update(ops)

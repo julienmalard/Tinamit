@@ -324,7 +324,7 @@ class Ecuación(object):
 
         return _a_python(símismo.árbol)
 
-    def gen_mod_bayes(símismo, paráms, líms_paráms, obs_x, obs_y, aprioris=None):
+    def gen_mod_bayes(símismo, paráms, líms_paráms, obs_x, obs_y, aprioris=None, binario=False):
 
         if pm is None:
             return ImportError(_('Hay que instalar PyMC3 para poder utilizar modelos bayesianos.'))
@@ -375,7 +375,7 @@ class Ecuación(object):
                                             dist_pm = pm.Uniform(name=v, lower=líms[0], upper=líms[1])
                                 else:
                                     dist, prms = aprioris[í_var]
-                                    if líms[0] is not None or líms[1] is not None and dist != pm.Uniform:
+                                    if (líms[0] is not None or líms[1] is not None) and dist != pm.Uniform:
                                         acotada = pm.Bound(dist, lower=líms[0], upper=líms[1])
                                         dist_pm = acotada(v, **prms)
                                     else:
@@ -408,7 +408,11 @@ class Ecuación(object):
             mu = _a_bayes(símismo.árbol)
             sigma = pm.HalfNormal(name='sigma', sd=1)
 
-            pm.Normal(name='Y_obs', mu=mu, sd=sigma, observed=obs_y)
+            if binario:
+                x = pm.Normal(name='X', mu=mu, sd=sigma)
+                pm.Bernoulli(name='Y_obs', p=pm.invlogit(x), observed=obs_y)
+            else:
+                pm.Normal(name='Y_obs', mu=mu, sd=sigma, observed=obs_y)
 
         return modelo
 

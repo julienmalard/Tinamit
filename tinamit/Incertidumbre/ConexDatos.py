@@ -29,6 +29,7 @@ class ConexDatos(object):
         símismo.modelo = modelo
         símismo.dic_info_calib = {}
         símismo.dic_info_const = {}
+        símismo.dic_info_iniciales = {}
 
     def estab_calib_var(símismo, var, ec=None, líms_paráms=None, paráms=None,
                         método=None, ops_método=None, regional=True):
@@ -40,6 +41,12 @@ class ConexDatos(object):
             'ops_método': ops_método,
             'regional': regional
         }
+
+    def espec_inicial(símismo, var_inic, var):
+        símismo.dic_info_iniciales[var] = var_inic
+
+    def borrar_inicial(símismo, var):
+        símismo.dic_info_iniciales.pop(var)
 
     def borrar_calib_ec(símismo, var):
         símismo.dic_info_calib.pop(var)
@@ -95,7 +102,10 @@ class ConexDatos(object):
         geog = símismo.bd.geog
         lugares = geog.obt_lugares_en(escala=escala, en=en, por=por)
 
-        l_lugs = list(lugares)
+        if isinstance(lugares, dict):
+            l_lugs = list(lugares.values())
+        else:
+            l_lugs = lugares
         obs = [símismo.bd.obt_datos(l_vars=const, lugar=v, datos=bds, fechas=fechas, excl_faltan=True)
                ['regional' if regional else 'individual'][const] for v in l_lugs]
 
@@ -110,7 +120,8 @@ class ConexDatos(object):
         return d_calib
 
     def calib_var(símismo, var, ec=None, paráms=None, líms_paráms=None, método=None, ops_método=None,
-                  en=None, escala=None, por=None, fechas=None, bds=None, aprioris=True, aprioris_por=None, regional=False):
+                  en=None, escala=None, por=None, fechas=None, bds=None, aprioris=True, aprioris_por=None,
+                  binario=False, regional=False):
 
         geog = símismo.bd.geog
 
@@ -186,14 +197,14 @@ class ConexDatos(object):
             if not isinstance(aprioris_por, list):
                 aprioris_por = [aprioris_por]
 
-            def calib_bayes_en(en_=None, escl=None, apr=None, **ops):
+            def calib_bayes_en(o_ec, en_=None, escl=None, apr=None, binario=False, **ops):
                 lgs = geog.obt_lugares_en(en=en_, escala=escl)
                 obs_ap = símismo.bd.obt_datos(l_vars=l_vars, lugar=lgs, datos=bds, fechas=fechas) \
-                    ['individual' if regional else 'regional'].dropna()
+                    ['regional' if regional else 'individual'].dropna()
 
                 obs_y_ap = obs_ap[var].values
                 obs_x_ap = {x: obs_ap[x].values for x in vars_x}
-                return calib_bayes(obj_ec, paráms, líms_paráms, obs_x_ap, obs_y_ap, apr, **ops)
+                return calib_bayes(o_ec, paráms, líms_paráms, obs_x_ap, obs_y_ap, apr, binario=binario, **ops)
 
             # Ordenar aprioris_por
             if not all(x in geog.orden_jer or x in geog.grupos for x in aprioris_por):
@@ -214,7 +225,7 @@ class ConexDatos(object):
                     nivel_inf = e
 
             # Para hacer: terminar para casos con aprioris_por
-            dic_aprioris = {None: calib_bayes_en(o_ec=obj_ec, prms=paráms, líms_prms=líms_paráms, **ops_método)}
+            dic_aprioris = {None: calib_bayes_en(o_ec=obj_ec, binario=binario, **ops_método)}
             dists_aprioris = [dic_aprioris[None] for _ in lugares]
 
         else:
@@ -224,7 +235,8 @@ class ConexDatos(object):
         for lg, x, y, ap in zip(lugares, obs_x, obs_y, dists_aprioris):
 
             if método == 'inf bayes':
-                resultados = calib_bayes(obj_ec, paráms, líms_paráms, x, y, dists_aprioris=ap, **ops_método)
+                resultados = calib_bayes(obj_ec, paráms, líms_paráms, x, y, dists_aprioris=ap, binario=binario,
+                                         **ops_método)
 
             elif método == 'optimizar':
                 resultados = optimizar(obj_ec, paráms, líms_paráms, x, y, **ops_método)
@@ -329,7 +341,7 @@ class ConexDatos(object):
             raise NotImplementedError  # para hacer
 
         d_vals_inic = {}
-        for var_mod, var_bd in símismo.dic_info_vals_inic.items():
+        for var_mod, var_bd in símismo.dic_info_iniciales.items():
             vals = símismo.bd.obt_datos(l_vars=var_bd, lugar=lugar)['regional'].dropna(subset=var_bd)
             # Interpolar la fecha, si necesitamos y podemos
             try:

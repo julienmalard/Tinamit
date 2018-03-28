@@ -93,14 +93,14 @@ class Datos(object):
 
         """
 
-        códs_vacío = símismo.cód_vacío.copy()
+        códs_vacío_final = símismo.cód_vacío.copy()
         if cód_vacío is not None:
             if isinstance(cód_vacío, list) or isinstance(cód_vacío, set):
-                códs_vacío.update(cód_vacío)
+                códs_vacío_final.update(cód_vacío)
             else:
-                códs_vacío.add(cód_vacío)
+                códs_vacío_final.add(cód_vacío)
 
-        datos = símismo.bd.obt_datos(l_vars, cód_vacío=códs_vacío)
+        datos = símismo.bd.obt_datos(l_vars, cód_vacío=códs_vacío_final)
 
         return datos
 
@@ -119,7 +119,7 @@ class DatosIndividuales(Datos):
 
 class DatosRegión(Datos):
 
-    def __init__(símismo, nombre, archivo, fecha=None, lugar=None, cód_vacío='', tmñ_muestra=None):
+    def __init__(símismo, nombre, archivo, fecha=None, lugar=None, cód_vacío=None, tmñ_muestra=None):
 
         super().__init__(nombre=nombre, archivo=archivo, fecha=fecha, lugar=lugar, cód_vacío=cód_vacío)
 
@@ -134,10 +134,10 @@ class DatosRegión(Datos):
         if col_error is not None:
             errores = símismo.bd.obt_datos(col_error)
         else:
-            datos = símismo.bd.obt_datos(var)
+            datos = símismo.bd.obt_datos(var, cód_vacío=símismo.cód_vacío)
             if símismo.tmñ_muestra is not None:
                 if np.nanmin(datos) >= 0 and np.nanmax(datos) <= 1:
-                    tmñ_muestra = símismo.bd.obt_datos(símismo.tmñ_muestra)
+                    tmñ_muestra = símismo.bd.obt_datos(símismo.tmñ_muestra, cód_vacío=símismo.cód_vacío)
                     errores = np.sqrt(np.divide(np.multiply(datos, np.subtract(1, datos)), tmñ_muestra))
             else:
                 errores = np.empty_like(datos)
@@ -174,7 +174,6 @@ class SuperBD(object):
 
         símismo.vars = {}
         símismo.receta = {'vars': símismo.vars, 'bds': []}
-        símismo.iniciales = {}
 
         símismo.datos_reg = None  # type: pd.DataFrame
         símismo.datos_reg_err = None  # type: pd.DataFrame
@@ -397,12 +396,6 @@ class SuperBD(object):
                         símismo.datos_reg_err.append(bd_pds_temp, ignore_index=True)
 
         símismo.bd_lista = True
-
-    def espec_inicial(símismo, var_inic, var):
-        símismo.iniciales[var] = var_inic
-
-    def borrar_inicial(símismo, var):
-        símismo.iniciales.pop(var)
 
     def obt_datos(símismo, l_vars, lugar=None, datos=None, fechas=None, excl_faltan=False):
 

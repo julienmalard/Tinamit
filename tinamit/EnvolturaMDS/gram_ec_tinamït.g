@@ -3,10 +3,10 @@ ec: suma
 ?suma: prod
     | suma "+" prod   -> suma
     | suma "-" prod   -> sub
-?prod: atom
+?prod: pod
     | prod "*" atom  -> mul
     | prod "/" atom  -> div
-?prod: pod
+?pod: atom
     | pod "^" atom -> pod
 ?atom: NUM           -> num
      | "-" atom         -> neg
