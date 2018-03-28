@@ -1,5 +1,8 @@
 from warnings import warn as avisar
 
+import numpy as np
+import pandas as pd
+
 from tinamit.Incertidumbre.Estadísticas import calib_bayes, optimizar, regresión
 from tinamit import _
 from tinamit.EnvolturaMDS.sintaxis import Ecuación
@@ -208,7 +211,7 @@ class ConexDatos(object):
                                           for x in dic_lg_pariente[nivel_inf].values()}
                     nivel_inf = e
 
-            # Para hacer: terminar para casis cib aprioris_por
+            # Para hacer: terminar para casos con aprioris_por
             dic_aprioris = {None: calib_bayes_en(o_ec=obj_ec, prms=paráms, líms_prms=líms_paráms, **ops_método)}
             dists_aprioris = [dic_aprioris[None] for _ in lugares]
 
@@ -239,7 +242,110 @@ class ConexDatos(object):
             if var not in modelo.variables:
                 avisar(_('El variable "{}" no existe en el nuevo modelo.').format(var))
 
+    def simular(símismo, tiempo_final, paso, nombre_corrida='Corrida Tinamït', fecha_inic=None, tcr=None,
+                recalc=False, clima=False, escala=None, en=None, por=None, orden=None):
+
+        lugares = símismo.bd.geog.obt_lugares_en(escala=escala, en=en, por=por)
+
+        n_rep = 1  # para hacer: implementar incertidumbre
+        vals_paráms_calib = símismo.prep_paráms_simul(n_rep=n_rep, lugares=lugares, orden=orden)
+        for lg, prms in vals_paráms_calib.items():
+
+            símismo.modelo.inic_vals(prms)
+
+            if fecha_inic is not None:
+                vals_inic = símismo.prep_vals_inic(fecha_inic=fecha_inic, lugar=lg)
+                símismo.modelo.inic_vals(vals_inic)
+
+            símismo.modelo.simular(tiempo_final=tiempo_final, paso=paso,
+                                   nombre_corrida='{}_{}'.format(nombre_corrida, lg),
+                                   fecha_inic=fecha_inic, tcr=tcr,
+                                   recalc=recalc, clima=clima)
+
+    def validar(símismo, tiempo_final, paso, nombre_corrida='Corrida Tinamït', fecha_inic=None, tcr=None,
+                recalc=False, clima=False, escala=None, en=None, por=None, orden=None, vars_valid=None):
+
+        if vars_valid is None:
+            vars_valid = [v for v in símismo.bd.vars]
+
+        resultados = símismo.simular()  # arreglarme
+
+        dic_valid = {}
+        for v in vars_valid:
+            for lg in lugares:
+                raise NotImplementedError
+
+        return dic_valid
+
+    def prep_paráms_simul(símismo, n_rep, lugares, orden=None):
+        d_prms = {}
+        if orden is None:
+            orden = símismo.bd.geog.orden_jer[::-1]
+        for lg in lugares:
+            d_prms[lg] = {}
+            for c, d_c in símismo.dic_info_const.items():
+                est = símismo.estim_constante(c, **d_c)
+                for niv in orden:
+                    lg_niv = símismo.bd.geog.árbol_geog_inv[lg][niv]
+                    if lg_niv in est:
+                        if n_rep == 1:
+                            d_prms[lg_niv][c] = est[lg_niv]['val']
+                        else:
+                            if 'ES' in est[lg_niv]:
+                                d_prms[lg_niv][c] = np.random.normal(loc=est[lg_niv]['val'], scale=est[lg_niv]['ES'], size=n_rep)
+                            elif 'dist' in est[lg_niv]:
+                                devolver = n_rep > est[lg_niv]['dist'].size
+                                d_prms[lg_niv][c] = np.random.choice(est[lg_niv]['dist'], size=n_rep, replace=devolver)
+                            else:
+                                raise NotImplementedError
+                        break
+            for v, d_v in símismo.dic_info_calib.items():
+                est = símismo.calib_var(v, **d_v)
+                for niv in orden:
+                    lg_niv = símismo.bd.geog.árbol_geog_inv[lg][niv]
+                    if lg_niv in est:
+                        for p, d_p in est[lg_niv].items():
+                            if n_rep == 1:
+                                d_prms[lg_niv][p] = d_p['val']
+                            else:
+                                if 'ES' in d_p:
+                                    d_prms[lg_niv][p] = np.random.normal(loc=d_p['val'], scale=d_p['ES'], size=n_rep)
+                                elif 'dist' in d_p:
+                                    devolver = n_rep > d_p['dist'].size
+                                    d_prms[lg_niv][p] = np.random.choice(d_p['dist'], size=n_rep, replace=devolver)
+                                else:
+                                    raise NotImplementedError
+                            break
+
+        return d_prms
+
+    def prep_vals_inic(símismo, fecha_inic, lugar, orden=None):
+
+        if orden is None:
+            orden = símismo.bd.geog.orden_jer[::-1]
+        else:
+            raise NotImplementedError  # para hacer
+
+        d_vals_inic = {}
+        for var_mod, var_bd in símismo.dic_info_vals_inic.items():
+            vals = símismo.bd.obt_datos(l_vars=var_bd, lugar=lugar)['regional'].dropna(subset=var_bd)
+            # Interpolar la fecha, si necesitamos y podemos
+            try:
+                d_vals_inic[var_mod] = vals.loc[fecha_inic][var_bd]
+            except KeyError:
+                if vals.shape[0] == 1:
+                    d_vals_inic[var_mod] = vals[var_bd]
+                elif vals.index.min() > pd.to_datetime(fecha_inic):
+                    d_vals_inic[var_mod] = vals.loc[vals.index.min()][var_bd]
+                else:
+                    val_interpol = vals.append(
+                        vals.Series(None,
+                                    name=vals.to_datetime(fecha_inic))
+                    ).sort_index().interpolate(method='time').loc[fecha_inic][var_bd]
+
+                    d_vals_inic[var_mod] = val_interpol
+
+        return d_vals_inic
+
     def no_calibrados(símismo):
         return [var for var in símismo.modelo.variables if var not in símismo.dic_info_calib]
-
-
