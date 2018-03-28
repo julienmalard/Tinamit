@@ -14,7 +14,7 @@ except ImportError:
 
 def sacar_variables(texto, rgx, n=None, excluir=None):
     """
-    Esat ecuación saca los variables de un texto.
+    Esta ecuación saca los variables de un texto.
 
     :param texto: El texto de cual extraer los nombres de los variables.
     :type texto: str

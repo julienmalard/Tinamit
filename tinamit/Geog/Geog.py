@@ -333,6 +333,7 @@ class Geografía(object):
     def leer_archivo_info_reg(símismo, archivo, orden_jer, col_cód, grupos=None):
 
         símismo.árbol_geog.clear()
+        símismo.árbol_geog_inv.clear()
         símismo.grupos.clear()
 
         if grupos is None:
