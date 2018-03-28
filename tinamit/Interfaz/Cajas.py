@@ -146,7 +146,7 @@ class CajaLeng(tk.Frame):
             Ctrl.CajaAviso(texto=texto, apli=símismo.apli)
             símismo.DicLeng.config['leng_act'] = nombre
             símismo.DicLeng.guardar()
-            cambiar_leng('nombre')
+            cambiar_leng(nombre)
             símismo.refrescar()
 
     def editar(símismo, nombre):

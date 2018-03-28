@@ -383,7 +383,11 @@ class Geografía(object):
                 símismo.árbol_geog_inv[cód] = dict([(orden_jer[k], f[j]) for k, j in enumerate(i_cols)])
 
                 for í, g in zip(í_g, grupos):
-                    símismo.árbol_geog_inv[cód][g] = f[í]
+                    nmb_gp = f[í]
+                    if len(nmb_gp):
+                        símismo.árbol_geog_inv[cód][g] = nmb_gp
+                    else:
+                        símismo.árbol_geog_inv[cód][g] = None
 
                 escala = orden_jer[max([n for n, i in enumerate(i_cols) if f[i] != ''])]
                 nombre = f[cols.index(escala)]
@@ -424,14 +428,18 @@ class Geografía(object):
                 try:
                     cat = símismo.árbol_geog_inv[r][por]
                     if por in símismo.grupos:
-                        cat = '{} {}'.format(por, cat)
+                        if cat is not None:
+                            cat = '{} {}'.format(por, cat)
+                        else:
+                            cat = None
                 except KeyError:
-                    cat = ''
+                    cat = None
 
-                if cat in categs:
-                    categs[cat].append(r)
-                else:
-                    categs[cat] = [r]
+                if cat is not None:
+                    if cat in categs:
+                        categs[cat].append(r)
+                    else:
+                        categs[cat] = [r]
 
             return categs
 

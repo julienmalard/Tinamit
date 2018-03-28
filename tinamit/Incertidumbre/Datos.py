@@ -4,18 +4,18 @@ import json
 import os
 from warnings import warn as avisar
 
-from tinamit.Geog.Geog import Geografía
 import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
 
-from tinamit.Incertidumbre.Números import tx_a_núm
 from tinamit import _
+from tinamit.Geog.Geog import Geografía
+from tinamit.Incertidumbre.Números import tx_a_núm
 
 
 class Datos(object):
-    def __init__(símismo, nombre, archivo, fecha, lugar, cód_vacío=None):
+    def __init__(símismo, nombre, archivo, fecha=None, lugar=None, cód_vacío=None):
         """
 
         :param nombre:
@@ -45,29 +45,37 @@ class Datos(object):
 
         símismo.cols = símismo.bd.obt_nombres_cols()
 
-        if fecha in símismo.cols:
+        if fecha is None:
+            símismo.fechas = fecha
+        elif fecha in símismo.cols:
             símismo.fechas = símismo.bd.obt_fechas(fecha)
         elif isinstance(fecha, ft.date) or isinstance(fecha, ft.datetime):
             símismo.fechas = fecha
         elif isinstance(fecha, int):
             símismo.fechas = ft.date(year=fecha, month=1, day=1)
         else:
-            raise TypeError('')
+            raise ValueError(_('El valor "{}" para fechas no corresponde a una fecha reconocida o al nombre de'
+                               'una columna en la base de datos').format(fecha))
 
-        if lugar in símismo.cols:
-            símismo.lugares = símismo.bd.obt_datos_tx(cols=lugar)
+        if lugar is None:
+            símismo.lugares = lugar
+        elif lugar in símismo.cols:
+            # Quitar 0's inútiles en frente del código.
+            símismo.lugares = [x.strip().lstrip('0') for x in símismo.bd.obt_datos_tx(cols=lugar)]
         else:
-            símismo.lugares = str(lugar)
+            símismo.lugares = str(lugar).strip().lstrip('0')
 
         if cód_vacío is None:
-            cód_vacío = {'', 'NA', 'na', 'Na', 'nan', 'NaN'}
+            símismo.cód_vacío = {'', 'NA', 'na', 'Na', 'nan', 'NaN'}
         else:
-            if isinstance(cód_vacío, list):
-                símismo.cod_vacío = set(cód_vacío)
+            if isinstance(cód_vacío, set):
+                símismo.cód_vacío = cód_vacío
+            elif isinstance(cód_vacío, list):
+                símismo.cód_vacío = set(cód_vacío)
             else:
-                símismo.cod_vacío = {cód_vacío}
+                símismo.cód_vacío = {cód_vacío}
 
-            símismo.cod_vacío.add('')
+            símismo.cód_vacío.add('')
 
         símismo.n_obs = símismo.bd.n_obs
 
@@ -85,7 +93,7 @@ class Datos(object):
 
         """
 
-        códs_vacío = símismo.cod_vacío.copy()
+        códs_vacío = símismo.cód_vacío.copy()
         if cód_vacío is not None:
             if isinstance(cód_vacío, list) or isinstance(cód_vacío, set):
                 códs_vacío.update(cód_vacío)
@@ -96,41 +104,44 @@ class Datos(object):
 
         return datos
 
+    def __str__(símismo):
+        return símismo.nombre
+
 
 class DatosIndividuales(Datos):
     """
     No tiene funcionalidad específica, pero esta clase queda muy útil para identificar el tipo de datos.
     """
-    pass
+
+    def __init__(símismo, nombre, archivo, fecha, lugar, cód_vacío=None):
+        super().__init__(nombre=nombre, archivo=archivo, fecha=fecha, lugar=lugar, cód_vacío=cód_vacío)
 
 
 class DatosRegión(Datos):
 
-    def __init__(símismo, nombre, archivo, fecha, lugar, cód_vacío='', tmñ_muestra=None):
+    def __init__(símismo, nombre, archivo, fecha=None, lugar=None, cód_vacío='', tmñ_muestra=None):
 
         super().__init__(nombre=nombre, archivo=archivo, fecha=fecha, lugar=lugar, cód_vacío=cód_vacío)
 
-        if tmñ_muestra in símismo.cols:
-            símismo.tmñ_muestra = tmñ_muestra
-        else:
-            raise ValueError(_('Nombre de columna de tamaños de muestra "{}" erróneo.').format(tmñ_muestra))
+        símismo.tmñ_muestra = tmñ_muestra
+        if tmñ_muestra is not None:
+            if tmñ_muestra not in símismo.cols:
+                raise ValueError(_('Nombre de columna de tamaños de muestra "{}" erróneo.').format(tmñ_muestra))
 
     def obt_error(símismo, var, col_error=None):
 
         errores = None
         if col_error is not None:
             errores = símismo.bd.obt_datos(col_error)
-        elif símismo.tmñ_muestra is not None:
+        else:
             datos = símismo.bd.obt_datos(var)
-
-            if np.nanmin(datos) >= 0 and np.nanmax(datos) <= 1:
-                tmñ_muestra = símismo.bd.obt_datos(símismo.tmñ_muestra)
-                errores = np.sqrt(np.divide(np.multiply(datos, np.subtract(1, datos)), tmñ_muestra))
-
-        if errores is None:
-            datos = símismo.bd.obt_datos(var)
-            errores = np.empty_like(datos)
-            errores[:] = np.nan
+            if símismo.tmñ_muestra is not None:
+                if np.nanmin(datos) >= 0 and np.nanmax(datos) <= 1:
+                    tmñ_muestra = símismo.bd.obt_datos(símismo.tmñ_muestra)
+                    errores = np.sqrt(np.divide(np.multiply(datos, np.subtract(1, datos)), tmñ_muestra))
+            else:
+                errores = np.empty_like(datos)
+                errores[:] = np.nan
 
         return errores
 
@@ -162,8 +173,8 @@ class SuperBD(object):
                 raise TypeError('')
 
         símismo.vars = {}
-        símismo.ind_a_reg = []
-        símismo.receta = {'vars': símismo.vars, 'ind_a_reg': símismo.ind_a_reg, 'bds': []}
+        símismo.receta = {'vars': símismo.vars, 'bds': []}
+        símismo.iniciales = {}
 
         símismo.datos_reg = None  # type: pd.DataFrame
         símismo.datos_reg_err = None  # type: pd.DataFrame
@@ -186,7 +197,7 @@ class SuperBD(object):
             avisar(_('Ya existía la base de datos "{}". Borramos la que estaba antes.').format(bd))
 
         símismo.bds[bd.nombre] = bd
-       #  símismo.receta['bds'].append(bd.archivo_datos)
+        #  símismo.receta['bds'].append(bd.archivo_datos)
 
         if auto_llenar:
             símismo.auto_llenar(bd=bd, bd_plantilla=bd_plantilla)
@@ -257,7 +268,7 @@ class SuperBD(object):
                 bds.remove(nm_bd)
 
         if not len(bds):
-            raise ValueError('El variable "{}" no existe en cualquiera de las base de datos especificadas.'
+            raise ValueError('El variable "{}" no existe en cualquiera de las bases de datos especificadas.'
                              .format(var_bd))
 
         if var not in símismo.vars:
@@ -296,22 +307,6 @@ class SuperBD(object):
             raise ValueError(_('El variable "{}" ya existe. Hay que borrarlo primero.').format(nuevo_nombre))
 
         símismo.vars[nuevo_nombre] = símismo.vars.pop(var)
-
-        símismo.bd_lista = False
-
-    def espec_ind_a_reg(símismo, var):
-
-        if var not in símismo.vars:
-            raise ValueError('')
-        símismo.ind_a_reg.append(var)
-
-        símismo.bd_lista = False
-
-    def borrar_ind_a_reg(símismo, var):
-        try:
-            símismo.ind_a_reg.pop(var)
-        except KeyError:
-            raise KeyError('')
 
         símismo.bd_lista = False
 
@@ -363,7 +358,12 @@ class SuperBD(object):
                 bd_pds_temp['lugar'] = bd.lugares
 
                 if isinstance(bd.fechas, tuple):
-                    bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas[0]) + pd.to_timedelta([1, 2, 3], unit='day')
+                    if bd.fechas[0] is not None:
+                        bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas[0]) + pd.to_timedelta(bd.fechas[1], unit='d')
+                    else:
+                        bd_pds_temp['fecha'] = pd.to_datetime(['{}-1-1'.format(str(x)) for x in bd.fechas[1]])
+                elif bd.fechas is None:
+                    bd_pds_temp['fecha'] = None
                 else:
                     bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas)
 
@@ -381,69 +381,30 @@ class SuperBD(object):
                     if símismo.datos_reg is None:
                         símismo.datos_reg = bd_pds_temp
                     else:
-                        símismo.datos_reg.append(bd_pds_temp, ignore_index=True)
+                        símismo.datos_reg = pd.concat([bd_pds_temp, símismo.datos_reg], ignore_index=True)
 
                     # Calcular errores
                     datos_err = np.array(
                         [bd.obt_error(d_v['fuente'][nb]['var'], col_error=d_v['fuente'][nb]['col_error'])
                          for v, d_v in vars_interés]
                     ).T
-                    bd_pds_temp[l_vars] = datos_err
+                    bd_pds_err_temp = bd_pds_temp.copy()
+                    bd_pds_err_temp[l_vars] = datos_err
 
                     if símismo.datos_reg_err is None:
                         símismo.datos_reg_err = bd_pds_temp
                     else:
                         símismo.datos_reg_err.append(bd_pds_temp, ignore_index=True)
 
-        # Generar datos regionales derivados de datos individuales
-        símismo._gen_datos_reg()
-
         símismo.bd_lista = True
 
-    def _gen_datos_reg(símismo):
+    def espec_inicial(símismo, var_inic, var):
+        símismo.iniciales[var] = var_inic
 
-        l_vars = list(símismo.ind_a_reg)
-        if not len(l_vars):
-            return
+    def borrar_inicial(símismo, var):
+        símismo.iniciales.pop(var)
 
-        datos_ind = símismo.datos_ind  # type: pd.DataFrame
-
-        grp = datos_ind.groupby(['fecha', 'lugar'])
-        índs = list(grp.indices)
-        n_filas = len(índs)
-        n_vars = len(l_vars)
-
-        nuevos = np.empty((n_filas, n_vars))
-        err_nuevos = np.empty((n_filas, n_vars))
-
-        proms = grp.mean()
-        err = grp.std()
-        n_obs = grp.size()
-
-        nuevos[:] = proms[l_vars]
-        err_nuevos[:] = err[l_vars] / np.sqrt(n_obs)
-
-        pd_nuevos = pd.DataFrame(nuevos, columns=l_vars)
-        pd_nuevos['fecha'] = [í[0] for í in índs]
-        pd_nuevos['lugar'] = [í[1] for í in índs]
-        pd_nuevos['bd'] = '_auto_gen'
-
-        pd_err_nuevos = pd.DataFrame(err_nuevos, columns=l_vars)
-        pd_err_nuevos['fecha'] = [í[0] for í in índs]
-        pd_err_nuevos['lugar'] = [í[1] for í in índs]
-        pd_err_nuevos['bd'] = '_auto_gen'
-
-        if símismo.datos_reg is None:
-            símismo.datos_reg = pd_nuevos
-        else:
-            símismo.datos_reg.append(pd_nuevos, ignore_index=True)
-
-        if símismo.datos_reg_err is None:
-            símismo.datos_reg_err = pd_err_nuevos
-        else:
-            símismo.datos_reg_err.append(pd_err_nuevos, ignore_index=True)
-
-    def obt_datos(símismo, l_vars, lugar=None, datos=None, fechas=None):
+    def obt_datos(símismo, l_vars, lugar=None, datos=None, fechas=None, excl_faltan=False):
 
         # Formatear la lista de variables deseados
         if not isinstance(l_vars, list):
@@ -452,12 +413,16 @@ class SuperBD(object):
             raise ValueError(_('Variable no válido.'))
 
         # Formatear el código de lugar
-        if lugar is not None and not isinstance(lugar, list):
-            lugar = [lugar]
+        if lugar is not None:
+            if not isinstance(lugar, list):
+                lugar = [lugar]
+            lugar.append(None)
 
         # Formatear los datos
-        if datos is not None and not isinstance(datos, list):
-            datos = [datos]
+        if datos is not None:
+            if not isinstance(datos, list):
+                datos = [datos]
+            datos.append(None)
 
         # Preparar las fechas
         if fechas is not None:
@@ -489,6 +454,11 @@ class SuperBD(object):
                 if lugar is not None:
                     bd_sel = bd_sel[bd_sel['lugar'].isin(lugar)]
 
+                if excl_faltan:
+                    bd_sel = bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha', 'lugar']])
+                else:
+                    bd_sel = bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha', 'lugar']],
+                                           how='all')
                 egr[í] = bd_sel
 
         return {'regional': egr[0], 'error_regional': egr[2], 'individual': egr[1]}
@@ -532,7 +502,7 @@ class SuperBD(object):
 
                     l = ejes.plot_date(fechas, y, label=l)
                     color = l.get_color()
-                    ejes.fill_between(fechas, y - err/2, y + err/2, facecolor=color, alpha=0.5)
+                    ejes.fill_between(fechas, y - err / 2, y + err / 2, facecolor=color, alpha=0.5)
 
                 ejes.set_xlabel(_('Fecha'))
                 ejes.set_ylabel(var)
@@ -635,7 +605,6 @@ class SuperBD(object):
 
         superbd = cls(nombre=nombre, bds=bds, geog=geog)
         superbd.vars = receta['vars']
-        superbd.ind_a_reg = receta['ind_a_reg']
 
         return superbd
 
@@ -696,7 +665,7 @@ class BD(object):
         :param cols:
         :type cols: list[str] | str
         :return:
-        :rtype: list
+        :rtype: list[str]
         """
         raise NotImplementedError
 

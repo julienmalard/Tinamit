@@ -3,6 +3,9 @@ from tinamit.EnvolturaMDS import generar_mds
 from tinamit.Geog.Geog import Geografía
 from tinamit.Incertidumbre.ConexDatos import ConexDatos
 
+import os
+
+c = lambda x: os.path.join('C:\\Users\\jmalar1\\Documents\\Julien\\Bases de datos\\Iximulew', x)
 # EnvolturaMDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
 modelo = generar_mds(archivo='Para Tinamït.mdl')
 print('vars', modelo.variables.keys())
@@ -13,32 +16,32 @@ print('niveles', modelo.niveles)
 print('constantes', modelo.constantes)
 # print('vacíos', modelo.vacíos())
 
-ENCOVI_hog_2011 = DatosIndividuales('ENCOVI hog 2011', archivo='Datos\\ENCOVI_hog_2011.csv', fecha=2011,
-                                    lugar='munidept', cód_vacío=['NA', 'na', 'Na', 'nan', 'NaN'])
-ENCOVI_ind_2011 = DatosIndividuales('ENCOVI ind 2011', archivo='Datos\\ENCOVI_ind_2011.csv', fecha=2011,
-                                    lugar='munidept', cód_vacío=['NA', 'na', 'Na', 'nan', 'NaN'])
-
-# ENCOVI_hog_2011 = DatosIndividuales(fuente='')
-# ENCOVI_hog_2011.estab_col_año(col='año')
+ENCOVI_ind_2011 = DatosIndividuales('ENCOVI hog 2011', archivo=c('ENCOVIs\\2011\\BD Personas_final.csv'), fecha=2011,
+                                    lugar='munidept')
+ENCOVI_hog_2011 = DatosIndividuales('ENCOVI ind 2011', archivo=c('ENCOVIs\\2011\\BD Hogares_final.csv'), fecha=2011,
+                                    lugar='munidept')
+ENCOVI_reg_2011 = DatosRegión('ENCOVI reg 2011', archivo=c('ENCOVIs\\2011\\BD regional_final.csv'), fecha=2011,
+                              lugar='Código_lugar')
 
 geog = Geografía('Iximulew')
 geog.agregar_info_regiones(archivo='Geografía Iximulew.csv',
                            orden_jer=['Departamento', 'Municipio'],
                            col_cód='Código', grupos='Territorio')
 
-datos_desnutr = DatosRegión('Desnutrición municipal', archivo='Datos\\Desnutrición_muni.csv', fecha='Año',
-                            lugar='Código_lugar', tmñ_muestra='Tamaño_muestra')
-# ENCOVI_reg_2011 = DatosRegión('ENCOVI reg 2011', archivo='Datos\\ENCOVI_reg_2011.csv', fecha=2011,
-#                               lugar='Código_lugar', cód_vacío=['NA', 'na', 'Na'])
+datos_muni = DatosRegión('Datos municipales', archivo=c('Datos muni\\Datos Muni Iximulew.csv'), fecha='Año',
+                         lugar='Código_lugar')
+datos_pob = DatosRegión('Población', archivo=c('Población\\Población INE.csv'), fecha='Año', lugar='Código')
+datos_tierra = DatosRegión('Uso tierra', archivo=c('Uso de tierra\\Uso de tierra.csv'), fecha='Año', lugar='Código')
+datos_superficie = DatosRegión('Superficie', archivo=c('Uso de tierra\\Superficie.csv'), fecha=None, lugar='Código')
 
-bd = SuperBD('BD Iximulew', bds=[ENCOVI_hog_2011, ENCOVI_ind_2011, datos_desnutr], geog=geog)
-bd.espec_var('Seguridad alimentaria', var_bd='ISA_23', bds='ENCOVI hog 2011')
-bd.espec_var('Educación formal', var_bd='educación', bds='ENCOVI ind 2011')
-bd.espec_var('Educación sexual', var_bd='educación.sexual', bds='ENCOVI ind 2011')
-bd.espec_var('Fertilidad', var_bd='fertilidad', bds='ENCOVI ind 2011')
-bd.espec_var('Calidad de la dieta', var_bd='défic.shannon.calidad.dieta', bds='ENCOVI hog 2011')
-bd.espec_var('Calidad de la dieta', var_bd='défic.shannon.calidad.dieta', bds='ENCOVI hog 2011')
-bd.espec_var('Calidad de la dieta', var_bd='défic.shannon.calidad.dieta', bds='ENCOVI hog 2011')
+#
+bd = SuperBD('BD Iximulew', bds=[ENCOVI_hog_2011, ENCOVI_ind_2011, ENCOVI_reg_2011, datos_muni,
+                                 datos_pob, datos_tierra, datos_superficie], geog=geog)
+bd.espec_var('Seguridad alimentaria', var_bd='ISA_23', bds=ENCOVI_hog_2011)
+bd.espec_var('Educación formal', var_bd='educación.adultos', bds=ENCOVI_hog_2011)
+bd.espec_var('Educación sexual', var_bd='educación.sexual', bds=ENCOVI_ind_2011)
+bd.espec_var('Fertilidad', var_bd='fertilidad', bds=ENCOVI_ind_2011)
+bd.espec_var('Calidad de la dieta', var_bd='défic.shannon.calidad.dieta', bds=ENCOVI_hog_2011)
 
 # bd.espec_var('Ingresos salarial', var_bd='Ingresos.de.salario', cód_vacío='NA')
 # bd.espec_var('Ingresos agrícolas', var_bd='Ingresos.agrícolas', cód_vacío='NA')
@@ -47,21 +50,31 @@ bd.espec_var('Calidad de la dieta', var_bd='défic.shannon.calidad.dieta', bds='
 # bd.espec_var('Producción autoconsumo', var_bd='Producción.autoconsumo', cód_vacío='NA')
 # bd.espec_var('Tamaño familias', var_bd='Tamaño.de.las.familias', cód_vacío='NA')
 # bd.espec_var('Repetición escolar', var_bd='Repetición.escolar', cód_vacío='NA')
-bd.espec_var('Enfermedades infantiles', var_bd='enfermedades.infantiles', bds=ENCOVI_hog_2011, cód_vacío='NA')
-bd.espec_var('Calidad del agua', var_bd='disponibilidad.agua', bds=ENCOVI_hog_2011, cód_vacío='NA')
+bd.espec_var('Enfermedades infantiles', var_bd='enfermedades.infantiles.fam', bds=ENCOVI_hog_2011)
+bd.espec_var('Calidad del agua', var_bd='disponibilidad.agua', bds=ENCOVI_hog_2011)
 bd.espec_var('Consumo leña por hogar', var_bd='talla.árb', bds=ENCOVI_hog_2011)
-# # bd.espec_var('Población', var_bd='Población')
-# bd.espec_var('Desnutrición crónica infantil', var_bd='Desntr_crón_inft')
+bd.espec_var('Población', var_bd='Población', bds=datos_pob)
+bd.espec_inicial('Población inicial', var='Población')
+bd.espec_var('Infraestructura vial', var_bd='Densidad vial (km/km2)', bds=datos_muni)
+bd.espec_var('Desnutrición crónica infantil', var_bd='Desntr_crón_inft', bds=datos_muni)
+bd.espec_var('Costumbre de consumo', var_bd='hog.prc.hort.prod', bds=ENCOVI_reg_2011)
+bd.espec_var('Superficie municipio', var_bd='Superficie (ha)', bds=datos_superficie)
 
 conex = ConexDatos(bd=bd, modelo=modelo)
 conex.no_calibrados()
 
 
 _ = conex.estim_constante(const='Consumo leña por hogar', líms=(0, None), por='Territorio')
-_ = conex.estim_constante(const='Consumo leña por hogar', líms=(0, None), por='Territorio')
-_ = conex.estim_constante(const='Consumo leña por hogar', líms=(0, None), por='Territorio')
-_ = conex.estim_constante(const='Consumo leña por hogar', líms=(0, None), por='Territorio')
-_ = conex.estim_constante(const='Consumo leña por hogar', líms=(0, None), por='Territorio')
+_ = conex.estim_constante(const='Infraestructura vial', líms=(0, None), regional=True)
+_ = conex.estim_constante(const='Costumbre de consumo', líms=(0, None), por='Territorio', regional=True)
+_ = conex.estim_constante(const='Educación sexual', líms=(0, None), por='Territorio')
+_ = conex.estim_constante(const='Superficie municipio', líms=(0, None), regional=True)
+_ = conex.estim_constante(const='Desnutrición inicial', líms=(0, None), por='Territorio', regional=True)
+_ = conex.estim_constante(const='Fracción infantes inicial', líms=(0, None), por='Territorio')
+_ = conex.estim_constante(const='Fracción niños inicial', líms=(0, None), por='Territorio')
+_ = conex.estim_constante(const='Fracción adultos inicial', líms=(0, None), por='Territorio')
+_ = conex.estim_constante(const='Fracción tierras a hortalizas', líms=(0, None), por='Territorio')
+
 
 _ = conex.calib_var('Enfermedades infantiles', ec='1/(-b*Calidad del agua-a)+c', paráms=['a', 'b', 'c'],
                     líms_paráms=[(0, None), (0, 50), (0, None)], por='Territorio', aprioris=True)
@@ -71,7 +84,7 @@ _ = conex.calib_var('Fertilidad', ec='1/(b*Educación formal+b2*Educación sexua
 
 d_calib2 = conex.calib_var('Seguridad alimentaria', ec='1/(1 + a*exp(-b*Calidad de la dieta))', paráms=['a', 'b'],
                            líms_paráms=[(0, None), (0, None)],
-                           por='Territorio', aprioris=True, indiv=False)
+                           por='Territorio', aprioris=True, regional=False)
 
 conex.calib_var('Fertilidad')
 

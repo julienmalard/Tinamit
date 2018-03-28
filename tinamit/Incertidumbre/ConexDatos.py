@@ -28,14 +28,14 @@ class ConexDatos(object):
         símismo.dic_info_const = {}
 
     def estab_calib_var(símismo, var, ec=None, líms_paráms=None, paráms=None,
-                        método=None, ops_método=None, indiv=True):
+                        método=None, ops_método=None, regional=True):
         símismo.dic_info_calib[var] = {
             'ec': ec,
             'paráms': paráms,
             'líms_paráms': líms_paráms,
             'método': método,
             'ops_método': ops_método,
-            'indiv': indiv
+            'regional': regional
         }
 
     def borrar_calib_ec(símismo, var):
@@ -72,7 +72,7 @@ class ConexDatos(object):
                     mod.calibs[nombre][lg] = {}
                 mod.calibs[nombre][lg][var] = est_lg
 
-    def estab_estim_const(símismo, const, líms=None, en=None, escala=None, por=None, fechas=None, bds=None, indiv=None):
+    def estab_estim_const(símismo, const, líms=None, en=None, escala=None, por=None, fechas=None, bds=None, regional=None):
         símismo.dic_info_const[const] = {
             'líms': líms,
             'en': en,
@@ -80,19 +80,21 @@ class ConexDatos(object):
             'por': por,
             'fechas': fechas,
             'bds': bds,
-            'indiv': indiv
+            'regional': regional
         }
 
-    def estim_constante(símismo, const, líms=None, en=None, escala=None, por=None, fechas=None, bds=None, indiv=True):
+    def estim_constante(símismo, const, líms=None, en=None, escala=None, por=None, fechas=None, bds=None,
+                        regional=False):
 
         símismo.estab_estim_const(const=const, líms=líms, en=en, escala=escala, por=por, fechas=fechas, bds=bds,
-                                  indiv=indiv)
+                                  regional=regional)
 
         geog = símismo.bd.geog
         lugares = geog.obt_lugares_en(escala=escala, en=en, por=por)
 
-        obs = [símismo.bd.obt_datos(l_vars=const, lugar=v, datos=bds, fechas=fechas)
-               ['individual' if indiv else 'regional'][const].dropna() for v in lugares.values()]
+        l_lugs = list(lugares)
+        obs = [símismo.bd.obt_datos(l_vars=const, lugar=v, datos=bds, fechas=fechas, excl_faltan=True)
+               ['regional' if regional else 'individual'][const] for v in l_lugs]
 
         d_calib = {}
         for lg, x in zip(lugares, obs):
@@ -105,12 +107,12 @@ class ConexDatos(object):
         return d_calib
 
     def calib_var(símismo, var, ec=None, paráms=None, líms_paráms=None, método=None, ops_método=None,
-                  en=None, escala=None, por=None, fechas=None, bds=None, aprioris=True, aprioris_por=None, indiv=False):
+                  en=None, escala=None, por=None, fechas=None, bds=None, aprioris=True, aprioris_por=None, regional=False):
 
         geog = símismo.bd.geog
 
         símismo.estab_calib_var(var=var, ec=ec, paráms=paráms, líms_paráms=líms_paráms, método=método,
-                                ops_método=ops_método, indiv=indiv)
+                                ops_método=ops_método, regional=regional)
 
         mod = símismo.modelo
         try:
@@ -119,6 +121,10 @@ class ConexDatos(object):
             raise ValueError('El variable "{}" no existe en el modelo "{}".'.format(var, mod.nombre))
 
         lugares = símismo.bd.geog.obt_lugares_en(escala=escala, en=en, por=por)
+        if isinstance(lugares, dict):
+            l_lugs = list(lugares.values())
+        else:
+            l_lugs = lugares
 
         if ops_método is None:
             ops_método = {}
@@ -164,12 +170,8 @@ class ConexDatos(object):
         vars_x = [x for x in obj_ec.variables() if x not in paráms]
         l_vars = vars_x + [var]
 
-        if isinstance(lugares, dict):
-            obs = [símismo.bd.obt_datos(l_vars=l_vars, lugar=v, datos=bds, fechas=fechas)
-                   ['individual' if indiv else 'regional'].dropna() for v in lugares.values()]
-        else:
-            obs = [símismo.bd.obt_datos(l_vars=l_vars, lugar=lugares, datos=bds, fechas=fechas)
-                   ['individual' if indiv else 'regional'].dropna()]
+        obs = [símismo.bd.obt_datos(l_vars=l_vars, lugar=v, datos=bds, fechas=fechas)
+               ['regional' if regional else 'individual'].dropna() for v in l_lugs]
 
         obs_y = [l[var].values for l in obs]
         obs_x = [{x: l[x].values for x in vars_x} for l in obs]
@@ -184,7 +186,7 @@ class ConexDatos(object):
             def calib_bayes_en(en_=None, escl=None, apr=None, **ops):
                 lgs = geog.obt_lugares_en(en=en_, escala=escl)
                 obs_ap = símismo.bd.obt_datos(l_vars=l_vars, lugar=lgs, datos=bds, fechas=fechas) \
-                    ['individual' if indiv else 'regional'].dropna()
+                    ['individual' if regional else 'regional'].dropna()
 
                 obs_y_ap = obs_ap[var].values
                 obs_x_ap = {x: obs_ap[x].values for x in vars_x}

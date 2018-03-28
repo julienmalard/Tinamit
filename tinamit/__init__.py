@@ -110,8 +110,10 @@ def obt_trads():
     :return:
     :rtype:
     """
-
-    return dic_trads[_leng[0]]
+    try:
+        return dic_trads[_leng[0]]
+    except KeyError:
+        return dic_trads['es']
 
 
 def cambiar_leng(leng, temp=False):
