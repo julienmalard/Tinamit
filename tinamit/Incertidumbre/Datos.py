@@ -448,13 +448,46 @@ class SuperBD(object):
                     bd_sel = bd_sel[bd_sel['lugar'].isin(lugar)]
 
                 if excl_faltan:
-                    bd_sel = bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha', 'lugar']])
+                    bd_sel = bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha',  'bd', 'lugar']])
                 else:
-                    bd_sel = bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha', 'lugar']],
+                    bd_sel = bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha',  'bd', 'lugar']],
                                            how='all')
                 egr[í] = bd_sel
 
         return {'regional': egr[0], 'error_regional': egr[2], 'individual': egr[1]}
+
+    def obt_datos_ind(símismo, l_vars, lugar=None, datos=None, fechas=None, excl_faltan=False):
+        res = símismo.obt_datos(l_vars=l_vars, lugar=lugar, datos=datos, fechas=fechas, excl_faltan=excl_faltan)
+        return res['indiv']
+
+    def obt_datos_reg(símismo, l_vars, lugar=None, datos=None, fechas=None, interpolar=True):
+        res = símismo.obt_datos(l_vars=l_vars, lugar=lugar, datos=datos, fechas=fechas, excl_faltan=False)['regional']
+
+        if interpolar:
+            proms_fecha = res.groupby('fecha').mean()
+            mín = proms_fecha.index.min()
+            máx = proms_fecha.index.max()
+
+            for v in l_vars:
+                compl_v = proms_fecha.dropna(subset=[v])[v]
+                mín_v = compl_v.index.min()
+                máx_v = compl_v.index.max()
+                mín = max(mín, mín_v)
+                máx = min(máx, máx_v)
+
+            l_fechas_fin = [í for í in proms_fecha.index if mín <= í <= máx]
+
+            nuevas_filas = pd.DataFrame(columns=l_vars,
+                                        index=pd.to_datetime([x for x in l_fechas_fin if x not in proms_fecha.index]))
+            proms_fecha = proms_fecha.append(nuevas_filas)
+            proms_fecha = proms_fecha.sort_index()
+            proms_fecha = proms_fecha.interpolate(method='time')
+            finalizados = proms_fecha.loc[l_fechas_fin]
+
+            return finalizados
+        else:
+            return  res
+
 
     def graficar(símismo, var, fechas=None, cód_lugar=None, lugar=None, datos=None, escala=None, archivo=None):
 

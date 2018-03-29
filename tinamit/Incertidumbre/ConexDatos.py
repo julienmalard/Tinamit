@@ -106,8 +106,13 @@ class ConexDatos(object):
             l_lugs = list(lugares.values())
         else:
             l_lugs = lugares
-        obs = [símismo.bd.obt_datos(l_vars=const, lugar=v, datos=bds, fechas=fechas, excl_faltan=True)
-               ['regional' if regional else 'individual'][const] for v in l_lugs]
+
+        if regional:
+            obs = [símismo.bd.obt_datos_reg(l_vars=const, lugar=v, datos=bds, fechas=fechas, interpolar=False)[const]
+                   for v in l_lugs]
+        else:
+            obs = [símismo.bd.obt_datos_ind(l_vars=const, lugar=v, datos=bds, fechas=fechas, excl_faltan=True)[const]
+                   for v in l_lugs]
 
         d_calib = {}
         for lg, x in zip(lugares, obs):
@@ -184,8 +189,12 @@ class ConexDatos(object):
         vars_x = [x for x in obj_ec.variables() if x not in paráms]
         l_vars = vars_x + [var]
 
-        obs = [símismo.bd.obt_datos(l_vars=l_vars, lugar=v, datos=bds, fechas=fechas)
-               ['regional' if regional else 'individual'].dropna() for v in l_lugs]
+        if regional:
+
+            obs = [símismo.bd.obt_datos_reg(l_vars=l_vars, lugar=v, datos=bds, fechas=fechas) for v in l_lugs]
+        else:
+            obs = [símismo.bd.obt_datos_ind(l_vars=l_vars, lugar=v, datos=bds, fechas=fechas,
+                                            excl_faltan=True) for v in l_lugs]
 
         obs_y = [l[var].values for l in obs]
         obs_x = [{x: l[x].values for x in vars_x} for l in obs]
@@ -199,8 +208,11 @@ class ConexDatos(object):
 
             def calib_bayes_en(o_ec, en_=None, escl=None, apr=None, binario=False, **ops):
                 lgs = geog.obt_lugares_en(en=en_, escala=escl)
-                obs_ap = símismo.bd.obt_datos(l_vars=l_vars, lugar=lgs, datos=bds, fechas=fechas) \
-                    ['regional' if regional else 'individual'].dropna()
+                if regional:
+                    obs_ap = símismo.bd.obt_datos_reg(l_vars=l_vars, lugar=lgs, datos=bds, fechas=fechas)
+                else:
+                    obs_ap = símismo.bd.obt_datos(l_vars=l_vars, lugar=lgs, datos=bds, fechas=fechas,
+                                            excl_faltan=True)
 
                 obs_y_ap = obs_ap[var].values
                 obs_x_ap = {x: obs_ap[x].values for x in vars_x}

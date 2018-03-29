@@ -38,6 +38,7 @@ datos_superficie = DatosRegión('Superficie', archivo=c('Uso de tierra\\Superfic
 bd = SuperBD('BD Iximulew', bds=[ENCOVI_hog_2011, ENCOVI_ind_2011, ENCOVI_reg_2011, datos_muni,
                                  datos_pob, datos_tierra, datos_superficie], geog=geog)
 bd.espec_var('Seguridad alimentaria', var_bd='ISA_23', bds=ENCOVI_hog_2011)
+bd.espec_var('Seguridad alimentaria', var_bd='hog.ISA_23', bds=ENCOVI_reg_2011)
 bd.espec_var('Educación formal', var_bd='educación.adultos', bds=ENCOVI_hog_2011)
 bd.espec_var('Educación sexual', var_bd='educación.sexual', bds=ENCOVI_ind_2011)
 bd.espec_var('Fertilidad', var_bd='fertilidad', bds=ENCOVI_ind_2011)
@@ -68,9 +69,13 @@ bd.espec_var('Fracción adultos inicial', var_bd='ind.edad.15.a.54', bds=ENCOVI_
 conex = ConexDatos(bd=bd, modelo=modelo)
 conex.no_calibrados()
 
+_ = conex.calib_var('Desnutrición crónica infantil', ec='1/((Seguridad alimentaria/(1-Seguridad alimentaria))^-a*exp(-b)+ 1)', paráms=['a', 'b'],
+                    líms_paráms=[(-10, 10), (-10, 10)],
+                    por='Territorio', aprioris=True, regional=True)
+
 
 _ = conex.calib_var('Seguridad alimentaria', ec='1/(1 + a*exp(-b*Calidad de la dieta+b2*Cantidad de alimentos))', paráms=['a', 'b', 'b2'],
-                    líms_paráms=[(0, None), (0, None), (0, None)],
+                    líms_paráms=[(0, None), (0, None), (0, 10e-5)],
                     por='Territorio', aprioris=True, regional=False)
 
 _ = conex.calib_var('Enfermedades infantiles', ec='1/(b*Calidad del agua-a)+c', paráms=['a', 'b', 'c'],

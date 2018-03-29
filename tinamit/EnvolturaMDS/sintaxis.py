@@ -409,8 +409,8 @@ class Ecuación(object):
             sigma = pm.HalfNormal(name='sigma', sd=1)
 
             if binario:
-                x = pm.Normal(name='X', mu=mu, sd=sigma)
-                pm.Bernoulli(name='Y_obs', p=pm.invlogit(x), observed=obs_y)
+                # x = pm.Normal(name='prob', mu=mu, sd=sigma)
+                pm.Bernoulli(name='Y_obs', p=pm.invlogit(mu), observed=obs_y)
             else:
                 pm.Normal(name='Y_obs', mu=mu, sd=sigma, observed=obs_y)
 

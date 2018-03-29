@@ -41,7 +41,7 @@ if pm is not None:
              }
 
 
-def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=None, binario=False, *ops):
+def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=None, binario=False, **ops):
     if pm is None:
         raise ImportError('')
     if dists_aprioris is not None:

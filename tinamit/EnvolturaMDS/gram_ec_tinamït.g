@@ -4,8 +4,8 @@ ec: suma
     | suma "+" prod   -> suma
     | suma "-" prod   -> sub
 ?prod: pod
-    | prod "*" atom  -> mul
-    | prod "/" atom  -> div
+    | prod "*" pod  -> mul
+    | prod "/" pod  -> div
 ?pod: atom
     | pod "^" atom -> pod
 ?atom: NUM           -> num
