@@ -68,11 +68,12 @@ def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=Non
     d_máx = {}
     for p in paráms:
         escl = np.max(t[p])
+        rango = escl - np.min(t[p])
         if escl < 10e10:
             escl = 1
         try:
             fdp = gaussian_kde(t[p]/escl)
-            x = np.linspace(t[p].min()/escl-1, t[p].max()/escl + 1, 1000)
+            x = np.linspace(t[p].min()/escl-1*rango, t[p].max()/escl + 1*rango, 1000)
             máx = x[np.argmax(fdp.evaluate(x))] * escl
             d_máx[p] = máx
         except:
