@@ -37,8 +37,8 @@ datos_superficie = DatosRegión('Superficie', archivo=c('Uso de tierra\\Superfic
 #
 bd = SuperBD('BD Iximulew', bds=[ENCOVI_hog_2011, ENCOVI_ind_2011, ENCOVI_reg_2011, datos_muni,
                                  datos_pob, datos_tierra, datos_superficie], geog=geog)
-bd.espec_var('Seguridad alimentaria', var_bd='ISA_23', bds=ENCOVI_hog_2011)
-bd.espec_var('Seguridad alimentaria', var_bd='hog.ISA_23', bds=ENCOVI_reg_2011)
+bd.espec_var('Seguridad alimentaria', var_bd='SA_0', bds=ENCOVI_hog_2011)
+bd.espec_var('Seguridad alimentaria', var_bd='hog.SA_0', bds=ENCOVI_reg_2011)
 bd.espec_var('Educación formal', var_bd='educación.adultos', bds=ENCOVI_hog_2011)
 bd.espec_var('Educación sexual', var_bd='educación.sexual', bds=ENCOVI_ind_2011)
 bd.espec_var('Fertilidad', var_bd='fertilidad', bds=ENCOVI_ind_2011)
@@ -53,7 +53,11 @@ bd.espec_var('Comercialización', var_bd='hog.prc.tierra.comercial', bds=ENCOVI_
 bd.espec_var('Tamaño familia', var_bd='tamaño.familia', bds=ENCOVI_hog_2011)
 # bd.espec_var('Repetición escolar', var_bd='Repetición.escolar', cód_vacío='NA')
 bd.espec_var('Enfermedades infantiles', var_bd='enfermedades.infantiles.fam', bds=ENCOVI_hog_2011)
-bd.espec_var('Calidad del agua', var_bd='disponibilidad.agua', bds=ENCOVI_hog_2011)
+bd.espec_var('Enfermedades infantiles', var_bd='ind.enfermedades.infantiles', bds=ENCOVI_reg_2011)
+bd.espec_var('Acceso agua potable', var_bd='disponibilidad.agua', bds=ENCOVI_hog_2011)
+bd.espec_var('Tratamiento agua', var_bd='tratamiento.agua', bds=ENCOVI_hog_2011)
+bd.espec_var('Higiene', var_bd='sanitación', bds=ENCOVI_hog_2011)
+
 bd.espec_var('Consumo leña por hogar', var_bd='talla.árb', bds=ENCOVI_hog_2011)
 bd.espec_var('Población', var_bd='Población', bds=datos_pob)
 bd.espec_var('Infraestructura vial', var_bd='Densidad vial (km/km2)', bds=datos_muni)
@@ -66,37 +70,75 @@ bd.espec_var('Fracción infantes inicial', var_bd='ind.edad.0.a.4', bds=ENCOVI_r
 bd.espec_var('Fracción niños inicial', var_bd='ind.edad.5.a.14', bds=ENCOVI_reg_2011)
 bd.espec_var('Fracción adultos inicial', var_bd='ind.edad.15.a.54', bds=ENCOVI_reg_2011)
 
+bd.espec_var('Comercialización', var_bd='hog.prc.tierra.comercial', bds=ENCOVI_reg_2011)
+bd.espec_var('Riego', var_bd='riego', bds=ENCOVI_hog_2011)
+bd.espec_var('Uso insumos orgánicos', var_bd='uso.orgánico', bds=ENCOVI_hog_2011)
+bd.espec_var('Uso insumos químicos', var_bd='uso.abono.químico', bds=ENCOVI_hog_2011)
+
+#bd.espec_var('Uso insumos químicos', var_bd='hog.uso.abono.químico', bds=ENCOVI_reg_2011)
+#bd.espec_var('Costos insumos químicos', var_bd='hog.gastos.abono.químico', bds=ENCOVI_hog_2011)
+bd.espec_var('Ingresos netos familiares', var_bd='hog.ingresos.per.cáp', bds=ENCOVI_reg_2011)
+bd.espec_var('Pobreza', var_bd='hog.brecha.pobr.gastos', bds=ENCOVI_reg_2011)
+
+bd.espec_var('Tecnificación agrícola', var_bd='tecni.agri', bds=ENCOVI_hog_2011)
+bd.espec_var('Costos insumos', var_bd='costos.insumos.agri', bds=ENCOVI_hog_2011)
+bd.espec_var('Rendimiento milpa', var_bd='rendimiento.maíz', bds=ENCOVI_hog_2011)
+bd.espec_var('Gastos en enfermedades', var_bd='gastos.enfermedades.fam', bds=ENCOVI_hog_2011)
+
+# bd.espec_var('Producción hortalizas consumida', var_bd='', bds=ENCOVI_hog_2011)
+
 conex = ConexDatos(bd=bd, modelo=modelo)
 conex.no_calibrados()
 
-_ = conex.calib_var('Desnutrición crónica infantil', ec='1/((Seguridad alimentaria/(1-Seguridad alimentaria))^-a*exp(-b)+ 1)', paráms=['a', 'b'],
-                    líms_paráms=[(-10, 10), (-10, 10)],
-                    por='Territorio', aprioris=True, regional=True)
 
+_ = conex.calib_var('Calidad de la dieta', ec='1/(1 + exp(-a*Pobreza - a2*Producción hortalizas consumida -b))', paráms=['a', 'a2', 'b'],
+                    líms_paráms=[(-10, 10), (-10, 10), (-10, 10)], por='Territorio', aprioris=True)
+
+_ = conex.calib_var('Gastos en enfermedades', ec='a*Enfermedades infantiles^b', paráms=['a', 'b'],
+                    líms_paráms=[(0, None), (0, 1)], por='Territorio', aprioris=True)
+
+_ = conex.calib_var('Rendimiento milpa', ec='c/(1 + exp(-a*Riego-a2*Uso insumos orgánicos-a3*Uso insumos químicos - b))', paráms=['a', 'a2', 'a3', 'b', 'c'],
+                    líms_paráms=[(-10, 10), (-10, 10), (-10, 10), (-10, 10), (0, 60000)], por='Territorio', aprioris=True)
+
+_ = conex.calib_var('Comercialización', ec='1/(1 + exp(-a*Infraestructura vial -b))', paráms=['a', 'b'],
+                    líms_paráms=[(-10, 10)]*2, por='Territorio', aprioris=True, regional=True)
+
+
+_ = conex.estim_constante(const='Fracción infantes inicial', líms=(0, 1), por='Territorio', regional=True)
+_ = conex.estim_constante(const='Fracción niños inicial', líms=(0, 1), por='Territorio', regional=True)
+_ = conex.estim_constante(const='Fracción adultos inicial', líms=(0, 1), por='Territorio', regional=True)
+_ = conex.estim_constante(const='Consumo leña por hogar', líms=(0, None), por='Territorio')
+_ = conex.estim_constante(const='Infraestructura vial', líms=(0, None), regional=True)
+_ = conex.estim_constante(const='Costumbre de consumo', líms=(0, 1), por='Territorio')
+_ = conex.estim_constante(const='Educación sexual', líms=(0, 1), por='Territorio')
+_ = conex.estim_constante(const='Superficie municipio', líms=(0, None), regional=True)
+_ = conex.estim_constante(const='Fracción tierras a hortalizas', líms=(0, 1), por='Territorio')
+_ = conex.estim_constante(const='Tratamiento agua', líms=(0, 1), por='Territorio')
+_ = conex.estim_constante(const='Acceso agua potable', líms=(0, 1), por='Territorio')
+_ = conex.estim_constante(const='Higiene', líms=(0, 1), por='Territorio')
+
+
+conex.espec_inicial('Desnutrición inicial', var='Desnutrición crónica infantil')
+conex.espec_inicial('Población inicial', var='Población')
+conex.espec_inicial('Pobreza inicial', var='Pobreza')
+
+_ = conex.calib_var('Fertilidad', ec='1/(b*Educación formal+b2*Educación sexual+a)+c', paráms=['a', 'b', 'b2', 'c'],
+                    líms_paráms=[(0, None), (0, 50), (0, 50), (0, None)], por='Territorio', aprioris=True)
+
+_ = conex.calib_var('Desnutrición crónica infantil', ec='1/(exp(-a*Seguridad alimentaria-a2*Enfermedades infantiles-b)+ 1)', paráms=['a', 'a2', 'b'],
+                    líms_paráms=[(-10, 10), (-10, 10), (-10, 10)],
+                    por='Territorio', aprioris=True, regional=True)
 
 _ = conex.calib_var('Seguridad alimentaria', ec='1/(1 + a*exp(-b*Calidad de la dieta+b2*Cantidad de alimentos))', paráms=['a', 'b', 'b2'],
                     líms_paráms=[(0, None), (0, None), (0, 10e-5)],
                     por='Territorio', aprioris=True, regional=False)
 
-_ = conex.calib_var('Enfermedades infantiles', ec='1/(b*Calidad del agua-a)+c', paráms=['a', 'b', 'c'],
-                    líms_paráms=[(0, None), (0, 50), (0, None)], por='Territorio', binario=True, aprioris=True)
+_ = conex.calib_var('Enfermedades infantiles', ec='1/(1 + exp(-a*Tratamiento agua-a2*Acceso agua potable-a3*Seguridad alimentaria-a4*Higiene - b))', paráms=['a', 'a2', 'a3', 'b', 'a4'],
+                    líms_paráms=[(-10, 10), (-10, 10), (-10, 10), (-10, 10), (-10, 10)], por='Territorio', aprioris=True)
 
+_ = conex.calib_var('Pobreza', ec='a/(Ingresos netos familiares)', paráms=['a'],
+                    líms_paráms=[(0, None)], por='Territorio', aprioris=True, regional=True)
 
-_ = conex.estim_constante(const='Fracción infantes inicial', líms=(0, None), por='Territorio', regional=True)
-_ = conex.estim_constante(const='Fracción niños inicial', líms=(0, None), por='Territorio', regional=True)
-_ = conex.estim_constante(const='Fracción adultos inicial', líms=(0, None), por='Territorio', regional=True)
-_ = conex.estim_constante(const='Consumo leña por hogar', líms=(0, None), por='Territorio')
-_ = conex.estim_constante(const='Infraestructura vial', líms=(0, None), regional=True)
-_ = conex.estim_constante(const='Costumbre de consumo', líms=(0, None), por='Territorio')
-_ = conex.estim_constante(const='Educación sexual', líms=(0, None), por='Territorio')
-_ = conex.estim_constante(const='Superficie municipio', líms=(0, None), regional=True)
-_ = conex.estim_constante(const='Fracción tierras a hortalizas', líms=(0, None), por='Territorio')
-
-conex.espec_inicial('Desnutrición inicial', var='Desnutrición crónica infantil')
-conex.espec_inicial('Población inicial', var='Población')
-
-_ = conex.calib_var('Fertilidad', ec='1/(b*Educación formal+b2*Educación sexual+a)+c', paráms=['a', 'b', 'b2', 'c'],
-                    líms_paráms=[(0, None), (0, 50), (0, 50), (0, None)], por='Territorio', aprioris=True)
 
 raise SystemExit(0)
 # Gráfico de "caja" con incertidumbre

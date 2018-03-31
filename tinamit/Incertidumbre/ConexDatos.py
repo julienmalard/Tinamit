@@ -211,8 +211,8 @@ class ConexDatos(object):
                 if regional:
                     obs_ap = símismo.bd.obt_datos_reg(l_vars=l_vars, lugar=lgs, datos=bds, fechas=fechas)
                 else:
-                    obs_ap = símismo.bd.obt_datos(l_vars=l_vars, lugar=lgs, datos=bds, fechas=fechas,
-                                            excl_faltan=True)
+                    obs_ap = símismo.bd.obt_datos_ind(l_vars=l_vars, lugar=lgs, datos=bds, fechas=fechas,
+                                                  excl_faltan=True)
 
                 obs_y_ap = obs_ap[var].values
                 obs_x_ap = {x: obs_ap[x].values for x in vars_x}

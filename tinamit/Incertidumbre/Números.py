@@ -18,8 +18,8 @@ def tx_a_núm(texto):
     else:
         neg = 1
 
-    if 'e' in texto:
-        texto, exp = texto.split('e')
+    if 'e' in texto.lower():
+        texto, exp = texto.lower().split('e')
         exp = tx_a_núm(exp)
     else:
         exp = None
@@ -44,6 +44,8 @@ def tx_a_núm(texto):
             try:
                 núm = _trad_texto(texto=texto, núms=l_núms, sep_dec=sep_dec)
                 # ¿Funcionó? ¡Perfecto!
+                if exp is not None:
+                    núm *= 10 ** exp
                 return núm * neg if sep_dec in texto else int(núm)*neg
             except ValueError:
                 pass  # ¿No funcionó? Qué pena. Ahora tenemos que trabajar.
@@ -184,3 +186,8 @@ dic_trads = {'Latino': {'núms': ('0', '1', '2', '3', '4', '5', '6', '7', '8', '
              '日本語': {'núms': ('〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'),
                      'sep_dec': ['.', ',']},
              }
+
+
+if __name__ == '__main__':
+    print(tx_a_núm('2.03485730137359e-11'))
+    print(tx_a_núm('2.03485730137359E-11'))

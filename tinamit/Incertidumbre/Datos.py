@@ -271,8 +271,10 @@ class SuperBD(object):
                              .format(var_bd))
 
         if var not in símismo.vars:
-            símismo.vars[var] = {'fuente': {}, 'limp': {}}
-        símismo.vars[var] = {'fuente': {bd: {'var': var_bd, 'cód_vacío': cód_vacío} for bd in bds}}
+            símismo.vars[var] = {'fuente': {bd: {'var': var_bd, 'cód_vacío': cód_vacío} for bd in bds}}
+        else:
+            for bd in bds:
+                símismo.vars[var]['fuente'][bd] = {'var': var_bd, 'cód_vacío': cód_vacío}
 
         # Agregar información de error para bases de datos regionales
         for bd in bds:
@@ -409,13 +411,11 @@ class SuperBD(object):
         if lugar is not None:
             if not isinstance(lugar, list):
                 lugar = [lugar]
-            lugar.append(None)
 
         # Formatear los datos
         if datos is not None:
             if not isinstance(datos, list):
                 datos = [datos]
-            datos.append(None)
 
         # Preparar las fechas
         if fechas is not None:
@@ -458,36 +458,42 @@ class SuperBD(object):
 
     def obt_datos_ind(símismo, l_vars, lugar=None, datos=None, fechas=None, excl_faltan=False):
         res = símismo.obt_datos(l_vars=l_vars, lugar=lugar, datos=datos, fechas=fechas, excl_faltan=excl_faltan)
-        return res['indiv']
+        return res['individual']
 
     def obt_datos_reg(símismo, l_vars, lugar=None, datos=None, fechas=None, interpolar=True):
         res = símismo.obt_datos(l_vars=l_vars, lugar=lugar, datos=datos, fechas=fechas, excl_faltan=False)['regional']
 
         if interpolar:
-            proms_fecha = res.groupby('fecha').mean()
-            mín = proms_fecha.index.min()
-            máx = proms_fecha.index.max()
+            finalizados = None
+            for l in lugar:
+                proms_fecha = res.loc[res['lugar'] == l].groupby(['fecha']).mean()
+                if proms_fecha.shape[0] > 0:
+                    mín = proms_fecha.index.min()
+                    máx = proms_fecha.index.max()
 
-            for v in l_vars:
-                compl_v = proms_fecha.dropna(subset=[v])[v]
-                mín_v = compl_v.index.min()
-                máx_v = compl_v.index.max()
-                mín = max(mín, mín_v)
-                máx = min(máx, máx_v)
+                    for v in l_vars:
+                        compl_v = proms_fecha.dropna(subset=[v])[v]
+                        mín_v = compl_v.index.min()
+                        máx_v = compl_v.index.max()
+                        mín = max(mín, mín_v)
+                        máx = min(máx, máx_v)
 
-            l_fechas_fin = [í for í in proms_fecha.index if mín <= í <= máx]
+                    l_fechas_fin = [í for í in proms_fecha.index if mín <= í <= máx]
 
-            nuevas_filas = pd.DataFrame(columns=l_vars,
-                                        index=pd.to_datetime([x for x in l_fechas_fin if x not in proms_fecha.index]))
-            proms_fecha = proms_fecha.append(nuevas_filas)
-            proms_fecha = proms_fecha.sort_index()
-            proms_fecha = proms_fecha.interpolate(method='time')
-            finalizados = proms_fecha.loc[l_fechas_fin]
-
+                    nuevas_filas = pd.DataFrame(columns=l_vars,
+                                                index=pd.to_datetime([x for x in l_fechas_fin if x not in proms_fecha.index]))
+                    proms_fecha = proms_fecha.append(nuevas_filas)
+                    proms_fecha = proms_fecha.sort_index()
+                    proms_fecha = proms_fecha.interpolate(method='time')
+                    proms_fecha['lugar'] = l
+                    proms_fecha = proms_fecha.loc[l_fechas_fin]
+                    if finalizados is None:
+                        finalizados = proms_fecha.dropna(how='any')
+                    else:
+                        finalizados = finalizados.append(proms_fecha.dropna(how='any'))
             return finalizados
         else:
-            return  res
-
+            return res
 
     def graficar(símismo, var, fechas=None, cód_lugar=None, lugar=None, datos=None, escala=None, archivo=None):
 
