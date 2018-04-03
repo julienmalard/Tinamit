@@ -468,6 +468,14 @@ class SuperBD(object):
             for l in lugar:
                 proms_fecha = res.loc[res['lugar'] == l].groupby(['fecha']).mean()
                 if proms_fecha.shape[0] > 0:
+
+                    # Aplicar valores sin fechas asociadas
+                    sin_fecha = res[res.fecha.isnull()]
+                    if sin_fecha.shape[0] > 0:
+                        proms_sin_fecha = sin_fecha.loc[sin_fecha['lugar'] == l].mean().to_frame().T
+                        proms_fecha.fillna(value={ll: v[0] for ll, v in proms_sin_fecha.to_dict(orient='list').items()},
+                                           inplace=True)
+
                     mín = proms_fecha.index.min()
                     máx = proms_fecha.index.max()
 
@@ -489,8 +497,10 @@ class SuperBD(object):
                         proms_fecha['lugar'] = l
                         proms_fecha = proms_fecha.loc[l_fechas_fin]
                     else:
-                        avisar('No se pudo interpolar entre datos "{}". Se tomará el promedio en vez.'.format(l_vars))
-                        proms_fecha = proms_fecha.mean().to_frame().T
+                        avisar('No se pudo interpolar entre datos "{}". Nos basaremos simplemente en los datos '
+                               'observados sin tener cuenta de la fecha de observación.'.format(l_vars))
+                        proms_fecha = proms_fecha.sort_index()
+                        proms_fecha.interpolate(limit_direction='both', inplace=True)
                     if finalizados is None:
                         finalizados = proms_fecha.dropna(how='any')
                     else:
