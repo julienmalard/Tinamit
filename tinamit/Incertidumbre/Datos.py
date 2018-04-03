@@ -168,7 +168,7 @@ class SuperBD(object):
             if isinstance(bds, Datos):
                 bds = [bds]
             if isinstance(bds, list):
-                símismo.bds = {d.nombre: d for d in bds}  # type: dict[Datos]
+                símismo.bds = {d.nombre: d for d in bds}  # type: dict[str, Datos]
             else:
                 raise TypeError('')
 
@@ -348,10 +348,10 @@ class SuperBD(object):
             l_vars = [it[0] for it in vars_interés]
 
             if len(vars_interés):
+                l_vars_bd = [d_v['fuente'][nb]['var'] for _, d_v in vars_interés]
+                l_códs_vac = [d_v['fuente'][nb]['cód_vacío'] for _, d_v in vars_interés]
 
-                datos_bd = np.array(
-                    [bd.obt_datos(d_v['fuente'][nb]['var'], cód_vacío=d_v['fuente'][nb]['cód_vacío'])
-                     for v, d_v in vars_interés]).T
+                datos_bd = np.array(bd.obt_datos(l_vars=l_vars_bd, cód_vacío=l_códs_vac)).T
 
                 bd_pds_temp = pd.DataFrame(datos_bd, columns=l_vars)
 
@@ -480,13 +480,17 @@ class SuperBD(object):
 
                     l_fechas_fin = [í for í in proms_fecha.index if mín <= í <= máx]
 
-                    nuevas_filas = pd.DataFrame(columns=l_vars,
-                                                index=pd.to_datetime([x for x in l_fechas_fin if x not in proms_fecha.index]))
-                    proms_fecha = proms_fecha.append(nuevas_filas)
-                    proms_fecha = proms_fecha.sort_index()
-                    proms_fecha = proms_fecha.interpolate(method='time')
-                    proms_fecha['lugar'] = l
-                    proms_fecha = proms_fecha.loc[l_fechas_fin]
+                    if len(l_fechas_fin):
+                        nuevas_filas = pd.DataFrame(columns=l_vars,
+                                                    index=pd.to_datetime([x for x in l_fechas_fin if x not in proms_fecha.index]))
+                        proms_fecha = proms_fecha.append(nuevas_filas)
+                        proms_fecha = proms_fecha.sort_index()
+                        proms_fecha = proms_fecha.interpolate(method='time')
+                        proms_fecha['lugar'] = l
+                        proms_fecha = proms_fecha.loc[l_fechas_fin]
+                    else:
+                        avisar('No se pudo interpolar entre datos "{}". Se tomará el promedio en vez.'.format(l_vars))
+                        proms_fecha = proms_fecha.mean().to_frame().T
                     if finalizados is None:
                         finalizados = proms_fecha.dropna(how='any')
                     else:
