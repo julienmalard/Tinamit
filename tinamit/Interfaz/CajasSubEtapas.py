@@ -197,8 +197,8 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
             símismo.MnVarsBf.reinstaurar(var)
 
         for conex in símismo.apli.receta['conexiones']:
-            símismo.MnVarsMDS.excluir(conex['vars']['mds'])
-            símismo.MnVarsBf.excluir(conex['vars']['bf'])
+            símismo.MnVarsMDS.excluir(conex['dic_vars']['mds'])
+            símismo.MnVarsBf.excluir(conex['dic_vars']['bf'])
 
         if símismo.BtMDSFuente.val:
             opciones_mds = vars_mds
@@ -229,8 +229,8 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
         if 'modelo_fuente' in conexión:
             dic_conex = {
                 'mds_fuente': conexión['modelo_fuente'] == 'EnvolturaMDS',
-                'var_mds': conexión['vars']['mds'],
-                'var_bf': conexión['vars']['bf'],
+                'var_mds': conexión['dic_vars']['mds'],
+                'var_bf': conexión['dic_vars']['bf'],
                 'conv': conexión['conv']
             }
         else:

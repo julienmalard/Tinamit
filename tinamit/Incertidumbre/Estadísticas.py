@@ -63,7 +63,6 @@ def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=Non
     with mod_bayes:
         ops_auto = {
             'tune': 1000,
-            'njobs': 1
         }
         ops_auto.update(ops)
         t = pm.sample(**ops_auto)
@@ -172,7 +171,7 @@ def ajust_dist(datos, dists_potenciales):
             p = estad.kstest(rvs=datos, cdf=dist_sp(*tupla_prms).cdf)[1]
 
             # Si el ajuste es mejor que el mejor ajuste anterior...
-            if p > mejor_ajuste['p'] or mejor_ajuste['tipo'] == '':
+            if p > mejor_ajuste['p'] or mejor_ajuste['tipo'] is None:
                 # Guardarlo
                 mejor_ajuste['p'] = p
                 mejor_ajuste['prms'] = tupla_prms

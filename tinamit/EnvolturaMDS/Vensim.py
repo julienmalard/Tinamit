@@ -391,7 +391,7 @@ class ModeloVensim(EnvolturaMDS):
 
             # Sacar los límites del variable
             rango = (símismo.obt_atrib_var(var, cód_attrib=11), símismo.obt_atrib_var(var, cód_attrib=12))
-            rango = tuple(float(l) if l != '?' else None for l in rango)
+            rango = tuple(float(l) if l != '' else None for l in rango)
 
             # Leer la descripción del variable.
             info = símismo.obt_atrib_var(var, 2)

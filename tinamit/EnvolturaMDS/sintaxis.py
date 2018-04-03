@@ -224,7 +224,10 @@ class Ecuación(object):
         with open(gramática) as gm:
             anlzdr = Lark(gm, parser='lalr', start='ec')
 
-        símismo.árbol = _Transformador().transform(anlzdr.parse(ec))[0]
+        try:
+            símismo.árbol = _Transformador().transform(anlzdr.parse(ec))[0]
+        except BaseException as e:
+            raise('Error en la ecuación "{}". Detalles: {}'.format(ec, e))
 
     def variables(símismo):
 
@@ -406,7 +409,7 @@ class Ecuación(object):
         modelo = pm.Model()
         with modelo:
             mu = _a_bayes(símismo.árbol)
-            sigma = pm.HalfNormal(name='sigma', sd=1)
+            sigma = pm.HalfNormal(name='sigma', sd=max(obs_y)/3)
 
             if binario:
                 x = pm.Normal(name='logit_prob', mu=mu, sd=sigma, shape=obs_y.shape, testval=np.full(obs_y.shape, 0))
@@ -472,8 +475,8 @@ class Ecuación(object):
 
 
 dic_funs = {
-    'mín': {'vensim': 'MIN', 'pm': min, 'python': min},
-    'máx': {'vensim': 'MAX', 'pm': max, 'python': max},
+    'mín': {'vensim': 'MIN', 'pm': pm.math.minimum, 'python': min},
+    'máx': {'vensim': 'MAX', 'pm': pm.math.maximum, 'python': max},
     'abs': {'vensim': 'ABS', 'pm': pm.math.abs_, 'python': abs},
     'exp': {'vensim': 'EXP', 'pm': pm.math.exp, 'python': mat.exp},
     'ent': {'vensim': 'INTEGER', 'pm': pm.math.floor, 'python': int},

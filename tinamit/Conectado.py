@@ -374,9 +374,11 @@ class SuperConectado(Modelo):
             if all(x in símismo.modelos for x in vals_inic):
                 vals_inic = [vals_inic]
 
-        super().simular_paralelo(tiempo_final, paso=paso, nombre_corrida=nombre_corrida, vals_inic=vals_inic,
-                         fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, combinar=combinar,
-                         dibujar=dibujar)
+        super().simular_paralelo(
+            tiempo_final, paso=paso, nombre_corrida=nombre_corrida, vals_inic=vals_inic,
+            fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima,
+            combinar=combinar, dibujar=dibujar
+        )
 
     def incrementar(símismo, paso):
         """
@@ -404,7 +406,7 @@ class SuperConectado(Modelo):
             """
             try:
                 mod.incrementar(*args)
-            except:
+            except BaseException:
                 d[nombre] = True
                 raise
 
