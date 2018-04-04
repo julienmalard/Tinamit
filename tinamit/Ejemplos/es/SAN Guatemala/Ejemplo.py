@@ -149,7 +149,7 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
 
     # 1/(b*Educación formal+b2*Educación sexual+a)+c', paráms=['a', 'b', 'b2', 'c'],
     #                    líms_paráms=[(0, None), (0, 50), (0, 50), (0, None)]
-
+    #
     # _ = conex.calib_var('Trabajo infantil',
     #                     ec='-1/(a*Tamaño familia+a2*Pobreza+b)+c',
     #                     paráms=['a', 'a2', 'b', 'c'],
@@ -165,124 +165,126 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
     #                     paráms=['a', 'b'],
     #                     líms_paráms=[(0, None)] * 2, por='Territorio', aprioris=True)
 
-    _ = conex.estim_constante(const='Fracción infantes inicial', líms=(0, 1), por='Territorio', regional=True)
-    _ = conex.estim_constante(const='Fracción niños inicial', líms=(0, 1), por='Territorio', regional=True)
-    _ = conex.estim_constante(const='Fracción adultos inicial', líms=(0, 1), por='Territorio', regional=True)
-    _ = conex.estim_constante(const='Consumo leña por hogar', líms=(0, None), por='Territorio')
-    _ = conex.estim_constante(const='Infraestructura vial', líms=(0, None), regional=True)
-    _ = conex.estim_constante(const='Costumbre de consumo', líms=(0, 1), por='Territorio')
-    _ = conex.estim_constante(const='Educación sexual', líms=(0, 1), por='Territorio')
-    _ = conex.estim_constante(const='Superficie municipio', líms=(0, None), regional=True)
-    _ = conex.estim_constante(const='Fracción tierras a hortalizas', líms=(0, 1), por='Territorio')
-    _ = conex.estim_constante(const='Tratamiento agua', líms=(0, 1), por='Territorio')
-    _ = conex.estim_constante(const='Acceso agua potable', líms=(0, 1), por='Territorio')
-    _ = conex.estim_constante(const='Higiene', líms=(0, 1), por='Territorio')
-    _ = conex.estim_constante(const='Uso insumos orgánicos', líms=(0, 1), por='Territorio')
-
-    conex.espec_inicial('Desnutrición inicial', var='Desnutrición crónica infantil')
-    conex.espec_inicial('Población inicial', var='Población')
-    conex.espec_inicial('Pobreza inicial', var='Pobreza')
+    # _ = conex.estim_constante(const='Fracción infantes inicial', líms=(0, 1), por='Territorio', regional=True)
+    # _ = conex.estim_constante(const='Fracción niños inicial', líms=(0, 1), por='Territorio', regional=True)
+    # _ = conex.estim_constante(const='Fracción adultos inicial', líms=(0, 1), por='Territorio', regional=True)
+    # _ = conex.estim_constante(const='Consumo leña por hogar', líms=(0, None), por='Territorio')
+    # _ = conex.estim_constante(const='Infraestructura vial', líms=(0, None), regional=True)
+    # _ = conex.estim_constante(const='Costumbre de consumo', líms=(0, 1), por='Territorio')
+    # _ = conex.estim_constante(const='Educación sexual', líms=(0, 1), por='Territorio')
+    # _ = conex.estim_constante(const='Superficie municipio', líms=(0, None), regional=True)
+    # _ = conex.estim_constante(const='Fracción tierras a hortalizas', líms=(0, 1), por='Territorio')
+    # _ = conex.estim_constante(const='Tratamiento agua', líms=(0, 1), por='Territorio')
+    # _ = conex.estim_constante(const='Acceso agua potable', líms=(0, 1), por='Territorio')
+    # _ = conex.estim_constante(const='Higiene', líms=(0, 1), por='Territorio')
+    # _ = conex.estim_constante(const='Uso insumos orgánicos', líms=(0, 1), por='Territorio')
     #
-    # # act_calib(conex)
+    # conex.espec_inicial('Desnutrición inicial', var='Desnutrición crónica infantil')
+    # conex.espec_inicial('Población inicial', var='Población')
+    # conex.espec_inicial('Pobreza inicial', var='Pobreza')
+    # #
+    # # # act_calib(conex)
+    # #
+    # _ = conex.calib_var('Fertilidad', ec='1/(b*Educación formal+b2*Educación sexual+a)+c', paráms=['a', 'b', 'b2', 'c'],
+    #                      líms_paráms=[(0, None), (0, 50), (0, 50), (0, None)], por='Territorio', aprioris=True)
     #
-    _ = conex.calib_var('Fertilidad', ec='1/(b*Educación formal+b2*Educación sexual+a)+c', paráms=['a', 'b', 'b2', 'c'],
-                         líms_paráms=[(0, None), (0, 50), (0, 50), (0, None)], por='Territorio', aprioris=True)
-
-    _ = conex.calib_var('Desnutrición crónica infantil',
-                        ec='1/(exp(-a9*Seguridad alimentaria-a10*Enfermedades infantiles-b6)+ 1)', paráms=['a9', 'a10', 'b6'],
-                        líms_paráms=[(-10, 10), (-10, 10), (-10, 10)],
-                        por='Territorio', aprioris=True, regional=True)
-
-    _ = conex.calib_var('Seguridad alimentaria', ec='1/(1 + b4*exp(-a2*Calidad de la dieta+a3*Cantidad de alimentos))',
-                        paráms=['b4', 'a2', 'a3'],
-                        líms_paráms=[(0, None), (0, None), (0, 10e-5)],
-                        por='Territorio', aprioris=True, regional=False)
-    # '1/((a2*Calidad de la dieta+a3*Cantidad de alimentos)^a4*b4 + 1)'
-    act_calib(conex)
-
-    _ = conex.calib_var('Enfermedades infantiles',
-                        ec='1/(1 + exp(-a5*Tratamiento agua-a6*Acceso agua potable-a7*Seguridad alimentaria-a8*Higiene - b5))',
-                        paráms=['a5', 'a6', 'a7', 'a8', 'b5'],
-                        líms_paráms=[(-10, 10), (-10, 10), (-10, 10), (-10, 10), (-10, 10)], por='Territorio',
-                        aprioris=True)
-
-    _ = conex.calib_var('Pobreza', ec='a11/(Ingresos netos familiares)', paráms=['a11'],
-                        líms_paráms=[(0, None)], por='Territorio', aprioris=True, regional=True)
-
-    _ = conex.calib_var('Rendimiento milpa',
-                        ec='c2/(1 + exp(-a16*Riego-a17*Uso insumos orgánicos-a18*Uso insumos químicos - b9))',
-                        paráms=['a16', 'a17', 'a18', 'b9', 'c2'],
-                        líms_paráms=[(-10, 50), (-10, 50), (-10, 50), (-10, 50), (0, 60000)], por='Territorio',
-                        aprioris=True)  # MUY LENTO. ... bueno, no siempre.
-
-    act_calib(conex)
-
-    _ = conex.calib_var('Calidad de la dieta',
-                        ec='1/(1 + exp(-a12*Pobreza - a13*Producción hortalizas consumida- a14*Educación formal-b7))',
-                        paráms=['a12', 'a13', 'a14', 'b7'],
-                        líms_paráms=[(-1e-2, 1e-2), (-1e-2, 1e-2), (-1, 1), (-10, 10)],
-                        por='Territorio', aprioris=True)  # MUY LENTO... de verdad. Pero un poco más rápido para territorios.
-
-    _ = conex.calib_var('Gastos en enfermedades', ec='a15*Enfermedades infantiles^b8', paráms=['a15', 'b8'],
-                        líms_paráms=[(0, None), (0, 10)], por='Territorio', aprioris=True)
-
-    _ = conex.calib_var('Comercialización',
-                        ec='1/(1 + exp(-a19*Infraestructura vial -a20*Población/Superficie municipio-b10))',
-                        paráms=['a19', 'a20', 'b10'],
-                        líms_paráms=[(-10, 10)] * 3, por='Territorio',
-                        aprioris=True, regional=True)  # Muy lento únicamente para terr. 1 (hacia rápido para Ixml)
-
-    act_calib(conex)
-
-    _ = conex.calib_var('Tecnificación agrícola',
-                         ec='exp(a22*Acceso a crédito + a23*Pobreza + a24*Comercialización)',
-                         paráms=['a22', 'a23', 'a24'],
-                         líms_paráms=[(-9, 9), (-1e-2, 1e-2), (-9, 9)], por='Territorio', aprioris=True)
-
+    # _ = conex.calib_var('Desnutrición crónica infantil',
+    #                     ec='1/(exp(-a9*Seguridad alimentaria-a10*Enfermedades infantiles-b6)+ 1)', paráms=['a9', 'a10', 'b6'],
+    #                     líms_paráms=[(-10, 10), (-10, 10), (-10, 10)],
+    #                     por='Territorio', aprioris=True, regional=True)
+    #
+    # _ = conex.calib_var('Seguridad alimentaria', ec='1/(1 + b4*exp(-a2*Calidad de la dieta+a3*Cantidad de alimentos))',
+    #                     paráms=['b4', 'a2', 'a3'],
+    #                     líms_paráms=[(0, None), (0, None), (0, 10e-5)],
+    #                     por='Territorio', aprioris=True, regional=False)
+    # # '1/((a2*Calidad de la dieta+a3*Cantidad de alimentos)^a4*b4 + 1)'
+    # act_calib(conex)
+    #
+    # _ = conex.calib_var('Enfermedades infantiles',
+    #                     ec='1/(1 + exp(-a5*Tratamiento agua-a6*Acceso agua potable-a7*Seguridad alimentaria-a8*Higiene - b5))',
+    #                     paráms=['a5', 'a6', 'a7', 'a8', 'b5'],
+    #                     líms_paráms=[(-10, 10), (-10, 10), (-10, 10), (-10, 10), (-10, 10)], por='Territorio',
+    #                     aprioris=True)
+    #
+    # _ = conex.calib_var('Pobreza', ec='a11/(Ingresos netos familiares)', paráms=['a11'],
+    #                     líms_paráms=[(0, None)], por='Territorio', aprioris=True, regional=True)
+    #
+    # _ = conex.calib_var('Rendimiento milpa',
+    #                     ec='c2/(1 + exp(-a16*Riego-a17*Uso insumos orgánicos-a18*Uso insumos químicos - b9))',
+    #                     paráms=['a16', 'a17', 'a18', 'b9', 'c2'],
+    #                     líms_paráms=[(-10, 50), (-10, 50), (-10, 50), (-10, 50), (0, 60000)], por='Territorio',
+    #                     aprioris=True)  # MUY LENTO. ... bueno, no siempre.
+    #
+    # act_calib(conex)
+    #
+    # _ = conex.calib_var('Calidad de la dieta',
+    #                     ec='1/(1 + exp(-a12*Pobreza - a13*Producción hortalizas consumida- a14*Educación formal-b7))',
+    #                     paráms=['a12', 'a13', 'a14', 'b7'],
+    #                     líms_paráms=[(-1e-2, 1e-2), (-1e-2, 1e-2), (-1, 1), (-10, 10)],
+    #                     por='Territorio', aprioris=True)  # MUY LENTO... de verdad. Pero un poco más rápido para territorios.
+    #
+    # _ = conex.calib_var('Gastos en enfermedades', ec='a15*Enfermedades infantiles^b8', paráms=['a15', 'b8'],
+    #                     líms_paráms=[(0, None), (0, 10)], por='Territorio', aprioris=True)
+    #
+    # _ = conex.calib_var('Comercialización',
+    #                     ec='1/(1 + exp(-a19*Infraestructura vial -a20*Población/Superficie municipio-b10))',
+    #                     paráms=['a19', 'a20', 'b10'],
+    #                     líms_paráms=[(-10, 10)] * 3, por='Territorio',
+    #                     aprioris=True, regional=True)  # Muy lento únicamente para terr. 1 (hacia rápido para Ixml)
+    #
+    # act_calib(conex)
+    #
+    # _ = conex.calib_var('Tecnificación agrícola',
+    #                      ec='exp(a22*Acceso a crédito + a23*Pobreza + a24*Comercialización)',
+    #                      paráms=['a22', 'a23', 'a24'],
+    #                      líms_paráms=[(-9, 9), (-1e-2, 1e-2), (-9, 9)], por='Territorio', aprioris=True)
+    # act_calib(conex)
+    #
     # _ = conex.calib_var('Tecnificación agrícola',
     #                     # ec='exp(a*Pobreza + a2*Comercialización)+b',
     #                     ec='c4/(1 + exp(-a22*Pobreza -a23*Comercialización-a24*Acceso a crédito -b17))',
     #                     paráms=['a22', 'a23', 'a24', 'b17', 'c4'],
     #                     líms_paráms=[(-1e-2, 1e-2), (-20, 20), (-10, 10), (-10, 10), (0, 5e5)], por='Territorio',
     #                     aprioris=True)
-
+    #
     # _ = conex.calib_var('Emigración permanente',
     #                     ec='1/(1 + exp(-a28*Desempleo-b14))',
     #                     paráms=['a28', 'b14'],
     #                     líms_paráms=[(-1e-1, 1e-1), (-10, 10)], por='Territorio', regional=True, aprioris=True)
     # act_calib(conex)
+    #
+    # _ = conex.calib_var('Comida comprada',
+    #                     ec='c3/(1 + exp(-a25*Pobreza - a26*Producción milpa/Tamaño familia-b12))',
+    #                     paráms=['a25', 'a26', 'b12', 'c3'],
+    #                     líms_paráms=[(-1e-2, 1e-2), (-1e-2, 1e-2), (-10, 10), (0, 1000)], por='Territorio',
+    #                     aprioris=True)
+    #
+    # act_calib(conex)
+    #
+    # _ = conex.calib_var('Acceso a crédito',
+    #                     ec='1/(1 + exp(-a21*Tierra por familia-b11))',
+    #                     paráms=['a21', 'b11'],
+    #                     líms_paráms=[(-1e-1, 1e-1), (-10, 10)], por='Territorio', aprioris=True)
+    #
+    # _ = conex.calib_var('Riego',
+    #                     ec='1/(1 + exp(a30*Tecnificación agrícola-b16))',
+    #                     paráms=['a30', 'b16'],
+    #                     líms_paráms=[(-1e-4, 1e-4), (-10, 10)], binario=False, por='Territorio', aprioris=True)
+    #
+    # act_calib(conex)
+    #
+    # _ = conex.calib_var('Uso insumos químicos',
+    #                     ec='1/(1 + exp(-a27*Tecnificación agrícola-b13))',
+    #                     paráms=['a27', 'b13'],
+    #                     líms_paráms=[(-1e-2, 1e-2), (-10, 10)], por='Territorio', aprioris=True)
+    #
+    # _ = conex.calib_var('Costos insumos',
+    #                     ec='a29*Uso insumos químicos+b15',
+    #                     paráms=['a29', 'b15'],
+    #                     líms_paráms=[(0, None)] * 2, por='Territorio', aprioris=True)
+    #
+    # act_calib(conex)
 
-    _ = conex.calib_var('Comida comprada',
-                        ec='c3/(1 + exp(-a25*Pobreza - a26*Producción milpa/Tamaño familia-b12))',
-                        paráms=['a25', 'a26', 'b12', 'c3'],
-                        líms_paráms=[(-1e-2, 1e-2), (-1e-2, 1e-2), (-10, 10), (0, 1000)], por='Territorio',
-                        aprioris=True)
-
-    act_calib(conex)
-
-    _ = conex.calib_var('Acceso a crédito',
-                        ec='1/(1 + exp(-a21*Tierra por familia-b11))',
-                        paráms=['a21', 'b11'],
-                        líms_paráms=[(-1e-1, 1e-1), (-10, 10)], por='Territorio', aprioris=True)
-
-    _ = conex.calib_var('Riego',
-                        ec='1/(1 + exp(a30*Tecnificación agrícola-b16))',
-                        paráms=['a30', 'b16'],
-                        líms_paráms=[(-1e-4, 1e-4), (-10, 10)], binario=False, por='Territorio', aprioris=True)
-
-    act_calib(conex)
-
-    _ = conex.calib_var('Uso insumos químicos',
-                        ec='1/(1 + exp(-a27*Tecnificación agrícola-b13))',
-                        paráms=['a27', 'b13'],
-                        líms_paráms=[(-1e-2, 1e-2), (-10, 10)], por='Territorio', aprioris=True)
-
-    _ = conex.calib_var('Costos insumos',
-                        ec='a29*Uso insumos químicos+b15',
-                        paráms=['a29', 'b15'],
-                        líms_paráms=[(0, None)] * 2, por='Territorio', aprioris=True)
-
-    act_calib(conex)
     raise SystemExit(0)
     # Gráfico de "caja" con incertidumbre
     bd.graficar(var='ISA', fechas=2011, cód_lugar='0708', datos=None)

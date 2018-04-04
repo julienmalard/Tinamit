@@ -191,7 +191,18 @@ class Modelo(object):
             # Actualizar variables de clima, si necesario
             if clima:
                 símismo.act_vals_clima(n_paso=paso, f=fecha_act)
-                fecha_act += ft.timedelta(paso)  # Avanzar la fecha
+                # arreglarme: mejor conversión de unidades de tiempo
+                if símismo.unidad_tiempo == 'año':
+                    fecha_act = ft.datetime(year=fecha_act.year+1, month=fecha_act.month, day=fecha_act.day)  # Avanzar la fecha
+                elif símismo.unidad_tiempo == 'mes':
+                    fecha_act += ft.timedelta(paso*30)  # Avanzar la fecha
+                elif símismo.unidad_tiempo == 'días':
+                    fecha_act += ft.timedelta(paso)  # Avanzar la fecha
+                else:
+                    if símismo.unidad_tiempo_meses is not None:
+                        fecha_act += ft.timedelta(paso *símismo.unidad_tiempo_meses * 30)  # Avanzar la fecha
+                    else:
+                        raise ValueError('')
 
             # Incrementar el modelo
             símismo.incrementar(paso)

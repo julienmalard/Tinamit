@@ -38,7 +38,7 @@ def graficar_calibs():
 
         if hay_dist:
             for r in d_p:
-                dib.hist(d_p[r]['dist'], alpha=0.2, label=r)
+                dib.hist(d_p[r]['dist'], alpha=0.2, label=r.split()[1] if 'Territorio' in r else r)
             dib.legend()
             dib.title(p)
             dib.savefig(os.path.join(dir_gráf_calib, '{}.jpeg'.format(p)))
@@ -47,7 +47,7 @@ def graficar_calibs():
         elif hay_val:
             fig, eje = dib.subplots()
             vals = [d_r['val'] for d_r in d_p.values() if d_r['val'] != 'None']
-            nmbs = [r for r, d_r in d_p.items() if d_r['val'] != 'None']
+            nmbs = [r.split()[1] if 'Territorio' in r else r for r, d_r in d_p.items() if d_r['val'] != 'None']
             if hay_es:
                 err = [d_r['ES'] for d_r in d_p.values() if d_r['ES'] != 'None']
             else:
