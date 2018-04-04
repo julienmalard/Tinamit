@@ -2,6 +2,7 @@ import os
 
 from tinamit import _
 from tinamit.EnvolturaMDS.Vensim import ModeloVensim, ModeloVensimMdl, dll_Vensim
+from tinamit.MDS import EnvolturaMDS
 
 
 def generar_mds(archivo):

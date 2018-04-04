@@ -201,7 +201,11 @@ class Modelo(object):
 
     def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
                          fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True,
-                         dibujar=None):
+                         dibujar=None, devolver=None, paralelo=True):
+
+        if devolver is not None:
+            if not isinstance(devolver, list) and not isinstance(devolver, tuple):
+                devolver = [devolver]
 
         # Poner las opciones de simulación en un diccionario.
         opciones = {'paso': paso, 'fecha_inic': fecha_inic, 'lugar': lugar, 'vals_inic': vals_inic,
@@ -218,6 +222,8 @@ class Modelo(object):
                                                                   and (len(x) > 1))])
         l_nmbs_ops_var = [ll for ll, v in opciones.items() if ((isinstance(v, list) or isinstance(v, dict))
                                                                and (len(v) > 1))]
+
+        devolv_lista = True
         if combinar:
             n_corridas = int(np.prod(l_n_ops))
 
@@ -234,6 +240,7 @@ class Modelo(object):
                     ops[ll] = op
                 else:
                     if isinstance(op, dict):
+                        devolv_lista = False
 
                         id_op = list(op)[0]
                         ops[ll] = op[id_op]
@@ -244,7 +251,8 @@ class Modelo(object):
                         ops[ll] = op[0]
 
                         if len(op) > 1:
-                            nombre.append(str(op[0]))
+                            nombre.append(str(op[0]) if not (isinstance(op[0], list) or isinstance(op[0], dict))
+                                          else str(0))
             l_n_ops_cum = np.roll(l_n_ops.cumprod(), 1)
             if len(l_n_ops_cum):
                 l_n_ops_cum[0] = 1
@@ -259,7 +267,8 @@ class Modelo(object):
 
                     if isinstance(op, list):
                         ops[nmb_op] = op[n]
-                        nombre[í] = str(op[n])
+                        nombre[í] = str(str(op[n]) if not (isinstance(op[n], list) or isinstance(op[n], dict))
+                                        else str(n))
                     elif isinstance(op, dict):
                         id_op = list(op)[n]
                         ops[nmb_op] = op[id_op]
@@ -269,8 +278,8 @@ class Modelo(object):
                                           'error.'.format(type(op))))
                 dic_ops[' '.join(x.replace(',', '_') for x in nombre)] = ops.copy()
 
-            corridas = {'{}{}'.format('nombre_corrida' + '_' if nombre_corrida else '', ll): ops
-                        for ll, ops in dic_ops.items()}
+                corridas = {'{}{}'.format(nombre_corrida + '_' if nombre_corrida else '', ll): ops
+                            for ll, ops in dic_ops.items()}
 
             if len(corridas) == 1 and list(corridas)[0] == '':
                 corridas['Corrida Tinamït'] = corridas.pop('')
@@ -289,6 +298,9 @@ class Modelo(object):
             for ll, op in opciones.items():
                 if isinstance(op, dict):
                     opciones[ll] = [op[x] for x in sorted(op)]
+
+            if any(isinstance(op, dict) for op in opciones.values()):
+                devolv_lista = False
 
             #
             if isinstance(nombre_corrida, str):
@@ -313,28 +325,30 @@ class Modelo(object):
         d_vals_inic = {ll: v.pop('vals_inic') for ll, v in corridas.items()}
 
         # Detectar si el modelo y todos sus submodelos son paralelizables
-        if símismo.paralelizable():
+        if símismo.paralelizable() and paralelo:
             # ...si lo son...
 
             # Empezar las simulaciones en paralelo
             l_trabajos = []  # type: list[tuple]
 
+            copia_mod = pickle.dumps(símismo)
+
             for corr, d_prms_corr in corridas.items():
                 d_args = {ll: copiar_profundo(v) for ll, v in d_prms_corr.items()}
                 d_args['nombre_corrida'] = corr
 
-                l_trabajos.append((pickle.dumps(símismo), copiar_profundo(d_vals_inic[corr]), d_args))
+                l_trabajos.append((copia_mod, copiar_profundo(d_vals_inic[corr]), d_args))
 
             with Reserva() as r:
                 r.map(_correr_modelo, l_trabajos)
 
         else:
             # Sino simplemente correrlas una tras otra con símismo.simular()
-
-            avisar(_('No todos los submodelos del modelo conectado "{}" son paralelizable. Para evitar el riesgo'
-                     'de errores de paralelización, correremos las corridas como simulaciones secuenciales normales. '
-                     'Si tus modelos sí son paralelizable, poner el atributo ".paralelizable = True" para activar la '
-                     'paralelización.').format(símismo.nombre))
+            if paralelo:
+                avisar(_('No todos los submodelos del modelo conectado "{}" son paralelizable. Para evitar el riesgo'
+                         'de errores de paralelización, correremos las corridas como simulaciones secuenciales normales. '
+                         'Si tus modelos sí son paralelizable, poner el atributo ".paralelizable = True" para activar la '
+                         'paralelización.').format(símismo.nombre))
 
             # Para cada corrida...
             for corr, d_prms_corr in corridas.items():
@@ -347,7 +361,7 @@ class Modelo(object):
                     símismo.inic_vals(dic_vals=d_vals)
 
                 # Después, simular el modelo.
-                símismo.simular(**d_prms_corr)
+                    símismo.simular(**d_prms_corr, nombre_corrida=corr)
 
         if dibujar is not None:
             # Para hacer: formalizar para todos los modelos
@@ -358,6 +372,18 @@ class Modelo(object):
                 for dib in dibujar:
                     for corr in corridas:
                         símismo.dibujar(corrida=corr, **dib)
+
+        if devolver is not None:
+            egresos = {}
+            for var in devolver:
+                if devolv_lista:
+                    egresos[var] = [símismo.leer_resultados(corrida=x, var=var)
+                                    for x in corridas.keys()]
+                else:
+                    egresos[var] = {x: símismo.leer_resultados(corrida=x, var=var)
+                                    for x in corridas.keys()}
+
+            return egresos
 
     def incrementar(símismo, paso):
         """

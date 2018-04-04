@@ -227,7 +227,7 @@ class Ecuación(object):
         try:
             símismo.árbol = _Transformador().transform(anlzdr.parse(ec))[0]
         except BaseException as e:
-            raise('Error en la ecuación "{}". Detalles: {}'.format(ec, e))
+            raise ValueError('Error en la ecuación "{}". Detalles: {}'.format(ec, e))
 
     def variables(símismo):
 

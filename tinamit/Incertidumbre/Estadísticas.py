@@ -63,6 +63,7 @@ def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=Non
     with mod_bayes:
         ops_auto = {
             'tune': 1000,
+            'chains': 1
         }
         ops_auto.update(ops)
         t = pm.sample(**ops_auto)

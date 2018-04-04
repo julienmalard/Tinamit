@@ -31,6 +31,8 @@ class ConexDatos(object):
         símismo.dic_info_const = {}
         símismo.dic_info_iniciales = {}
 
+        símismo.dic_calibs = {}
+
     def estab_calib_var(símismo, var, ec=None, líms_paráms=None, paráms=None,
                         método=None, ops_método=None, regional=True):
         símismo.dic_info_calib[var] = {
@@ -121,6 +123,8 @@ class ConexDatos(object):
             resultados = {'val': np.mean(x), 'ES': np.std(x) / np.sqrt(x.size)}
 
             d_calib[lg] = resultados
+
+        símismo.dic_calibs[const] = d_calib
 
         return d_calib
 
@@ -246,19 +250,26 @@ class ConexDatos(object):
         d_calib = {}
         for lg, x, y, ap in zip(lugares, obs_x, obs_y, dists_aprioris):
 
-            if método == 'inf bayes':
-                resultados = calib_bayes(obj_ec, paráms, líms_paráms, x, y, dists_aprioris=ap, binario=binario,
-                                         **ops_método)
+            try:
+                if método == 'inf bayes':
+                    resultados = calib_bayes(obj_ec, paráms, líms_paráms, x, y, dists_aprioris=ap, binario=binario,
+                                             **ops_método)
 
-            elif método == 'optimizar':
-                resultados = optimizar(obj_ec, paráms, líms_paráms, x, y, **ops_método)
+                elif método == 'optimizar':
+                    resultados = optimizar(obj_ec, paráms, líms_paráms, x, y, **ops_método)
 
-            elif método == 'regresión':
-                resultados = regresión(obj_ec, paráms, líms_paráms, x, y, **ops_método)
-            else:
-                raise ValueError('')
+                elif método == 'regresión':
+                    resultados = regresión(obj_ec, paráms, líms_paráms, x, y, **ops_método)
+                else:
+                    raise ValueError('')
 
-            d_calib[lg] = resultados
+                d_calib[lg] = resultados
+            except:
+                avisar('Error de calibración para región {}. Tomaremos los a prioris como estimo final.'.format(lg))
+                d_calib[lg] = ap
+
+        for v in paráms:
+            símismo.dic_calibs[v] = {lg: clb[v] for lg, clb in d_calib.items()}
 
         return d_calib
 

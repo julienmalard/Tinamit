@@ -368,7 +368,7 @@ class SuperConectado(Modelo):
 
     def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
                          fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True,
-                         dibujar=None):
+                         dibujar=None, paralelo=True, devolver=None):
         #
         if isinstance(vals_inic, dict):
             if all(x in símismo.modelos for x in vals_inic):
@@ -377,8 +377,10 @@ class SuperConectado(Modelo):
         super().simular_paralelo(
             tiempo_final, paso=paso, nombre_corrida=nombre_corrida, vals_inic=vals_inic,
             fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima,
-            combinar=combinar, dibujar=dibujar
+            combinar=combinar, dibujar=dibujar, paralelo=paralelo, devolver=devolver
         )
+
+
 
     def incrementar(símismo, paso):
         """
