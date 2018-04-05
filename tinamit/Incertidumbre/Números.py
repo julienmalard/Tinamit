@@ -20,7 +20,7 @@ def tx_a_núm(texto):
 
     if 'e' in texto.lower():
         texto, exp = texto.lower().split('e')
-        exp = tx_a_núm(exp)
+        exp = tx_a_núm(exp.strip('+'))
     else:
         exp = None
 

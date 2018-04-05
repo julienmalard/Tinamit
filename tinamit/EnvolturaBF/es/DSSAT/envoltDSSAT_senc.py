@@ -28,8 +28,6 @@ class EnvoltDSSAT(ModeloBF):
     def incrementar(símismo, paso):
         correr(símismo.comanda, cwd='C:\\DSSAT46\\maize')
 
-        símismo.leer_vals()  # ¿Se puede quitar?
-
     def act_vals_clima(símismo, n_paso, f):
         vars_clima = ['Precipitación', 'Radiación solar',
                       'Temperatura máxima', 'Temperatura mínima']
@@ -60,8 +58,6 @@ class EnvoltDSSAT(ModeloBF):
                     rend = float(l.split(':')[1].split('kg/ha')[0].strip())
                     egr[corr] = rend
 
-        os.remove(símismo.dic_egr)
-
         irr = símismo.variables['Irrigación']['val']
         org = símismo.variables['Orgánico']['val']
         quím = símismo.variables['Químico']['val']
@@ -77,6 +73,8 @@ class EnvoltDSSAT(ModeloBF):
                     egr['ORGANICO'] * org * (1 - irr) + egr['QUIMICO'] * (1 - org) * (1 - irr)
 
         símismo.variables['Rendimiento']['val'] = rend_prom
+
+        os.remove(símismo.dic_egr)
 
     def cerrar_modelo(símismo):
         pass

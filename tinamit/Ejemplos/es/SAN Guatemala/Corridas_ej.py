@@ -19,15 +19,15 @@ if not os.path.isdir(dir_gráf_simuls):
 with open(os.path.join(dir_base, 'calib.json'), encoding='UTF-8', mode='r') as d:
     dic_calib = json.load(d)
 
-modelo_mds = generar_mds(archivo='Para Tinamït.mdl')
+modelo_mds = generar_mds(archivo='Para Tinamït.vpm')
 geog = Geografía('Iximulew')
 geog.agregar_info_regiones(archivo='Geografía Iximulew.csv',
                            orden_jer=['Departamento', 'Municipio'],
                            col_cód='Código', grupos='Territorio')
 
 vars_interés = []
-munis = {m: geog.árbol_geog_inv[m]['Territorio'] for m in geog.obt_lugares_en(escala='municipio')}
-munis = {m: tr for m, tr in munis.items() if all(m in d_p or tr in d_p for d_p in dic_calib.values())}
+munis = {m: geog.árbol_geog_inv[m]['Territorio'] for m in geog.obt_lugares_en()}
+munis = {m: tr for m, tr in munis.items() if all(m in d_p or 'Territorio {}'.format(tr) in d_p for d_p in dic_calib.values())}
 
 
 def graficar_calibs():
@@ -74,12 +74,16 @@ def correr_mod(mod, n_rep=1):
     -------
 
     """
+    res = {}
     if n_rep == 1:
-        dic_prms = {'Tinamït {}'.format(m): {p: dic_calib[p][m]['val'] if m in dic_calib[p] else dic_calib[p][tr]
-                                             for p in dic_calib} for m, tr in munis.items()}
+        dic_prms = {'{}'.format(m): {p: dic_calib[p][m]['val'] if m in dic_calib[p] else dic_calib[p]['Territorio {}'.format(tr)]
+                                     for p in dic_calib} for m, tr in munis.items()}
 
-        res = mod.simular_paralelo(tiempo_final=20, nombre_corrida=['Tinamït {}'.format(m) for m in munis],
-                                   vals_inic=dic_prms, fecha_inic=None, devolver=vars_interés)
+        for lg in dic_prms:
+            corr = 'Vld {}'.format(lg)
+            mod.inic_vals(dic_prms[lg])
+            mod.simular(tiempo_final=20, nombre_corrida=corr, )
+            res[lg] = {v: mod.leer_resultados_mds(corrida=corr, var=v) for v in vars_interés}
 
     else:
         raise NotImplementedError
@@ -87,4 +91,6 @@ def correr_mod(mod, n_rep=1):
     return res
 
 
-graficar_calibs()
+# graficar_calibs()
+if __name__ == '__main__':
+    correr_mod(mod=modelo_mds)

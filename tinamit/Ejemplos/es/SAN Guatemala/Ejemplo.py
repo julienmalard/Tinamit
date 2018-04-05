@@ -107,6 +107,13 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
     bd.espec_var('Trabajo parcela', var_bd='trabajo.parcela', bds=ENCOVI_ind_2011)
     bd.espec_var('Demanda de trabajo', var_bd='demanda.trabajo', bds=ENCOVI_ind_2011)
     bd.espec_var('Trabajo infantil', var_bd='trabajo.infantil', bds=ENCOVI_hog_2011)
+    bd.espec_var('Salario', var_bd='salario.hora.prom', bds=ENCOVI_ind_2011)
+    bd.espec_var('Mortalidad infantil', var_bd='mortalidad.infantil', bds=ENCOVI_hog_2011)
+    bd.espec_var('Atraso escolar', var_bd='atraso.escolar.fam', bds=ENCOVI_hog_2011)
+    bd.espec_var('Disponibilidad trabajo', var_bd='ind.horas.trabajo', bds=ENCOVI_reg_2011)
+    bd.espec_var('Producción hortalizas', var_bd='valor.econ.hort', bds=ENCOVI_hog_2011)
+    bd.espec_var('Rendimiento hortalizas', var_bd='rendimiento.econ.hort', bds=ENCOVI_hog_2011)
+    bd.espec_var('Educación inicial', var_bd='educación.adultos', bds=ENCOVI_hog_2011)
 
     conex = ConexDatos(bd=bd, modelo=modelo)
     conex.no_calibrados()
@@ -121,10 +128,16 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
                 np_a_lista(d=v, d_f=d_f[ll])
             elif isinstance(v, np.ndarray):
                 d_f[ll] = v.tolist()
-            elif v is None or np.any(np.isnan(v)):
-                d_f[ll] = 'None'
-            else:
+            elif isinstance(v, str):
                 d_f[ll] = v
+            else:
+                try:
+                    if v is None or np.any(np.isnan(v)):
+                        d_f[ll] = 'None'
+                    else:
+                        d_f[ll] = v
+                except TypeError:
+                    d_f[ll] = 'None'
 
         return d_f
 
@@ -142,28 +155,21 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
         with open(os.path.join(os.path.split(__file__)[0], 'calib.json'), 'w', encoding='UTF-8') as d:
             json.dump(np_a_lista(dic), d, ensure_ascii=False, sort_keys=True, indent=2)
 
-    # act_calib(conex)
 
-    # Rendimiento hortalizas
-    # Precios agrícolas
+    _ = conex.estim_constante(const='Educación inicial', líms=(0, 1), por='Territorio')
+    act_calib(conex)
 
-    # 1/(b*Educación formal+b2*Educación sexual+a)+c', paráms=['a', 'b', 'b2', 'c'],
-    #                    líms_paráms=[(0, None), (0, 50), (0, 50), (0, None)]
-    #
-    # _ = conex.calib_var('Trabajo infantil',
-    #                     ec='-1/(a*Tamaño familia+a2*Pobreza+b)+c',
-    #                     paráms=['a', 'a2', 'b', 'c'],
-    #                     líms_paráms=[(-100, 100), (-1e-1, 1e-1), (0, 100), (0, 500)], por='Territorio', aprioris=True)
-    #
-    # _ = conex.calib_var('Demanda de trabajo',
-    #                     ec='a*((Tierra por familia+c)^b)',
-    #                     paráms=['a', 'b', 'c'],
-    #                     líms_paráms=[(0, None), (-10, 0), (0, 10)], por='Territorio', aprioris=True)
-    #
-    # _ = conex.calib_var('Venta de tierra',
-    #                     ec='máx(a*Pobreza)+b, Tierra por familia)',
-    #                     paráms=['a', 'b'],
-    #                     líms_paráms=[(0, None)] * 2, por='Territorio', aprioris=True)
+    # #1/(b*Educación formal+b2*Educación sexual+a)+c', paráms=['a', 'b', 'b2', 'c'],
+    # #                   líms_paráms=[(0, None), (0, 50), (0, 50), (0, None)]
+    # #_ = conex.calib_var('Demanda de trabajo',
+    # #                    ec='a*((Tierra por familia+c)^b)',
+    # #                    paráms=['a', 'b', 'c'],
+    # #                    líms_paráms=[(0, None), (-10, 0), (0, 10)], por='Territorio', aprioris=True)
+    # #
+    # #_ = conex.calib_var('Venta de tierra',
+    # #                    ec='máx(a*Pobreza)+b, Tierra por familia)',
+    # #                    paráms=['a', 'b'],
+    # #                    líms_paráms=[(0, None)] * 2, por='Territorio', aprioris=True)
 
     # _ = conex.estim_constante(const='Fracción infantes inicial', líms=(0, 1), por='Territorio', regional=True)
     # _ = conex.estim_constante(const='Fracción niños inicial', líms=(0, 1), por='Territorio', regional=True)
@@ -178,7 +184,8 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
     # _ = conex.estim_constante(const='Acceso agua potable', líms=(0, 1), por='Territorio')
     # _ = conex.estim_constante(const='Higiene', líms=(0, 1), por='Territorio')
     # _ = conex.estim_constante(const='Uso insumos orgánicos', líms=(0, 1), por='Territorio')
-    #
+    # _ = conex.estim_constante(const='Disponibilidad trabajo', líms=(0, None), por='Territorio', regional=True)
+
     # conex.espec_inicial('Desnutrición inicial', var='Desnutrición crónica infantil')
     # conex.espec_inicial('Población inicial', var='Población')
     # conex.espec_inicial('Pobreza inicial', var='Pobreza')
@@ -283,6 +290,42 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
     #                     paráms=['a29', 'b15'],
     #                     líms_paráms=[(0, None)] * 2, por='Territorio', aprioris=True)
     #
+    # act_calib(conex)
+
+    # _ = conex.calib_var('Salario',
+    #                     ec='c5/(1+exp(-a31*Educación formal -b18))',
+    #                     paráms=['a31', 'b18', 'c5'],
+    #                     líms_paráms=[(0, None), (0, None), (0, None)], por='Territorio', aprioris=True)
+    # act_calib(conex)
+
+    # _ = conex.calib_var('Trabajo infantil',
+    #                     ec='c6/(1+exp(-a32*Pobreza -a33*Tamaño familia-b19))',
+    #                     paráms=['a32', 'a33', 'b19', 'c6'],
+    #                     líms_paráms=[(-1e-2, 1e-2), (0, None), (0, None), (0, None)], por='Territorio', aprioris=True)
+    # act_calib(conex)
+
+    # _ = conex.calib_var('Mortalidad infantil',
+    #                     ec='a1*Seguridad alimentaria+b3',
+    #                     paráms=['a1', 'b3'],
+    #                     líms_paráms=[(0, None), (0, None)], por='Territorio', aprioris=True)
+    # act_calib(conex)
+
+    # _ = conex.calib_var('Atraso escolar',
+    #                     ec='c7/(1+exp(-a34*Trabajo infantil -a35*Pobreza-a36*Enfermedades infantiles-a37*Seguridad alimentaria-b20))',
+    #                     paráms=['a34', 'a35', 'a36', 'a37', 'b20', 'c7'],
+    #                     líms_paráms=[(0, 10), (0, 1e-2), (0, 10), (-10, 0), (0, 10), (0, 20)], por='Territorio', aprioris=True)
+    # act_calib(conex)
+
+    # _ = conex.calib_var('Producción hortalizas consumida',
+    #                     ec='c8/(1+exp(-a38*Producción hortalizas -a39*Costumbre de consumo-b21))',
+    #                     paráms=['a38', 'a39', 'b21', 'c8'],
+    #                     líms_paráms=[(-1e-5, 1e-5), (-10, 10), (0, 10), (0, None)], por='Territorio', aprioris=True)
+    # act_calib(conex)
+
+    # _ = conex.calib_var('Rendimiento hortalizas',
+    #                     ec='c9/(1+exp(-a40*Riego -a41*Uso insumos químicos-b22))',
+    #                     paráms=['a40', 'a41', 'b22', 'c9'],
+    #                     líms_paráms=[ (-10, 10), (-10, 10),  (-10, 10), (0, None)], por='Territorio', aprioris=True)
     # act_calib(conex)
 
     raise SystemExit(0)

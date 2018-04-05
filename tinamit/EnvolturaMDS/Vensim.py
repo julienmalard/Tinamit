@@ -537,6 +537,7 @@ class ModeloVensim(EnvolturaMDS):
                            mensaje_error=_('Error estableciendo el paso de VENSIM.'))
             símismo.paso = paso
 
+
         # Avanzar el modelo.
         comanda_vensim(func=símismo.dll.vensim_command,
                        args="GAME>GAMEON", mensaje_error=_('Error para incrementar VENSIM.'))
