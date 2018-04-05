@@ -1,0 +1,1850 @@
+{UTF-8}
+Rendimiento milpa=
+	c2/(1 + EXP(-a16*Agua disponible-a17*Uso insumos orgánicos-a18*Uso insumos químicos\
+		 - b9))
+	~	
+	~	Productividad de la milpa. Determinada por el programa Tikon, conectado .a \
+		través del programa Tinamit.
+	|
+
+a=
+	5.16
+	~	
+	~		|
+
+a1=
+	0.0005
+	~	
+	~		|
+
+a10=
+	0.51
+	~	
+	~		|
+
+a11=
+	34000
+	~	
+	~		|
+
+a12=
+	-0.0019
+	~	
+	~		|
+
+a13=
+	0.007
+	~	
+	~		|
+
+a14=
+	0.132
+	~	
+	~		|
+
+a15=
+	105
+	~	
+	~		|
+
+a16=
+	20
+	~	
+	~		|
+
+a17=
+	1
+	~	
+	~		|
+
+a18=
+	20
+	~	
+	~		|
+
+a19=
+	-0.05
+	~	
+	~		|
+
+a2=
+	2.9
+	~	
+	~		|
+
+a20=
+	0.005
+	~	
+	~		|
+
+a21=
+	0.08
+	~	
+	~		|
+
+a22=
+	6.5
+	~	
+	~		|
+
+a23=
+	-0.009
+	~	
+	~		|
+
+a24=
+	3.2
+	~	
+	~		|
+
+a25=
+	-0.009
+	~	
+	~		|
+
+a26=
+	0.004
+	~	
+	~		|
+
+a27=
+	0.0099
+	~	
+	~		|
+
+a28=
+	0.0975
+	~	
+	~		|
+
+a29=
+	120
+	~	
+	~		|
+
+a3=
+	5e-006
+	~	
+	~		|
+
+a30=
+	-1.2e-005
+	~	
+	~		|
+
+a31=
+	0.14
+	~	
+	~		|
+
+a32=
+	0.0005
+	~	
+	~		|
+
+a33=
+	0.32
+	~	
+	~		|
+
+a34=
+	0.035
+	~	
+	~		|
+
+a35=
+	0.0045
+	~	
+	~		|
+
+a36=
+	0.16
+	~	
+	~		|
+
+a37=
+	-0.65
+	~	
+	~		|
+
+a38=
+	0
+	~	
+	~		|
+
+a39=
+	9.5
+	~	
+	~		|
+
+a40=
+	0.1
+	~	
+	~		|
+
+a41=
+	2.5
+	~	
+	~		|
+
+a5=
+	0.2
+	~	
+	~		|
+
+a6=
+	-0.6
+	~	
+	~		|
+
+a7=
+	-0.6
+	~	
+	~		|
+
+a8=
+	0.05
+	~	
+	~		|
+
+a9=
+	-1
+	~	
+	~		|
+
+Acceso a crédito=
+	IF THEN ELSE( Política acceso a crédito, 1, 1/(1 + EXP(-a21*Tierra por familia-b11\
+		)))
+	~	
+	~	El acceso a crédito se determina únicamente por la tierra que tiene cada \
+		familia.
+	|
+
+b4=
+	30
+	~	
+	~		|
+
+b5=
+	0.55
+	~	
+	~		|
+
+b6=
+	0.2
+	~	
+	~		|
+
+b7=
+	0.39
+	~	
+	~		|
+
+b=
+	0.36
+	~	
+	~		|
+
+b10=
+	-1
+	~	
+	~		|
+
+b11=
+	1.53
+	~	
+	~		|
+
+b12=
+	7.2
+	~	
+	~		|
+
+b13=
+	-1.5
+	~	
+	~		|
+
+b14=
+	-5
+	~	
+	~		|
+
+b15=
+	5
+	~	
+	~		|
+
+b16=
+	-4.1
+	~	
+	~		|
+
+b18=
+	0.001
+	~	
+	~		|
+
+b19=
+	0.1
+	~	
+	~		|
+
+b2=
+	0.15
+	~	
+	~		|
+
+b20=
+	1.25
+	~	
+	~		|
+
+b21=
+	0.05
+	~	
+	~		|
+
+b22=
+	4
+	~	
+	~		|
+
+b3=
+	0.035
+	~	
+	~		|
+
+Educación=
+	DELAY1I(IF THEN ELSE( Política educación, 18-6, 12-Atraso escolar), (18-6)*12, Educación inicial\
+		)
+	~	Años/persona
+	~	El promedio del nivel educacional de la población. Se multiplica el rendimiento \
+		escolar (un índice de 0-1) con la atendencia escolar (horas por mes). 
+		Para convertir horas de educación a años de educación por persona, se divide este \
+		por el número normal de horas de escuela por mes, multiplicado por el \
+		nivel educacional alcanzable para obtener el nivel de educación de la \
+		población. 
+		Hay un retraso del tiempo necesario para que un niño se vuelva adulto.
+	|
+
+Educación inicial=
+	2.9
+	~	
+	~		|
+
+Salario infantil=
+	0.76
+	~	Q/h
+	~		|
+
+c7=
+	4
+	~	
+	~		|
+
+b8=
+	0.6
+	~	
+	~		|
+
+b9=
+	1.1
+	~	
+	~		|
+
+Bosques= INTEG (
+	Reforestación-Deforestación,
+		Cobertura forestal inicial*Superficie municipio)
+	~	Ha [0,100]
+	~	Los bosques se pierden a la deforestación.
+		Para el valor inicial de cobertura de bosques, se utilizó la superficie \
+		de la superficie del municipio, multiplicado por el % de bosques.
+	|
+
+c=
+	0.00558
+	~	
+	~		|
+
+c2=
+	2425
+	~	
+	~		|
+
+c3=
+	999.5
+	~	
+	~		|
+
+c5=
+	6
+	~	
+	~		|
+
+c6=
+	14
+	~	
+	~		|
+
+Política reforestación=
+	0
+	~	Sdmn [0,1,1]
+	~		|
+
+c8=
+	19.5
+	~	
+	~		|
+
+c9=
+	28000
+	~	
+	~		|
+
+Calidad de la dieta=
+	1/(1 + EXP(-a12*Pobreza - a13*Producción hortalizas consumida- a14))
+	~	Dmnl
+	~	La diversificación de alimentos se representa por el promedio de dos \
+		índices: 1) la cantidad relativa de comida chatarra consumida, y 2) la \
+		cantidad de hortalizas y frutas consumidas relativamente a la cantidad \
+		biológicamente necesaria por familia. Las funciones "MAX" evitan que \
+		cualquier de los dos índices aumenten a más de 1.
+	|
+
+Reforestación=
+	IF THEN ELSE(Política reforestación, Deforestación, 0)
+	~	
+	~		|
+
+Rendimiento hortalizas=
+	c9/(1+EXP(-a41*Uso insumos químicos-b22))*Agua disponible
+	~	
+	~		|
+
+Ventas hortalizas=
+	Producción hortalizas-Producción hortalizas consumida
+	~	Quintales/familia/mes
+	~	Lo que no se come, se vende.
+	|
+
+Riego=
+	IF THEN ELSE( Política riego, 1, 1/(1 + EXP(a30*Tecnificación agrícola-b16)))
+	~	Dmnl
+	~		|
+
+Política consumo de hortalizas=
+	0
+	~	Sdmn [0,1,1]
+	~		|
+
+Política riego=
+	0
+	~	Sdmn [0,1,1]
+	~		|
+
+Costumbre de consumo=
+	IF THEN ELSE( Política consumo de hortalizas, 0.15, 0.01)
+	~	Dmnl
+	~	La costumbre de consumo es un índice de 0 a 1, un 0 indicando que no consumen \
+		cualquier fruta o verdura de la producción, y un 1 indicando que consumen \
+		todas las verduras necesarias para una buena alimentación.
+		Se supuso un valor de 1%, o 0.01.
+	|
+
+Fertilidad=
+	1/(b*Educación+b2*Educación sexual+a + 5*(1-Pobreza/600))+c
+	~	
+	~		|
+
+Política acceso a crédito=
+	0
+	~	 [0,1,1]
+	~		|
+
+Producción hortalizas=
+	Tierras hortalizas*Rendimiento hortalizas
+	~	Quintales/familia/mes
+	~		|
+
+Política educación=
+	0
+	~	 [0,1,1]
+	~		|
+
+Tierra agrícola= INTEG (
+	Deforestación-Reforestación,
+		Superficie municipio*(0.2))
+	~	Ha
+	~	La disponibilidad de tierra agrícola puede aumentar por deforestación de \
+		los bosques y se pierde por ventas de tierras. Su valor inicial es la \
+		superficie total del municipio, multiplicada por el % de la superficie en \
+		uso agrícola. Toca verificar este último dato.
+	|
+
+Ganancia agrícola=
+	Ventas hortalizas-Costos insumos
+	~	
+	~		|
+
+Agua disponible=
+	Disponibilidad agua superficie+Riego
+	~	
+	~		|
+
+Costos insumos=
+	a29*Uso insumos químicos+b15
+	~	
+	~		|
+
+Atraso escolar=
+	2*c7/(1+EXP(-a34*Trabajo infantil -a35*Pobreza-a36*Enfermedades infantiles-a37*Seguridad alimentaria\
+		-b20))
+	~	Horas/mes/persona
+	~	La atendencia escolar se calcula por sustraer el número de horas de trabajo \
+		infantil del número de horas disponibles por mes (se supone que un \
+		estudiante podría trabajar un máximo de 10 horas por semanas mientras \
+		estudia, así que horas de trabajo además de 40 horas por mes dismunuyen \
+		la atendencia escolar). La función "máx" asegura que nadie estudie menos \
+		que 0 horas, no importa cuánto trabajo hace. La función "min" asegura \
+		que nadie estudia más que 140 horas por mes (7 horas por día) aunque no \
+		trabaje.
+		Se multiplica este por la cobertura escolar (si no hay escuelas, no \
+		podrán ir a a escuela).
+	|
+
+Cubertura forestal mínima=
+	0.6
+	~	
+	~		|
+
+Demanda de trabajo=
+	MAX(0, Tierra por familia*-270.851 + 16.36*Desarrollo físico + 348.428)
+	~	Horas/mes/persona
+	~	Estimada manualmente con datos en R. Hay que revisar.
+	|
+
+Desempleo=
+	Demanda de trabajo-Trabajo
+	~	
+	~		|
+
+Trabajo=
+	MIN(Demanda de trabajo, Disponibilidad trabajo)
+	~	Horas/mes/persona
+	~	El trabajo es el mínimo entre el tiempo que están dispuestas a trabajar \
+		la gente y el trabajo disponible localmente.
+	|
+
+Ingresos salariales=
+	Salario*Trabajo*Población[Adultos]/Número de familias + Trabajo infantil*Salario infantil
+	~	Q/familia/mes
+	~	Los ingresos de trabajo se determinana por el trabajo de los padres y de \
+		los niños. Se supone que los niños solamente alcanzan el salario mínimo.
+	|
+
+Uso insumos químicos=
+	MAX(1/(1 + EXP(-a27*Tecnificación agrícola-b13)) - Uso insumos orgánicos, 0)
+	~	
+	~		|
+
+Uso insumos orgánicos=
+	0.168
+	~	
+	~		|
+
+Trabajo infantil=
+	c6/(1+EXP(-a32*Pobreza -a33*Tamaño familia-b19))
+	~	Horas/mes/persona
+	~	Los niños trabajan si los ingresos de los padres no cubren los gastos.
+	|
+
+Enfermedades infantiles=
+	SMOOTH(1/(1 + EXP(-Calidad del agua-a7*Desnutrición crónica infantil-a8*Higiene - \
+		b5)), Tiempo de ajusto de enfermedades)
+	~	Dmnl
+	~	Las enfermedades infantiles se representan por un índice de 0 a 1 (0 = sin \
+		enfermedades, y 1 = siempre enfermos). Se calcula por la desnutrición, \
+		con la calidad del agua y el higiene aumentando las enfermedades si 0 < \
+		desnutrición < 1. (Con plena nutrición no hay enfermedades y con pura \
+		desnutrición no importa la calidad del agua, porque siempre estarán \
+		enfermos de todo modo). 
+		Hay un retraso del tiempo necesario para enfermarse.
+	|
+
+Ingresos netos familiares=
+	Ingresos salariales+Ganancia agrícola/12-Gastos en enfermedades
+	~	
+	~		|
+
+Tamaño familia=
+	(Población total) / Número de familias
+	~	Personas/familia
+	~	El número de hijos por familia. Se calcula por dividir el total de niños \
+		por el número de familias.
+	|
+
+Emigración permanente=
+	1/(1 + EXP(-a28*Desempleo-b14))
+	~	Personas/mes
+	~	Notar que la emigración puede ser negativa, si hay más disponibilidad de \
+		trabajo que de personas.
+	|
+
+Tratamiento agua=
+	0.82
+	~	
+	~		|
+
+Pobreza inicial=
+	111.8
+	~	
+	~		|
+
+Comida comprada=
+	(c3+500)/(1 + EXP(-a25*Pobreza - a26*Producción milpa/Tamaño familia-b12))
+	~	Quintales/familia/mes
+	~		|
+
+Pobreza=
+	SMOOTHI( MAX(0, 8000/12-(Ingresos netos familiares/Tamaño familia)), 12, Pobreza inicial\
+		)
+	~	
+	~		|
+
+Higiene=
+	0.897
+	~	Dmnl
+	~	La higiene en el hogar se determina por los recursos económicos \
+		familiares relativamente al nivel de recursos económicos mínimo (los \
+		gastos fijos, que incluyen ropa, etc.). Se supone una relación directa \
+		entre los recursos relativos y el higiene del hogar (ver gráfico).
+	|
+
+Infraestructura vial=
+	0.11
+	~	km/km2
+	~		|
+
+Mortalidad infantil= ACTIVE INITIAL (
+	(a1*Desnutrición crónica infantil+b3) / (5*12),
+		44/1000 / (5*12))
+	~	1/mes
+	~		|
+
+Seguridad alimentaria=
+	1/(1 + b4*EXP(-a2*(Calidad de la dieta+0.35)-0.0004*(Cantidad de alimentos)))
+	~	
+	~		|
+
+Comercialización=
+	1/(1 + EXP(-a19 * Infraestructura vial - a20*Densidad poblacional - b10))
+	~	Dmnl
+	~		|
+
+Tierras milpa=
+	Tierra por familia*Fracción tierras a hortalizas
+	~	
+	~		|
+
+Tierras hortalizas=
+	Tierra por familia*Fracción tierras a hortalizas
+	~	
+	~		|
+
+Gastos en enfermedades=
+	a15*Enfermedades infantiles^b8
+	~	Q/familia/mes
+	~		|
+
+Calidad del agua=
+	a5*Acceso agua potable + a6*Tratamiento agua
+	~	Dmnl
+	~	Se supone que la educación integral determina la calidad del agua \
+		(relación directa). La calidad del agua se mide por un índice entre 0 y \
+		1 (0 = peor calidad, 1 = calidad perfecta).
+	|
+
+Cantidad de alimentos=
+	Producción milpa+Producción hortalizas consumida+Comida comprada
+	~	Dmnl
+	~	La cantidad de alimentos se mide por una escala empezando a 0,  donde 0 \
+		representa no comida y 1  representa que la familia cumple sus requisitos \
+		de calorías (valores encima de 1 indican que sobre comida). Las calorías \
+		disponibles por familia se calculan por multiplicar la cantidad de granos \
+		disponibles por su contenido energético, tanto como la cantidad de \
+		hortalizas disponibles por su contenido energético.
+	|
+
+Cobertura forestal=
+	Bosques/Superficie municipio
+	~	Ha
+	~		|
+
+Densidad poblacional=
+	Población total/Superficie municipio
+	~	
+	~		|
+
+Disponibilidad agua superficie=
+	MIN(1,(Cobertura forestal)/Cubertura forestal mínima)
+	~	m3/mes
+	~	La disponibilidad de agua se determina por la cubertura forestal relativa \
+		a la cubertura crítica necesaria para mantener la provisión de agua, \
+		multiplicada por la disponibilidad de agua normal.
+	|
+
+Producción milpa=
+	Tierras milpa*Rendimiento milpa
+	~	Quintales/(familia*mes)
+	~	La producción de milpa es la productividad máxima potencial multiplicada \
+		por la productividad agrícola y multiplicada por la tierra dedicada a \
+		milpa.
+	|
+
+Fracción niños inicial=
+	Años por cohorte edad[Niños] / SUM(Años por cohorte edad[Edad!])
+	~	
+	~		|
+
+Acceso agua potable=
+	0.853
+	~	
+	~	Verificar para Tz'olöj Ya'.
+	|
+
+Deforestación=
+	MIN(Consumo de leña/Madera por área, Bosques/TIME STEP)
+	~	Ha/mes
+	~	La deforestación es el consumo de leña multiplicado por la población \
+		total, dividido por la cantidad de madera disponible por área. ¡La \
+		función MIN asegura que no deforestamos más bosques que todavía existen!
+	|
+
+Consumo de leña=
+	Consumo leña por hogar * Número de familias
+	~	Árboles/mes
+	~		|
+
+Consumo leña por hogar=
+	0.8
+	~	
+	~	Toca verificar este dato.
+	|
+
+Desnutrición crónica infantil=
+	SMOOTHI(1/(EXP(-a9*Seguridad alimentaria-a10*Enfermedades infantiles-b6)+ 0.5), Tiempo de ajusto de desnutrición\
+		, Desnutrición inicial)
+	~	Dmnl
+	~		|
+
+Producción hortalizas consumida=
+	c8/(1+EXP(-a38*Producción hortalizas -a39*Costumbre de consumo-b21))
+	~	Quintales/familia/mes
+	~		|
+
+Tecnificación agrícola=
+	EXP(a23*IF THEN ELSE( Acceso a crédito, 0, Pobreza) + a24*Comercialización)
+	~	Dmnl
+	~		|
+
+Educación sexual=
+	0.4
+	~	Dmnl [0,1]
+	~	¿Verificar si existe para Tz'olöj Ya'?
+	|
+
+Años por cohorte edad[Infantes]=
+	5 ~~|
+Años por cohorte edad[Niños]=
+	(15-5) ~~|
+Años por cohorte edad[Adultos]=
+	(55-15) ~~|
+Años por cohorte edad[Ancianos]=
+	MAX(0, Esperanza de vida - 55)
+	~	Años
+	~		|
+
+Número de familias=
+	Población[Adultos] / 2
+	~	Familias
+	~	El número de familias en el municipio. Se calcula por dividir la \
+		población adulta por el número de adultos por familia (2, vamos a \
+		suponer).
+	|
+
+Migración[Edad]=
+	Emigración permanente * Población[Edad] / SUM(Población[Edad!])
+	~	
+	~		|
+
+Población[Infantes]= INTEG (
+	Nacimientos - Fallecimientos[Infantes]
+	- Población[Infantes] / Años por cohorte edad[Infantes] / 12
+	- Migración[Infantes],
+		Población inicial * Fracción infantes inicial) ~~|
+Población[Niños]= INTEG (
+	Población[Infantes] / Años por cohorte edad[Infantes] / 12 - Fallecimientos[Niños\
+		]
+	- Población[Niños] / Años por cohorte edad[Niños] / 12
+	- Migración[Niños],
+		Población inicial * Fracción niños inicial) ~~|
+Población[Adultos]= INTEG (
+	Población[Niños] / Años por cohorte edad[Niños] / 12 - Fallecimientos[Adultos]
+	- Población[Adultos] / Años por cohorte edad[Adultos] / 12
+	- Migración[Adultos],
+		Población inicial * Fracción adultos inicial) ~~|
+Población[Ancianos]= INTEG (
+	Población[Adultos] / Años por cohorte edad[Adultos] / 12 - Fallecimientos[Ancianos\
+		]
+	- Migración[Ancianos],
+		Población inicial * (1 - (Fracción infantes inicial + Fracción niños inicial + \
+		Fracción adultos inicial)))
+	~	Personas
+	~		|
+
+Edad:
+	Infantes, Niños, Adultos, Ancianos
+	~	
+	~		|
+
+Población total=
+	SUM(Población[Edad!])
+	~	Personas
+	~	La población total del municipio.
+	|
+
+Nacimientos=
+	Población[Adultos] * (Fertilidad / 12 / 2)
+	~	Personas / mes
+	~		|
+
+Esperanza de vida=
+	75
+	~	Años
+	~		|
+
+Fallecimientos[Infantes]=
+	Mortalidad infantil * Población[Infantes] ~~|
+Fallecimientos[Niños]=
+	0 * Población[Niños] ~~|
+Fallecimientos[Adultos]=
+	0 * Población[Adultos] ~~|
+Fallecimientos[Ancianos]=
+	Población[Ancianos] / Años por cohorte edad[Ancianos] / 12
+	~	Personas/mes
+	~		|
+
+Desarrollo físico=
+	DELAY3I((1-Desnutrición crónica infantil), 18, 1-Desnutrición inicial)
+	~	Dmnl
+	~	El desarrollo físico se determina por la desnutrición, con un retraso \
+		del tiempo necesario para que un niño crezca a la edad adulta. Un valor \
+		de 1 indica crecimiento perfecto, y valores menores (hasta 0) indican \
+		desarrollo sub-óptimo. Se toma la desnutrición inicial para inicializar \
+		el modelo.
+	|
+
+Salario=
+	c5*3/(1+EXP(-a31*Educación -b18))
+	~	Dmnl
+	~	El salario relativo es un índice del salario relativo al salario mínimo \
+		y se determina por el nivel de educación relativo.
+	|
+
+Disponibilidad trabajo=
+	75.38
+	~	Horas/mes/persona
+	~		|
+
+Fracción adultos inicial=
+	Años por cohorte edad[Adultos] / SUM(Años por cohorte edad[Edad!])
+	~	Personas
+	~	Multiplicado por 0.4 para aproximar el valor en 1985.
+	|
+
+Desnutrición inicial= INITIAL(
+	0.73)
+	~	Dmnl
+	~		|
+
+Fracción infantes inicial=
+	Años por cohorte edad[Infantes] / SUM(Años por cohorte edad[Edad!])
+	~	Personas
+	~		|
+
+Fracción tierras a hortalizas=
+	0.4
+	~	Dmnl
+	~		|
+
+Cobertura forestal inicial= INITIAL(
+	661/1497)
+	~	Dmnl
+	~	La fracción de la tierra inicialmente forestada al principio de la \
+		simulación.
+	|
+
+Madera por área=
+	1100
+	~	Árboles/Ha
+	~	La cantidad de madera en un ha de bosque. Toca verificar.
+	|
+
+Superficie municipio=
+	1497
+	~	Ha
+	~	La superficie del municipio.
+	|
+
+Población inicial=
+	2931
+	~	Personas
+	~		|
+
+Tiempo de ajusto de desnutrición=
+	24
+	~	Meses
+	~	El tiempo necesario para que cambios en la disponibilidad de alimentos se \
+		manifiesten en las medidas de desnutrición de la población.
+		Aquí se supone un tiempo de 1 año.
+	|
+
+Tiempo de ajusto de enfermedades=
+	1
+	~	Meses
+	~	El tiempo que toma para que un cambio en el estatus nutricional del niño tenga \
+		efecto en su susceptibilidad a enfermedades. 
+		Aquí se supuso que toma 1 mes para que los impactos de cambios en el \
+		estado nutricional de los niños se manifiesten en la susceptibilidad a \
+		las enfermedades.
+	|
+
+Tierra por familia=
+	Tierra agrícola/Número de familias
+	~	Ha/familia
+	~		|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 1200
+	~	mes
+	~	El tiempo final para la simulación.
+	|
+
+INITIAL TIME  = 0
+	~	mes
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP
+	~	mes [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 1
+	~	mes [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Página central
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,50,0
+12,1,0,675,601,113,39,3,135,0,31,-1,4,3,0,0-64-0,0-128-0,|30|B|255-255-255
+Agrónomo
+12,2,0,675,711,113,39,3,135,0,31,-1,4,4,0,128-64-0,255-128-0,|30|B|255-255-255
+Económico
+12,3,0,675,821,113,39,3,135,0,31,-1,4,5,0,0-0-128,0-0-255,|30|B|255-255-255
+Salud-social
+12,4,0,675,931,113,39,3,135,0,31,-1,4,6,0,64-64-64,92-92-92,|30|B|255-255-255
+Poblacional
+12,5,0,675,1043,113,39,3,135,0,30,-1,4,7,0,-1--1--1,128-0-0,|30|B|255-255-255
+Alocación de dinero
+12,6,0,1116,601,284,54,8,135,0,8,-1,0,0,0,-1--1--1,0-0-0,|24||0-0-0
+El sub-modelo de las dinámicas agrícolas del sistema.
+12,7,0,988,333,503,60,8,135,0,8,-1,0,0,0,-1--1--1,0-0-0,|24||0-0-0
+¡Bienvenido al modelo! Para navigar a una vista en particular, hacer doble clique en uno de los sub-modelos abajo o escoger "modelo completo".
+12,8,0,1116,711,284,56,8,135,0,8,-1,0,0,0,-1--1--1,0-0-0,|24||0-0-0
+El sub-modelo de las dinámicas económicas del sistema.
+12,9,0,1116,821,284,53,8,135,0,8,-1,0,0,0,-1--1--1,0-0-0,|24||0-0-0
+El sub-modelo de las dinámicas de la salud y de los aspectos sociales del sistema.
+12,10,0,1116,931,284,69,8,135,0,8,-1,0,0,0,-1--1--1,0-0-0,|24||0-0-0
+El sub-modelo de crecimiento de población.
+12,11,0,1116,1043,284,54,8,135,0,8,-1,0,0,0,-1--1--1,0-0-0,|24||0-0-0
+Determina cómo las familias alocan su dinero entre diferentes necesidades.
+12,12,0,988,457,184,37,3,135,0,31,-1,4,2,0,128-0-64,128-0-128,|30|B|255-255-255
+Modelo completo
+12,13,0,988,142,434,90,8,135,0,26,-1,0,0,0,-1--1--1,0-0-0,|60|B|0-0-128
+Modelo de Inseguridad Alimentaria Concepción
+12,14,0,973,1173,153,23,3,135,0,30,-1,2,8,0,-1--1--1,128-128-128,|20|B|255-255-255
+Variables constantes
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Modelo completo
+$192-192-192,0,Arial|14||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,90,0
+10,1,Producción hortalizas,860,588,48,21,8,131,0,0,0,0,0,0
+1,2,1,73,1,0,43,0,40,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(944,615)|
+10,3,Tierra agrícola,1171,-76,49,22,3,131,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+10,4,Disponibilidad agua superficie,288,667,65,21,8,3,0,0,0,0,0,0
+1,5,4,159,1,0,43,0,42,0,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(404,638)|
+10,6,Acceso a crédito,718,105,39,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,7,3,8,1,0,43,0,42,192,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(1186,62)|
+10,8,Tierra por familia,1016,225,42,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,9,8,6,1,0,43,0,40,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(830,171)|
+10,10,Educación,2753,1046,52,19,3,131,0,0,0,0,0,0
+10,11,Atraso escolar,2679,959,59,12,8,3,0,0,0,0,0,0
+10,12,Tecnificación agrícola,432,242,56,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,13,12,162,1,0,43,0,42,128,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(574,280)|
+10,14,Comercialización,369,147,75,15,8,131,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,15,14,12,1,0,43,0,42,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(417,190)|
+10,16,Educación,591,-676,55,12,8,2,0,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+10,17,Bosques,904,-73,42,26,3,131,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+10,18,Consumo de leña,1156,-169,54,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,19,21,3,4,0,0,22,0,0,0,-1--1--1,,1|(1084,-77)|
+1,20,21,17,100,0,0,22,0,0,0,-1--1--1,,1|(990,-77)|
+11,21,2860,1040,-77,6,8,34,3,0,0,3,0,0,0
+10,22,Deforestación,1040,-97,58,12,40,3,0,0,0,0,0,0
+10,23,Cantidad de alimentos,1993,270,52,21,8,131,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+10,24,Producción hortalizas consumida,856,712,48,31,8,131,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,25,1,24,1,0,43,0,40,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(877,649)|
+10,26,Número de familias,1023,-693,47,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,27,6,12,1,0,43,0,40,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(540,131)|
+1,28,11,10,1,0,43,0,40,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(2694,982)|
+10,29,Tamaño familia,872,-755,38,21,8,131,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+10,30,Costumbre de consumo,755,823,59,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,31,30,24,1,0,45,0,40,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(844,786)|
+10,32,Desnutrición crónica infantil,2314,286,64,27,3,131,0,0,0,0,0,0
+10,33,Trabajo,2683,57,33,12,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+10,34,Trabajo,1101,859,44,12,8,2,0,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+1,35,34,68,1,0,43,0,40,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(1146,785)|
+10,36,Desarrollo físico,2483,230,47,19,3,131,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,37,32,36,1,0,45,0,40,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(2394,233)|
+10,38,Enfermedades infantiles,2313,417,67,23,3,131,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,39,38,32,1,0,43,0,40,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(2347,341)|
+10,40,Higiene,2138,502,33,12,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,41,40,38,1,0,45,0,40,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(2204,449)|
+10,42,Calidad de la dieta,1979,74,56,21,8,131,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+10,43,Trabajo infantil,2625,863,33,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+10,44,Calidad del agua,2411,498,48,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,45,43,11,1,0,45,0,40,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(2658,905)|
+10,46,Enfermedades infantiles,2476,939,67,21,8,2,0,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+1,47,46,11,1,0,45,0,40,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(2570,934)|
+1,48,17,22,1,0,45,0,40,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(957,-129)|
+10,49,Número de familias,977,126,53,21,8,2,0,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+1,50,49,8,1,0,45,0,40,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(993,187)|
+10,51,Producción hortalizas consumida,1825,135,54,31,8,2,0,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+10,52,Fracción tierras a hortalizas,1091,353,73,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,53,52,179,1,0,43,0,42,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(1015,296)|
+10,54,Producción milpa,1609,379,48,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,55,52,178,1,0,45,0,42,64,0,-1--1--1,@Arial Unicode MS|14||0-0-0,1|(1226,380)|
+1,56,8,178,1,0,0,0,0,64,0,-1--1--1,,1|(1226,277)|
+10,57,Población inicial,-108,-621,42,21,8,3,0,40,-1,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+10,58,Comida comprada,1693,242,47,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+10,59,Superficie municipio,-108,-322,43,21,8,3,0,0,-1,0,0,0
+12,60,0,-100,-679,44,21,8,135,0,56,-1,0,0,0,-1--1--1,0-0-0,Arial|14|BU|0-0-0
+Variables iniciales
+1,61,59,17,0,0,0,0,0,64,1,-1--1--1,,1|(391,-199)|
+10,62,Tiempo de ajusto de desnutrición,2152,319,73,21,8,3,0,40,-1,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,63,62,32,1,0,0,0,0,64,0,-1--1--1,,1|(2217,292)|
+10,64,Tiempo de ajusto de enfermedades,2073,418,73,21,8,3,0,40,-1,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,65,64,38,1,0,0,0,0,64,0,-1--1--1,,1|(2191,408)|
+10,66,Salario,1102,747,30,12,8,3,0,0,-1,0,0,0
+1,67,66,68,1,0,0,0,0,64,0,-1--1--1,,1|(1157,721)|
+10,68,Ingresos salariales,1249,725,41,21,8,3,0,0,0,0,0,0
+10,69,Educación,1007,801,55,12,8,2,0,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+1,70,69,66,1,0,0,0,0,64,0,-1--1--1,,1|(1046,768)|
+10,71,TIME STEP,1060,1550,32,21,8,2,1,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+10,72,TIME STEP,1396,-1,32,21,8,2,17,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+10,73,Ventas hortalizas,1034,625,41,21,8,3,0,0,0,0,0,0
+10,74,TIME STEP,1012,0,32,21,8,2,1,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+1,75,74,21,0,1,0,0,0,64,0,-1--1--1,,1|(1025,-39)|
+10,76,Madera por área,992,-187,49,21,8,3,0,0,0,0,0,0
+1,77,18,22,1,0,0,0,0,64,0,-1--1--1,,1|(1105,-118)|
+1,78,76,22,1,0,0,0,0,64,0,-1--1--1,,1|(1029,-147)|
+10,79,Superficie municipio,739,-249,48,21,8,2,0,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+1,80,58,23,1,0,0,0,0,64,0,-1--1--1,,1|(1861,218)|
+1,81,54,23,1,0,0,0,0,64,0,-1--1--1,,1|(1812,361)|
+1,82,51,23,1,0,0,0,0,64,0,-1--1--1,,1|(1920,193)|
+10,83,Gastos en enfermedades,2274,568,60,21,8,3,0,40,-1,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+10,84,Población total,730,-731,42,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+10,85,Cobertura forestal inicial,-109,-268,58,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,86,85,17,0,0,0,0,0,64,1,-1--1--1,,1|(398,-170)|
+10,87,Trabajo infantil,1329,838,39,21,8,2,0,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+1,88,87,68,1,0,0,0,0,64,0,-1--1--1,,1|(1327,819)|
+10,89,Tamaño familia,2541,774,44,21,8,2,0,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+1,90,89,43,1,0,0,0,0,64,0,-1--1--1,,1|(2563,824)|
+10,91,Fracción infantes inicial,-105,-552,60,21,8,3,0,0,-1,0,0,0
+10,92,Fracción adultos inicial,-104,-488,57,21,8,3,0,0,-1,0,0,0
+10,93,Desnutrición inicial,2410,133,59,21,8,2,1,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+1,94,93,32,0,1,0,0,0,64,0,-1--1--1,,1|(2367,200)|
+10,95,Desnutrición inicial,-106,-385,53,21,8,3,0,40,-1,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+10,96,Demanda de trabajo,2588,148,54,21,8,3,0,40,-1,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,97,96,33,1,0,0,0,0,64,0,-1--1--1,,1|(2651,126)|
+10,98,Disponibilidad trabajo,2778,-41,59,21,8,3,0,0,-1,0,0,0
+1,99,98,33,1,0,0,0,0,64,0,-1--1--1,,1|(2755,8)|
+10,100,Tierra por familia,2767,163,48,21,8,2,0,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+1,101,100,96,1,0,0,0,0,64,0,-1--1--1,,1|(2742,175)|
+10,102,Desnutrición inicial,2546,358,59,21,8,2,1,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+1,103,102,36,0,1,0,0,0,128,0,-1--1--1,,1|(2517,299)|
+10,104,Rendimiento milpa,591,451,53,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+10,105,Riego,353,451,26,12,8,3,0,0,0,0,0,0
+1,106,12,105,1,0,0,0,0,64,0,-1--1--1,,1|(350,380)|
+1,107,16,120,1,0,0,0,0,128,0,-1--1--1,,1|(598,-643)|
+10,108,Población,821,-522,49,23,3,131,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+12,109,48,635,-525,10,8,0,3,0,40,-1,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,110,112,108,4,0,0,22,0,0,0,-1--1--1,,1|(733,-524)|
+1,111,112,109,100,0,0,22,0,0,0,-1--1--1,,1|(664,-524)|
+11,112,48,689,-524,6,8,34,3,0,0,1,0,0,0
+10,113,Nacimientos,689,-502,60,14,40,131,0,40,-1,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+12,114,48,1017,-521,10,8,0,3,0,40,-1,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,115,117,114,4,0,0,22,0,0,0,-1--1--1,,1|(978,-522)|
+1,116,117,108,100,0,0,22,0,0,0,-1--1--1,,1|(903,-522)|
+11,117,48,943,-522,6,8,34,3,0,0,1,0,0,0
+10,118,Fallecimientos,943,-502,59,12,40,3,0,40,-1,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,119,108,112,1,0,0,0,0,128,0,-1--1--1,,1|(770,-568)|
+10,120,Fertilidad,580,-592,39,12,8,3,0,0,0,0,0,0
+10,121,Años por cohorte edad,939,-420,56,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+10,122,Esperanza de vida,1064,-363,58,21,8,131,0,40,-1,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,123,122,121,1,0,0,0,0,64,0,-1--1--1,,1|(959,-395)|
+1,124,121,108,1,0,0,0,0,64,0,-1--1--1,,1|(863,-460)|
+1,125,120,112,1,0,0,0,0,128,0,-1--1--1,,1|(667,-580)|
+10,126,Mortalidad infantil,1054,-582,45,21,8,3,0,40,0,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,127,126,117,1,0,0,0,0,128,0,-1--1--1,,1|(989,-575)|
+1,128,121,118,1,0,0,0,0,128,0,-1--1--1,,1|(951,-459)|
+1,129,108,117,1,0,0,0,0,128,0,-1--1--1,,1|(867,-571)|
+1,130,108,84,1,0,0,0,0,128,0,-1--1--1,,1|(801,-636)|
+12,131,48,820,-396,10,8,0,3,0,40,-1,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,132,134,131,4,0,0,22,0,0,0,-1--1--1,,1|(820,-428)|
+1,133,134,108,100,0,0,22,0,0,0,-1--1--1,,1|(820,-481)|
+11,134,48,820,-458,8,6,33,3,0,0,2,0,0,0
+10,135,Migración,764,-458,48,16,40,131,0,40,-1,0,0,0,0-0-0,0-0-0,Arial|14||0-0-0
+1,136,57,108,0,0,0,0,0,64,1,-1--1--1,,1|(346,-572)|
+10,137,Emigración permanente,648,-396,56,21,8,130,0,43,-1,0,0,0,128-128-128,0-0-0,Arial|14||128-128-128
+1,138,137,135,1,0,0,0,0,128,0,-1--1--1,,1|(743,-415)|
+1,139,108,135,1,0,0,0,0,128,0,-1--1--1,,1|(758,-480)|
+1,140,108,26,1,0,0,0,0,128,0,-1--1--1,,1|(892,-649)|
+1,141,26,29,1,0,0,0,0,128,0,-1--1--1,,1|(943,-710)|
+10,142,Seguridad alimentaria,2125,187,46,21,8,3,0,0,0,0,0,0
+1,143,142,32,1,0,0,0,0,128,0,-1--1--1,,1|(2262,180)|
+1,144,142,142,1,0,0,0,0,128,0,-1--1--1,,1|(2125,187)|
+10,145,Acceso agua potable,2476,607,55,21,8,3,0,2,0,0,0,0,-1--1--1,0-0-0,|14||255-160-0
+1,146,145,44,1,0,0,0,0,128,0,-1--1--1,,1|(2420,553)|
+10,147,Educación sexual,464,-622,45,21,8,3,0,0,0,0,0,0
+1,148,147,120,1,0,0,0,0,128,0,-1--1--1,,1|(503,-591)|
+10,149,Pobreza,1637,654,40,20,3,3,0,0,0,0,0,0
+10,150,Emigración permanente,2517,-60,50,21,8,3,0,0,-1,0,0,0
+10,151,Pobreza,2749,790,46,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,152,151,43,1,0,0,0,0,128,0,-1--1--1,,1|(2698,825)|
+10,153,Pobreza,1686,9,46,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,154,153,42,1,0,0,0,0,128,0,-1--1--1,,1|(1837,-10)|
+10,155,Consumo leña por hogar,1082,-258,61,21,8,3,0,0,0,0,0,0
+1,156,155,18,1,0,0,0,0,128,0,-1--1--1,,1|(1144,-216)|
+10,157,Número de familias,1237,-250,53,21,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,158,157,18,1,0,0,0,0,128,0,-1--1--1,,1|(1185,-217)|
+10,159,Agua disponible,459,587,43,21,8,3,0,0,0,0,0,0
+1,160,105,159,1,0,0,0,0,128,0,-1--1--1,,1|(355,510)|
+10,161,Uso insumos orgánicos,480,376,55,21,8,3,0,0,0,0,0,0
+10,162,Uso insumos químicos,611,331,55,21,8,3,0,0,0,0,0,0
+10,163,Pobreza,234,243,46,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,164,163,12,1,0,0,0,0,128,0,-1--1--1,,1|(353,225)|
+10,165,Desnutrición crónica infantil,1206,-637,67,21,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,166,165,126,1,0,0,0,0,128,0,-1--1--1,,1|(1123,-630)|
+1,167,91,108,0,0,0,0,0,64,1,-1--1--1,,1|(356,-537)|
+1,168,121,91,0,1,0,0,0,64,0,-1--1--1,,1|(425,-484)|
+1,169,92,108,0,0,0,0,0,64,1,-1--1--1,,1|(355,-504)|
+1,170,121,92,0,1,0,0,0,64,0,-1--1--1,,1|(424,-453)|
+10,171,Fracción niños inicial,-104,-438,62,21,8,3,0,0,0,0,0,0
+1,172,121,171,0,1,0,0,0,64,0,-1--1--1,,1|(427,-427)|
+1,173,171,108,0,0,0,0,0,64,1,-1--1--1,,1|(357,-479)|
+10,174,Densidad poblacional,646,-819,48,21,8,3,0,0,0,0,0,0
+1,175,84,174,1,0,0,0,0,128,0,-1--1--1,,1|(645,-786)|
+10,176,Superficie municipio,479,-840,48,21,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,177,176,174,1,0,0,0,0,128,0,-1--1--1,,1|(558,-838)|
+10,178,Tierras milpa,1318,358,54,12,8,3,0,0,0,0,0,0
+10,179,Tierras hortalizas,912,376,41,21,8,3,0,0,0,0,0,0
+1,180,8,179,1,0,0,0,0,128,0,-1--1--1,,1|(910,327)|
+1,181,178,54,1,0,0,0,0,128,0,-1--1--1,,1|(1469,384)|
+10,182,Seguridad alimentaria,2519,1032,52,21,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,183,182,11,1,0,0,0,0,128,0,-1--1--1,,1|(2571,1019)|
+1,184,179,1,1,0,0,0,0,128,0,-1--1--1,,1|(947,421)|
+10,185,Costos insumos,1276,512,35,21,8,3,0,0,0,0,0,0
+10,186,Ganancia agrícola,1256,595,41,21,8,3,0,0,0,0,0,0
+1,187,73,186,1,0,0,0,0,128,0,-1--1--1,,1|(1145,644)|
+1,188,185,186,1,0,0,0,0,128,0,-1--1--1,,1|(1278,564)|
+1,189,68,205,1,0,0,0,0,128,0,-1--1--1,,1|(1322,675)|
+1,190,186,205,1,0,0,0,0,128,0,-1--1--1,,1|(1372,585)|
+10,191,Cobertura forestal,802,-162,43,21,8,3,0,0,0,0,0,0
+1,192,17,191,1,0,0,0,0,128,0,-1--1--1,,1|(890,-147)|
+1,193,79,191,1,0,0,0,0,128,0,-1--1--1,,1|(811,-221)|
+10,194,Cobertura forestal,162,688,48,21,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,195,194,4,1,0,0,0,0,128,0,-1--1--1,,1|(256,708)|
+1,196,162,374,1,0,0,0,0,128,0,-1--1--1,,1|(728,432)|
+10,197,Densidad poblacional,166,108,54,21,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,198,197,14,1,0,0,0,0,128,0,-1--1--1,,1|(260,103)|
+10,199,Rendimiento milpa,1478,298,59,21,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,200,199,54,1,0,0,0,0,128,0,-1--1--1,,1|(1589,334)|
+1,201,162,104,1,0,0,0,0,128,0,-1--1--1,,1|(623,413)|
+1,202,161,104,1,0,0,0,0,128,0,-1--1--1,,1|(503,427)|
+1,203,161,162,1,0,0,0,0,128,0,-1--1--1,,1|(501,341)|
+10,204,Gastos en enfermedades,1580,546,66,21,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+10,205,Ingresos netos familiares,1423,656,62,21,8,3,0,0,0,0,0,0
+1,206,204,205,1,0,0,0,0,128,0,-1--1--1,,1|(1504,568)|
+1,207,205,149,1,0,0,0,0,128,0,-1--1--1,,1|(1526,617)|
+1,208,38,83,1,0,0,0,0,128,0,-1--1--1,,1|(2248,465)|
+10,209,Desempleo,2510,37,47,12,8,3,0,0,0,0,0,0
+1,210,96,209,1,0,0,0,0,128,0,-1--1--1,,1|(2525,99)|
+1,211,209,150,1,0,0,0,0,128,0,-1--1--1,,1|(2493,-19)|
+10,212,Tratamiento agua,2561,497,51,21,8,3,0,0,0,0,0,0
+1,213,212,44,1,0,0,0,0,128,0,-1--1--1,,1|(2494,470)|
+10,214,Uso insumos químicos,1163,442,60,21,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,215,214,185,1,0,0,0,0,128,0,-1--1--1,,1|(1238,469)|
+1,216,54,58,1,0,0,0,0,128,0,-1--1--1,,1|(1618,329)|
+1,217,51,42,1,0,0,0,0,128,0,-1--1--1,,1|(1896,100)|
+1,218,153,58,1,0,0,0,0,128,0,-1--1--1,,1|(1632,128)|
+10,219,a,611,-561,7,12,8,3,1,0,-1,0,0,0
+1,220,219,120,0,1,0,0,0,64,0,-1--1--1,,1|(602,-569)|
+10,221,b,611,-561,7,12,8,3,1,0,-1,0,0,0
+1,222,221,120,0,1,0,0,0,64,0,-1--1--1,,1|(602,-569)|
+10,223,b2,611,-561,12,12,8,3,1,0,-1,0,0,0
+1,224,223,120,0,1,0,0,0,64,0,-1--1--1,,1|(600,-571)|
+10,225,c,611,-561,7,12,8,3,1,0,-1,0,0,0
+1,226,225,120,0,1,0,0,0,64,0,-1--1--1,,1|(602,-569)|
+10,227,a1,1054,-540,12,12,8,3,1,0,-1,0,0,0
+1,228,227,126,0,1,0,0,0,64,0,-1--1--1,,1|(1054,-549)|
+10,229,b3,1054,-540,12,12,8,3,17,0,-1,0,0,0
+1,230,229,126,0,17,0,0,0,64,0,-1--1--1,,1|(1054,-549)|
+1,231,42,142,1,0,0,0,0,128,0,-1--1--1,,1|(2100,116)|
+1,232,23,142,1,0,0,0,0,128,0,-1--1--1,,1|(2088,241)|
+10,233,a2,2126,250,12,12,8,3,1,0,-1,0,0,0
+1,234,233,142,0,1,0,0,0,64,0,-1--1--1,,1|(2125,229)|
+10,235,a3,2128,252,12,12,8,3,1,0,-1,0,0,0
+10,236,b4,2128,253,12,12,8,3,1,0,-1,0,0,0
+1,237,236,142,0,1,0,0,0,64,0,-1--1--1,,1|(2127,231)|
+10,238,Infraestructura vial,420,53,61,21,8,3,0,0,0,0,0,0
+1,239,238,14,1,0,0,0,0,128,0,-1--1--1,,1|(383,93)|
+1,240,84,29,1,0,0,0,0,128,0,-1--1--1,,1|(796,-761)|
+10,241,a5,2411,540,12,12,8,3,1,0,-1,0,0,0
+1,242,241,44,0,1,0,0,0,64,0,-1--1--1,,1|(2411,530)|
+10,243,a6,2411,540,12,12,8,3,1,0,-1,0,0,0
+1,244,243,44,0,1,0,0,0,64,0,-1--1--1,,1|(2411,530)|
+10,245,a7,2313,461,12,12,8,3,1,0,-1,0,0,0
+1,246,245,38,0,1,0,0,0,64,0,-1--1--1,,1|(2313,451)|
+10,247,a8,2313,461,12,12,8,3,1,0,-1,0,0,0
+1,248,247,38,0,1,0,0,0,64,0,-1--1--1,,1|(2313,451)|
+10,249,b5,2313,461,12,12,8,3,1,0,-1,0,0,0
+1,250,249,38,0,1,0,0,0,64,0,-1--1--1,,1|(2313,451)|
+10,251,a10,2308,335,17,12,8,3,1,0,-1,0,0,0
+1,252,251,32,0,1,0,0,0,64,0,-1--1--1,,1|(2308,324)|
+10,253,a9,2303,334,12,12,8,3,1,0,-1,0,0,0
+1,254,253,32,0,1,0,0,0,64,0,-1--1--1,,1|(2304,324)|
+10,255,b6,2307,335,12,12,8,3,1,0,-1,0,0,0
+1,256,255,32,0,1,0,0,0,64,0,-1--1--1,,1|(2307,324)|
+1,257,24,73,1,0,0,0,0,128,0,-1--1--1,,1|(975,669)|
+10,258,Tamaño familia,1570,733,41,21,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,259,258,149,1,0,0,0,0,128,0,-1--1--1,,1|(1611,703)|
+10,260,a11,1637,695,17,12,8,3,1,0,-1,0,0,0
+10,261,Pobreza inicial,-106,-209,35,21,8,3,0,0,-1,0,0,0
+1,262,261,149,0,1,0,0,0,64,0,-1--1--1,,1|(756,217)|
+10,263,a12,1982,119,17,12,8,3,1,0,-1,0,0,0
+1,264,263,42,0,1,0,0,0,64,0,-1--1--1,,1|(1982,107)|
+10,265,a13,1982,119,17,12,8,3,1,0,-1,0,0,0
+1,266,265,42,0,1,0,0,0,64,0,-1--1--1,,1|(1982,107)|
+10,267,a14,1982,119,17,12,8,3,1,0,-1,0,0,0
+1,268,267,42,0,1,0,0,0,64,0,-1--1--1,,1|(1982,107)|
+10,269,b7,1982,119,12,12,8,3,1,0,-1,0,0,0
+10,270,Tamaño familia,1523,177,41,21,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,271,270,58,1,0,0,0,0,128,0,-1--1--1,,1|(1590,230)|
+10,272,a15,2274,610,17,12,8,3,1,0,-1,0,0,0
+1,273,272,83,0,1,0,0,0,64,0,-1--1--1,,1|(2274,600)|
+10,274,b8,2274,610,12,12,8,3,1,0,-1,0,0,0
+1,275,274,83,0,1,0,0,0,64,0,-1--1--1,,1|(2274,600)|
+10,276,a16,591,493,17,12,8,3,1,0,-1,0,0,0
+1,277,276,104,0,1,0,0,0,64,0,-1--1--1,,1|(591,483)|
+10,278,a17,591,493,17,12,8,3,1,0,-1,0,0,0
+1,279,278,104,0,1,0,0,0,64,0,-1--1--1,,1|(591,483)|
+10,280,a18,591,493,17,12,8,3,1,0,-1,0,0,0
+1,281,280,104,0,1,0,0,0,64,0,-1--1--1,,1|(591,483)|
+10,282,b9,591,493,12,12,8,3,1,0,-1,0,0,0
+1,283,282,104,0,1,0,0,0,64,0,-1--1--1,,1|(591,483)|
+10,284,c2,591,493,12,12,8,3,1,0,-1,0,0,0
+1,285,284,104,0,1,0,0,0,64,0,-1--1--1,,1|(591,483)|
+10,286,a19,369,183,17,12,8,3,1,0,-1,0,0,0
+1,287,286,14,0,1,0,0,0,64,0,-1--1--1,,1|(369,173)|
+10,288,a20,369,183,17,12,8,3,1,0,-1,0,0,0
+1,289,288,14,0,1,0,0,0,64,0,-1--1--1,,1|(369,173)|
+10,290,b10,369,183,17,12,8,3,1,0,-1,0,0,0
+1,291,290,14,0,1,0,0,0,64,0,-1--1--1,,1|(369,173)|
+10,292,a21,718,147,17,12,8,3,1,0,-1,0,0,0
+1,293,292,6,0,1,0,0,0,64,0,-1--1--1,,1|(718,137)|
+10,294,b11,718,147,17,12,8,3,1,0,-1,0,0,0
+1,295,294,6,0,1,0,0,0,64,0,-1--1--1,,1|(718,137)|
+10,296,a22,432,284,17,12,8,3,1,0,-1,0,0,0
+10,297,a23,432,284,17,12,8,3,1,0,-1,0,0,0
+1,298,297,12,0,1,0,0,0,64,0,-1--1--1,,1|(432,274)|
+10,299,a24,432,284,17,12,8,3,1,0,-1,0,0,0
+1,300,299,12,0,1,0,0,0,64,0,-1--1--1,,1|(432,274)|
+1,301,159,374,1,0,0,0,0,128,0,-1--1--1,,1|(583,603)|
+10,302,Cubertura forestal mínima,364,751,64,21,8,3,0,0,-1,0,0,0
+1,303,302,4,1,0,0,0,0,64,0,-1--1--1,,1|(312,721)|
+10,304,a25,1693,284,17,12,8,3,1,0,-1,0,0,0
+1,305,304,58,0,1,0,0,0,64,0,-1--1--1,,1|(1693,274)|
+10,306,a26,1693,284,17,12,8,3,1,0,-1,0,0,0
+1,307,306,58,0,1,0,0,0,64,0,-1--1--1,,1|(1693,274)|
+10,308,b12,1693,284,17,12,8,3,1,0,-1,0,0,0
+1,309,308,58,0,1,0,0,0,64,0,-1--1--1,,1|(1693,274)|
+10,310,c3,1693,284,12,12,8,3,1,0,-1,0,0,0
+1,311,310,58,0,1,0,0,0,64,0,-1--1--1,,1|(1693,274)|
+10,312,a27,611,373,17,12,8,3,1,0,-1,0,0,0
+1,313,312,162,0,1,0,0,0,64,0,-1--1--1,,1|(611,363)|
+10,314,b13,611,373,17,12,8,3,1,0,-1,0,0,0
+1,315,314,162,0,1,0,0,0,64,0,-1--1--1,,1|(611,363)|
+10,316,a28,2642,53,17,12,8,3,1,0,-1,0,0,0
+1,317,316,150,0,1,0,0,0,64,0,-1--1--1,,1|(2589,7)|
+10,318,b14,2642,53,17,12,8,3,1,0,-1,0,0,0
+1,319,318,150,0,1,0,0,0,64,0,-1--1--1,,1|(2589,7)|
+1,320,33,209,1,0,0,0,0,128,0,-1--1--1,,1|(2607,17)|
+10,321,a29,1276,554,17,12,8,3,1,0,-1,0,0,0
+1,322,321,185,0,1,0,0,0,64,0,-1--1--1,,1|(1276,544)|
+10,323,b15,1276,554,17,12,8,3,1,0,-1,0,0,0
+1,324,323,185,0,1,0,0,0,64,0,-1--1--1,,1|(1276,544)|
+1,325,151,11,1,0,0,0,0,128,0,-1--1--1,,1|(2720,894)|
+1,326,36,96,1,0,0,0,0,128,0,-1--1--1,,1|(2566,210)|
+10,327,a30,353,484,17,12,8,3,1,0,-1,0,0,0
+1,328,327,105,0,1,0,0,0,64,0,-1--1--1,,1|(353,474)|
+10,329,b16,353,484,17,12,8,3,1,0,-1,0,0,0
+1,330,329,105,0,1,0,0,0,64,0,-1--1--1,,1|(353,474)|
+10,331,Salario infantil,1422,741,59,12,8,3,0,0,0,0,0,0
+1,332,331,68,1,0,0,0,0,128,0,-1--1--1,,1|(1359,713)|
+1,333,44,38,0,0,0,0,0,64,0,-1--1--1,,1|(2368,462)|
+1,334,32,38,1,0,0,0,0,64,0,-1--1--1,,1|(2283,346)|
+10,335,Política riego,203,399,54,12,8,3,0,0,0,0,0,0
+1,336,335,105,1,0,0,0,0,128,0,-1--1--1,,1|(271,440)|
+1,337,339,17,4,0,0,22,0,0,0,-1--1--1,,1|(904,-14)|
+1,338,339,3,100,0,0,22,0,0,0,-1--1--1,,1|(1171,-14)|
+11,339,1868,1024,-14,6,8,34,3,0,0,1,0,0,0
+10,340,Reforestación,1024,6,58,12,40,3,0,0,-1,0,0,0
+10,341,Política reforestación,828,36,55,21,8,3,0,0,0,0,0,0
+1,342,341,340,1,0,0,0,0,128,0,-1--1--1,,1|(949,47)|
+1,343,22,339,1,0,0,0,0,128,0,-1--1--1,,1|(1057,-44)|
+10,344,Política consumo de hortalizas,602,865,72,21,8,3,0,0,0,0,0,0
+1,345,344,30,1,0,0,0,0,128,0,-1--1--1,,1|(701,880)|
+10,346,a31,1102,780,17,12,8,3,1,0,-1,0,0,0
+1,347,346,66,0,1,0,0,0,64,0,-1--1--1,,1|(1102,770)|
+10,348,b18,1102,780,17,12,8,3,1,0,-1,0,0,0
+1,349,348,66,0,1,0,0,0,64,0,-1--1--1,,1|(1102,770)|
+10,350,c5,1102,780,12,12,8,3,1,0,-1,0,0,0
+1,351,350,66,0,1,0,0,0,64,0,-1--1--1,,1|(1102,770)|
+10,352,a32,2625,905,17,12,8,3,1,0,-1,0,0,0
+1,353,352,43,0,1,0,0,0,64,0,-1--1--1,,1|(2625,895)|
+10,354,a33,2625,905,17,12,8,3,1,0,-1,0,0,0
+1,355,354,43,0,1,0,0,0,64,0,-1--1--1,,1|(2625,895)|
+10,356,b19,2625,905,17,12,8,3,1,0,-1,0,0,0
+1,357,356,43,0,1,0,0,0,64,0,-1--1--1,,1|(2625,895)|
+10,358,c6,2625,905,12,12,8,3,1,0,-1,0,0,0
+1,359,358,43,0,1,0,0,0,64,0,-1--1--1,,1|(2625,895)|
+10,360,a34,2679,992,17,12,8,3,1,0,-1,0,0,0
+1,361,360,11,0,1,0,0,0,64,0,-1--1--1,,1|(2679,982)|
+10,362,a35,2679,992,17,12,8,3,1,0,-1,0,0,0
+1,363,362,11,0,1,0,0,0,64,0,-1--1--1,,1|(2679,982)|
+10,364,a36,2679,992,17,12,8,3,1,0,-1,0,0,0
+1,365,364,11,0,1,0,0,0,64,0,-1--1--1,,1|(2679,982)|
+10,366,a37,2679,992,17,12,8,3,1,0,-1,0,0,0
+1,367,366,11,0,1,0,0,0,64,0,-1--1--1,,1|(2679,982)|
+10,368,b20,2679,992,17,12,8,3,1,0,-1,0,0,0
+1,369,368,11,0,1,0,0,0,64,0,-1--1--1,,1|(2679,982)|
+10,370,c7,2679,992,12,12,8,3,1,0,-1,0,0,0
+1,371,370,11,0,1,0,0,0,64,0,-1--1--1,,1|(2679,982)|
+10,372,Política acceso a crédito,583,-54,64,21,8,3,0,0,0,0,0,0
+1,373,372,6,1,0,0,0,0,128,0,-1--1--1,,1|(697,8)|
+10,374,Rendimiento hortalizas,698,527,53,21,8,3,0,0,0,0,0,0
+1,375,374,1,1,0,0,0,0,128,0,-1--1--1,,1|(782,584)|
+10,376,a40,698,569,17,12,8,3,1,0,-1,0,0,0
+10,377,a41,698,569,17,12,8,3,1,0,-1,0,0,0
+1,378,377,374,0,1,0,0,0,64,0,-1--1--1,,1|(698,559)|
+10,379,b22,698,569,17,12,8,3,1,0,-1,0,0,0
+1,380,379,374,0,1,0,0,0,64,0,-1--1--1,,1|(698,559)|
+10,381,c9,698,569,12,12,8,3,1,0,-1,0,0,0
+1,382,381,374,0,1,0,0,0,64,0,-1--1--1,,1|(698,559)|
+10,383,a38,900,771,17,12,8,3,1,0,-1,0,0,0
+1,384,383,24,0,1,0,0,0,64,0,-1--1--1,,1|(889,756)|
+10,385,a39,897,768,17,12,8,3,1,0,-1,0,0,0
+1,386,385,24,0,1,0,0,0,64,0,-1--1--1,,1|(888,754)|
+10,387,b21,900,767,17,12,8,3,1,0,-1,0,0,0
+1,388,387,24,0,1,0,0,0,64,0,-1--1--1,,1|(890,754)|
+10,389,c8,901,766,12,12,8,3,1,0,-1,0,0,0
+1,390,389,24,0,1,0,0,0,64,0,-1--1--1,,1|(890,753)|
+10,391,Educación inicial,2617,1113,45,21,8,3,0,0,-1,0,0,0
+1,392,391,10,0,0,0,0,0,64,0,-1--1--1,,1|(2680,1081)|
+1,393,59,3,0,0,0,0,0,64,1,-1--1--1,,1|(521,-200)|
+10,394,Pobreza,455,-516,46,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|14||128-128-128
+1,395,394,120,1,0,0,0,0,128,0,-1--1--1,,1|(538,-529)|
+1,396,108,68,0,1,0,0,0,64,0,-1--1--1,,1|(1032,95)|
+1,397,26,68,0,1,0,0,0,64,0,-1--1--1,,1|(1134,10)|
+10,398,Política educación,2810,927,44,21,8,3,0,0,0,0,0,0
+1,399,398,10,1,0,0,0,0,128,0,-1--1--1,,1|(2813,979)|
+1,400,159,104,1,0,0,0,0,128,0,-1--1--1,,1|(535,544)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Agrónomo
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+10,1,Tierra agrícola,410,385,49,22,3,131,0,0,0,0,0,0
+12,2,48,414,495,10,8,0,3,0,0,-1,0,0,0
+10,3,Bosques,412,237,42,26,3,131,0,0,0,0,0,0
+10,4,Consumo de leña,221,303,55,11,8,3,0,0,0,0,0,0
+1,5,7,1,4,0,0,22,0,0,0,-1--1--1,,1|(414,335)|
+1,6,7,3,100,0,0,22,0,0,0,-1--1--1,,1|(414,279)|
+11,7,2860,414,301,8,6,33,3,0,0,2,0,0,0
+10,8,Deforestación,362,301,44,11,40,3,0,0,-1,0,0,0
+10,9,Número de familias,290,104,37,19,8,3,0,0,-1,0,0,0
+10,10,TIME STEP,327,430,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,11,Superficie municipio,507,403,44,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,12,11,1,0,1,0,0,0,64,1,-1--1--1,,1|(467,396)|
+1,13,11,3,0,1,0,0,0,64,1,-1--1--1,,1|(467,333)|
+12,14,48,1277,137,10,8,0,3,0,0,-1,0,0,0
+12,15,48,431,136,10,8,0,3,0,0,-1,0,0,0
+10,16,Educación,1303,319,34,11,8,3,0,0,-1,0,0,0
+10,17,Población inicial,612,177,60,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,18,Atraso escolar,1290,523,60,11,8,3,0,0,-1,0,0,0
+10,19,Desnutrición crónica infantil,1070,353,40,11,8,3,0,0,-1,0,0,0
+10,20,Cantidad de alimentos,995,438,40,19,8,3,0,0,-1,0,0,0
+10,21,Trabajo infantil,1244,620,47,11,8,3,0,0,-1,0,0,0
+1,22,21,18,1,0,0,0,0,0,0,-1--1--1,,1|(1256,569)|
+10,23,Calidad de la dieta,1402,378,61,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,24,Enfermedades infantiles,1402,378,50,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,25,24,19,0,1,0,0,0,64,0,-1--1--1,,1|(1237,366)|
+10,26,Tiempo de ajusto de desnutrición,1402,378,70,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,27,26,19,0,1,0,0,0,64,0,-1--1--1,,1|(1227,365)|
+10,28,Tamaño familia,1155,280,35,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,29,28,21,0,1,0,0,0,64,0,-1--1--1,,1|(1198,447)|
+10,30,Ventas hortalizas,838,882,57,19,8,3,0,0,-1,0,0,0
+10,31,Enfermedades infantiles,1532,237,50,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,32,Ingresos salariales,-202,73,42,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,33,Tierra por familia,133,448,62,13,8,131,0,0,-1,0,0,0
+1,34,1,33,1,0,0,0,0,0,0,-1--1--1,,1|(255,376)|
+1,35,9,33,1,0,0,0,0,0,0,-1--1--1,,1|(149,235)|
+10,36,Producción hortalizas,580,893,64,19,8,3,0,0,-1,0,0,0
+1,37,36,30,1,0,0,0,0,0,0,-1--1--1,,1|(697,911)|
+10,38,Comercialización,708,254,54,11,8,3,0,0,-1,0,0,0
+10,39,Tecnificación agrícola,716,381,42,19,8,3,0,0,-1,0,0,0
+1,40,38,39,1,0,0,0,0,0,0,-1--1--1,,1|(723,309)|
+10,41,Disponibilidad agua superficie,561,364,56,19,8,3,0,0,-1,0,0,0
+10,42,Acceso a crédito,243,283,35,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,43,42,39,0,1,0,0,0,64,0,-1--1--1,,1|(469,329)|
+10,44,Superficie municipio,315,514,44,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+12,45,0,883,251,20,20,5,7,0,3,-1,0,0,0,255-128-0,0-0-0,|12||255-128-0
+E
+12,46,0,887,297,65,19,8,135,0,18,-1,0,0,0,-1--1--1,0-0-0,|12|I|255-128-0
+Ciclo poblacional - comercialización
+10,47,Comida comprada,984,578,36,19,8,3,0,0,-1,0,0,0
+10,48,TIME STEP,1205,825,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,49,Producción hortalizas consumida,1413,700,70,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,50,Producción milpa,1413,700,42,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,51,TIME STEP,1045,542,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+12,52,0,331,764,20,20,5,7,0,3,-1,0,0,0,255-128-0,0-0-0,|12||255-128-0
+R
+12,53,0,333,809,68,19,8,7,0,18,-1,0,0,0,-1--1--1,0-0-0,|12|I|255-128-0
+Ciclo del tamaño de las familias
+12,54,0,1369,569,20,20,5,7,0,3,-1,0,0,0,255-128-0,0-0-0,|12||255-128-0
+R
+12,55,0,1367,621,70,19,8,135,0,18,-1,0,0,0,-1--1--1,0-0-0,|12|I|255-128-0
+Ciclo de moderación de los insumos
+12,56,0,298,492,20,20,5,7,0,3,-1,0,0,0,255-128-0,0-0-0,|12||255-128-0
+R
+12,57,0,296,528,52,11,8,7,0,18,-1,0,0,0,-1--1--1,0-0-0,|12|I|255-128-0
+Ciclo de plagas
+10,58,Producción hortalizas consumida,817,834,70,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,59,Producción milpa,612,691,55,11,8,3,0,0,-1,0,0,0
+10,60,Fracción tierras a hortalizas,680,795,62,19,8,3,0,0,-1,0,0,0
+1,61,47,20,1,0,0,0,0,0,0,-1--1--1,,1|(975,524)|
+1,62,59,20,1,0,0,0,0,0,0,-1--1--1,,1|(871,546)|
+10,63,Producción hortalizas consumida,1502,629,70,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,64,63,20,0,1,0,0,0,64,0,-1--1--1,,1|(1250,533)|
+10,65,Población total,236,240,47,11,8,3,1,0,-1,0,0,0
+10,66,Gastos en enfermedades,1351,778,49,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,67,18,16,1,0,0,0,0,64,0,-1--1--1,,1|(1271,424)|
+10,68,Cobertura forestal inicial,412,282,48,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,69,68,3,0,1,0,0,0,64,1,-1--1--1,,1|(412,263)|
+10,70,Superficie municipio,708,284,44,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,71,Fracción infantes inicial,1094,182,56,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,72,Fracción adultos inicial,612,177,58,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,73,Madera por área,242,226,54,11,8,3,0,0,-1,0,0,0
+1,74,3,8,0,0,0,0,0,0,0,-1--1--1,,1|(385,271)|
+1,75,4,8,1,0,0,0,0,0,0,-1--1--1,,1|(295,320)|
+1,76,73,8,1,0,0,0,0,0,0,-1--1--1,,1|(310,248)|
+10,77,TIME STEP,256,352,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,78,77,8,0,1,0,0,0,0,0,-1--1--1,,1|(302,329)|
+10,79,TIME STEP,1150,825,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,80,Desnutrición inicial,1070,383,45,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,81,80,19,0,1,0,0,0,64,0,-1--1--1,,1|(1070,364)|
+10,82,Time,1290,553,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,83,Población,290,142,41,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,84,83,9,0,0,0,0,0,64,0,-1--1--1,,1|(290,134)|
+10,85,Seguridad alimentaria,1070,383,60,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,86,85,19,0,0,0,0,0,64,0,-1--1--1,,1|(1070,375)|
+10,87,Rendimiento milpa,612,721,45,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,88,87,59,0,0,0,0,0,64,0,-1--1--1,,1|(612,702)|
+10,89,Población,236,270,41,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,90,89,65,0,0,0,0,0,64,0,-1--1--1,,1|(236,262)|
+10,91,Consumo leña por hogar,221,333,50,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,92,91,4,0,0,0,0,0,64,0,-1--1--1,,1|(221,314)|
+1,93,9,4,0,0,0,0,0,64,0,-1--1--1,,1|(256,200)|
+10,94,Seguridad alimentaria,1181,342,39,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,95,Pobreza,1290,553,36,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,96,95,18,0,0,0,0,0,64,0,-1--1--1,,1|(1290,545)|
+10,97,Tierras hortalizas,838,920,35,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,98,97,30,0,0,0,0,0,64,0,-1--1--1,,1|(838,901)|
+10,99,Uso insumos químicos,580,931,46,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,100,99,36,0,0,0,0,0,64,0,-1--1--1,,1|(580,912)|
+10,101,Densidad poblacional,708,284,42,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,102,101,38,0,0,0,0,0,64,0,-1--1--1,,1|(708,265)|
+10,103,Pobreza,716,419,36,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,104,103,39,0,0,0,0,0,64,0,-1--1--1,,1|(716,411)|
+10,105,Cobertura forestal,561,402,38,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,106,105,41,0,0,0,0,0,64,0,-1--1--1,,1|(561,383)|
+10,107,Tierras milpa,612,721,50,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,108,107,59,0,0,0,0,0,64,0,-1--1--1,,1|(612,713)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Económico
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+12,1,48,1074,249,10,8,0,3,0,0,-1,0,0,0
+12,2,48,1073,557,10,8,0,3,0,0,-1,0,0,0
+10,3,Trabajo,1561,328,30,12,8,131,0,4,-1,0,0,0,-1--1--1,255-192-128,|12||0-0-0
+1,4,20,112,1,0,0,0,0,0,0,-1--1--1,,1|(1618,471)|
+10,5,Producción hortalizas,457,149,71,20,8,131,0,0,-1,0,0,0
+10,6,Tierra por familia,295,585,54,11,8,3,0,0,-1,0,0,0
+1,7,6,5,1,0,0,0,0,0,0,-1--1--1,,1|(233,350)|
+10,8,Tierra agrícola,312,702,54,21,3,131,0,0,-1,0,0,0
+1,9,8,6,1,0,0,0,0,0,0,-1--1--1,,1|(288,631)|
+10,10,Cantidad de alimentos,1202,774,40,19,8,3,0,0,-1,0,0,0
+10,11,Desnutrición crónica infantil,1357,720,40,11,8,3,0,0,-1,0,0,0
+1,12,10,11,1,0,0,0,0,0,0,-1--1--1,,1|(1287,756)|
+10,13,Enfermedades infantiles,1359,585,46,19,8,3,0,0,-1,0,0,0
+1,14,13,11,1,0,0,0,0,0,0,-1--1--1,,1|(1409,642)|
+1,15,11,13,1,0,0,0,0,0,0,-1--1--1,,1|(1304,663)|
+10,16,Higiene,1413,952,34,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,17,16,13,0,1,0,0,0,64,0,-1--1--1,,1|(1387,779)|
+10,18,Calidad del agua,1257,1030,42,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,19,18,13,0,1,0,0,0,64,0,-1--1--1,,1|(1305,814)|
+10,20,Desarrollo físico,1568,542,60,11,8,3,0,0,-1,0,0,0
+1,21,11,20,1,0,0,0,0,0,0,-1--1--1,,1|(1491,698)|
+10,22,Calidad de la dieta,961,805,61,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,23,22,11,0,1,0,0,0,64,0,-1--1--1,,1|(1162,761)|
+10,24,Número de familias,305,657,42,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,25,24,6,0,1,0,0,0,64,0,-1--1--1,,1|(300,623)|
+10,26,Atraso escolar,1333,489,41,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,27,Producción milpa,964,900,42,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,28,Fracción tierras a hortalizas,310,543,67,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,29,28,5,0,1,0,0,0,64,0,-1--1--1,,1|(380,353)|
+10,30,Ingresos salariales,1387,256,74,16,8,131,0,0,-1,0,0,0
+10,31,Ventas hortalizas,763,88,65,23,8,131,0,0,-1,0,0,0
+10,32,Superficie municipio,512,704,44,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,33,32,8,0,1,0,0,0,64,1,-1--1--1,,1|(423,703)|
+10,34,TIME STEP,543,784,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,35,Número de familias,783,613,42,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,36,Deforestación,545,493,53,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,37,36,8,0,1,0,0,0,64,0,-1--1--1,,1|(439,587)|
+10,38,Tiempo de ajusto de enfermedades,1402,578,70,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,39,38,13,0,1,0,0,0,64,0,-1--1--1,,1|(1375,581)|
+10,40,Producción milpa,508,555,55,11,8,3,0,0,-1,0,0,0
+10,41,Salario,1362,354,47,11,8,3,0,0,-1,0,0,0
+1,42,41,30,1,0,0,0,0,0,0,-1--1--1,,1|(1364,300)|
+10,43,Número de familias,450,548,42,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,44,3,30,1,0,0,0,0,64,0,-1--1--1,,1|(1492,276)|
+10,45,TIME STEP,949,457,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,46,Comida comprada,1016,743,36,19,8,3,0,0,-1,0,0,0
+10,47,Costumbre de consumo,837,872,46,19,8,3,0,0,-1,0,0,0
+10,48,Producción hortalizas consumida,816,766,70,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,49,5,31,1,0,0,0,0,0,0,-1--1--1,,1|(576,91)|
+10,50,TIME STEP,932,460,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,51,Tiempo de ajusto de desnutrición,1358,725,70,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,52,51,11,0,1,0,0,0,64,0,-1--1--1,,1|(1357,721)|
+12,53,0,1116,608,20,20,5,7,0,3,-1,0,0,0,255-128-0,0-0-0,|12||255-128-0
+R
+12,54,0,1120,652,62,19,8,7,0,18,-1,0,0,0,-1--1--1,0-0-0,|12|I|255-128-0
+Ciclo de gastos de enfermedades
+12,55,0,447,440,20,20,4,7,0,3,-1,0,0,0,255-128-0,0-0-0,|12||255-128-0
+R
+12,56,0,442,483,73,19,8,7,0,18,-1,0,0,0,-1--1--1,0-0-0,|12|I|255-128-0
+Ciclo de tecnificación agrícola
+12,57,0,511,699,20,20,5,7,0,3,-1,0,0,0,255-128-0,0-0-0,|12||255-128-0
+R
+12,58,0,515,743,80,19,8,7,0,18,-1,0,0,0,-1--1--1,0-0-0,|12|I|255-128-0
+Ciclo de venta de tierra por falta de comida
+10,59,Superficie municipio,704,772,44,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,60,TIME STEP,685,577,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,61,Fracción tierras a hortalizas,669,531,67,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,62,Costumbre de consumo,821,826,50,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+12,63,0,652,524,20,20,4,7,0,3,-1,0,0,0,255-128-0,0-0-0,|12||255-128-0
+R
+12,64,0,638,561,55,19,8,7,0,18,-1,0,0,0,-1--1--1,0-0-0,|12|I|255-128-0
+Ciclo de precios regionales
+10,65,Superficie municipio,1188,361,44,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,66,TIME STEP,1336,501,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,67,Fracción tierras a hortalizas,1203,395,67,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,68,Costumbre de consumo,1422,475,50,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+12,69,0,1207,357,20,20,5,7,0,3,-1,0,0,0,255-128-0,0-0-0,|12||255-128-0
+R
+12,70,0,1204,400,65,19,8,7,0,18,-1,0,0,0,-1--1--1,0-0-0,|12|I|255-128-0
+Ciclo de capacidad de trabajo
+10,71,Superficie municipio,1554,523,44,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,72,TIME STEP,1540,591,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,73,Fracción tierras a hortalizas,1569,557,67,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,74,Costumbre de consumo,1626,565,50,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+12,75,0,1629,591,20,20,5,7,0,3,-1,0,0,0,255-128-0,0-0-0,|12||255-128-0
+R
+12,76,0,1617,635,54,19,8,7,0,18,-1,0,0,0,-1--1--1,0-0-0,|12|I|255-128-0
+Ciclo de tiempo libre
+10,77,Tecnificación agrícola,747,318,50,21,8,131,0,0,-1,0,0,0
+1,78,6,40,1,0,0,0,0,0,0,-1--1--1,,1|(388,545)|
+10,79,Fracción tierras a hortalizas,508,585,67,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,80,79,40,0,1,0,0,0,64,0,-1--1--1,,1|(508,566)|
+10,81,Disponibilidad agua superficie,501,440,60,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,82,Acceso a crédito,406,372,54,11,8,3,0,0,-1,0,0,0
+1,83,6,82,1,0,0,0,0,0,0,-1--1--1,,1|(320,466)|
+1,84,82,77,1,0,0,0,0,0,0,-1--1--1,,1|(582,297)|
+10,85,Comercialización,775,396,40,20,8,2,17,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,86,85,77,0,17,0,0,0,64,0,-1--1--1,,1|(763,364)|
+10,87,Producción hortalizas consumida,852,185,70,19,8,2,17,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,88,87,31,0,17,0,0,0,64,0,-1--1--1,,1|(814,143)|
+12,89,0,841,180,20,20,4,7,0,3,-1,0,0,0,255-128-0,0-0-0,|12||255-128-0
+R
+12,90,0,836,223,59,19,8,7,0,18,-1,0,0,0,-1--1--1,0-0-0,|12|I|255-128-0
+Ciclo de venta de hortalizas
+10,91,Disponibilidad agua superficie,895,180,60,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,92,46,10,1,0,0,0,0,64,0,-1--1--1,,1|(1094,778)|
+10,93,Producción hortalizas consumida,1280,864,70,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,94,93,10,0,1,0,0,0,64,0,-1--1--1,,1|(1245,824)|
+1,95,40,10,0,1,0,0,0,64,0,-1--1--1,,1|(845,661)|
+10,96,Atraso escolar,1480,820,41,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,97,Educación,1386,445,34,11,8,3,0,0,-1,0,0,0
+1,98,97,41,1,0,0,0,0,0,0,-1--1--1,,1|(1357,410)|
+10,99,Gastos en enfermedades,1202,467,45,19,8,3,0,0,-1,0,0,0
+10,100,Tamaño familia,1307,544,35,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,101,Atraso escolar,1386,475,41,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,102,101,97,0,1,0,0,0,64,0,-1--1--1,,1|(1386,456)|
+10,103,Tamaño familia,1372,281,35,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,104,103,30,0,1,0,0,0,64,0,-1--1--1,,1|(1376,273)|
+10,105,Trabajo infantil,1372,281,56,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,106,105,30,0,1,0,0,0,64,0,-1--1--1,,1|(1373,277)|
+1,107,6,77,0,1,0,0,0,64,0,-1--1--1,,1|(505,460)|
+10,108,Desnutrición inicial,1357,750,45,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,109,108,11,0,1,0,0,0,64,0,-1--1--1,,1|(1357,731)|
+10,110,Disponibilidad trabajo,1600,256,43,19,8,3,0,0,0,0,0,0
+1,111,110,3,1,0,0,0,0,64,0,-1--1--1,,1|(1592,290)|
+10,112,Demanda de trabajo,1614,424,41,19,8,3,0,0,0,0,0,0
+1,113,112,3,1,0,0,0,0,64,0,-1--1--1,,1|(1606,383)|
+10,114,Tierra por familia,1894,330,37,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,115,Fracción adultos inicial,1696,352,58,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,116,Desnutrición inicial,1568,572,45,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,117,116,20,0,1,0,0,0,64,0,-1--1--1,,1|(1568,553)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Salud-social
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+10,1,Cantidad de alimentos,578,646,40,19,8,131,0,0,0,0,0,0
+10,2,Desnutrición crónica infantil,853,604,47,24,3,131,0,0,0,0,0,0
+10,3,Trabajo,1331,565,26,11,8,3,0,0,0,0,0,0
+10,4,Desarrollo físico,1078,644,40,20,3,3,0,0,0,0,0,0
+1,5,2,4,1,0,45,0,0,64,0,-1--1--1,,1|(970,648)|
+10,6,Enfermedades infantiles,852,824,49,22,3,131,0,0,0,0,0,0
+1,7,2,6,1,0,43,0,0,64,0,-1--1--1,,1|(785,687)|
+1,8,6,2,1,0,43,0,0,64,0,-1--1--1,,1|(920,704)|
+10,9,Higiene,958,1004,25,11,8,3,0,0,0,0,0,0
+1,10,9,6,1,0,45,0,0,64,0,-1--1--1,,1|(875,898)|
+10,11,Calidad de la dieta,571,457,64,20,8,131,0,0,0,0,0,0
+10,12,Educación,1121,717,34,11,8,3,0,0,-1,0,0,0
+10,13,Calidad del agua,355,876,53,11,8,3,0,0,0,0,0,0
+1,14,13,6,1,0,45,0,0,64,0,-1--1--1,,1|(599,886)|
+10,15,Producción hortalizas consumida,302,518,70,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,16,Producción milpa,353,783,42,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,17,Comida comprada,445,804,41,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,18,Tiempo de ajusto de desnutrición,683,586,66,19,8,3,0,0,-1,0,0,0
+1,19,18,2,0,0,0,0,0,64,0,-1--1--1,,1|(770,594)|
+10,20,Tiempo de ajusto de enfermedades,764,951,66,19,8,3,0,0,-1,0,0,0
+1,21,20,6,0,0,0,0,0,64,0,-1--1--1,,1|(802,894)|
+1,22,17,1,0,0,0,0,0,64,0,-1--1--1,,1|(506,730)|
+1,23,16,1,0,0,0,0,0,64,0,-1--1--1,,1|(459,718)|
+10,24,Producción hortalizas consumida,328,597,70,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,25,24,1,0,0,0,0,0,64,0,-1--1--1,,1|(461,622)|
+10,26,Atraso escolar,1095,846,60,11,8,3,0,0,-1,0,0,0
+10,27,Trabajo infantil,1204,902,47,11,8,3,0,0,-1,0,0,0
+1,28,27,26,1,0,0,0,0,0,0,-1--1--1,,1|(1162,890)|
+10,29,Tamaño familia,695,1214,35,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,30,29,27,0,1,0,0,0,64,0,-1--1--1,,1|(949,1057)|
+1,31,26,12,1,0,0,0,0,64,0,-1--1--1,,1|(1087,773)|
+10,32,TIME STEP,770,997,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,33,32,9,0,1,0,0,0,64,0,-1--1--1,,1|(869,1000)|
+10,34,Desnutrición inicial,854,647,45,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,35,34,2,0,1,0,0,0,64,0,-1--1--1,,1|(860,628)|
+10,36,Ingresos salariales,1418,815,59,11,8,3,0,0,-1,0,0,0
+10,37,Ventas hortalizas,274,1040,61,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,38,Demanda de trabajo,1196,532,41,19,8,3,0,0,-1,0,0,0
+1,39,38,3,1,0,0,0,0,64,0,-1--1--1,,1|(1267,536)|
+10,40,Disponibilidad trabajo,1383,501,43,19,8,3,0,0,-1,0,0,0
+1,41,40,3,0,0,0,0,0,64,0,-1--1--1,,1|(1358,531)|
+10,42,Tierra por familia,1087,393,37,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,43,4,38,1,0,0,0,0,0,0,-1--1--1,,1|(1145,605)|
+10,44,Desnutrición inicial,1135,837,45,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,45,44,4,0,1,0,0,0,64,0,-1--1--1,,1|(1108,747)|
+10,46,Time,897,1213,26,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,47,Salario,1258,718,47,11,8,3,0,0,-1,0,0,0
+1,48,12,47,1,0,0,0,0,0,0,-1--1--1,,1|(1180,701)|
+1,49,47,36,1,0,0,0,0,0,0,-1--1--1,,1|(1333,742)|
+1,50,3,36,1,0,0,0,0,0,0,-1--1--1,,1|(1413,656)|
+1,51,27,36,1,0,0,0,0,0,0,-1--1--1,,1|(1299,853)|
+10,52,Tamaño familia,1400,840,35,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,53,52,36,0,1,0,0,0,64,0,-1--1--1,,1|(1407,829)|
+10,54,Costumbre de consumo,876,405,46,19,8,3,0,0,-1,0,0,0
+10,55,Seguridad alimentaria,853,647,60,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,56,55,2,0,0,0,0,0,64,0,-1--1--1,,1|(853,639)|
+10,57,Acceso agua potable,355,906,46,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,58,57,13,0,0,0,0,0,64,0,-1--1--1,,1|(355,887)|
+1,59,12,11,0,0,0,0,0,64,0,-1--1--1,,1|(861,594)|
+10,60,Pobreza,571,496,36,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,61,60,11,0,0,0,0,0,64,0,-1--1--1,,1|(571,488)|
+10,62,Pobreza,462,329,36,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,63,Seguridad alimentaria,1011,790,39,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,64,Pobreza,1095,876,36,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,65,64,26,0,0,0,0,0,64,0,-1--1--1,,1|(1095,868)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Poblacional
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+12,1,48,1053,359,10,8,0,3,0,0,-1,0,0,0
+10,2,Educación,1137,220,43,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,3,Número de familias,332,229,37,19,8,3,0,0,0,0,0,0
+12,4,48,890,194,10,8,0,3,0,0,-1,0,0,0
+12,5,48,207,358,10,8,0,3,0,0,-1,0,0,0
+10,6,Tamaño familia,660,163,63,14,8,131,0,0,0,0,0,0
+1,7,3,6,1,0,45,0,0,64,0,-1--1--1,,1|(485,225)|
+10,8,Desnutrición crónica infantil,1060,108,49,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,9,Población inicial,156,515,60,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,10,Fracción infantes inicial,161,615,56,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,11,Emigración permanente,688,603,37,19,8,3,0,0,0,0,0,0
+10,12,Demanda de trabajo,386,593,41,19,8,3,0,0,-1,0,0,0
+10,13,Disponibilidad trabajo,772,679,43,19,8,3,0,0,-1,0,0,0
+1,14,13,11,1,0,0,0,0,0,0,-1--1--1,,1|(745,648)|
+10,15,Tierra por familia,593,741,37,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+12,16,48,389,481,10,8,0,3,0,0,-1,0,0,0
+12,17,48,870,518,10,8,0,3,0,0,-1,0,0,0
+12,18,48,632,507,10,8,0,3,0,0,-1,0,0,0
+10,19,TIME STEP,494,691,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,20,19,11,1,1,0,0,0,64,0,-1--1--1,,1|(557,624)|
+10,21,Desarrollo físico,273,785,39,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,22,21,12,0,1,0,0,0,64,0,-1--1--1,,1|(325,695)|
+10,23,Fracción adultos inicial,159,560,58,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,24,12,11,1,0,0,0,0,64,0,-1--1--1,,1|(513,551)|
+10,25,Población total,657,855,47,11,8,3,0,0,-1,0,0,0
+10,26,Población,332,267,41,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,27,26,3,0,0,0,0,0,64,0,-1--1--1,,1|(332,259)|
+10,28,Población,660,196,41,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,29,28,6,0,0,0,0,0,64,0,-1--1--1,,1|(660,188)|
+10,30,Población,657,885,41,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,31,30,25,0,0,0,0,0,64,0,-1--1--1,,1|(657,877)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Alocación de dinero
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,75,0
+12,1,48,-64,-176,10,8,0,3,0,0,-1,0,0,0
+12,2,48,296,-174,10,8,0,3,0,0,-1,0,0,0
+10,3,Producción hortalizas consumida,570,-238,66,19,8,3,0,0,-1,0,0,0
+12,4,48,559,511,10,8,0,3,0,0,-1,0,0,0
+12,5,48,193,513,10,8,0,3,0,0,-1,0,0,0
+12,6,48,374,701,10,8,0,3,0,0,-1,0,0,0
+10,7,Tierra por familia,16,678,37,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,8,Producción milpa,844,-106,55,11,8,3,0,0,-1,0,0,0
+10,9,Comida comprada,568,24,36,19,8,3,0,0,0,0,0,0
+10,10,TIME STEP,273,152,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,11,TIME STEP,255,593,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,12,TIME STEP,542,463,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,13,TIME STEP,580,112,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,14,Trabajo,51,-19,35,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,15,Ingresos salariales,-12,-127,42,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,16,Ventas hortalizas,-12,-127,61,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,17,Gastos en enfermedades,333,-307,49,19,8,2,0,5,-1,0,0,0,128-128-128,128-192-255,|12||128-128-128
+10,18,Gastos en enfermedades,447,303,45,19,8,3,0,4,-1,0,0,0,-1--1--1,128-192-255,|12||0-0-0
+10,19,Enfermedades infantiles,872,162,50,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,20,Tamaño familia,872,162,35,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,21,TIME STEP,220,-125,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,22,Costumbre de consumo,570,-200,50,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,23,22,3,0,1,0,0,0,64,0,-1--1--1,,1|(570,-219)|
+10,24,Producción hortalizas,570,-200,68,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,25,24,3,0,1,0,0,0,64,0,-1--1--1,,1|(570,-219)|
+10,26,Fracción tierras a hortalizas,719,-242,67,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,27,Tierra por familia,719,-242,37,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,28,Tamaño familia,1029,-207,35,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,29,TIME STEP,214,110,50,11,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,30,Número de familias,414,454,42,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,31,Número de familias,1029,-207,42,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,32,Población total,1029,-207,56,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+10,33,Rendimiento milpa,844,-76,45,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,34,33,8,0,0,0,0,0,64,0,-1--1--1,,1|(844,-95)|
+10,35,Tierras milpa,844,-76,50,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,36,35,8,0,0,0,0,0,64,0,-1--1--1,,1|(844,-84)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Variables iniciales
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,100,0
+10,1,Población inicial,125,43,51,11,8,3,0,0,-1,0,0,0
+10,2,Superficie municipio,870,319,35,11,8,3,0,0,-1,0,0,0
+12,3,0,126,1,67,19,8,135,0,16,-1,0,0,0,-1--1--1,0-0-0,|12|BU|0-0-0
+Variables iniciales
+10,4,Cobertura forestal inicial,125,84,58,19,8,3,0,0,0,0,0,0
+12,5,0,648,3,40,11,8,135,0,16,-1,0,0,0,-1--1--1,0-0-0,|12|BU|0-0-0
+Constantes
+10,6,Madera por área,559,212,54,11,8,3,0,0,-1,0,0,0
+10,7,Tiempo de ajusto de desnutrición,707,211,66,19,8,3,0,0,-1,0,0,0
+10,8,Tiempo de ajusto de enfermedades,707,265,66,19,8,3,0,0,-1,0,0,0
+10,9,Fracción adultos inicial,120,131,60,19,8,3,0,0,0,0,0,0
+10,10,Fracción infantes inicial,126,176,60,19,8,3,0,0,0,0,0,0
+10,11,Desnutrición inicial,126,217,58,11,8,3,0,0,-1,0,0,0
+10,12,Años por cohorte edad,120,169,61,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,13,12,9,0,0,0,0,0,64,0,-1--1--1,,1|(120,150)|
+1,14,1,9,0,0,0,0,0,64,0,-1--1--1,,1|(123,76)|
+10,15,Años por cohorte edad,126,214,61,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,16,15,10,0,0,0,0,0,64,0,-1--1--1,,1|(126,195)|
+///---\\\
+:L<%^E!@
+1:Base.vdf
+9:Base
+22:$,Dollar,Dollars,$s
+22:Cuerda,cuerdas
+22:Day,Days,Día,Días
+22:Familia,Familias
+22:Ha,Hectárea,Hectáreas
+22:Hour,Hours,Hora,Horas
+22:Month,Months,Mes,Meses
+22:Person,Persons,Persona,Personas,Niñas,Niña,Niños,Niño
+22:Q,Quetzal,Quetzales
+22:Quintal,Quintales
+22:Unidad,Unidades,Unit,Units
+22:Week,Weeks,Semana,Semanas
+22:Year,Years,Año,Años
+23:0
+18:MDS_Tz'_Taller 9.vsc
+20:MDS_Tz'_Taller 9.lst
+15:0,0,0,0,0,0
+19:90,1
+27:2,
+34:0,
+4:Time
+5:Tierra por familia
+35:Date
+36:YYYY
+37:2010
+38:1
+39:1
+40:2
+41:0
+42:1
+24:0
+25:1200
+26:1200
+6:Infantes
