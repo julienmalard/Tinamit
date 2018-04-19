@@ -22,8 +22,7 @@ setup(
                      'sistemas (EnvolturaMDS). Es muy útil para proyectos de modelización participativa, especialmente'
                      'en proyectos de manejo del ambiente. El interaz gráfico traducible facilita la adopción por'
                      'comunidades en cualquier parte del mundo.',
-    requires=['numpy', 'matplotlib', 'scipy', 'taqdir', 'python_dateutil', 'pyshp', 'pandas', 'lark'],
-    setup_requires=['Babel'],
+    install_requires=['numpy', 'Babel', 'matplotlib', 'scipy', 'taqdir', 'python_dateutil', 'pyshp', 'pandas', 'lark'],
     zip_safe=False,
     classifiers=[
         'Programming Language :: Python :: 3.6',
