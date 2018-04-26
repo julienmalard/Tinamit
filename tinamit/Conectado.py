@@ -11,7 +11,7 @@ from warnings import warn as avisar
 import numpy as np
 from dateutil.relativedelta import relativedelta as deltarelativo
 from tinamit import _
-from tinamit.BF import EnvolturaBF
+from tinamit.BF import EnvolturaBF, ModeloBF
 from tinamit.EnvolturaMDS import generar_mds
 from tinamit.Geog.Geog import Lugar
 from tinamit.MDS import EnvolturaMDS
@@ -313,7 +313,7 @@ class SuperConectado(Modelo):
         return all(mod.paralelizable() for mod in símismo.modelos.values())
 
     def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None, tcr=None,
-                recalc=True, clima=False):
+                recalc=True, clima=False, vars_interés=None):
         """
         Simula el modelo :class:`~tinamit.Conectado.SuperConectado`.
 
@@ -363,9 +363,14 @@ class SuperConectado(Modelo):
                      'Por el momento pusimos el factor de conversión a 1, pero probablemente no es lo que quieres.')
                    .format(unid_mod_1, unid_mod_2))
 
+        #
+        if vars_interés is not None:
+            for i, v in enumerate(vars_interés.copy()):
+                vars_interés[i] = símismo.valid_var(v)
+
         # Todo el restode la simulación se hace como en la clase pariente
         super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, fecha_inic=fecha_inic,
-                        lugar=lugar, tcr=tcr, recalc=recalc, clima=clima)
+                        lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, vars_interés=vars_interés)
 
     def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
                          fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True,
@@ -543,7 +548,7 @@ class SuperConectado(Modelo):
 
                 for dib in dibujar:
                     for corr in corridas:
-                        símismo.dibujar(corrida=corr, **dib)
+                        símismo.dibujar_mapa(corrida=corr, **dib)
 
         if devolver is not None:
             egresos = {}
@@ -811,6 +816,17 @@ class SuperConectado(Modelo):
             if mod.unidad_tiempo == símismo.unidad_tiempo:
                 mod.estab_conv_meses(conv)
 
+    def valid_var(símismo, var):
+        if var in símismo.variables:
+            return var
+        else:
+            for m, obj_m in símismo.modelos.items():
+                if var in obj_m.variables:
+                    return '{}_{}'.format(m, var)
+
+            raise ValueError(_('El variable "{}" no existe en el modelo "{}", ni siquieta en sus '
+                               'submodelos.').format(var, símismo))
+
     def __getinitargs__(símismo):
         return símismo.nombre,
 
@@ -894,20 +910,20 @@ class Conectado(SuperConectado):
         # Y hacemos la referencia rápida.
         símismo.mds = modelo_mds
 
-    def estab_bf(símismo, archivo_bf):
+    def estab_bf(símismo, bf):
         """
         Establece el modelo biofísico (:class:`~tinamit.BF.EnvolturaBF`).
 
-        :param archivo_bf: El archivo con la clase del modelo biofísico. **Debe** ser un archivo de Python.
-        :type archivo_bf: str
+        :param bf: El archivo con la clase del modelo biofísico. **Debe** ser un archivo de Python.
+        :type bf: str | EnvolturaBF
 
         """
 
         # Creamos una instancia de la Envoltura BF con este modelo.
-        if isinstance(archivo_bf, str):
-            modelo_bf = EnvolturaBF(archivo=archivo_bf)
-        elif isinstance(archivo_bf, EnvolturaBF):
-            modelo_bf = archivo_bf
+        if isinstance(bf, str) or isinstance(bf, ModeloBF):
+            modelo_bf = EnvolturaBF(modelo=bf)
+        elif isinstance(bf, EnvolturaBF):
+            modelo_bf = bf
         else:
             raise TypeError(_('Debes dar o un modelo BF, o la dirección hacia el archivo de uno.'))
 
@@ -960,80 +976,6 @@ class Conectado(SuperConectado):
 
         # Llamar la función apropiada de la clase superior.
         símismo.desconectar_vars(var_fuente=var_mds, modelo_fuente='mds')
-
-    def dibujar(símismo, geog, var, corrida, directorio, i_paso=None, colores=None, escala=None):
-        """
-        Dibuja mapas espaciales de los valores de un variable.
-
-        :param geog: La geografía del lugares.
-        :type geog: Geografía
-        :param var: El variable para dibujar.
-        :type var: str
-        :param corrida: El nombre de la corrida para dibujar.
-        :type corrida: str
-        :param directorio: El directorio, relativo al archivo EnvolturaMDS, donde hay que poner los dibujos.
-        :type directorio: str
-        :param i_paso: Los pasos a los cuales quieres dibujar los egresos.
-        :type i_paso: list | tuple | int
-        :param colores: La escala de colores para representar los valores del variable.
-        :type colores: tuple | list | int
-        :param escala: La escala de valores para el dibujo. Si ``None``, será el rango del variable.
-        :type escala: list | np.ndarray
-        """
-
-        def valid_nombre_arch(nombre):
-            """
-            Una función para validar un nombre de archivo.
-
-            :param nombre: El nombre propuesto para el archivo.
-            :type nombre: str
-            :return: Un nombre válido.
-            :rtype: str
-            """
-            for x in ['\\', '/', '\|', ':' '*', '?', '"', '>', '<']:
-                nombre = nombre.replace(x, '_')
-
-            return nombre
-
-        # Incluir el nombre de la corrida en el directorio, si no es que ya esté allí.
-        if os.path.split(directorio)[1] != corrida:
-            dir_corrida = valid_nombre_arch(corrida)
-            directorio = os.path.join(directorio, dir_corrida)
-
-        # Preparar el nombre del variable para uso en el nombre del archivo.
-        nombre_var = valid_nombre_arch(var)
-
-        # Crear el directorio, si no existe ya.
-        if not os.path.isdir(directorio):
-            os.makedirs(directorio)
-        else:
-            # Si ya existía el directorio, borrar dibujos ya existentes con este nombre (de corridas anteriores).
-            for arch in os.listdir(directorio):
-                if re.match(r'{}, [0-9]+'.format(nombre_var), arch):
-                    os.remove(os.path.join(directorio, arch))
-
-        bd = símismo.mds.leer_resultados_mds(corrida, var)
-
-        if isinstance(i_paso, tuple):
-            i_paso = list(i_paso)
-        if i_paso is None:
-            i_paso = [0, bd.shape[-1]]
-        if isinstance(i_paso, int):
-            i_paso = [i_paso, i_paso + 1]
-        if i_paso[0] is None:
-            i_paso[0] = 0
-        if i_paso[1] is None:
-            i_paso[1] = bd.shape[-1]
-
-        unid = símismo.mds.variables[var]['unidades']
-        if escala is None:
-            escala = np.min(bd), np.max(bd)
-
-        for i in range(*i_paso):
-            valores = bd[..., i]
-            nombre_archivo = os.path.join(directorio, '{}, {}'.format(nombre_var, i))
-            geog.dibujar(archivo=nombre_archivo, valores=valores, título=var, unidades=unid,
-                         colores=colores, escala_num=escala)
 
     def leer_resultados(símismo, corrida, var):
         return símismo.mds.leer_resultados_mds(corrida, var)

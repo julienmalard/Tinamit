@@ -1,5 +1,8 @@
 import datetime as ft
+import math
+import os
 import pickle
+import re
 from copy import deepcopy as copiar_profundo
 from multiprocessing import Pool as Reserva
 from warnings import warn as avisar
@@ -8,7 +11,7 @@ import numpy as np
 from dateutil.relativedelta import relativedelta as deltarelativo
 
 import tinamit.Geog.Geog as Geog
-from tinamit import _
+from tinamit import _, valid_nombre_arch
 from tinamit.Unidades.Unidades import convertir
 
 
@@ -48,6 +51,9 @@ class Modelo(object):
 
         #
         símismo.calibs = {}
+
+        # Memorio de valores de variables (para leer los resultados más rápidamente después de una simulación).
+        símismo.mem_vars = {}
 
         # Un diccionarior para guardar valores de variables iniciales hasta el momento que empezamos la simulación.
         # Es muy útil para modelos cuyos variables no podemos cambiar antes de empezar una simulación (como VENSIM).
@@ -144,10 +150,10 @@ class Modelo(object):
         lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=tcr, regenerar=recalc)
 
     def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None, tcr=None,
-                recalc=True, clima=False):
+                recalc=True, clima=False, vars_interés=None):
 
         # Calcular el número de pasos necesario
-        n_pasos = int(tiempo_final / paso)
+        n_pasos = int(math.ceil(tiempo_final / paso))
 
         # Conectar el clima, si necesario
         if clima:
@@ -185,6 +191,18 @@ class Modelo(object):
         else:
             fecha_act = None
 
+        if vars_interés is None:
+            vars_interés = []
+        else:
+            for v in vars_interés:
+                if v not in símismo.variables:
+                    raise ValueError(_('El variable "{}" no existe en el modelo "{}".').format(v, símismo))
+
+        símismo.mem_vars.clear()
+        for v in vars_interés:
+            símismo.mem_vars[v] = np.empty((n_pasos + 1, *símismo.variables[v]['dims']))
+            símismo.mem_vars[v][0] = símismo.variables[v]['val']
+
         # Hasta llegar al tiempo final, incrementamos el modelo.
         for i in range(n_pasos):
 
@@ -207,8 +225,15 @@ class Modelo(object):
             # Incrementar el modelo
             símismo.incrementar(paso)
 
+            # Guardar valores de variables de interés
+            for v in vars_interés:
+                símismo.mem_vars[v][i] = símismo.variables[v]['val']
+
         # Después de la simulación, cerramos el modelo.
         símismo.cerrar_modelo()
+
+        if vars_interés is not None:
+            return símismo.mem_vars
 
     def incrementar(símismo, paso):
         """
@@ -425,6 +450,94 @@ class Modelo(object):
         """
 
         símismo.unidad_tiempo_meses = conv
+
+    def dibujar_mapa(símismo, geog, var, directorio, corrida=None, i_paso=None, colores=None, escala=None):
+        """
+        Dibuja mapas espaciales de los valores de un variable.
+
+        :param geog: La geografía del lugares.
+        :type geog: Geografía
+        :param var: El variable para dibujar.
+        :type var: str
+        :param corrida: El nombre de la corrida para dibujar.
+        :type corrida: str
+        :param directorio: El directorio, relativo al archivo EnvolturaMDS, donde hay que poner los dibujos.
+        :type directorio: str
+        :param i_paso: Los pasos a los cuales quieres dibujar los egresos.
+        :type i_paso: list | tuple | int
+        :param colores: La escala de colores para representar los valores del variable.
+        :type colores: tuple | list | int
+        :param escala: La escala de valores para el dibujo. Si ``None``, será el rango del variable.
+        :type escala: list | np.ndarray
+        """
+
+        # Validar el nombre del variable.
+        var = símismo.valid_var(var)
+
+        # Preparar el nombre del variable para uso en el nombre del archivo.
+        nombre_var = valid_nombre_arch(var)
+
+        bd = símismo.leer_resultados(corrida, var)
+
+        if isinstance(i_paso, tuple):
+            i_paso = list(i_paso)
+        if i_paso is None:
+            i_paso = [0, bd.shape[-1]]
+        if isinstance(i_paso, int):
+            i_paso = [i_paso, i_paso + 1]
+        if i_paso[0] is None:
+            i_paso[0] = 0
+        if i_paso[1] is None:
+            i_paso[1] = bd.shape[-1]
+
+        unid = símismo.variables[var]['unidades']
+        if escala is None:
+            escala = np.min(bd), np.max(bd)
+
+        # Incluir el nombre de la corrida en el directorio, si no es que ya esté allí.
+        if os.path.split(directorio)[1] != corrida:
+            dir_corrida = valid_nombre_arch(corrida)
+            directorio = os.path.join(directorio, dir_corrida)
+
+        # Crear el directorio, si no existe ya.
+        if not os.path.isdir(directorio):
+            os.makedirs(directorio)
+        else:
+            # Si ya existía el directorio, borrar dibujos ya existentes con este nombre (de corridas anteriores).
+            for arch in os.listdir(directorio):
+                if re.match(valid_nombre_arch(nombre_var), arch):
+                    os.remove(os.path.join(directorio, arch))
+
+        for i in range(*i_paso):
+            valores = bd[..., i]
+            nombre_archivo = os.path.join(directorio, '{}, {}'.format(nombre_var, i))
+            geog.dibujar(archivo=nombre_archivo, valores=valores, título=var, unidades=unid,
+                         colores=colores, escala_num=escala)
+
+    def valid_var(símismo, var):
+        if var in símismo.variables:
+            return var
+        else:
+            raise ValueError(_('El variable "{}" no existe en el modelo "{}".').format(var, símismo))
+
+    def leer_resultados(símismo, var, corrida=None):
+        if corrida is None:
+            if var in símismo.mem_vars:
+                return símismo.mem_vars[var]
+            else:
+                raise ValueError(_('El variable "{}" no está en la memoria temporaria, y no especificaste una corrida '
+                                   'donde buscarlo. Debes o especificar una corrida en particular, o poner "{}" en'
+                                   '"vars_interés" cuando corres una simulación').format(var, var))
+        else:
+            return símismo._leer_resultados(var, corrida)
+
+    def _leer_resultados(símismo, var, corrida):
+        raise NotImplementedError(_(
+            'Modelos de tipo "{}" no pueden leer los resultados de una corrida después de terminar una simulación. '
+            'Debes especificar "vars_interés" cuando corres la simulación para poder acceder a los resultados después. '
+            'Si estás desarrollando esta envoltura y quieres agregar esta funcionalidad, debes implementar la '
+            'función "._leer_resultados()" en tu envoltura.')
+                                  .format(símismo.__class__))
 
     def paralelizable(símismo):
         """

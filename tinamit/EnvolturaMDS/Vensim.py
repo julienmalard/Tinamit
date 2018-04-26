@@ -27,6 +27,8 @@ if sys.platform[:3] == 'win':
             dll_Vensim = None
             avisar('Esta computadora no tiene el DLL de Vensim DSS. Las funciones con modelos Vensim se verán'
                    'limitados.')
+else:
+    dll_Vensim = None
 
 
 class ModeloVensimMdl(EnvolturaMDS):

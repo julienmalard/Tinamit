@@ -137,4 +137,29 @@ def cambiar_leng(leng, temp=False):
 
 
 def _(tx):
+    """
+
+    Parameters
+    ----------
+    tx :
+
+    Returns
+    -------
+    str
+    """
     return obt_trads().gettext(tx)
+
+
+def valid_nombre_arch(nombre):
+    """
+    Una función para validar un nombre de archivo.
+
+    :param nombre: El nombre propuesto para el archivo.
+    :type nombre: str
+    :return: Un nombre válido.
+    :rtype: str
+    """
+    for x in ['\\', '/', '\|', ':' '*', '?', '"', '>', '<']:
+        nombre = nombre.replace(x, '_')
+
+    return nombre.strip()

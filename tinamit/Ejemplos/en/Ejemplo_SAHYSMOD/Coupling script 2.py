@@ -3,6 +3,9 @@ import os
 from tinamit.Conectado import Conectado
 from tinamit.Geog.Geog import Lugar, Geografía
 
+from .SAHYSMOD import Modelo
+
+
 if __name__ == '__main__':
     use_simple = True
     climate_change = True
@@ -68,7 +71,7 @@ if __name__ == '__main__':
 
     # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
     modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Vensim', 'Tinamit_sub_v4.vpm'))
-    modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'SAHYSMOD.py'))
+    modelo.estab_bf(Modelo)
     modelo.estab_conv_tiempo(mod_base='mds', conv=6)
 
     # Couple models(Change variable names as needed)
@@ -110,8 +113,8 @@ if __name__ == '__main__':
             modelo.simular(paso=1, tiempo_final=20, nombre_corrida=name)  # time step and final time are in months
 
             # Draw maps
-            modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
-            modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
+            modelo.dibujar_mapa(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
+            modelo.dibujar_mapa(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
     else:
         # Climate change runs
         location = Lugar(lat=32.178207, long=73.217391, elev=217)
