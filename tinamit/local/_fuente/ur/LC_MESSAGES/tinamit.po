@@ -7,133 +7,162 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamit 1.3.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-01-15 14:17-0500\n"
-"PO-Revision-Date: 2018-02-12 05:22-0500\n"
+"POT-Creation-Date: 2018-04-27 11:49-0400\n"
+"PO-Revision-Date: 2018-04-27 10:02-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: ur <LL@li.org>\n"
 "Language: ur\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: ur <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"Generated-By: Babel 2.5.1\n"
-"X-Generator: Zanata 3.9.6\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
 
-#: tinamit/BF.py:41
-msgid "El archivo especificado ({}) no contiene una clase llamada Modelo."
+#: tinamit/BF.py:39
+#, fuzzy
+msgid "El archivo \"{}\" no existe... :("
+msgstr "دستاويز \"\" موجود نہیں ہے۔"
+
+#: tinamit/BF.py:57
+#, fuzzy
+msgid "El archivo especificado (\"{}\") no contiene subclase de \"ModeloBF\"."
 msgstr "مخصوص دستاويز ({}) میں ماڈل نامی طبقہ نہیں ہے."
 
-#: tinamit/BF.py:50
+#: tinamit/BF.py:67
 msgid ""
-"El archivo especificado (\"{}\") contiene una clase llamada Modelo, peroesta"
-" clase no es una subclase de ClaseModeloBF."
+"Había más que una instancia de \"ModeloBF\" en el archivo \"{}\", y "
+"ninguna se llamaba \"Envoltura\". Tomaremos \"{}\" como la envoltura y "
+"esperaremos que funcione. Si no te parece, asegúrate que la definición de"
+" clase u elobjeto correcto se llame \"Envoltura\"."
 msgstr ""
-"مخصوص دستاويز (\"{}\") میں ماڈل کا نام ایک کلاس ہے، لیکن اس کلاس کلاسومودیل "
-"بی ایف کے ذیلی کلاس نہیں ہے۔"
 
-#: tinamit/BF.py:366
+#: tinamit/BF.py:80
+msgid ""
+"El parámetro \"modelo\" debe ser o una instancia o subclase de "
+"\"ModeloBF\", o un archivo Python que contiene uno."
+msgstr ""
+
+#: tinamit/BF.py:412
 msgid "El paso debe ser un número entero."
 msgstr "قدم ایک مکمل نمبر ہونا چاہئے۔"
 
-#: tinamit/Conectado.py:69
+#: tinamit/Conectado.py:72
 msgid ""
-"Ya hay dos modelo conectados. Desconecta uno primero o emplea una instancia "
-"deSuperConectado para conectar más que 2 modelos."
+"Ya hay dos modelo conectados. Desconecta uno primero o emplea una "
+"instancia deSuperConectado para conectar más que 2 modelos."
 msgstr ""
-"پہلے سے ہی دو ماڈل منسلک ہیں. ایک سے پہلے منسلک کریں یا 2 سے زائد ماڈلز سے "
-"منسلک کرنے کے لئے سپر کنکشن کا ایک مثال استعمال کریں."
+"پہلے سے ہی دو ماڈل منسلک ہیں. ایک سے پہلے منسلک کریں یا 2 سے زائد ماڈلز "
+"سے منسلک کرنے کے لئے سپر کنکشن کا ایک مثال استعمال کریں."
 
-#: tinamit/Conectado.py:74
-msgid ""
-"El modelo {} ya existe. El nuevo modelo reemplazará el modelo anterior."
+#: tinamit/Conectado.py:77
+msgid "El modelo {} ya existe. El nuevo modelo reemplazará el modelo anterior."
 msgstr "ماڈل {} پہلے ہی موجود ہے. نیا ماڈل پچھلے ماڈل کو تبدیل کرے گا."
 
-#: tinamit/Conectado.py:196
+#: tinamit/Conectado.py:199
 msgid "El modelo \"{}\" no existe en este modelo conectado."
 msgstr "ماڈل \"{}\" اس منسلک ماڈل میں موجود نہیں ہے."
 
-#: tinamit/Conectado.py:341
+#: tinamit/Conectado.py:349
 msgid "Hay que conectar dos modelos antes de empezar una simulación."
 msgstr "آپ کو ایک تخروپن شروع کرنے سے پہلے دو ماڈلز سے رابطہ کرنا ہوگا."
 
-#: tinamit/Conectado.py:345
+#: tinamit/Conectado.py:353
 msgid ""
 "Hay que especificar la conversión de unidades de tiempo con "
 ".estab_conv_tiempo() antes de correr la simulación."
 msgstr ""
-"آپ کو تخروپن کو چلنے سے قبل وقت کے units .estab_conv_time () کے ساتھ تبدیل "
-"کرنا ضروری ہے."
+"آپ کو تخروپن کو چلنے سے قبل وقت کے units .estab_conv_time () کے ساتھ "
+"تبدیل کرنا ضروری ہے."
 
-#: tinamit/Conectado.py:353
+#: tinamit/Conectado.py:361
 msgid ""
 "\n"
 "No se pudo inferir la conversión de unidades de tiempo entre {} y {}.\n"
 "Especificarla con la función .estab_conv_tiempo().\n"
-"Por el momento pusimos el factor de conversión a 1, pero probablemente no es lo que quieres."
+"Por el momento pusimos el factor de conversión a 1, pero probablemente no"
+" es lo que quieres."
 msgstr ""
 "\n"
-"{} اور {} کے درمیان وقت کے یونٹوں کے تبادلوں کو نفاذ نہیں کیا جا سکا. function.estab_conv_time () کے ساتھ اس کی وضاحت کریں. اس وقت کے لئے جب ہم تبادلوں کا عنصر 1 پر ڈالتے ہیں، لیکن شاید یہ وہ نہیں کہ  جو  آپ چاہتے ہیں."
+"{} اور {} کے درمیان وقت کے یونٹوں کے تبادلوں کو نفاذ نہیں کیا جا سکا. "
+"function.estab_conv_time () کے ساتھ اس کی وضاحت کریں. اس وقت کے لئے جب ہم"
+" تبادلوں کا عنصر 1 پر ڈالتے ہیں، لیکن شاید یہ وہ نہیں کہ  جو  آپ چاہتے "
+"ہیں."
 
-#: tinamit/Conectado.py:364
-msgid "Hay que especificar un lugares para incorporar el clima."
+#: tinamit/Conectado.py:395
+msgid "Las llaves de diccionario de cada opción deben ser iguales."
 msgstr ""
 
-#: tinamit/Conectado.py:367
-msgid "Hay que especificar la fecha inicial para simulaciones de clima"
-msgstr "آپ کو موسمیاتی سمیلیوں کے لئے شروع کی تاریخ کی وضاحت کرنا ہے۔"
-
-#: tinamit/Conectado.py:381
+#: tinamit/Conectado.py:455
 msgid ""
-"La fecha inicial debe ser en formato \"día/mes/año\", por ejemplo "
-"\"24/12/2017\"."
+"Tipo de variable \"{}\" erróneo. Debería ser imposible llegar hasta este "
+"error."
 msgstr ""
-"ابتدائی تاریخ \"دن / ماہ / سال\" شکل میں ہونا چاہئے، مثال کے طور پر "
-"\"24/12/2017\"."
 
-#: tinamit/Conectado.py:460
+#: tinamit/Conectado.py:471
+msgid ""
+"Si combinar == False, todas las opciones en forma de lista deben tener el"
+" mismo número de opciones."
+msgstr ""
+
+#: tinamit/Conectado.py:525
+msgid ""
+"No todos los submodelos del modelo conectado \"{}\" son paralelizable. "
+"Para evitar el riesgode errores de paralelización, correremos las "
+"corridas como simulaciones secuenciales normales. Si tus modelos sí son "
+"paralelizable, poner el atributo \".paralelizable = True\" para activar "
+"la paralelización."
+msgstr ""
+
+#: tinamit/Conectado.py:614
 msgid "Hubo error en el modelo \"{}\"."
 msgstr ""
 
-#: tinamit/Conectado.py:559
+#: tinamit/Conectado.py:715
 msgid "Nombre de modelo \"{}\" erróneo."
 msgstr "ماڈل کا نام \"{}\" غلط ہے۔"
 
-#: tinamit/Conectado.py:565
+#: tinamit/Conectado.py:721 tinamit/Modelo.py:199 tinamit/Modelo.py:521
 msgid "El variable \"{}\" no existe en el modelo \"{}\"."
 msgstr "متغیر \"{}\" موجود نہیں ہے \"{}\" ماڈل۔"
 
-#: tinamit/Conectado.py:569
+#: tinamit/Conectado.py:725
 msgid ""
-"El variable \"{}\" del modelo \"{}\" ya está conectado. Desconéctalo primero"
-" con .desconectar_vars()."
+"El variable \"{}\" del modelo \"{}\" ya está conectado. Desconéctalo "
+"primero con .desconectar_vars()."
 msgstr ""
 "متغیر \"{}\" ماڈل کے \"{}\" پہلے ہی منسلک ہے. پہلے سے اس کا منقطع کریں. "
 "dconconnect_vars ()"
 
-#: tinamit/Conectado.py:587
-msgid ""
-"Las dimensiones de los dos variables ({}: {}; {}: {}) no son compatibles."
+#: tinamit/Conectado.py:743
+msgid "Las dimensiones de los dos variables ({}: {}; {}: {}) no son compatibles."
 msgstr "دو متغیرات کے طول و عرض ({}: {}؛ {}: {}) ہم آہنگ نہیں ہیں۔"
 
-#: tinamit/Conectado.py:598
+#: tinamit/Conectado.py:754
 msgid ""
-"No se pudo identificar una conversión automática para las unidades de los "
-"variables\"{}\" (unidades: {}) y \"{}\" (unidades: {}). Se está suponiendo "
-"un factor de conversión de 1."
+"No se pudo identificar una conversión automática para las unidades de los"
+" variables\"{}\" (unidades: {}) y \"{}\" (unidades: {}). Se está "
+"suponiendo un factor de conversión de 1."
 msgstr ""
-"متغیرات \"{}\" (یونٹس: {}) اور \"{}\" (یونٹس: {}) کے اکائیوں کے لئے ایک خود "
-"کار طریقے سے تبادلوں کی نشاندہی نہیں کی جا سکتی. یہ 1 کے تبادلوں کا عنصر فرض"
-" کر رہا ہے۔"
+"متغیرات \"{}\" (یونٹس: {}) اور \"{}\" (یونٹس: {}) کے اکائیوں کے لئے ایک "
+"خود کار طریقے سے تبادلوں کی نشاندہی نہیں کی جا سکتی. یہ 1 کے تبادلوں کا "
+"عنصر فرض کر رہا ہے۔"
 
-#: tinamit/Conectado.py:656
+#: tinamit/Conectado.py:810
 msgid "La conexión especificada no existe."
 msgstr "مخصوص کنکشن موجود نہیں ہے۔"
 
-#: tinamit/Conectado.py:699
+#: tinamit/Conectado.py:827
+#, fuzzy
+msgid ""
+"El variable \"{}\" no existe en el modelo \"{}\", ni siquieta en sus "
+"submodelos."
+msgstr "متغیر \"{}\" موجود نہیں ہے \"{}\" ماڈل۔"
+
+#: tinamit/Conectado.py:905
 msgid "Debes dar o un modelo DS, o la dirección hacia el archivo de uno."
 msgstr ""
 
-#: tinamit/Conectado.py:722
+#: tinamit/Conectado.py:928
 msgid "Debes dar o un modelo BF, o la dirección hacia el archivo de uno."
 msgstr ""
 
@@ -141,38 +170,73 @@ msgstr ""
 msgid "El variable \"{}\" no existe."
 msgstr "متغیر \"{}\" موجود نہیں ہے۔"
 
-#: tinamit/MDS.py:203
+#: tinamit/MDS.py:210
 msgid "El formato de datos \"{}\" no se puede leer al momento."
 msgstr "ڈیٹا فارمیٹ \"{}\" اس وقت پڑھا نہیں جا سکتا۔"
 
-#: tinamit/Modelo.py:130
+#: tinamit/Modelo.py:161
+msgid "Hay que especificar un lugares para incorporar el clima."
+msgstr ""
+
+#: tinamit/Modelo.py:164
+msgid "Hay que especificar la fecha inicial para simulaciones de clima"
+msgstr "آپ کو موسمیاتی سمیلیوں کے لئے شروع کی تاریخ کی وضاحت کرنا ہے۔"
+
+#: tinamit/Modelo.py:178
+msgid ""
+"La fecha inicial debe ser en formato \"día/mes/año\", por ejemplo "
+"\"24/12/2017\"."
+msgstr ""
+"ابتدائی تاریخ \"دن / ماہ / سال\" شکل میں ہونا چاہئے، مثال کے طور پر "
+"\"24/12/2017\"."
+
+#: tinamit/Modelo.py:271
 msgid ""
 "El variable inicializado \"{}\" no existe en los variables del modelo.\n"
-"Pero antes de quejarte al gerente, sería buena idea verificar si lo escrbiste bien."
+"Pero antes de quejarte al gerente, sería buena idea verificar si lo "
+"escrbiste bien."
 msgstr ""
-"ابتدائی متغیر \"{}\" ماڈل کے متغیرات میں موجود نہیں ہے. لیکن مینیجر سے شکایت"
-" کرنے سے پہلے، اگر آپ نے صحیح طریقے سے لکھا تو یہ ثابت کرنے کا ایک اچھا خیال"
-" ہوگا۔"
+"ابتدائی متغیر \"{}\" ماڈل کے متغیرات میں موجود نہیں ہے. لیکن مینیجر سے "
+"شکایت کرنے سے پہلے، اگر آپ نے صحیح طریقے سے لکھا تو یہ ثابت کرنے کا ایک "
+"اچھا خیال ہوگا۔"
 
-#: tinamit/Modelo.py:162
+#: tinamit/Modelo.py:315
 msgid "El variable \"{}\" no existe en este modelo. ¿De pronto lo escribiste mal?"
 msgstr "متغیر \"{}\" اس ماڈل میں موجود نہیں ہے. تم نے اچانک غلط لکھا؟"
 
-#: tinamit/Modelo.py:164
+#: tinamit/Modelo.py:317
 msgid ""
 "El variable climático \"{}\" no es una posibilidad. Debe ser uno de:\n"
 "\t{}"
 msgstr "موسمی متغیر \"{}\" امکان نہیں ہے. اس میں سے ایک ہونا چاہئے: \t {}"
 
-#: tinamit/Modelo.py:168
+#: tinamit/Modelo.py:321
 msgid "\"Combin\" debe ser \"prom\", \"total\", o None, no \"{}\"."
 msgstr "\"Combin\"ہرصورت ميں\"prom\",\"total\"يا\"None\" چاہيے۔ نہيں \"{}\"۔"
 
-#: tinamit/Modelo.py:257
+#: tinamit/Modelo.py:410
 msgid ""
 "La unidad de tiempo \"{}\" no se pudo convertir a meses. Tienes que "
 "especificarel factor de conversión manualmente con "
 "\".estab_conv_meses(conv)\"."
+msgstr ""
+
+#: tinamit/Modelo.py:528
+msgid ""
+"El variable \"{}\" no está en la memoria temporaria, y no especificaste "
+"una corrida donde buscarlo. Debes o especificar una corrida en "
+"particular, o poner \"{}\" en\"vars_interés\" cuando corres una "
+"simulación"
+msgstr ""
+
+#: tinamit/Modelo.py:535
+msgid ""
+"Modelos de tipo \"{}\" no pueden leer los resultados de una corrida "
+"después de terminar una simulación. Debes especificar \"vars_interés\" "
+"cuando corres la simulación para poder acceder a los resultados después. "
+"Si estás desarrollando esta envoltura y quieres agregar esta "
+"funcionalidad, debes implementar la función \"._leer_resultados()\" en tu"
+" envoltura."
 msgstr ""
 
 #: tinamit/__init__.py:77
@@ -193,199 +257,217 @@ msgstr "دستاويز \"\" موجود نہیں ہے۔"
 msgid "Tinamït no tiene variable \"{}\" de configuración."
 msgstr "ٹينامٹ میں ترتیب کا متغیر نہیں ہے \"{}\"."
 
-#: tinamit/EnvolturaMDS/Vensim.py:267
+#: tinamit/EnvolturaBF/en/SAHYSMOD/SAHYSMOD_Wrapper.py:41
+msgid "Especificar la ubicación de tu modelo SAHYSMOD."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/PySD.py:18
+msgid ""
+"PySD no sabe leer modelos del formato \"{}\". Debes darle un modelo "
+"\".mdl\" o \".xmile\"."
+msgstr ""
+
+#: tinamit/EnvolturaMDS/Vensim.py:278
 msgid "Esta computadora no tiene el DLL de Vensim DSS."
 msgstr "اس کمپیوٹر میں Vensim DSS DLL نہیں ہے۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:274
+#: tinamit/EnvolturaMDS/Vensim.py:285
 msgid "Error iniciando VENSIM."
 msgstr "وینسیم شروع کرنے میں خرابی۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:279
+#: tinamit/EnvolturaMDS/Vensim.py:290
 msgid "Error cargando el modelo de VENSIM."
 msgstr "وینسیم ماڈل کو لوڈ کرنے میں خرابی."
 
-#: tinamit/EnvolturaMDS/Vensim.py:283
+#: tinamit/EnvolturaMDS/Vensim.py:294
 msgid "Error en la comanda \"vensim_be_quiet\"."
 msgstr "کمانڈ میں غلطی \"vensim_be_quiet\"."
 
-#: tinamit/EnvolturaMDS/Vensim.py:319
+#: tinamit/EnvolturaMDS/Vensim.py:333
 msgid "Error obteniendo eñ tamaño de los variables VENSIM."
 msgstr " وینسیم کےمتغیرسائز کو حاصل کرنے میں خرابی."
 
-#: tinamit/EnvolturaMDS/Vensim.py:328
+#: tinamit/EnvolturaMDS/Vensim.py:342
 msgid "Error obteniendo los nombres de los variables de VENSIM."
 msgstr "وینسیم متغیرات کے نام حاصل کرنے میں خرابی."
 
-#: tinamit/EnvolturaMDS/Vensim.py:341
+#: tinamit/EnvolturaMDS/Vensim.py:355
 msgid ""
 "Error obteniendo los nombres de los variables editables (\"Gaming\") de "
 "VENSIM."
 msgstr "وینسیم کے قابل تدوین متغیرات (\"گیمنگ\") کے نام حاصل کرنے میں خرابی۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:449
+#: tinamit/EnvolturaMDS/Vensim.py:471
 msgid "Error iniciando la corrida VENSIM."
 msgstr "وینسیم کے تغير پن کو شروع کرنے میں خرابی."
 
-#: tinamit/EnvolturaMDS/Vensim.py:454
+#: tinamit/EnvolturaMDS/Vensim.py:476
 msgid "Error estableciendo el tiempo final para VENSIM."
 msgstr "وینسیم  کے لئے آخری وقت کی ترتیب میں خرابی۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:460
+#: tinamit/EnvolturaMDS/Vensim.py:482
 msgid "Error inicializando el juego VENSIM."
 msgstr "وینسیم کھیل کو شروع کرنے میں خرابی۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:485 tinamit/EnvolturaMDS/Vensim.py:502
+#: tinamit/EnvolturaMDS/Vensim.py:507 tinamit/EnvolturaMDS/Vensim.py:524
 #, python-format
 msgid "Error cambiando el variable %s."
 msgstr "متغیر تبدیل کرنے میں خرابی %s."
 
-#: tinamit/EnvolturaMDS/Vensim.py:517
+#: tinamit/EnvolturaMDS/Vensim.py:539
 msgid "Error estableciendo el paso de VENSIM."
 msgstr "وینسیم کے قدم کو قائم کرنے میں خرابی۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:522
+#: tinamit/EnvolturaMDS/Vensim.py:545
 msgid "Error para incrementar VENSIM."
 msgstr "وینسیم میں اضافہ کرنے میں خرابی۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:542 tinamit/EnvolturaMDS/Vensim.py:557
+#: tinamit/EnvolturaMDS/Vensim.py:565 tinamit/EnvolturaMDS/Vensim.py:580
+#: tinamit/EnvolturaMDS/Vensim.py:602
 msgid "Error con VENSIM para leer variables."
 msgstr "متغیر پڑھنے کے لئے وینسیم کے ساتھ خرابی."
 
-#: tinamit/EnvolturaMDS/Vensim.py:573 tinamit/EnvolturaMDS/Vensim.py:578
+#: tinamit/EnvolturaMDS/Vensim.py:596 tinamit/EnvolturaMDS/Vensim.py:609
 msgid "Error para terminar la simulación VENSIM."
 msgstr "وینسیم تخروپن کو ختم کرنے میں خرابی."
 
-#: tinamit/EnvolturaMDS/Vensim.py:601
-msgid ""
-"Error verificando el estatus de VENSIM. De verdad, la cosate va muy mal."
+#: tinamit/EnvolturaMDS/Vensim.py:637
+#, fuzzy
+msgid "Error verificando el estatus de VENSIM. De verdad, la cosa te va muy mal."
 msgstr "وینسیم حیثیت کی توثیق کرنے میں خرابی. واقعی، چیز بہت خراب ہے."
 
-#: tinamit/EnvolturaMDS/Vensim.py:624
+#: tinamit/EnvolturaMDS/Vensim.py:660
 msgid ""
-"Código \"{}\" no reconocido para la comanda Vensim de obtener atributos de "
-"variables."
+"Código \"{}\" no reconocido para la comanda Vensim de obtener atributos "
+"de variables."
 msgstr ""
-"کوڈ \"{}\" متغیر کی صفات حاصل کرنے کے لئے کمانڈ ویسنم کے لئے تسلیم نہیں کیا "
-"گیا."
+"کوڈ \"{}\" متغیر کی صفات حاصل کرنے کے لئے کمانڈ ویسنم کے لئے تسلیم نہیں "
+"کیا گیا."
 
-#: tinamit/EnvolturaMDS/Vensim.py:628
+#: tinamit/EnvolturaMDS/Vensim.py:664
 msgid "las unidades"
 msgstr "اکا‏‏ئياں۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:628
+#: tinamit/EnvolturaMDS/Vensim.py:664
 msgid "la descipción"
 msgstr "وضاحت۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:628
+#: tinamit/EnvolturaMDS/Vensim.py:664
 msgid "la ecuación"
 msgstr "مساوات۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:628
+#: tinamit/EnvolturaMDS/Vensim.py:664
 msgid "las causas"
 msgstr "وجوہات۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:628
+#: tinamit/EnvolturaMDS/Vensim.py:664
 msgid "las consecuencias"
 msgstr "نتائج۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:629
+#: tinamit/EnvolturaMDS/Vensim.py:665
 msgid "la causas iniciales"
 msgstr "ابتدائی وجوہات۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:629
+#: tinamit/EnvolturaMDS/Vensim.py:665
 msgid "las causas activas"
 msgstr "فعال وجوہات۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:629
+#: tinamit/EnvolturaMDS/Vensim.py:665
 msgid "los subscriptos"
 msgstr "سبسکرائب۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:630
+#: tinamit/EnvolturaMDS/Vensim.py:666
 msgid "las combinaciones de subscriptos"
 msgstr "سبسکرائب مجموعہ۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:630
+#: tinamit/EnvolturaMDS/Vensim.py:666
 msgid "los subscriptos de gráfico"
 msgstr "گرافک سبسکرائب۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:630
+#: tinamit/EnvolturaMDS/Vensim.py:666
 msgid "el mínimo"
 msgstr "کم از کم۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:631
+#: tinamit/EnvolturaMDS/Vensim.py:667
 msgid "el máximo"
 msgstr "زیادہ سے زیادہ۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:631
+#: tinamit/EnvolturaMDS/Vensim.py:667
 msgid "el rango"
 msgstr "رینج۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:631
+#: tinamit/EnvolturaMDS/Vensim.py:667
 msgid "el tipo"
 msgstr "قسم۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:632
+#: tinamit/EnvolturaMDS/Vensim.py:668
 msgid ""
-"Error leyendo el tamaño de memoria para obtener {} del variable \"{}\" en "
-"Vensim"
+"Error leyendo el tamaño de memoria para obtener {} del variable \"{}\" en"
+" Vensim"
 msgstr ""
-"میموری سائز کو پڑھنے میں خرابی {} کے متغیرکو حاصل کرنے کے لئے \"{}\" ویسنیم "
-"میں۔"
+"میموری سائز کو پڑھنے میں خرابی {} کے متغیرکو حاصل کرنے کے لئے \"{}\" "
+"ویسنیم میں۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:634
+#: tinamit/EnvolturaMDS/Vensim.py:670
 msgid "Error leyendo {} del variable \"{}\" en Vensim."
 msgstr "{} متغیر سے {} \"پڑھنے میں خرابی۔"
 
-#: tinamit/EnvolturaMDS/Vensim.py:700
+#: tinamit/EnvolturaMDS/Vensim.py:751
 msgid "Error con la comanda Vensim."
 msgstr ""
 
-#: tinamit/EnvolturaMDS/Vensim.py:702
+#: tinamit/EnvolturaMDS/Vensim.py:753
 msgid " Código de error {}."
 msgstr "غلطی کوڈ {}۔"
 
-#: tinamit/EnvolturaMDS/__init__.py:33
+#: tinamit/EnvolturaMDS/__init__.py:39
 msgid ""
-"El tipo de modelo \"{}\" no se acepta como modelo DS en Tinamit al momento. "
-"Si piensasque podrías contribuir aquí, ¡contáctenos!"
+"El tipo de modelo \"{}\" no se acepta como modelo DS en Tinamit al "
+"momento. Si piensasque podrías contribuir aquí, ¡contáctenos!"
 msgstr ""
-"ماڈل کی قسم \"{}\" ميں وقت کی اکا‏ئی ٹينامٹ میں ڈی ایس ماڈلميں وقت کی اکا‏ئی"
-" سے مختلف ہے. اگر آپ سوچتے ہیں کہ آپ یہاں شراکت کرسکتے ہیں تو ہم سے رابطہ "
-"کریں۔"
+"ماڈل کی قسم \"{}\" ميں وقت کی اکا‏ئی ٹينامٹ میں ڈی ایس ماڈلميں وقت کی "
+"اکا‏ئی سے مختلف ہے. اگر آپ سوچتے ہیں کہ آپ یہاں شراکت کرسکتے ہیں تو ہم سے"
+" رابطہ کریں۔"
 
-#: tinamit/EnvolturaMDS/sintaxis.py:222
+#: tinamit/EnvolturaMDS/__init__.py:49
+msgid ""
+"El modelo \"{}\" no se pudo leer. Intentamos las envolturas siguientes, "
+"pero no funcionaron:{}"
+msgstr ""
+
+#: tinamit/EnvolturaMDS/sintaxis.py:333
 msgid "Hay que instalar PyMC3 para poder utilizar modelos bayesianos."
 msgstr ""
 
 #: tinamit/Geog/Geog.py:71
 msgid ""
-"Error en observaciones diarias: \"{}\" no es variable climático reconocido "
-"en Tinamït. Debe ser uno de: {}"
+"Error en observaciones diarias: \"{}\" no es variable climático "
+"reconocido en Tinamït. Debe ser uno de: {}"
 msgstr ""
 
 #: tinamit/Geog/Geog.py:75 tinamit/Geog/Geog.py:150
 msgid ""
-"Error en factores de conversión: \"{}\" no es variable climático reconocido "
-"en Tinamït. Debe ser uno de: {}"
+"Error en factores de conversión: \"{}\" no es variable climático "
+"reconocido en Tinamït. Debe ser uno de: {}"
 msgstr ""
 
 #: tinamit/Geog/Geog.py:110
 msgid ""
-"Error en observaciones mensuales: \"{}\" no es variable climático reconocido"
-" en Tinamït. Debe ser uno de: {}"
+"Error en observaciones mensuales: \"{}\" no es variable climático "
+"reconocido en Tinamït. Debe ser uno de: {}"
 msgstr ""
 
 #: tinamit/Geog/Geog.py:114
 msgid ""
-"Error en factores de conversión: \"{}\" no es variable climático reconocido en Tinamït. Debe ser uno de:\t\n"
+"Error en factores de conversión: \"{}\" no es variable climático "
+"reconocido en Tinamït. Debe ser uno de:\t\n"
 "{}"
 msgstr ""
 
 #: tinamit/Geog/Geog.py:146
 msgid ""
-"Error en observaciones anuales: \"{}\" no es variable climático reconocido "
-"en Tinamït. Debe ser uno de: {}"
+"Error en observaciones anuales: \"{}\" no es variable climático "
+"reconocido en Tinamït. Debe ser uno de: {}"
 msgstr ""
 
 #: tinamit/Geog/Geog.py:200 tinamit/Geog/Geog.py:231
@@ -394,82 +476,111 @@ msgid ""
 "\t{}"
 msgstr "متغیر \"{}\" غلط ہے. اس میں سے ایک ہونا چاہئے: \t {}۔"
 
-#: tinamit/Geog/Geog.py:299 tinamit/Geog/Geog.py:310
+#: tinamit/Geog/Geog.py:301 tinamit/Geog/Geog.py:312
 msgid "La columna \"{}\" no existe en la base de datos."
 msgstr "کالم \"{}\" ڈیٹا بیس میں موجود نہیں ہے۔"
 
-#: tinamit/Geog/Geog.py:345
+#: tinamit/Geog/Geog.py:354
 msgid ""
 "Los nombres de las regiones en \"orden_jer\" ({}) no concuerdan con los "
 "nombres en el archivo ({})."
 msgstr "\"order_jer\" میں علاقوں کے نام ({}) دستاويز میں نام سے متفق نہيں ({})۔"
 
-#: tinamit/Geog/Geog.py:350
+#: tinamit/Geog/Geog.py:359
 msgid ""
 "La columna de código de región especificada ({}) no concuerda con los "
 "nombres de columnas del archivo ({})."
-msgstr ""
-"مخصوص علاقائی کوڈ کالم ({}) کالم کے نام سے فائل میں نہیں ملتا ہے ({})۔"
+msgstr "مخصوص علاقائی کوڈ کالم ({}) کالم کے نام سے فائل میں نہیں ملتا ہے ({})۔"
 
-#: tinamit/Geog/Geog.py:438
+#: tinamit/Geog/Geog.py:366
+#, fuzzy
 msgid ""
-"El número de regiones en los datos no concuerdan con la geografía del lugar."
+"Una o más de las columnas de grupo especificadas ({}) no concuerda con "
+"los nombres de columnas del archivo ({})."
+msgstr "مخصوص علاقائی کوڈ کالم ({}) کالم کے نام سے فائل میں نہیں ملتا ہے ({})۔"
+
+#: tinamit/Geog/Geog.py:500
+msgid ""
+"El número de regiones en los datos no concuerdan con la geografía del "
+"lugar."
 msgstr ""
 
-#: tinamit/Geog/Geog.py:445
+#: tinamit/Geog/Geog.py:507
 msgid "El número de regiones no corresponde con el tamñao de los valores."
 msgstr "علاقوں کی تعداد اقدار کی جسامت کے مطابق نہیں ہے۔"
 
-#: tinamit/Incertidumbre/Datos.py:116
+#: tinamit/Incertidumbre/ConexDatos.py:65
+#, fuzzy
+msgid ""
+"El variable \"{}\" no existe en modelo \"{}\" y por lo tanto no se pudo "
+"calibrar."
+msgstr "متغیر \"{}\" اس ماڈل میں موجود نہیں ہے. تم نے اچانک غلط لکھا؟"
+
+#: tinamit/Incertidumbre/ConexDatos.py:77
+#, fuzzy
+msgid ""
+"El variable \"{}\" no existe en modelo \"{}\" y por lo tanto no se pudo "
+"estimar."
+msgstr "متغیر \"{}\" اس ماڈل میں موجود نہیں ہے. تم نے اچانک غلط لکھا؟"
+
+#: tinamit/Incertidumbre/ConexDatos.py:280
+#, fuzzy
+msgid "El variable \"{}\" no existe en el nuevo modelo."
+msgstr "متغیر \"{}\" موجود نہیں ہے \"{}\" ماڈل۔"
+
+#: tinamit/Incertidumbre/Datos.py:57
+msgid ""
+"El valor \"{}\" para fechas no corresponde a una fecha reconocida o al "
+"nombre deuna columna en la base de datos"
+msgstr ""
+
+#: tinamit/Incertidumbre/Datos.py:129
 msgid "Nombre de columna de tamaños de muestra \"{}\" erróneo."
 msgstr ""
 
-#: tinamit/Incertidumbre/Datos.py:184
+#: tinamit/Incertidumbre/Datos.py:196
 msgid "Ya existía la base de datos \"{}\". Borramos la que estaba antes."
 msgstr ""
 
-#: tinamit/Incertidumbre/Datos.py:210
+#: tinamit/Incertidumbre/Datos.py:224
 msgid ""
 "El variable existente \"{}\" no existe en la nueva base de datos \"{}\". "
 "Nolo podremos copiar."
 msgstr ""
 
-#: tinamit/Incertidumbre/Datos.py:251
+#: tinamit/Incertidumbre/Datos.py:266
 msgid "\"{}\" no existe en base de datos \"{}\"."
 msgstr ""
 
-#: tinamit/Incertidumbre/Datos.py:287
+#: tinamit/Incertidumbre/Datos.py:308
 msgid "El variable \"{}\" ya existe. Hay que borrarlo primero."
 msgstr ""
 
-#: tinamit/Incertidumbre/Datos.py:445
+#: tinamit/Incertidumbre/Datos.py:408
 msgid "Variable no válido."
 msgstr ""
 
-#: tinamit/Incertidumbre/Datos.py:468
-msgid "El lugar \"{}\" no existe en la Geografía actual."
-msgstr ""
-
-#: tinamit/Incertidumbre/Datos.py:473
-msgid "Lugar y código de lugar ambos especificados. Tomaremos el código."
-msgstr ""
-
-#: tinamit/Incertidumbre/Datos.py:537
+#: tinamit/Incertidumbre/Datos.py:532
 msgid "Freq"
 msgstr ""
 
-#: tinamit/Incertidumbre/Datos.py:558
+#: tinamit/Incertidumbre/Datos.py:553
 msgid "Fecha"
 msgstr ""
 
-#: tinamit/Incertidumbre/Datos.py:565
+#: tinamit/Incertidumbre/Datos.py:560
 msgid "Lugar"
 msgstr ""
 
-#: tinamit/Incertidumbre/Datos.py:588
+#: tinamit/Incertidumbre/Datos.py:583
 msgid "{} vs {}"
+msgstr ""
+
+#: tinamit/Incertidumbre/Estadísticas.py:123
+msgid "Error de optimización par aecuación \"{}\"."
 msgstr ""
 
 #: tinamit/Unidades/Unidades.py:72
 msgid "Unidades incompatibles: \"{}\" y \"{}\"."
 msgstr "ناممکن یونٹس: \"{}\" اور \"{}\"۔"
+
