@@ -2,9 +2,14 @@
    :scale: 80%
    :alt: Logo muy bonito
 
+.. image:: https://badge.fury.io/py/tinamit.svg
+    :target: https://badge.fury.io/py/tinamit
+
+.. image:: https://travis-ci.org/julienmalard/Tinamit.svg?branch=master
+    :target: https://travis-ci.org/julienmalard/Tinamit
+
 .. image:: https://coveralls.io/repos/github/julienmalard/Tinamit/badge.svg?branch=master
    :target: https://coveralls.io/github/julienmalard/Tinamit?branch=master
-
 
 Tinamit
 =======
