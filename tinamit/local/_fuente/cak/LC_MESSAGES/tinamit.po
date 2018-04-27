@@ -422,7 +422,7 @@ msgstr ""
 msgid "{} vs {}"
 msgstr ""
 
-#: tinamit/Unidades/Unidades.py:72
+#: tinamit/Unidades/Unidades.py:73
 msgid "Unidades incompatibles: \"{}\" y \"{}\"."
 msgstr ""
 

@@ -78,6 +78,3 @@ class ModeloPySD(EnvolturaMDS):
 
     def cerrar_modelo(símismo):
         pass
-
-    def _leer_resultados(símismo, var, corrida):
-        raise NotImplementedError

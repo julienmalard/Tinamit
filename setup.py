@@ -126,21 +126,24 @@ setup(
     packages=find_packages(),
     url='https://tinamit.readthedocs.io',
     download_url='https://github.com/julienmalard/Tinamit',
+
     license='GNU GPL 3',
     author='Julien Jean Malard',
     author_email='julien.malard@mail.mcgill.ca',
     description='Conexión de modelos socioeconómicos (dinámicas de los sistemas) con modelos biofísicos.',
     long_description=leer('README.rst'),
+
     install_requires=leer('requirements.txt').split('\n'),
     setup_requires=['Babel', 'polib'],
     zip_safe=False,
+
+    include_package_data=True,
+
     classifiers=[
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.6',
     ],
-    package_data={
-        # Incluir estos documentos de los paquetes:
-        '': ['*.txt', '*.vpm', '*.json', '*.png', '*.jpg', '*.gif'],
-    },
 
     # Tenemos que hacer unos cambiocitos a las funciones de distribución automáticas para poder compilar
     # traducciones de manera automática.

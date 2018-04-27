@@ -131,7 +131,7 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def leer_resultados_mds(símismo, corrida, var):
+    def _leer_resultados(símismo, var, corrida):
         """
         Esta función lee los resultados desde un archivo de egresos del modelo DS.
 

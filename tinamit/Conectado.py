@@ -827,6 +827,25 @@ class SuperConectado(Modelo):
             raise ValueError(_('El variable "{}" no existe en el modelo "{}", ni siquieta en sus '
                                'submodelos.').format(var, símismo))
 
+    def _leer_resultados(símismo, var, corrida):
+
+        if '_' in var:
+            mod, v = var.split('_')
+            if mod in símismo.modelos and v in símismo.modelos[mod].variables:
+                try:
+                    return símismo.modelos[mod]._leer_resultados(v, corrida)
+                except NotImplementedError:
+                    pass
+
+        for m, obj_m in símismo.modelos.items():
+            if var in obj_m.variables:
+                try:
+                    return obj_m._leer_resultados(var, corrida)
+                except NotImplementedError:
+                    pass
+
+        raise IOError('Ningún de los submodelos pudieron leer los resultados de la corrida.')
+
     def __getinitargs__(símismo):
         return símismo.nombre,
 
