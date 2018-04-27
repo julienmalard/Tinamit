@@ -1,7 +1,11 @@
 .. image:: tinamit/Interfaz/Imágenes/LogoCent.png
    :scale: 80%
    :alt: Logo muy bonito
-   
+
+.. image:: https://coveralls.io/repos/github/julienmalard/Tinamit/badge.svg?branch=master
+   :target: https://coveralls.io/github/julienmalard/Tinamit?branch=master
+
+
 Tinamit
 =======
 Programa para conectar modelos socioeconómicos (dinámicas de los sistemas) con modelos biofísicos.
