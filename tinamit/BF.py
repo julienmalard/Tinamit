@@ -28,7 +28,7 @@ class EnvolturaBF(Modelo):
         Incializar la envoltura.
 
         :param modelo:
-        :type modelo: str | ModeloBF
+        :type modelo: str | ModeloBF | Callable
 
         """
 
@@ -69,13 +69,16 @@ class EnvolturaBF(Modelo):
                              'y esperaremos que funcione. Si no te parece, asegúrate que la definición de clase u el'
                              'objeto correcto se llame "Envoltura".').format(modelo, elegido))
 
-        elif isinstance(modelo, ModeloBF):
-            símismo.archivo = inspect.getfile(modelo)
-            símismo.modelo = copiar(modelo)
-
         else:
-            raise TypeError(_('El parámetro "modelo" debe ser o una instancia o subclase de "ModeloBF", o un archivo'
-                              'Python que contiene uno.'))
+            if callable(modelo):
+                modelo = modelo()
+
+            if isinstance(modelo, ModeloBF):
+                símismo.archivo = inspect.getfile(modelo.__class__)
+                símismo.modelo = copiar(modelo)
+            else:
+                raise TypeError(_('El parámetro "modelo" debe ser o una instancia o subclase de "ModeloBF", o un '
+                                  'archivo Python que contiene uno.'))
 
         super().__init__(nombre='bf')
 

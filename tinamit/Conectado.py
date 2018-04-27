@@ -920,7 +920,7 @@ class Conectado(SuperConectado):
         """
 
         # Creamos una instancia de la Envoltura BF con este modelo.
-        if isinstance(bf, str) or isinstance(bf, ModeloBF):
+        if isinstance(bf, str) or isinstance(bf, ModeloBF) or callable(bf):
             modelo_bf = EnvolturaBF(modelo=bf)
         elif isinstance(bf, EnvolturaBF):
             modelo_bf = bf
