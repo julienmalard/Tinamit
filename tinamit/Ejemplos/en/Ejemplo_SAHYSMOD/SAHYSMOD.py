@@ -9,6 +9,4 @@ initial_data = os.path.join(directory, '459anew1.inp')
 
 
 # Creates the SAHYSMOD wrapper. Don't change this line.
-class Modelo(ModeloSAHYSMOD):
-    def __init__(self):
-        super().__init__(initial_data=initial_data)
+Envoltura = ModeloSAHYSMOD(initial_data=initial_data)

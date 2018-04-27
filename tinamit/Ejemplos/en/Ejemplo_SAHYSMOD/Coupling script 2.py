@@ -3,7 +3,7 @@ import os
 from tinamit.Conectado import Conectado
 from tinamit.Geog.Geog import Lugar, Geografía
 
-from .SAHYSMOD import Modelo
+from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
 
 
 if __name__ == '__main__':
@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
     # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
     modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Vensim', 'Tinamit_sub_v4.vpm'))
-    modelo.estab_bf(Modelo)
+    modelo.estab_bf(Envoltura)
     modelo.estab_conv_tiempo(mod_base='mds', conv=6)
 
     # Couple models(Change variable names as needed)
