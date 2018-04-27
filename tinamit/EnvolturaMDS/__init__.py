@@ -9,7 +9,6 @@ from tinamit.MDS import EnvolturaMDS
 dic_motores = {
     '.vpm': [ModeloVensim],
     '.mdl': [ModeloPySD, ModeloVensimMdl],
-    '.stmx': [ModeloPySD],
     '.xml': [ModeloPySD],
     '.xmile': [ModeloPySD]
 
