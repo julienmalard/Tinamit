@@ -14,6 +14,10 @@ Tinamit permite la conexión rápida, flexible y reproducible de modelos con:
 * Una estructura transparente para que todos puedan agregar modelos y recursos.
 * Apoyo multilingual en el IGU.
 
+Tinamït permite conectar modelos biofísicos con modelos socioeconómicos de dinámicas de los sistemas (EnvolturaMDS).
+Es muy útil para proyectos de modelización participativa, especialmente en proyectos de manejo del ambiente.
+El interaz gráfico traducible facilita la adopción por comunidades en cualquier parte del mundo.
+
 Autores
 =======
 
