@@ -1,0 +1,10 @@
+numpy
+Babel
+matplotlib
+scipy
+taqdir
+python_dateutil
+pyshp
+pandas
+lark
+pint

@@ -1,0 +1,129 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamit 1.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-05-20 22:09+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.4.0\n"
+
+#: ../../source/Modelo.rst:2
+msgid "Modelo"
+msgstr ""
+
+#: of tinamit.Modelo.Modelo:1
+msgid ""
+"Todas las cosas en Tinamit son instancias de Modelo, que sea un modelo de"
+" dinámicas de los sistemas, un modelo de cultivos o de suelos o de clima,"
+" o un modelo conectado. Cada tipo de modelo se representa por subclases "
+"específicas. Por eso, la gran mayoría de los métodos definidos aquí se "
+"implementan de manera independiente en cada"
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.cambiar_vals:1
+msgid ""
+"Esta función cambiar el calor de uno o más variables del modelo. Cambia "
+"primero el valor en el diccionario interno del :class:`Modelo`, y después"
+" llama la función :func:`~Modelo.Modelo.cambiar_vals_modelo` para "
+"cambiar, si necesario, los valores de los variables en el modelo externo."
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.cambiar_vals
+#: tinamit.Modelo.Modelo.cambiar_vals_modelo_interno
+#: tinamit.Modelo.Modelo.incrementar tinamit.Modelo.Modelo.iniciar_modelo
+msgid "Parámetros"
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.cambiar_vals:5
+msgid ""
+"Un diccionario de variables y valores para cambiar, con el formato "
+"siguiente: { var1: nuevovalor, var2: nuevovalor, ... }"
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.cambiar_vals_modelo_interno:1
+msgid ""
+"Esta función debe cambiar el valor de variables en el :class:`Modelo`, "
+"incluso tomar acciones para asegurarse de que el cambio se hizo en el "
+"modelo externo, si aplica."
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.cambiar_vals_modelo_interno:4
+msgid ""
+"Un diccionario de variables y valores para cambiar, con el formato "
+"siguiente: {var1: nuevovalor, var2: nuevovalor, ... }"
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.cerrar_modelo:1
+msgid ""
+"Esta función debe tomar las acciones necesarias para terminar la "
+"simulación y cerrar el modelo, si aplica. Si no aplica, usar \"pass\"."
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.incrementar:1
+msgid "Esta función debe avanzar el modelo por un periodo de tiempo especificado."
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.incrementar:3
+msgid "El paso."
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.inic_vars:3
+msgid ""
+"Esta función debe poblar el diccionario de variables del modelo, según la"
+" forma siguiente::"
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.inic_vars:2
+msgid ""
+"{'var1': {'val': 13, 'unidades': 'cm', 'ingreso': True, dims: (1,), "
+"'egreso': True}, 'var2': {'val': 2, 'unidades': 'cm', 'ingreso': False, "
+"dims: (3,2), 'egreso': True}} }"
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.iniciar_modelo:1
+msgid ""
+"Esta función llama cualquier acción necesaria para preparar el modelo "
+"para la simulación. Si no es necesario, usar \"pass\"."
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.iniciar_modelo:4
+msgid "El tiempo final de la simulación."
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.iniciar_modelo:7
+msgid "El nombre de la corrida (generalmente para guardar resultados)."
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.leer_vals:1
+msgid ""
+"Esta función debe leer los valores del modelo y escribirlos en el "
+"diccionario interno de variables. Se implementa frequentement con modelos"
+" externos de cuyos egresos hay que leer los resultados de una corrida."
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.obt_unidad_tiempo:1
+msgid "Esta función debe devolver la unidad de tiempo empleada por el modelo."
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.obt_unidad_tiempo
+msgid "Devuelve"
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.obt_unidad_tiempo:3
+msgid "La unidad de tiempo (p. ejemplo, 'meses', 'días', etc."
+msgstr ""
+
+#: of tinamit.Modelo.Modelo.obt_unidad_tiempo
+msgid "Tipo del valor devuelto"
+msgstr ""
+

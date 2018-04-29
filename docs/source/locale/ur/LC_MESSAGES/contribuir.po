@@ -1,0 +1,231 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamit 1.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-05-20 22:09+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.4.0\n"
+
+#: ../../source/contribuir.rst:2
+msgid "Contribuir a Tinamit"
+msgstr ""
+
+#: ../../source/contribuir.rst:8
+msgid "Traducir"
+msgstr ""
+
+#: ../../source/contribuir.rst:9
+msgid ""
+"¡Siempre querremos traducciones para hacer de Tinamit una herramienta aún"
+" más accesible! El interfaz de Tinamit tiene funcionalidades para la "
+"traducción del interfaz sí mismo (el globo)."
+msgstr ""
+
+#: ../../source/contribuir.rst:17
+msgid ""
+"Allí puedes editar lenguas existentes o agregar nuevas lenguas. Notar que"
+" hay un error en la funcionalidad del interfaz de Python para escribir "
+"texto en lenguas indias. Para estas, desafortunademente tienes que "
+"escribir tu traducción en otro programa primero (Word, Notas, etc.) y "
+"después copiarla en la caja. Lo siento. (Pero no es culpa mia.)"
+msgstr ""
+
+#: ../../source/contribuir.rst:21
+msgid ""
+"Para chino, etc. no hay problemas. Hay unas cosas muy raras que pasan con"
+" abecedarios que se escriben de la derecha hacia la izquierda (árabe, "
+"hebreo). Estoy trabajando (un día) para resolver eso."
+msgstr ""
+
+#: ../../source/contribuir.rst:25
+msgid "Agregar modelos biofísicos"
+msgstr ""
+
+#: ../../source/contribuir.rst:26
+msgid ""
+"Cada modelo biofísico en Tinamit necesita una envoltura específica para "
+"él. Es por esta envoltura que Tinamit sabrá cómo controlar el modelo "
+"biofísico, cómo leer sus egresos y cómo actualizarlos con los valores del"
+" modelo DS. Visto que la gran mayoría de modelos biofísicos están "
+"escritos en lenguas compiladas y por veces oscuras, esta es la parte la "
+"más difícil de usar Tinamit. Lo bueno es que solamente se tiene que hacer"
+" una vez por cada tipo de modelo biofísico, y que Tinamit ya viene con "
+"algunos prehechos. Si vas a tener que crear una nueva envoltura para ti, "
+"¡te rogamos que la compartes con todos!"
+msgstr ""
+
+#: ../../source/contribuir.rst:33
+msgid "Cómo hacer una nueva envoltura"
+msgstr ""
+
+#: ../../source/contribuir.rst:34
+msgid ""
+"En teoría, es muy fácil. Simplemente tienes que crear una nueva instancia"
+" de la clase class:`~tinamit.BF.ClaseModeloBF` y después implementar allí"
+" las funciones siguientes:"
+msgstr ""
+
+#: ../../source/contribuir.rst:37
+msgid ":func:`~tinamit.BF.ClaseModeloBF.__init__`"
+msgstr ""
+
+#: ../../source/contribuir.rst:38
+msgid ":func:`~tinamit.BF.ClaseModeloBF.cambiar_vals_modelo`"
+msgstr ""
+
+#: ../../source/contribuir.rst:39
+msgid ":func:`~tinamit.BF.ClaseModeloBF.incrementar`"
+msgstr ""
+
+#: ../../source/contribuir.rst:40
+msgid ":func:`~tinamit.BF.ClaseModeloBF.leer_vals`"
+msgstr ""
+
+#: ../../source/contribuir.rst:41
+msgid ":func:`~tinamit.BF.ClaseModeloBF.iniciar_modelo`"
+msgstr ""
+
+#: ../../source/contribuir.rst:42
+msgid ":func:`~tinamit.BF.ClaseModeloBF.cerrar_modelo`"
+msgstr ""
+
+#: ../../source/contribuir.rst:43
+msgid ":func:`~tinamit.BF.ClaseModeloBF.obt_unidad_tiempo`"
+msgstr ""
+
+#: ../../source/contribuir.rst:44
+msgid ":func:`~tinamit.BF.ClaseModeloBF.inic_vars`"
+msgstr ""
+
+#: ../../source/contribuir.rst:46
+msgid ""
+"Puedes escribir tu envoltura en cualquier archivo (hacia no tiene que ser"
+" en el código fuente de Tinamit sí mismo). La subclase incluida es este "
+"archivo **debe** llamarse ``Modelo``. Si se llama cualquier otra cosa, no"
+" funcionará."
+msgstr ""
+
+#: ../../source/contribuir.rst:50
+msgid "Cómo compartir tu nueva envoltura"
+msgstr ""
+
+#: ../../source/contribuir.rst:51
+msgid ""
+"La manera más fácil (para mi) es que te inscribas en GitHub, creas una "
+"nueva rama de Tinamit, le agreges tu nueva envoltura y después la "
+"combinemos con la rama central del proyecto. La manera más fácil para ti "
+"es probablemente mandarme tu nuevo código por correo electrónico "
+"(|correo|)."
+msgstr ""
+
+#: ../../source/contribuir.rst:55
+msgid "Unos apuntos para cuándo vas a compartir una nueva envoltura:"
+msgstr ""
+
+#: ../../source/contribuir.rst:57
+msgid ""
+"Incluir instrucciones, si necesario, para que tus usuarios puedan "
+"conseguir el modelo biofísico correspondiente."
+msgstr ""
+
+#: ../../source/contribuir.rst:58
+msgid ""
+"Incluir tantos comentarios como posible en tu envoltura (el código fuente"
+" de Tinamit es un ejemplo)."
+msgstr ""
+
+#: ../../source/contribuir.rst:59
+msgid ""
+"Se recomienda escribir envolturas en castellano, pero aceptamos "
+"envolturas escritas en todos idiomas."
+msgstr ""
+
+#: ../../source/contribuir.rst:62
+msgid "Agregar modelos DS"
+msgstr ""
+
+#: ../../source/contribuir.rst:63
+msgid ""
+"Tinamit ya puede leer (casi) cualquier modelo en VENSIM. Para poder "
+"agregar un nuevo programa de modelos DS, tienes que saber cómo ejecutar "
+"las acciones siguientes en el programa *sin el uso del interfaz gráfico* "
+"(es decir, por la línea de comanda, por un dll, o por algo similar):"
+msgstr ""
+
+#: ../../source/contribuir.rst:67
+msgid "Cargar un modelo."
+msgstr ""
+
+#: ../../source/contribuir.rst:68
+msgid "Empezar una simulación."
+msgstr ""
+
+#: ../../source/contribuir.rst:69
+msgid "Avanzar la simulación de un número de pasos predeterminados."
+msgstr ""
+
+#: ../../source/contribuir.rst:70
+msgid ""
+"Leer valores intermediaros de los variables, y cambiar estos valores "
+"antes de seguir con el próximo paso de la simulación."
+msgstr ""
+
+#: ../../source/contribuir.rst:73
+msgid ""
+"Si puedes hacer esto, ya estás listo. Los cambios de tendrán que efectuar"
+" directamente al código fuente de Tinamit (al contrario de la adición de "
+"una envoltura biofísica), así que recomiento fuertemente que creas una "
+"nueva rama de Tinamit en GitHub (|GitHub|) primero."
+msgstr ""
+
+#: ../../source/contribuir.rst:77
+msgid ""
+"Después, vaya al archivo MDS.py y crea una subclase de la clase "
+":class:`~tinamit.MDS.EnvolturaMDS`. En esta clase, se debe definir cada "
+"una de las funciones siguientes (ver, como ejemplo, la implementación "
+"para VENSIM en :class:`~tinamit.MDS.ModeloVENSIM`):"
+msgstr ""
+
+#: ../../source/contribuir.rst:81
+msgid ":func:`~tinamit.MDS.EnvolturaMDS.__init__`"
+msgstr ""
+
+#: ../../source/contribuir.rst:82
+msgid ":func:`~tinamit.MDS.EnvolturaMDS.inic_vars`"
+msgstr ""
+
+#: ../../source/contribuir.rst:83
+msgid ":func:`~tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo`"
+msgstr ""
+
+#: ../../source/contribuir.rst:84
+msgid ":func:`~tinamit.MDS.EnvolturaMDS.iniciar_modelo`"
+msgstr ""
+
+#: ../../source/contribuir.rst:85
+msgid ":func:`~tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo`"
+msgstr ""
+
+#: ../../source/contribuir.rst:86
+msgid ":func:`~tinamit.MDS.EnvolturaMDS.incrementar`"
+msgstr ""
+
+#: ../../source/contribuir.rst:87
+msgid ":func:`~tinamit.MDS.EnvolturaMDS.leer_vals`"
+msgstr ""
+
+#: ../../source/contribuir.rst:88
+msgid ":func:`~tinamit.MDS.EnvolturaMDS.cerrar_modelo`"
+msgstr ""
+

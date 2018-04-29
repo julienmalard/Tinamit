@@ -1,0 +1,7 @@
+recursive-include tinamit *.vpm *.json *.png *.jpg *.gif *.txt *.g *.inp *.tmpl *.py *.xlsx *.xls *.odc *.csv
+
+include tinamit/local/_fuente/*/LC_MESSAGES/*.mo
+include tinamit/EnvolturaMDS/gram_Vensim.g
+
+recursive-include tinamit/Ejemplos
+prune tinamit/Ejemplos/**/_temp
