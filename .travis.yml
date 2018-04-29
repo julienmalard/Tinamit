@@ -9,5 +9,5 @@ install:
 
 script:
   - cd pruebas
-  - nosetests --with-coverage
+  - nosetests --with-coverage --cover-package=tinamit
   - coveralls

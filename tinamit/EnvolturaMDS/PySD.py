@@ -35,7 +35,7 @@ class ModeloPySD(EnvolturaMDS):
             nombre_py = f['Py Name']
             unidades, líms = f['Unit'].rsplit('[')  # type: str, str
             unidades = unidades.strip()
-            líms = [float(x) if 'inf' not in x else None for x in líms.strip(']').split(',')]
+            líms = [float(x) if x != '?' else None for x in líms.strip(']').split(',')]
 
             símismo.variables[nombre] = {
                 'val': getattr(símismo.modelo.components, nombre_py)(),
