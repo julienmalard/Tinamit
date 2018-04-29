@@ -98,43 +98,77 @@ def poner_val_config(llave, val):
 
 
 # Funciones fáciles para opciones de lenguas.
-_dir_local = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'local')
-dic_trads = {'es': gettext.translation(__name__, _dir_local, fallback=True, languages=['es'])}
+_dir_local = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'local', '_fuente')
 
-_leng = [_configs['leng']]
+lenguas = _configs['leng'] if isinstance(_configs['leng'], list) else [_configs['leng']]
 
-
-def obt_trads():
-    """
-    Dewuelve un objeto de traducción.
-    :return:
-    :rtype:
-    """
-    try:
-        return dic_trads[_leng[0]]
-    except KeyError:
-        return dic_trads['es']
+_dic_trads = {'leng': lenguas[0],
+              'otras': lenguas,
+              'trads': gettext.translation(__name__, _dir_local, fallback=True, languages=lenguas)}
 
 
-def cambiar_leng(leng, temp=False):
+def cambiar_lengua(leng, temp=False):
     """
     Cambia la lengua de Tinamït.
 
     :param leng:
-    :type leng: str
+    :type leng: str | list[str]
 
     :param temp: Si el cambio es temporario (esta sesión) o el nuevo normal.
     :type temp: bool
 
     """
 
-    _leng[0] = leng
+    if isinstance(leng, str):
+        if leng in lenguas:
+            lenguas.remove(leng)
+        lenguas.insert(0, leng)
+
+    elif isinstance(leng, list):
+        lenguas.clear()
+        lenguas.extend(leng)
+
+    else:
+        raise TypeError
+
     if not temp:
         poner_val_config('leng', leng)
 
-    if leng not in dic_trads:
-        dic_trads[leng] = gettext.translation(__name__, _dir_local, fallback=True, languages=[leng])
+    actualizar = False
+    if _dic_trads['leng'] != lenguas[0]:
+        actualizar = True
+        _dic_trads['leng'] = lenguas[0]
+    elif _dic_trads['otras'] != lenguas:
+        actualizar = True
+        _dic_trads['otras'] = lenguas
+    if actualizar:
+        _dic_trads['trads'] = gettext.translation(__name__, _dir_local, fallback=True, languages=lenguas)
 
 
 def _(tx):
-    return obt_trads().gettext(tx)
+    """
+
+    Parameters
+    ----------
+    tx :
+
+    Returns
+    -------
+    str
+    """
+    return _dic_trads['trads'].gettext(tx)
+
+
+def valid_nombre_arch(nombre):
+    """
+    Una función para validar un nombre de archivo.
+
+    :param nombre: El nombre propuesto para el archivo.
+    :type nombre: str
+    :return: Un nombre válido.
+    :rtype: str
+    """
+    for x in ['\\', '/', '\|', ':' '*', '?', '"', '>', '<']:
+        nombre = nombre.replace(x, '_')
+
+    return nombre.strip()

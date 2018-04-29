@@ -3,7 +3,7 @@ import random
 from tinamit.BF import ModeloBF
 
 
-class Modelo(ModeloBF):
+class Envoltura(ModeloBF):
 
     def ejec(símismo):
         pass

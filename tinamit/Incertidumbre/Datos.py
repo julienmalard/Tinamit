@@ -442,7 +442,7 @@ class SuperBD(object):
                     bd_sel = bd_sel[bd_sel['bd'].isin(datos)]
 
                 if fechas is not None:
-                    bd_sel = bd_sel[bd_sel['fecha'].isin(fechas)]
+                    bd_sel = bd_sel[bd_sel['fecha'].isin(fechas)]  # Arreglarme
 
                 if lugar is not None:
                     bd_sel = bd_sel[bd_sel['lugar'].isin(lugar)]

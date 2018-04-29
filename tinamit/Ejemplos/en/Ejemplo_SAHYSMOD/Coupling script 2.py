@@ -3,22 +3,27 @@ import os
 from tinamit.Conectado import Conectado
 from tinamit.Geog.Geog import Lugar, Geografía
 
+from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
+
+
 if __name__ == '__main__':
     use_simple = True
     climate_change = True
 
+    base_dir = os.path.dirname(os.path.realpath(__file__))
+
     # 0. Site geography
     Rechna_Doab = Geografía(nombre='Rechna Doab')
 
-    base_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Shape_files')
-    Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir, 'Internal_Polygon.shp'), col_orden='Polygon_ID')
+    base_dir_shp = os.path.join(base_dir, 'Shape_files')
+    Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir_shp, 'Internal_Polygon.shp'), col_orden='Polygon_ID')
 
-    Rechna_Doab.agregar_forma(os.path.join(base_dir, 'External_Polygon.shp'), color='#edf4da')
-    Rechna_Doab.agregar_forma(os.path.join(base_dir, 'RIVR.shp'), tipo='agua')
-    Rechna_Doab.agregar_forma(os.path.join(base_dir, 'CNL_Arc.shp'), tipo='agua', llenar=False)
-    Rechna_Doab.agregar_forma(os.path.join(base_dir, 'Forst_polygon.shp'), tipo='bosque')
-    Rechna_Doab.agregar_forma(os.path.join(base_dir, 'buildup_Polygon.shp'), tipo='ciudad')
-    Rechna_Doab.agregar_forma(os.path.join(base_dir, 'road.shp'), tipo='calle')
+    Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'External_Polygon.shp'), color='#edf4da')
+    Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'RIVR.shp'), tipo='agua')
+    Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'CNL_Arc.shp'), tipo='agua', llenar=False)
+    Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'Forst_polygon.shp'), tipo='bosque')
+    Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'buildup_Polygon.shp'), tipo='ciudad')
+    Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'road.shp'), tipo='calle')
 
     # 1. Simple runs
     runs_simple = {'CWU': {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,
@@ -68,7 +73,7 @@ if __name__ == '__main__':
 
     # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
     modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Vensim', 'Tinamit_sub_v4.vpm'))
-    modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'SAHYSMOD.py'))
+    modelo.estab_bf(Envoltura)
     modelo.estab_conv_tiempo(mod_base='mds', conv=6)
 
     # Couple models(Change variable names as needed)
@@ -110,12 +115,12 @@ if __name__ == '__main__':
             modelo.simular(paso=1, tiempo_final=20, nombre_corrida=name)  # time step and final time are in months
 
             # Draw maps
-            modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
-            modelo.dibujar(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
+            modelo.dibujar_mapa(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
+            modelo.dibujar_mapa(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
     else:
         # Climate change runs
         location = Lugar(lat=32.178207, long=73.217391, elev=217)
-        location.observar_mensuales('مشاہدہ بارش.csv', meses='مہینہ', años='سال',
+        location.observar_mensuales((os.path.join(base_dir, 'مشاہدہ بارش.csv')), meses='مہینہ', años='سال',
                                     cols_datos={'Precipitación': 'بارش (ملیمیٹر)',
                                                 'Temperatura mínima': 'درجہ_حرارت_کم',
                                                 'Temperatura máxima': 'درجہ_حرارت_زیادہ'
@@ -132,6 +137,6 @@ if __name__ == '__main__':
         dibs = [dict(geog=Rechna_Doab, var='Watertable depth Tinamit', directorio='Maps'),
                 dict(geog=Rechna_Doab, var='Soil salinity Tinamit CropA', colores=-1, directorio='Maps')]
 
-        modelo.simular_paralelo(paso=1, tiempo_final=100*2, fecha_inic='01/11/1989', lugar=location, clima=True, recalc=False,
-                                tcr=[0, 2.6, 4.5, 6.0, 8.5], vals_inic=vals_inic, combinar=True,
-                                nombre_corrida='', dibujar=dibs)
+        modelo.simular_paralelo(paso=1, tiempo_final=100*2, fecha_inic='01/11/1989', lugar=location, clima=True,
+                                recalc=False, tcr=[0, 2.6, 4.5, 6.0, 8.5], vals_inic=vals_inic, combinar=True,
+                                nombre_corrida='', dibujar=dibs, paralelo=False)

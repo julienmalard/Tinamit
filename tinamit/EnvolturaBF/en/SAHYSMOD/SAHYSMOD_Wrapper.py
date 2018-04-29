@@ -6,7 +6,7 @@ from warnings import warn
 import numpy as np
 import shutil
 
-from tinamit import obt_val_config
+from tinamit import obt_val_config, _
 from tinamit.BF import ModeloImpaciente
 from tinamit.EnvolturaBF.en.SAHYSMOD.sahysmodIO import read_into_param_dic, write_from_param_dic
 
@@ -38,7 +38,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
         # Find the SAHYSMOD executable path, if necessary.
         if sahysmod_exe is None:
-            sahysmod_exe = obt_val_config('exe_sahysmod', mnsj='Especificar la ubicación de tu modelo SAHYSMOD.')
+            sahysmod_exe = obt_val_config('exe_sahysmod', mnsj=_('Especificar la ubicación de tu modelo SAHYSMOD.'))
         self.SAHYSMOD_exe = sahysmod_exe
 
         # Number of (internal) polygons in the model
@@ -48,7 +48,8 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         self.dic_input = {}
 
         # Set the working directory to write model output, and remember where the initial data is stored.
-        self.base_dir, self.initial_data = os.path.split(initial_data)
+        self.initial_data = initial_data
+        self.base_dir = os.path.split(initial_data)[0]
 
         # The path from which to read and write input and output data will be set later on according to the run name
         self.input = None  # type: str

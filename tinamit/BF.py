@@ -1,4 +1,5 @@
 import datetime as ft
+import inspect
 import math as mat
 import os
 import sys
@@ -22,36 +23,62 @@ class EnvolturaBF(Modelo):
     para ellos.
     """
 
-    def __init__(símismo, archivo):
+    def __init__(símismo, modelo):
         """
         Incializar la envoltura.
 
-        :param archivo: El archivo con el
-        :type archivo: str
+        :param modelo:
+        :type modelo: str | ModeloBF | Callable
 
         """
 
-        dir_mod, nombre_mod = os.path.split(archivo)
-        sys.path.append(dir_mod)
+        if isinstance(modelo, str):
+            símismo.archivo = modelo
 
-        módulo = importar_mod(os.path.splitext(nombre_mod)[0])
+            if not os.path.isfile(modelo):
+                raise ValueError(_('El archivo "{}" no existe... :(').format(modelo))
 
-        símismo.archivo = archivo
+            dir_mod, nombre_mod = os.path.split(modelo)
+            sys.path.append(dir_mod)
+            módulo = importar_mod(os.path.splitext(nombre_mod)[0])
 
-        try:
-            modelo = módulo.Modelo  # type: ModeloBF
-        except AttributeError:
-            raise AttributeError(_('El archivo especificado ({}) no contiene una clase llamada Modelo.')
-                                 .format(archivo))
+            candidatos = inspect.getmembers(módulo, inspect.isclass)
+            cands_final = {}
+            for nombre, obj in candidatos:
+                if callable(obj):
+                    try:
+                        obj = obj()
+                    except BaseException:
+                        continue
+                if isinstance(obj, ModeloBF):
+                    cands_final[nombre] = obj
 
-        if callable(modelo):
-            símismo.modelo = modelo()
+            if len(cands_final) == 0:
+                raise AttributeError(_('El archivo especificado ("{}") no contiene subclase de "ModeloBF".')
+                                     .format(modelo))
+            elif len(cands_final) == 1:
+                símismo.modelo = cands_final[list(cands_final)[0]]
+            else:
+                try:
+                    símismo.modelo = cands_final['Envoltura']
+                except KeyError:
+                    elegido = list(cands_final)[0]
+                    símismo.modelo = elegido
+                    avisar(_('Había más que una instancia de "ModeloBF" en el archivo "{}", '
+                             'y ninguna se llamaba "Envoltura". Tomaremos "{}" como la envoltura '
+                             'y esperaremos que funcione. Si no te parece, asegúrate que la definición de clase u el'
+                             'objeto correcto se llame "Envoltura".').format(modelo, elegido))
+
         else:
-            símismo.modelo = copiar(modelo)
+            if callable(modelo):
+                modelo = modelo()
 
-        if not isinstance(símismo.modelo, ModeloBF):
-            raise TypeError(_('El archivo especificado ("{}") contiene una clase llamada Modelo, pero'
-                              'esta clase no es una subclase de ClaseModeloBF.').format(archivo))
+            if isinstance(modelo, ModeloBF):
+                símismo.archivo = inspect.getfile(modelo.__class__)
+                símismo.modelo = copiar(modelo)
+            else:
+                raise TypeError(_('El parámetro "modelo" debe ser o una instancia o subclase de "ModeloBF", o un '
+                                  'archivo Python que contiene uno.'))
 
         super().__init__(nombre='bf')
 

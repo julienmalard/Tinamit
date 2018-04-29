@@ -1,8 +1,20 @@
 import os
 
 from tinamit import _
-from tinamit.EnvolturaMDS.Vensim import ModeloVensim, ModeloVensimMdl, dll_Vensim
+from tinamit.EnvolturaMDS.Vensim import ModeloVensim, ModeloVensimMdl
+from tinamit.EnvolturaMDS.PySD import ModeloPySD
 from tinamit.MDS import EnvolturaMDS
+
+
+dic_motores = {
+    '.vpm': [ModeloVensim],
+    '.mdl': [ModeloPySD, ModeloVensimMdl],
+    '.xml': [ModeloPySD],
+    '.xmile': [ModeloPySD]
+
+    # Agregar otros tipos de modelos DS aquí.
+
+}
 
 
 def generar_mds(archivo):
@@ -14,27 +26,25 @@ def generar_mds(archivo):
     :type archivo: str
 
     :return: Un modelo DS.
-    :rtype: tinamit.MDS.EnvolturaMDS
+    :rtype: EnvolturaMDS
 
     """
 
     # Identificar la extensión.
     ext = os.path.splitext(archivo)[1]
 
-    # Crear la instancia de modelo apropiada para la extensión del archivo.
-    if ext == '.vpm':
-        if dll_Vensim:
-            # Modelos VENSIM
-            return ModeloVensim(archivo)
-        else:
-            raise OSError('')
-    elif ext == '.mdl':
-        return ModeloVensimMdl(archivo)
-    elif ext == '.xml':
-        raise NotImplementedError
-    else:
-        # Agregar otros tipos de modelos DS aquí.
-
+    # Verificar si podemos leer este tipo de archivo.
+    if ext not in dic_motores:
         # Mensaje para modelos todavía no incluidos en Tinamit.
-        raise ValueError(_('El tipo de modelo "{}" no se acepta como modelo DS en Tinamit al momento. Si piensas'
-                         'que podrías contribuir aquí, ¡contáctenos!').format(ext))
+        raise TypeError(_('El tipo de modelo "{}" no se acepta como modelo DS en Tinamit al momento. Si piensas'
+                          'que podrías contribuir aquí, ¡contáctenos!').format(ext))
+    else:
+        errores = {}
+        for env in dic_motores[ext]:
+            try:
+                return env(archivo)
+            except BaseException as e:
+                errores[env.__name__] = e
+
+        raise ValueError(_('El modelo "{}" no se pudo leer. Intentamos las envolturas siguientes, pero no funcionaron:'
+                         '{}').format(''.join(['\n\t{}: {}'.format(env, e) for env, e in errores.items()])))
