@@ -1,6 +1,6 @@
 .. image:: tinamit/Interfaz/Imágenes/LogoCent.png
    :scale: 80%
-   :alt: Logo muy bonito
+   :alt: Logo muy bonito. :)
 
 .. image:: https://badge.fury.io/py/tinamit.svg
     :target: https://badge.fury.io/py/tinamit
