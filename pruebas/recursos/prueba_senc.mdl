@@ -7,7 +7,7 @@ Evaporación=
 
 Flujo río=
 	Lluvia
-	~	m3 [0,?]
+	~	m3/mes [0,?]
 	~	El flujo de agua en el río.
 	|
 
@@ -18,9 +18,9 @@ Lago= INTEG (
 	~	La cantidad de agua en el lago.
 	|
 
-Lluvia=
-	10
-	~	m3 [0,?]
+Lluvia= GAME (
+	10)
+	~	m3/mes [0,?]
 	~	La cantidad de lluvia que cae por mes.
 	|
 
@@ -37,23 +37,23 @@ Nivel lago inicial=
 	|
 
 FINAL TIME  = 200
-	~	Month
+	~	mes
 	~	The final time for the simulation.
 	|
 
 INITIAL TIME  = 0
-	~	Month
+	~	mes
 	~	The initial time for the simulation.
 	|
 
 SAVEPER  = 
-        TIME STEP 
-	~	Month [0,?]
+        TIME STEP
+	~	mes [0,?]
 	~	The frequency with which output is stored.
 	|
 
 TIME STEP  = 1
-	~	Month [0,?]
+	~	mes [0,?]
 	~	The time step for the simulation.
 	|
 
@@ -79,15 +79,15 @@ $192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,1
 1,16,15,1,0,0,0,0,0,64,1,-1--1--1,,1|(592,182)|
 ///---\\\
 :L<%^E!@
-1:Current.vdf
 9:Current
 22:Month,Mes,Meses
+23:0
 15:0,0,0,0,0,0
 19:100,0
 27:2,
 34:0,
 4:Time
-5:Lago
+5:Lluvia
 35:Date
 36:YYYY-MM-DD
 37:2000

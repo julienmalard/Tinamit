@@ -632,6 +632,7 @@ class SuperConectado(Modelo):
         Leamos los valores de los variables de los dos submodelos. Por la conexión entre los diccionarios de variables
         de los submodelos y del :class:`~tinamit.Conectado.SuperConectado`, no hay necesidad de actualizar el
         diccionario del :class:`~tinamit.Modelo.SuperConectado` sí mismo.
+
         """
 
         for mod in símismo.modelos.values():

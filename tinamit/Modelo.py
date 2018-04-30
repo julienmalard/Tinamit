@@ -1,10 +1,7 @@
 import datetime as ft
 import math
 import os
-import pickle
 import re
-from copy import deepcopy as copiar_profundo
-from multiprocessing import Pool as Reserva
 from warnings import warn as avisar
 
 import numpy as np
@@ -194,9 +191,12 @@ class Modelo(object):
         if vars_interés is None:
             vars_interés = []
         else:
+            if isinstance(vars_interés, str):
+                vars_interés = [vars_interés]
             for v in vars_interés:
                 if v not in símismo.variables:
                     raise ValueError(_('El variable "{}" no existe en el modelo "{}".').format(v, símismo))
+                símismo.vars_saliendo.append(v)  # para hacer: limpiar
 
         símismo.mem_vars.clear()
         for v in vars_interés:
@@ -211,14 +211,15 @@ class Modelo(object):
                 símismo.act_vals_clima(n_paso=paso, f=fecha_act)
                 # arreglarme: mejor conversión de unidades de tiempo
                 if símismo.unidad_tiempo == 'año':
-                    fecha_act = ft.datetime(year=fecha_act.year+1, month=fecha_act.month, day=fecha_act.day)  # Avanzar la fecha
+                    fecha_act = ft.datetime(year=fecha_act.year + 1, month=fecha_act.month,
+                                            day=fecha_act.day)  # Avanzar la fecha
                 elif símismo.unidad_tiempo == 'mes':
-                    fecha_act += ft.timedelta(paso*30)  # Avanzar la fecha
+                    fecha_act += ft.timedelta(paso * 30)  # Avanzar la fecha
                 elif símismo.unidad_tiempo == 'días':
                     fecha_act += ft.timedelta(paso)  # Avanzar la fecha
                 else:
                     if símismo.unidad_tiempo_meses is not None:
-                        fecha_act += ft.timedelta(paso *símismo.unidad_tiempo_meses * 30)  # Avanzar la fecha
+                        fecha_act += ft.timedelta(paso * símismo.unidad_tiempo_meses * 30)  # Avanzar la fecha
                     else:
                         raise ValueError('')
 
@@ -226,8 +227,10 @@ class Modelo(object):
             símismo.incrementar(paso)
 
             # Guardar valores de variables de interés
+            if len(vars_interés):
+                símismo.leer_vals()
             for v in vars_interés:
-                símismo.mem_vars[v][i] = símismo.variables[v]['val']
+                símismo.mem_vars[v][i + 1] = símismo.variables[v]['val']
 
         # Después de la simulación, cerramos el modelo.
         símismo.cerrar_modelo()
@@ -582,5 +585,3 @@ class Modelo(object):
         símismo.vars_clima = estado['vars_clima']
         símismo.unidad_tiempo = estado['unidad_tiempo']
         símismo.unidad_tiempo_meses = estado['unidad_tiempo_meses']
-
-

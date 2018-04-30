@@ -1,3 +1,4 @@
+import os
 import unittest
 
 from tinamit.EnvolturaMDS import generar_mds, EnvolturaMDS, ModeloVensim, ModeloPySD, ModeloVensimMdl
@@ -6,54 +7,58 @@ from tinamit.EnvolturaMDS.Vensim import dll_Vensim
 
 class Test_ModeloSenc(unittest.TestCase):
 
-    def setUp(símismo):
-        print('setUp')
-        símismo.modelos = {
+    @classmethod
+    def setUpClass(cls):
+        cls.modelos = {
             'mdlVensim': ModeloVensimMdl('recursos/prueba_senc.mdl'),
             'PySDVensim': ModeloPySD('recursos/prueba_senc.mdl')
         }  # type: dict[str, EnvolturaMDS]
 
         if dll_Vensim:
-            símismo.modelos['dllVensim'] = ModeloVensim('recursos/prueba_senc.vpm')
+            cls.modelos['dllVensim'] = ModeloVensim('recursos/prueba_senc.vpm')
 
-        símismo.info_vars = {
-            'Lluvia': {'unidades': 'm3', 'líms': (0, None)},
+        cls.info_vars = {
+            'Lluvia': {'unidades': 'm3/mes', 'líms': (0, None)},
             'Nivel lago inicial': {'unidades': 'm3', 'líms': (0, None), 'val_inic': 1500},
             'Flujo río': {'unidades': 'm3/mes', 'líms': (0, None)},
             'Lago': {'unidades': 'm3', 'líms': (0, None)},
             'Evaporación': {'unidades': 'm3/mes', 'líms': (0, None)}
         }
 
-        for mod in símismo.modelos.values():
-            for v, d_v in símismo.info_vars.items():
+        for mod in cls.modelos.values():
+            for v, d_v in cls.info_vars.items():
                 if 'val_inic' in d_v:
                     mod.inic_val(v, d_v['val_inic'])
 
-            mod.simular(tiempo_final=200)
+            mod.simular(tiempo_final=200, vars_interés='Lago')
 
     def test_leer_vars(símismo):
-        print('test_leer_vars')
         for mod in símismo.modelos.values():
             with símismo.subTest(mod=mod):
                 vars_modelo = set(mod.variables)
                 símismo.assertSetEqual(set(símismo.info_vars), vars_modelo)
 
-    def prb_leer_info(símismo):
+    def test_unid_tiempo(símismo):
+        for mod in símismo.modelos.values():
+            with símismo.subTest(mod=mod):
+                símismo.assertEqual('mes', mod.unidad_tiempo.lower())
+
+    def test_leer_info(símismo):
 
         for mod in símismo.modelos.values():
             with símismo.subTest(mod=mod):
                 símismo.assertTrue(len(d_v['info']) > 0 for d_v in mod.variables.values())
 
-    def prb_leer_unidades(símismo):
+    def test_leer_unidades(símismo):
 
         unids = {v: d_v['unidades'] for v, d_v in símismo.info_vars.items()}
 
         for mod in símismo.modelos.values():
             with símismo.subTest(mod=mod):
-                unids_mod = {v: d_v['unidades'] for v, d_v in mod.variables.items()}
+                unids_mod = {v: d_v['unidades'].lower() for v, d_v in mod.variables.items()}
                 símismo.assertDictEqual(unids, unids_mod)
 
-    def prb_leer_líms(símismo):
+    def test_leer_líms(símismo):
         unids = {v: d_v['líms'] for v, d_v in símismo.info_vars.items()}
 
         for mod in símismo.modelos.values():
@@ -61,12 +66,29 @@ class Test_ModeloSenc(unittest.TestCase):
                 unids_mod = {v: d_v['líms'] for v, d_v in mod.variables.items()}
                 símismo.assertDictEqual(unids, unids_mod)
 
-    def prb_cmb_vals_inic(símismo):
+    def test_cmb_vals_inic(símismo):
         for mod in símismo.modelos.values():
             with símismo.subTest(mod=mod):
                 símismo.assertEqual(mod.variables['Nivel lago inicial']['val'], 1500)
 
-    def prb_simul(símismo):
+    def test_simul(símismo):
         for mod in símismo.modelos.values():
             with símismo.subTest(mod=mod):
-                símismo.assertAlmostEqual(mod.variables['Lago']['val'], 100)
+                val_simulado = mod.leer_resultados('Lago')[-1, 0]
+                símismo.assertEqual(round(val_simulado, 3), 100)
+
+    @classmethod
+    def tearDownClass(cls):
+        for c in os.walk('../recursos'):
+            for a in c[2]:
+                nmbr, ext = os.path.splitext(a)
+                try:
+                    print(a)
+                    if nmbr == 'Corrida Tinamït':
+                        print('Quitando nmb...')
+                        os.remove(a)
+                    if ext in ['.2mdl', '.vdf']:
+                        print('Quitando ext...')
+                        os.remove(a)
+                except PermissionError:
+                    print('\t{}\tsalvado'.format(a))

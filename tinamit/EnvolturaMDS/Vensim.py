@@ -55,7 +55,7 @@ class ModeloVensimMdl(EnvolturaMDS):
         # Leer las tres secciones generales del archivo
         with open(archivo, encoding='UTF-8') as d:
             # La primera línea del documento, con {UTF-8}
-            símismo.dic_doc['cabeza'] = d.readline()
+            símismo.dic_doc['cabeza'] = [d.readline()]
 
             l = d.readline()
             # Seguir hasta la primera línea que NO contiene información de variables ("****...***" para Vensim).
@@ -65,7 +65,7 @@ class ModeloVensimMdl(EnvolturaMDS):
 
             # Guardar todo el resto del archivo (que no contiene información de ecuaciones de variables).
             cola = d.readlines()
-            símismo.dic_doc['cola'].append([l] + cola)
+            símismo.dic_doc['cola'] += [l] + cola
 
         super().__init__(archivo=archivo)
 
@@ -237,7 +237,10 @@ class ModeloVensimMdl(EnvolturaMDS):
         símismo.conex_datos.calib_var(var=var, ec=ec, paráms=paráms, método=método)
 
     def obt_unidad_tiempo(símismo):
-        pass
+        # Para hacer: algo mucho más elegante
+        i_f = next(i for i, f in enumerate(símismo.dic_doc['cola']) if 'INITIAL TIME' in f) + 1
+        unid_tiempo = símismo.dic_doc['cola'][i_f].split('\t')[-1].strip()
+        return unid_tiempo
 
     def iniciar_modelo(símismo, nombre_corrida, tiempo_final):
         pass
@@ -548,6 +551,7 @@ class ModeloVensim(EnvolturaMDS):
         """
         Este método lee los valores intermediaros de los variables del modelo VENSIM. Para ahorrar tiempo, únicamente
         lee esos variables que están en la lista de ``ModeloVENSIM.vars_saliendo``.
+
         """
 
         # Una memoria

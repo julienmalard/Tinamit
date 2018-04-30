@@ -24,31 +24,42 @@ class ModeloPySD(EnvolturaMDS):
 
         super().__init__(archivo)
 
-        raise NotImplementedError
-
     def inic_vars(símismo):
         símismo.variables.clear()
         símismo.conv_nombres.clear()
 
         for i, f in símismo.modelo.doc().iterrows():
             nombre = f['Real Name']
-            nombre_py = f['Py Name']
-            unidades, líms = f['Unit'].rsplit('[')  # type: str, str
-            unidades = unidades.strip()
-            líms = [float(x) if x != '?' else None for x in líms.strip(']').split(',')]
+            if nombre not in ['FINAL TIME', 'TIME STEP', 'SAVEPER', 'INITIAL TIME']:
+                nombre_py = f['Py Name']
+                if f['Unit'][-1] == ']':
+                    unidades, líms = f['Unit'].rsplit('[')  # type: str, str
+                else:
+                    unidades = f['Unit']
+                    líms = '?, ?]'
+                unidades = unidades.strip()
+                líms = tuple([float(x) if x.strip() != '?' else None for x in líms.strip(']').split(',')])
 
-            símismo.variables[nombre] = {
-                'val': getattr(símismo.modelo.components, nombre_py)(),
-                'dims': (1,),  # Para hacer
-                'unidades': unidades,
-                'líms': líms,
-                'info': f['Comment']
-            }
+                símismo.variables[nombre] = {
+                    'val': getattr(símismo.modelo.components, nombre_py)(),
+                    'dims': (1,),  # Para hacer
+                    'unidades': unidades,
+                    'líms': líms,
+                    'info': f['Comment']
+                }
 
-            símismo.conv_nombres[nombre] = nombre_py
+                símismo.conv_nombres[nombre] = nombre_py
 
     def obt_unidad_tiempo(símismo):
-        raise NotImplementedError
+        docs = símismo.modelo.doc()
+        unid_tiempo = docs.loc[docs['Real Name'] == 'TIME STEP', 'Unit'].values[0]
+
+        if unid_tiempo[-1] == ']':
+            unid_tiempo = unid_tiempo.rsplit('[')[0]
+
+        unid_tiempo = unid_tiempo.strip()
+
+        return unid_tiempo
 
     def iniciar_modelo(símismo, nombre_corrida, tiempo_final):
         símismo.cont_simul = False
@@ -66,7 +77,7 @@ class ModeloPySD(EnvolturaMDS):
         símismo.cont_simul = True
 
     def leer_vals(símismo):
-        for v, d_v in símismo.variables:
+        for v in símismo.vars_saliendo:
             nombre_py = símismo.conv_nombres[v]
             val = getattr(símismo.modelo.components, nombre_py)()
 

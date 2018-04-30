@@ -220,6 +220,7 @@ class ModeloBF(Modelo):
         Esta función debe leer los variables del modelo desde el modelo externo y copiarlos al diccionario interno
         de variables. Asegúrese que esté *actualizando* el diccionario interno, y que no lo esté recreando, lo cual
         quebrará las conexiones con el modelo conectado.
+
         """
         raise NotImplementedError
 
@@ -457,6 +458,7 @@ class ModeloImpaciente(ModeloBF):
         Empleamos :func:`ModeloImpaciente.leer_egr` en vez, lo cual lee los egresos de todas los pasos de la última
         simulación. :func:`ModeloImpaciente.incrementar` arregla lo de apuntar los diccionarios de
         variables actuales a la estación apropiada.
+
         """
         pass
 
@@ -674,6 +676,7 @@ class ModeloFlexible(ModeloBF):
         Esta función debe leer los variables del modelo desde el modelo externo y copiarlos al diccionario interno
         de variables. Asegúrese que esté *actualizando* el diccionario interno, y que no lo esté recreando, lo cual
         quebrará las conexiones con el modelo conectado.
+
         """
         raise NotImplementedError
 
