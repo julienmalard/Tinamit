@@ -13,5 +13,5 @@ install:
 script:
   - cd pruebas
   - nosetests --with-coverage --cover-package=tinamit
-  - coveralls --exclude-lines-pattern "*/trads*"
+  - coveralls --rcfile=.coveragerc
   - codecov

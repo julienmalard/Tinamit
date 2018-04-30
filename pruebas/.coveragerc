@@ -1,6 +1,18 @@
 [run]
 source = tinamit
 omit =
-       trads/*
-       Interfaz/*
-       local/*
+       */trads/*
+       */Interfaz/*
+       */local/*
+
+[report]
+omit =
+       */trads/*
+       */Interfaz/*
+       */local/*
+
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise NotImplementedError
+    if __name__ == .__main__.:
