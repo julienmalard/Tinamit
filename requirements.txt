@@ -8,4 +8,5 @@ pyshp
 pandas
 lark
 pint
+regex
 git+git://github.com/julienmalard/pysd.git@master
