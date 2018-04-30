@@ -1,5 +1,5 @@
 [run]
-source = tinamitasd
+source = tinamit
 omit =
        */trads/*
        */Interfaz/*
@@ -10,3 +10,9 @@ omit =
        */trads/*
        */Interfaz/*
        */local/*
+
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise NotImplementedError
+    if __name__ == .__main__.:
