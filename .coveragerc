@@ -1,5 +1,5 @@
 [run]
-source = tinamit
+source = tinamitasd
 omit =
        */trads/*
        */Interfaz/*
