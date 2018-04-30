@@ -17,7 +17,7 @@ dic_motores = {
 }
 
 
-def generar_mds(archivo):
+def generar_mds(archivo, motor=None):
     """
     Esta función genera una instancia de modelo de DS. Identifica el tipo de archivo por su extensión (p. ej., .vpm) y
     después genera una instancia de la subclase apropiada de :class:`~tinamit.EnvolturaMDS.EnvolturaMDS`.
@@ -40,7 +40,14 @@ def generar_mds(archivo):
                           'que podrías contribuir aquí, ¡contáctenos!').format(ext))
     else:
         errores = {}
-        for env in dic_motores[ext]:
+        if motor is None:
+            motores_potenciales = dic_motores[ext]
+        else:
+            if not isinstance(motor, list):
+                motor = [motor]
+            motores_potenciales = [x for x in dic_motores if x in motor]
+
+        for env in motores_potenciales:
             try:
                 return env(archivo)
             except BaseException as e:

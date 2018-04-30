@@ -499,11 +499,3 @@ def read_output_file(file_path, n_s, n_p, n_y):
                             dic_data[cod][(season, season_poly)] = val
                             break
     return dic_data
-
-
-if __name__ == '__main__':
-    from pprint import pprint
-
-    pprint(read_output_file(
-        'C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\tinamit\\Ejemplos\\en\\Ejemplo_SAHYSMOD\\test.out',
-        n_s=2, n_p=214, n_y=5))

@@ -33,15 +33,10 @@ docs/.tx/*
 #######################
 *.tin
 Config.json
+_temp
 
 # Archivos de SAHYSMOD #
-########################
-*.frq
-*.gwt
-*.out
-*.lst
-*SAHYSMOD.inp
-*/Ejemplos/**/*SAHYSMOD/NAME*
+#######################*/Ejemplos/**/*SAHYSMOD/NAME*
 */Ejemplos/**/*SAHYSMOD/*.txt
 */EnvolturaBF/**/*SAHYSMOD/*.txt
 */Name0

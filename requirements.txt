@@ -8,4 +8,4 @@ pyshp
 pandas
 lark
 pint
-git+git://github.com/julenmalard/pysd.git
+git+git://github.com/julienmalard/pysd.git@master

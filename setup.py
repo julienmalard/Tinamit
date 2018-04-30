@@ -133,7 +133,10 @@ setup(
     description='Conexión de modelos socioeconómicos (dinámicas de los sistemas) con modelos biofísicos.',
     long_description=leer('README.rst'),
 
-    install_requires=leer('requirements.txt').split('\n'),
+    install_requires=[r for r in leer('requirements.txt').split('\n') if 'git' not in r].append('pysd'),
+    dependency_links=[
+        "git+git://github.com/julienmalard/pysd.git"
+    ],
     setup_requires=['Babel', 'polib'],
     zip_safe=False,
 
