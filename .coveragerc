@@ -4,3 +4,9 @@ omit =
        */trads/*
        */Interfaz/*
        */local/*
+
+[report]
+omit =
+       */trads/*
+       */Interfaz/*
+       */local/*
