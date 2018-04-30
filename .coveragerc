@@ -1,5 +1,6 @@
 [run]
 source = tinamit
-omit = trads/*
-       Interfaz/*
-       local/*
+omit =
+       tinamit/trads/*
+       /Interfaz/*
+       */local/*
