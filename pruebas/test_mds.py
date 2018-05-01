@@ -9,15 +9,18 @@ class Test_ModeloSenc(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.modelos = {
-            'mdlVensim': ModeloVensimMdl('recursos/prueba_senc.mdl'),
-            'PySDVensim': ModeloPySD('recursos/prueba_senc.mdl'),
-            'dllVensim': ModeloVensim('recursos/prueba_senc.vpm')
-        }  # type: dict[str, EnvolturaMDS]
 
-        for nmb in list(cls.modelos):
-            if not cls.modelos[nmb].instalado:
-                cls.modelos.pop(nmb)
+        tipos_modelos = {
+            'mdlVensim': {'envlt': ModeloVensimMdl, 'prueba': 'recursos/prueba_senc.mdl'},
+            'PySDVensim': {'envlt': ModeloPySD, 'prueba': 'recursos/prueba_senc.mdl'},
+            'dllVensim': {'envlt': ModeloVensim, 'prueba': 'recursos/prueba_senc.vpm'}
+        }
+
+        for nmb in list(tipos_modelos):
+            if not tipos_modelos[nmb]['envlt'].instalado:
+                tipos_modelos.pop(nmb)
+
+        cls.modelos = {ll: d['envlt'](d['prueba']) for ll, d in tipos_modelos.items()}  # type: dict[str, EnvolturaMDS]
 
         cls.info_vars = {
             'Lluvia': {'unidades': 'm3/mes', 'líms': (0, None)},
