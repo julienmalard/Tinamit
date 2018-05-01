@@ -21,6 +21,8 @@ class ModeloPySD(EnvolturaMDS):
         símismo.conv_nombres = {}
         símismo.tiempo_final = None
         símismo.cont_simul = False
+        símismo.paso_act = 0
+        símismo.vars_para_cambiar = {}
 
         super().__init__(archivo)
 
@@ -64,15 +66,23 @@ class ModeloPySD(EnvolturaMDS):
     def iniciar_modelo(símismo, nombre_corrida, tiempo_final):
         símismo.cont_simul = False
         símismo.tiempo_final = tiempo_final
+        símismo.paso_act = 0
+        símismo.vars_para_cambiar.clear()
+
+        símismo.modelo.initialize()
 
     def cambiar_vals_modelo_interno(símismo, valores):
-        raise NotImplementedError
+        símismo.vars_para_cambiar.clear()
+        símismo.vars_para_cambiar.update(valores)
 
     def incrementar(símismo, paso):
+        símismo.paso_act += paso
+
         if símismo.cont_simul:
-            símismo.modelo.run(initial_condition='current', params={'FINAL TIME': paso, 'TIME STEP': 1})
+            símismo.modelo.run(initial_condition='current', params=símismo.vars_para_cambiar,
+                               return_timestamps=símismo.paso_act)
         else:
-            símismo.modelo.run(params={'FINAL TIME': paso, 'TIME STEP': 1})
+            símismo.modelo.run(return_timestamps=símismo.paso_act, params=símismo.vars_para_cambiar)
 
         símismo.cont_simul = True
 

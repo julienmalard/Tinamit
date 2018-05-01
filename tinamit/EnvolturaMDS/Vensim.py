@@ -25,7 +25,7 @@ if sys.platform[:3] == 'win':
             dll_Vensim = 'C:\\Windows\\SysWOW64\\vendll32.dll'
         except OSError:
             dll_Vensim = None
-            avisar('Esta computadora no tiene el DLL de Vensim DSS. Las funciones con modelos Vensim se verán'
+            avisar('Esta computadora no tiene el DLL de Vensim DSS. Las funcionalidades con modelos Vensim se verán'
                    'limitados.')
 else:
     dll_Vensim = None
@@ -47,6 +47,8 @@ class ModeloVensimMdl(EnvolturaMDS):
     #         print(m.groupdict())
     #         print(m.group())
     #     print('===')
+
+    instalado = False  # para hacer: Por el momento lo dejamos inactivado.
 
     def __init__(símismo, archivo):
 
@@ -267,6 +269,8 @@ class ModeloVensim(EnvolturaMDS):
 
     ext_arch_egr = '.vdf'
 
+    instalado = dll_Vensim is not None
+
     def __init__(símismo, archivo):
         """
         La función de inicialización del modelo. Creamos el vínculo con el DLL de VENSIM y cargamos el modelo
@@ -276,7 +280,7 @@ class ModeloVensim(EnvolturaMDS):
         :type archivo: str
         """
 
-        # Llamar el DLL de VENSIM.
+        # Llamar el DLL de Vensim.
         if dll_Vensim is None:
             raise OSError(_('Esta computadora no tiene el DLL de Vensim DSS.'))
         else:

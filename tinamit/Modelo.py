@@ -20,6 +20,10 @@ class Modelo(object):
     aquí se implementan de manera independiente en cada subclase de `Modelo`.
     """
 
+    # Una opción para precisar si un modelo está instalado en la computadora o no. Se usa en el caso de modelos que
+    # dependen de un programa externo que podría no estar disponible en todas las computadoras que tienen Tinamït.
+    instalado = True
+
     def __init__(símismo, nombre):
         """
         La función de inicialización de todos modelos, conectados o no.

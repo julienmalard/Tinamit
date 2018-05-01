@@ -11,11 +11,13 @@ class Test_ModeloSenc(unittest.TestCase):
     def setUpClass(cls):
         cls.modelos = {
             'mdlVensim': ModeloVensimMdl('recursos/prueba_senc.mdl'),
-            'PySDVensim': ModeloPySD('recursos/prueba_senc.mdl')
+            'PySDVensim': ModeloPySD('recursos/prueba_senc.mdl'),
+            'dllVensim': ModeloVensim('recursos/prueba_senc.vpm')
         }  # type: dict[str, EnvolturaMDS]
 
-        if dll_Vensim:
-            cls.modelos['dllVensim'] = ModeloVensim('recursos/prueba_senc.vpm')
+        for nmb in list(cls.modelos):
+            if not cls.modelos[nmb].instalado:
+                cls.modelos.pop(nmb)
 
         cls.info_vars = {
             'Lluvia': {'unidades': 'm3/mes', 'líms': (0, None)},
@@ -85,10 +87,8 @@ class Test_ModeloSenc(unittest.TestCase):
                 try:
                     print(a)
                     if nmbr == 'Corrida Tinamït':
-                        print('Quitando nmb...')
                         os.remove(a)
                     if ext in ['.2mdl', '.vdf']:
-                        print('Quitando ext...')
                         os.remove(a)
                 except PermissionError:
-                    print('\t{}\tsalvado'.format(a))
+                    pass
