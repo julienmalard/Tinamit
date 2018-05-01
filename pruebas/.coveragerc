@@ -4,12 +4,14 @@ omit =
        */trads/*
        */Interfaz/*
        */local/*
+       */Ejemplos/*
 
 [report]
 omit =
        */trads/*
        */Interfaz/*
        */local/*
+       */Ejemplos/*
 
 exclude_lines =
     pragma: no cover
