@@ -372,195 +372,31 @@ class SuperConectado(Modelo):
         super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, fecha_inic=fecha_inic,
                         lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, vars_interés=vars_interés)
 
-    def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
-                         fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True,
-                         dibujar=None, paralelo=True, devolver=None):
-        #
-        if isinstance(vals_inic, dict):
-            if all(x in símismo.modelos for x in vals_inic):
-                vals_inic = [vals_inic]
+    def inic_vals(símismo, dic_vals):
 
-        if devolver is not None:
-            if not isinstance(devolver, list) and not isinstance(devolver, tuple):
-                devolver = [devolver]
+        llaves = list(dic_vals)
 
-        # Poner las opciones de simulación en un diccionario.
-        opciones = {'paso': paso, 'fecha_inic': fecha_inic, 'lugar': lugar, 'vals_inic': vals_inic,
-                    'tcr': tcr, 'recalc': recalc, 'clima': clima, 'tiempo_final': tiempo_final}
-
-        # Verificar llaves consistentes
-        for op in opciones.values():
-            lls_dics = next((d.keys() for d in opciones.values() if isinstance(d, dict)), None)  # Las llaves
-            if isinstance(op, dict) and op.keys() != lls_dics:
-                raise ValueError(_('Las llaves de diccionario de cada opción deben ser iguales.'))
-
-        # Generar el diccionario de corridas
-        l_n_ops = np.array([len(x) for x in opciones.values() if ((isinstance(x, list) or isinstance(x, dict))
-                                                                  and (len(x) > 1))])
-        l_nmbs_ops_var = [ll for ll, v in opciones.items() if ((isinstance(v, list) or isinstance(v, dict))
-                                                               and (len(v) > 1))]
-
-        devolv_lista = True
-        if combinar:
-            n_corridas = int(np.prod(l_n_ops))
-
-            if isinstance(nombre_corrida, list):
-                raise TypeError('')
-
-            dic_ops = {}  # Un diccionario de nombres de simulación y sus opciones de corrida
-
-            # Poblar el diccionario de opciones iniciales
-            ops = {}
-            nombre = []
-            for ll, op in opciones.items():
-                if not isinstance(op, dict) and not isinstance(op, list):
-                    ops[ll] = op
-                else:
-                    if isinstance(op, dict):
-                        devolv_lista = False
-
-                        id_op = list(op)[0]
-                        ops[ll] = op[id_op]
-
-                        if len(op) > 1:
-                            nombre.append(id_op)
-                    else:
-                        ops[ll] = op[0]
-
-                        if len(op) > 1:
-                            nombre.append(str(op[0]) if not (isinstance(op[0], list) or isinstance(op[0], dict))
-                                          else str(0))
-            l_n_ops_cum = np.roll(l_n_ops.cumprod(), 1)
-            if len(l_n_ops_cum):
-                l_n_ops_cum[0] = 1
-            else:
-                l_n_ops_cum = [1]
-
-            for i in range(n_corridas):
-                í_ops = [int(np.floor(i / l_n_ops_cum[n]) % l_n_ops[n]) for n in range(l_n_ops.shape[0])]
-                for í, n in enumerate(í_ops):
-                    nmb_op = l_nmbs_ops_var[í]
-                    op = opciones[nmb_op]
-
-                    if isinstance(op, list):
-                        ops[nmb_op] = op[n]
-                        nombre[í] = str(str(op[n]) if not (isinstance(op[n], list) or isinstance(op[n], dict))
-                                        else str(n))
-                    elif isinstance(op, dict):
-                        id_op = list(op)[n]
-                        ops[nmb_op] = op[id_op]
-                        nombre[í] = id_op
-                    else:
-                        raise TypeError(_('Tipo de variable "{}" erróneo. Debería ser imposible llegar hasta este '
-                                          'error.'.format(type(op))))
-                dic_ops[' '.join(x.replace(',', '_') for x in nombre)] = ops.copy()
-
-                corridas = {'{}{}'.format(nombre_corrida + '_' if nombre_corrida else '', ll): ops
-                            for ll, ops in dic_ops.items()}
-
-            if len(corridas) == 1 and list(corridas)[0] == '':
-                corridas['Corrida Tinamït'] = corridas.pop('')
+        # Implementar los valores iniciales
+        if all(ll in símismo.variables for ll in llaves):
+            super().inic_vals(dic_vals)  # Enlaces dinámicos deberían arreglar los diccionarios de los submodelos
 
         else:
-            # Si no estamos haciendo todas las combinaciones posibles de opciones, es un poco más fácil.
-
-            n_corridas = np.max(l_n_ops)  # El número de corridas
-
-            # Asegurarse de que todas las opciones tengan el mismo número de opciones.
-            if np.any(np.not_equal(l_n_ops, n_corridas)):
-                raise ValueError(_('Si combinar == False, todas las opciones en forma de lista deben tener el mismo '
-                                   'número de opciones.'))
-
-            # Convertir diccionarios a listas
-            for ll, op in opciones.items():
-                if isinstance(op, dict):
-                    opciones[ll] = [op[x] for x in sorted(op)]
-
-            if any(isinstance(op, dict) for op in opciones.values()):
-                devolv_lista = False
-
-            #
-            if isinstance(nombre_corrida, str):
-                if any(isinstance(op, dict) for op in opciones.values()):
-                    l_nombres = next(isinstance(op, dict) for op in opciones.values())
-                else:
-                    l_nombres = range(n_corridas)
-                l_nombres = sorted(l_nombres)
-
-                corridas = {'{}_{}'.format(nombre_corrida, l_nombres[i]): {
-                    ll: op[i] if isinstance(op, list) else op for ll, op in opciones.items()
-                } for i in range(n_corridas)}
-
-            else:
-                corridas = {nmb: {
-                    ll: op[i] if isinstance(op, list) else op for ll, op in opciones.items()
-                } for i, nmb in enumerate(nombre_corrida)}
-
-        for nmb in list(corridas.keys()):
-            corridas[nmb.replace('.', '_')] = corridas.pop(nmb)
-        # Sacar los valores iniciales del diccionario de opciones de corridas
-        d_vals_inic = {ll: v.pop('vals_inic') for ll, v in corridas.items()}
-
-        # Detectar si el modelo y todos sus submodelos son paralelizables
-        if símismo.paralelizable() and paralelo:
-            # ...si lo son...
-
-            # Empezar las simulaciones en paralelo
-            l_trabajos = []  # type: list[tuple]
-
-            copia_mod = pickle.dumps(símismo)
-
-            for corr, d_prms_corr in corridas.items():
-                d_args = {ll: copiar_profundo(v) for ll, v in d_prms_corr.items()}
-                d_args['nombre_corrida'] = corr
-
-                l_trabajos.append((copia_mod, copiar_profundo(d_vals_inic[corr]), d_args))
-
-            with Reserva() as r:
-                r.map(_correr_modelo, l_trabajos)
-
-        else:
-            # Sino simplemente correrlas una tras otra con símismo.simular()
-            if paralelo:
-                avisar(_('No todos los submodelos del modelo conectado "{}" son paralelizable. Para evitar el riesgo'
-                         'de errores de paralelización, correremos las corridas como simulaciones secuenciales normales. '
-                         'Si tus modelos sí son paralelizable, poner el atributo ".paralelizable = True" para activar la '
-                         'paralelización.').format(símismo.nombre))
-
-            # Para cada corrida...
-            for corr, d_prms_corr in corridas.items():
-
-                # Implementar los valores iniciales
-                for m, d_vals in d_vals_inic[corr].items():
+            if all(ll in símismo.modelos for ll in llaves):
+                for m, d_vals in dic_vals.items():  # type: str, dict[str, float]
                     # Para cada submodelo...
 
                     # Implementar sus valores iniciales.
                     símismo.modelos[m].inic_vals(dic_vals=d_vals)
-
-                # Después, simular el modelo.
-                símismo.simular(**d_prms_corr, nombre_corrida=corr)
-
-        if dibujar is not None:
-            # Para hacer: formalizar para todos los modelos
-            if símismo.__class__.__name__ == 'Conectado':
-                if not isinstance(dibujar, list):
-                    dibujar = [dibujar]
-
-                for dib in dibujar:
-                    for corr in corridas:
-                        símismo.dibujar_mapa(corrida=corr, **dib)
-
-        if devolver is not None:
-            egresos = {}
-            for var in devolver:
-                if devolv_lista:
-                    egresos[var] = [símismo.leer_resultados(corrida=x, var=var)
-                                    for x in corridas.keys()]
-                else:
-                    egresos[var] = {x: símismo.leer_resultados(corrida=x, var=var)
-                                    for x in corridas.keys()}
-
-            return egresos
+            else:
+                for var, val in dic_vals:
+                    encontrado = False
+                    for mod in símismo.modelos.values():
+                        if var in mod.variables:
+                            mod.inic_val(var, val)
+                            encontrado = True
+                            break
+                    if not encontrado:
+                        raise ValueError('')
 
     def incrementar(símismo, paso):
         """
@@ -831,7 +667,7 @@ class SuperConectado(Modelo):
     def _leer_resultados(símismo, var, corrida):
 
         if '_' in var:
-            mod, v = var.split('_')
+            mod, v = var.split('_', maxsplit=1)
             if mod in símismo.modelos and v in símismo.modelos[mod].variables:
                 try:
                     return símismo.modelos[mod]._leer_resultados(v, corrida)
