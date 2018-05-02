@@ -36,9 +36,9 @@ class Modelo(object):
         # No se puede incluir nombres de modelos con "_" en el nombre (podría corrumpir el manejo de variables en
         # modelos jerarquizados).
         if "_" in nombre:
-            avisar('No se pueden emplear nombres de modelos con "_", así que no puedes nombrar tu modelo"{}".\n'
+            avisar(_('No se pueden emplear nombres de modelos con "_", así que no puedes nombrar tu modelo"{}".\n'
                    'Sino, causaría problemas de conexión de variables por una razón muy compleja y oscura.\n'
-                   'Vamos a renombrar tu modelo "{}". Lo siento.'.format(nombre, nombre.replace('_', '.')))
+                   'Vamos a renombrar tu modelo "{}". Lo siento.').format(nombre, nombre.replace('_', '.')))
 
         # El nombre del modelo (sirve como una referencia a este modelo en el modelo conectado).
         símismo.nombre = nombre

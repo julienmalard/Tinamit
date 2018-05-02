@@ -74,7 +74,6 @@ class EnvolturaBF(Modelo):
                 modelo = modelo()
 
             if isinstance(modelo, ModeloBF):
-                símismo.archivo = inspect.getfile(modelo.__class__)
                 símismo.modelo = copiar(modelo)
             else:
                 raise TypeError(_('El parámetro "modelo" debe ser o una instancia o subclase de "ModeloBF", o un '
@@ -180,7 +179,7 @@ class EnvolturaBF(Modelo):
         return símismo.modelo.paralelizable()
 
     def __getinitargs__(símismo):
-        return símismo.archivo,
+        return símismo.modelo,
 
 
 class ModeloBF(Modelo):

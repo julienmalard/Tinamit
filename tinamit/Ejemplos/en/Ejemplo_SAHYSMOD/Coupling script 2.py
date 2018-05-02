@@ -139,4 +139,4 @@ if __name__ == '__main__':
 
         modelo.simular_paralelo(paso=1, tiempo_final=100*2, fecha_inic='01/11/1989', lugar=location, clima=True,
                                 recalc=False, tcr=[0, 2.6, 4.5, 6.0, 8.5], vals_inic=vals_inic, combinar=True,
-                                nombre_corrida='', dibujar=dibs, paralelo=False)
+                                nombre_corrida='', dibujar=dibs, paralelo=True)
