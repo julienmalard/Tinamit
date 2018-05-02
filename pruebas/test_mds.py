@@ -13,6 +13,7 @@ class Test_ModeloSenc(unittest.TestCase):
         tipos_modelos = {
             'mdlVensim': {'envlt': ModeloVensimMdl, 'prueba': 'recursos/prueba_senc.mdl'},
             'PySDVensim': {'envlt': ModeloPySD, 'prueba': 'recursos/prueba_senc.mdl'},
+            'PySD_XMILE': {'envlt': ModeloPySD, 'prueba': 'recursos/prueba_senc_.xmile'},
             'dllVensim': {'envlt': ModeloVensim, 'prueba': 'recursos/prueba_senc.vpm'}
         }
 
@@ -88,7 +89,6 @@ class Test_ModeloSenc(unittest.TestCase):
             for a in c[2]:
                 nmbr, ext = os.path.splitext(a)
                 try:
-                    print(a)
                     if nmbr == 'Corrida Tinamït':
                         os.remove(a)
                     if ext in ['.2mdl', '.vdf']:

@@ -1,4 +1,6 @@
 import os
+from ast import literal_eval
+
 import pysd
 
 from tinamit import _
@@ -11,8 +13,10 @@ class ModeloPySD(EnvolturaMDS):
 
         ext = os.path.splitext(archivo)[1]
         if ext == '.mdl':
+            símismo.tipo = '.mdl'
             símismo.modelo = pysd.read_vensim(archivo)
         elif ext in ['.xmile', '.xml']:
+            símismo.tipo = '.xmile'
             símismo.modelo = pysd.read_xmile(archivo)
         else:
             raise ValueError(_('PySD no sabe leer modelos del formato "{}". Debes darle un modelo ".mdl" o ".xmile".')
@@ -34,13 +38,8 @@ class ModeloPySD(EnvolturaMDS):
             nombre = f['Real Name']
             if nombre not in ['FINAL TIME', 'TIME STEP', 'SAVEPER', 'INITIAL TIME']:
                 nombre_py = f['Py Name']
-                if f['Unit'][-1] == ']':
-                    unidades, líms = f['Unit'].rsplit('[')  # type: str, str
-                else:
-                    unidades = f['Unit']
-                    líms = '?, ?]'
-                unidades = unidades.strip()
-                líms = tuple([float(x) if x.strip() != '?' else None for x in líms.strip(']').split(',')])
+                unidades = f['Unit']
+                líms = literal_eval(f['Lims'])
 
                 símismo.variables[nombre] = {
                     'val': getattr(símismo.modelo.components, nombre_py)(),
@@ -54,12 +53,20 @@ class ModeloPySD(EnvolturaMDS):
 
     def obt_unidad_tiempo(símismo):
         docs = símismo.modelo.doc()
-        unid_tiempo = docs.loc[docs['Real Name'] == 'TIME STEP', 'Unit'].values[0]
 
-        if unid_tiempo[-1] == ']':
-            unid_tiempo = unid_tiempo.rsplit('[')[0]
+        if símismo.tipo == '.mdl':
+            unid_tiempo = docs.loc[docs['Real Name'] == 'TIME STEP', 'Unit'].values[0]
 
-        unid_tiempo = unid_tiempo.strip()
+        else:
+            # Solución muy fea para PySD
+            with open(símismo.modelo.py_model_file, 'r', encoding='UTF-8') as d:
+                f = d.readline()
+                while f != 'def time_step():\n':
+                    f = d.readline()
+                f = d.readline()
+                while f.strip() in ['"""', 'TIME STEP', '']:
+                    f = d.readline()
+                unid_tiempo = f.strip()
 
         return unid_tiempo
 

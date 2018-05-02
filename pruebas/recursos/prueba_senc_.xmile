@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xmile xmlns="http://www.systemdynamics.org/XMILE" version="1.0" level="3">
+    <header>
+        <smile version="1.0"></smile>
+        <name>eval_order</name>
+        <uuid>554973ab-f992-4869-8aa8-9cf90e6e3158</uuid>
+        <vendor>SDLabs</vendor>
+        <product version="0.1">go-xmile</product>
+    </header>
+    <sim_specs time_units="mes">
+        <start>0</start>
+        <stop>200</stop>
+        <dt>1</dt>
+    </sim_specs>
+    <dimensions></dimensions>
+    <model_units>
+        <unit name="mes">
+            <alias>mes</alias>
+            <alias>month</alias>
+        </unit>
+    </model_units>
+    <equation_prefs xmlns="isee" order_by="module"></equation_prefs>
+    <model>
+        <variables>
+            <flow name="Evaporación">
+                <eqn>0.1*Lago</eqn>
+                <units>m3/mes</units>
+                <range min="0"></range>
+                <doc>La evaporación del lago, fija al 10%.</doc>
+            </flow>
+
+            <flow name="Flujo río">
+                <eqn>Lluvia</eqn>
+                <units>m3/mes</units>
+                <range min="0"/>
+                <doc>El flujo de agua en el río.</doc>
+            </flow>
+
+            <stock name="Lago">
+                <eqn>Nivel lago inicial</eqn>
+                <inflow>Flujo río</inflow>
+                <outflow>Evaporación</outflow>
+                <units>m3</units>
+                <range min="0"/>
+                <doc>La cantidad de agua en el lago.</doc>
+            </stock>
+
+            <aux name="Lluvia">
+                <eqn>10</eqn>
+                <units>m3/mes</units>
+                <range min="0"/>
+                <doc>La cantidad de lluvia que cae por mes.</doc>
+            </aux>
+
+            <aux name="Nivel lago inicial">
+                <eqn>1500</eqn>
+                <units>m3</units>
+                <range min="0"/>
+                <doc>La cantidad inicial  de agua en el lago.</doc>
+            </aux>
+
+        </variables>
+
+        <views>
+            <view scroll_x="0" scroll_y="0" zoom="200" converter_size="medium">
+                <aux x="143" y="77" color="blue" name="auxiliary"></aux>
+            </view>
+            <view name="interface" scroll_x="0" scroll_y="0" zoom="0" page_width="788" page_height="528">
+                <simulation_delay>0.1</simulation_delay>
+            </view>
+        </views>
+    </model>
+</xmile>

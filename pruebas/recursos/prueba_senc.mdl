@@ -2,7 +2,7 @@
 Evaporación=
 	0.1*Lago
 	~	m3/mes [0,?]
-	~	La evaporación del lago, fijo al 10%.
+	~	La evaporación del lago, fija al 10%.
 	|
 
 Flujo río=
