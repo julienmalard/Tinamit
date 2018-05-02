@@ -91,7 +91,11 @@ class Test_ModeloSenc(unittest.TestCase):
                 try:
                     if nmbr == 'Corrida Tinamït':
                         os.remove(a)
-                    if ext in ['.2mdl', '.vdf']:
+                    elif ext in ['.2mdl', '.vdf']:
+                        os.remove(a)
+                    elif a == 'prueba_senc.py':
+                        os.remove(a)
+                    elif a == 'prueba_senc_.py':
                         os.remove(a)
                 except PermissionError:
                     pass
