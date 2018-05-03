@@ -1,11 +1,24 @@
+import os
 import tkinter as tk
 
 import pkg_resources
+from tinamit.Interfaz import Traducciones as Trad
 
 
 def imagen(nombre):
-    archivo = pkg_resources.resource_filename('tinamit.Interfaz.Imágenes', archivos_imgs[nombre])
-    img = tk.PhotoImage(file=archivo)
+    leng = Trad.Diccionario().config['leng_act']
+    nmb_arch = archivos_imgs[nombre]
+    nmb, ext = os.path.splitext(nmb_arch)
+
+    if leng != Trad.Diccionario().estándar:
+        direc_archivo = pkg_resources.resource_filename('tinamit.Interfaz.Imágenes', '{}_{}{}'.format(nmb, leng, ext))
+        if not os.path.isfile(direc_archivo):
+            direc_archivo = pkg_resources.resource_filename('tinamit.Interfaz.Imágenes', nmb_arch)
+    else:
+        direc_archivo = pkg_resources.resource_filename('tinamit.Interfaz.Imágenes', nmb_arch)
+
+    img = tk.PhotoImage(file=direc_archivo)
+
     return img
 
 
