@@ -21,7 +21,7 @@ def _act_arch_trads(l_d_t, arch):
     lengs = set(itertools.chain.from_iterable([list(d) for d in l_d_t]))
     for u in unids_faltan:
         d_u = {'en': [u]}
-        d_u.update({l: [''] for l in lengs})
+        d_u.update({l: [''] for l in lengs if l != 'en'})
 
         l_d_t.append(d_u)
 
@@ -29,6 +29,7 @@ def _act_arch_trads(l_d_t, arch):
     for d in l_d_t:
         for l, t in d.items():
             d[l] = list(set(t))
+    l_d_t[:] = [d for d in l_d_t if all(len(t) and all(len(i) for i in t) for l, t in d.items())]
 
     with open(arch, 'w', encoding='UTF-8') as d:
         json.dump(l_d_t, d, ensure_ascii=False, indent=2)
@@ -39,8 +40,8 @@ if not os.path.isfile(archivo_json):
     l_dic_trads = []
 else:
     try:
-        with open(archivo_json, encoding='UTF-8') as d:
-            l_dic_trads = json.load(d)  # type: list[dict]
+        with open(archivo_json, encoding='UTF-8') as d_j:
+            l_dic_trads = json.load(d_j)  # type: list[dict]
     except json.JSONDecodeError:
         l_dic_trads = []
 

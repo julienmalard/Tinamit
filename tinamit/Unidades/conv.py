@@ -38,6 +38,10 @@ def convertir(de, a, val=1, lengua=None):
     if de == a:
         return val
 
+    # Arreglar exponentes para que los entienda Pint
+    de = re.sub(r'([\p{l}\p{m}]+\w*)(-?[\p{n}]+)', repl=r'\1 ^ \2', string=de)
+    a = re.sub(r'([\p{l}\p{m}]+\w*)(-?[\p{n}]+)', repl=r'\1 ^ \2', string=a)
+
     # Leer los nombres de todas las unidades presentes.
     unids_pres_de = re.findall(r'[\p{l}\p{m}]+', de)
     unids_pres_a =  re.findall(r'[\p{l}\p{m}]+', a)
