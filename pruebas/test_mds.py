@@ -75,7 +75,9 @@ class Test_ModeloSenc(unittest.TestCase):
     def test_cmb_vals_inic(símismo):
         for mod in símismo.modelos.values():
             with símismo.subTest(mod=mod):
-                símismo.assertEqual(mod.variables['Nivel lago inicial']['val'], 1500)
+                for v, d_v in símismo.info_vars.items():
+                    if 'val_inic' in d_v:
+                        símismo.assertEqual(mod.variables[v]['val'], d_v['val_inic'])
 
     def test_simul(símismo):
         for mod in símismo.modelos.values():

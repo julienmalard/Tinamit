@@ -1,15 +1,18 @@
 import datetime as ft
 import math
 import os
+import pickle
 import re
 from warnings import warn as avisar
 
+from copy import deepcopy as copiar_profundo
 import numpy as np
+from multiprocessing import Pool as Reserva
 from dateutil.relativedelta import relativedelta as deltarelativo
 
 import tinamit.Geog.Geog as Geog
 from tinamit import _, valid_nombre_arch
-from tinamit.Unidades.Unidades import convertir
+from tinamit.Unidades.conv import convertir
 
 
 class Modelo(object):
@@ -774,3 +777,27 @@ class Modelo(object):
         símismo.vars_clima = estado['vars_clima']
         símismo.unidad_tiempo = estado['unidad_tiempo']
         símismo.unidad_tiempo_meses = estado['unidad_tiempo_meses']
+
+
+def _correr_modelo(x):
+    """
+    Función para inicializar y correr un modelo :class:`SuperConectado`.
+
+    :param x: Los parámetros. El primero es el modelo, el segundo el diccionario de valores iniciales (El primer
+      nivel de llaves es el nombre del submodelo y el segundo los nombres de los variables con sus valores
+      iniciales), y el tercero es el diccionario de argumentos para pasar al modelo.
+    :type x: tuple[SuperConectado, dict[str, dict[str, float | int | np.ndarray]], dict]
+
+    """
+
+    estado_mod, vls_inic, d_args = x
+
+    mod = pickle.loads(estado_mod)
+
+    # Inicializar los variables y valores iniciales. Esto debe ser adentro de la función llamada por
+    # Proceso, para que los valores iniciales se apliquen en su propio proceso (y no en el modelo
+    # original).
+    mod.inic_vals(vls_inic)
+
+    # Después, simular el modelo
+    mod.simular(**d_args)

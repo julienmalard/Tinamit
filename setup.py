@@ -58,6 +58,8 @@ class dist_f(sdist):
         # Compilar todo.
         símismo.run_command('compilar_cat')
 
+        # lassi.gen_trads(__file__)  # para hacer: activar generación automática de traducciones de código con lassi
+
         # Seguimos con la generación de distribución fuente según el proceso habitual de Python.
         super().run()
 
@@ -133,7 +135,21 @@ setup(
     description='Conexión de modelos socioeconómicos (dinámicas de los sistemas) con modelos biofísicos.',
     long_description=leer('README.rst'),
 
-    install_requires=[r for r in leer('requirements.txt').split('\n') if 'git' not in r].append('pysd'),
+    install_requires=[
+        'numpy',
+        'scipy',
+        'matplotlib',
+        'pandas',
+        'python_dateutil',
+        'regex',
+        'lark-parser',
+        'Babel',
+        'pint',
+        'pyshp',
+        'taqdir',
+        'pysd'
+    ],
+
     dependency_links=[
         "git+git://github.com/julienmalard/pysd.git"
     ],
@@ -157,5 +173,3 @@ setup(
               'sdist': dist_f  # Comanda para crear distribución instalable
               }
 )
-
-# lassi.gen_trads(__file__)  # para hacer: activar generación automática de traducciones de código con lassi

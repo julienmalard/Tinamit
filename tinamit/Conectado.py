@@ -16,7 +16,7 @@ from tinamit.EnvolturaMDS import generar_mds
 from tinamit.Geog.Geog import Lugar
 from tinamit.MDS import EnvolturaMDS
 from tinamit.Modelo import Modelo
-from tinamit.Unidades.Unidades import convertir
+from tinamit.Unidades.conv import convertir
 
 
 class SuperConectado(Modelo):
@@ -583,10 +583,10 @@ class SuperConectado(Modelo):
         if conv is None:
             # Si no se especificó factor de conversión...
 
+            # Intentar hacer una conversión automática.
             try:
-                # Intentar hacer una conversión automática.
                 conv = convertir(de=unid_fuente, a=unid_recip)
-            except (ValueError, AttributeError):
+            except ValueError:
                 # Si eso no funcionó, suponer una conversión de 1.
                 avisar(_('No se pudo identificar una conversión automática para las unidades de los variables'
                          '"{}" (unidades: {}) y "{}" (unidades: {}). Se está suponiendo un factor de conversión de 1.')
@@ -852,31 +852,3 @@ class Conectado(SuperConectado):
         super().__setstate__(estado)
         símismo.bf = símismo.modelos['bf']
         símismo.mds = símismo.modelos['mds']
-
-
-def _correr_modelo(x):
-    """
-    Función para inicializar y correr un modelo :class:`SuperConectado`.
-
-    :param x: Los parámetros. El primero es el modelo, el segundo el diccionario de valores iniciales (El primer
-      nivel de llaves es el nombre del submodelo y el segundo los nombres de los variables con sus valores
-      iniciales), y el tercero es el diccionario de argumentos para pasar al modelo.
-    :type x: tuple[SuperConectado, dict[str, dict[str, float | int | np.ndarray]], dict]
-
-    """
-
-    estado_mod, vls_inic, d_args = x
-
-    mod = pickle.loads(estado_mod)
-
-    # Inicializar los variables y valores iniciales. Esto debe ser adentro de la función llamada por
-    # Proceso, para que los valores iniciales se apliquen en su propio proceso (y no en el modelo
-    # original).
-    for m, d_inic in vls_inic.items():
-        # Para cada submodelo...
-
-        # Iniciar los valores iniciales
-        mod.modelos[m].inic_vals(dic_vals=d_inic)
-
-    # Después, simular el modelo
-    mod.simular(**d_args)

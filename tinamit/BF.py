@@ -12,7 +12,7 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 
 from tinamit import _
 from tinamit.Modelo import Modelo
-from .Unidades.Unidades import convertir
+from .Unidades.conv import convertir
 
 
 class EnvolturaBF(Modelo):
@@ -308,7 +308,11 @@ class ModeloImpaciente(ModeloBF):
         super().__init__()
 
         símismo.paso_mín = "Año"
-        símismo.ratio_pasos = convertir(de=símismo.unidad_tiempo, a=símismo.paso_mín)
+        try:
+            símismo.ratio_pasos = convertir(de=símismo.unidad_tiempo, a=símismo.paso_mín)
+        except ValueError:
+            raise ValueError(_('La unidad de tiempo ("{}") del modelo no se pudo convertir al paso ("{}")')
+                             .format(símismo.unidad_tiempo, símismo.paso_mín))
 
         # Una lista de todos los variables estacionales (que sean ingresos o egresos)
         símismo.tipos_vars['Estacionales'] = list(
