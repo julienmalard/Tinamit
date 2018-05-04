@@ -414,6 +414,14 @@
                             "self": {
                               "ਪ੍ਰਕਾਰ": "param",
                               "num": "16051973"
+                            },
+                            "tiempo_final": {
+                              "ਪ੍ਰਕਾਰ": "param",
+                              "num": "54721539"
+                            },
+                            "nombre_corrida": {
+                              "ਪ੍ਰਕਾਰ": "param",
+                              "num": "82518733"
                             }
                           },
                           "num": "17995100"
@@ -479,6 +487,16 @@
                             }
                           },
                           "num": "65302806"
+                        },
+                        "paralelizable": {
+                          "ਪ੍ਰਕਾਰ": "fonction",
+                          "ਸੱਮਗਰੀ": {
+                            "símismo": {
+                              "ਪ੍ਰਕਾਰ": "param",
+                              "num": "28336848"
+                            }
+                          },
+                          "num": "27785350"
                         }
                       },
                       "num": "29063788"
@@ -524,6 +542,17 @@
                         }
                       },
                       "num": "23271461"
+                    },
+                    "shutil": {
+                      "ਪ੍ਰਕਾਰ": "import",
+                      "ਸੱਮਗਰੀ": {},
+                      "parent": "shutil"
+                    },
+                    "obt_val_config": {
+                      "ਪ੍ਰਕਾਰ": "import",
+                      "ਸੱਮਗਰੀ": {},
+                      "parent": "obt_val_config",
+                      "mod": "tinamit"
                     }
                   },
                   "num": "84471990"
@@ -668,6 +697,153 @@
                     }
                   },
                   "num": "7563306"
+                },
+                "envoltDSSAT_senc.py": {
+                  "ਪ੍ਰਕਾਰ": "ਦਸ੍ਤ",
+                  "ਸੱਮਗਰੀ": {
+                    "os": {
+                      "ਪ੍ਰਕਾਰ": "import",
+                      "ਸੱਮਗਰੀ": {},
+                      "parent": "os"
+                    },
+                    "ft": {
+                      "ਪ੍ਰਕਾਰ": "import",
+                      "ਸੱਮਗਰੀ": {},
+                      "parent": "datetime",
+                      "mod": "datetime"
+                    },
+                    "correr": {
+                      "ਪ੍ਰਕਾਰ": "import",
+                      "ਸੱਮਗਰੀ": {},
+                      "parent": "run",
+                      "mod": "subprocess"
+                    },
+                    "resource_filename": {
+                      "ਪ੍ਰਕਾਰ": "import",
+                      "ਸੱਮਗਰੀ": {},
+                      "parent": "resource_filename",
+                      "mod": "pkg_resources"
+                    },
+                    "ModeloBF": {
+                      "ਪ੍ਰਕਾਰ": "import",
+                      "ਸੱਮਗਰੀ": {},
+                      "parent": "ModeloBF",
+                      "mod": "tinamit.BF"
+                    },
+                    "plantilla_wth": {
+                      "ਪ੍ਰਕਾਰ": "attr",
+                      "ਸੱਮਗਰੀ": {},
+                      "num": "58070565"
+                    },
+                    "arch_DSSAT_WTH": {
+                      "ਪ੍ਰਕਾਰ": "attr",
+                      "ਸੱਮਗਰੀ": {},
+                      "num": "72102916"
+                    },
+                    "EnvoltDSSAT": {
+                      "ਪ੍ਰਕਾਰ": "classe",
+                      "ਸੱਮਗਰੀ": {
+                        "cambiar_vals_modelo_interno": {
+                          "ਪ੍ਰਕਾਰ": "fonction",
+                          "ਸੱਮਗਰੀ": {
+                            "símismo": {
+                              "ਪ੍ਰਕਾਰ": "param",
+                              "num": "66673398"
+                            },
+                            "valores": {
+                              "ਪ੍ਰਕਾਰ": "param",
+                              "num": "57289544"
+                            }
+                          },
+                          "num": "42494755"
+                        },
+                        "incrementar": {
+                          "ਪ੍ਰਕਾਰ": "fonction",
+                          "ਸੱਮਗਰੀ": {
+                            "símismo": {
+                              "ਪ੍ਰਕਾਰ": "param",
+                              "num": "46326331"
+                            },
+                            "paso": {
+                              "ਪ੍ਰਕਾਰ": "param",
+                              "num": "18519205"
+                            }
+                          },
+                          "num": "97250480"
+                        },
+                        "act_vals_clima": {
+                          "ਪ੍ਰਕਾਰ": "fonction",
+                          "ਸੱਮਗਰੀ": {
+                            "símismo": {
+                              "ਪ੍ਰਕਾਰ": "param",
+                              "num": "49947352"
+                            },
+                            "n_paso": {
+                              "ਪ੍ਰਕਾਰ": "param",
+                              "num": "55766745"
+                            },
+                            "f": {
+                              "ਪ੍ਰਕਾਰ": "param",
+                              "num": "33187701"
+                            }
+                          },
+                          "num": "71714617"
+                        },
+                        "leer_vals": {
+                          "ਪ੍ਰਕਾਰ": "fonction",
+                          "ਸੱਮਗਰੀ": {
+                            "símismo": {
+                              "ਪ੍ਰਕਾਰ": "param",
+                              "num": "55927204"
+                            }
+                          },
+                          "num": "41544040"
+                        },
+                        "cerrar_modelo": {
+                          "ਪ੍ਰਕਾਰ": "fonction",
+                          "ਸੱਮਗਰੀ": {
+                            "símismo": {
+                              "ਪ੍ਰਕਾਰ": "param",
+                              "num": "41568808"
+                            }
+                          },
+                          "num": "35658269"
+                        },
+                        "obt_unidad_tiempo": {
+                          "ਪ੍ਰਕਾਰ": "fonction",
+                          "ਸੱਮਗਰੀ": {
+                            "símismo": {
+                              "ਪ੍ਰਕਾਰ": "param",
+                              "num": "58526814"
+                            }
+                          },
+                          "num": "90515794"
+                        },
+                        "inic_vars": {
+                          "ਪ੍ਰਕਾਰ": "fonction",
+                          "ਸੱਮਗਰੀ": {
+                            "símismo": {
+                              "ਪ੍ਰਕਾਰ": "param",
+                              "num": "14200417"
+                            }
+                          },
+                          "num": "34065934"
+                        },
+                        "leer_vals_inic": {
+                          "ਪ੍ਰਕਾਰ": "fonction",
+                          "ਸੱਮਗਰੀ": {
+                            "símismo": {
+                              "ਪ੍ਰਕਾਰ": "param",
+                              "num": "40648146"
+                            }
+                          },
+                          "num": "42260918"
+                        }
+                      },
+                      "num": "29750983"
+                    }
+                  },
+                  "num": "28495215"
                 }
               },
               "num": "57081495"
@@ -894,6 +1070,10 @@
                     "c_fecha": {
                       "ਪ੍ਰਕਾਰ": "param",
                       "num": "77439843"
+                    },
+                    "conv": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "64990520"
                     }
                   },
                   "num": "14404869"
@@ -920,6 +1100,10 @@
                     "años": {
                       "ਪ੍ਰਕਾਰ": "param",
                       "num": "42105672"
+                    },
+                    "conv": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "53949005"
                     }
                   },
                   "num": "97246985"
@@ -942,6 +1126,10 @@
                     "años": {
                       "ਪ੍ਰਕਾਰ": "param",
                       "num": "88113846"
+                    },
+                    "conv": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "98750405"
                     }
                   },
                   "num": "61439529"
@@ -1037,64 +1225,6 @@
             "Geografía": {
               "ਪ੍ਰਕਾਰ": "classe",
               "ਸੱਮਗਰੀ": {
-                "agregar_objeto": {
-                  "ਪ੍ਰਕਾਰ": "fonction",
-                  "ਸੱਮਗਰੀ": {
-                    "símismo": {
-                      "ਪ੍ਰਕਾਰ": "param",
-                      "num": "14801634"
-                    },
-                    "archivo": {
-                      "ਪ੍ਰਕਾਰ": "param",
-                      "num": "3256985"
-                    },
-                    "nombre": {
-                      "ਪ੍ਰਕਾਰ": "param",
-                      "val": null,
-                      "num": "72063865"
-                    },
-                    "tipo": {
-                      "ਪ੍ਰਕਾਰ": "param",
-                      "val": null,
-                      "num": "75453015"
-                    },
-                    "alpha": {
-                      "ਪ੍ਰਕਾਰ": "param",
-                      "val": null,
-                      "num": "21338730"
-                    },
-                    "color": {
-                      "ਪ੍ਰਕਾਰ": "param",
-                      "val": null,
-                      "num": "17838404"
-                    },
-                    "llenar": {
-                      "ਪ੍ਰਕਾਰ": "param",
-                      "val": null,
-                      "num": "22216420"
-                    }
-                  },
-                  "num": "45330222"
-                },
-                "agregar_regiones": {
-                  "ਪ੍ਰਕਾਰ": "fonction",
-                  "ਸੱਮਗਰੀ": {
-                    "símismo": {
-                      "ਪ੍ਰਕਾਰ": "param",
-                      "num": "63335995"
-                    },
-                    "archivo": {
-                      "ਪ੍ਰਕਾਰ": "param",
-                      "num": "11149630"
-                    },
-                    "col_orden": {
-                      "ਪ੍ਰਕਾਰ": "param",
-                      "val": null,
-                      "num": "3137635"
-                    }
-                  },
-                  "num": "42115286"
-                },
                 "dibujar": {
                   "ਪ੍ਰਕਾਰ": "fonction",
                   "ਸੱਮਗਰੀ": {
@@ -1126,16 +1256,193 @@
                       "val": null,
                       "num": "69781476"
                     },
-                    "escala": {
+                    "escala_num": {
                       "ਪ੍ਰਕਾਰ": "param",
                       "val": null,
-                      "num": "67730475"
+                      "num": "95150728"
                     }
                   },
                   "num": "62411712"
+                },
+                "agregar_forma": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "77019694"
+                    },
+                    "archivo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "71056"
+                    },
+                    "nombre": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "12661796"
+                    },
+                    "tipo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "94837164"
+                    },
+                    "alpha": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "78351297"
+                    },
+                    "color": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "67640369"
+                    },
+                    "llenar": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "72891645"
+                    }
+                  },
+                  "num": "46016277"
+                },
+                "agregar_frm_regiones": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "1337087"
+                    },
+                    "archivo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "145466"
+                    },
+                    "col_id": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "67220345"
+                    },
+                    "col_orden": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "76058362"
+                    },
+                    "escala_geog": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "96261787"
+                    }
+                  },
+                  "num": "87773353"
+                },
+                "agregar_info_regiones": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "8941529"
+                    },
+                    "archivo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "33025030"
+                    },
+                    "col_cód": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "68758573"
+                    },
+                    "orden_jer": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "88814687"
+                    },
+                    "grupos": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "69006731"
+                    }
+                  },
+                  "num": "34715681"
+                },
+                "leer_archivo_info_reg": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "92492027"
+                    },
+                    "archivo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "54456793"
+                    },
+                    "orden_jer": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "4140282"
+                    },
+                    "col_cód": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "94790936"
+                    },
+                    "grupos": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "63032931"
+                    }
+                  },
+                  "num": "69791124"
+                },
+                "obt_lugares_en": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "33874395"
+                    },
+                    "escala": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "21978457"
+                    },
+                    "en": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "63780857"
+                    },
+                    "por": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "28651099"
+                    }
+                  },
+                  "num": "13865472"
+                },
+                "obt_en_grupo": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "34366552"
+                    },
+                    "tipo_grupo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "55912245"
+                    },
+                    "grupos": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "61903873"
+                    }
+                  },
+                  "num": "58067210"
                 }
               },
               "num": "46989282"
+            },
+            "csv": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "csv"
+            },
+            "_": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "_",
+              "mod": "tinamit"
             }
           },
           "num": "76384522"
@@ -1146,82 +1453,204 @@
     "Unidades": {
       "ਪ੍ਰਕਾਰ": "ਨਤ੍ਥੀ",
       "ਸੱਮਗਰੀ": {
-        "Unidades.py": {
+        "conv.py": {
           "ਪ੍ਰਕਾਰ": "ਦਸ੍ਤ",
           "ਸੱਮਗਰੀ": {
-            "json": {
+            "pint": {
               "ਪ੍ਰਕਾਰ": "import",
               "ਸੱਮਗਰੀ": {},
-              "parent": "json"
+              "parent": "pint"
             },
             "re": {
               "ਪ੍ਰਕਾਰ": "import",
               "ਸੱਮਗਰੀ": {},
-              "parent": "re"
+              "parent": "regex"
             },
-            "pkg_resources": {
+            "_": {
               "ਪ੍ਰਕਾਰ": "import",
               "ਸੱਮਗਰੀ": {},
-              "parent": "pkg_resources"
+              "parent": "_",
+              "mod": "tinamit"
             },
-            "archivo_json": {
-              "ਪ੍ਰਕਾਰ": "attr",
+            "regu": {
+              "ਪ੍ਰਕਾਰ": "import",
               "ਸੱਮਗਰੀ": {},
-              "num": "5689589"
+              "parent": "regu",
+              "mod": "tinamit.Unidades"
             },
             "convertir": {
               "ਪ੍ਰਕਾਰ": "fonction",
               "ਸੱਮਗਰੀ": {
                 "de": {
                   "ਪ੍ਰਕਾਰ": "param",
-                  "num": "3422114"
+                  "num": "16909699"
                 },
                 "a": {
                   "ਪ੍ਰਕਾਰ": "param",
-                  "num": "94439353"
+                  "num": "33935792"
                 },
                 "val": {
                   "ਪ੍ਰਕਾਰ": "param",
                   "val": 1,
-                  "num": "10715338"
-                },
-                "clase": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "val": null,
-                  "num": "40188460"
+                  "num": "44771007"
                 },
                 "lengua": {
                   "ਪ੍ਰਕਾਰ": "param",
                   "val": null,
-                  "num": "18792612"
+                  "num": "96418891"
                 }
               },
-              "num": "53297234"
-            },
-            "convertir_unid_senc": {
-              "ਪ੍ਰਕਾਰ": "fonction",
-              "ਸੱਮਗਰੀ": {
-                "de": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "62957569"
-                },
-                "a": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "50470163"
-                },
-                "clases": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "5135274"
-                },
-                "lenguas": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "57670305"
-                }
-              },
-              "num": "99077136"
+              "num": "95829106"
             }
           },
-          "num": "4271960"
+          "num": "21272004"
+        },
+        "trads.py": {
+          "ਪ੍ਰਕਾਰ": "ਦਸ੍ਤ",
+          "ਸੱਮਗਰੀ": {
+            "itertools": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "itertools"
+            },
+            "json": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "json"
+            },
+            "os": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "os"
+            },
+            "pint": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "pint"
+            },
+            "pkg_resources": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "pkg_resources"
+            },
+            "_": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "_",
+              "mod": "tinamit"
+            },
+            "regu": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "regu",
+              "mod": null
+            },
+            "archivo_json": {
+              "ਪ੍ਰਕਾਰ": "attr",
+              "ਸੱਮਗਰੀ": {},
+              "num": "27549577"
+            },
+            "trad_unid": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "unid": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "36772014"
+                },
+                "leng_final": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "3903142"
+                },
+                "leng_orig": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "3609096"
+                }
+              },
+              "num": "42892267"
+            },
+            "agregar_trad": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "unid": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "48510657"
+                },
+                "trad": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "25072831"
+                },
+                "leng_trad": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "93502431"
+                },
+                "leng_orig": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "91705999"
+                },
+                "guardar": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": true,
+                  "num": "10093783"
+                }
+              },
+              "num": "44458917"
+            },
+            "agregar_sinónimos": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "unid": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "54921115"
+                },
+                "sinónimos": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "75764405"
+                },
+                "leng": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "67039876"
+                },
+                "guardar": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": true,
+                  "num": "48811382"
+                }
+              },
+              "num": "84888524"
+            }
+          },
+          "num": "20165824"
+        },
+        "__init__.py": {
+          "ਪ੍ਰਕਾਰ": "ਦਸ੍ਤ",
+          "ਸੱਮਗਰੀ": {
+            "UnitRegistry": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "UnitRegistry",
+              "mod": "pint"
+            },
+            "regu": {
+              "ਪ੍ਰਕਾਰ": "attr",
+              "ਸੱਮਗਰੀ": {},
+              "num": "79079212"
+            },
+            "C_": {
+              "ਪ੍ਰਕਾਰ": "attr",
+              "ਸੱਮਗਰੀ": {},
+              "num": "84487497"
+            },
+            "agregar_trad": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "agregar_trad",
+              "mod": "tinamit.Unidades.trads"
+            }
+          },
+          "num": "63583814"
         }
       },
       "num": "44018012"
@@ -1282,7 +1711,7 @@
           "ਪ੍ਰਕਾਰ": "import",
           "ਸੱਮਗਰੀ": {},
           "parent": "convertir",
-          "mod": "Unidades.Unidades"
+          "mod": "Unidades.conv"
         },
         "EnvolturaBF": {
           "ਪ੍ਰਕਾਰ": "classe",
@@ -1364,6 +1793,34 @@
                 }
               },
               "num": "91808040"
+            },
+            "act_vals_clima": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "9370547"
+                },
+                "n_paso": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "70352160"
+                },
+                "f": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "6806213"
+                }
+              },
+              "num": "18981171"
+            },
+            "paralelizable": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "11421672"
+                }
+              },
+              "num": "37216151"
             }
           },
           "num": "2739319"
@@ -1415,6 +1872,14 @@
                 "símismo": {
                   "ਪ੍ਰਕਾਰ": "param",
                   "num": "93371418"
+                },
+                "tiempo_final": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "93946286"
+                },
+                "nombre_corrida": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "18737225"
                 }
               },
               "num": "27457414"
@@ -1448,6 +1913,16 @@
                 }
               },
               "num": "11255304"
+            },
+            "leer_vals_inic": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "25421546"
+                }
+              },
+              "num": "82452438"
             }
           },
           "num": "29511022"
@@ -1527,6 +2002,14 @@
                 "símismo": {
                   "ਪ੍ਰਕਾਰ": "param",
                   "num": "94694007"
+                },
+                "tiempo_final": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "76716381"
+                },
+                "nombre_corrida": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "65793519"
                 }
               },
               "num": "36056235"
@@ -1776,9 +2259,36 @@
                 }
               },
               "num": "98211804"
+            },
+            "leer_vals_inic": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "57499198"
+                }
+              },
+              "num": "56203059"
             }
           },
           "num": "59404327"
+        },
+        "inspect": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "inspect"
+        },
+        "copiar": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "copy",
+          "mod": "copy"
+        },
+        "_": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "_",
+          "mod": "tinamit"
         }
       },
       "num": "24416636"
@@ -1817,12 +2327,6 @@
           "ਸੱਮਗਰੀ": {},
           "parent": "numpy"
         },
-        "relativedelta": {
-          "ਪ੍ਰਕਾਰ": "import",
-          "ਸੱਮਗਰੀ": {},
-          "parent": "relativedelta",
-          "mod": "dateutil.relativedelta"
-        },
         "EnvolturaBF": {
           "ਪ੍ਰਕਾਰ": "import",
           "ਸੱਮਗਰੀ": {},
@@ -1833,7 +2337,7 @@
           "ਪ੍ਰਕਾਰ": "import",
           "ਸੱਮਗਰੀ": {},
           "parent": "generar_mds",
-          "mod": "tinamit.MDS"
+          "mod": "tinamit.EnvolturaMDS"
         },
         "Modelo": {
           "ਪ੍ਰਕਾਰ": "import",
@@ -1845,19 +2349,7 @@
           "ਪ੍ਰਕਾਰ": "import",
           "ਸੱਮਗਰੀ": {},
           "parent": "convertir",
-          "mod": "tinamit.Unidades.Unidades"
-        },
-        "Geografía": {
-          "ਪ੍ਰਕਾਰ": "import",
-          "ਸੱਮਗਰੀ": {},
-          "parent": "Geografía",
-          "mod": "tinamit.Geog.Geog"
-        },
-        "مقام": {
-          "ਪ੍ਰਕਾਰ": "import",
-          "ਸੱਮਗਰੀ": {},
-          "parent": "مقام",
-          "mod": "taqdir.مقام"
+          "mod": "tinamit.Unidades.conv"
         },
         "SuperConectado": {
           "ਪ੍ਰਕਾਰ": "classe",
@@ -1991,6 +2483,11 @@
                   "ਪ੍ਰਕਾਰ": "param",
                   "val": false,
                   "num": "81742064"
+                },
+                "vars_interés": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "3765202"
                 }
               },
               "num": "60651037"
@@ -2079,6 +2576,58 @@
                 }
               },
               "num": "78024711"
+            },
+            "paralelizable": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "10053239"
+                }
+              },
+              "num": "3309245"
+            },
+            "inic_vals": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "53632561"
+                },
+                "dic_vals": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "70072295"
+                }
+              },
+              "num": "66743931"
+            },
+            "estab_conv_meses": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "96942505"
+                },
+                "conv": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "22607291"
+                }
+              },
+              "num": "65772795"
+            },
+            "valid_var": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "628654"
+                },
+                "var": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "99942626"
+                }
+              },
+              "num": "97624153"
             }
           },
           "num": "25616858"
@@ -2107,9 +2656,9 @@
                   "ਪ੍ਰਕਾਰ": "param",
                   "num": "57339338"
                 },
-                "archivo_bf": {
+                "bf": {
                   "ਪ੍ਰਕਾਰ": "param",
-                  "num": "31003140"
+                  "num": "68776067"
                 }
               },
               "num": "72511608"
@@ -2155,49 +2704,73 @@
               },
               "num": "24401201"
             },
-            "dibujar": {
+            "leer_resultados": {
               "ਪ੍ਰਕਾਰ": "fonction",
               "ਸੱਮਗਰੀ": {
                 "símismo": {
                   "ਪ੍ਰਕਾਰ": "param",
-                  "num": "51027998"
-                },
-                "geog": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "4997197"
-                },
-                "var": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "10829566"
+                  "num": "367618"
                 },
                 "corrida": {
                   "ਪ੍ਰਕਾਰ": "param",
-                  "num": "12886364"
+                  "num": "49490542"
                 },
-                "directorio": {
+                "var": {
                   "ਪ੍ਰਕਾਰ": "param",
-                  "num": "42788601"
-                },
-                "i_paso": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "val": null,
-                  "num": "15950618"
-                },
-                "colores": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "val": null,
-                  "num": "47118609"
-                },
-                "escala": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "val": null,
-                  "num": "73351707"
+                  "num": "10662522"
                 }
               },
-              "num": "42589284"
+              "num": "56193021"
             }
           },
           "num": "37169428"
+        },
+        "pickle": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "pickle"
+        },
+        "copiar": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "copy",
+          "mod": "copy"
+        },
+        "copiar_profundo": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "deepcopy",
+          "mod": "copy"
+        },
+        "Reserva": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "Pool",
+          "mod": "multiprocessing"
+        },
+        "deltarelativo": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "relativedelta",
+          "mod": "dateutil.relativedelta"
+        },
+        "_": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "_",
+          "mod": "tinamit"
+        },
+        "Lugar": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "Lugar",
+          "mod": "tinamit.Geog.Geog"
+        },
+        "EnvolturaMDS": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "EnvolturaMDS",
+          "mod": "tinamit.MDS"
         }
       },
       "num": "13949829"
@@ -2252,7 +2825,7 @@
           "ਪ੍ਰਕਾਰ": "import",
           "ਸੱਮਗਰੀ": {},
           "parent": "convertir",
-          "mod": "tinamit.Unidades.Unidades"
+          "mod": "tinamit.Unidades.conv"
         },
         "Modelo": {
           "ਪ੍ਰਕਾਰ": "classe",
@@ -2337,16 +2910,6 @@
               },
               "num": "62888244"
             },
-            "limp_vals_inic": {
-              "ਪ੍ਰਕਾਰ": "fonction",
-              "ਸੱਮਗਰੀ": {
-                "símismo": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "7467581"
-                }
-              },
-              "num": "82907455"
-            },
             "conectar_var_clima": {
               "ਪ੍ਰਕਾਰ": "fonction",
               "ਸੱਮਗਰੀ": {
@@ -2366,6 +2929,10 @@
                   "ਪ੍ਰਕਾਰ": "param",
                   "val": null,
                   "num": "40145213"
+                },
+                "conv": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "31785365"
                 }
               },
               "num": "2210222"
@@ -2439,9 +3006,288 @@
                 }
               },
               "num": "36773024"
+            },
+            "simular": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "53953236"
+                },
+                "tiempo_final": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "21126675"
+                },
+                "paso": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": 1,
+                  "num": "59896697"
+                },
+                "nombre_corrida": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": "Corrida Tinamït",
+                  "num": "12796171"
+                },
+                "fecha_inic": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "76500656"
+                },
+                "lugar": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "17344279"
+                },
+                "tcr": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "94299784"
+                },
+                "recalc": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": true,
+                  "num": "92782856"
+                },
+                "clima": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": false,
+                  "num": "65430107"
+                },
+                "vars_interés": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "5575395"
+                }
+              },
+              "num": "786623"
+            },
+            "simular_paralelo": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "20687245"
+                },
+                "tiempo_final": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "92111714"
+                },
+                "paso": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": 1,
+                  "num": "88845839"
+                },
+                "nombre_corrida": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": "Corrida Tinamït",
+                  "num": "14103713"
+                },
+                "vals_inic": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "73991545"
+                },
+                "fecha_inic": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "89213722"
+                },
+                "lugar": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "27579580"
+                },
+                "tcr": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "33670167"
+                },
+                "recalc": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": true,
+                  "num": "72848027"
+                },
+                "clima": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": false,
+                  "num": "66776280"
+                },
+                "combinar": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": true,
+                  "num": "36632061"
+                },
+                "dibujar": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "96573999"
+                },
+                "paralelo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": true,
+                  "num": "62071966"
+                },
+                "devolver": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "37516391"
+                }
+              },
+              "num": "40621491"
+            },
+            "inic_vals": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "97815332"
+                },
+                "dic_vals": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "7048552"
+                }
+              },
+              "num": "91839497"
+            },
+            "estab_conv_meses": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "13991836"
+                },
+                "conv": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "36112285"
+                }
+              },
+              "num": "92532488"
+            },
+            "dibujar_mapa": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "58447404"
+                },
+                "geog": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "85278674"
+                },
+                "var": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "41614512"
+                },
+                "directorio": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "72819840"
+                },
+                "corrida": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "4331043"
+                },
+                "i_paso": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "98886307"
+                },
+                "colores": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "38514664"
+                },
+                "escala": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "4657858"
+                }
+              },
+              "num": "66953319"
+            },
+            "valid_var": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "84936833"
+                },
+                "var": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "39501073"
+                }
+              },
+              "num": "99284293"
+            },
+            "leer_resultados": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "50624155"
+                },
+                "var": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "67354930"
+                },
+                "corrida": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "51764455"
+                }
+              },
+              "num": "55997406"
+            },
+            "paralelizable": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "símismo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "84156670"
+                }
+              },
+              "num": "9008927"
             }
           },
           "num": "77669205"
+        },
+        "math": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "math"
+        },
+        "os": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "os"
+        },
+        "pickle": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "pickle"
+        },
+        "re": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "re"
+        },
+        "copiar_profundo": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "deepcopy",
+          "mod": "copy"
+        },
+        "Reserva": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "Pool",
+          "mod": "multiprocessing"
+        },
+        "_": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "_",
+          "mod": "tinamit"
         }
       },
       "num": "79251216"
@@ -2469,6 +3315,110 @@
           "ਪ੍ਰਕਾਰ": "attr",
           "ਸੱਮਗਰੀ": {},
           "num": "32831258"
+        },
+        "json": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "json"
+        },
+        "os": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "os"
+        },
+        "gettext": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "gettext"
+        },
+        "_dir_config": {
+          "ਪ੍ਰਕਾਰ": "attr",
+          "ਸੱਮਗਰੀ": {},
+          "num": "15156969"
+        },
+        "_config_base": {
+          "ਪ੍ਰਕਾਰ": "attr",
+          "ਸੱਮਗਰੀ": {},
+          "num": "63868751"
+        },
+        "obt_val_config": {
+          "ਪ੍ਰਕਾਰ": "fonction",
+          "ਸੱਮਗਰੀ": {
+            "llave": {
+              "ਪ੍ਰਕਾਰ": "param",
+              "num": "18592993"
+            },
+            "tipo": {
+              "ਪ੍ਰਕਾਰ": "param",
+              "val": "arch",
+              "num": "37496297"
+            },
+            "pedir": {
+              "ਪ੍ਰਕਾਰ": "param",
+              "val": true,
+              "num": "6221335"
+            },
+            "mnsj": {
+              "ਪ੍ਰਕਾਰ": "param",
+              "val": null,
+              "num": "7490194"
+            }
+          },
+          "num": "68849294"
+        },
+        "poner_val_config": {
+          "ਪ੍ਰਕਾਰ": "fonction",
+          "ਸੱਮਗਰੀ": {
+            "llave": {
+              "ਪ੍ਰਕਾਰ": "param",
+              "num": "23213278"
+            },
+            "val": {
+              "ਪ੍ਰਕਾਰ": "param",
+              "num": "31421043"
+            }
+          },
+          "num": "83674978"
+        },
+        "_dir_local": {
+          "ਪ੍ਰਕਾਰ": "attr",
+          "ਸੱਮਗਰੀ": {},
+          "num": "16550521"
+        },
+        "lenguas": {
+          "ਪ੍ਰਕਾਰ": "attr",
+          "ਸੱਮਗਰੀ": {},
+          "num": "66762761"
+        },
+        "_dic_trads": {
+          "ਪ੍ਰਕਾਰ": "attr",
+          "ਸੱਮਗਰੀ": {},
+          "num": "45310609"
+        },
+        "cambiar_lengua": {
+          "ਪ੍ਰਕਾਰ": "fonction",
+          "ਸੱਮਗਰੀ": {
+            "leng": {
+              "ਪ੍ਰਕਾਰ": "param",
+              "num": "44129219"
+            },
+            "temp": {
+              "ਪ੍ਰਕਾਰ": "param",
+              "val": false,
+              "num": "4121280"
+            }
+          },
+          "num": "12153887"
+        },
+        "valid_nombre_arch": {
+          "ਪ੍ਰਕਾਰ": "fonction",
+          "ਸੱਮਗਰੀ": {
+            "nombre": {
+              "ਪ੍ਰਕਾਰ": "param",
+              "num": "36725343"
+            }
+          },
+          "num": "75329581"
         }
       },
       "num": "73675776"
@@ -2490,11 +3440,6 @@
           "ਪ੍ਰਕਾਰ": "import",
           "ਸੱਮਗਰੀ": {},
           "parent": "re"
-        },
-        "struct": {
-          "ਪ੍ਰਕਾਰ": "import",
-          "ਸੱਮਗਰੀ": {},
-          "parent": "struct"
         },
         "csv": {
           "ਪ੍ਰਕਾਰ": "import",
@@ -2600,168 +3545,9 @@
                 }
               },
               "num": "53222615"
-            },
-            "leer_resultados_mds": {
-              "ਪ੍ਰਕਾਰ": "fonction",
-              "ਸੱਮਗਰੀ": {
-                "símismo": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "25489841"
-                },
-                "corrida": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "11166173"
-                },
-                "var": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "27596032"
-                }
-              },
-              "num": "14688328"
             }
           },
           "num": "56151118"
-        },
-        "ModeloVensim": {
-          "ਪ੍ਰਕਾਰ": "classe",
-          "ਸੱਮਗਰੀ": {
-            "inic_vars": {
-              "ਪ੍ਰਕਾਰ": "fonction",
-              "ਸੱਮਗਰੀ": {
-                "símismo": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "2315756"
-                }
-              },
-              "num": "33949715"
-            },
-            "obt_unidad_tiempo": {
-              "ਪ੍ਰਕਾਰ": "fonction",
-              "ਸੱਮਗਰੀ": {
-                "símismo": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "89598497"
-                }
-              },
-              "num": "47381417"
-            },
-            "iniciar_modelo": {
-              "ਪ੍ਰਕਾਰ": "fonction",
-              "ਸੱਮਗਰੀ": {
-                "símismo": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "25228304"
-                },
-                "tiempo_final": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "67600370"
-                },
-                "nombre_corrida": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "28237814"
-                }
-              },
-              "num": "97468276"
-            },
-            "cambiar_vals_modelo_interno": {
-              "ਪ੍ਰਕਾਰ": "fonction",
-              "ਸੱਮਗਰੀ": {
-                "símismo": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "2383770"
-                },
-                "valores": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "90599912"
-                }
-              },
-              "num": "68015063"
-            },
-            "incrementar": {
-              "ਪ੍ਰਕਾਰ": "fonction",
-              "ਸੱਮਗਰੀ": {
-                "símismo": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "91658697"
-                },
-                "paso": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "18055062"
-                }
-              },
-              "num": "63196813"
-            },
-            "leer_vals": {
-              "ਪ੍ਰਕਾਰ": "fonction",
-              "ਸੱਮਗਰੀ": {
-                "símismo": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "27452642"
-                }
-              },
-              "num": "58538084"
-            },
-            "cerrar_modelo": {
-              "ਪ੍ਰਕਾਰ": "fonction",
-              "ਸੱਮਗਰੀ": {
-                "símismo": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "61451092"
-                }
-              },
-              "num": "97535968"
-            },
-            "verificar_vensim": {
-              "ਪ੍ਰਕਾਰ": "fonction",
-              "ਸੱਮਗਰੀ": {
-                "símismo": {
-                  "ਪ੍ਰਕਾਰ": "param",
-                  "num": "35651668"
-                }
-              },
-              "num": "41924403"
-            }
-          },
-          "num": "98426460"
-        },
-        "comanda_vensim": {
-          "ਪ੍ਰਕਾਰ": "fonction",
-          "ਸੱਮਗਰੀ": {
-            "func": {
-              "ਪ੍ਰਕਾਰ": "param",
-              "num": "29827050"
-            },
-            "args": {
-              "ਪ੍ਰਕਾਰ": "param",
-              "num": "16983622"
-            },
-            "mensaje_error": {
-              "ਪ੍ਰਕਾਰ": "param",
-              "val": null,
-              "num": "98492087"
-            },
-            "val_error": {
-              "ਪ੍ਰਕਾਰ": "param",
-              "val": null,
-              "num": "95359799"
-            },
-            "devolver": {
-              "ਪ੍ਰਕਾਰ": "param",
-              "val": false,
-              "num": "39731823"
-            }
-          },
-          "num": "29018659"
-        },
-        "generar_mds": {
-          "ਪ੍ਰਕਾਰ": "fonction",
-          "ਸੱਮਗਰੀ": {
-            "archivo": {
-              "ਪ੍ਰਕਾਰ": "param",
-              "num": "34787524"
-            }
-          },
-          "num": "35147308"
         },
         "leer_egr_mds": {
           "ਪ੍ਰਕਾਰ": "fonction",
@@ -2773,12 +3559,910 @@
             "var": {
               "ਪ੍ਰਕਾਰ": "param",
               "num": "74354352"
+            },
+            "saltar_última": {
+              "ਪ੍ਰਕਾਰ": "param",
+              "val": true,
+              "num": "71347301"
             }
           },
           "num": "26868086"
+        },
+        "_": {
+          "ਪ੍ਰਕਾਰ": "import",
+          "ਸੱਮਗਰੀ": {},
+          "parent": "_",
+          "mod": "tinamit"
+        },
+        "MDSEditable": {
+          "ਪ੍ਰਕਾਰ": "classe",
+          "ਸੱਮਗਰੀ": {},
+          "num": "5918354"
         }
       },
       "num": "67821795"
+    },
+    "EnvolturaMDS": {
+      "ਪ੍ਰਕਾਰ": "ਨਤ੍ਥੀ",
+      "ਸੱਮਗਰੀ": {
+        "PySD.py": {
+          "ਪ੍ਰਕਾਰ": "ਦਸ੍ਤ",
+          "ਸੱਮਗਰੀ": {
+            "os": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "os"
+            },
+            "literal_eval": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "literal_eval",
+              "mod": "ast"
+            },
+            "pysd": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "pysd"
+            },
+            "_": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "_",
+              "mod": "tinamit"
+            },
+            "EnvolturaMDS": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "EnvolturaMDS",
+              "mod": "tinamit.MDS"
+            },
+            "ModeloPySD": {
+              "ਪ੍ਰਕਾਰ": "classe",
+              "ਸੱਮਗਰੀ": {
+                "inic_vars": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "86225593"
+                    }
+                  },
+                  "num": "73193920"
+                },
+                "obt_unidad_tiempo": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "24918338"
+                    }
+                  },
+                  "num": "80371631"
+                },
+                "iniciar_modelo": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "64773919"
+                    },
+                    "nombre_corrida": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "73398717"
+                    },
+                    "tiempo_final": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "8846774"
+                    }
+                  },
+                  "num": "36558836"
+                },
+                "cambiar_vals_modelo_interno": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "14486497"
+                    },
+                    "valores": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "40976416"
+                    }
+                  },
+                  "num": "88242442"
+                },
+                "incrementar": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "41171724"
+                    },
+                    "paso": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "24125616"
+                    }
+                  },
+                  "num": "16466335"
+                },
+                "leer_vals": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "77553758"
+                    }
+                  },
+                  "num": "20786811"
+                },
+                "cerrar_modelo": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "19634989"
+                    }
+                  },
+                  "num": "81629037"
+                }
+              },
+              "num": "38347272"
+            }
+          },
+          "num": "50481875"
+        },
+        "sintaxis.py": {
+          "ਪ੍ਰਕਾਰ": "ਦਸ੍ਤ",
+          "ਸੱਮਗਰੀ": {
+            "np": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "numpy"
+            },
+            "regex": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "regex"
+            },
+            "Lark": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "Lark",
+              "mod": "lark"
+            },
+            "resource_filename": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "resource_filename",
+              "mod": "pkg_resources"
+            },
+            "mat": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "math"
+            },
+            "_": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "_",
+              "mod": "tinamit"
+            },
+            "sacar_variables": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "texto": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "9271682"
+                },
+                "rgx": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "36672890"
+                },
+                "n": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "79874336"
+                },
+                "excluir": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "22232689"
+                }
+              },
+              "num": "62933500"
+            },
+            "sacar_arg": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "ec": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "13379543"
+                },
+                "regex_var": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "96294914"
+                },
+                "regex_fun": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "76181971"
+                },
+                "i": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "12767979"
+                }
+              },
+              "num": "6166381"
+            },
+            "juntar_líns": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "l": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "50637766"
+                },
+                "cabeza": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "29825028"
+                },
+                "cola": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "40157875"
+                }
+              },
+              "num": "66714588"
+            },
+            "cortar_líns": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "texto": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "88549044"
+                },
+                "máx_car": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "30664760"
+                },
+                "lín_1": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "76311031"
+                },
+                "lín_otras": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "88289570"
+                }
+              },
+              "num": "18497106"
+            },
+            "_Transformador": {
+              "ਪ੍ਰਕਾਰ": "classe",
+              "ਸੱਮਗਰੀ": {
+                "num": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "x": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "25211064"
+                    }
+                  },
+                  "num": "11556867"
+                },
+                "neg": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "x": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "12579386"
+                    }
+                  },
+                  "num": "87698622"
+                },
+                "var": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "x": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "76981689"
+                    }
+                  },
+                  "num": "15092952"
+                },
+                "nombre": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "x": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "121465"
+                    }
+                  },
+                  "num": "8680309"
+                },
+                "cadena": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "x": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "952941"
+                    }
+                  },
+                  "num": "12505554"
+                },
+                "func": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "x": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "17415708"
+                    }
+                  },
+                  "num": "14613529"
+                },
+                "pod": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "x": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "78365478"
+                    }
+                  },
+                  "num": "42609948"
+                },
+                "mul": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "x": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "52868773"
+                    }
+                  },
+                  "num": "72652167"
+                },
+                "div": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "x": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "6282717"
+                    }
+                  },
+                  "num": "82412482"
+                },
+                "suma": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "x": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "15654193"
+                    }
+                  },
+                  "num": "58149373"
+                },
+                "sub": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "x": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "91055580"
+                    }
+                  },
+                  "num": "60841434"
+                }
+              },
+              "num": "6269214"
+            },
+            "Ecuación": {
+              "ਪ੍ਰਕਾਰ": "classe",
+              "ਸੱਮਗਰੀ": {
+                "variables": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "44538396"
+                    }
+                  },
+                  "num": "17601441"
+                },
+                "gen_func_python": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "83086003"
+                    },
+                    "paráms": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "65084153"
+                    }
+                  },
+                  "num": "72300795"
+                },
+                "gen_mod_bayes": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "82098378"
+                    },
+                    "paráms": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "3205602"
+                    },
+                    "líms_paráms": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "31778210"
+                    },
+                    "obs_x": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "16825993"
+                    },
+                    "obs_y": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "88064483"
+                    },
+                    "aprioris": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "76646771"
+                    },
+                    "binario": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": false,
+                      "num": "71434351"
+                    }
+                  },
+                  "num": "28147808"
+                },
+                "gen_texto": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "90330725"
+                    },
+                    "paráms": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "19852609"
+                    }
+                  },
+                  "num": "67185993"
+                }
+              },
+              "num": "38932374"
+            },
+            "dic_funs": {
+              "ਪ੍ਰਕਾਰ": "attr",
+              "ਸੱਮਗਰੀ": {},
+              "num": "52873512"
+            },
+            "dic_funs_inv": {
+              "ਪ੍ਰਕਾਰ": "attr",
+              "ਸੱਮਗਰੀ": {},
+              "num": "65551818"
+            },
+            "conv_fun": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "fun": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "25174853"
+                },
+                "dialecto_0": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "95256158"
+                },
+                "dialecto_1": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "91600695"
+                }
+              },
+              "num": "75646242"
+            }
+          },
+          "num": "52950140"
+        },
+        "Vensim.py": {
+          "ਪ੍ਰਕਾਰ": "ਦਸ੍ਤ",
+          "ਸੱਮਗਰੀ": {
+            "ctypes": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "ctypes"
+            },
+            "struct": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "struct"
+            },
+            "sys": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "sys"
+            },
+            "avisar": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "warn",
+              "mod": "warnings"
+            },
+            "np": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "numpy"
+            },
+            "regex": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "regex"
+            },
+            "_": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "_",
+              "mod": "tinamit"
+            },
+            "EnvolturaMDS": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "EnvolturaMDS",
+              "mod": "tinamit.MDS"
+            },
+            "sacar_arg": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "sacar_arg",
+              "mod": "sintaxis"
+            },
+            "ModeloVensimMdl": {
+              "ਪ੍ਰਕਾਰ": "classe",
+              "ਸੱਮਗਰੀ": {
+                "inic_vars": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "36833414"
+                    }
+                  },
+                  "num": "47225803"
+                },
+                "calib_ec": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "28502011"
+                    },
+                    "var": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "78748616"
+                    },
+                    "ec": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "45128704"
+                    },
+                    "paráms": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "7438972"
+                    },
+                    "método": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "86092275"
+                    }
+                  },
+                  "num": "45530199"
+                },
+                "obt_unidad_tiempo": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "56274452"
+                    }
+                  },
+                  "num": "1396463"
+                },
+                "iniciar_modelo": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "65240935"
+                    },
+                    "nombre_corrida": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "6044113"
+                    },
+                    "tiempo_final": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "3370782"
+                    }
+                  },
+                  "num": "85399181"
+                },
+                "cambiar_vals_modelo_interno": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "81883278"
+                    },
+                    "valores": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "56125265"
+                    }
+                  },
+                  "num": "3081672"
+                },
+                "incrementar": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "31403753"
+                    },
+                    "paso": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "45614337"
+                    }
+                  },
+                  "num": "97444191"
+                },
+                "leer_vals": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "90024228"
+                    }
+                  },
+                  "num": "98077466"
+                },
+                "cerrar_modelo": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "19242364"
+                    }
+                  },
+                  "num": "51198205"
+                }
+              },
+              "num": "69419280"
+            },
+            "ModeloVensim": {
+              "ਪ੍ਰਕਾਰ": "classe",
+              "ਸੱਮਗਰੀ": {
+                "inic_vars": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "86384077"
+                    }
+                  },
+                  "num": "16997677"
+                },
+                "obt_unidad_tiempo": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "93032358"
+                    }
+                  },
+                  "num": "59043350"
+                },
+                "iniciar_modelo": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "81421222"
+                    },
+                    "tiempo_final": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "45190971"
+                    },
+                    "nombre_corrida": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "26838346"
+                    }
+                  },
+                  "num": "12015519"
+                },
+                "cambiar_vals_modelo_interno": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "84511400"
+                    },
+                    "valores": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "73734260"
+                    }
+                  },
+                  "num": "68863557"
+                },
+                "incrementar": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "89077153"
+                    },
+                    "paso": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "9498236"
+                    }
+                  },
+                  "num": "34467287"
+                },
+                "leer_vals": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "21709766"
+                    }
+                  },
+                  "num": "19273409"
+                },
+                "cerrar_modelo": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "33667786"
+                    }
+                  },
+                  "num": "26333244"
+                },
+                "verificar_vensim": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "27849182"
+                    }
+                  },
+                  "num": "23410708"
+                },
+                "obt_atrib_var": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "58132916"
+                    },
+                    "var": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "58380563"
+                    },
+                    "cód_attrib": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "95948092"
+                    },
+                    "mns_error": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "val": null,
+                      "num": "6587086"
+                    }
+                  },
+                  "num": "63333716"
+                },
+                "paralelizable": {
+                  "ਪ੍ਰਕਾਰ": "fonction",
+                  "ਸੱਮਗਰੀ": {
+                    "símismo": {
+                      "ਪ੍ਰਕਾਰ": "param",
+                      "num": "32139427"
+                    }
+                  },
+                  "num": "55952728"
+                }
+              },
+              "num": "15243116"
+            },
+            "comanda_vensim": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "func": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "46691910"
+                },
+                "args": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "99260981"
+                },
+                "mensaje_error": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "62264504"
+                },
+                "val_error": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "373454"
+                },
+                "devolver": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": false,
+                  "num": "26244418"
+                }
+              },
+              "num": "10038430"
+            }
+          },
+          "num": "72066315"
+        },
+        "__init__.py": {
+          "ਪ੍ਰਕਾਰ": "ਦਸ੍ਤ",
+          "ਸੱਮਗਰੀ": {
+            "os": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "os"
+            },
+            "_": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "_",
+              "mod": "tinamit"
+            },
+            "ModeloVensim": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "ModeloVensim",
+              "mod": "tinamit.EnvolturaMDS.Vensim"
+            },
+            "ModeloPySD": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "ModeloPySD",
+              "mod": "tinamit.EnvolturaMDS.PySD"
+            },
+            "EnvolturaMDS": {
+              "ਪ੍ਰਕਾਰ": "import",
+              "ਸੱਮਗਰੀ": {},
+              "parent": "EnvolturaMDS",
+              "mod": "tinamit.MDS"
+            },
+            "dic_motores": {
+              "ਪ੍ਰਕਾਰ": "attr",
+              "ਸੱਮਗਰੀ": {},
+              "num": "95997357"
+            },
+            "generar_mds": {
+              "ਪ੍ਰਕਾਰ": "fonction",
+              "ਸੱਮਗਰੀ": {
+                "archivo": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "num": "5745810"
+                },
+                "motor": {
+                  "ਪ੍ਰਕਾਰ": "param",
+                  "val": null,
+                  "num": "84877621"
+                }
+              },
+              "num": "84896315"
+            }
+          },
+          "num": "43499228"
+        }
+      },
+      "num": "51410960"
     }
   },
   "ਪ੍ਰਕਾਰ": "ਕੂਟਨ"

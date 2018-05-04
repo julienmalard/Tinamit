@@ -2,16 +2,16 @@
   "langue": "español",
   "ਲੋੜੀਦਾ_ਭਾਸ਼ਾਵਾਂ": [
     "தமிழ்",
-    "اردو"
+    "اردو",
+    "Nederlands"
   ],
   "chemin_code_source": "c:\\users\\jmalar1\\pycharmprojects\\tinamit\\tinamit",
   "chemin_trads": "c:\\users\\jmalar1\\pycharmprojects\\tinamit\\tinamit\\trads",
   "ignore": [
     "Interfaz",
-    "NuevoInterfaz",
     "Incertidumbre",
     "Ejemplos",
-    "Stella.py",
+    "local",
     "trads"
   ]
 }
