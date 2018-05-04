@@ -6,6 +6,7 @@ python_dateutil
 regex
 lark-parser
 Babel
+polib
 pint
 pyshp
 taqdir
