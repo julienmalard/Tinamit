@@ -160,7 +160,7 @@ class Test_GenerarMDS(unittest.TestCase):
         # Verificamos que funcione la generación automática de modelos DS a base de un archivo.
 
         for m, d_m in tipos_modelos.items():
-            with símismo.subTest():
+            with símismo.subTest(ext=os.path.splitext(d_m['prueba'])[1]):
                 try:
                     mod = generar_mds(d_m['prueba'])  # Generar el modelo
                     símismo.assertIsInstance(mod, EnvolturaMDS)
