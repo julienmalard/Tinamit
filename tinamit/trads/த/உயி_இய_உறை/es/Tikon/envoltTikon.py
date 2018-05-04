@@ -9,8 +9,8 @@ class ModeloTikon(ModeloTikon):
     def leer_archivo_vals_inic(தன்):
         return super().leer_archivo_vals_inic()
 
-    def act_vals_clima(தன், படி_எண், f):
-        return super().act_vals_clima(n_paso=படி_எண், f=f)
+    def act_vals_clima(தன், படி_எண், தேதி):
+        return super().act_vals_clima(n_paso=படி_எண், f=தேதி)
 
     def leer_archivo_egr(தன், n_años_egr):
         return super().leer_archivo_egr(n_años_egr=n_años_egr)

@@ -27,6 +27,12 @@ class EnvolturaBF(EnvolturaBF):
     def cerrar_modelo(خود):
         return super().cerrar_modelo()
 
+    def act_vals_clima(símismo, n_paso, f):
+        return super().act_vals_clima(n_paso=n_paso, f=f)
+
+    def paralelizable(símismo):
+        return super().paralelizable()
+
 
 class ModeloBF(ModeloBF):
 
@@ -39,8 +45,8 @@ class ModeloBF(ModeloBF):
     def leer_vals(خود):
         return super().leer_vals()
 
-    def iniciar_modelo(خود):
-        return super().iniciar_modelo()
+    def iniciar_modelo(خود, tiempo_final, nombre_corrida):
+        return super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
 
     def cerrar_modelo(خود):
         return super().cerrar_modelo()
@@ -50,6 +56,9 @@ class ModeloBF(ModeloBF):
 
     def inic_vars(خود):
         return super().inic_vars()
+
+    def leer_vals_inic(símismo):
+        return super().leer_vals_inic()
 
 
 class ModeloImpaciente(ModeloImpaciente):
@@ -69,8 +78,8 @@ class ModeloImpaciente(ModeloImpaciente):
     def obt_unidad_tiempo(خود):
         return super().obt_unidad_tiempo()
 
-    def iniciar_modelo(خود):
-        return super().iniciar_modelo()
+    def iniciar_modelo(خود, tiempo_final, nombre_corrida):
+        return super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
 
     def cerrar_modelo(خود):
         return super().cerrar_modelo()
@@ -134,3 +143,6 @@ class ModeloFlexible(ModeloFlexible):
 
     def escribir_archivo_ingr(خود, n_años_simul, dic_ingr):
         return super().escribir_archivo_ingr(n_años_simul=n_años_simul, dic_ingr=dic_ingr)
+
+    def leer_vals_inic(símismo):
+        return super().leer_vals_inic()

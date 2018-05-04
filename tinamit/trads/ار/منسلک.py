@@ -22,8 +22,8 @@ class ہڑامنسلک(SuperConectado):
     def act_vals_clima(خود, n_paso, f):
         return super().act_vals_clima(n_paso=n_paso, f=f)
 
-    def simular(خود, tiempo_final, قدم=1, nombre_corrida="Corrida Tinamït", fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False):
-        return super().simular(tiempo_final=tiempo_final, paso=قدم, nombre_corrida=nombre_corrida, fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima)
+    def simular(خود, tiempo_final, قدم=1, nombre_corrida="Corrida Tinamït", fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, vars_interés=None):
+        return super().simular(tiempo_final=tiempo_final, paso=قدم, nombre_corrida=nombre_corrida, fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, vars_interés=vars_interés)
 
     def incrementar(خود, قدم):
         return super().incrementar(paso=قدم)
@@ -43,14 +43,26 @@ class ہڑامنسلک(SuperConectado):
     def desconectar_vars(خود, var_fuente, modelo_fuente):
         return super().desconectar_vars(var_fuente=var_fuente, modelo_fuente=modelo_fuente)
 
+    def paralelizable(símismo):
+        return super().paralelizable()
+
+    def inic_vals(símismo, dic_vals):
+        return super().inic_vals(dic_vals=dic_vals)
+
+    def estab_conv_meses(símismo, conv):
+        return super().estab_conv_meses(conv=conv)
+
+    def valid_var(símismo, var):
+        return super().valid_var(var=var)
+
 
 class منسلک(Conectado):
 
     def estab_mds(خود, archivo_mds):
         return super().estab_mds(archivo_mds=archivo_mds)
 
-    def estab_bf(خود, archivo_bf):
-        return super().estab_bf(archivo_bf=archivo_bf)
+    def estab_bf(خود, bf):
+        return super().estab_bf(bf=bf)
 
     def conectar(خود, var_mds, var_bf, mds_fuente, conv=None):
         return super().conectar(var_mds=var_mds, var_bf=var_bf, mds_fuente=mds_fuente, conv=conv)
@@ -58,5 +70,5 @@ class منسلک(Conectado):
     def desconectar(خود, var_mds):
         return super().desconectar(var_mds=var_mds)
 
-    def dibujar(خود, geog, var, corrida, directorio, i_paso=None, colores=None, escala=None):
-        return super().dibujar(geog=geog, var=var, corrida=corrida, directorio=directorio, i_paso=i_paso, colores=colores, escala=escala)
+    def leer_resultados(símismo, corrida, var):
+        return super().leer_resultados(corrida=corrida, var=var)

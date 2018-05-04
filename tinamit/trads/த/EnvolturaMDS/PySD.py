@@ -1,9 +1,7 @@
-from tinamit.MDS import MDSEditable
-from tinamit.MDS import leer_egr_mds
-from tinamit.MDS import EnvolturaMDS
+from tinamit.EnvolturaMDS.PySD import ModeloPySD
 
 
-class EnvolturaMDS(EnvolturaMDS):
+class ModeloPySD(ModeloPySD):
 
     def inic_vars(símismo):
         return super().inic_vars()
@@ -25,6 +23,3 @@ class EnvolturaMDS(EnvolturaMDS):
 
     def cerrar_modelo(símismo):
         return super().cerrar_modelo()
-
-
-class MDSEditable(MDSEditable):

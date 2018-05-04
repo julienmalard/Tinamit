@@ -7,14 +7,14 @@ conv_vars = conv_vars
 
 class Lugar(Lugar):
 
-    def observar_diarios(தன், archivo, cols_datos, c_fecha):
-        return super().observar_diarios(archivo=archivo, cols_datos=cols_datos, c_fecha=c_fecha)
+    def observar_diarios(தன், archivo, cols_datos, c_fecha, conv):
+        return super().observar_diarios(archivo=archivo, cols_datos=cols_datos, c_fecha=c_fecha, conv=conv)
 
-    def observar_mensuales(தன், archivo, cols_datos, meses, años):
-        return super().observar_mensuales(archivo=archivo, cols_datos=cols_datos, meses=meses, años=años)
+    def observar_mensuales(தன், archivo, cols_datos, meses, años, conv):
+        return super().observar_mensuales(archivo=archivo, cols_datos=cols_datos, meses=meses, años=años, conv=conv)
 
-    def observar_anuales(தன், archivo, cols_datos, años):
-        return super().observar_anuales(archivo=archivo, cols_datos=cols_datos, años=años)
+    def observar_anuales(தன், archivo, cols_datos, años, conv):
+        return super().observar_anuales(archivo=archivo, cols_datos=cols_datos, años=años, conv=conv)
 
     def prep_datos(தன், ஆரம்பும்_தேதி, fecha_final, tcr, prefs=None, lím_prefs=False, regenerar=False):
         return super().prep_datos(fecha_inic=ஆரம்பும்_தேதி, fecha_final=fecha_final, tcr=tcr, prefs=prefs, lím_prefs=lím_prefs, regenerar=regenerar)
@@ -28,11 +28,23 @@ class Lugar(Lugar):
 
 class Geografía(Geografía):
 
-    def agregar_objeto(தன், archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=None):
-        return super().agregar_objeto(archivo=archivo, nombre=nombre, tipo=tipo, alpha=alpha, color=color, llenar=llenar)
+    def dibujar(தன், archivo, valores=None, título=None, unidades=None, colores=None, escala_num=None):
+        return super().dibujar(archivo=archivo, valores=valores, título=título, unidades=unidades, colores=colores, escala_num=escala_num)
 
-    def agregar_regiones(தன், archivo, col_orden=None):
-        return super().agregar_regiones(archivo=archivo, col_orden=col_orden)
+    def agregar_forma(símismo, archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=None):
+        return super().agregar_forma(archivo=archivo, nombre=nombre, tipo=tipo, alpha=alpha, color=color, llenar=llenar)
 
-    def dibujar(தன், archivo, valores=None, título=None, unidades=None, colores=None, escala=None):
-        return super().dibujar(archivo=archivo, valores=valores, título=título, unidades=unidades, colores=colores, escala=escala)
+    def agregar_frm_regiones(símismo, archivo, col_id=None, col_orden=None, escala_geog=None):
+        return super().agregar_frm_regiones(archivo=archivo, col_id=col_id, col_orden=col_orden, escala_geog=escala_geog)
+
+    def agregar_info_regiones(símismo, archivo, col_cód, orden_jer=None, grupos=None):
+        return super().agregar_info_regiones(archivo=archivo, col_cód=col_cód, orden_jer=orden_jer, grupos=grupos)
+
+    def leer_archivo_info_reg(símismo, archivo, orden_jer, col_cód, grupos=None):
+        return super().leer_archivo_info_reg(archivo=archivo, orden_jer=orden_jer, col_cód=col_cód, grupos=grupos)
+
+    def obt_lugares_en(símismo, escala=None, en=None, por=None):
+        return super().obt_lugares_en(escala=escala, en=en, por=por)
+
+    def obt_en_grupo(símismo, tipo_grupo, grupos):
+        return super().obt_en_grupo(tipo_grupo=tipo_grupo, grupos=grupos)

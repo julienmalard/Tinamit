@@ -1,7 +1,7 @@
 from tinamit.Modelo import Modelo
 
 
-class Modelo(Modelo):
+class نمونہ(Modelo):
 
     def inic_vars(خود):
         return super().inic_vars()
@@ -21,11 +21,8 @@ class Modelo(Modelo):
     def inic_val(خود, var, val):
         return super().inic_val(var=var, val=val)
 
-    def limp_vals_inic(خود):
-        return super().limp_vals_inic()
-
-    def conectar_var_clima(خود, var, var_clima, combin=None):
-        return super().conectar_var_clima(var=var, var_clima=var_clima, combin=combin)
+    def conectar_var_clima(خود, var, var_clima, combin=None, conv):
+        return super().conectar_var_clima(var=var, var_clima=var_clima, combin=combin, conv=conv)
 
     def desconectar_var_clima(خود, var):
         return super().desconectar_var_clima(var=var)
@@ -41,3 +38,27 @@ class Modelo(Modelo):
 
     def act_vals_clima(خود, n_paso, f):
         return super().act_vals_clima(n_paso=n_paso, f=f)
+
+    def simular(símismo, tiempo_final, paso=1, nombre_corrida="Corrida Tinamït", fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, vars_interés=None):
+        return super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, vars_interés=vars_interés)
+
+    def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida="Corrida Tinamït", vals_inic=None, fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True, dibujar=None, paralelo=True, devolver=None):
+        return super().simular_paralelo(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, vals_inic=vals_inic, fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, combinar=combinar, dibujar=dibujar, paralelo=paralelo, devolver=devolver)
+
+    def inic_vals(símismo, dic_vals):
+        return super().inic_vals(dic_vals=dic_vals)
+
+    def estab_conv_meses(símismo, conv):
+        return super().estab_conv_meses(conv=conv)
+
+    def dibujar_mapa(símismo, geog, var, directorio, corrida=None, i_paso=None, colores=None, escala=None):
+        return super().dibujar_mapa(geog=geog, var=var, directorio=directorio, corrida=corrida, i_paso=i_paso, colores=colores, escala=escala)
+
+    def valid_var(símismo, var):
+        return super().valid_var(var=var)
+
+    def leer_resultados(símismo, var, corrida=None):
+        return super().leer_resultados(var=var, corrida=corrida)
+
+    def paralelizable(símismo):
+        return super().paralelizable()

@@ -3,45 +3,62 @@ from tinamit.Modelo import Modelo
 
 class மாதிரி(Modelo):
 
-    def __init__(தன், பெயர்):
-        super().__init__(nombre=பெயர்)
-
     def மாறிகளை_ஆரம்ப(தன்):
         return தன்.inic_vars()
 
     def obt_unidad_tiempo(தன்):
-        return தன்.obt_unidad_tiempo()
+        return super().obt_unidad_tiempo()
 
-    def iniciar_modelo(தன், கடைசி_நேரம், பாவனை_பெயர்):
-        return தன்.iniciar_modelo(tiempo_final, nombre_corrida)
+    def iniciar_modelo(தன், கடைசி_நேரம், பாவனைப்பெயர்):
+        return super().iniciar_modelo(tiempo_final=கடைசி_நேரம், nombre_corrida=பாவனைப்பெயர்)
 
     def incrementar(தன், படி):
-        return தன்.incrementar(paso)
+        return super().incrementar(paso=படி)
 
     def leer_vals(தன்):
-        return தன்.leer_vals()
+        return super().leer_vals()
 
     def inic_val(தன், மாறி, val):
-        return தன்.inic_val(var, val)
+        return super().inic_val(var=மாறி, val=val)
 
-    def limp_vals_inic(தன்):
-        return தன்.limp_vals_inic()
-
-    def conectar_var_clima(தன், மாறி, பருவனிலை_மாறி, combin):
-        return தன்.conectar_var_clima(var, var_clima, combin)
+    def conectar_var_clima(தன், மாறி, பருவனிலை_மாறி, combin=None, conv):
+        return super().conectar_var_clima(var=மாறி, var_clima=பருவனிலை_மாறி, combin=combin, conv=conv)
 
     def desconectar_var_clima(தன், மாறி):
-        return தன்.desconectar_var_clima(var)
+        return super().desconectar_var_clima(var=மாறி)
 
     def cambiar_vals(தன், valores):
-        return தன்.cambiar_vals(valores)
+        return super().cambiar_vals(valores=valores)
 
     def cambiar_vals_modelo_interno(தன், valores):
-        return தன்.cambiar_vals_modelo_interno(valores)
+        return super().cambiar_vals_modelo_interno(valores=valores)
 
     def cerrar_modelo(தன்):
-        return தன்.cerrar_modelo()
+        return super().cerrar_modelo()
 
-    def act_vals_clima(தன், n_paso, f):
-        return தன்.act_vals_clima(n_paso, f)
+    def act_vals_clima(தன், படி_எண், தேதி):
+        return super().act_vals_clima(n_paso=படி_எண், f=தேதி)
 
+    def simular(símismo, tiempo_final, paso=1, nombre_corrida="Corrida Tinamït", fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, vars_interés=None):
+        return super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, vars_interés=vars_interés)
+
+    def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida="Corrida Tinamït", vals_inic=None, fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True, dibujar=None, paralelo=True, devolver=None):
+        return super().simular_paralelo(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, vals_inic=vals_inic, fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, combinar=combinar, dibujar=dibujar, paralelo=paralelo, devolver=devolver)
+
+    def inic_vals(símismo, dic_vals):
+        return super().inic_vals(dic_vals=dic_vals)
+
+    def estab_conv_meses(símismo, conv):
+        return super().estab_conv_meses(conv=conv)
+
+    def dibujar_mapa(símismo, geog, var, directorio, corrida=None, i_paso=None, colores=None, escala=None):
+        return super().dibujar_mapa(geog=geog, var=var, directorio=directorio, corrida=corrida, i_paso=i_paso, colores=colores, escala=escala)
+
+    def valid_var(símismo, var):
+        return super().valid_var(var=var)
+
+    def leer_resultados(símismo, var, corrida=None):
+        return super().leer_resultados(var=var, corrida=corrida)
+
+    def paralelizable(símismo):
+        return super().paralelizable()
