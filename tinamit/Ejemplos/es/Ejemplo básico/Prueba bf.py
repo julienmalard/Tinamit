@@ -5,9 +5,6 @@ from tinamit.BF import ModeloBF
 
 class Envoltura(ModeloBF):
 
-    def ejec(símismo):
-        pass
-
     def incrementar(símismo, paso):
 
         símismo.variables['Lluvia']['val'] = random.random() * símismo.variables['Bosques']['val']/1000000 * paso
