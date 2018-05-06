@@ -44,7 +44,7 @@ def convertir(de, a, val=1, lengua=None):
 
     # Leer los nombres de todas las unidades presentes.
     unids_pres_de = re.findall(r'[\p{l}\p{m}]+', de)
-    unids_pres_a =  re.findall(r'[\p{l}\p{m}]+', a)
+    unids_pres_a = re.findall(r'[\p{l}\p{m}]+', a)
     unids_pres = list(set(unids_pres_de + unids_pres_a))
 
     # Agregar unidades no reconocidas por Pint

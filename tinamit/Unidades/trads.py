@@ -51,14 +51,27 @@ _act_arch_trads(l_d_t=l_dic_trads, arch=archivo_json)
 def trad_unid(unid, leng_final, leng_orig=None):
     unid = unid.lower()
 
-    if leng_orig is None:
-        unid_t = next((x[leng_final] for x in l_dic_trads if
-                       (unid in itertools.chain.from_iterable(x.values()) and leng_final in x)
-                       ), None)
+    if unid[-1] == 's':
+        l_u = [unid, unid[:-1]]
     else:
-        unid_t = next((x[leng_final] for x in l_dic_trads if
-                       (leng_orig in x and unid in x[leng_orig] and leng_final in x)
-                       ), None)
+        l_u = [unid]
+
+    unid_t = None
+    if leng_orig is None:
+
+        for u in l_u:
+            unid_t = next((x[leng_final] for x in l_dic_trads if
+                           (u in itertools.chain.from_iterable(x.values()) and leng_final in x)
+                           ), None)
+            if unid_t is not None:
+                break
+    else:
+        for u in l_u:
+            unid_t = next((x[leng_final] for x in l_dic_trads if
+                           (leng_orig in x and u in x[leng_orig] and leng_final in x)
+                           ), None)
+            if unid_t is not None:
+                break
 
     if unid_t is None and (leng_orig == 'en' or leng_orig is None):
         try:
@@ -118,9 +131,15 @@ def _buscar_d_unid(unid, leng=None):
     if leng is None:
         d_unid = next((x for x in l_dic_trads if any(unid in y for y in x.values())), None)
         if d_unid is None:
+            if unid[-1] == 's':
+                d_unid = next((x for x in l_dic_trads if any(unid[:-1] in y for y in x.values())), None)
+        if d_unid is None:
             raise ValueError(_('La unidad "{}" no existe en cualquier lengua conocida.').format(unid))
     else:
         d_unid = next((x for x in l_dic_trads if leng in x and unid in x[leng]), None)
+        if d_unid is None:
+            if unid[-1] == 's':
+                d_unid = next((x for x in l_dic_trads if leng in x and unid[:-1] in x[leng]), None)
         if d_unid is None:
             raise ValueError(_('La unidad "{}" no existe en la lengua "{}".').format(unid, leng))
 

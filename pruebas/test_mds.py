@@ -159,10 +159,10 @@ class Test_GenerarMDS(unittest.TestCase):
     def test_generación_auto_mds(símismo):
         # Verificamos que funcione la generación automática de modelos DS a base de un archivo.
 
-        for m, d_m in tipos_modelos.items():
-            with símismo.subTest(ext=os.path.splitext(d_m['prueba'])[1]):
+        for m, d in tipos_modelos.items():
+            with símismo.subTest(ext=os.path.splitext(d['prueba'])[1]):
                 try:
-                    mod = generar_mds(d_m['prueba'])  # Generar el modelo
+                    mod = generar_mds(d['prueba'])  # Generar el modelo
                     símismo.assertIsInstance(mod, EnvolturaMDS)
                 except ValueError:
                     # No hay problema si el MDS no se pudo leer en la computadora actual. De pronto no estaba instalado.
