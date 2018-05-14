@@ -22,8 +22,11 @@ class மேலிணைக்கப்பட்ட(SuperConectado):
     def act_vals_clima(தன், படி_எண், தேதி):
         return super().act_vals_clima(n_paso=படி_எண், f=தேதி)
 
-    def simular(தன், கடைசி_நேரம், படி=1, பாவனைப்பெயர்="Corrida Tinamït", ஆரம்பும்_தேதி=None, இடம்=None, tcr=None, recalc=True, பருவநிலை=False, vars_interés=None):
-        return super().simular(tiempo_final=கடைசி_நேரம், paso=படி, nombre_corrida=பாவனைப்பெயர், fecha_inic=ஆரம்பும்_தேதி, lugar=இடம், tcr=tcr, recalc=recalc, clima=பருவநிலை, vars_interés=vars_interés)
+    def simular(தன், கடைசி_நேரம், படி=1, பாவனைப்பெயர்="Corrida Tinamït", ஆரம்பும்_தேதி=None, இடம்=None, tcr=None,
+                recalc=True, பருவநிலை=False, vars_interés=None):
+        return super().simular(tiempo_final=கடைசி_நேரம், paso=படி, nombre_corrida=பாவனைப்பெயர்,
+                               fecha_inic=ஆரம்பும்_தேதி, lugar=இடம், tcr=tcr, recalc=recalc, clima=பருவநிலை,
+                               vars_interés=vars_interés)
 
     def முன்னெடுக்க(தன், படி):
         return தன்.incrementar(paso=படி)

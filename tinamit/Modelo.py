@@ -3,11 +3,11 @@ import math
 import os
 import pickle
 import re
+from copy import deepcopy as copiar_profundo
+from multiprocessing import Pool as Reserva
 from warnings import warn as avisar
 
-from copy import deepcopy as copiar_profundo
 import numpy as np
-from multiprocessing import Pool as Reserva
 from dateutil.relativedelta import relativedelta as deltarelativo
 
 import tinamit.Geog.Geog as Geog
@@ -40,8 +40,8 @@ class Modelo(object):
         # modelos jerarquizados).
         if "_" in nombre:
             avisar(_('No se pueden emplear nombres de modelos con "_", así que no puedes nombrar tu modelo"{}".\n'
-                   'Sino, causaría problemas de conexión de variables por una razón muy compleja y oscura.\n'
-                   'Vamos a renombrar tu modelo "{}". Lo siento.').format(nombre, nombre.replace('_', '.')))
+                     'Sino, causaría problemas de conexión de variables por una razón muy compleja y oscura.\n'
+                     'Vamos a renombrar tu modelo "{}". Lo siento.').format(nombre, nombre.replace('_', '.')))
 
         # El nombre del modelo (sirve como una referencia a este modelo en el modelo conectado).
         símismo.nombre = nombre
@@ -59,6 +59,12 @@ class Modelo(object):
         # Memorio de valores de variables (para leer los resultados más rápidamente después de una simulación).
         símismo.mem_vars = {}
 
+        # Referencia hacia el nombre de la corrida activa.
+        símismo.corrida_activa = None
+
+        # Una referncia para acordarse si los valores de los variables en el diccionario de variables están actualizados
+        símismo.vals_actualizadas = False
+
         # Un diccionarior para guardar valores de variables iniciales hasta el momento que empezamos la simulación.
         # Es muy útil para modelos cuyos variables no podemos cambiar antes de empezar una simulación (como VENSIM).
         símismo.vals_inic = {}
@@ -67,7 +73,6 @@ class Modelo(object):
 
         # Listas de los nombres de los variables que sirven de conexión con otro modelo.
         símismo.vars_saliendo = set()
-        símismo.vars_entrando = set()
 
         # El factor de conversión entre la unidad de tiempo del modelo y meses. (P. ej., 6 quiere decir que
         # hay 6 meses en una unidad de tiempo del modelo.)
@@ -107,6 +112,9 @@ class Modelo(object):
 
         """
         raise NotImplementedError
+
+    def especificar_var_saliendo(símismo, var):
+        símismo.vars_saliendo.add(var)
 
     def _conectar_clima(símismo, n_pasos, lugar, fecha_inic, tcr, recalc):
         """
@@ -184,6 +192,7 @@ class Modelo(object):
                 símismo._conectar_clima(n_pasos=n_pasos, lugar=lugar, fecha_inic=fecha_inic, tcr=tcr, recalc=recalc)
 
         # Iniciamos el modelo.
+        símismo.corrida_activa = nombre_corrida
         símismo.iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
 
         # Si hay fecha inicial, tenemos que guardar cuenta de donde estamos en el calendario
@@ -200,11 +209,16 @@ class Modelo(object):
             for v in vars_interés:
                 if v not in símismo.variables:
                     raise ValueError(_('El variable "{}" no existe en el modelo "{}".').format(v, símismo))
-                símismo.vars_saliendo.add(v)  # para hacer: limpiar
+                símismo.vars_saliendo.add(v)
 
         símismo.mem_vars.clear()
         for v in vars_interés:
-            símismo.mem_vars[v] = np.empty((n_pasos + 1, *símismo.variables[v]['dims']))
+            dims = símismo.variables[v]['dims']
+            if dims == (1,):
+                símismo.mem_vars[v] = np.empty(n_pasos + 1)
+            else:
+                símismo.mem_vars[v] = np.empty((n_pasos + 1, *símismo.variables[v]['dims']))
+
             símismo.mem_vars[v][0] = símismo.variables[v]['val']
 
         # Hasta llegar al tiempo final, incrementamos el modelo.
@@ -382,7 +396,7 @@ class Modelo(object):
 
             for corr, d_prms_corr in corridas.items():
                 d_args = {ll: copiar_profundo(v) for ll, v in d_prms_corr.items()}
-                d_args['nombre_corrida'] = corr
+                d_args['corrida_activa'] = corr
 
                 l_trabajos.append((copia_mod, copiar_profundo(d_vals_inic[corr]), d_args))
 
@@ -399,7 +413,6 @@ class Modelo(object):
 
             # Para cada corrida...
             for corr, d_prms_corr in corridas.items():
-
                 símismo.inic_vals_vars(d_prms_corr)
 
                 # Después, simular el modelo.
@@ -427,7 +440,7 @@ class Modelo(object):
 
             return egresos
 
-    def incrementar(símismo, paso):
+    def _incrementar(símismo, paso):
         """
         Esta función debe avanzar el modelo por un periodo de tiempo especificado.
 
@@ -437,12 +450,24 @@ class Modelo(object):
         """
         raise NotImplementedError
 
+    def incrementar(símismo, paso):
+        símismo.vals_actualizadas = False
+        símismo._incrementar(paso=paso)
+
     def leer_vals(símismo):
+
+        if not símismo.vals_actualizadas:
+            símismo._leer_vals()
+
+            símismo.vals_actualizadas = True
+
+    def _leer_vals(símismo):
         """
         Esta función debe leer los valores del modelo y escribirlos en el diccionario interno de variables. Se
         implementa frequentement con modelos externos de cuyos egresos hay que leer los resultados de una corrida.
 
         """
+
         raise NotImplementedError
 
     def inic_val_var(símismo, var, val):
@@ -745,23 +770,32 @@ class Modelo(object):
         return [v for v, d_v in símismo.variables.items() if d_v['estado_inicial']]
 
     def leer_resultados(símismo, var, corrida=None):
+
+        # Verificar que existe el variable en este modelo.
+        if var not in símismo.variables:
+            raise ValueError(_('El variable "{}" no existe en este modelo.').format(var))
+
+        # Si no se especificó corrida especial, tomaremos la corrida más recién.
         if corrida is None:
+            if símismo.corrida_activa is None:
+                raise ValueError(_('Debes especificar una corrida.'))
+            else:
+                corrida = símismo.corrida_activa
+
+                # Leer de la memoria temporaria, si estamos interesadas en la corrida más recién
+        if corrida == símismo.corrida_activa:
             if var in símismo.mem_vars:
                 return símismo.mem_vars[var]
-            else:
-                raise ValueError(_('El variable "{}" no está en la memoria temporaria, y no especificaste una corrida '
-                                   'donde buscarlo. Debes o especificar una corrida en particular, o poner "{}" en'
-                                   '"vars_interés" cuando corres una simulación').format(var, var))
-        else:
-            return símismo._leer_resultados(var, corrida)
+
+        return símismo._leer_resultados(var, corrida)
 
     def _leer_resultados(símismo, var, corrida):
         raise NotImplementedError(_(
             'Modelos de tipo "{}" no pueden leer los resultados de una corrida después de terminar una simulación. '
             'Debes especificar "vars_interés" cuando corres la simulación para poder acceder a los resultados después. '
             'Si estás desarrollando esta envoltura y quieres agregar esta funcionalidad, debes implementar la '
-            'función "._leer_resultados()" en tu envoltura.')
-                                  .format(símismo.__class__))
+            'función "._leer_resultados()" en tu envoltura.'
+        ).format(símismo.__class__))
 
     def paralelizable(símismo):
         """

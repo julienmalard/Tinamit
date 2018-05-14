@@ -3,9 +3,8 @@ import unittest
 
 import numpy as np
 
-from tinamit.BF import EnvolturaBF
 from pruebas.recursos.prueba_bf import ModeloPrueba
-
+from tinamit.BF import EnvolturaBF
 
 dir_act = os.path.split(__file__)[0]
 arch_bf = os.path.join(dir_act, 'recursos/prueba_bf.py')
@@ -21,7 +20,6 @@ class Test_ModeloSenc(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-
         # Generar la Envoltura BF
         cls.envltmodelo = EnvolturaBF(arch_bf)
 
@@ -56,14 +54,14 @@ class Test_ModeloSenc(unittest.TestCase):
         Comprobar que los valores iniciales se establecieron correctamente.
         """
 
-        símismo.assertEqual(símismo.envltmodelo.variables['Máx lluvia']['val'], 15)
+        símismo.assertEqual(símismo.envltmodelo.obt_val_actual_var('Máx lluvia'), 15)
 
     def test_simul(símismo):
         """
         Assegurarse que la simulación dió los resultados esperados.
         """
 
-        val_simulado = símismo.envltmodelo.leer_resultados('Escala')[:, 0]
+        val_simulado = símismo.envltmodelo.leer_resultados('Escala')
 
         símismo.assertTrue(np.array_equal(val_simulado, np.arange(0, 201)))
 

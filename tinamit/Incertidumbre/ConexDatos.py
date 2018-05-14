@@ -3,10 +3,10 @@ from warnings import warn as avisar
 import numpy as np
 import pandas as pd
 
-from tinamit.Incertidumbre.Estadísticas import calib_bayes, optimizar, regresión
 from tinamit import _
 from tinamit.EnvolturaMDS.sintaxis import Ecuación
 from tinamit.Incertidumbre.Datos import SuperBD
+from tinamit.Incertidumbre.Estadísticas import calib_bayes, optimizar, regresión
 from tinamit.MDS import EnvolturaMDS
 
 try:
@@ -84,7 +84,8 @@ class ConexDatos(object):
                     mod.calibs[nombre][lg] = {}
                 mod.calibs[nombre][lg][var] = est_lg
 
-    def estab_estim_const(símismo, const, líms=None, en=None, escala=None, por=None, fechas=None, bds=None, regional=None):
+    def estab_estim_const(símismo, const, líms=None, en=None, escala=None, por=None, fechas=None, bds=None,
+                          regional=None):
         símismo.dic_info_const[const] = {
             'líms': líms,
             'en': en,
@@ -216,7 +217,7 @@ class ConexDatos(object):
                     obs_ap = símismo.bd.obt_datos_reg(l_vars=l_vars, lugar=lgs, datos=bds, fechas=fechas)
                 else:
                     obs_ap = símismo.bd.obt_datos_ind(l_vars=l_vars, lugar=lgs, datos=bds, fechas=fechas,
-                                                  excl_faltan=True)
+                                                      excl_faltan=True)
 
                 obs_y_ap = obs_ap[var].values
                 obs_x_ap = {x: obs_ap[x].values for x in vars_x}
@@ -233,7 +234,7 @@ class ConexDatos(object):
                 nivel_inf = en
                 for n, e in enumerate(reversed(aprioris_por)):
                     try:
-                        nivel_sup = list(reversed(aprioris_por))[n+1]
+                        nivel_sup = list(reversed(aprioris_por))[n + 1]
                     except IndexError:
                         nivel_sup = None
                     dic_lg_pariente[e] = {x: geog.árbol_geog_inv[x][nivel_sup] if nivel_sup is not None else None
@@ -245,7 +246,7 @@ class ConexDatos(object):
             dists_aprioris = [dic_aprioris[None] for _ in lugares]
 
         else:
-            dists_aprioris = [None]*len(lugares)
+            dists_aprioris = [None] * len(lugares)
 
         d_calib = {}
         for lg, x, y, ap in zip(lugares, obs_x, obs_y, dists_aprioris):
@@ -329,7 +330,8 @@ class ConexDatos(object):
                             d_prms[lg_niv][c] = est[lg_niv]['val']
                         else:
                             if 'ES' in est[lg_niv]:
-                                d_prms[lg_niv][c] = np.random.normal(loc=est[lg_niv]['val'], scale=est[lg_niv]['ES'], size=n_rep)
+                                d_prms[lg_niv][c] = np.random.normal(loc=est[lg_niv]['val'], scale=est[lg_niv]['ES'],
+                                                                     size=n_rep)
                             elif 'dist' in est[lg_niv]:
                                 devolver = n_rep > est[lg_niv]['dist'].size
                                 d_prms[lg_niv][c] = np.random.choice(est[lg_niv]['dist'], size=n_rep, replace=devolver)

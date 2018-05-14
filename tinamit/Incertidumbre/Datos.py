@@ -448,9 +448,9 @@ class SuperBD(object):
                     bd_sel = bd_sel[bd_sel['lugar'].isin(lugar)]
 
                 if excl_faltan:
-                    bd_sel = bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha',  'bd', 'lugar']])
+                    bd_sel = bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha', 'bd', 'lugar']])
                 else:
-                    bd_sel = bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha',  'bd', 'lugar']],
+                    bd_sel = bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha', 'bd', 'lugar']],
                                            how='all')
                 egr[í] = bd_sel
 
@@ -490,7 +490,8 @@ class SuperBD(object):
 
                     if len(l_fechas_fin):
                         nuevas_filas = pd.DataFrame(columns=l_vars,
-                                                    index=pd.to_datetime([x for x in l_fechas_fin if x not in proms_fecha.index]))
+                                                    index=pd.to_datetime(
+                                                        [x for x in l_fechas_fin if x not in proms_fecha.index]))
                         proms_fecha = proms_fecha.append(nuevas_filas)
                         proms_fecha = proms_fecha.sort_index()
                         proms_fecha = proms_fecha.interpolate(method='time')

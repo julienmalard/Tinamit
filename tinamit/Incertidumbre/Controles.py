@@ -5,8 +5,6 @@ import re
 import numpy as np
 from scipy.optimize import minimize
 
-from tinamit.Incertidumbre.Datos import SuperBD
-
 
 class Control(object):
 

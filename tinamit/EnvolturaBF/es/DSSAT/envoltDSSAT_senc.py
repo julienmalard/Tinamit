@@ -25,7 +25,7 @@ class EnvoltDSSAT(ModeloBF):
     def _cambiar_vals_modelo_interno(símismo, valores):
         pass
 
-    def incrementar(símismo, paso):
+    def _incrementar(símismo, paso):
         correr(símismo.comanda, cwd='C:\\DSSAT46\\maize')
 
     def act_vals_clima(símismo, n_paso, f):
@@ -44,7 +44,7 @@ class EnvoltDSSAT(ModeloBF):
         with open(arch_DSSAT_WTH, 'w') as d:
             d.writelines(líns)
 
-    def leer_vals(símismo):
+    def _leer_vals(símismo):
         if not os.path.isfile(símismo.dic_egr):
             raise OSError('Error en el programa DSSAT.')
 

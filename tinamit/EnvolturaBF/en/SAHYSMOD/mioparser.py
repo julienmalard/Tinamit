@@ -176,9 +176,10 @@ def buildLine(parameterNames, lineSpec, parameterDictionary, configDictionary, i
             line = line.strip() + ',' * diff + '\n'
     return line
 
+
 def createArrayOfZeros(*dims):
     if len(dims) == 1:
-        return [0]*dims[0]
+        return [0] * dims[0]
     else:
         arr = []
         for i in range(dims[0]):

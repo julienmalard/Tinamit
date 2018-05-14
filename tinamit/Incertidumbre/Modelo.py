@@ -4,7 +4,6 @@ import os
 import re
 
 
-
 class ModeloMDS(object):
     """
 
@@ -76,7 +75,6 @@ class ModeloMDS(object):
                     if n == len(l_regex):
                         raise ValueError(mensaje_error)
 
-
     def guardar_mds(símismo, archivo=None):
         if archivo is None:
             archivo = símismo.archivo_mds
@@ -134,6 +132,3 @@ class ModeloVENSIMmdl(ModeloMDS):
         comanda_vensim(dll.vensim_command, ('FILE>PUBLISH|%s' % archivo_frm))
 
         símismo.vpm = ModeloVENSIMvpm(archivo_mds=archivo_vpm)
-
-
-

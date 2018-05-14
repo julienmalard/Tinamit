@@ -16,8 +16,8 @@ Si quieres hacer una nueva envoltura para otro tipo de modelo DS, tendrás que h
 * :func:`~tinamit.MDS.EnvolturaMDS._inic_dic_vars`: Incializa el diccionario interno de variables disponibles.
 * :func:`~tinamit.MDS.EnvolturaMDS.iniciar_modelo`: Inicializa la simulación.
 * :func:`~tinamit.MDS.EnvolturaMDS._cambiar_vals_modelo_interno`: Cambia los valores internos de los variables.
-* :func:`~tinamit.MDS.EnvolturaMDS.incrementar`: Avanza el modelo.
-* :func:`~tinamit.MDS.EnvolturaMDS.leer_vals`: Lee los egresos del modelo.
+* :func:`~tinamit.MDS.EnvolturaMDS._incrementar`: Avanza el modelo.
+* :func:`~tinamit.MDS.EnvolturaMDS._leer_vals`: Lee los egresos del modelo.
 * :func:`~tinamit.MDS.EnvolturaMDS.cerrar_modelo`: Cierre el modelo al final de una simulación.
 
 Ver :class:`~tinamit.EnvolturaMDS.ModeloVensim` para un ejemplo.

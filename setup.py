@@ -1,9 +1,9 @@
 import os
 
+import polib
 from babel.messages import frontend as babel
 from setuptools import setup, find_packages
 from setuptools.command.sdist import sdist
-import polib
 
 directorio = os.path.split(os.path.realpath(__file__))[0]
 
@@ -15,7 +15,6 @@ def leer(arch):
 
 # Leer la versión de Tinamït
 versión = leer(os.path.join('tinamit', 'versión.txt'))
-
 
 # Lo que sigue es código un poco complicado pero necesario para manejar las traducciones del código y de sus
 # mensajes al usuario. En gran parte, su necesidad es culpa del paquete Babel que no reconoce lenguas Mayas, entre
@@ -40,6 +39,7 @@ class dist_f(sdist):
     """
     Clase para crear distribución de código fuente.
     """
+
     def run(símismo):
         # Antes de generar la distribución de código fuente, tenemos que actualizar las traducciones...
 

@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 
 import pkg_resources
+
 from tinamit.Interfaz import Traducciones as Trad
 
 
@@ -66,7 +67,6 @@ archivos_imgs = {'LogoInic': 'LogoInic.png',
                  'BtNavSub_atrs_bloq': 'BtNavSub_atrs_bloq.png',
                  'BtNavSub_atrs_sel': 'BtNavSub_atrs_sel.png',
 
-
                  'BtBorrarItema_norm': 'BtBorrarItema_norm.png',
                  'BtBorrarItema_sel': 'BtBorrarItema_sel.png',
                  'BtBorrarItema_bloq': 'BtBorrarItema_bloq.png',
@@ -99,10 +99,9 @@ archivos_imgs = {'LogoInic': 'LogoInic.png',
 
 
 def escalar_colores(color1, color2, n):
-
     def escalar(val1, val2, m):
-            escl = [val1/256 + (val2/256 - val1/256)*i/(m-1) for i in range(m)]
-            return escl
+        escl = [val1 / 256 + (val2 / 256 - val1 / 256) * i / (m - 1) for i in range(m)]
+        return escl
 
     r = escalar(color1[0], color2[0], n)
     v = escalar(color1[1], color2[1], n)
@@ -112,14 +111,13 @@ def escalar_colores(color1, color2, n):
 
 
 def inter_color(colores, p, tipo='rva'):
-
     def interpol(val1, val2, u):
-        return int(val1 + (val2 - val1)*u)
+        return int(val1 + (val2 - val1) * u)
 
     def interpol_col(col1, col2, u):
         return tuple([interpol(col1[n], col2[n], u) for n in range(3)])
 
-    pos = (p * (len(colores)-1)) % 1
+    pos = (p * (len(colores) - 1)) % 1
     inic = max(0, int(pos) - 1)
     fin = inic + 1
     if fin >= len(colores):

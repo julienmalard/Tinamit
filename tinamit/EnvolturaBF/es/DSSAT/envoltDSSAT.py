@@ -12,7 +12,7 @@ class ModeloDSSAT(ModeloFlexible):
         símismo.día_act = 0  # El día actual de la simulación
         símismo.día_princ_últ_sim = 0  # El primer día de la última llamada a DSSAT
 
-    def iniciar_modelo(símismo, tiempo_final, **kwargs):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
 
         símismo.inic_vars_clima(tiempo_final=tiempo_final)
 
@@ -34,12 +34,12 @@ class ModeloDSSAT(ModeloFlexible):
     def unidad_tiempo(símismo):
         return 'Días'
 
-    def leer_vals(símismo):
+    def _leer_vals(símismo):
 
         for var in símismo.vars_saliendo:
             raise NotImplementedError
 
-    def incrementar(símismo, paso):
+    def _incrementar(símismo, paso):
         raise NotImplementedError
 
     def _cambiar_vals_modelo_interno(símismo, valores):
@@ -50,6 +50,7 @@ class ModeloDSSAT(ModeloFlexible):
 
     def inic_vars_clima(símismo, tiempo_final):
         raise NotImplementedError
+
 
 vars_DSSAT = {
     'Rendimiento': {

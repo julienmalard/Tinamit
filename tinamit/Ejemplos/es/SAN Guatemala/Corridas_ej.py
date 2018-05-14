@@ -27,7 +27,8 @@ geog.agregar_info_regiones(archivo='Geografía Iximulew.csv',
 
 vars_interés = []
 munis = {m: geog.árbol_geog_inv[m]['Territorio'] for m in geog.obt_lugares_en()}
-munis = {m: tr for m, tr in munis.items() if all(m in d_p or 'Territorio {}'.format(tr) in d_p for d_p in dic_calib.values())}
+munis = {m: tr for m, tr in munis.items() if
+         all(m in d_p or 'Territorio {}'.format(tr) in d_p for d_p in dic_calib.values())}
 
 
 def graficar_calibs():
@@ -76,8 +77,9 @@ def correr_mod(mod, n_rep=1):
     """
     res = {}
     if n_rep == 1:
-        dic_prms = {'{}'.format(m): {p: dic_calib[p][m]['val'] if m in dic_calib[p] else dic_calib[p]['Territorio {}'.format(tr)]
-                                     for p in dic_calib} for m, tr in munis.items()}
+        dic_prms = {
+        '{}'.format(m): {p: dic_calib[p][m]['val'] if m in dic_calib[p] else dic_calib[p]['Territorio {}'.format(tr)]
+                         for p in dic_calib} for m, tr in munis.items()}
 
         for lg in dic_prms:
             corr = 'Vld {}'.format(lg)

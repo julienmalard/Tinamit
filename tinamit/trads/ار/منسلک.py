@@ -22,8 +22,11 @@ class ہڑامنسلک(SuperConectado):
     def act_vals_clima(خود, n_paso, f):
         return super().act_vals_clima(n_paso=n_paso, f=f)
 
-    def simular(خود, tiempo_final, قدم=1, nombre_corrida="Corrida Tinamït", fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, vars_interés=None):
-        return super().simular(tiempo_final=tiempo_final, paso=قدم, nombre_corrida=nombre_corrida, fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, vars_interés=vars_interés)
+    def simular(خود, tiempo_final, قدم=1, nombre_corrida="Corrida Tinamït", fecha_inic=None, lugar=None, tcr=None,
+                recalc=True, clima=False, vars_interés=None):
+        return super().simular(tiempo_final=tiempo_final, paso=قدم, nombre_corrida=nombre_corrida,
+                               fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima,
+                               vars_interés=vars_interés)
 
     def incrementar(خود, قدم):
         return super().incrementar(paso=قدم)

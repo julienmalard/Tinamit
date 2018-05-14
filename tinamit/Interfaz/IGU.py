@@ -10,6 +10,7 @@ class Apli(tk.Frame):
     """
     Aquí creamos la aplicación centra para el IGU.
     """
+
     def __init__(símismo, pariente):
         tk.Frame.__init__(símismo, pariente)
         pariente.title('Tinamit')

@@ -1,7 +1,7 @@
+from tinamit.BF import EnvolturaBF
+from tinamit.BF import ModeloBF
 from tinamit.BF import ModeloFlexible
 from tinamit.BF import ModeloImpaciente
-from tinamit.BF import ModeloBF
-from tinamit.BF import EnvolturaBF
 
 
 class EnvolturaBF(EnvolturaBF):

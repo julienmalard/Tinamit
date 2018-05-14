@@ -98,6 +98,7 @@ class Dll(object):
         else:
             print('Tienes un problema.', estatus)
 
+
 ubicación_modelo = "C:\\Users\\jmalar1\\Documents\\PycharmProjects\\Tinamit\\Prueba dll.vpm"
 modelo = Dll(ubicación_modelo)
 # modelo.silenciar()
@@ -106,7 +107,6 @@ modelo.sacar_nombres_vars()
 modelo.estab_nombre_corrida('Corrida')
 modelo.sacar_val_var('FINAL TIME')
 modelo.poner_val_var(120, 'FINAL TIME')  # Absolutamente necesario
-
 
 modelo.empezar_juego()
 
@@ -127,6 +127,5 @@ for i in range(12):
     input('Presione "Intro" para seguir...')
 
 modelo.terminar_juego()
-
 
 print('fin')

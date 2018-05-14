@@ -1,6 +1,7 @@
 from warnings import warn as avisar
 
 import numpy as np
+
 try:
     import pymc3 as pm
 except ImportError:
@@ -19,9 +20,9 @@ if pm is not None:
              'Chi2': {'sp': estad.chi2, 'pm': pm.ChiSquared,
                       'sp_a_pm': lambda p: {'df': p[0]}},
              'Exponencial': {'sp': estad.expon, 'pm': pm.Exponential,
-                             'sp_a_pm': lambda p: {'lam': 1/p[1]}},
+                             'sp_a_pm': lambda p: {'lam': 1 / p[1]}},
              'Gamma': {'sp': estad.gamma, 'pm': pm.Gamma,
-                       'sp_a_pm': lambda p: {'alpha': p[0], 'beta': 1/p[2]}},
+                       'sp_a_pm': lambda p: {'alpha': p[0], 'beta': 1 / p[2]}},
              'Laplace': {'sp': estad.laplace, 'pm': pm.Laplace,
                          'sp_a_pm': lambda p: {'mu': p[0], 'b': p[1]}},
              'LogNormal': {'sp': estad.lognorm, 'pm': pm.Lognormal,
@@ -75,8 +76,8 @@ def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=Non
         if escl < 10e10:
             escl = 1
         try:
-            fdp = gaussian_kde(t[p]/escl)
-            x = np.linspace(t[p].min()/escl-1*rango, t[p].max()/escl + 1*rango, 1000)
+            fdp = gaussian_kde(t[p] / escl)
+            x = np.linspace(t[p].min() / escl - 1 * rango, t[p].max() / escl + 1 * rango, 1000)
             máx = x[np.argmax(fdp.evaluate(x))] * escl
             d_máx[p] = máx
         except:
@@ -128,8 +129,9 @@ def optimizar(obj_ec, paráms, líms_paráms, obs_x, obs_y, **ops):
 def regresión(obj_ec, paráms, líms_paráms, obs_x, obs_y, **ops):
     raise NotImplementedError
 
+
 def ajust_dist(datos, dists_potenciales):
-    mejor_ajuste = {'p':0, 'tipo':None}
+    mejor_ajuste = {'p': 0, 'tipo': None}
 
     for nombre_dist, dist_sp in dists_potenciales.items():
 

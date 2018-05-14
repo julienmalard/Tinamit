@@ -30,8 +30,10 @@ def run_model(name, switches):
         modelo.mds.inic_val_var(var=switch, val=val)
 
     # Couple models(Change variable names as needed)
-    modelo.conectar(var_mds='Soil salinity Tinamit CropA', mds_fuente=False, var_bf="Cr4 - Fully rotated land irrigated root zone salinity")
-    modelo.conectar(var_mds='Soil salinity Tinamit CropB', mds_fuente=False, var_bf="Cr4 - Fully rotated land irrigated root zone salinity")
+    modelo.conectar(var_mds='Soil salinity Tinamit CropA', mds_fuente=False,
+                    var_bf="Cr4 - Fully rotated land irrigated root zone salinity")
+    modelo.conectar(var_mds='Soil salinity Tinamit CropB', mds_fuente=False,
+                    var_bf="Cr4 - Fully rotated land irrigated root zone salinity")
     modelo.conectar(var_mds='Watertable depth Tinamit', mds_fuente=False, var_bf="Dw - Groundwater depth")
     modelo.conectar(var_mds='ECdw Tinamit', mds_fuente=False, var_bf='Cqf - Aquifer salinity')
     modelo.conectar(var_mds='Lc', mds_fuente=True, var_bf='Lc - Canal percolation')

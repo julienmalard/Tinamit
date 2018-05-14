@@ -8,11 +8,11 @@ class ModeloPrueba(ModeloBF):
     def _cambiar_vals_modelo_interno(símismo, valores):
         pass
 
-    def incrementar(símismo, paso):
+    def _incrementar(símismo, paso):
         símismo.variables['Lluvia']['val'] = random.random() * símismo.variables['Lago']['val'] / 10 * paso
         símismo.variables['Escala']['val'] += paso
 
-    def leer_vals(símismo):
+    def _leer_vals(símismo):
         pass
 
     def cerrar_modelo(símismo):

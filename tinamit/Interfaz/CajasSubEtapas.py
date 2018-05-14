@@ -179,7 +179,6 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
         símismo.MnVarsBf.refrescar(opciones=vars_bf)
 
         for conex in símismo.apli.receta['conexiones']:
-
             Ctrl.ItemaConexión(grupo_control=símismo.grupo_controles, lista_itemas=símismo.lista,
                                receta=conex, creando_manual=False)
 

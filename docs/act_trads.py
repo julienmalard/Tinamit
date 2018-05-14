@@ -1,7 +1,6 @@
 import os
 from subprocess import run, Popen, PIPE
 
-
 """
 Este código aquí sirve para simplificar el proceso de manejo de traducciones. Correr este código actualizará las 
 traducciones y en el servidor, y en la computadora.

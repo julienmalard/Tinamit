@@ -23,7 +23,7 @@ class EnvolturaBF(Modelo):
     para ellos.
     """
 
-    def __init__(símismo, modelo):
+    def __init__(símismo, modelo, nombre='bf'):
         """
         Incializar la envoltura.
 
@@ -44,14 +44,14 @@ class EnvolturaBF(Modelo):
 
             candidatos = inspect.getmembers(módulo, inspect.isclass)
             cands_final = {}
-            for nombre, obj in candidatos:
+            for nmb, obj in candidatos:
                 if callable(obj):
                     try:
                         obj = obj()
                     except BaseException:
                         continue
                 if isinstance(obj, ModeloBF):
-                    cands_final[nombre] = obj
+                    cands_final[nmb] = obj
 
             if len(cands_final) == 0:
                 raise AttributeError(_('El archivo especificado ("{}") no contiene subclase de "ModeloBF".')
@@ -79,9 +79,8 @@ class EnvolturaBF(Modelo):
                 raise TypeError(_('El parámetro "modelo" debe ser o una instancia o subclase de "ModeloBF", o un '
                                   'archivo Python que contiene uno.'))
 
-        super().__init__(nombre='bf')
+        super().__init__(nombre=nombre)
 
-        símismo.vars_entrando = símismo.modelo.vars_entrando
         símismo.vars_saliendo = símismo.modelo.vars_saliendo
         símismo.vars_clima = símismo.modelo.vars_clima
 
@@ -116,7 +115,7 @@ class EnvolturaBF(Modelo):
 
         símismo.modelo._cambiar_vals_modelo_interno(valores=valores)
 
-    def incrementar(símismo, paso):
+    def _incrementar(símismo, paso):
         """
         Esta función avanza el modelo por un periodo de tiempo especificado en `paso`.
 
@@ -127,7 +126,7 @@ class EnvolturaBF(Modelo):
 
         símismo.modelo.incrementar(paso=paso)
 
-    def leer_vals(símismo):
+    def _leer_vals(símismo):
         """
         Esta función lee los valores del modelo y los escribe en el diccionario interno de variables.
 
@@ -145,7 +144,7 @@ class EnvolturaBF(Modelo):
         """
         símismo.modelo.act_vals_clima(n_paso=n_paso, f=f)
 
-    def iniciar_modelo(símismo, **kwargs):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
         Inicializa el modelo biofísico interno, incluyendo la inicialización de variables.
 
@@ -155,7 +154,7 @@ class EnvolturaBF(Modelo):
 
         # Inicializar el modelo.
         símismo.modelo.lugar = símismo.lugar
-        símismo.modelo.iniciar_modelo(**kwargs)
+        símismo.modelo.iniciar_modelo(tiempo_final, nombre_corrida)
 
         # Aplicar valores iniciales después de la inicialización del modelo. Simplemente llamamos la función
         # símismo.cambiar_vals() con el diccionario de valores iniciales.
@@ -205,7 +204,7 @@ class ModeloBF(Modelo):
         """
         raise NotImplementedError
 
-    def incrementar(símismo, paso):
+    def _incrementar(símismo, paso):
         """
         Esta función debe incrementar el modelo de `paso` unidades de tiempo.
         :param paso: El número de pasos
@@ -214,7 +213,7 @@ class ModeloBF(Modelo):
 
         raise NotImplementedError
 
-    def leer_vals(símismo):
+    def _leer_vals(símismo):
         """
         Esta función debe leer los variables del modelo desde el modelo externo y copiarlos al diccionario interno
         de variables. Asegúrese que esté *actualizando* el diccionario interno, y que no lo esté recreando, lo cual
@@ -401,7 +400,7 @@ class ModeloImpaciente(ModeloBF):
                 # Avanzar la fecha
                 f_inic = f_final
 
-    def incrementar(símismo, paso):
+    def _incrementar(símismo, paso):
         """
         Incrementa el modelo, tomando valores de variables desde el diccionario de valores internos.
         Si necesitamos avanzar la simulación del modelo externo, lo hace ahora y después lee los resultados.
@@ -456,7 +455,7 @@ class ModeloImpaciente(ModeloBF):
         símismo.mes = m
         símismo.estación = e
 
-    def leer_vals(símismo):
+    def _leer_vals(símismo):
         """
         Empleamos :func:`ModeloImpaciente.leer_egr` en vez, lo cual lee los egresos de todas los pasos de la última
         simulación. :func:`ModeloImpaciente.incrementar` arregla lo de apuntar los diccionarios de
@@ -666,7 +665,7 @@ class ModeloFlexible(ModeloBF):
         """
         raise NotImplementedError
 
-    def incrementar(símismo, paso):
+    def _incrementar(símismo, paso):
         """
 
 
@@ -674,7 +673,7 @@ class ModeloFlexible(ModeloBF):
 
         raise NotImplementedError
 
-    def leer_vals(símismo):
+    def _leer_vals(símismo):
         """
         Esta función debe leer los variables del modelo desde el modelo externo y copiarlos al diccionario interno
         de variables. Asegúrese que esté *actualizando* el diccionario interno, y que no lo esté recreando, lo cual
@@ -683,7 +682,7 @@ class ModeloFlexible(ModeloBF):
         """
         raise NotImplementedError
 
-    def iniciar_modelo(símismo, **kwargs):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
         Esta función debe preparar el modelo para una simulación.
 

@@ -33,7 +33,7 @@ class ContCajaEtps(tk.Frame):
 
         if not símismo.en_transición:
             símismo.en_transición = True
-            nueva_caja = símismo.Cajas[núm_cj_nueva-1]
+            nueva_caja = símismo.Cajas[núm_cj_nueva - 1]
             nueva_caja.lift()
             Anim.intercambiar(símismo.CajaActual, nueva_caja, dirección=dirección)
             símismo.CajaActual = nueva_caja
@@ -53,7 +53,7 @@ class CajaEtapa(tk.Frame):
         símismo.pariente = pariente
         símismo.SubCajas = []
         símismo.SubCajaActual = None
-        
+
         etiq = tk.Label(símismo, text=nombre, **Fm.formato_EncbzCjEtp)
         etiq.place(**gf(Fm.ubic_EncbzCjEtp))
 
@@ -89,7 +89,7 @@ class CajaEtapa(tk.Frame):
 
     def ir_a_sub(símismo, núm_sub_nueva):
         if símismo.SubCajaActual is None:
-            símismo.SubCajaActual = símismo.SubCajas[núm_sub_nueva-1]
+            símismo.SubCajaActual = símismo.SubCajas[núm_sub_nueva - 1]
             símismo.SubCajaActual.lift()
         else:
             if núm_sub_nueva < símismo.SubCajaActual.núm:
@@ -98,8 +98,8 @@ class CajaEtapa(tk.Frame):
                 dirección = 'izquierda'
             else:
                 return
-            Anim.intercambiar(símismo.SubCajaActual, símismo.SubCajas[núm_sub_nueva-1], dirección=dirección)
-            símismo.SubCajaActual = símismo.SubCajas[núm_sub_nueva-1]
+            Anim.intercambiar(símismo.SubCajaActual, símismo.SubCajas[núm_sub_nueva - 1], dirección=dirección)
+            símismo.SubCajaActual = símismo.SubCajas[núm_sub_nueva - 1]
 
     def traer_me(símismo):
         símismo.pariente.ir_a_caja(símismo.núm)
@@ -109,7 +109,7 @@ class CajaEtapa(tk.Frame):
 
     def ir_etp_anterior(símismo):
         símismo.pariente.ir_a_caja(símismo.núm - 1)
-        
+
     def bloquear_subcajas(símismo, núms_cajas):
         for n in núms_cajas:
             if n > 1:
@@ -135,11 +135,11 @@ class CajaSubEtapa(tk.Frame):
 
         símismo.pariente = pariente
         símismo.núm = núm
-        
+
         if nombre is not None:
             etiq = tk.Label(símismo, text=nombre, **Fm.formato_EncbzCjSubEtp)
             etiq.place(**gf(Fm.ubic_EncbzCjSubEtp))
-            
+
         símismo.BtAdelante = None
         símismo.BtAtrás = None
         if núm < total:
@@ -186,7 +186,7 @@ class CajaActivable(tk.Frame):
         símismo.etiquetas = []
         símismo.colores_etiquetas = []
         símismo.botones = []
-        
+
         if tipo_ubic == 'pack':
             símismo.pack(**ubicación)
         elif tipo_ubic == 'place':

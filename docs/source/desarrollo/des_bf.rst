@@ -56,8 +56,8 @@ siguientes en una subclase de esta plantilla.
 * :func:`~tinamit.BF.ModeloBF._inic_dic_vars`: Incializa el diccionario interno de variables disponibles.
 * :func:`~tinamit.BF.ModeloBF.iniciar_modelo`: Inicializa la simulación.
 * :func:`~tinamit.BF.ModeloBF._cambiar_vals_modelo_interno`: Cambia los valores internos de los variables.
-* :func:`~tinamit.BF.ModeloBF.incrementar`: Avanza el modelo.
-* :func:`~tinamit.BF.ModeloBF.leer_vals`: Lee los egresos del modelo.
+* :func:`~tinamit.BF.ModeloBF._incrementar`: Avanza el modelo.
+* :func:`~tinamit.BF.ModeloBF._leer_vals`: Lee los egresos del modelo.
 * :func:`~tinamit.BF.ModeloBF.cerrar_modelo`: Cierre el modelo al final de una simulación.
 
 .. _plantilla_modimp:

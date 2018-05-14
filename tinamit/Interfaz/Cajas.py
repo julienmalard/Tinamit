@@ -4,9 +4,9 @@ import os
 import tkinter as tk
 from tkinter import filedialog as diálogo
 
+from tinamit import cambiar_lengua
 from tinamit.Conectado import Conectado
 from tinamit.definiciones import dir_raíz
-from tinamit import cambiar_lengua
 from . import CajasGenéricas as CjG
 from . import CajasSubEtapas as CjSE
 from . import Controles as Ctrl
@@ -202,7 +202,7 @@ class CajaCentral(tk.Frame):
 
     def desbloquear_cajas(símismo, núms_cajas):
         for n in núms_cajas:
-            símismo.CajasEtapas[n-1].acción_desbloquear()
+            símismo.CajasEtapas[n - 1].acción_desbloquear()
             if n > 1:
                 símismo.CajasEtapas[n - 2].desbloquear_transición(dirección='siguiente')
             if n < len(símismo.CajasEtapas):

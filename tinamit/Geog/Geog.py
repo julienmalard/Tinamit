@@ -198,7 +198,7 @@ class Lugar(مقام):
         for v in vars_clima:
             if v not in conv_vars:
                 raise ValueError(_('El variable "{}" está erróneo. Debe ser uno de:\n'
-                                 '\t{}').format(v, ', '.join(conv_vars)))
+                                   '\t{}').format(v, ', '.join(conv_vars)))
 
         v_conv = [conv_vars[v] for v in vars_clima]
 
@@ -229,7 +229,7 @@ class Lugar(مقام):
                 v_conv = conv_vars[v]
             except KeyError:
                 raise ValueError(_('El variable "{}" está erróneo. Debe ser uno de:\n'
-                                 '\t{}').format(v, ', '.join(conv_vars)))
+                                   '\t{}').format(v, ', '.join(conv_vars)))
             if c is None:
                 if v in ['Temperatura máxima', 'Temperatura mínima', 'Temperatura promedia']:
                     c = 'prom'
@@ -250,6 +250,7 @@ class Geografía(object):
     """
     Esta clase representa la geografía de un lugares.
     """
+
     def __init__(símismo, nombre):
 
         símismo.nombre = nombre
@@ -352,12 +353,12 @@ class Geografía(object):
                 i_cols = [cols.index(x) for x in orden_jer]
             except ValueError:
                 raise ValueError(_('Los nombres de las regiones en "orden_jer" ({}) no concuerdan con los nombres en el'
-                                 ' archivo ({}).').format(', '.join(orden_jer), ', '.join(cols)))
+                                   ' archivo ({}).').format(', '.join(orden_jer), ', '.join(cols)))
             try:
                 in_col_cód = cols.index(col_cód)
             except ValueError:
                 raise ValueError(_('La columna de código de región especificada ({}) no concuerda con los nombres de '
-                                 'columnas del archivo ({}).').format(col_cód, ', '.join(cols)))
+                                   'columnas del archivo ({}).').format(col_cód, ', '.join(cols)))
 
             try:
                 í_g = [cols.index(x) for x in grupos]
@@ -477,7 +478,7 @@ class Geografía(object):
         if colores is None:
             colores = ['#FF6666', '#FFCC66', '#00CC66']
         if colores == -1:
-            colores = ['#00CC66', '#FFCC66','#FF6666']
+            colores = ['#00CC66', '#FFCC66', '#FF6666']
 
         if isinstance(colores, str):
             colores = ['#FFFFFF', colores]

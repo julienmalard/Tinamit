@@ -5,7 +5,6 @@ from tinamit.Geog.Geog import Lugar, Geografía
 
 from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
 
-
 if __name__ == '__main__':
     use_simple = True
     climate_change = True
@@ -137,6 +136,6 @@ if __name__ == '__main__':
         dibs = [dict(geog=Rechna_Doab, var='Watertable depth Tinamit', directorio='Maps'),
                 dict(geog=Rechna_Doab, var='Soil salinity Tinamit CropA', colores=-1, directorio='Maps')]
 
-        modelo.simular_paralelo(paso=1, tiempo_final=100*2, fecha_inic='01/11/1989', lugar=location, clima=True,
+        modelo.simular_paralelo(paso=1, tiempo_final=100 * 2, fecha_inic='01/11/1989', lugar=location, clima=True,
                                 recalc=False, tcr=[0, 2.6, 4.5, 6.0, 8.5], vals_inic=vals_inic, combinar=True,
                                 nombre_corrida='', dibujar=dibs, paralelo=True)

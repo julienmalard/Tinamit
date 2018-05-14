@@ -17,7 +17,8 @@ class Lugar(Lugar):
         return super().observar_anuales(archivo=archivo, cols_datos=cols_datos, años=años)
 
     def prep_datos(símismo, fecha_inic, fecha_final, tcr, prefs=None, lím_prefs=False, regenerar=False):
-        return super().prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=tcr, prefs=prefs, lím_prefs=lím_prefs, regenerar=regenerar)
+        return super().prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=tcr, prefs=prefs,
+                                  lím_prefs=lím_prefs, regenerar=regenerar)
 
     def devolver_datos(símismo, vars_clima, f_inic, f_final):
         return super().devolver_datos(vars_clima=vars_clima, f_inic=f_inic, f_final=f_final)
@@ -29,10 +30,12 @@ class Lugar(Lugar):
 class Geografía(Geografía):
 
     def agregar_objeto(símismo, archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=None):
-        return super().agregar_objeto(archivo=archivo, nombre=nombre, tipo=tipo, alpha=alpha, color=color, llenar=llenar)
+        return super().agregar_objeto(archivo=archivo, nombre=nombre, tipo=tipo, alpha=alpha, color=color,
+                                      llenar=llenar)
 
     def agregar_regiones(símismo, archivo, col_orden=None):
         return super().agregar_regiones(archivo=archivo, col_orden=col_orden)
 
     def dibujar(símismo, archivo, valores=None, título=None, unidades=None, colores=None, escala=None):
-        return super().dibujar(archivo=archivo, valores=valores, título=título, unidades=unidades, colores=colores, escala=escala)
+        return super().dibujar(archivo=archivo, valores=valores, título=título, unidades=unidades, colores=colores,
+                               escala=escala)

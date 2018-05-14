@@ -30,7 +30,7 @@ class Test_ConvertirUnidades(unittest.TestCase):
     def test_convertir_con_traducción_desconocida(símismo):
         # Aunque no sepa lo que es una "estación", el programa debería detectar que es lo mismo en ambos y solamente
         # convertir los m3 a cm3.
-        símismo.assertAlmostEqual(convertir('m3/estación', 'cm3/estación'), 100**3)
+        símismo.assertAlmostEqual(convertir('m3/estación', 'cm3/estación'), 100 ** 3)
 
     def test_convertir_con_valor(símismo):
         # Comprobar conversión real.

@@ -85,16 +85,15 @@ def quitar(actual, dirección):
 
 
 def deslizar(objetos, pos_inic, dirección, distancia, paso=0.025, método='logístico', tiempo=0.5):
-
-    for i in range(1, int(tiempo/paso) + 1):
-        t = i*paso
+    for i in range(1, int(tiempo / paso) + 1):
+        t = i * paso
         if método == 'logístico':
-            nueva_pos = mat.ceil(distancia/(1+mat.exp(-12/tiempo * (t-tiempo/2))))
+            nueva_pos = mat.ceil(distancia / (1 + mat.exp(-12 / tiempo * (t - tiempo / 2))))
         elif método == 'linear':
-            nueva_pos = mat.ceil(distancia*t/tiempo)
+            nueva_pos = mat.ceil(distancia * t / tiempo)
         else:
             raise ValueError
-        if i == int(tiempo/paso):
+        if i == int(tiempo / paso):
             nueva_pos = distancia
 
         if dirección == 'izquierda':

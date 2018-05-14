@@ -5,6 +5,7 @@ class ModeloTikon(ModeloImpaciente):
     """
 
     """
+
     def escribir_archivo_ingr(símismo, n_años_simul, dic_ingr):
         pass
 
@@ -20,7 +21,7 @@ class ModeloTikon(ModeloImpaciente):
     def _inic_dic_vars(símismo):
         pass
 
-    def iniciar_modelo(símismo, **kwargs):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         pass
 
     def avanzar_modelo(símismo):

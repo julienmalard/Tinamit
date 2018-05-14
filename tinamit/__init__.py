@@ -1,6 +1,6 @@
+import gettext
 import json
 import os
-import gettext
 
 from pkg_resources import resource_filename
 

@@ -1,7 +1,8 @@
 import ctypes
+import os
 import random
 import struct
-import os
+
 
 # Un ejemplo de base de como conectar e intercambiar valores con Vensim. Este se desarrolló como prueba y NO es
 # necesario para el funcionamiento del programa Tinamit.

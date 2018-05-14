@@ -91,7 +91,6 @@ class Botón(object):
 class BotónTexto(Botón):
     def __init__(símismo, pariente, texto, formato_norm, formato_sel,
                  ubicación, tipo_ubic, comanda=None, formato_bloq=None):
-
         super().__init__(pariente, comanda, texto=texto, formato_norm=formato_norm,
                          formato_sel=formato_sel, formato_bloq=formato_bloq,
                          ubicación=ubicación, tipo_ubic=tipo_ubic)

@@ -53,7 +53,7 @@ class Diccionario(object):
                 else:
                     leng['Trads'][frase] = ''
                     llenos.append(0)
-            símismo.lenguas[nombre]['Estado'] = sum(llenos)/len(llenos)
+            símismo.lenguas[nombre]['Estado'] = sum(llenos) / len(llenos)
 
         for nombre, leng in símismo.lenguas.items():
             for frase in leng['Trads'].copy():

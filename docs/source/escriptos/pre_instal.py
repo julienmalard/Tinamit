@@ -12,7 +12,6 @@ Esta parte instala todas las dependencias de Tinamit de manera automática. Al m
 Python 3.6 de 32 bits. Necesita una buena conexión internet.
 """
 
-
 so = platform.system()
 bits = platform.architecture()[0][:2]
 

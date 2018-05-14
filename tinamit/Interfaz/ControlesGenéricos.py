@@ -35,7 +35,8 @@ class ListaItemas(tk.Frame):
             x = 0
         else:
             x = 20
-        símismo.Tela.create_window(x, 1, window=símismo.Caja, tags="self.frame", width=símismo.ancho-20, **Fm.ubic_CjTl)
+        símismo.Tela.create_window(x, 1, window=símismo.Caja, tags="self.frame", width=símismo.ancho - 20,
+                                   **Fm.ubic_CjTl)
 
         símismo.Caja.bind("<Configure>", símismo.ajust_auto)
 
@@ -74,9 +75,9 @@ class ListaEditable(ListaItemas):
         cj_encbz = tk.Frame(símismo, **Fm.formato_cajas)
 
         ancho_bts = Fm.ancho_cj_bts_itemas
-        x = [-ancho_bts*n/len(anchuras) for n in range(len(anchuras))]
+        x = [-ancho_bts * n / len(anchuras) for n in range(len(anchuras))]
         relx = [sum(anchuras[:n]) for n in range(len(anchuras))]
-        ajust_ancho = [0] * (len(anchuras)-1) + [ancho_bts]
+        ajust_ancho = [0] * (len(anchuras) - 1) + [ancho_bts]
         cols = []
         for n, col in enumerate(nombres_cols):
             ubic = dict(relx=relx[n], x=x[n], **Fm.ubic_ColsEncbzLst)
@@ -520,7 +521,7 @@ class Escala(object):
         símismo.cj = tk.Frame(pariente, **Fm.formato_cajas)
         símismo.comanda = comanda
         if valor_inicial is None:
-            valor_inicial = (límites[0] + límites[1])/2
+            valor_inicial = (límites[0] + límites[1]) / 2
         símismo.valor_inicial = valor_inicial
 
         símismo.val = símismo.valor_inicial
@@ -583,8 +584,8 @@ class CosoEscala(tk.Canvas):
         símismo.val = val_inic
 
         símismo.create_rectangle(0, 0, 1, altura, **Fm.formato_lín_escl)
-        símismo.create_rectangle(ancho-2, 0, ancho, altura, **Fm.formato_lín_escl)
-        símismo.create_line(0, round(altura/2), ancho, round(altura/2), fill=Fm.col_1)
+        símismo.create_rectangle(ancho - 2, 0, ancho, altura, **Fm.formato_lín_escl)
+        símismo.create_line(0, round(altura / 2), ancho, round(altura / 2), fill=Fm.col_1)
 
         símismo.info_mov = {"x": 0, "y": 0}
 
@@ -599,7 +600,7 @@ class CosoEscala(tk.Canvas):
         símismo.poner(símismo.val)
 
     def acción_empujar(símismo, event):
-        símismo.info_mov["x"] = (símismo.coords(símismo.manilla)[0] + símismo.coords(símismo.manilla)[2])/2
+        símismo.info_mov["x"] = (símismo.coords(símismo.manilla)[0] + símismo.coords(símismo.manilla)[2]) / 2
 
     def acción_soltar(símismo, event):
         símismo.info_mov["x"] = 0
@@ -611,11 +612,11 @@ class CosoEscala(tk.Canvas):
         elif x < 0:
             x = 0
 
-        símismo.val = round(x/símismo.dim[0] * (símismo.límites[1] - símismo.límites[0]) + símismo.límites[0], 3)
+        símismo.val = round(x / símismo.dim[0] * (símismo.límites[1] - símismo.límites[0]) + símismo.límites[0], 3)
 
         if símismo.tipo == 'ent':
             símismo.val = int(símismo.val)
-            x = (símismo.val - símismo.límites[0])/(símismo.límites[1] - símismo.límites[0])*símismo.dim[0]
+            x = (símismo.val - símismo.límites[0]) / (símismo.límites[1] - símismo.límites[0]) * símismo.dim[0]
 
         delta_x = x - símismo.info_mov["x"]
 
@@ -627,7 +628,7 @@ class CosoEscala(tk.Canvas):
 
     def poner(símismo, val):
         símismo.val = val
-        x_manilla = (símismo.coords(símismo.manilla)[0] + símismo.coords(símismo.manilla)[2])/2
-        nuevo_x = (símismo.val - símismo.límites[0])/(símismo.límites[1] - símismo.límites[0])*símismo.dim[0]
+        x_manilla = (símismo.coords(símismo.manilla)[0] + símismo.coords(símismo.manilla)[2]) / 2
+        nuevo_x = (símismo.val - símismo.límites[0]) / (símismo.límites[1] - símismo.límites[0]) * símismo.dim[0]
         delta_x = nuevo_x - x_manilla
         símismo.move(símismo.manilla, delta_x, 0)

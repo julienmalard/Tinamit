@@ -86,7 +86,7 @@ class ItemaLeng(CtrG.Itema):
             altura, ancho = Fm.dim_barra_prog_leng
             barra_prog = tk.Canvas(cj_central, width=ancho, height=altura, background=Fm.col_fondo,
                                    highlightthickness=1, highlightbackground=color_barra)
-            barra_prog.create_rectangle(0, 0, round(ancho*estado), altura, fill=color_barra, outline=color_barra)
+            barra_prog.create_rectangle(0, 0, round(ancho * estado), altura, fill=color_barra, outline=color_barra)
             barra_prog.pack(gf(Fm.ubic_DerLstLeng))
 
         símismo.bt_editar = Bt.BotónImagen(cj_bts, comanda=lambda x=nombre: pariente.editar(x),

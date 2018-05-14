@@ -1,8 +1,9 @@
+import math as mat
+
 import numpy as np
 import regex
 from lark import Lark, Transformer
 from pkg_resources import resource_filename
-import math as mat
 
 from tinamit import _
 
@@ -244,7 +245,7 @@ class Ecuación(object):
                             return vrs
 
                         else:
-                            return set([i for x in v[1] for i in _obt_vars(x) ])
+                            return set([i for x in v[1] for i in _obt_vars(x)])
 
                     elif ll == 'var':
                         return {v}
@@ -355,7 +356,8 @@ class Ecuación(object):
                         elif v[0] == '^':
                             return _a_bayes(v[1][0], d_pm=d_pm) ** _a_bayes(v[1][1], d_pm=d_pm)
                         else:
-                            return conv_fun(v[0], 'tinamït', 'pm')(*_a_bayes(v[1], d_pm=d_pm))  # para hacer: arreglar dialecto
+                            return conv_fun(v[0], 'tinamït', 'pm')(
+                                *_a_bayes(v[1], d_pm=d_pm))  # para hacer: arreglar dialecto
 
                     elif ll == 'var':
                         try:
@@ -409,7 +411,7 @@ class Ecuación(object):
         modelo = pm.Model()
         with modelo:
             mu = _a_bayes(símismo.árbol)
-            sigma = pm.HalfNormal(name='sigma', sd=max(obs_y)/3)
+            sigma = pm.HalfNormal(name='sigma', sd=max(obs_y) / 3)
 
             if binario:
                 x = pm.Normal(name='logit_prob', mu=mu, sd=sigma, shape=obs_y.shape, testval=np.full(obs_y.shape, 0))

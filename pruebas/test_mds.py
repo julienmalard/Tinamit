@@ -3,7 +3,6 @@ import unittest
 
 from tinamit.EnvolturaMDS import generar_mds, EnvolturaMDS, ModeloVensim, ModeloPySD, ModeloVensimMdl
 
-
 # Los tipos de modelos DS que queremos comprobar.
 tipos_modelos = {
     'mdlVensim': {'envlt': ModeloVensimMdl, 'prueba': 'recursos/prueba_senc.mdl'},
@@ -60,8 +59,8 @@ class Test_ModeloSenc(unittest.TestCase):
         """
         Comprobar que los nombres de los variables se leyeron correctamente.
         """
-        for mod in símismo.modelos.values():
-            with símismo.subTest(mod=mod):
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
                 vars_modelo = set(mod.variables)
                 símismo.assertSetEqual(set(símismo.info_vars), vars_modelo)
 
@@ -69,8 +68,8 @@ class Test_ModeloSenc(unittest.TestCase):
         """
         Comprobar que las unidades de tiempo se leyeron correctamente.
         """
-        for mod in símismo.modelos.values():
-            with símismo.subTest(mod=mod):
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
                 símismo.assertEqual('mes', mod.unidad_tiempo())
 
     def test_leer_info(símismo):
@@ -78,9 +77,9 @@ class Test_ModeloSenc(unittest.TestCase):
         Comprobar que la documentación de cada variable se leyó correctamente.
         """
 
-        for mod in símismo.modelos.values():
-            with símismo.subTest(mod=mod):
-                símismo.assertTrue(len(d_v['info']) > 0 for d_v in mod.variables.values())
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                símismo.assertTrue(len(mod.obt_info_var(v)) > 0 for v in mod.variables)
 
     def test_leer_unidades(símismo):
         """
@@ -89,9 +88,9 @@ class Test_ModeloSenc(unittest.TestCase):
 
         unids = {v: d_v['unidades'] for v, d_v in símismo.info_vars.items()}
 
-        for mod in símismo.modelos.values():
-            with símismo.subTest(mod=mod):
-                unids_mod = {v: d_v['unidades'].lower() for v, d_v in mod.variables.items()}
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                unids_mod = {v: mod.obt_unidades_var(v).lower() for v in mod.variables}
                 símismo.assertDictEqual(unids, unids_mod)
 
     def test_leer_líms(símismo):
@@ -101,8 +100,8 @@ class Test_ModeloSenc(unittest.TestCase):
 
         unids = {v: d_v['líms'] for v, d_v in símismo.info_vars.items()}
 
-        for mod in símismo.modelos.values():
-            with símismo.subTest(mod=mod):
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
                 unids_mod = {v: d_v['líms'] for v, d_v in mod.variables.items()}
                 símismo.assertDictEqual(unids, unids_mod)
 
@@ -111,8 +110,8 @@ class Test_ModeloSenc(unittest.TestCase):
         Comprobar que los valores iniciales se establecieron correctamente.
         """
 
-        for mod in símismo.modelos.values():
-            with símismo.subTest(mod=mod):
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
                 for v, d_v in símismo.info_vars.items():
 
                     # Únicamente verificar los variables con valores iniciales especificados, naturalmente.
@@ -124,10 +123,10 @@ class Test_ModeloSenc(unittest.TestCase):
         Assegurarse que la simulación dió los resultados esperados.
         """
 
-        for mod in símismo.modelos.values():
-            with símismo.subTest(mod=mod):
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
                 # Leer el resultado del último día de simulación pára el variable "Lago"
-                val_simulado = mod.leer_resultados('Lago')[-1, 0]
+                val_simulado = mod.leer_resultados('Lago')[-1]
 
                 # Debería ser aproximativamente igual a 100
                 símismo.assertEqual(round(val_simulado, 3), 100)
@@ -156,6 +155,7 @@ class Test_GenerarMDS(unittest.TestCase):
     """
     Verifica el funcionamiento del generado automático de modelos DS.
     """
+
     def test_generación_auto_mds(símismo):
         # Verificamos que funcione la generación automática de modelos DS a base de un archivo.
 

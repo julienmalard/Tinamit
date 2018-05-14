@@ -1,7 +1,7 @@
+import csv
 import ctypes
 import os
 import re
-import csv
 
 import numpy as np
 
@@ -17,7 +17,7 @@ class EnvolturaMDS(Modelo):
 
     ext_arch_egr = '.csv'
 
-    def __init__(símismo, archivo):
+    def __init__(símismo, archivo, nombre='mds'):
         """
         Iniciamos el modelo DS.
 
@@ -41,7 +41,7 @@ class EnvolturaMDS(Modelo):
         símismo.archivo = archivo
 
         # Modelos DS se identifican por el nombre 'mds'.
-        super().__init__(nombre='mds')
+        super().__init__(nombre=nombre)
 
     def _inic_dic_vars(símismo):
         """
@@ -66,7 +66,7 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def iniciar_modelo(símismo, nombre_corrida, tiempo_final):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
         Este método se deja a las subclases de :class:`~tinamit.EnvolturaMDS.EnvolturaMDS` para implementar. Notar que la
         implementación de este método debe incluir la aplicación de valores iniciales.
@@ -94,7 +94,7 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def incrementar(símismo, paso):
+    def _incrementar(símismo, paso):
         """
         Este método se deja a las subclases de :class:`~tinamit.EnvolturaMDS.EnvolturaMDS` para implementar.
 
@@ -107,7 +107,7 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def leer_vals(símismo):
+    def _leer_vals(símismo):
         """
         Este método se deja a las subclases de :class:`~tinamit.EnvolturaMDS.EnvolturaMDS` para implementar.
 
@@ -143,17 +143,7 @@ class EnvolturaMDS(Modelo):
         :rtype: np.ndarray
         """
 
-        if var not in símismo.variables:
-            raise ValueError(_('El variable "{}" no existe.').format(var))
-
-        if os.path.splitdrive(corrida)[0] == '':
-            archivo = os.path.join(os.path.split(símismo.archivo)[0], corrida)
-        else:
-            archivo = corrida
-
-        archivo += símismo.ext_arch_egr
-
-        return leer_egr_mds(archivo, var)
+        raise NotImplementedError
 
     def __getinitargs__(símismo):
 
@@ -164,7 +154,7 @@ class MDSEditable(EnvolturaMDS):
     pass
 
 
-def leer_egr_mds(archivo, var, saltar_última=True):
+def leer_egr_mds(archivo, var, saltar_última_vdf=True):
     """
     Lee archivos de egresos de simulaciones EnvolturaMDS.
 
@@ -182,7 +172,6 @@ def leer_egr_mds(archivo, var, saltar_última=True):
         archivo += ext
 
     datos = []
-    final = None
 
     if ext == '.vdf':
         ext = '.csv'
@@ -191,15 +180,19 @@ def leer_egr_mds(archivo, var, saltar_última=True):
         dll_vensim = ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
 
         dll_vensim.vensim_command('MENU>VDF2CSV|{vdffile}|{CSVfile}'
-                       .format(vdffile=archivo, CSVfile=archivo_csv).encode())
+                                  .format(vdffile=archivo, CSVfile=archivo_csv).encode())
 
         archivo = archivo.replace('.vdf', '.csv')
-        if saltar_última:
-            final = -1
+        if saltar_última_vdf:
+            with open(archivo, 'r', encoding='UTF-8') as d:
+                lect = csv.reader(d)
+                filas = [f[:-1] if len(f) > 2 else f for f in lect]
+            with open(archivo, 'w', encoding='UTF-8', newline='') as d:
+                escr = csv.writer(d)
+                escr.writerows(filas)
 
     if ext == '.csv':
-
-        with open(archivo) as d:
+        with open(archivo, encoding='UTF-8') as d:
             lector = csv.reader(d)
             filas = [f for f in lector if re.match('{}(\[.*\])?$'.format(var), f[0])]
 
@@ -209,4 +202,8 @@ def leer_egr_mds(archivo, var, saltar_última=True):
     else:
         raise ValueError(_('El formato de datos "{}" no se puede leer al momento.').format(ext))
 
-    return np.array(datos, dtype=float)[..., :final]
+    datos = np.array(datos, dtype=float).swapaxes(0, -1)
+    if datos.shape[-1] == 1:
+        datos = datos[..., 0]
+
+    return datos

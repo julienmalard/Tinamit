@@ -10,7 +10,6 @@ class ConecciónVar(object):
         símismo.multiplicador = multiplicador
         símismo.caja = tk.Frame(pariente, **Fms.formato_cajas)
 
-
         símismo.botón_quitar = BotónQuitarConección(símismo)
         símismo.botón_editar = BotónEditarConección(símismo)
 

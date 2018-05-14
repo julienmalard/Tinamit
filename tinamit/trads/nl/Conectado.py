@@ -22,8 +22,10 @@ class SuperConectado(SuperConectado):
     def act_vals_clima(símismo, n_paso, f):
         return super().act_vals_clima(n_paso=n_paso, f=f)
 
-    def simular(símismo, tiempo_final, paso=1, nombre_corrida="Corrida Tinamït", fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False):
-        return super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima)
+    def simular(símismo, tiempo_final, paso=1, nombre_corrida="Corrida Tinamït", fecha_inic=None, lugar=None, tcr=None,
+                recalc=True, clima=False):
+        return super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida,
+                               fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima)
 
     def incrementar(símismo, paso):
         return super().incrementar(paso=paso)
@@ -59,4 +61,5 @@ class Conectado(Conectado):
         return super().desconectar(var_mds=var_mds)
 
     def dibujar(símismo, geog, var, corrida, directorio, i_paso=None, colores=None, escala=None):
-        return super().dibujar(geog=geog, var=var, corrida=corrida, directorio=directorio, i_paso=i_paso, colores=colores, escala=escala)
+        return super().dibujar(geog=geog, var=var, corrida=corrida, directorio=directorio, i_paso=i_paso,
+                               colores=colores, escala=escala)

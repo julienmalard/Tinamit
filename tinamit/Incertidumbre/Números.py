@@ -46,7 +46,7 @@ def tx_a_núm(texto):
                 # ¿Funcionó? ¡Perfecto!
                 if exp is not None:
                     núm *= 10 ** exp
-                return núm * neg if sep_dec in texto else int(núm)*neg
+                return núm * neg if sep_dec in texto else int(núm) * neg
             except ValueError:
                 pass  # ¿No funcionó? Qué pena. Ahora tenemos que trabajar.
 
@@ -109,7 +109,7 @@ def tx_a_núm(texto):
                 if exp is not None:
                     núm *= 10 ** exp
 
-                return núm * neg # Devolver el número
+                return núm * neg  # Devolver el número
 
             except (KeyError, ValueError):
                 # Si no funcionó, intentemos otra lengua
@@ -186,7 +186,6 @@ dic_trads = {'Latino': {'núms': ('0', '1', '2', '3', '4', '5', '6', '7', '8', '
              '日本語': {'núms': ('〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'),
                      'sep_dec': ['.', ',']},
              }
-
 
 if __name__ == '__main__':
     print(tx_a_núm('2.03485730137359e-11'))

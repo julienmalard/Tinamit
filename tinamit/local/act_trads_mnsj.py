@@ -1,5 +1,6 @@
-from subprocess import run
 import os
+from subprocess import run
+
 from tinamit import __file__ as dir_tinamit
 
 leng_orig = 'es'

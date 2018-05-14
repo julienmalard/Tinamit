@@ -84,6 +84,7 @@ int_params = [
     'KRF',
 ]
 
+
 def transpose_params(parameter_dictionary):
     for param in paramsToTranspose:
         array = parameter_dictionary[param]  # type: np.ndarray
@@ -126,14 +127,12 @@ def read_into_param_dic(from_fn):
 
 
 def write_from_param_dic(param_dictionary, to_fn, csv=False):
-
     to_template = CSVTEMPLATE if csv else INPTEMPLATE
 
     mioparser.write_file(param_dictionary, to_fn, to_template, int_params=int_params)
 
 
 def main(from_fn, to_fn):
-
     param_dictionary = read_into_param_dic(from_fn=from_fn)
 
     write_from_param_dic(param_dictionary=param_dictionary, to_fn=to_fn,

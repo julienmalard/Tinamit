@@ -2,7 +2,6 @@ import os
 from ast import literal_eval
 
 import pysd
-
 from tinamit import _
 from tinamit.MDS import EnvolturaMDS
 
@@ -70,7 +69,7 @@ class ModeloPySD(EnvolturaMDS):
 
         return unid_tiempo
 
-    def iniciar_modelo(símismo, nombre_corrida, tiempo_final):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         símismo.cont_simul = False
         símismo.tiempo_final = tiempo_final
         símismo.paso_act = 0
@@ -82,7 +81,7 @@ class ModeloPySD(EnvolturaMDS):
         símismo.vars_para_cambiar.clear()
         símismo.vars_para_cambiar.update(valores)
 
-    def incrementar(símismo, paso):
+    def _incrementar(símismo, paso):
         símismo.paso_act += paso
 
         if símismo.cont_simul:
@@ -93,7 +92,7 @@ class ModeloPySD(EnvolturaMDS):
 
         símismo.cont_simul = True
 
-    def leer_vals(símismo):
+    def _leer_vals(símismo):
         for v in símismo.vars_saliendo:
             nombre_py = símismo.conv_nombres[v]
             val = getattr(símismo.modelo.components, nombre_py)()

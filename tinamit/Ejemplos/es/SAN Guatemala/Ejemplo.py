@@ -120,6 +120,7 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
 
     _ = bd.obt_datos(l_vars=['Desnutrición crónica infantil'], fechas=1986)
 
+
     def np_a_lista(d, d_f=None):
         if d_f is None:
             d_f = {}
@@ -143,6 +144,7 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
 
         return d_f
 
+
     def act_calib(cnx):
 
         if os.path.isfile(os.path.join(os.path.split(__file__)[0], 'calib.json')):
@@ -156,6 +158,7 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
 
         with open(os.path.join(os.path.split(__file__)[0], 'calib.json'), 'w', encoding='UTF-8') as d:
             json.dump(np_a_lista(dic), d, ensure_ascii=False, sort_keys=True, indent=2)
+
 
     # #1/(b*Educación formal+b2*Educación sexual+a)+c', paráms=['a', 'b', 'b2', 'c'],
     # #                   líms_paráms=[(0, None), (0, 50), (0, 50), (0, None)]
