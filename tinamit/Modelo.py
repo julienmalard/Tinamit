@@ -262,7 +262,7 @@ class Modelo(object):
         #
         if isinstance(vals_inic, dict):
             if all(x in símismo.modelos for x in vals_inic):
-                vals_inic = [vals_inic]
+                vals_inic = [vals_inic]  # Para hacer: arreglarme
 
         if devolver is not None:
             if not isinstance(devolver, list) and not isinstance(devolver, tuple):
@@ -764,7 +764,12 @@ class Modelo(object):
         return [v for v, d_v in símismo.variables.items() if d_v['ingreso']]
 
     def paráms(símismo):
-        return [v for v, d_v in símismo.variables.items() if d_v['parám']]
+        seguros = [v for v, d_v in símismo.variables.items() if d_v['parám']]
+
+        potenciales = [v for v, d_v in símismo.variables.items()
+                       if v not in seguros and d_v['ingreso'] is True and not d_v['estado_inicial']]
+
+        return {'seguros': seguros, 'potenciales': potenciales}
 
     def vars_estado_inicial(símismo):
         return [v for v, d_v in símismo.variables.items() if d_v['estado_inicial']]

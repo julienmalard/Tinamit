@@ -8,11 +8,8 @@ from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import ModeloSAHYSMOD
 
 class ModeloSAHYSMOD(ModeloSAHYSMOD):
 
-    def inic_vars(self):
-        return super()._inic_dic_vars()
-
-    def iniciar_modelo(self):
-        return super().iniciar_modelo()
+    def iniciar_modelo(self, tiempo_final, nombre_corrida):
+        return super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
 
     def avanzar_modelo(self):
         return super().avanzar_modelo()
@@ -28,6 +25,9 @@ class ModeloSAHYSMOD(ModeloSAHYSMOD):
 
     def leer_archivo_vals_inic(self):
         return super().leer_archivo_vals_inic()
+
+    def paralelizable(símismo):
+        return super().paralelizable()
 
 vars_SAHYSMOD = vars_SAHYSMOD
 

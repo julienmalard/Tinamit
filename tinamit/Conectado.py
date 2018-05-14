@@ -366,7 +366,7 @@ class SuperConectado(Modelo):
 
         """
 
-        # ¡No se puede simular con menos (o más) de dos modelos!
+        # ¡No se puede simular con menos de un modelo!
         if len(símismo.modelos) < 1:
             raise ValueError(_('Hay que conectar submodelos antes de empezar una simulación.'))
 

@@ -8,9 +8,6 @@ from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import ModeloSAHYSMOD
 
 class ModeloSAHYSMOD(ModeloSAHYSMOD):
 
-    def inic_vars(خود):
-        return super()._inic_dic_vars()
-
     def iniciar_modelo(خود, tiempo_final, nombre_corrida):
         return super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
 

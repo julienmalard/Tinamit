@@ -1,9 +1,9 @@
+from tinamit.EnvolturaMDS.sintaxis import conv_fun
+from tinamit.EnvolturaMDS.sintaxis import dic_funs_inv
+from tinamit.EnvolturaMDS.sintaxis import dic_funs
 from tinamit.EnvolturaMDS.sintaxis import Ecuación
 from tinamit.EnvolturaMDS.sintaxis import _Transformador
-from tinamit.EnvolturaMDS.sintaxis import conv_fun
 from tinamit.EnvolturaMDS.sintaxis import cortar_líns
-from tinamit.EnvolturaMDS.sintaxis import dic_funs
-from tinamit.EnvolturaMDS.sintaxis import dic_funs_inv
 from tinamit.EnvolturaMDS.sintaxis import juntar_líns
 from tinamit.EnvolturaMDS.sintaxis import sacar_arg
 from tinamit.EnvolturaMDS.sintaxis import sacar_variables
@@ -54,12 +54,10 @@ class Ecuación(Ecuación):
         return super().gen_func_python(paráms=paráms)
 
     def gen_mod_bayes(símismo, paráms, líms_paráms, obs_x, obs_y, aprioris=None, binario=False):
-        return super().gen_mod_bayes(paráms=paráms, líms_paráms=líms_paráms, obs_x=obs_x, obs_y=obs_y,
-                                     aprioris=aprioris, binario=binario)
+        return super().gen_mod_bayes(paráms=paráms, líms_paráms=líms_paráms, obs_x=obs_x, obs_y=obs_y, aprioris=aprioris, binario=binario)
 
     def gen_texto(símismo, paráms=None):
         return super().gen_texto(paráms=paráms)
-
 
 dic_funs = dic_funs
 
