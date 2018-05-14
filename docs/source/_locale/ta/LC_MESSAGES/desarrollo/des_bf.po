@@ -164,18 +164,18 @@ msgstr ""
 
 #: ../../source/desarrollo/des_bf.rst:55
 msgid ""
-":func:`~tinamit.BF.ModeloBF.obt_unidad_tiempo`: Devuelve la unidad de tiempo"
+":func:`~tinamit.BF.ModeloBF.unidad_tiempo`: Devuelve la unidad de tiempo"
 " del modelo."
 msgstr ""
-":func:`~tinamit.BF.ModeloBF.obt_unidad_tiempo`: மாதிரியின் நேரம் அலகு "
+":func:`~tinamit.BF.ModeloBF.unidad_tiempo`: மாதிரியின் நேரம் அலகு "
 "திரும்பி கொடுக்கும்."
 
 #: ../../source/desarrollo/des_bf.rst:56
 msgid ""
-":func:`~tinamit.BF.ModeloBF.inic_vars`: Incializa el diccionario interno de "
+":func:`~tinamit.BF.ModeloBF._inic_dic_vars`: Incializa el diccionario interno de "
 "variables disponibles."
 msgstr ""
-":func:`~tinamit.BF.ModeloBF.inic_vars`: மாதிரியில் கிடக்க கூறிய மாறி "
+":func:`~tinamit.BF.ModeloBF._inic_dic_vars`: மாதிரியில் கிடக்க கூறிய மாறி "
 "அகராதியை தொடங்கும்."
 
 #: ../../source/desarrollo/des_bf.rst:57
@@ -184,10 +184,10 @@ msgstr ":func:`~tinamit.BF.ModeloBF.iniciar_modelo`: பாவனையை ஆ�
 
 #: ../../source/desarrollo/des_bf.rst:58
 msgid ""
-":func:`~tinamit.BF.ModeloBF.cambiar_vals_modelo_interno`: Cambia los valores"
+":func:`~tinamit.BF.ModeloBF._cambiar_vals_modelo_interno`: Cambia los valores"
 " internos de los variables."
 msgstr ""
-":func:`~tinamit.BF.ModeloBF.cambiar_vals_modelo_interno`: மாதிரியின் "
+":func:`~tinamit.BF.ModeloBF._cambiar_vals_modelo_interno`: மாதிரியின் "
 "மாறிகளின் உள் மதிப்புகளை மாற்றும்."
 
 #: ../../source/desarrollo/des_bf.rst:59
@@ -237,10 +237,10 @@ msgstr ""
 
 #: ../../source/desarrollo/des_bf.rst:73
 msgid ""
-":func:`~tinamit.BF.ModeloImpaciente.inic_vars`: Incializa el diccionario "
+":func:`~tinamit.BF.ModeloImpaciente._inic_dic_vars`: Incializa el diccionario "
 "interno de variables disponibles."
 msgstr ""
-":func:`~tinamit.BF.ModeloImpaciente.inic_vars`: மாதிரியில் கிடக்க கூறிய மாறி"
+":func:`~tinamit.BF.ModeloImpaciente._inic_dic_vars`: மாதிரியில் கிடக்க கூறிய மாறி"
 " அகராதியை தொடங்கும்."
 
 #: ../../source/desarrollo/des_bf.rst:74
@@ -306,10 +306,10 @@ msgstr ""
 
 #: ../../source/desarrollo/des_bf.rst:96
 msgid ""
-":func:`~tinamit.BF.ModeloFlexible.inic_vars`: Incializa el diccionario "
+":func:`~tinamit.BF.ModeloFlexible._inic_dic_vars`: Incializa el diccionario "
 "interno de variables disponibles."
 msgstr ""
-":func:`~tinamit.BF.ModeloFlexible.inic_vars`: மாதிரியில் கிடக்க கூறிய மாறி "
+":func:`~tinamit.BF.ModeloFlexible._inic_dic_vars`: மாதிரியில் கிடக்க கூறிய மாறி "
 "அகராதியை தொடங்கும்."
 
 #: ../../source/desarrollo/des_bf.rst:97

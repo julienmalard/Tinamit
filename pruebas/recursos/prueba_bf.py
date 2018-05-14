@@ -5,7 +5,7 @@ from tinamit.BF import ModeloBF
 
 class ModeloPrueba(ModeloBF):
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_interno(símismo, valores):
         pass
 
     def incrementar(símismo, paso):
@@ -18,10 +18,10 @@ class ModeloPrueba(ModeloBF):
     def cerrar_modelo(símismo):
         pass
 
-    def obt_unidad_tiempo(símismo):
-        return 'meses'
+    def unidad_tiempo(símismo):
+        return 'años'
 
-    def inic_vars(símismo):
+    def _inic_dic_vars(símismo):
         símismo.variables['Lluvia'] = {
             'val': 1,
             'unidades': 'm3/mes',

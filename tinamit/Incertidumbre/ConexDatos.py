@@ -288,11 +288,11 @@ class ConexDatos(object):
         vals_paráms_calib = símismo.prep_paráms_simul(n_rep=n_rep, lugares=lugares, orden=orden)
         for lg, prms in vals_paráms_calib.items():
 
-            símismo.modelo.inic_vals(prms)
+            símismo.modelo.inic_vals_vars(prms)
 
             if fecha_inic is not None:
                 vals_inic = símismo.prep_vals_inic(fecha_inic=fecha_inic, lugar=lg)
-                símismo.modelo.inic_vals(vals_inic)
+                símismo.modelo.inic_vals_vars(vals_inic)
 
             símismo.modelo.simular(tiempo_final=tiempo_final, paso=paso,
                                    nombre_corrida='{}_{}'.format(nombre_corrida, lg),

@@ -180,7 +180,7 @@ msgstr ""
 #: ../../source/uso/IPA.rst:89
 msgid ""
 "``modelo.mds`` accede el objeto de modelo DS asociado con el modelo "
-"conectado, y la función :func:`~tinamit.Modelo.Modelo.inic_val`` hace "
+"conectado, y la función :func:`~tinamit.Modelo.Modelo.inic_val_var`` hace "
 "exactamente lo que piensas que hace."
 msgstr ""
 

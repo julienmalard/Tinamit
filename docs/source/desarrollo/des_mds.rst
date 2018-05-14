@@ -12,10 +12,10 @@ Cómo crear una nueva envoltura
 Si quieres hacer una nueva envoltura para otro tipo de modelo DS, tendrás que hacer una subclase de
 :class:`~tinamit.MDS.EnvolturaMDS` e implementar las funciones siguientes:
 
-* :func:`~tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo`: Devuelve la unidad de tiempo del modelo.
-* :func:`~tinamit.MDS.EnvolturaMDS.inic_vars`: Incializa el diccionario interno de variables disponibles.
+* :func:`~tinamit.MDS.EnvolturaMDS.unidad_tiempo`: Devuelve la unidad de tiempo del modelo.
+* :func:`~tinamit.MDS.EnvolturaMDS._inic_dic_vars`: Incializa el diccionario interno de variables disponibles.
 * :func:`~tinamit.MDS.EnvolturaMDS.iniciar_modelo`: Inicializa la simulación.
-* :func:`~tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo_interno`: Cambia los valores internos de los variables.
+* :func:`~tinamit.MDS.EnvolturaMDS._cambiar_vals_modelo_interno`: Cambia los valores internos de los variables.
 * :func:`~tinamit.MDS.EnvolturaMDS.incrementar`: Avanza el modelo.
 * :func:`~tinamit.MDS.EnvolturaMDS.leer_vals`: Lee los egresos del modelo.
 * :func:`~tinamit.MDS.EnvolturaMDS.cerrar_modelo`: Cierre el modelo al final de una simulación.

@@ -27,14 +27,14 @@ class Test_ModeloSenc(unittest.TestCase):
 
         # Información sobre los variables del modelo de prueba
         cls.info_vars = {
-            'Lluvia': {'unidades': 'm3/mes', 'líms': (0, None)},
+            'Lluvia': {'unidades': 'm3/año', 'líms': (0, None)},
             'Lago': {'unidades': 'm3', 'líms': (0, None)},
             'Escala': {'unidades': '', 'líms': (0, None)},
-            'Máx lluvia': {'unidades': 'm3/mes', 'líms': (0, None)}
+            'Máx lluvia': {'unidades': 'm3/año', 'líms': (0, None)}
         }  # type: dict[str, dict]
 
         # Iniciar constantes
-        cls.envltmodelo.inic_val('Máx lluvia', 15)
+        cls.envltmodelo.inic_val_var('Máx lluvia', 15)
 
         # Correr el modelo para 200 pasos, guardando los egresos del variable "Lago"
         cls.envltmodelo.simular(tiempo_final=200, vars_interés='Escala')
@@ -49,7 +49,7 @@ class Test_ModeloSenc(unittest.TestCase):
         """
         Comprobar que las unidades de tiempo se leyeron correctamente.
         """
-        símismo.assertEqual('meses', símismo.envltmodelo.unidad_tiempo.lower())
+        símismo.assertEqual('años', símismo.envltmodelo.unidad_tiempo())
 
     def test_cmb_vals_inic(símismo):
         """

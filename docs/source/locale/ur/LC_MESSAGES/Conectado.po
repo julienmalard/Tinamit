@@ -37,7 +37,7 @@ msgstr ""
 #: of tinamit.Conectado.Conectado.conectar
 #: tinamit.Conectado.Conectado.desconectar tinamit.Conectado.Conectado.estab_bf
 #: tinamit.Conectado.Conectado.estab_mds
-#: tinamit.Conectado.SuperConectado.cambiar_vals_modelo_interno
+#: tinamit.Conectado.SuperConectado._cambiar_vals_modelo_interno
 #: tinamit.Conectado.SuperConectado.conectar_vars
 #: tinamit.Conectado.SuperConectado.desconectar_vars
 #: tinamit.Conectado.SuperConectado.estab_conv_tiempo
@@ -106,19 +106,19 @@ msgid ""
 "permitiendo la conexión de números arbitrarios de modelos."
 msgstr ""
 
-#: of tinamit.Conectado.SuperConectado.cambiar_vals_modelo_interno:1
+#: of tinamit.Conectado.SuperConectado._cambiar_vals_modelo_interno:1
 msgid ""
 "Esta función cambia los valores del modelo. A través de la función "
 ":func:`~tinamit.Conectado.cambiar_vals`, se vuelve recursiva."
 msgstr ""
 
-#: of tinamit.Conectado.SuperConectado.cambiar_vals_modelo_interno:4
+#: of tinamit.Conectado.SuperConectado._cambiar_vals_modelo_interno:4
 msgid ""
 "El diccionario de nombres de variables para cambiar. Hay que prefijar "
 "cada nombre de variable"
 msgstr ""
 
-#: of tinamit.Conectado.SuperConectado.cambiar_vals_modelo_interno:5
+#: of tinamit.Conectado.SuperConectado._cambiar_vals_modelo_interno:5
 msgid ""
 "con el nombre del submodelo en en cual se ubica (separados con un ``_``),"
 " para que Tinamit sepa en cuál submodelo se ubica cada variable."
@@ -199,10 +199,10 @@ msgstr ""
 msgid "El intervalo de tiempo."
 msgstr ""
 
-#: of tinamit.Conectado.SuperConectado.inic_vars:1
+#: of tinamit.Conectado.SuperConectado._inic_dic_vars:1
 msgid ""
 "Esta función no es necesaria, porque :func:`.estab_modelo` ya llama las "
-"funciones :func:`~tinamit.Modelo.inic_vars` de los submodelos."
+"funciones :func:`~tinamit.Modelo._inic_dic_vars` de los submodelos."
 msgstr ""
 
 #: of tinamit.Conectado.SuperConectado.iniciar_modelo:1
@@ -231,7 +231,7 @@ msgid ""
 "mismo."
 msgstr ""
 
-#: of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:1
+#: of tinamit.Conectado.SuperConectado.unidad_tiempo:1
 msgid ""
 "Esta función devolverá las unidades de tiempo del modelo conectado. "
 "Dependerá de los submodelos. Si los dos submodelos tienen las mismas "
@@ -243,25 +243,25 @@ msgid ""
 " tiempo de años al modelo conectado."
 msgstr ""
 
-#: of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:8
+#: of tinamit.Conectado.SuperConectado.unidad_tiempo:8
 msgid ""
 "Después se actualiza el variable símismo.conv_tiempo para guardar en "
 "memoria la conversión necesaria entre los pasos de los dos submodelos."
 msgstr ""
 
-#: of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:11
+#: of tinamit.Conectado.SuperConectado.unidad_tiempo:11
 msgid "Se emplea las clase `~tinamit.Unidades.Unidades` para convertir unidades."
 msgstr ""
 
-#: of tinamit.Conectado.SuperConectado.obt_unidad_tiempo
+#: of tinamit.Conectado.SuperConectado.unidad_tiempo
 msgid "Devuelve"
 msgstr ""
 
-#: of tinamit.Conectado.SuperConectado.obt_unidad_tiempo:13
+#: of tinamit.Conectado.SuperConectado.unidad_tiempo:13
 msgid "El tiempo de paso del modelo SuperConectado."
 msgstr ""
 
-#: of tinamit.Conectado.SuperConectado.obt_unidad_tiempo
+#: of tinamit.Conectado.SuperConectado.unidad_tiempo
 msgid "Tipo del valor devuelto"
 msgstr ""
 

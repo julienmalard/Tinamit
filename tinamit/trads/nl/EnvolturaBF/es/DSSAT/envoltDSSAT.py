@@ -11,10 +11,10 @@ class ModeloDSSAT(ModeloDSSAT):
         return super().cerrar_modelo()
 
     def inic_vars(símismo):
-        return super().inic_vars()
+        return super()._inic_dic_vars()
 
     def obt_unidad_tiempo(símismo):
-        return super().obt_unidad_tiempo()
+        return super().unidad_tiempo()
 
     def leer_vals(símismo):
         return super().leer_vals()
@@ -23,7 +23,7 @@ class ModeloDSSAT(ModeloDSSAT):
         return super().incrementar(paso=paso)
 
     def cambiar_vals_modelo_interno(símismo, valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def mandar_simul(símismo):
         return super().mandar_simul()

@@ -22,7 +22,7 @@ class EnvoltDSSAT(ModeloBF):
         símismo.día_act = 0  # El día actual de la simulación
         símismo.día_princ_últ_sim = 0  # El primer día de la última llamada a DSSAT
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_interno(símismo, valores):
         pass
 
     def incrementar(símismo, paso):
@@ -79,10 +79,10 @@ class EnvoltDSSAT(ModeloBF):
     def cerrar_modelo(símismo):
         pass
 
-    def obt_unidad_tiempo(símismo):
+    def unidad_tiempo(símismo):
         return 'año'
 
-    def inic_vars(símismo):
+    def _inic_dic_vars(símismo):
         símismo.variables = {
             'Rendimiento':
                 {'val': None,

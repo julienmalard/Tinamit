@@ -19,7 +19,7 @@ class ModeloDSSAT(ModeloFlexible):
     def cerrar_modelo(símismo):
         pass  # Aquí no hay nada que hacer.
 
-    def inic_vars(símismo):
+    def _inic_dic_vars(símismo):
 
         símismo.variables.clear()
 
@@ -31,7 +31,7 @@ class ModeloDSSAT(ModeloFlexible):
                                        'dims': (1,)
                                        }
 
-    def obt_unidad_tiempo(símismo):
+    def unidad_tiempo(símismo):
         return 'Días'
 
     def leer_vals(símismo):
@@ -42,7 +42,7 @@ class ModeloDSSAT(ModeloFlexible):
     def incrementar(símismo, paso):
         raise NotImplementedError
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_interno(símismo, valores):
         raise NotImplementedError
 
     def mandar_simul(símismo):

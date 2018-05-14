@@ -84,10 +84,10 @@ tener que abrir Vensim y republicar el modelo para cada cambio. Actualmente, pue
 de cualquier variable en el modelo antes de empezar la simulación, pero es más útil que todo para activar y desactivar 
 políticas. (¡Cuidado! Esta función solamente cambia el valor inicial del variable.)::
 
-  modelo.mds.inic_val(var=”Política maravillosa”, val=1)
+  modelo.mds.inic_val_var(var=”Política maravillosa”, val=1)
   
 ``modelo.mds`` accede el objeto de modelo DS asociado con el modelo conectado, y la función
-:func:`~tinamit.Modelo.Modelo.inic_val`` hace exactamente lo que piensas que hace.
+:func:`~tinamit.Modelo.Modelo.inic_val_var`` hace exactamente lo que piensas que hace.
 
 Resumen
 -------

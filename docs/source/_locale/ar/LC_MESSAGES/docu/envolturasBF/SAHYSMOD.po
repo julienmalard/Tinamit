@@ -70,7 +70,7 @@ msgid "The dictionary of input variable values"
 msgstr ""
 
 #: ../../../tinamit/EnvolturaBF/en/SAHYSMOD/SAHYSMOD_Wrapper.py:docstring of
-#: tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper.ModeloSAHYSMOD.inic_vars:1
+#: tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper.ModeloSAHYSMOD._inic_dic_vars:1
 msgid "Initialises the variable and variable type dictionaries."
 msgstr ""
 
@@ -78,7 +78,7 @@ msgstr ""
 #: tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper.ModeloSAHYSMOD.iniciar_modelo:1
 msgid ""
 "Nothing specific to do. Variables have already been read in "
-"func:`inic_vars`."
+"func:`_inic_dic_vars`."
 msgstr ""
 
 #: ../../../tinamit/EnvolturaBF/en/SAHYSMOD/SAHYSMOD_Wrapper.py:docstring of

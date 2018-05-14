@@ -51,7 +51,7 @@ class Test_ModeloSenc(unittest.TestCase):
 
                 # Iniciar los valores iniciales, si hay
                 if 'val_inic' in d_v:
-                    mod.inic_val(v, d_v['val_inic'])
+                    mod.inic_val_var(v, d_v['val_inic'])
 
             # Correr el modelo para 200 pasos, guardando los egresos del variable "Lago"
             mod.simular(tiempo_final=200, vars_interés='Lago')
@@ -71,7 +71,7 @@ class Test_ModeloSenc(unittest.TestCase):
         """
         for mod in símismo.modelos.values():
             with símismo.subTest(mod=mod):
-                símismo.assertEqual('mes', mod.unidad_tiempo.lower())
+                símismo.assertEqual('mes', mod.unidad_tiempo())
 
     def test_leer_info(símismo):
         """

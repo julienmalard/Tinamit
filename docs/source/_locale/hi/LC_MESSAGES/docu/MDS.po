@@ -30,7 +30,7 @@ msgid ""
 msgstr ""
 
 #: ../../../tinamit/MDS.py:docstring of
-#: tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo_interno:1
+#: tinamit.MDS.EnvolturaMDS._cambiar_vals_modelo_interno:1
 #: ../../../tinamit/MDS.py:docstring of
 #: tinamit.MDS.EnvolturaMDS.cerrar_modelo:1 ../../../tinamit/MDS.py:docstring
 #: of tinamit.MDS.EnvolturaMDS.incrementar:1 ../../../tinamit/MDS.py:docstring
@@ -41,18 +41,18 @@ msgid ""
 msgstr ""
 
 #: ../../../tinamit/MDS.py:docstring of
-#: tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo_interno:3
+#: tinamit.MDS.EnvolturaMDS._cambiar_vals_modelo_interno:3
 msgid "Ver :func:`Modelo.Modelo.cambiar_vals_modelo` para más información."
 msgstr ""
 
 #: ../../../tinamit/MDS.py:docstring of
-#: tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo_interno:0
+#: tinamit.MDS.EnvolturaMDS._cambiar_vals_modelo_interno:0
 #: ../../../tinamit/MDS.py:docstring of tinamit.MDS.EnvolturaMDS.incrementar:0
 #: ../../../tinamit/MDS.py:docstring of
 #: tinamit.MDS.EnvolturaMDS.iniciar_modelo:0 ../../../tinamit/MDS.py:docstring
 #: of tinamit.MDS.EnvolturaMDS.leer_resultados_mds:0
 #: ../../../tinamit/MDS.py:docstring of
-#: tinamit.MDS.ModeloVensim.cambiar_vals_modelo_interno:0
+#: tinamit.MDS.ModeloVensim._cambiar_vals_modelo_interno:0
 #: ../../../tinamit/MDS.py:docstring of tinamit.MDS.ModeloVensim.incrementar:0
 #: ../../../tinamit/MDS.py:docstring of
 #: tinamit.MDS.ModeloVensim.iniciar_modelo:0 ../../../tinamit/MDS.py:docstring
@@ -63,7 +63,7 @@ msgid "Parámetros"
 msgstr ""
 
 #: ../../../tinamit/MDS.py:docstring of
-#: tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo_interno:5
+#: tinamit.MDS.EnvolturaMDS._cambiar_vals_modelo_interno:5
 msgid "El diccionario de valores para cambiar."
 msgstr ""
 
@@ -89,15 +89,15 @@ msgstr ""
 msgid "El paso con cual incrementar el modelo."
 msgstr ""
 
-#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.EnvolturaMDS.inic_vars:1
+#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.EnvolturaMDS._inic_dic_vars:1
 msgid ""
 "Este método se deja a las subclases de :class:`~tinamit.MDS.EnvolturaMDS` "
 "para implementar. Además de los diccionarios de variables normales, debe "
 "establecer `símismo.constantes`, `símismo.flujos`, y `símismo.niveles`."
 msgstr ""
 
-#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.EnvolturaMDS.inic_vars:4
-msgid "Ver :func:`Modelo.Modelo.inic_vars` para más información."
+#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.EnvolturaMDS._inic_dic_vars:4
+msgid "Ver :func:`Modelo.Modelo._inic_dic_vars` para más información."
 msgstr ""
 
 #: ../../../tinamit/MDS.py:docstring of
@@ -144,9 +144,9 @@ msgstr ""
 #: ../../../tinamit/MDS.py:docstring of
 #: tinamit.MDS.EnvolturaMDS.leer_resultados_mds:0
 #: ../../../tinamit/MDS.py:docstring of
-#: tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo:0
+#: tinamit.MDS.EnvolturaMDS.unidad_tiempo:0
 #: ../../../tinamit/MDS.py:docstring of
-#: tinamit.MDS.ModeloVensim.obt_unidad_tiempo:0
+#: tinamit.MDS.ModeloVensim.unidad_tiempo:0
 #: ../../../tinamit/MDS.py:docstring of
 #: tinamit.MDS.ModeloVensim.verificar_vensim:0
 #: ../../../tinamit/MDS.py:docstring of tinamit.MDS.generar_mds:0
@@ -162,9 +162,9 @@ msgstr ""
 #: ../../../tinamit/MDS.py:docstring of
 #: tinamit.MDS.EnvolturaMDS.leer_resultados_mds:0
 #: ../../../tinamit/MDS.py:docstring of
-#: tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo:0
+#: tinamit.MDS.EnvolturaMDS.unidad_tiempo:0
 #: ../../../tinamit/MDS.py:docstring of
-#: tinamit.MDS.ModeloVensim.obt_unidad_tiempo:0
+#: tinamit.MDS.ModeloVensim.unidad_tiempo:0
 #: ../../../tinamit/MDS.py:docstring of
 #: tinamit.MDS.ModeloVensim.verificar_vensim:0
 #: ../../../tinamit/MDS.py:docstring of tinamit.MDS.generar_mds:0
@@ -185,14 +185,14 @@ msgid "Ver :func:`Modelo.Modelo.leer_vals` para más información."
 msgstr ""
 
 #: ../../../tinamit/MDS.py:docstring of
-#: tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo:1
+#: tinamit.MDS.EnvolturaMDS.unidad_tiempo:1
 msgid ""
 "Cada envoltura de programa DS debe implementar eset metodo para devolver las"
 " unidades de tiempo del modelo DS cargado."
 msgstr ""
 
 #: ../../../tinamit/MDS.py:docstring of
-#: tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo:4
+#: tinamit.MDS.EnvolturaMDS.unidad_tiempo:4
 msgid "Las unidades del modelo DS cargado."
 msgstr ""
 
@@ -204,7 +204,7 @@ msgid ""
 msgstr ""
 
 #: ../../../tinamit/MDS.py:docstring of
-#: tinamit.MDS.ModeloVensim.cambiar_vals_modelo_interno:1
+#: tinamit.MDS.ModeloVensim._cambiar_vals_modelo_interno:1
 msgid ""
 "Esta función cambiar los valores de variables en VENSIM. Notar que "
 "únicamente los variables identificados como de tipo \"Gaming\" en el modelo "
@@ -212,7 +212,7 @@ msgid ""
 msgstr ""
 
 #: ../../../tinamit/MDS.py:docstring of
-#: tinamit.MDS.ModeloVensim.cambiar_vals_modelo_interno:4
+#: tinamit.MDS.ModeloVensim._cambiar_vals_modelo_interno:4
 msgid "Un diccionario de variables y sus nuevos valores."
 msgstr ""
 
@@ -229,7 +229,7 @@ msgstr ""
 msgid "El número de pasos para tomar."
 msgstr ""
 
-#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.ModeloVensim.inic_vars:1
+#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.ModeloVensim._inic_dic_vars:1
 msgid "Inicializamos el diccionario de variables del modelo VENSIM."
 msgstr ""
 
@@ -251,12 +251,12 @@ msgid ""
 msgstr ""
 
 #: ../../../tinamit/MDS.py:docstring of
-#: tinamit.MDS.ModeloVensim.obt_unidad_tiempo:1
+#: tinamit.MDS.ModeloVensim.unidad_tiempo:1
 msgid "Aquí, sacamos las unidades de tiempo del modelo VENSIM."
 msgstr ""
 
 #: ../../../tinamit/MDS.py:docstring of
-#: tinamit.MDS.ModeloVensim.obt_unidad_tiempo:3
+#: tinamit.MDS.ModeloVensim.unidad_tiempo:3
 msgid "Las unidades de tiempo."
 msgstr ""
 

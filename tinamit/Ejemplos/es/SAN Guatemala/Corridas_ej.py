@@ -81,7 +81,7 @@ def correr_mod(mod, n_rep=1):
 
         for lg in dic_prms:
             corr = 'Vld {}'.format(lg)
-            mod.inic_vals(dic_prms[lg])
+            mod.inic_vals_vars(dic_prms[lg])
             mod.simular(tiempo_final=20, nombre_corrida=corr, )
             res[lg] = {v: mod.leer_resultados_mds(corrida=corr, var=v) for v in vars_interés}
 

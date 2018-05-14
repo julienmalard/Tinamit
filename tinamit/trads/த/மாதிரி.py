@@ -4,10 +4,10 @@ from tinamit.Modelo import Modelo
 class மாதிரி(Modelo):
 
     def மாறிகளை_ஆரம்ப(தன்):
-        return தன்.inic_vars()
+        return தன்._inic_dic_vars()
 
-    def obt_unidad_tiempo(தன்):
-        return super().obt_unidad_tiempo()
+    def unidad_tiempo(தன்):
+        return super().unidad_tiempo()
 
     def iniciar_modelo(தன், கடைசி_நேரம், பாவனைப்பெயர்):
         return super().iniciar_modelo(tiempo_final=கடைசி_நேரம், nombre_corrida=பாவனைப்பெயர்)
@@ -18,8 +18,8 @@ class மாதிரி(Modelo):
     def leer_vals(தன்):
         return super().leer_vals()
 
-    def inic_val(தன், மாறி, val):
-        return super().inic_val(var=மாறி, val=val)
+    def inic_val_var(தன், மாறி, val):
+        return super().inic_val_var(var=மாறி, val=val)
 
     def conectar_var_clima(தன், மாறி, பருவனிலை_மாறி, combin=None, conv):
         return super().conectar_var_clima(var=மாறி, var_clima=பருவனிலை_மாறி, combin=combin, conv=conv)
@@ -30,8 +30,8 @@ class மாதிரி(Modelo):
     def cambiar_vals(தன், valores):
         return super().cambiar_vals(valores=valores)
 
-    def cambiar_vals_modelo_interno(தன், valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+    def _cambiar_vals_modelo_interno(தன், valores):
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def cerrar_modelo(தன்):
         return super().cerrar_modelo()
@@ -45,8 +45,8 @@ class மாதிரி(Modelo):
     def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida="Corrida Tinamït", vals_inic=None, fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True, dibujar=None, paralelo=True, devolver=None):
         return super().simular_paralelo(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, vals_inic=vals_inic, fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, combinar=combinar, dibujar=dibujar, paralelo=paralelo, devolver=devolver)
 
-    def inic_vals(símismo, dic_vals):
-        return super().inic_vals(dic_vals=dic_vals)
+    def inic_vals_vars(símismo, dic_vals):
+        return super().inic_vals_vars(dic_vals=dic_vals)
 
     def estab_conv_meses(símismo, conv):
         return super().estab_conv_meses(conv=conv)

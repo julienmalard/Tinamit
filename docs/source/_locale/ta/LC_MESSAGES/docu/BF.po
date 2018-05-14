@@ -37,18 +37,18 @@ msgid ""
 msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.EnvolturaBF.cambiar_vals_modelo_interno:1
+#: tinamit.BF.EnvolturaBF._cambiar_vals_modelo_interno:1
 msgid "Esta función cambia el valor de variables en el modelo."
 msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.EnvolturaBF.cambiar_vals_modelo_interno:0
+#: tinamit.BF.EnvolturaBF._cambiar_vals_modelo_interno:0
 #: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF.incrementar:0
 #: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF.iniciar_modelo:0
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloBF.cambiar_vals_modelo_interno:0
+#: tinamit.BF.ModeloBF._cambiar_vals_modelo_interno:0
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloFlexible.cambiar_vals_modelo_interno:0
+#: tinamit.BF.ModeloFlexible._cambiar_vals_modelo_interno:0
 #: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloFlexible.escribir_archivo_ingr:0
 #: ../../../tinamit/BF.py:docstring of
@@ -57,7 +57,7 @@ msgstr ""
 #: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.act_vals_clima:0
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloImpaciente.cambiar_vals_modelo_interno:0
+#: tinamit.BF.ModeloImpaciente._cambiar_vals_modelo_interno:0
 #: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.escribir_archivo_ingr:0
 #: ../../../tinamit/BF.py:docstring of
@@ -68,11 +68,11 @@ msgid "Parámetros"
 msgstr "சுட்டளவுகள்"
 
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.EnvolturaBF.cambiar_vals_modelo_interno:3
+#: tinamit.BF.EnvolturaBF._cambiar_vals_modelo_interno:3
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloBF.cambiar_vals_modelo_interno:3
+#: tinamit.BF.ModeloBF._cambiar_vals_modelo_interno:3
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloImpaciente.cambiar_vals_modelo_interno:5
+#: tinamit.BF.ModeloImpaciente._cambiar_vals_modelo_interno:5
 msgid "Un diccionario de variables y valores para cambiar."
 msgstr ""
 
@@ -90,7 +90,7 @@ msgstr ""
 msgid "El paso."
 msgstr "நேரம் படி."
 
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF.inic_vars:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.EnvolturaBF._inic_dic_vars:1
 msgid ""
 "Inicializa los variables del modelo biofísico y los conecta al diccionario "
 "de variables del modelo."
@@ -113,40 +113,40 @@ msgid ""
 msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.EnvolturaBF.obt_unidad_tiempo:1
+#: tinamit.BF.EnvolturaBF.unidad_tiempo:1
 msgid "Esta función debe devolver la unidad de tiempo empleada por el modelo."
 msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.EnvolturaBF.obt_unidad_tiempo:0 ../../../tinamit/BF.py:docstring
-#: of tinamit.BF.ModeloBF.obt_unidad_tiempo:0 ../../../tinamit/BF.py:docstring
+#: tinamit.BF.EnvolturaBF.unidad_tiempo:0 ../../../tinamit/BF.py:docstring
+#: of tinamit.BF.ModeloBF.unidad_tiempo:0 ../../../tinamit/BF.py:docstring
 #: of tinamit.BF.ModeloFlexible.leer_archivo_egr:0
 #: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloFlexible.mandar_simul:0 ../../../tinamit/BF.py:docstring
-#: of tinamit.BF.ModeloFlexible.obt_unidad_tiempo:0
+#: of tinamit.BF.ModeloFlexible.unidad_tiempo:0
 #: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.leer_archivo_egr:0
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloImpaciente.obt_unidad_tiempo:0
+#: tinamit.BF.ModeloImpaciente.unidad_tiempo:0
 msgid "Devuelve"
 msgstr "திரும்பி"
 
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.EnvolturaBF.obt_unidad_tiempo:3
+#: tinamit.BF.EnvolturaBF.unidad_tiempo:3
 msgid "La unidad de tiempo (p. ejemplo, 'meses', 'مہینہ', etc."
 msgstr "நேரம் அலகு. உதாரணத்துக்கு, 'meses', 'மாதம்',  'مہینہ', அதி."
 
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.EnvolturaBF.obt_unidad_tiempo:0 ../../../tinamit/BF.py:docstring
-#: of tinamit.BF.ModeloBF.obt_unidad_tiempo:0 ../../../tinamit/BF.py:docstring
+#: tinamit.BF.EnvolturaBF.unidad_tiempo:0 ../../../tinamit/BF.py:docstring
+#: of tinamit.BF.ModeloBF.unidad_tiempo:0 ../../../tinamit/BF.py:docstring
 #: of tinamit.BF.ModeloFlexible.leer_archivo_egr:0
 #: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloFlexible.mandar_simul:0 ../../../tinamit/BF.py:docstring
-#: of tinamit.BF.ModeloFlexible.obt_unidad_tiempo:0
+#: of tinamit.BF.ModeloFlexible.unidad_tiempo:0
 #: ../../../tinamit/BF.py:docstring of
 #: tinamit.BF.ModeloImpaciente.leer_archivo_egr:0
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloImpaciente.obt_unidad_tiempo:0
+#: tinamit.BF.ModeloImpaciente.unidad_tiempo:0
 msgid "Tipo del valor devuelto"
 msgstr "திரும்பி எண் வகை"
 
@@ -157,9 +157,9 @@ msgid ""
 msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloBF.cambiar_vals_modelo_interno:1
+#: tinamit.BF.ModeloBF._cambiar_vals_modelo_interno:1
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloFlexible.cambiar_vals_modelo_interno:1
+#: tinamit.BF.ModeloFlexible._cambiar_vals_modelo_interno:1
 msgid ""
 "Esta función debe cambiar el valor de variables en el modelo biofísico."
 msgstr ""
@@ -179,36 +179,36 @@ msgid ""
 " paso: El número de pasos :type paso: int"
 msgstr ""
 
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.inic_vars:1
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloFlexible.inic_vars:1
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.inic_vars:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF._inic_dic_vars:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloFlexible._inic_dic_vars:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente._inic_dic_vars:1
 msgid "Esta función debe iniciar el diccionario interno de variables."
 msgstr ""
 
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.inic_vars:3
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.inic_vars:3
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF._inic_dic_vars:3
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente._inic_dic_vars:3
 msgid ""
 "MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe "
 "para símismo.variables, no crear un diccionario nuevo."
 msgstr ""
 
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.inic_vars:6
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.inic_vars:6
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF._inic_dic_vars:6
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente._inic_dic_vars:6
 msgid ""
 "Por ejemplo, NO HAGAS: ``símismo.variables = {var1: {...}, var2: {...}, "
 "...}``"
 msgstr ""
 
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.inic_vars:8
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente.inic_vars:8
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF._inic_dic_vars:8
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloImpaciente._inic_dic_vars:8
 msgid ""
 "sino: ``símismo.variables[var1] = {...}``, ``símismo.variables[var2] = "
 "{...}``, etc."
 msgstr ""
 
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.inic_vars:10
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF._inic_dic_vars:10
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloImpaciente.inic_vars:10
+#: tinamit.BF.ModeloImpaciente._inic_dic_vars:10
 msgid ""
 "Al no hacer esto, romperás la conección entre los diccionarios de variables "
 "de :class:`ModeloBF` y :class:`EnvolturaBF`, lo cual impedirá después la "
@@ -230,11 +230,11 @@ msgid ""
 "quebrará las conexiones con el modelo conectado."
 msgstr ""
 
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.obt_unidad_tiempo:1
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.unidad_tiempo:1
 msgid "Esta función debe devolver la unidad de tiempo del modelo biofísico."
 msgstr ""
 
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.obt_unidad_tiempo:3
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF.unidad_tiempo:3
 msgid "La unidad de tiempo del modelo."
 msgstr "மாதிரியின் நேரம் படி."
 
@@ -246,23 +246,23 @@ msgid ""
 msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloFlexible.cambiar_vals_modelo_interno:3
+#: tinamit.BF.ModeloFlexible._cambiar_vals_modelo_interno:3
 msgid "Un diccionario de variables y valores para cambiar．"
 msgstr ""
 
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloFlexible.inic_vars:3
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloFlexible._inic_dic_vars:3
 msgid ""
 "MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe "
 "para símismo.variables, no crear un diccionario nuevo. Por ejemplo, NO "
 "HAGAS: |  símismo.variables = {var1: {...}, var2: {...}, ...}"
 msgstr ""
 
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloFlexible.inic_vars:8
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloFlexible._inic_dic_vars:8
 msgid ""
 "sino: |  símismo.variables[var1] = {...} |  símismo.variables[var2] = {...}"
 msgstr ""
 
-#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloFlexible.inic_vars:12
+#: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloFlexible._inic_dic_vars:12
 msgid ""
 "Al no hacer esto, romperás la conección entre los diccionarios de variables "
 "de ClaseModeloBF y EnvolturaBF, lo cual impedirá después la conexión de "
@@ -282,7 +282,7 @@ msgid "El número de pasos que avanzamos con esta simulación."
 msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloFlexible.obt_unidad_tiempo:1
+#: tinamit.BF.ModeloFlexible.unidad_tiempo:1
 msgid ""
 "**¡Cuidado!** Esta función debe devolver la unidad de tiempo del modelo **a "
 "la cual quieres que pueda evaluarse**.  Por ejemplo, si tu modelo biofísico "
@@ -292,9 +292,9 @@ msgid ""
 msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloFlexible.obt_unidad_tiempo:5
+#: tinamit.BF.ModeloFlexible.unidad_tiempo:5
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloImpaciente.obt_unidad_tiempo:4
+#: tinamit.BF.ModeloImpaciente.unidad_tiempo:4
 msgid "La unidad de tiempo **deseada** del modelo."
 msgstr "மாதிரியின் **வேண்டிய** நேரம் படி."
 
@@ -335,7 +335,7 @@ msgid ""
 msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloImpaciente.cambiar_vals_modelo_interno:1
+#: tinamit.BF.ModeloImpaciente._cambiar_vals_modelo_interno:1
 msgid ""
 "Solamente nos tenemos que asegurar que los datos internos (para variables "
 "estacionales) queda consistente con los nuevos valores cambiadas por la "
@@ -383,7 +383,7 @@ msgid "El paso con cual avanzar la simulación."
 msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloImpaciente.inic_vars:13
+#: tinamit.BF.ModeloImpaciente._inic_dic_vars:13
 msgid ""
 "También debe actualizar ``símismo.tipos_vars``, poniendo en 'Ingresos' los "
 "nombres de todos los variables de ingreso, en 'Egresos' todos los variables "
@@ -450,7 +450,7 @@ msgid "Esta función lee los valores iniciales del modelo."
 msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of
-#: tinamit.BF.ModeloImpaciente.obt_unidad_tiempo:1
+#: tinamit.BF.ModeloImpaciente.unidad_tiempo:1
 msgid ""
 "**¡Cuidado!** Esta función devuelve la unidad de tiempo del modelo **a la "
 "cual quieres que pueda evaluarse**.  Así que función debe devolver \"mes\" y"

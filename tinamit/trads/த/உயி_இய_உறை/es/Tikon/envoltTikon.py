@@ -16,7 +16,7 @@ class ModeloTikon(ModeloTikon):
         return super().leer_archivo_egr(n_años_egr=n_años_egr)
 
     def மாறிகளை_ஆரம்ப(தன்):
-        return தன்.inic_vars()
+        return தன்._inic_dic_vars()
 
     def iniciar_modelo(தன்):
         return super().iniciar_modelo()

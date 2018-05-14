@@ -8,16 +8,16 @@ class மேலிணைக்கப்பட்ட(SuperConectado):
         return super().estab_modelo(modelo=மாதிரி)
 
     def மாறிகளை_ஆரம்ப(தன்):
-        return தன்.inic_vars()
+        return தன்._inic_dic_vars()
 
-    def obt_unidad_tiempo(தன்):
-        return super().obt_unidad_tiempo()
+    def unidad_tiempo(தன்):
+        return super().unidad_tiempo()
 
     def estab_conv_tiempo(தன், mod_base, conv):
         return super().estab_conv_tiempo(mod_base=mod_base, conv=conv)
 
-    def cambiar_vals_modelo_interno(தன், valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+    def _cambiar_vals_modelo_interno(தன், valores):
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def act_vals_clima(தன், படி_எண், தேதி):
         return super().act_vals_clima(n_paso=படி_எண், f=தேதி)
@@ -46,8 +46,8 @@ class மேலிணைக்கப்பட்ட(SuperConectado):
     def paralelizable(símismo):
         return super().paralelizable()
 
-    def inic_vals(símismo, dic_vals):
-        return super().inic_vals(dic_vals=dic_vals)
+    def inic_vals_vars(símismo, dic_vals):
+        return super().inic_vals_vars(dic_vals=dic_vals)
 
     def estab_conv_meses(símismo, conv):
         return super().estab_conv_meses(conv=conv)

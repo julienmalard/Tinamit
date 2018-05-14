@@ -46,12 +46,12 @@ class Modelo(object):
         # El nombre del modelo (sirve como una referencia a este modelo en el modelo conectado).
         símismo.nombre = nombre
 
-        # El diccionario de variables necesita la forma siguiente. Se llena con la función símismo.inic_vars().
+        # El diccionario de variables necesita la forma siguiente. Se llena con la función símismo._inic_dic_vars().
         # {var1: {'val': 13, 'unidades': cm, 'ingreso': True, 'egreso': True},
         #  var2: {...},
         #  ...}
         símismo.variables = {}
-        símismo.inic_vars()  # Iniciar los variables.
+        símismo._inic_dic_vars()  # Iniciar los variables.
 
         #
         símismo.calibs = {}
@@ -66,17 +66,14 @@ class Modelo(object):
         símismo.lugar = None  # type: Geog.Lugar
 
         # Listas de los nombres de los variables que sirven de conexión con otro modelo.
-        símismo.vars_saliendo = []
-        símismo.vars_entrando = []
-
-        # Las unidades de tiempo del modelo.
-        símismo.unidad_tiempo = símismo.obt_unidad_tiempo()
+        símismo.vars_saliendo = set()
+        símismo.vars_entrando = set()
 
         # El factor de conversión entre la unidad de tiempo del modelo y meses. (P. ej., 6 quiere decir que
         # hay 6 meses en una unidad de tiempo del modelo.)
         símismo.unidad_tiempo_meses = None
 
-    def inic_vars(símismo):
+    def _inic_dic_vars(símismo):
         """
         Esta función debe poblar el diccionario de variables del modelo, según la forma siguiente:
         {'var1': {'val': 13, 'unidades': 'cm', 'ingreso': True, dims: (1,), 'egreso': True, 'info': 'descripción'},
@@ -86,7 +83,7 @@ class Modelo(object):
         """
         raise NotImplementedError
 
-    def obt_unidad_tiempo(símismo):
+    def unidad_tiempo(símismo):
         """
         Esta función debe devolver la unidad de tiempo empleada por el modelo.
 
@@ -133,7 +130,7 @@ class Modelo(object):
         fecha_final = None
         n_días = None
         try:
-            n_días = convertir(de=símismo.unidad_tiempo, a='días', val=n_pasos)
+            n_días = convertir(de=símismo.unidad_tiempo(), a='días', val=n_pasos)
         except ValueError:
             pass
 
@@ -142,7 +139,7 @@ class Modelo(object):
 
         else:
             try:
-                n_meses = convertir(de=símismo.unidad_tiempo, a='meses', val=n_pasos)
+                n_meses = convertir(de=símismo.unidad_tiempo(), a='meses', val=n_pasos)
                 fecha_final = fecha_inic + deltarelativo(months=int(n_meses) + 1)
             except ValueError:
                 pass
@@ -203,7 +200,7 @@ class Modelo(object):
             for v in vars_interés:
                 if v not in símismo.variables:
                     raise ValueError(_('El variable "{}" no existe en el modelo "{}".').format(v, símismo))
-                símismo.vars_saliendo.append(v)  # para hacer: limpiar
+                símismo.vars_saliendo.add(v)  # para hacer: limpiar
 
         símismo.mem_vars.clear()
         for v in vars_interés:
@@ -217,12 +214,12 @@ class Modelo(object):
             if clima:
                 símismo.act_vals_clima(n_paso=paso, f=fecha_act)
                 # arreglarme: mejor conversión de unidades de tiempo
-                if símismo.unidad_tiempo == 'año':
+                if símismo.unidad_tiempo() == 'año':
                     fecha_act = ft.datetime(year=fecha_act.year + 1, month=fecha_act.month,
                                             day=fecha_act.day)  # Avanzar la fecha
-                elif símismo.unidad_tiempo == 'mes':
+                elif símismo.unidad_tiempo() == 'mes':
                     fecha_act += ft.timedelta(paso * 30)  # Avanzar la fecha
-                elif símismo.unidad_tiempo == 'días':
+                elif símismo.unidad_tiempo() == 'días':
                     fecha_act += ft.timedelta(paso)  # Avanzar la fecha
                 else:
                     if símismo.unidad_tiempo_meses is not None:
@@ -403,7 +400,7 @@ class Modelo(object):
             # Para cada corrida...
             for corr, d_prms_corr in corridas.items():
 
-                símismo.inic_vals(d_prms_corr)
+                símismo.inic_vals_vars(d_prms_corr)
 
                 # Después, simular el modelo.
                 símismo.simular(**d_prms_corr, nombre_corrida=corr)
@@ -448,7 +445,7 @@ class Modelo(object):
         """
         raise NotImplementedError
 
-    def inic_val(símismo, var, val):
+    def inic_val_var(símismo, var, val):
         """
         Est método cambia el valor inicial de un variable (antes de empezar la simulación). Se emplea principalmente
         para activar y desactivar políticas y para establecer parámetros y valores iniciales para simulaciones.
@@ -471,7 +468,7 @@ class Modelo(object):
         # de empezar la simulación.
         símismo.vals_inic[var] = val
 
-    def inic_vals(símismo, dic_vals):
+    def inic_vals_vars(símismo, dic_vals):
         """
         Una función más cómoda para inicializar muchos variables al mismo tiempo.
 
@@ -481,7 +478,7 @@ class Modelo(object):
         """
 
         for var, val in dic_vals.items():
-            símismo.inic_val(var=var, val=val)
+            símismo.inic_val_var(var=var, val=val)
 
     def _limp_vals_inic(símismo):
         """
@@ -547,9 +544,9 @@ class Modelo(object):
             else:
                 símismo.variables[var]['val'] = valores[var]
 
-        símismo.cambiar_vals_modelo_interno(valores=valores)
+        símismo._cambiar_vals_modelo_interno(valores=valores)
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_interno(símismo, valores):
         """
         Esta función debe cambia el valor de variables en el :class:`Modelo`, incluso tomar acciones para asegurarse
         de que el cambio se hizo en el modelo externo, si aplica.
@@ -592,14 +589,14 @@ class Modelo(object):
         convs = [d['conv'] for d in símismo.vars_clima.values()]
 
         # La fecha final
-        if símismo.unidad_tiempo == 'Días':
+        if símismo.unidad_tiempo() == 'Días':
             f_final = f + deltarelativo(days=+n_paso)
             n_meses = n_paso / 30
         else:
             if símismo.unidad_tiempo_meses is None:
 
                 try:
-                    símismo.unidad_tiempo_meses = convertir(de=símismo.unidad_tiempo, a='Mes', val=1)
+                    símismo.unidad_tiempo_meses = convertir(de=símismo.unidad_tiempo(), a='Mes', val=1)
 
                 except ValueError:
                     raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a meses. Tienes que especificar'
@@ -715,6 +712,38 @@ class Modelo(object):
         else:
             raise ValueError(_('El variable "{}" no existe en el modelo "{}".').format(var, símismo))
 
+    def obt_info_var(símismo, var):
+        var = símismo.valid_var(var)
+        return símismo.variables[var]['info']
+
+    def obt_unidades_var(símismo, var):
+        var = símismo.valid_var(var)
+        return símismo.variables[var]['unidades']
+
+    def obt_val_actual_var(símismo, var):
+        var = símismo.valid_var(var)
+        return símismo.variables[var]['val']
+
+    def obt_lims_var(símismo, var):
+        var = símismo.valid_var(var)
+        return símismo.variables[var]['líms']
+
+    def obt_dims_var(símismo, var):
+        var = símismo.valid_var(var)
+        return símismo.variables[var]['dims']
+
+    def egresos(símismo):
+        return [v for v, d_v in símismo.variables.items() if d_v['egreso']]
+
+    def ingresos(símismo):
+        return [v for v, d_v in símismo.variables.items() if d_v['ingreso']]
+
+    def paráms(símismo):
+        return [v for v, d_v in símismo.variables.items() if d_v['parám']]
+
+    def vars_estado_inicial(símismo):
+        return [v for v, d_v in símismo.variables.items() if d_v['estado_inicial']]
+
     def leer_resultados(símismo, var, corrida=None):
         if corrida is None:
             if var in símismo.mem_vars:
@@ -756,7 +785,6 @@ class Modelo(object):
         copia = símismo.__class__(*símismo.__getinitargs__())
         copia.vals_inic = símismo.vals_inic
         copia.vars_clima = símismo.vars_clima
-        copia.unidad_tiempo = símismo.unidad_tiempo
         copia.unidad_tiempo_meses = símismo.unidad_tiempo_meses
 
         return copia
@@ -766,7 +794,6 @@ class Modelo(object):
             'args_inic': símismo.__getinitargs__(),
             'vals_inic': símismo.vals_inic,
             'vars_clima': símismo.vars_clima,
-            'unidad_tiempo': símismo.unidad_tiempo,
             'unidad_tiempo_meses': símismo.unidad_tiempo_meses
         }
         return d
@@ -775,7 +802,6 @@ class Modelo(object):
         símismo.__init__(*estado['args_inic'])
         símismo.vals_inic = estado['vals_inic']
         símismo.vars_clima = estado['vars_clima']
-        símismo.unidad_tiempo = estado['unidad_tiempo']
         símismo.unidad_tiempo_meses = estado['unidad_tiempo_meses']
 
 
@@ -797,7 +823,7 @@ def _correr_modelo(x):
     # Inicializar los variables y valores iniciales. Esto debe ser adentro de la función llamada por
     # Proceso, para que los valores iniciales se apliquen en su propio proceso (y no en el modelo
     # original).
-    mod.inic_vals(vls_inic)
+    mod.inic_vals_vars(vls_inic)
 
     # Después, simular el modelo
     mod.simular(**d_args)

@@ -8,16 +8,16 @@ from tinamit.MDS.MDS import EnvolturaMDS
 class EnvolturaMDS(EnvolturaMDS):
 
     def inic_vars(símismo):
-        return super().inic_vars()
+        return super()._inic_dic_vars()
 
     def obt_unidad_tiempo(símismo):
-        return super().obt_unidad_tiempo()
+        return super().unidad_tiempo()
 
     def iniciar_modelo(símismo, nombre_corrida, tiempo_final):
         return super().iniciar_modelo(nombre_corrida=nombre_corrida, tiempo_final=tiempo_final)
 
     def cambiar_vals_modelo_interno(símismo, valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def incrementar(símismo, paso):
         return super().incrementar(paso=paso)
@@ -35,16 +35,16 @@ class EnvolturaMDS(EnvolturaMDS):
 class ModeloVensim(ModeloVensim):
 
     def inic_vars(símismo):
-        return super().inic_vars()
+        return super()._inic_dic_vars()
 
     def obt_unidad_tiempo(símismo):
-        return super().obt_unidad_tiempo()
+        return super().unidad_tiempo()
 
     def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         return super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
 
     def cambiar_vals_modelo_interno(símismo, valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def incrementar(símismo, paso):
         return super().incrementar(paso=paso)

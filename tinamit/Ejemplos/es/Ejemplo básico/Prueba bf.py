@@ -12,10 +12,10 @@ class Envoltura(ModeloBF):
     def leer_vals(símismo):
         pass
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_interno(símismo, valores):
         pass
 
-    def inic_vars(símismo):
+    def _inic_dic_vars(símismo):
         símismo.variables['Lluvia'] = {'val': 1,
                                        'unidades': 'm*m*m/mes',
                                        'ingreso': False,
@@ -32,7 +32,7 @@ class Envoltura(ModeloBF):
     def iniciar_modelo(símismo, **kwargs):
         pass
 
-    def obt_unidad_tiempo(símismo):
+    def unidad_tiempo(símismo):
         return "Meses"
 
     def cerrar_modelo(símismo):

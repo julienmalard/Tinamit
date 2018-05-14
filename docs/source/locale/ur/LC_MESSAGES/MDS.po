@@ -28,9 +28,9 @@ msgid ""
 "único incluido es VENSIM."
 msgstr ""
 
-#: of tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo_interno:1
+#: of tinamit.MDS.EnvolturaMDS._cambiar_vals_modelo_interno:1
 #: tinamit.MDS.EnvolturaMDS.cerrar_modelo:1
-#: tinamit.MDS.EnvolturaMDS.incrementar:1 tinamit.MDS.EnvolturaMDS.inic_vars:1
+#: tinamit.MDS.EnvolturaMDS.incrementar:1 tinamit.MDS.EnvolturaMDS._inic_dic_vars:1
 #: tinamit.MDS.EnvolturaMDS.iniciar_modelo:1
 #: tinamit.MDS.EnvolturaMDS.leer_vals:1
 msgid ""
@@ -38,20 +38,20 @@ msgid ""
 " para implementar."
 msgstr ""
 
-#: of tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo_interno:3
+#: of tinamit.MDS.EnvolturaMDS._cambiar_vals_modelo_interno:3
 msgid "Ver :func:`Modelo.Modelo.cambiar_vals_modelo` para más información."
 msgstr ""
 
-#: of tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo_interno
+#: of tinamit.MDS.EnvolturaMDS._cambiar_vals_modelo_interno
 #: tinamit.MDS.EnvolturaMDS.cambiar_var tinamit.MDS.EnvolturaMDS.incrementar
 #: tinamit.MDS.EnvolturaMDS.iniciar_modelo
-#: tinamit.MDS.ModeloVENSIM.cambiar_vals_modelo_interno
+#: tinamit.MDS.ModeloVENSIM._cambiar_vals_modelo_interno
 #: tinamit.MDS.ModeloVENSIM.comanda_vensim tinamit.MDS.ModeloVENSIM.incrementar
 #: tinamit.MDS.ModeloVENSIM.iniciar_modelo tinamit.MDS.generar_mds
 msgid "Parámetros"
 msgstr ""
 
-#: of tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo_interno:5
+#: of tinamit.MDS.EnvolturaMDS._cambiar_vals_modelo_interno:5
 msgid "El diccionario de valores para cambiar."
 msgstr ""
 
@@ -90,8 +90,8 @@ msgstr ""
 msgid "El paso con cual incrementar el modelo."
 msgstr ""
 
-#: of tinamit.MDS.EnvolturaMDS.inic_vars:3
-msgid "Ver :func:`Modelo.Modelo.inic_vars` para más información."
+#: of tinamit.MDS.EnvolturaMDS._inic_dic_vars:3
+msgid "Ver :func:`Modelo.Modelo._inic_dic_vars` para más información."
 msgstr ""
 
 #: of tinamit.MDS.EnvolturaMDS.iniciar_modelo:3
@@ -119,24 +119,24 @@ msgstr ""
 msgid "Ver :func:`Modelo.Modelo.leer_vals` para más información."
 msgstr ""
 
-#: of tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo:1
+#: of tinamit.MDS.EnvolturaMDS.unidad_tiempo:1
 msgid ""
 "Cada envoltura de programa DS debe implementar eset metodo para devolver "
 "las unidades de tiempo del modelo DS cargado."
 msgstr ""
 
-#: of tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo
-#: tinamit.MDS.ModeloVENSIM.obt_unidad_tiempo
+#: of tinamit.MDS.EnvolturaMDS.unidad_tiempo
+#: tinamit.MDS.ModeloVENSIM.unidad_tiempo
 #: tinamit.MDS.ModeloVENSIM.verificar_vensim tinamit.MDS.generar_mds
 msgid "Devuelve"
 msgstr ""
 
-#: of tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo:4
+#: of tinamit.MDS.EnvolturaMDS.unidad_tiempo:4
 msgid "Las unidades del modelo DS cargado."
 msgstr ""
 
-#: of tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo
-#: tinamit.MDS.ModeloVENSIM.obt_unidad_tiempo
+#: of tinamit.MDS.EnvolturaMDS.unidad_tiempo
+#: tinamit.MDS.ModeloVENSIM.unidad_tiempo
 #: tinamit.MDS.ModeloVENSIM.verificar_vensim tinamit.MDS.generar_mds
 msgid "Tipo del valor devuelto"
 msgstr ""
@@ -148,14 +148,14 @@ msgid ""
 "Necesitarás la versión DSS de VENSIM para que funcione en Tinamit."
 msgstr ""
 
-#: of tinamit.MDS.ModeloVENSIM.cambiar_vals_modelo_interno:1
+#: of tinamit.MDS.ModeloVENSIM._cambiar_vals_modelo_interno:1
 msgid ""
 "Esta función cambiar los valores de variables en VENSIM. Notar que "
 "únicamente los variables identificados como de tipo \"Gaming\" en el "
 "modelo podrán actualizarse."
 msgstr ""
 
-#: of tinamit.MDS.ModeloVENSIM.cambiar_vals_modelo_interno:4
+#: of tinamit.MDS.ModeloVENSIM._cambiar_vals_modelo_interno:4
 msgid "Un diccionario de variables y sus nuevos valores."
 msgstr ""
 
@@ -201,7 +201,7 @@ msgstr ""
 msgid "El número de pasos para tomar."
 msgstr ""
 
-#: of tinamit.MDS.ModeloVENSIM.inic_vars:1
+#: of tinamit.MDS.ModeloVENSIM._inic_dic_vars:1
 msgid "Inicializamos el diccionario de variables del modelo VENSIM."
 msgstr ""
 
@@ -220,11 +220,11 @@ msgid ""
 " lista de ``ModeloVENSIM.vars_saliendo``."
 msgstr ""
 
-#: of tinamit.MDS.ModeloVENSIM.obt_unidad_tiempo:1
+#: of tinamit.MDS.ModeloVENSIM.unidad_tiempo:1
 msgid "Aquí, sacamos las unidades de tiempo del modelo VENSIM."
 msgstr ""
 
-#: of tinamit.MDS.ModeloVENSIM.obt_unidad_tiempo:3
+#: of tinamit.MDS.ModeloVENSIM.unidad_tiempo:3
 msgid "Las unidades de tiempo."
 msgstr ""
 

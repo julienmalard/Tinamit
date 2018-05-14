@@ -7,17 +7,17 @@ class ہڑامنسلک(SuperConectado):
     def estab_modelo(خود, نمونہ):
         return super().estab_modelo(modelo=نمونہ)
 
-    def inic_vars(خود):
-        return super().inic_vars()
+    def _inic_dic_vars(خود):
+        return super()._inic_dic_vars()
 
-    def obt_unidad_tiempo(خود):
-        return super().obt_unidad_tiempo()
+    def unidad_tiempo(خود):
+        return super().unidad_tiempo()
 
     def estab_conv_tiempo(خود, mod_base, conv):
         return super().estab_conv_tiempo(mod_base=mod_base, conv=conv)
 
-    def cambiar_vals_modelo_interno(خود, valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+    def _cambiar_vals_modelo_interno(خود, valores):
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def act_vals_clima(خود, n_paso, f):
         return super().act_vals_clima(n_paso=n_paso, f=f)
@@ -46,8 +46,8 @@ class ہڑامنسلک(SuperConectado):
     def paralelizable(símismo):
         return super().paralelizable()
 
-    def inic_vals(símismo, dic_vals):
-        return super().inic_vals(dic_vals=dic_vals)
+    def inic_vals_vars(símismo, dic_vals):
+        return super().inic_vals_vars(dic_vals=dic_vals)
 
     def estab_conv_meses(símismo, conv):
         return super().estab_conv_meses(conv=conv)

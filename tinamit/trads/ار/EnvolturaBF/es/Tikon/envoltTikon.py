@@ -16,7 +16,7 @@ class ModeloTikon(ModeloTikon):
         return super().leer_archivo_egr(n_años_egr=n_años_egr)
 
     def inic_vars(خود):
-        return super().inic_vars()
+        return super()._inic_dic_vars()
 
     def iniciar_modelo(خود):
         return super().iniciar_modelo()

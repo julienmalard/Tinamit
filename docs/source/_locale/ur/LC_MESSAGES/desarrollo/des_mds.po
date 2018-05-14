@@ -58,19 +58,19 @@ msgstr ""
 
 #: ../../source/desarrollo/des_mds.rst:15
 msgid ""
-":func:`~tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo`: Devuelve la unidad de "
+":func:`~tinamit.MDS.EnvolturaMDS.unidad_tiempo`: Devuelve la unidad de "
 "tiempo del modelo."
 msgstr ""
 "نمونے کا وقت یونٹ واپس کرتا ہے۔ "
-"'func:`~tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo:"
+"'func:`~tinamit.MDS.EnvolturaMDS.unidad_tiempo:"
 
 #: ../../source/desarrollo/des_mds.rst:16
 msgid ""
-":func:`~tinamit.MDS.EnvolturaMDS.inic_vars`: Incializa el diccionario "
+":func:`~tinamit.MDS.EnvolturaMDS._inic_dic_vars`: Incializa el diccionario "
 "interno de variables disponibles."
 msgstr ""
 "دستیاب متغیر کی اندرونی لغت کو شروع کریں. "
-"'func:`~tinamit.MDS.EnvolturaMDS.inic_vars: "
+"'func:`~tinamit.MDS.EnvolturaMDS._inic_dic_vars: "
 
 #: ../../source/desarrollo/des_mds.rst:17
 msgid ""
@@ -80,11 +80,11 @@ msgstr ""
 
 #: ../../source/desarrollo/des_mds.rst:18
 msgid ""
-":func:`~tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo_interno`: Cambia los "
+":func:`~tinamit.MDS.EnvolturaMDS._cambiar_vals_modelo_interno`: Cambia los "
 "valores internos de los variables."
 msgstr ""
 "متغیرات کی اندرونی اقدار کو تبدیل کریں۔ "
-"'func:`~tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo_interno:"
+"'func:`~tinamit.MDS.EnvolturaMDS._cambiar_vals_modelo_interno:"
 
 #: ../../source/desarrollo/des_mds.rst:19
 msgid ":func:`~tinamit.MDS.EnvolturaMDS.incrementar`: Avanza el modelo."

@@ -55,7 +55,7 @@ msgstr ""
 #: ../../../tinamit/Conectado.py:docstring of
 #: tinamit.Conectado.SuperConectado.act_vals_clima:0
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.cambiar_vals_modelo_interno:0
+#: tinamit.Conectado.SuperConectado._cambiar_vals_modelo_interno:0
 #: ../../../tinamit/Conectado.py:docstring of
 #: tinamit.Conectado.SuperConectado.conectar_vars:0
 #: ../../../tinamit/Conectado.py:docstring of
@@ -206,14 +206,14 @@ msgid "La fecha actual."
 msgstr "இன்று தேதி."
 
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.cambiar_vals_modelo_interno:1
+#: tinamit.Conectado.SuperConectado._cambiar_vals_modelo_interno:1
 msgid ""
 "Esta función cambia los valores del modelo. A través de la función "
 ":func:`~tinamit.Conectado.cambiar_vals`, se vuelve recursiva."
 msgstr ""
 
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.cambiar_vals_modelo_interno:4
+#: tinamit.Conectado.SuperConectado._cambiar_vals_modelo_interno:4
 msgid ""
 "El diccionario de nombres de variables para cambiar. Hay que prefijar cada "
 "nombre de variable con el nombre del submodelo en en cual se ubica "
@@ -311,14 +311,14 @@ msgid "El intervalo de tiempo."
 msgstr "நேரம் படி."
 
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.inic_vars:1
+#: tinamit.Conectado.SuperConectado._inic_dic_vars:1
 msgid ""
 "Esta función no es necesaria, porque "
 ":func:`~tinamit.Conectado.Conectado.estab_modelo` ya llama las funciones "
-"necesarias, :func:`~tinamit.Modelo.inic_vars` de los submodelos."
+"necesarias, :func:`~tinamit.Modelo._inic_dic_vars` de los submodelos."
 msgstr ""
 "இந்த செயல்பாடு தேவை இல்லை, எனென்றால் துணைமாதிரிகளின் தேவையான செயல்பாடுகள், "
-":func:`~tinamit.Modelo.inic_vars`, ஏற்கனவை "
+":func:`~tinamit.Modelo._inic_dic_vars`, ஏற்கனவை "
 ":func:`~tinamit.Conectado.Conectado.estab_modelo` ஆல் அழைப்படுத்தன."
 
 #: ../../../tinamit/Conectado.py:docstring of
@@ -356,7 +356,7 @@ msgid ""
 msgstr ""
 
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.obt_unidad_tiempo:1
+#: tinamit.Conectado.SuperConectado.unidad_tiempo:1
 msgid ""
 "Esta función devolverá las unidades de tiempo del modelo conectado. "
 "Dependerá de los submodelos. Si los dos submodelos tienen las mismas "
@@ -369,30 +369,30 @@ msgid ""
 msgstr ""
 
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.obt_unidad_tiempo:8
+#: tinamit.Conectado.SuperConectado.unidad_tiempo:8
 msgid ""
 "Después se actualiza el variable símismo.conv_tiempo para guardar en memoria"
 " la conversión necesaria entre los pasos de los dos submodelos."
 msgstr ""
 
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.obt_unidad_tiempo:11
+#: tinamit.Conectado.SuperConectado.unidad_tiempo:11
 msgid ""
 "Se emplea las clase `~tinamit.Unidades.Unidades` para convertir unidades."
 msgstr ""
 
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.obt_unidad_tiempo:0
+#: tinamit.Conectado.SuperConectado.unidad_tiempo:0
 msgid "Devuelve"
 msgstr "திரும்பி"
 
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.obt_unidad_tiempo:13
+#: tinamit.Conectado.SuperConectado.unidad_tiempo:13
 msgid "El tiempo de paso del modelo SuperConectado."
 msgstr ""
 
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.obt_unidad_tiempo:0
+#: tinamit.Conectado.SuperConectado.unidad_tiempo:0
 msgid "Tipo del valor devuelto"
 msgstr "திரும்பி எண் வகை"
 

@@ -30,7 +30,7 @@ class ModeloPySD(EnvolturaMDS):
 
         super().__init__(archivo)
 
-    def inic_vars(símismo):
+    def _inic_dic_vars(símismo):
         símismo.variables.clear()
         símismo.conv_nombres.clear()
 
@@ -51,7 +51,7 @@ class ModeloPySD(EnvolturaMDS):
 
                 símismo.conv_nombres[nombre] = nombre_py
 
-    def obt_unidad_tiempo(símismo):
+    def unidad_tiempo(símismo):
         docs = símismo.modelo.doc()
 
         if símismo.tipo == '.mdl':
@@ -78,7 +78,7 @@ class ModeloPySD(EnvolturaMDS):
 
         símismo.modelo.initialize()
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_interno(símismo, valores):
         símismo.vars_para_cambiar.clear()
         símismo.vars_para_cambiar.update(valores)
 

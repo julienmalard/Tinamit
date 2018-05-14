@@ -27,7 +27,7 @@ def run_model(name, switches):
 
     # Set appropriate switches for policy analysis
     for switch, val in switches.items():
-        modelo.mds.inic_val(var=switch, val=val)
+        modelo.mds.inic_val_var(var=switch, val=val)
 
     # Couple models(Change variable names as needed)
     modelo.conectar(var_mds='Soil salinity Tinamit CropA', mds_fuente=False, var_bf="Cr4 - Fully rotated land irrigated root zone salinity")

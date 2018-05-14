@@ -109,7 +109,7 @@ if __name__ == '__main__':
 
             # Set appropriate switches for policy analysis
             for switch, val in run.items():
-                modelo.mds.inic_val(var=switch, val=val)
+                modelo.mds.inic_val_var(var=switch, val=val)
 
             # Simulate the coupled model
             modelo.simular(paso=1, tiempo_final=20, nombre_corrida=name)  # time step and final time are in months

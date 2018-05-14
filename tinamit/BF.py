@@ -85,7 +85,7 @@ class EnvolturaBF(Modelo):
         símismo.vars_saliendo = símismo.modelo.vars_saliendo
         símismo.vars_clima = símismo.modelo.vars_clima
 
-    def obt_unidad_tiempo(símismo):
+    def unidad_tiempo(símismo):
         """
         Esta función debe devolver la unidad de tiempo empleada por el modelo.
 
@@ -94,9 +94,9 @@ class EnvolturaBF(Modelo):
 
         """
 
-        return símismo.modelo.unidad_tiempo
+        return símismo.modelo.unidad_tiempo()
 
-    def inic_vars(símismo):
+    def _inic_dic_vars(símismo):
         """
         Inicializa los variables del modelo biofísico y los conecta al diccionario de variables del modelo.
 
@@ -105,7 +105,7 @@ class EnvolturaBF(Modelo):
         # Crear el vínculo
         símismo.variables = símismo.modelo.variables
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_interno(símismo, valores):
         """
         Esta función cambia el valor de variables en el modelo.
 
@@ -114,7 +114,7 @@ class EnvolturaBF(Modelo):
 
         """
 
-        símismo.modelo.cambiar_vals_modelo_interno(valores=valores)
+        símismo.modelo._cambiar_vals_modelo_interno(valores=valores)
 
     def incrementar(símismo, paso):
         """
@@ -195,7 +195,7 @@ class ModeloBF(Modelo):
         """
         super().__init__(nombre='modeloBF')
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_interno(símismo, valores):
         """
         Esta función debe cambiar el valor de variables en el modelo biofísico.
 
@@ -238,7 +238,7 @@ class ModeloBF(Modelo):
         """
         raise NotImplementedError
 
-    def obt_unidad_tiempo(símismo):
+    def unidad_tiempo(símismo):
         """
         Esta función debe devolver la unidad de tiempo del modelo biofísico.
         
@@ -247,7 +247,7 @@ class ModeloBF(Modelo):
         """
         raise NotImplementedError
 
-    def inic_vars(símismo):
+    def _inic_dic_vars(símismo):
         """
         Esta función debe iniciar el diccionario interno de variables.
 
@@ -309,10 +309,10 @@ class ModeloImpaciente(ModeloBF):
 
         símismo.paso_mín = "Año"
         try:
-            símismo.ratio_pasos = convertir(de=símismo.unidad_tiempo, a=símismo.paso_mín)
+            símismo.ratio_pasos = convertir(de=símismo.unidad_tiempo(), a=símismo.paso_mín)
         except ValueError:
             raise ValueError(_('La unidad de tiempo ("{}") del modelo no se pudo convertir al paso ("{}")')
-                             .format(símismo.unidad_tiempo, símismo.paso_mín))
+                             .format(símismo.unidad_tiempo(), símismo.paso_mín))
 
         # Una lista de todos los variables estacionales (que sean ingresos o egresos)
         símismo.tipos_vars['Estacionales'] = list(
@@ -332,7 +332,7 @@ class ModeloImpaciente(ModeloBF):
         # Leer los valores iniciales
         símismo.leer_vals_inic()
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_interno(símismo, valores):
         """
         Solamente nos tenemos que asegurar que los datos internos (para variables estacionales) queda consistente
         con los nuevos valores cambiadas por la conexión con el modelo externo. La función `.avanzar_modelo()` debe
@@ -465,7 +465,7 @@ class ModeloImpaciente(ModeloBF):
         """
         pass
 
-    def obt_unidad_tiempo(símismo):
+    def unidad_tiempo(símismo):
         """
         **¡Cuidado!** Esta función devuelve la unidad de tiempo del modelo **a la cual quieres que pueda
         evaluarse**.  Así que función debe devolver "mes" y no "año".
@@ -495,7 +495,7 @@ class ModeloImpaciente(ModeloBF):
         """
         raise NotImplementedError
 
-    def inic_vars(símismo):
+    def _inic_dic_vars(símismo):
         """
         Esta función debe iniciar el diccionario interno de variables.
 
@@ -656,7 +656,7 @@ class ModeloFlexible(ModeloBF):
         """
         super().__init__()
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_interno(símismo, valores):
         """
         Esta función debe cambiar el valor de variables en el modelo biofísico.
 
@@ -700,7 +700,7 @@ class ModeloFlexible(ModeloBF):
         """
         raise NotImplementedError
 
-    def obt_unidad_tiempo(símismo):
+    def unidad_tiempo(símismo):
         """
         **¡Cuidado!** Esta función debe devolver la unidad de tiempo del modelo **a la cual quieres que pueda
         evaluarse**.  Por ejemplo, si tu modelo biofísico evalua con un paso de simulación mínimo de 1 año, pero
@@ -711,7 +711,7 @@ class ModeloFlexible(ModeloBF):
         """
         raise NotImplementedError
 
-    def inic_vars(símismo):
+    def _inic_dic_vars(símismo):
         """
         Esta función debe iniciar el diccionario interno de variables.
 

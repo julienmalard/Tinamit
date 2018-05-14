@@ -8,16 +8,16 @@ class SuperConectado(SuperConectado):
         return super().estab_modelo(modelo=modelo)
 
     def inic_vars(símismo):
-        return super().inic_vars()
+        return super()._inic_dic_vars()
 
     def obt_unidad_tiempo(símismo):
-        return super().obt_unidad_tiempo()
+        return super().unidad_tiempo()
 
     def estab_conv_tiempo(símismo, mod_base, conv):
         return super().estab_conv_tiempo(mod_base=mod_base, conv=conv)
 
     def cambiar_vals_modelo_interno(símismo, valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def act_vals_clima(símismo, n_paso, f):
         return super().act_vals_clima(n_paso=n_paso, f=f)

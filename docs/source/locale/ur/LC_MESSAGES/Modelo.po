@@ -39,7 +39,7 @@ msgid ""
 msgstr ""
 
 #: of tinamit.Modelo.Modelo.cambiar_vals
-#: tinamit.Modelo.Modelo.cambiar_vals_modelo_interno
+#: tinamit.Modelo.Modelo._cambiar_vals_modelo_interno
 #: tinamit.Modelo.Modelo.incrementar tinamit.Modelo.Modelo.iniciar_modelo
 msgid "Parámetros"
 msgstr ""
@@ -50,14 +50,14 @@ msgid ""
 "siguiente: { var1: nuevovalor, var2: nuevovalor, ... }"
 msgstr ""
 
-#: of tinamit.Modelo.Modelo.cambiar_vals_modelo_interno:1
+#: of tinamit.Modelo.Modelo._cambiar_vals_modelo_interno:1
 msgid ""
 "Esta función debe cambiar el valor de variables en el :class:`Modelo`, "
 "incluso tomar acciones para asegurarse de que el cambio se hizo en el "
 "modelo externo, si aplica."
 msgstr ""
 
-#: of tinamit.Modelo.Modelo.cambiar_vals_modelo_interno:4
+#: of tinamit.Modelo.Modelo._cambiar_vals_modelo_interno:4
 msgid ""
 "Un diccionario de variables y valores para cambiar, con el formato "
 "siguiente: {var1: nuevovalor, var2: nuevovalor, ... }"
@@ -77,13 +77,13 @@ msgstr ""
 msgid "El paso."
 msgstr ""
 
-#: of tinamit.Modelo.Modelo.inic_vars:3
+#: of tinamit.Modelo.Modelo._inic_dic_vars:3
 msgid ""
 "Esta función debe poblar el diccionario de variables del modelo, según la"
 " forma siguiente::"
 msgstr ""
 
-#: of tinamit.Modelo.Modelo.inic_vars:2
+#: of tinamit.Modelo.Modelo._inic_dic_vars:2
 msgid ""
 "{'var1': {'val': 13, 'unidades': 'cm', 'ingreso': True, dims: (1,), "
 "'egreso': True}, 'var2': {'val': 2, 'unidades': 'cm', 'ingreso': False, "
@@ -111,19 +111,19 @@ msgid ""
 " externos de cuyos egresos hay que leer los resultados de una corrida."
 msgstr ""
 
-#: of tinamit.Modelo.Modelo.obt_unidad_tiempo:1
+#: of tinamit.Modelo.Modelo.unidad_tiempo:1
 msgid "Esta función debe devolver la unidad de tiempo empleada por el modelo."
 msgstr ""
 
-#: of tinamit.Modelo.Modelo.obt_unidad_tiempo
+#: of tinamit.Modelo.Modelo.unidad_tiempo
 msgid "Devuelve"
 msgstr ""
 
-#: of tinamit.Modelo.Modelo.obt_unidad_tiempo:3
+#: of tinamit.Modelo.Modelo.unidad_tiempo:3
 msgid "La unidad de tiempo (p. ejemplo, 'meses', 'días', etc."
 msgstr ""
 
-#: of tinamit.Modelo.Modelo.obt_unidad_tiempo
+#: of tinamit.Modelo.Modelo.unidad_tiempo
 msgid "Tipo del valor devuelto"
 msgstr ""
 

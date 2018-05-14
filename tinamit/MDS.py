@@ -43,19 +43,19 @@ class EnvolturaMDS(Modelo):
         # Modelos DS se identifican por el nombre 'mds'.
         super().__init__(nombre='mds')
 
-    def inic_vars(símismo):
+    def _inic_dic_vars(símismo):
         """
         Este método se deja a las subclases de :class:`~tinamit.EnvolturaMDS.EnvolturaMDS` para implementar. Además de
         los diccionarios de variables normales, debe establecer `símismo.constantes`, `símismo.flujos`,
         `símismo.niveles`, `símismo.editables`, `símismo.auxiliares`, y `símismo.dic_info_vars`. Este último
         debe tener las llaves "hijos", "parientes" y "ec".
 
-        Ver :func:`Modelo.Modelo.inic_vars` para más información.
+        Ver :func:`Modelo.Modelo._inic_dic_vars` para más información.
         """
 
         raise NotImplementedError
 
-    def obt_unidad_tiempo(símismo):
+    def unidad_tiempo(símismo):
         """
         Cada envoltura de programa DS debe implementar este metodo para devolver las unidades de tiempo del modelo DS
         cargado.
@@ -82,7 +82,7 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_interno(símismo, valores):
         """
         Este método se deja a las subclases de :class:`~tinamit.EnvolturaMDS.EnvolturaMDS` para implementar.
 

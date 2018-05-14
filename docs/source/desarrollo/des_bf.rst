@@ -52,10 +52,10 @@ Plantilla estándar (ModeloBF)
 Esta plantilla es la más sencilla (y todas las otras son subclases de esta). Deberás implementar las funciones
 siguientes en una subclase de esta plantilla.
 
-* :func:`~tinamit.BF.ModeloBF.obt_unidad_tiempo`: Devuelve la unidad de tiempo del modelo.
-* :func:`~tinamit.BF.ModeloBF.inic_vars`: Incializa el diccionario interno de variables disponibles.
+* :func:`~tinamit.BF.ModeloBF.unidad_tiempo`: Devuelve la unidad de tiempo del modelo.
+* :func:`~tinamit.BF.ModeloBF._inic_dic_vars`: Incializa el diccionario interno de variables disponibles.
 * :func:`~tinamit.BF.ModeloBF.iniciar_modelo`: Inicializa la simulación.
-* :func:`~tinamit.BF.ModeloBF.cambiar_vals_modelo_interno`: Cambia los valores internos de los variables.
+* :func:`~tinamit.BF.ModeloBF._cambiar_vals_modelo_interno`: Cambia los valores internos de los variables.
 * :func:`~tinamit.BF.ModeloBF.incrementar`: Avanza el modelo.
 * :func:`~tinamit.BF.ModeloBF.leer_vals`: Lee los egresos del modelo.
 * :func:`~tinamit.BF.ModeloBF.cerrar_modelo`: Cierre el modelo al final de una simulación.
@@ -70,7 +70,7 @@ estaciones, de manera automática. Simplemente debes implementar las funciones s
 
 * :func:`~tinamit.BF.ModeloImpaciente.iniciar_modelo`: Inicializa la simulación.
 * :func:`~tinamit.BF.ModeloImpaciente.cerrar_modelo`: Cierre el modelo al final de una simulación.
-* :func:`~tinamit.BF.ModeloImpaciente.inic_vars`: Incializa el diccionario interno de variables disponibles.
+* :func:`~tinamit.BF.ModeloImpaciente._inic_dic_vars`: Incializa el diccionario interno de variables disponibles.
 * :func:`~tinamit.BF.ModeloImpaciente.avanzar_modelo`: Avanza la simulación del paso mínimo del modelo (por ejemplo,
   avanzará un modelo anual de 1 año, aunque este de resultados con una precisión de 1 mes). No te preoccupes, Tinamït
   arreglará todo.
@@ -93,7 +93,7 @@ las funciones siguientes en una subclase:
 
 * :func:`~tinamit.BF.ModeloFlexible.iniciar_modelo`: Inicializa la simulación.
 * :func:`~tinamit.BF.ModeloFlexible.cerrar_modelo`: Cierre el modelo al final de una simulación.
-* :func:`~tinamit.BF.ModeloFlexible.inic_vars`: Incializa el diccionario interno de variables disponibles.
+* :func:`~tinamit.BF.ModeloFlexible._inic_dic_vars`: Incializa el diccionario interno de variables disponibles.
 * :func:`~tinamit.BF.ModeloFlexible.mandar_modelo`: Avanza la simulación.
 * :func:`~tinamit.BF.ModeloFlexible.leer_archivo_vals_inic`: Lee un archivo con valores inciales para la simulación.
 * :func:`~tinamit.BF.ModeloFlexible.leer_archivo_egr`: Le un archivo de los egresos de una simulación.

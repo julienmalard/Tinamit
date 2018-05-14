@@ -9,7 +9,7 @@ from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import ModeloSAHYSMOD
 class ஸாஹிஸ்மாட்_மாதிரி(ModeloSAHYSMOD):
 
     def மாறிகளை_ஆரம்ப(தன்):
-        return தன்.inic_vars()
+        return தன்._inic_dic_vars()
 
     def மாதிரி_ஆரம்பு(தன், tiempo_final, nombre_corrida):
         return தன்.iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)

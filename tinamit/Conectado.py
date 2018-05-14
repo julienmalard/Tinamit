@@ -49,10 +49,12 @@ class SuperConectado(Modelo):
         # Un diccionario con la información de conversiones de unidades de tiempo entre los dos modelos conectados.
         # Tiene la forma general:
         # {'nombre_modelo_1': factor_conv,
-        # {'nombre_modelo_2': factor_conv}
+        # {'nombre_modelo_2': factor_conv,
+        # ...}
         # Al menos uno de los dos factores siempre será = a 1.
         símismo.conv_tiempo = {}
         símismo.conv_tiempo_dudoso = False  # Para acordarse si Tinamït tuvo que adivinar la conversión o no.
+        símismo.mod_base_tiempo = None
 
         # Inicializamos el SuperConectado como todos los Modelos.
         super().__init__(nombre=nombre)
@@ -66,11 +68,6 @@ class SuperConectado(Modelo):
         :type modelo: tinamit.Modelo.Modelo
 
         """
-
-        # Si ya hay dos modelos conectados, no podemos conectar un modelo más.
-        if len(símismo.modelos) >= 2:
-            raise ValueError(_('Ya hay dos modelo conectados. Desconecta uno primero o emplea una instancia de'
-                               'SuperConectado para conectar más que 2 modelos.'))
 
         # Si ya se conectó otro modelo con el mismo nombre, avisarlo al usuario.
         if modelo.nombre in símismo.modelos:
@@ -86,18 +83,15 @@ class SuperConectado(Modelo):
             nombre_var = '{mod}_{var}'.format(var=var, mod=modelo.nombre)
             símismo.variables[nombre_var] = modelo.variables[var]
 
-        # Establecemos las unidades de tiempo del modelo SuperConectado según las unidades de tiempo de sus submodelos.
-        símismo.unidad_tiempo = símismo.obt_unidad_tiempo()
-
-    def inic_vars(símismo):
+    def _inic_dic_vars(símismo):
         """
         Esta función no es necesaria, porque :func:`~tinamit.Conectado.Conectado.estab_modelo` ya llama las funciones
-        necesarias, :func:`~tinamit.Modelo.inic_vars` de los submodelos.
+        necesarias, :func:`~tinamit.Modelo._inic_dic_vars` de los submodelos.
 
         """
         pass
 
-    def obt_unidad_tiempo(símismo):
+    def unidad_tiempo(símismo):
         """
         Esta función devolverá las unidades de tiempo del modelo conectado. Dependerá de los submodelos.
         Si los dos submodelos tienen las mismas unidades, esta será la unidad del modelo conectado también.
@@ -116,81 +110,87 @@ class SuperConectado(Modelo):
 
         """
 
-        # Si todavía no se han conectado 2 modelos, no hay nada que hacer.
-        if len(símismo.modelos) < 2:
+        # Borrar información existente
+        símismo.conv_tiempo_dudoso = False
+        símismo.conv_tiempo.clear()
+
+        # Si se especificó modelo de base de tiempo, usar éste.
+        if símismo.mod_base_tiempo is not None:
+            return símismo.modelos[símismo.mod_base_tiempo].unidad_tiempo()
+
+        # Casos fáciles
+        if not len(símismo.modelos):
+            # Si todavía no se han conectado modelos, no hay nada que hacer.
             return None
+        elif len(símismo.modelos) == 1:
+            # Si solamente se contectó un modelo, devolver la unidad de tiempo de éste.
+            m = list(símismo.modelos)[0]
+            símismo.conv_tiempo[m] = 1
 
-        # Identificar las unidades de los dos submodelos.
-        l_mods = list(símismo.modelos)
+            return símismo.modelos[m].unidad_tiempo()
 
-        unid_mod_1 = símismo.modelos[l_mods[0]].unidad_tiempo
-        unid_mod_2 = símismo.modelos[l_mods[1]].unidad_tiempo
+        # Identificar las unidades de los submodelos.
+        d_unids = {m: obj_m.unidad_tiempo() for m, obj_m in símismo.modelos.items()}
 
-        # Una función auxiliar aquí para verificar si el factor de conversión es un nombre entero o no.
-        def verificar_entero(factor):
+        # Una función auxiliar aquí para verificar si los factores de conversión son números enteros o no.
+        def verificar_entero(factor, l_unids):
 
-            if int(factor) != factor:
-                # Si el factor no es un número entero, avisar antes de redondearlo.
-                avisar('Las unidades de tiempo de los dos modelos ({} y {}) no tienen denominator común.'
-                       'Se aproximará la conversión.'.format(unid_mod_1, unid_mod_2))
+            if not np.array_equal(factor.astype(int), factor):
+                # Si todos los factores no son números enteros, tendremos que aproximar.
+                avisar('Las unidades de tiempo de los dos modelos ({}) no tienen denominator común. ' \
+                         'Se aproximará la conversión.'.format(', '.join(l_unids)))
 
-            # Devolver la mejor aproximación entera
-            return round(factor)
+            np.round(factor, out=factor)
 
-        if unid_mod_1 == unid_mod_2:
-            # Si las unidades son idénticas, ya tenemos nuestra respuesta.
-            símismo.conv_tiempo[l_mods[0]] = 1
-            símismo.conv_tiempo[l_mods[1]] = 1
+        # Tomar cualquier unidad del diccionario como referencia de base
+        u_0 = list(d_unids.values())[0]
 
-            return unid_mod_1
+        # Si las unidades son idénticas, ya tenemos nuestra respuesta.
+        if all(convertir(u, u_0) == 1 for u in d_unids.values()):
+            for m in símismo.modelos:
+                símismo.conv_tiempo[m] = 1
+
+            return list(d_unids.values())[0]
 
         else:
             # Sino, intentemos convertir automáticamente
-            try:
-                factor_conv = convertir(de=unid_mod_1, a=unid_mod_2)
 
-            except ValueError:
-                # Si no lo logramos, hay un error.
-                símismo.conv_tiempo_dudoso = True
-                factor_conv = 1
+            factores_conv = np.empty(len(d_unids))
+            for i, u in enumerate(d_unids.items()):
+                try:
+                    factores_conv[i] = convertir(de=u_0, a=u)
+                except ValueError:
+                    # Si no lo logramos, hay un error, pero no querremos parar todo el programa por eso.
+                    símismo.conv_tiempo_dudoso = True
+                    factores_conv[i] = 1
 
-            if factor_conv > 1:
-                # Si la unidad de tiempo del primer modelo es más grande que la del otro...
+            # El factor más pequeño debe ser 1.
+            np.divide(factores_conv, factores_conv.min())
 
-                # Verificar que sea un factor entero
-                factor_conv = verificar_entero(factor_conv)
+            # Verificar que no tengamos factores de conversión fraccionales.
+            verificar_entero(factores_conv, l_unids=list(d_unids))
 
-                # ...y usar esta como unidad de tiempo y guardar el factor de conversión.
-                símismo.conv_tiempo[l_mods[0]] = 1
-                símismo.conv_tiempo[l_mods[1]] = factor_conv
+            # Aplicar los factores calculados.
+            for i, m in enumerate(d_unids):
+                símismo.conv_tiempo[m] = factores_conv[i]
 
-                return unid_mod_1
+            # La unidad de base para el SuperConectado es la que tiene factor de conversión de 1.
+            unid_base = next(d_unids[m] for m, c in símismo.conv_tiempo.items() if c == 1)
 
-            else:
-                # Si la unidad de tiempo del segundo modelo es la más grande...
-
-                # Tomar el recíproco de la conversión
-                factor_conv = 1 / factor_conv
-
-                # Verificar que sea un factor entero
-                factor_conv = verificar_entero(factor_conv)
-
-                # ...y usar las unidades del segundo modelo como referencia.
-                símismo.conv_tiempo[l_mods[1]] = 1
-                símismo.conv_tiempo[l_mods[0]] = factor_conv
-
-                return unid_mod_2
+            # Devolver la unidad de base
+            return unid_base
 
     def estab_conv_tiempo(símismo, mod_base, conv):
         """
-        Esta función establece la conversión de tiempo entre los dos modelos (útil para unidades que Tinamit
+        Esta función establece la conversión de tiempo entre los modelos (útil para unidades que Tinamït
         no reconoce).
 
         :param mod_base: El modelo con la unidad de tiempo mayor.
         :type mod_base: str
 
-        :param conv: El factor de conversión con la unidad de tiempo del otro modelo.
-        :type conv: int
+        :param conv: El factor de conversión con la unidad de tiempo del otro modelo. Si hay más que 2 modelos
+        conectados, *debe* ser un diccionario con los nombres de los modelos y sus factores de conversión.
+        :type conv: int | dict[str, int]
 
         """
 
@@ -198,21 +198,39 @@ class SuperConectado(Modelo):
         if mod_base not in símismo.modelos:
             raise ValueError(_('El modelo "{}" no existe en este modelo conectado.').format(mod_base))
 
-        # Identificar el modelo que no sirve de referencia para la unidad de tiempo
-        l_mod = list(símismo.modelos)
-        mod_otro = l_mod[(l_mod.index(mod_base) + 1) % 2]
+        # Convertir `conv`, si necesario.
+        if isinstance(conv, int):
+            if len(símismo.modelos) == 2:
+                # Si hay dos modelos conectados, convertir `conv` a un diccionario.
+                otro = next(m for m in símismo.modelos if m != mod_base)
+                conv = {otro: conv}
+            else:
+                raise TypeError(_('Debes especificar un diccionario de factores de conversión si tienes'
+                                  'más que 2 modelos conectados.'))
+
+        else:
+            # Asegurarse que todos los modelos en `conv` existen en `símismo.modelos`.
+            m_error = [m for m in conv if m not in símismo.modelos]
+            if len(m_error):
+                raise ValueError(_('Los modelos siguientes no existen en el modelo conectado: {}')
+                                 .format(', '.join(m_error)))
+
+            # Assegurarse que todos los modelos en `símismo.modelos` existen en `conv`.
+            if not all(m in símismo.modelos for m in conv if m != mod_base):
+                raise ValueError(_('`Conv` debe incluir todos los modelos en este modelo conectado.'))
 
         # Establecer las conversiones
         símismo.conv_tiempo[mod_base] = 1
-        símismo.conv_tiempo[mod_otro] = conv
+        for m, c in conv:
+            símismo.conv_tiempo[m] = c
 
-        # Y guardar la unidad de tiempo.
-        símismo.unidad_tiempo = símismo.modelos[mod_base].unidad_tiempo
+        # Y guardar el nombre del modelo de base.
+        símismo.mod_base_tiempo = mod_base
 
         # Si había duda acerca de la conversión de tiempo, ya no hay.
         símismo.conv_tiempo_dudoso = False
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_interno(símismo, valores):
         """
         Esta función cambia los valores del modelo. A través de la función :func:`~tinamit.Conectado.cambiar_vals`, se
         vuelve recursiva.
@@ -256,11 +274,11 @@ class SuperConectado(Modelo):
         fecha_final = None
         n_días = None
         try:
-            n_días = convertir(de=símismo.unidad_tiempo, a='días', val=n_pasos)
+            n_días = convertir(de=símismo.unidad_tiempo(), a='días', val=n_pasos)
         except ValueError:
             for m in símismo.modelos.values():
                 try:
-                    n_días = convertir(de=m.unidad_tiempo, a='días', val=símismo.conv_tiempo[m.nombre] * n_pasos)
+                    n_días = convertir(de=m.unidad_tiempo(), a='días', val=símismo.conv_tiempo[m.nombre] * n_pasos)
                     continue
                 except ValueError:
                     pass
@@ -271,11 +289,11 @@ class SuperConectado(Modelo):
         else:
             n_meses = None
             try:
-                n_meses = convertir(de=símismo.unidad_tiempo, a='meses', val=n_pasos)
+                n_meses = convertir(de=símismo.unidad_tiempo(), a='meses', val=n_pasos)
             except ValueError:
                 for m in símismo.modelos.values():
                     try:
-                        n_meses = convertir(de=m.unidad_tiempo, a='meses', val=símismo.conv_tiempo[m.nombre] * n_pasos)
+                        n_meses = convertir(de=m.unidad_tiempo(), a='meses', val=símismo.conv_tiempo[m.nombre] * n_pasos)
                         continue
                     except ValueError:
                         pass
@@ -345,25 +363,18 @@ class SuperConectado(Modelo):
         """
 
         # ¡No se puede simular con menos (o más) de dos modelos!
-        if len(símismo.modelos) < 2:
-            raise ValueError(_('Hay que conectar dos modelos antes de empezar una simulación.'))
-
-        # Si no hay conversión de tiempo entre los dos modelos, no se puede simular nada.
-        if not len(símismo.conv_tiempo):
-            raise ValueError(_('Hay que especificar la conversión de unidades de tiempo con '
-                               '.estab_conv_tiempo() antes de correr la simulación.'))
+        if len(símismo.modelos) < 1:
+            raise ValueError(_('Hay que conectar submodelos antes de empezar una simulación.'))
 
         # Si no estamos seguro de la conversión de unidades de tiempo, decirlo aquí.
         if símismo.conv_tiempo_dudoso:
-            l_mods = list(símismo.modelos)
-            unid_mod_1 = símismo.modelos[l_mods[0]].unidad_tiempo
-            unid_mod_2 = símismo.modelos[l_mods[1]].unidad_tiempo
+            l_unids = [m.unidad_tiempo() for m in símismo.modelos.values()]
             avisar(_('\nNo se pudo inferir la conversión de unidades de tiempo entre {} y {}.\n'
                      'Especificarla con la función .estab_conv_tiempo().\n'
                      'Por el momento pusimos el factor de conversión a 1, pero probablemente no es lo que quieres.')
-                   .format(unid_mod_1, unid_mod_2))
+                   .format(l_unids))
 
-        #
+        # Verificar los nombres de los variables de interés
         if vars_interés is not None:
             for i, v in enumerate(vars_interés.copy()):
                 vars_interés[i] = símismo.valid_var(v)
@@ -372,13 +383,13 @@ class SuperConectado(Modelo):
         super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, fecha_inic=fecha_inic,
                         lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, vars_interés=vars_interés)
 
-    def inic_vals(símismo, dic_vals):
+    def inic_vals_vars(símismo, dic_vals):
 
         llaves = list(dic_vals)
 
         # Implementar los valores iniciales
         if all(ll in símismo.variables for ll in llaves):
-            super().inic_vals(dic_vals)  # Enlaces dinámicos deberían arreglar los diccionarios de los submodelos
+            super().inic_vals_vars(dic_vals)  # Enlaces dinámicos deberían arreglar los diccionarios de los submodelos
 
         else:
             if all(ll in símismo.modelos for ll in llaves):
@@ -386,13 +397,13 @@ class SuperConectado(Modelo):
                     # Para cada submodelo...
 
                     # Implementar sus valores iniciales.
-                    símismo.modelos[m].inic_vals(dic_vals=d_vals)
+                    símismo.modelos[m].inic_vals_vars(dic_vals=d_vals)
             else:
                 for var, val in dic_vals:
                     encontrado = False
                     for mod in símismo.modelos.values():
                         if var in mod.variables:
-                            mod.inic_val(var, val)
+                            mod.inic_val_var(var, val)
                             encontrado = True
                             break
                     if not encontrado:
@@ -436,7 +447,7 @@ class SuperConectado(Modelo):
                                    target=incr_mod, args=(mod, nombre, dic_err, (símismo.conv_tiempo[nombre] * paso,)))
                   for nombre, mod in símismo.modelos.items()]
 
-        # Empezar los dos hilos al mismo tiempo
+        # Empezar los hilos al mismo tiempo
         for hilo in l_hilo:
             hilo.start()
 
@@ -454,14 +465,19 @@ class SuperConectado(Modelo):
             mod.leer_vals()
 
         # Intercambiar variables
-        l_mods = [m for m in símismo.modelos.items()]  # Una lista de los submodelos.
+        for m_r, d_m_r in símismo.conex_rápida.items():
+            dic_vals = {}
+            for v_r, d_v_r in d_m_r.items():
 
-        vars_egr = [dict([(símismo.conex_rápida[nombre][v]['var'],
-                           m.variables[v]['val'] * símismo.conex_rápida[nombre][v]['conv'])
-                          for v in m.vars_saliendo]) for nombre, m in l_mods]
+                m_f = d_v_r['mod_fuente']  # El modelo fuente
+                v_f = d_v_r['var_fuente']  # El variable fuente
 
-        for n, tup in enumerate(l_mods):
-            tup[1].cambiar_vals(valores=vars_egr[(n + 1) % 2])
+                val = símismo.modelos[m_f].obt_val_actual_var(v_f)  # El valor del variable
+                conv = d_v_r['conv']  # La conversión
+                dic_vals[v_r] = val * conv  # Agregar el nuevo valor al diccionario
+
+            # Aplicar los cambios
+            símismo.modelos[m_r].cambiar_vals(valores=dic_vals)
 
     def leer_vals(símismo):
         """
@@ -481,35 +497,43 @@ class SuperConectado(Modelo):
         Actualizamos el diccionario de cconexiones rápidas para facilitar el intercambio eventual de valores entre los
         modelos.
 
-        Se organiza este diccionario por modelo fuente. Tendrá la forma general:
-
-        { modelo1: {var_fuente: {'var': var_recipiente_del_otro_modelo, 'conv': factor_conversión}, ...}, ...}
+        Se organiza este diccionario por modelo recipiente.
 
         """
 
         # Borrar lo que podría haber allí desde antes.
         símismo.conex_rápida.clear()
 
-        # Una lista de los submodelos
-        l_mod = list(símismo.modelos)
+        for m in símismo.modelos.values():
+            m.vars_saliendo.clear()
+            m.vars_entrando.clear()
 
         for conex in símismo.conexiones:
             # Para cada conexión establecida...
 
             # Identificar el modelo fuente y el modelo recipiente de la conexión.
             mod_fuente = conex['modelo_fuente']
-            mod_recip = l_mod[(l_mod.index(mod_fuente) + 1) % 2]
+            mod_recip = conex['modelo_recip']
 
             # Identificar el variable fuente y el variable recipiente de la conexión.
-            var_fuente = conex['dic_vars'][mod_fuente]
-            var_recip = conex['dic_vars'][mod_recip]
+            var_fuente = conex['var_fuente']
+            var_recip = conex['var_recip']
 
-            # Si el modelo fuente todavía no existe en el diccionario, agregarlo.
-            if mod_fuente not in símismo.conex_rápida:
-                símismo.conex_rápida[mod_fuente] = {}
+            # Si el modelo recipiente todavía no existe en el diccionario, agregarlo.
+            if mod_recip not in símismo.conex_rápida:
+                símismo.conex_rápida[mod_recip] = {}
+            # Si el variable recipiente todavia no existe en el diccionario, agregarlo también.
+            if var_recip not in símismo.conex_rápida[mod_recip]:
+                símismo.conex_rápida[mod_recip][var_recip] = {}
 
             # Agregar el diccionario de conexión rápida.
-            símismo.conex_rápida[mod_fuente][var_fuente] = {'var': var_recip, 'conv': conex['conv']}
+            símismo.conex_rápida[mod_recip][var_recip] = {
+                'mod_fuente': mod_fuente, 'var_fuente': var_fuente, 'conv': conex['conv']
+            }
+
+            # Para hacer: recursivo
+            símismo.modelos[mod_fuente].vars_saliendo.add(var_fuente)
+            símismo.modelos[mod_recip].vars_entrando.add(var_recip)
 
         # Iniciar los submodelos también.
         for mod in símismo.modelos.values():
@@ -526,54 +550,51 @@ class SuperConectado(Modelo):
         for mod in símismo.modelos.values():
             mod.cerrar_modelo()
 
-    def conectar_vars(símismo, dic_vars, modelo_fuente, conv=None):
+    def conectar_vars(símismo, var_fuente, modelo_fuente, var_recip, modelo_recip, conv=None):
         """
         Conecta variables entre los submodelos.
 
-        :param dic_vars: Un diccionario especificando los variables de cada modelo en el formato {mod1: var, mod2: var}.
-        :type dic_vars: dict
+        :param var_fuente: El variable fuente de la conexión.
+        :type var_fuente: str
 
         :param modelo_fuente: El nombre del modelo fuente.
         :type modelo_fuente: str
 
-        :param conv: La conversión entre las unidades de ambos modelos. En el caso ``None``, se intentará adivinar la
-          conversión con el módulo `~tinamit.Unidades`.
+        :param var_recip: El variable recipiente de la conexión.
+        :type var_recip: str
 
-        :type conv: float
+        :param modelo_recip: El nombre del modelo recipiente.
+        :type modelo_recip: str
+
+        :param conv: La conversión entre las unidades de los modelos. En el caso ``None``, se intentará adivinar la
+        conversión con el módulo `~tinamit.Unidades`.
+
+        :type conv: float | int
 
         """
 
-        # Una lista de los submodelos.
-        l_mods = list(símismo.modelos)
+        # Verificar que todos los modelos existan.
+        for m in [modelo_fuente, modelo_recip]:
+            if m not in símismo.modelos:
+                raise ValueError(_('El submodelo "{}" no existe en este modelo.').format(m))
 
-        # Asegurarse de que modelos y variables especificados sí existan.
-        for nombre_mod in dic_vars:
-            if nombre_mod not in símismo.modelos:
-                raise ValueError(_('Nombre de modelo "{}" erróneo.').format(nombre_mod))
+        # Verificar que todos los variables existan.
+        for v, m in [(var_fuente, modelo_fuente), (var_recip, modelo_recip)]:
+            mod = símismo.modelos[m]
+            if v not in mod.variables:
+                raise ValueError(_('El variable "{}" no existe en el modelo "{}".').format(v, m))
 
-            mod = símismo.modelos[nombre_mod]
-            var = dic_vars[nombre_mod]
-
-            if var not in mod.variables:
-                raise ValueError(_('El variable "{}" no existe en el modelo "{}".').format(var, nombre_mod))
-
-            # Y también asegurarse de que el variable no a sido conectado ya.
-            if var in mod.vars_saliendo or var in mod.vars_entrando:
-                raise ValueError(_('El variable "{}" del modelo "{}" ya está conectado. '
-                                   'Desconéctalo primero con .desconectar_vars().').format(var, nombre_mod))
-
-        # Identificar el nombre del modelo recipiente también.
-        n_mod_fuente = l_mods.index(modelo_fuente)
-        modelo_recip = l_mods[(n_mod_fuente + 1) % 2]
+        # Y también asegurarse de que el variable no haya sido conectado como variable recipiente ya.
+        if any(x['var_recip'] == var_recip and x['mod_recip'] == modelo_recip for x in símismo.conexiones):
+            avisar(_('El variable "{}" del modelo "{}" ya está conectado como variable recipiente. '
+                     'Borraremos la conexión anterior.').format(var_recip, modelo_recip))
 
         # Identificar los nombres de los variables fuente y recipiente, tanto como sus unidades y dimensiones.
-        var_fuente = dic_vars[modelo_fuente]
-        var_recip = dic_vars[modelo_recip]
-        unid_fuente = símismo.modelos[modelo_fuente].variables[var_fuente]['unidades']
-        unid_recip = símismo.modelos[modelo_recip].variables[var_recip]['unidades']
+        unid_fuente = símismo.modelos[modelo_fuente].obt_unidades_var(var_fuente)
+        unid_recip = símismo.modelos[modelo_recip].obt_unidades_var(var_recip)
 
-        dims_recip = símismo.modelos[modelo_recip].variables[var_recip]['dims']
-        dims_fuente = símismo.modelos[modelo_fuente].variables[var_fuente]['dims']
+        dims_recip = símismo.modelos[modelo_recip].obt_unidades_var(var_recip)
+        dims_fuente = símismo.modelos[modelo_fuente].obt_unidades_var(var_fuente)
 
         # Verificar que las dimensiones sean compatibles
         if dims_fuente != dims_recip:
@@ -595,18 +616,16 @@ class SuperConectado(Modelo):
 
         # Crear el diccionario de conexión.
         dic_conex = {'modelo_fuente': modelo_fuente,
-                     'dic_vars': dic_vars,
+                     'modelo_recip': modelo_recip,
+                     'var_fuente': var_fuente,
+                     'var_recip': var_recip,
                      'conv': conv
                      }
 
         # Agregar el diccionario de conexión a la lista de conexiones.
         símismo.conexiones.append(dic_conex)
 
-        # Para hacer: el siguiente debe ser recursivo.
-        símismo.modelos[modelo_fuente].vars_saliendo.append(var_fuente)
-        símismo.modelos[modelo_recip].vars_entrando.append(var_recip)
-
-    def desconectar_vars(símismo, var_fuente, modelo_fuente):
+    def desconectar_vars(símismo, var_fuente, modelo_fuente, modelo_recip=None, var_recip=None):
         """
         Esta función desconecta variables.
 
@@ -618,39 +637,35 @@ class SuperConectado(Modelo):
 
         """
 
-        # Una lisat de los submodelos.
-        l_mod = list(símismo.modelos)
+        # Verificar parámetros
+        if modelo_recip is None and var_recip is not None:
+            avisar(_('`var_recip` sin `modelo_recip` será ignorado en la función '
+                     '`SuperConectado.desconectar_vars().'))
 
         # Buscar la conexión correspondiente...
         for n, conex in enumerate(símismo.conexiones):
             # Para cada conexión existente...
-
-            if conex['modelo_fuente'] == modelo_fuente and conex['dic_vars'][modelo_fuente] == var_fuente:
+            if conex['modelo_fuente'] == modelo_fuente and conex['var_fuente'] == var_fuente:
                 # Si el modelo y variable fuente corresponden...
 
-                # Identificar el modelo recipiente.
-                mod_recip = l_mod[(l_mod.index(modelo_fuente) + 1) % 2]
-                var_recipiente = conex['dic_vars'][mod_recip]
+                # Identificar si el modelo recipiente corresponde también.
+                quitar = False
+                if modelo_recip is None:
+                    quitar = True
+                else:
+                    if modelo_recip == conex['modelo_recip']:
+                        if var_recip is None or var_recip == conex['var_recip']:
+                            quitar = True
 
-                # Quitar la conexión.
-                símismo.conexiones.pop(n)
-
-                # Quitar los variables desconectados de las listas de variables entrando y saliendo de los
-                # submodelos.
-                símismo.modelos[modelo_fuente].vars_saliendo.remove(var_fuente)
-                símismo.modelos[mod_recip].vars_entrando.remove(var_recipiente)
-
-                # Si ya encontramos la conexión, podemos parar aquí.
-                return
-
-        # Si no encontramos la conexión, hay un error.
-        raise ValueError(_('La conexión especificada no existe.'))
+                # Si corresponde todo, quitar la conexión.
+                if quitar:
+                    símismo.conexiones.pop(n)
 
     def estab_conv_meses(símismo, conv):
 
         super().estab_conv_meses(conv)
         for mod in símismo.modelos.values():
-            if mod.unidad_tiempo == símismo.unidad_tiempo:
+            if mod.unidad_tiempo() == símismo.unidad_tiempo():
                 mod.estab_conv_meses(conv)
 
     def valid_var(símismo, var):
@@ -666,7 +681,7 @@ class SuperConectado(Modelo):
 
     def _leer_resultados(símismo, var, corrida):
 
-        if '_' in var:
+        if '_' in var:  # Para hacer: ¿emplear valid_var()?
             mod, v = var.split('_', maxsplit=1)
             if mod in símismo.modelos and v in símismo.modelos[mod].variables:
                 try:
@@ -693,7 +708,6 @@ class SuperConectado(Modelo):
         for c in símismo.conexiones:
             copia.conectar_vars(**c)
 
-        copia.unidad_tiempo = símismo.unidad_tiempo
         copia.conv_tiempo = símismo.conv_tiempo
         copia.conv_tiempo_dudoso = símismo.conv_tiempo_dudoso
         copia.vars_clima = símismo.vars_clima
@@ -720,9 +734,9 @@ class SuperConectado(Modelo):
         for c in estado['conexiones']:
             símismo.conectar_vars(**c)
 
-        símismo.conv_tiempo = estado['conv_tiempo']
+        símismo.conv_tiempo.clear()
+        símismo.conv_tiempo.update(estado['conv_tiempo'])
         símismo.conv_tiempo_dudoso = estado['conv_tiempo_dudoso']
-        símismo.unidad_tiempo = estado['unidad_tiempo']  # Necesario después de estab_modelo()
 
 
 class Conectado(SuperConectado):

@@ -27,9 +27,9 @@ msgid ""
 "biofísico que se quiere volver compatible con Tinamit."
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.cambiar_vals_modelo_interno
+#: of tinamit.BF.ClaseModeloBF._cambiar_vals_modelo_interno
 #: tinamit.BF.ClaseModeloBF.incrementar tinamit.BF.ClaseModeloBF.iniciar_modelo
-#: tinamit.BF.EnvolturaBF.cambiar_vals_modelo_interno
+#: tinamit.BF.EnvolturaBF._cambiar_vals_modelo_interno
 #: tinamit.BF.EnvolturaBF.incrementar tinamit.BF.EnvolturaBF.iniciar_modelo
 msgid "Parámetros"
 msgstr ""
@@ -48,24 +48,24 @@ msgstr ""
 msgid "El número de pasos que hay que avanzar."
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.inic_vars:1
+#: of tinamit.BF.ClaseModeloBF._inic_dic_vars:1
 msgid "Esta función debe iniciar el diccionario interno de variables."
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.inic_vars:3
+#: of tinamit.BF.ClaseModeloBF._inic_dic_vars:3
 msgid ""
 "MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe "
 "para símismo.variables, no crear un diccionario nuevo. Por ejemplo, NO "
 "HAGAS: |  símismo.variables = {var1: {...}, var2: {...}, ...}"
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.inic_vars:8
+#: of tinamit.BF.ClaseModeloBF._inic_dic_vars:8
 msgid ""
 "sino: |  símismo.variables[var1] = {...} |  símismo.variables[var2] = "
 "{...}"
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.inic_vars:12
+#: of tinamit.BF.ClaseModeloBF._inic_dic_vars:12
 msgid ""
 "Al no hacer esto, romperás la conección entre los diccionarios de "
 "variables de ClaseModeloBF y EnvolturaBF, lo cual impedirá después la "
@@ -84,21 +84,21 @@ msgid ""
 "cual quebrará las conexiones con el modelo conectado."
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.obt_unidad_tiempo:1
+#: of tinamit.BF.ClaseModeloBF.unidad_tiempo:1
 msgid "Esta función debe devolver la unidad de tiempo del modelo biofísico."
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.obt_unidad_tiempo
-#: tinamit.BF.EnvolturaBF.obt_unidad_tiempo
+#: of tinamit.BF.ClaseModeloBF.unidad_tiempo
+#: tinamit.BF.EnvolturaBF.unidad_tiempo
 msgid "Devuelve"
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.obt_unidad_tiempo:3
+#: of tinamit.BF.ClaseModeloBF.unidad_tiempo:3
 msgid "La unidad de tiempo del modelo."
 msgstr ""
 
-#: of tinamit.BF.ClaseModeloBF.obt_unidad_tiempo
-#: tinamit.BF.EnvolturaBF.obt_unidad_tiempo
+#: of tinamit.BF.ClaseModeloBF.unidad_tiempo
+#: tinamit.BF.EnvolturaBF.unidad_tiempo
 msgid "Tipo del valor devuelto"
 msgstr ""
 
@@ -114,7 +114,7 @@ msgid ""
 "`~tinamit.BF.ClaseModeloBF` específica para ellos."
 msgstr ""
 
-#: of tinamit.BF.EnvolturaBF.inic_vars:1
+#: of tinamit.BF.EnvolturaBF._inic_dic_vars:1
 msgid ""
 "Inicializa los variables del modelo biofísico y los conecta al "
 "diccionario de variables del modelo."

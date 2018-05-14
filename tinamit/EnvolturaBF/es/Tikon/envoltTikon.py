@@ -17,7 +17,7 @@ class ModeloTikon(ModeloImpaciente):
     def leer_archivo_egr(símismo, n_años_egr):
         pass
 
-    def inic_vars(símismo):
+    def _inic_dic_vars(símismo):
         pass
 
     def iniciar_modelo(símismo, **kwargs):

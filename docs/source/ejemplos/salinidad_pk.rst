@@ -144,7 +144,7 @@ Ahora, corremos el modelo con el grupo de políticas que escogió el usuario::
 
         # Aplicamos las políticas
         for var_pol, val in corrida.items():
-            modelo.mds.inic_val(var=var_pol, val=val)
+            modelo.mds.inic_val_var(var=var_pol, val=val)
 
         # Simulamos el modelo conectado
         modelo.simular(paso=1, tiempo_final=240, nombre_corrida=nombre)  # paso y tiempo final en meses
@@ -179,7 +179,7 @@ Y corremos el modelo con combinaciones de cada política y escenario climático 
 
             # Set appropriate var_poles for policy analysis
             for var_pol, val in corrida.items():
-                modelo.mds.inic_val(var=var_pol, val=val)
+                modelo.mds.inic_val_var(var=var_pol, val=val)
 
             modelo.simular(paso=1, tiempo_final=50 * 2, fecha_inic=1990, lugar=location, tcr=rcp, clima=True, recalc=False,
                            nombre_corrida='{}, {}'.format(rcp, nombre))

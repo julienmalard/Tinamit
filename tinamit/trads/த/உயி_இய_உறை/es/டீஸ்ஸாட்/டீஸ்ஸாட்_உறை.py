@@ -11,10 +11,10 @@ class டிஸ்ஸாட்_மாதிரி(ModeloDSSAT):
         return super().cerrar_modelo()
 
     def மாறிகளை_ஆரம்ப(தன்):
-        return தன்.inic_vars()
+        return தன்._inic_dic_vars()
 
-    def obt_unidad_tiempo(தன்):
-        return super().obt_unidad_tiempo()
+    def unidad_tiempo(தன்):
+        return super().unidad_tiempo()
 
     def leer_vals(தன்):
         return super().leer_vals()
@@ -22,8 +22,8 @@ class டிஸ்ஸாட்_மாதிரி(ModeloDSSAT):
     def incrementar(தன், படி):
         return super().incrementar(paso=படி)
 
-    def cambiar_vals_modelo_interno(தன், valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+    def _cambiar_vals_modelo_interno(தன், valores):
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def mandar_simul(தன்):
         return super().mandar_simul()

@@ -120,13 +120,13 @@ msgstr ""
 
 #: ../../source/desarrollo/des_bf.rst:54
 msgid ""
-":func:`~tinamit.BF.ModeloBF.obt_unidad_tiempo`: Devuelve la unidad de tiempo"
+":func:`~tinamit.BF.ModeloBF.unidad_tiempo`: Devuelve la unidad de tiempo"
 " del modelo."
 msgstr ""
 
 #: ../../source/desarrollo/des_bf.rst:55
 msgid ""
-":func:`~tinamit.BF.ModeloBF.inic_vars`: Incializa el diccionario interno de "
+":func:`~tinamit.BF.ModeloBF._inic_dic_vars`: Incializa el diccionario interno de "
 "variables disponibles."
 msgstr ""
 
@@ -136,7 +136,7 @@ msgstr ""
 
 #: ../../source/desarrollo/des_bf.rst:57
 msgid ""
-":func:`~tinamit.BF.ModeloBF.cambiar_vals_modelo_interno`: Cambia los valores"
+":func:`~tinamit.BF.ModeloBF._cambiar_vals_modelo_interno`: Cambia los valores"
 " internos de los variables."
 msgstr ""
 
@@ -181,7 +181,7 @@ msgstr ""
 
 #: ../../source/desarrollo/des_bf.rst:71
 msgid ""
-":func:`~tinamit.BF.ModeloImpaciente.inic_vars`: Incializa el diccionario "
+":func:`~tinamit.BF.ModeloImpaciente._inic_dic_vars`: Incializa el diccionario "
 "interno de variables disponibles."
 msgstr ""
 
@@ -246,7 +246,7 @@ msgstr ""
 
 #: ../../source/desarrollo/des_bf.rst:93
 msgid ""
-":func:`~tinamit.BF.ModeloFlexible.inic_vars`: Incializa el diccionario "
+":func:`~tinamit.BF.ModeloFlexible._inic_dic_vars`: Incializa el diccionario "
 "interno de variables disponibles."
 msgstr ""
 

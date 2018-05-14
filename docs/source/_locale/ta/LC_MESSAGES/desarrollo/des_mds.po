@@ -47,15 +47,15 @@ msgstr ""
 
 #: ../../source/desarrollo/des_mds.rst:15
 msgid ""
-":func:`~tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo`: Devuelve la unidad de "
+":func:`~tinamit.MDS.EnvolturaMDS.unidad_tiempo`: Devuelve la unidad de "
 "tiempo del modelo."
 msgstr ""
-":func:`~tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo`: மாதிரியின் நேரம் அலகு "
+":func:`~tinamit.MDS.EnvolturaMDS.unidad_tiempo`: மாதிரியின் நேரம் அலகு "
 "திரும்பி கொடுக்கும்."
 
 #: ../../source/desarrollo/des_mds.rst:16
 msgid ""
-":func:`~tinamit.MDS.EnvolturaMDS.inic_vars`: Incializa el diccionario "
+":func:`~tinamit.MDS.EnvolturaMDS._inic_dic_vars`: Incializa el diccionario "
 "interno de variables disponibles."
 msgstr ""
 
@@ -66,7 +66,7 @@ msgstr ""
 
 #: ../../source/desarrollo/des_mds.rst:18
 msgid ""
-":func:`~tinamit.MDS.EnvolturaMDS.cambiar_vals_modelo_interno`: Cambia los "
+":func:`~tinamit.MDS.EnvolturaMDS._cambiar_vals_modelo_interno`: Cambia los "
 "valores internos de los variables."
 msgstr ""
 

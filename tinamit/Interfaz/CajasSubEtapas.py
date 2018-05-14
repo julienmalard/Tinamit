@@ -317,8 +317,8 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
         cj_bt_simul.place(**gf(Fm.ubic_cj_bt_simular))
 
     def acción_desbloquear(símismo):
-        unidad_tiempo_mds = símismo.apli.Modelo.mds.unidad_tiempo
-        unidad_tiempo_bf = símismo.apli.Modelo.bf.unidad_tiempo
+        unidad_tiempo_mds = símismo.apli.Modelo.mds.unidad_tiempo()
+        unidad_tiempo_bf = símismo.apli.Modelo.bf.unidad_tiempo()
         símismo.MnTiempoRef.refrescar(opciones=[unidad_tiempo_mds, unidad_tiempo_bf])
         if not len(símismo.apli.Modelo.conv_tiempo):
             símismo.apli.Modelo.estab_conv_tiempo(mod_base='mds', conv=1)
@@ -334,8 +334,8 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
         símismo.verificar_completo()
 
     def acción_cambió_ref_unid(símismo, val):
-        unidad_tiempo_mds = símismo.apli.Modelo.mds.unidad_tiempo
-        unidad_tiempo_bf = símismo.apli.Modelo.bf.unidad_tiempo
+        unidad_tiempo_mds = símismo.apli.Modelo.mds.unidad_tiempo()
+        unidad_tiempo_bf = símismo.apli.Modelo.bf.unidad_tiempo()
 
         val_conv = símismo.IngrConvUnidTiempo.val
 
@@ -352,7 +352,7 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
 
     def acción_cambió_conversión(símismo, val):
 
-        unidad_tiempo_mds = símismo.apli.Modelo.mds.unidad_tiempo
+        unidad_tiempo_mds = símismo.apli.Modelo.mds.unidad_tiempo()
 
         mod_tiempo_ref = símismo.MnTiempoRef.val
 

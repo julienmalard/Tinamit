@@ -3,11 +3,11 @@ from tinamit.Modelo import Modelo
 
 class نمونہ(Modelo):
 
-    def inic_vars(خود):
-        return super().inic_vars()
+    def _inic_dic_vars(خود):
+        return super()._inic_dic_vars()
 
-    def obt_unidad_tiempo(خود):
-        return super().obt_unidad_tiempo()
+    def unidad_tiempo(خود):
+        return super().unidad_tiempo()
 
     def iniciar_modelo(خود, tiempo_final, nombre_corrida):
         return super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
@@ -18,8 +18,8 @@ class نمونہ(Modelo):
     def leer_vals(خود):
         return super().leer_vals()
 
-    def inic_val(خود, var, val):
-        return super().inic_val(var=var, val=val)
+    def inic_val_var(خود, var, val):
+        return super().inic_val_var(var=var, val=val)
 
     def conectar_var_clima(خود, var, var_clima, combin=None, conv):
         return super().conectar_var_clima(var=var, var_clima=var_clima, combin=combin, conv=conv)
@@ -30,8 +30,8 @@ class نمونہ(Modelo):
     def cambiar_vals(خود, valores):
         return super().cambiar_vals(valores=valores)
 
-    def cambiar_vals_modelo_interno(خود, valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+    def _cambiar_vals_modelo_interno(خود, valores):
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def cerrar_modelo(خود):
         return super().cerrar_modelo()
@@ -45,8 +45,8 @@ class نمونہ(Modelo):
     def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida="Corrida Tinamït", vals_inic=None, fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True, dibujar=None, paralelo=True, devolver=None):
         return super().simular_paralelo(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, vals_inic=vals_inic, fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, combinar=combinar, dibujar=dibujar, paralelo=paralelo, devolver=devolver)
 
-    def inic_vals(símismo, dic_vals):
-        return super().inic_vals(dic_vals=dic_vals)
+    def inic_vals_vars(símismo, dic_vals):
+        return super().inic_vals_vars(dic_vals=dic_vals)
 
     def estab_conv_meses(símismo, conv):
         return super().estab_conv_meses(conv=conv)

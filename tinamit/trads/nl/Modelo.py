@@ -4,10 +4,10 @@ from tinamit.Modelo import Modelo
 class Modelo(Modelo):
 
     def inic_vars(símismo):
-        return super().inic_vars()
+        return super()._inic_dic_vars()
 
     def obt_unidad_tiempo(símismo):
-        return super().obt_unidad_tiempo()
+        return super().unidad_tiempo()
 
     def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         return super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
@@ -19,7 +19,7 @@ class Modelo(Modelo):
         return super().leer_vals()
 
     def inic_val(símismo, var, val):
-        return super().inic_val(var=var, val=val)
+        return super().inic_val_var(var=var, val=val)
 
     def limp_vals_inic(símismo):
         return super().limp_vals_inic()
@@ -34,7 +34,7 @@ class Modelo(Modelo):
         return super().cambiar_vals(valores=valores)
 
     def cambiar_vals_modelo_interno(símismo, valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def cerrar_modelo(símismo):
         return super().cerrar_modelo()

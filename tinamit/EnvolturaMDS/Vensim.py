@@ -71,7 +71,7 @@ class ModeloVensimMdl(EnvolturaMDS):
 
         super().__init__(archivo=archivo)
 
-    def inic_vars(símismo):
+    def _inic_dic_vars(símismo):
 
         # Borrar lo que podría haber allí desde antes.
         símismo.variables.clear()
@@ -238,7 +238,7 @@ class ModeloVensimMdl(EnvolturaMDS):
 
         símismo.conex_datos.calib_var(var=var, ec=ec, paráms=paráms, método=método)
 
-    def obt_unidad_tiempo(símismo):
+    def unidad_tiempo(símismo):
         # Para hacer: algo mucho más elegante
         i_f = next(i for i, f in enumerate(símismo.dic_doc['cola']) if 'INITIAL TIME' in f) + 1
         unid_tiempo = símismo.dic_doc['cola'][i_f].split('\t')[-1].strip()
@@ -247,7 +247,7 @@ class ModeloVensimMdl(EnvolturaMDS):
     def iniciar_modelo(símismo, nombre_corrida, tiempo_final):
         pass
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_interno(símismo, valores):
         pass
 
     def incrementar(símismo, paso):
@@ -313,7 +313,7 @@ class ModeloVensim(EnvolturaMDS):
         # Inicializar ModeloVENSIM como una EnvolturaMDS.
         super().__init__(archivo=archivo)
 
-    def inic_vars(símismo):
+    def _inic_dic_vars(símismo):
         """
         Inicializamos el diccionario de variables del modelo VENSIM.
         """
@@ -438,7 +438,7 @@ class ModeloVensim(EnvolturaMDS):
                     if var in auxiliares:
                         auxiliares.remove(var)
 
-    def obt_unidad_tiempo(símismo):
+    def unidad_tiempo(símismo):
         """
         Aquí, sacamos las unidades de tiempo del modelo VENSIM.
 
@@ -492,7 +492,7 @@ class ModeloVensim(EnvolturaMDS):
         símismo.cambiar_vals({var: val for var, val in símismo.vals_inic.items()
                               if var not in símismo.constantes})
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_interno(símismo, valores):
         """
         Esta función cambiar los valores de variables en VENSIM. Notar que únicamente los variables identificados como
         de tipo "Gaming" en el modelo podrán actualizarse.

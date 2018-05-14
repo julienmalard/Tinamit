@@ -9,7 +9,7 @@ from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import ModeloSAHYSMOD
 class ModeloSAHYSMOD(ModeloSAHYSMOD):
 
     def inic_vars(self):
-        return super().inic_vars()
+        return super()._inic_dic_vars()
 
     def iniciar_modelo(self):
         return super().iniciar_modelo()

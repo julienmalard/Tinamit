@@ -66,7 +66,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         self.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total',
                                 conv=0.001)
 
-    def inic_vars(self):
+    def _inic_dic_vars(self):
         """
         Initialises the variable and variable type dictionaries.
         """
@@ -99,7 +99,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
     def iniciar_modelo(self, tiempo_final, nombre_corrida):
         """
         Nothing specific to do apart from inicialising working and I/O directories.
-        Variables have already been read in func:`inic_vars`.
+        Variables have already been read in func:`_inic_dic_vars`.
         """
 
         # Create run-specific working directories and input and ouput paths.

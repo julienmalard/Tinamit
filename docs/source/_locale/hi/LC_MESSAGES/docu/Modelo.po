@@ -43,13 +43,13 @@ msgstr ""
 #: tinamit.Modelo.Modelo.act_vals_clima:0 ../../../tinamit/Modelo.py:docstring
 #: of tinamit.Modelo.Modelo.cambiar_vals:0
 #: ../../../tinamit/Modelo.py:docstring of
-#: tinamit.Modelo.Modelo.cambiar_vals_modelo_interno:0
+#: tinamit.Modelo.Modelo._cambiar_vals_modelo_interno:0
 #: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.conectar_var_clima:0
 #: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.desconectar_var_clima:0
 #: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.incrementar:0
-#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.inic_val:0
+#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.inic_val_var:0
 #: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.iniciar_modelo:0
 msgid "Parámetros"
@@ -76,12 +76,12 @@ msgstr ""
 
 #: ../../../tinamit/Modelo.py:docstring of
 #: tinamit.Modelo.Modelo.cambiar_vals:5 ../../../tinamit/Modelo.py:docstring
-#: of tinamit.Modelo.Modelo.cambiar_vals_modelo_interno:4
+#: of tinamit.Modelo.Modelo._cambiar_vals_modelo_interno:4
 msgid "Un diccionario de variables y sus valores para cambiar."
 msgstr ""
 
 #: ../../../tinamit/Modelo.py:docstring of
-#: tinamit.Modelo.Modelo.cambiar_vals_modelo_interno:1
+#: tinamit.Modelo.Modelo._cambiar_vals_modelo_interno:1
 msgid ""
 "Esta función debe cambiar el valor de variables en el :class:`Modelo`, "
 "incluso tomar acciones para asegurarse de que el cambio se hizo en el modelo"
@@ -132,22 +132,22 @@ msgstr ""
 msgid "El paso."
 msgstr ""
 
-#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.inic_val:1
+#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.inic_val_var:1
 msgid ""
 "Est método cambia el valor inicial de un variable (antes de empezar la "
 "simulación). Se emplea principalmente para activar y desactivar políticas y "
 "para establecer parámetros y valores iniciales para simulaciones."
 msgstr ""
 
-#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.inic_val:4
+#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.inic_val_var:4
 msgid "El nombre del variable para cambiar."
 msgstr ""
 
-#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.inic_val:7
+#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.inic_val_var:7
 msgid "El nuevo valor del variable."
 msgstr ""
 
-#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo.inic_vars:1
+#: ../../../tinamit/Modelo.py:docstring of tinamit.Modelo.Modelo._inic_dic_vars:1
 msgid ""
 "Esta función debe poblar el diccionario de variables del modelo, según la "
 "forma siguiente: {'var1': {'val': 13, 'unidades': 'cm', 'ingreso': True, "
@@ -188,21 +188,21 @@ msgid "Esta función limpa los valores iniciales especificados anteriormente."
 msgstr ""
 
 #: ../../../tinamit/Modelo.py:docstring of
-#: tinamit.Modelo.Modelo.obt_unidad_tiempo:1
+#: tinamit.Modelo.Modelo.unidad_tiempo:1
 msgid "Esta función debe devolver la unidad de tiempo empleada por el modelo."
 msgstr ""
 
 #: ../../../tinamit/Modelo.py:docstring of
-#: tinamit.Modelo.Modelo.obt_unidad_tiempo:0
+#: tinamit.Modelo.Modelo.unidad_tiempo:0
 msgid "Devuelve"
 msgstr ""
 
 #: ../../../tinamit/Modelo.py:docstring of
-#: tinamit.Modelo.Modelo.obt_unidad_tiempo:3
+#: tinamit.Modelo.Modelo.unidad_tiempo:3
 msgid "La unidad de tiempo (p. ejemplo, 'meses', 'مہینہ', etc."
 msgstr ""
 
 #: ../../../tinamit/Modelo.py:docstring of
-#: tinamit.Modelo.Modelo.obt_unidad_tiempo:0
+#: tinamit.Modelo.Modelo.unidad_tiempo:0
 msgid "Tipo del valor devuelto"
 msgstr ""

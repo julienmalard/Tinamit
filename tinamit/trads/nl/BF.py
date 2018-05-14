@@ -7,13 +7,13 @@ from tinamit.BF import EnvolturaBF
 class EnvolturaBF(EnvolturaBF):
 
     def obt_unidad_tiempo(símismo):
-        return super().obt_unidad_tiempo()
+        return super().unidad_tiempo()
 
     def inic_vars(símismo):
-        return super().inic_vars()
+        return super()._inic_dic_vars()
 
     def cambiar_vals_modelo_interno(símismo, valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def incrementar(símismo, paso):
         return super().incrementar(paso=paso)
@@ -31,7 +31,7 @@ class EnvolturaBF(EnvolturaBF):
 class ModeloBF(ModeloBF):
 
     def cambiar_vals_modelo_interno(símismo, valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def incrementar(símismo, paso):
         return super().incrementar(paso=paso)
@@ -46,16 +46,16 @@ class ModeloBF(ModeloBF):
         return super().cerrar_modelo()
 
     def obt_unidad_tiempo(símismo):
-        return super().obt_unidad_tiempo()
+        return super().unidad_tiempo()
 
     def inic_vars(símismo):
-        return super().inic_vars()
+        return super()._inic_dic_vars()
 
 
 class ModeloImpaciente(ModeloImpaciente):
 
     def cambiar_vals_modelo_interno(símismo, valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def act_vals_clima(símismo, n_paso, f):
         return super().act_vals_clima(n_paso=n_paso, f=f)
@@ -67,7 +67,7 @@ class ModeloImpaciente(ModeloImpaciente):
         return super().leer_vals()
 
     def obt_unidad_tiempo(símismo):
-        return super().obt_unidad_tiempo()
+        return super().unidad_tiempo()
 
     def iniciar_modelo(símismo):
         return super().iniciar_modelo()
@@ -76,7 +76,7 @@ class ModeloImpaciente(ModeloImpaciente):
         return super().cerrar_modelo()
 
     def inic_vars(símismo):
-        return super().inic_vars()
+        return super()._inic_dic_vars()
 
     def avanzar_modelo(símismo):
         return super().avanzar_modelo()
@@ -103,7 +103,7 @@ class ModeloImpaciente(ModeloImpaciente):
 class ModeloFlexible(ModeloFlexible):
 
     def cambiar_vals_modelo_interno(símismo, valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def incrementar(símismo, paso):
         return super().incrementar(paso=paso)
@@ -118,10 +118,10 @@ class ModeloFlexible(ModeloFlexible):
         return super().cerrar_modelo()
 
     def obt_unidad_tiempo(símismo):
-        return super().obt_unidad_tiempo()
+        return super().unidad_tiempo()
 
     def inic_vars(símismo):
-        return super().inic_vars()
+        return super()._inic_dic_vars()
 
     def leer_archivo_vals_inic(símismo):
         return super().leer_archivo_vals_inic()

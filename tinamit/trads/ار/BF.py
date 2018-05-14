@@ -7,13 +7,13 @@ from tinamit.BF import EnvolturaBF
 class EnvolturaBF(EnvolturaBF):
 
     def obt_unidad_tiempo(خود):
-        return super().obt_unidad_tiempo()
+        return super().unidad_tiempo()
 
     def inic_vars(خود):
-        return super().inic_vars()
+        return super()._inic_dic_vars()
 
     def cambiar_vals_modelo_interno(خود, valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def incrementar(خود, قدم):
         return super().incrementar(paso=قدم)
@@ -37,7 +37,7 @@ class EnvolturaBF(EnvolturaBF):
 class ModeloBF(ModeloBF):
 
     def cambiar_vals_modelo_interno(خود, valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def incrementar(خود, قدم):
         return super().incrementar(paso=قدم)
@@ -52,10 +52,10 @@ class ModeloBF(ModeloBF):
         return super().cerrar_modelo()
 
     def obt_unidad_tiempo(خود):
-        return super().obt_unidad_tiempo()
+        return super().unidad_tiempo()
 
     def inic_vars(خود):
-        return super().inic_vars()
+        return super()._inic_dic_vars()
 
     def leer_vals_inic(símismo):
         return super().leer_vals_inic()
@@ -64,7 +64,7 @@ class ModeloBF(ModeloBF):
 class ModeloImpaciente(ModeloImpaciente):
 
     def cambiar_vals_modelo_interno(خود, valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def act_vals_clima(خود, n_paso, f):
         return super().act_vals_clima(n_paso=n_paso, f=f)
@@ -76,7 +76,7 @@ class ModeloImpaciente(ModeloImpaciente):
         return super().leer_vals()
 
     def obt_unidad_tiempo(خود):
-        return super().obt_unidad_tiempo()
+        return super().unidad_tiempo()
 
     def iniciar_modelo(خود, tiempo_final, nombre_corrida):
         return super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
@@ -85,7 +85,7 @@ class ModeloImpaciente(ModeloImpaciente):
         return super().cerrar_modelo()
 
     def inic_vars(خود):
-        return super().inic_vars()
+        return super()._inic_dic_vars()
 
     def avanzar_modelo(خود):
         return super().avanzar_modelo()
@@ -112,7 +112,7 @@ class ModeloImpaciente(ModeloImpaciente):
 class ModeloFlexible(ModeloFlexible):
 
     def cambiar_vals_modelo_interno(خود, valores):
-        return super().cambiar_vals_modelo_interno(valores=valores)
+        return super()._cambiar_vals_modelo_interno(valores=valores)
 
     def incrementar(خود, قدم):
         return super().incrementar(paso=قدم)
@@ -127,10 +127,10 @@ class ModeloFlexible(ModeloFlexible):
         return super().cerrar_modelo()
 
     def obt_unidad_tiempo(خود):
-        return super().obt_unidad_tiempo()
+        return super().unidad_tiempo()
 
     def inic_vars(خود):
-        return super().inic_vars()
+        return super()._inic_dic_vars()
 
     def leer_archivo_vals_inic(خود):
         return super().leer_archivo_vals_inic()

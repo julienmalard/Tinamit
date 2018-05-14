@@ -101,11 +101,11 @@ msgid ":func:`~tinamit.BF.ClaseModeloBF.cerrar_modelo`"
 msgstr ""
 
 #: ../../source/contribuir.rst:43
-msgid ":func:`~tinamit.BF.ClaseModeloBF.obt_unidad_tiempo`"
+msgid ":func:`~tinamit.BF.ClaseModeloBF.unidad_tiempo`"
 msgstr ""
 
 #: ../../source/contribuir.rst:44
-msgid ":func:`~tinamit.BF.ClaseModeloBF.inic_vars`"
+msgid ":func:`~tinamit.BF.ClaseModeloBF._inic_dic_vars`"
 msgstr ""
 
 #: ../../source/contribuir.rst:46
@@ -202,11 +202,11 @@ msgid ":func:`~tinamit.MDS.EnvolturaMDS.__init__`"
 msgstr ""
 
 #: ../../source/contribuir.rst:82
-msgid ":func:`~tinamit.MDS.EnvolturaMDS.inic_vars`"
+msgid ":func:`~tinamit.MDS.EnvolturaMDS._inic_dic_vars`"
 msgstr ""
 
 #: ../../source/contribuir.rst:83
-msgid ":func:`~tinamit.MDS.EnvolturaMDS.obt_unidad_tiempo`"
+msgid ":func:`~tinamit.MDS.EnvolturaMDS.unidad_tiempo`"
 msgstr ""
 
 #: ../../source/contribuir.rst:84
