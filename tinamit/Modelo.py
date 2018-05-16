@@ -4,8 +4,7 @@ import os
 import pickle
 import re
 from copy import deepcopy as copiar_profundo
-from multiprocessing import Pool as ReservaProc
-from multiprocessing.pool import ThreadPool as ReservaHilo
+from multiprocessing import Pool as Reserva
 from warnings import warn as avisar
 
 from lxml import etree as arbole
@@ -216,13 +215,13 @@ class Modelo(object):
 
         símismo.mem_vars.clear()
         for v in vars_interés:
-            dims = símismo.variables[v]['dims']
+            dims = símismo.obt_dims_var(v)
             if dims == (1,):
                 símismo.mem_vars[v] = np.empty(n_pasos + 1)
             else:
-                símismo.mem_vars[v] = np.empty((n_pasos + 1, *símismo.variables[v]['dims']))
+                símismo.mem_vars[v] = np.empty((n_pasos + 1, *símismo.obt_dims_var(v)))
 
-            símismo.mem_vars[v][0] = símismo.variables[v]['val']
+            símismo.mem_vars[v][0] = símismo.obt_val_actual_var(v)
 
         # Hasta llegar al tiempo final, incrementamos el modelo.
         for i in range(n_pasos):
@@ -251,7 +250,7 @@ class Modelo(object):
             if len(vars_interés):
                 símismo.leer_vals()
             for v in vars_interés:
-                símismo.mem_vars[v][i + 1] = símismo.variables[v]['val']
+                símismo.mem_vars[v][i + 1] = símismo.obt_val_actual_var(v)
 
         # Después de la simulación, cerramos el modelo.
         símismo.cerrar_modelo()
@@ -268,8 +267,9 @@ class Modelo(object):
                 vals_inic = [vals_inic]  # Para hacer: arreglarme
 
         if devolver is not None:
-            if not isinstance(devolver, list) and not isinstance(devolver, tuple):
+            if not isinstance(devolver, list):
                 devolver = [devolver]
+            devolver = [símismo.valid_var(v) for v in devolver]
 
         # Poner las opciones de simulación en un diccionario.
         opciones = {'paso': paso, 'fecha_inic': fecha_inic, 'lugar': lugar, 'vals_inic': vals_inic,
@@ -400,16 +400,15 @@ class Modelo(object):
             for corr, d_prms_corr in corridas.items():
                 d_args = {ll: copiar_profundo(v) for ll, v in d_prms_corr.items()}
                 d_args['nombre_corrida'] = corr
+                d_args['vars_interés'] = devolver
 
                 l_trabajos.append((copia_mod, copiar_profundo(d_vals_inic[corr]), d_args))
 
-            if símismo.paralelo_requiere_multiproceso():
-                Reserva = ReservaProc
-            else:
-                Reserva = ReservaHilo
-
             with Reserva() as r:
-                r.map(_correr_modelo, l_trabajos)
+                resultados = r.map(_correr_modelo, l_trabajos)
+
+            if resultados is not None:
+                resultados = {corr: res for corr, res in zip(corridas, resultados)}
 
         else:
             # Sino simplemente correrlas una tras otra con símismo.simular()
@@ -421,12 +420,19 @@ class Modelo(object):
                          'que devuelve ``True`` en tu clase de modelo para activar la paralelización.'
                          ).format(símismo.nombre))
 
+            resultados = {}
             # Para cada corrida...
             for corr, d_prms_corr in corridas.items():
                 símismo.inic_vals_vars(d_prms_corr)
 
                 # Después, simular el modelo.
-                símismo.simular(**d_prms_corr, nombre_corrida=corr)
+                res = símismo.simular(**d_prms_corr, nombre_corrida=corr)
+
+                if res is not None:
+                    resultados[corr] = res
+
+            if not len(resultados):
+                resultados = None
 
         if dibujar is not None:
             # Para hacer: formalizar para todos los modelos
@@ -437,18 +443,10 @@ class Modelo(object):
                 for dib in dibujar:
                     for corr in corridas:
                         símismo.dibujar_mapa(corrida=corr, **dib)
+            else:
+                raise NotImplementedError
 
-        if devolver is not None:
-            egresos = {}
-            for var in devolver:
-                if devolv_lista:
-                    egresos[var] = [símismo.leer_resultados(corrida=x, var=var)
-                                    for x in corridas.keys()]
-                else:
-                    egresos[var] = {x: símismo.leer_resultados(corrida=x, var=var)
-                                    for x in corridas.keys()}
-
-            return egresos
+        return resultados
 
     def _incrementar(símismo, paso):
         """
@@ -500,6 +498,12 @@ class Modelo(object):
         # de empezar la simulación.
         símismo.vals_inic[var] = val
 
+        # Aplicar los valores iniciales al diccionario de valores actuales también.
+        if isinstance(símismo.variables[var]['val'], np.ndarray):
+            símismo.variables[var]['val'][:] = val
+        else:
+            símismo.variables[var]['val'] = val
+
     def inic_vals_vars(símismo, dic_vals):
         """
         Una función más cómoda para inicializar muchos variables al mismo tiempo.
@@ -512,14 +516,20 @@ class Modelo(object):
         for var, val in dic_vals.items():
             símismo.inic_val_var(var=var, val=val)
 
-    def _limp_vals_inic(símismo):
+    def limp_vals_inic(símismo, var=None):
         """
         Esta función limpa los valores iniciales especificados anteriormente.
         """
 
         # Limpiar el diccionario.
-        for v in símismo.vals_inic.values():
-            v.clear()
+        if var is None:
+            símismo.vals_inic.clear()
+        else:
+            var = símismo.valid_var(var)
+            try:
+                símismo.vals_inic.pop(var)
+            except KeyError:
+                pass
 
     def conectar_var_clima(símismo, var, var_clima, conv, combin=None):
         """
@@ -644,7 +654,7 @@ class Modelo(object):
         if n_meses > 1:
             avisar('El paso ({} {}) es superior a 1 mes. Puede ser que las predicciones climáticas pierdan '
                    'en precisión.'
-                   .format(n_paso, símismo.unidad_tiempo))
+                   .format(n_paso, símismo.unidad_tiempo()))
 
         # Calcular los datos
         datos = símismo.lugar.comb_datos(vars_clima=nombres_extrn, combin=combins,
@@ -714,7 +724,7 @@ class Modelo(object):
         if i_paso[1] is None:
             i_paso[1] = bd.shape[-1]
 
-        unid = símismo.variables[var]['unidades']
+        unid = símismo.obt_unidades_var(var)
         if escala is None:
             escala = np.min(bd), np.max(bd)
 
@@ -823,9 +833,6 @@ class Modelo(object):
         """
         return False
 
-    def paralelo_requiere_multiproceso(símismo):
-        return False
-
     def actualizar_trads(símismo, auto_llenar=True):
         raíz = arbole.Element('xliff')
 
@@ -876,7 +883,6 @@ def _correr_modelo(x):
     :type x: tuple[SuperConectado, dict[str, dict[str, float | int | np.ndarray]], dict]
 
     """
-
     estado_mod, vls_inic, d_args = x
 
     mod = pickle.loads(estado_mod)
@@ -886,5 +892,5 @@ def _correr_modelo(x):
     # original).
     mod.inic_vals_vars(vls_inic)
 
-    # Después, simular el modelo
-    mod.simular(**d_args)
+    # Después, simular el modelo y devolver los resultados, si hay.
+    return mod.simular(**d_args)

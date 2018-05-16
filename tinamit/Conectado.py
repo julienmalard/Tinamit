@@ -225,7 +225,7 @@ class SuperConectado(Modelo):
 
         # Establecer las conversiones
         símismo.conv_tiempo[mod_base] = 1
-        for m, c in conv:
+        for m, c in conv.items():
             símismo.conv_tiempo[m] = c
 
         # Y guardar el nombre del modelo de base.
@@ -306,7 +306,7 @@ class SuperConectado(Modelo):
                 fecha_final = fecha_inic + deltarelativo(months=int(n_meses) + 1)
 
         if fecha_final is None:
-            raise ValueError
+            raise ValueError(_('Debes especificar la conversión de la unidad de tiempo a meses o a días.'))
 
         # Obtener los datos de lugares
         lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=tcr, regenerar=recalc)
@@ -334,10 +334,6 @@ class SuperConectado(Modelo):
         """
 
         return all(mod.paralelizable() for mod in símismo.modelos.values())
-
-    def paralelo_requiere_multiproceso(símismo):
-
-        return any(mod.paralelo_requiere_multiproceso() for mod in símismo.modelos.values())
 
     def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None, tcr=None,
                 recalc=True, clima=False, vars_interés=None):
@@ -393,12 +389,12 @@ class SuperConectado(Modelo):
         aplicar_nombre_corr(símismo, corr=nombre_corrida)
 
         # Todo el restode la simulación se hace como en la clase pariente
-        super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, fecha_inic=fecha_inic,
-                        lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, vars_interés=vars_interés)
+        return super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida,
+                               fecha_inic=fecha_inic,
+                               lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, vars_interés=vars_interés)
 
     def inic_val_var(símismo, var, val):
-        if var not in símismo.variables:
-            var = símismo.valid_var(var)
+
         mod, var = símismo.resolver_nombre_var(var)
         símismo.modelos[mod].inic_val_var(var, val=val)
 
@@ -419,6 +415,14 @@ class SuperConectado(Modelo):
                 for var, val in dic_vals.items():
                     mod, var = símismo.resolver_nombre_var(var)
                     símismo.modelos[mod].inic_val_var(var, val)
+
+    def limp_vals_inic(símismo, var=None):
+        if var is not None:
+            mod, var = símismo.resolver_nombre_var(var)
+            símismo.modelos[mod].limp_vals_inic(var)
+        else:
+            for mod in símismo.modelos.values():
+                mod.limp_vals_inic()
 
     def _incrementar(símismo, paso):
         """
@@ -605,8 +609,8 @@ class SuperConectado(Modelo):
         unid_fuente = símismo.modelos[modelo_fuente].obt_unidades_var(var_fuente)
         unid_recip = símismo.modelos[modelo_recip].obt_unidades_var(var_recip)
 
-        dims_recip = símismo.modelos[modelo_recip].obt_unidades_var(var_recip)
-        dims_fuente = símismo.modelos[modelo_fuente].obt_unidades_var(var_fuente)
+        dims_recip = símismo.modelos[modelo_recip].obt_dims_var(var_recip)
+        dims_fuente = símismo.modelos[modelo_fuente].obt_dims_var(var_fuente)
 
         # Verificar que las dimensiones sean compatibles
         if dims_fuente != dims_recip:
@@ -684,6 +688,12 @@ class SuperConectado(Modelo):
         if var in símismo.variables:
             return var
         else:
+            try:
+                m = next(d['modelo_fuente'] for d in símismo.conexiones if d['var_fuente'] == var)
+                return '{}_{}'.format(m, var)
+            except StopIteration:
+                pass
+
             for m, obj_m in símismo.modelos.items():
                 if var in obj_m.variables:
                     return '{}_{}'.format(m, var)

@@ -5,6 +5,7 @@ pandas
 python_dateutil
 regex
 lark-parser
+lxml
 Babel
 polib
 pint

@@ -1,14 +1,12 @@
 import os
-import sys
 import unittest
 
 import numpy as np
-from nose import with_setup
 
 from Unidades import trads
+from pruebas.test_mds import tipos_modelos, limpiar_mds
 from tinamit.BF import EnvolturaBF
 from tinamit.Conectado import Conectado
-from pruebas.test_mds import tipos_modelos
 
 dir_act = os.path.split(__file__)[0]
 arch_bf = os.path.join(dir_act, 'recursos/prueba_bf.py')
@@ -27,13 +25,14 @@ class Test_Conectado(unittest.TestCase):
         cls.modelos = {ll: Conectado() for ll in cls.mods_mds}  # type: dict[str, Conectado]
 
         trads.agregar_trad('year', 'año', leng_trad='es', leng_orig='en')
-        trads.agregar_trad('year', 'año', leng_trad='es', leng_orig='en')
+        trads.agregar_trad('month', 'mes', leng_trad='es', leng_orig='en')
 
         for mds, mod_con in cls.modelos.items():
             mod_con.estab_bf(cls.mod_bf)
             mod_con.estab_mds(cls.mods_mds[mds])
 
             mod_con.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)
+            mod_con.conectar(var_mds='Lago', var_bf='Lago', mds_fuente=True)
 
     def test_simular(símismo):
         for ll, mod in símismo.modelos.items():
@@ -46,6 +45,8 @@ class Test_Conectado(unittest.TestCase):
                 except NotImplementedError:
                     egr_mds = mod.leer_resultados('mds_Lluvia')[1:]
 
+                if not np.array_equal(np.round(egr_bf, 1), np.round(egr_mds, 1)):
+                    pass
                 símismo.assertTrue(np.array_equal(np.round(egr_bf, 1), np.round(egr_mds, 1)))
 
     def test_simular_paralelo(símismo):
@@ -58,24 +59,28 @@ class Test_Conectado(unittest.TestCase):
         if ejecutando_prueba_primera_vez == 1:
             for ll, mod in símismo.modelos.items():
                 with símismo.subTest(mod=ll):
-
                     t_final = 100
                     sin_paral = {}
-                    mod.inic_val_var('Lago', 50)
+                    mod.inic_val_var('Nivel lago inicial', 50)
                     mod.simular(tiempo_final=t_final, vars_interés='Lago')
-                    sin_paral['lago_50'] = mod.leer_resultados('Lago')
+                    sin_paral['Corrida Tinamït_lago_50'] = mod.leer_resultados('Lago')
 
-                    mod.inic_val_var('Lago', 2000)
+                    mod.inic_val_var('Nivel lago inicial', 2000)
                     mod.simular(tiempo_final=t_final, vars_interés='Lago')
-                    sin_paral['lago_2000'] = mod.leer_resultados('Lago')
+                    sin_paral['Corrida Tinamït_lago_2000'] = mod.leer_resultados('Lago')
 
                     resultados = mod.simular_paralelo(
-                        tiempo_final=t_final, vals_inic={'lago_50': {'Lago': 50}, 'lago_2000': {'Lago': 2000}},
+                        tiempo_final=t_final,
+                        vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
                         devolver='Lago'
                     )
 
                     símismo.assertDictEqual(sin_paral, resultados)
 
+    @classmethod
+    def tearDownClass(cls):
+
+        limpiar_mds()
 
 # Comprobar SuperConectado
 

@@ -74,7 +74,9 @@ class ModeloPySD(EnvolturaMDS):
         símismo.tiempo_final = tiempo_final
         símismo.paso_act = 0
         símismo.vars_para_cambiar.clear()
+        símismo.vars_para_cambiar.update(símismo.vals_inic)
 
+        símismo.modelo.reload()
         símismo.modelo.initialize()
 
     def _cambiar_vals_modelo_interno(símismo, valores):

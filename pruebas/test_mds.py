@@ -134,21 +134,25 @@ class Test_ModeloSenc(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
 
-        # Limpiamos todos los documentos temporarios generados por los programas de modelos DS.
-        for c in os.walk('../recursos'):
-            for a in c[2]:
-                nmbr, ext = os.path.splitext(a)
-                try:
-                    if nmbr == 'Corrida Tinamït':
-                        os.remove(a)
-                    elif ext in ['.2mdl', '.vdf']:
-                        os.remove(a)
-                    elif a == 'prueba_senc.py':
-                        os.remove(a)
-                    elif a == 'prueba_senc_.py':
-                        os.remove(a)
-                except PermissionError:
-                    pass
+        limpiar_mds()
+
+
+def limpiar_mds():
+    # Limpiamos todos los documentos temporarios generados por los programas de modelos DS.
+    for c in os.walk('../recursos'):
+        for a in c[2]:
+            nmbr, ext = os.path.splitext(a)
+            try:
+                if 'Corrida Tinamït' in nmbr:
+                    os.remove(a)
+                elif ext in ['.2mdl', '.vdf']:
+                    os.remove(a)
+                elif a == 'prueba_senc.py':
+                    os.remove(a)
+                elif a == 'prueba_senc_.py':
+                    os.remove(a)
+            except PermissionError:
+                pass
 
 
 class Test_GenerarMDS(unittest.TestCase):

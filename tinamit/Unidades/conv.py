@@ -66,7 +66,7 @@ def convertir(de, a, val=1, lengua=None):
                     # Si la traducción se efectuó...
 
                     # ...reemplazar las unidades iniciales con la versión traducida.
-                    regu.parse_units(u_t)
+                    regu.parse_units(u_t)  # Verificar que la traducción sí funcione.
                     if u in unids_pres_de:
                         de = re.sub(r'%s(?![\p{l}\p{m}])' % u, repl=u_t, string=de)
                     if u in unids_pres_a:

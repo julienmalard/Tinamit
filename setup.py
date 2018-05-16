@@ -147,7 +147,8 @@ setup(
         'pint',
         'pyshp',
         'taqdir',
-        'pysd'
+        'pysd',
+        'lxml'
     ],
 
     dependency_links=[

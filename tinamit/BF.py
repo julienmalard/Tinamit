@@ -310,7 +310,7 @@ class ModeloImpaciente(ModeloBF):
         try:
             símismo.ratio_pasos = convertir(de=símismo.unidad_tiempo(), a=símismo.paso_mín)
         except ValueError:
-            raise ValueError(_('La unidad de tiempo ("{}") del modelo no se pudo convertir al paso ("{}")')
+            raise ValueError(_('La unidad de tiempo ("{}") del modelo no se pudo convertir a años.')
                              .format(símismo.unidad_tiempo(), símismo.paso_mín))
 
         # Una lista de todos los variables estacionales (que sean ingresos o egresos)
