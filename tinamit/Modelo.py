@@ -7,6 +7,7 @@ from copy import deepcopy as copiar_profundo
 from multiprocessing import Pool as Reserva
 from warnings import warn as avisar
 
+from lxml import etree as arbole
 import numpy as np
 from dateutil.relativedelta import relativedelta as deltarelativo
 
@@ -813,6 +814,16 @@ class Modelo(object):
         :rtype: bool
         """
         return False
+
+    def actualizar_trads(símismo, auto_llenar=True):
+        raíz = arbole.Element('xliff')
+
+
+    def cambiar_lengua(símismo, lengua):
+        pass
+
+    def agregar_lengua(símismo, lengua):
+        pass
 
     def __str__(símismo):
         return símismo.nombre
