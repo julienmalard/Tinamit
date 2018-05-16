@@ -57,3 +57,6 @@ class ModeloPrueba(ModeloBF):
 
     def leer_vals_inic(símismo):
         pass
+
+    def paralelizable(símismo):
+        return True

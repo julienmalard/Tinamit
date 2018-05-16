@@ -138,8 +138,12 @@ def _buscar_d_unid(unid, leng=None):
     else:
         d_unid = next((x for x in l_dic_trads if leng in x and unid in x[leng]), None)
         if d_unid is None:
-            if unid[-1] == 's':
-                d_unid = next((x for x in l_dic_trads if leng in x and unid[:-1] in x[leng]), None)
+            pluriales = ['s', 'es', 'ें', 'கள்', 'க்கள்']
+            for p in pluriales:
+                t = len(p)
+                if unid[-t] == p:
+                    d_unid = next((x for x in l_dic_trads if leng in x and unid[:-t] in x[leng]), None)
+
         if d_unid is None:
             raise ValueError(_('La unidad "{}" no existe en la lengua "{}".').format(unid, leng))
 

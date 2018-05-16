@@ -701,6 +701,9 @@ class ModeloVensim(EnvolturaMDS):
         """
         return True
 
+    def paralelo_requiere_multiproceso(símismo):
+        return False
+
     def _leer_resultados(símismo, var, corrida):
         """
         Esta función lee los resultados desde un archivo de egresos del modelo DS.

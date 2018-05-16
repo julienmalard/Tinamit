@@ -147,41 +147,42 @@ class SuperConectado(Modelo):
         u_0 = d_unids[l_mods[0]]
 
         # Si las unidades son idénticas, ya tenemos nuestra respuesta.
-        if all(convertir(u, u_0) == 1 for u in d_unids.values()):
-            for m in l_mods:
-                símismo.conv_tiempo[m] = 1
+        try:
+            if all(convertir(u, u_0) == 1 for u in d_unids.values()):
+                for m in l_mods:
+                    símismo.conv_tiempo[m] = 1
 
-            return list(d_unids.values())[0]
+                return list(d_unids.values())[0]
+        except ValueError:
+            pass
 
-        else:
-            # Sino, intentemos convertir automáticamente
+        # Sino, intentemos convertir automáticamente
+        factores_conv = np.empty(len(d_unids))
+        for i, m in enumerate(l_mods):
+            u = d_unids[m]
+            try:
+                # Intentar convertir la unidad del submodelo a la unidad de base
+                factores_conv[i] = convertir(de=u_0, a=u)
+            except ValueError:
+                # Si no lo logramos, hay un error, pero no querremos parar todo el programa por eso.
+                símismo.conv_tiempo_dudoso = True
+                factores_conv[i] = 1
 
-            factores_conv = np.empty(len(d_unids))
-            for i, m in enumerate(l_mods):
-                u = d_unids[m]
-                try:
-                    # Intentar convertir la unidad del submodelo a la unidad de base
-                    factores_conv[i] = convertir(de=u_0, a=u)
-                except ValueError:
-                    # Si no lo logramos, hay un error, pero no querremos parar todo el programa por eso.
-                    símismo.conv_tiempo_dudoso = True
-                    factores_conv[i] = 1
+        # El factor más pequeño debe ser 1.
+        np.divide(factores_conv, factores_conv.min())
 
-            # El factor más pequeño debe ser 1.
-            np.divide(factores_conv, factores_conv.min())
+        # Verificar que no tengamos factores de conversión fraccionales.
+        verificar_entero(factores_conv, l_unids=list(d_unids))
 
-            # Verificar que no tengamos factores de conversión fraccionales.
-            verificar_entero(factores_conv, l_unids=list(d_unids))
+        # Aplicar los factores calculados.
+        for i, m in enumerate(l_mods):
+            símismo.conv_tiempo[m] = factores_conv[i]
 
-            # Aplicar los factores calculados.
-            for i, m in enumerate(l_mods):
-                símismo.conv_tiempo[m] = factores_conv[i]
+        # La unidad de base para el SuperConectado es la que tiene factor de conversión de 1.
+        unid_base = next(d_unids[m] for m, c in símismo.conv_tiempo.items() if c == 1)
 
-            # La unidad de base para el SuperConectado es la que tiene factor de conversión de 1.
-            unid_base = next(d_unids[m] for m, c in símismo.conv_tiempo.items() if c == 1)
-
-            # Devolver la unidad de base
-            return unid_base
+        # Devolver la unidad de base
+        return unid_base
 
     def estab_conv_tiempo(símismo, mod_base, conv):
         """
@@ -248,7 +249,7 @@ class SuperConectado(Modelo):
         # Para cada nombre de variable...
         for var, val in valores.items():
             # Primero, vamos a sacar el nombre del variable y el nombre del submodelo.
-            mod, var = símismo.descomponer_nombre_var(var)
+            mod, var = símismo.resolver_nombre_var(var)
 
             # Ahora, pedimos a los submodelos de hacer los cambios en los modelos externos, si hay.
             símismo.modelos[mod].cambiar_vals(valores={var: val})
@@ -334,6 +335,10 @@ class SuperConectado(Modelo):
 
         return all(mod.paralelizable() for mod in símismo.modelos.values())
 
+    def paralelo_requiere_multiproceso(símismo):
+
+        return any(mod.paralelo_requiere_multiproceso() for mod in símismo.modelos.values())
+
     def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None, tcr=None,
                 recalc=True, clima=False, vars_interés=None):
         """
@@ -373,17 +378,10 @@ class SuperConectado(Modelo):
         # Si no estamos seguro de la conversión de unidades de tiempo, decirlo aquí.
         if símismo.conv_tiempo_dudoso:
             l_unids = [m.unidad_tiempo() for m in símismo.modelos.values()]
-            avisar(_('\nNo se pudo inferir la conversión de unidades de tiempo entre {} y {}.\n'
+            avisar(_('No se pudo inferir la conversión de unidades de tiempo entre {}.\n'
                      'Especificarla con la función .estab_conv_tiempo().\n'
                      'Por el momento pusimos el factor de conversión a 1, pero probablemente no es lo que quieres.')
-                   .format(l_unids))
-
-        # Verificar los nombres de los variables de interés
-        if vars_interés is not None:
-            if not isinstance(vars_interés, list):
-                vars_interés = [vars_interés]
-            for i, v in enumerate(vars_interés.copy()):
-                vars_interés[i] = símismo.valid_var(v)
+                   .format(', '.join(l_unids)))
 
         # Pasar la corrida activa a todos los submodelos también
         def aplicar_nombre_corr(m, corr):
@@ -398,31 +396,29 @@ class SuperConectado(Modelo):
         super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, fecha_inic=fecha_inic,
                         lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, vars_interés=vars_interés)
 
+    def inic_val_var(símismo, var, val):
+        if var not in símismo.variables:
+            var = símismo.valid_var(var)
+        mod, var = símismo.resolver_nombre_var(var)
+        símismo.modelos[mod].inic_val_var(var, val=val)
+
     def inic_vals_vars(símismo, dic_vals):
 
-        llaves = list(dic_vals)
-
         # Implementar los valores iniciales
-        if all(ll in símismo.variables for ll in llaves):
+        if all(ll in símismo.variables for ll in dic_vals):
             super().inic_vals_vars(dic_vals)  # Enlaces dinámicos deberían arreglar los diccionarios de los submodelos
 
         else:
-            if all(ll in símismo.modelos for ll in llaves):
+            if all(ll in símismo.modelos for ll in dic_vals):
                 for m, d_vals in dic_vals.items():  # type: str, dict[str, float]
                     # Para cada submodelo...
 
                     # Implementar sus valores iniciales.
                     símismo.modelos[m].inic_vals_vars(dic_vals=d_vals)
             else:
-                for var, val in dic_vals:
-                    encontrado = False
-                    for mod in símismo.modelos.values():
-                        if var in mod.variables:
-                            mod.inic_val_var(var, val)
-                            encontrado = True
-                            break
-                    if not encontrado:
-                        raise ValueError('')
+                for var, val in dic_vals.items():
+                    mod, var = símismo.resolver_nombre_var(var)
+                    símismo.modelos[mod].inic_val_var(var, val)
 
     def _incrementar(símismo, paso):
         """
@@ -554,7 +550,7 @@ class SuperConectado(Modelo):
 
     def especificar_var_saliendo(símismo, var):
 
-        mod, var_mod = símismo.descomponer_nombre_var(var)
+        mod, var_mod = símismo.resolver_nombre_var(var)
         símismo.modelos[mod].especificar_var_saliendo(var_mod)
 
     def cerrar_modelo(símismo):
@@ -695,7 +691,7 @@ class SuperConectado(Modelo):
             raise ValueError(_('El variable "{}" no existe en el modelo "{}", ni siquieta en sus '
                                'submodelos.').format(var, símismo))
 
-    def descomponer_nombre_var(símismo, var):
+    def resolver_nombre_var(símismo, var):
         """
 
         Parameters
@@ -706,8 +702,8 @@ class SuperConectado(Modelo):
         -------
 
         """
-        if '_' not in var:
-            raise ValueError(_('Un variable sin "_" no se puede descomponer en submodelo y nombre de variable.'))
+
+        var = símismo.valid_var(var)
 
         mod, var = var.split('_', maxsplit=1)
 
@@ -722,7 +718,7 @@ class SuperConectado(Modelo):
     def _leer_resultados(símismo, var, corrida):
 
         if var in símismo.variables:
-            mod, v = símismo.descomponer_nombre_var(var)
+            mod, v = símismo.resolver_nombre_var(var)
 
             if mod in símismo.modelos and v in símismo.modelos[mod].variables:
                 try:

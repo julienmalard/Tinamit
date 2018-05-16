@@ -105,3 +105,6 @@ class ModeloPySD(EnvolturaMDS):
 
     def cerrar_modelo(símismo):
         pass
+
+    def paralelizable(símismo):
+        return True

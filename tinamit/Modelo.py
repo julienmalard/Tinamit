@@ -4,7 +4,8 @@ import os
 import pickle
 import re
 from copy import deepcopy as copiar_profundo
-from multiprocessing import Pool as Reserva
+from multiprocessing import Pool as ReservaProc
+from multiprocessing.pool import ThreadPool as ReservaHilo
 from warnings import warn as avisar
 
 from lxml import etree as arbole
@@ -202,15 +203,16 @@ class Modelo(object):
         else:
             fecha_act = None
 
+        # Verificar los nombres de los variables de interés
         if vars_interés is None:
             vars_interés = []
         else:
-            if isinstance(vars_interés, str):
+            if not isinstance(vars_interés, list):
                 vars_interés = [vars_interés]
-            for v in vars_interés:
-                if v not in símismo.variables:
-                    raise ValueError(_('El variable "{}" no existe en el modelo "{}".').format(v, símismo))
-                símismo.vars_saliendo.add(v)
+            for i, v in enumerate(vars_interés.copy()):
+                var = símismo.valid_var(v)
+                vars_interés[i] = var
+                símismo.vars_saliendo.add(var)
 
         símismo.mem_vars.clear()
         for v in vars_interés:
@@ -397,9 +399,14 @@ class Modelo(object):
 
             for corr, d_prms_corr in corridas.items():
                 d_args = {ll: copiar_profundo(v) for ll, v in d_prms_corr.items()}
-                d_args['corrida_activa'] = corr
+                d_args['nombre_corrida'] = corr
 
                 l_trabajos.append((copia_mod, copiar_profundo(d_vals_inic[corr]), d_args))
+
+            if símismo.paralelo_requiere_multiproceso():
+                Reserva = ReservaProc
+            else:
+                Reserva = ReservaHilo
 
             with Reserva() as r:
                 r.map(_correr_modelo, l_trabajos)
@@ -408,9 +415,11 @@ class Modelo(object):
             # Sino simplemente correrlas una tras otra con símismo.simular()
             if paralelo:
                 avisar(_('No todos los submodelos del modelo conectado "{}" son paralelizable. Para evitar el riesgo'
-                         'de errores de paralelización, correremos las corridas como simulaciones secuenciales normales. '
-                         'Si tus modelos sí son paralelizable, poner el atributo ".paralelizable = True" para activar la '
-                         'paralelización.').format(símismo.nombre))
+                         'de errores de paralelización, correremos las corridas como simulaciones secuenciales '
+                         'normales. '
+                         'Si tus modelos sí son paralelizables, crear un método nombrado `.paralelizable()` '
+                         'que devuelve ``True`` en tu clase de modelo para activar la paralelización.'
+                         ).format(símismo.nombre))
 
             # Para cada corrida...
             for corr, d_prms_corr in corridas.items():
@@ -485,10 +494,7 @@ class Modelo(object):
         """
 
         # Primero, asegurarse que el variable existe.
-        if var not in símismo.variables:
-            raise ValueError(_('El variable inicializado "{}" no existe en los variables del modelo.\n'
-                               'Pero antes de quejarte al gerente, sería buena idea verificar '
-                               'si lo escrbiste bien.').format(var))  # Sí, lo "escrbí" así por propósito. :)
+        var = símismo.valid_var(var)
 
         # Guardamos el valor en el diccionario `vals_inic`. Se aplicarán los valores iniciales únicamente al momento
         # de empezar la simulación.
@@ -529,8 +535,8 @@ class Modelo(object):
         :type combin: str
 
         """
-        if var not in símismo.variables:
-            raise ValueError(_('El variable "{}" no existe en este modelo. ¿De pronto lo escribiste mal?').format(var))
+        var = símismo.valid_var(var)
+
         if var_clima not in Geog.conv_vars:
             raise ValueError(_('El variable climático "{}" no es una posibilidad. Debe ser uno de:\n'
                                '\t{}').format(var_clima, ', '.join(Geog.conv_vars)))
@@ -736,7 +742,10 @@ class Modelo(object):
         if var in símismo.variables:
             return var
         else:
-            raise ValueError(_('El variable "{}" no existe en el modelo "{}".').format(var, símismo))
+            raise ValueError(_('El variable "{}" no existe en el modelo "{}". Pero antes de quejarte '
+                               'al gerente, sería buena idea verificar '
+                               'si lo escrbiste bien.')  # Sí, lo "escrbí" así por propósito. :)
+                             .format(var, símismo))
 
     def obt_info_var(símismo, var):
         var = símismo.valid_var(var)
@@ -778,8 +787,7 @@ class Modelo(object):
     def leer_resultados(símismo, var, corrida=None):
 
         # Verificar que existe el variable en este modelo.
-        if var not in símismo.variables:
-            raise ValueError(_('El variable "{}" no existe en este modelo.').format(var))
+        var = símismo.valid_var(var)
 
         # Si no se especificó corrida especial, tomaremos la corrida más recién.
         if corrida is None:
@@ -813,6 +821,9 @@ class Modelo(object):
           documents de egresos).
         :rtype: bool
         """
+        return False
+
+    def paralelo_requiere_multiproceso(símismo):
         return False
 
     def actualizar_trads(símismo, auto_llenar=True):
