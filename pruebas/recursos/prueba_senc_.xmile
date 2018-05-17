@@ -25,7 +25,7 @@
             <flow name="Evaporación">
                 <eqn>0.1*Lago</eqn>
                 <units>m3/mes</units>
-                <range min="0"></range>
+                <range min="0"/>
                 <doc>La evaporación del lago, fija al 10%.</doc>
             </flow>
 
@@ -50,6 +50,13 @@
                 <units>m3/mes</units>
                 <range min="0"/>
                 <doc>La cantidad de lluvia que cae por mes.</doc>
+            </aux>
+
+            <aux name="Aleatorio">
+                <eqn>0</eqn>
+                <units>Sdmn</units>
+                <range min="0" max="1"/>
+                <doc>Un variable aleatorio que debe provenir del modelo BP.</doc>
             </aux>
 
             <aux name="Nivel lago inicial">

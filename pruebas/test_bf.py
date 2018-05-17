@@ -25,17 +25,19 @@ class Test_ModeloSenc(unittest.TestCase):
 
         # Información sobre los variables del modelo de prueba
         cls.info_vars = {
-            'Lluvia': {'unidades': 'm3/año', 'líms': (0, None)},
+            'Lluvia': {'unidades': 'm3/año', 'líms': (0, None), 'val_inic': 2.3},
             'Lago': {'unidades': 'm3', 'líms': (0, None)},
             'Escala': {'unidades': '', 'líms': (0, None)},
-            'Máx lluvia': {'unidades': 'm3/año', 'líms': (0, None)}
+            'Máx lluvia': {'unidades': 'm3/año', 'líms': (0, None), 'val_inic': 15}
         }  # type: dict[str, dict]
 
-        # Iniciar constantes
-        cls.envltmodelo.inic_val_var('Máx lluvia', 15)
+        # Iniciar variables
+        for v, d_v in cls.info_vars.items():
+            if 'val_inic' in d_v:
+                cls.envltmodelo.inic_val_var(v, d_v['val_inic'])
 
         # Correr el modelo para 200 pasos, guardando los egresos del variable "Lago"
-        cls.envltmodelo.simular(tiempo_final=200, vars_interés='Escala')
+        cls.envltmodelo.simular(tiempo_final=200, vars_interés=['Escala', 'Lluvia'])
 
     def test_leer_vars(símismo):
         """
@@ -49,12 +51,26 @@ class Test_ModeloSenc(unittest.TestCase):
         """
         símismo.assertEqual('años', símismo.envltmodelo.unidad_tiempo())
 
-    def test_cmb_vals_inic(símismo):
+    def test_cambiar_vals_inic_constante(símismo):
         """
         Comprobar que los valores iniciales se establecieron correctamente.
         """
 
-        símismo.assertEqual(símismo.envltmodelo.obt_val_actual_var('Máx lluvia'), 15)
+        símismo.assertEqual(
+            símismo.envltmodelo.obt_val_actual_var('Máx lluvia'),
+            símismo.info_vars['Máx lluvia']['val_inic']
+        )
+
+    def test_cambiar_vals_inic_var_dinámico(símismo):
+        """
+        Comprobar que los valores iniciales de variables cuyos valores cambian aparezcan correctamente en
+        los resultados.
+        """
+
+        símismo.assertEqual(
+            símismo.envltmodelo.leer_resultados('Lluvia')[0],
+            símismo.info_vars['Lluvia']['val_inic']
+        )
 
     def test_simul(símismo):
         """

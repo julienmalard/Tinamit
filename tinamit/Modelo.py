@@ -284,15 +284,6 @@ class Modelo(object):
                          fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True,
                          dibujar=None, paralelo=True, devolver=None):
 
-        global ejecutando_prueba_primera_vez
-        if 'ejecutando_prueba_primera_vez' not in globals():
-            ejecutando_prueba_primera_vez = True
-
-        if not ejecutando_prueba_primera_vez:
-            return
-
-        ejecutando_prueba_primera_vez = False
-
         #
         if isinstance(vals_inic, dict):
             if all(x in símismo.modelos for x in vals_inic):
@@ -424,6 +415,15 @@ class Modelo(object):
         if símismo.paralelizable() and paralelo:
             # ...si lo son...
 
+            global ejecutando_simulación_paralela_por_primera_vez
+            if 'ejecutando_simulación_paralela_por_primera_vez' not in globals():
+                ejecutando_simulación_paralela_por_primera_vez = True
+
+            if not ejecutando_simulación_paralela_por_primera_vez:
+                return
+
+            ejecutando_simulación_paralela_por_primera_vez = False
+
             # Empezar las simulaciones en paralelo
             l_trabajos = []  # type: list[tuple]
 
@@ -438,6 +438,8 @@ class Modelo(object):
 
             with Reserva() as r:
                 resultados = r.map(_correr_modelo, l_trabajos)
+
+            ejecutando_simulación_paralela_por_primera_vez = True
 
             if resultados is not None:
                 resultados = {corr: res for corr, res in zip(corridas, resultados)}

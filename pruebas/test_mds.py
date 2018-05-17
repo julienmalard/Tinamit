@@ -39,7 +39,8 @@ class Test_ModeloSenc(unittest.TestCase):
             'Nivel lago inicial': {'unidades': 'm3', 'líms': (0, None), 'val_inic': 1500},
             'Flujo río': {'unidades': 'm3/mes', 'líms': (0, None)},
             'Lago': {'unidades': 'm3', 'líms': (0, None)},
-            'Evaporación': {'unidades': 'm3/mes', 'líms': (0, None)}
+            'Evaporación': {'unidades': 'm3/mes', 'líms': (0, None)},
+            'Aleatorio': {'unidades': 'Sdmn', 'líms': (0, 1), 'val_inic': 2.3},
         }  # type: dict[str, dict]
 
         # Para cada modelo...
@@ -53,7 +54,7 @@ class Test_ModeloSenc(unittest.TestCase):
                     mod.inic_val_var(v, d_v['val_inic'])
 
             # Correr el modelo para 200 pasos, guardando los egresos del variable "Lago"
-            mod.simular(tiempo_final=200, vars_interés='Lago')
+            mod.simular(tiempo_final=200, vars_interés=['Lago', 'Aleatorio'])
 
     def test_leer_vars(símismo):
         """
@@ -86,7 +87,7 @@ class Test_ModeloSenc(unittest.TestCase):
         Comprobar que las unidades de los variables se leyeron correctamente.
         """
 
-        unids = {v: d_v['unidades'] for v, d_v in símismo.info_vars.items()}
+        unids = {v: d_v['unidades'].lower() for v, d_v in símismo.info_vars.items()}
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
@@ -105,18 +106,40 @@ class Test_ModeloSenc(unittest.TestCase):
                 unids_mod = {v: d_v['líms'] for v, d_v in mod.variables.items()}
                 símismo.assertDictEqual(unids, unids_mod)
 
-    def test_cmb_vals_inic(símismo):
+    def test_cmb_vals_inic_constante(símismo):
         """
-        Comprobar que los valores iniciales se establecieron correctamente.
+        Comprobar que los valores iniciales se establecieron correctamente en el diccionario interno.
         """
 
         for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                for v, d_v in símismo.info_vars.items():
+            v = 'Nivel lago inicial'
+            d_v = símismo.info_vars[v]
 
-                    # Únicamente verificar los variables con valores iniciales especificados, naturalmente.
-                    if 'val_inic' in d_v:
-                        símismo.assertEqual(mod.variables[v]['val'], d_v['val_inic'])
+            with símismo.subTest(mod=ll):
+                símismo.assertEqual(mod.obt_val_actual_var(v), d_v['val_inic'])
+
+    def test_cambiar_vals_inic_var_dinámico(símismo):
+        """
+        Asegurarse que los valores iniciales de variables dinámicos aparezcan en el paso 0 de los resultados.
+        """
+
+        for ll, mod in símismo.modelos.items():
+            v = 'Aleatorio'
+            d_v = símismo.info_vars[v]
+
+            with símismo.subTest(mod=11):
+                símismo.assertEqual(mod.leer_resultados(v)[0], d_v['val_inic'])
+
+    def test_cambiar_vals_inic_nivel(símismo):
+        """
+        Comprobar que valores iniciales pasados a un variable de valor inicial aparezcan en los resultados también.
+        """
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                símismo.assertEqual(
+                    mod.leer_resultados('Lago')[0],
+                    símismo.info_vars['Nivel lago inicial']['val_inic']
+                )
 
     def test_simul(símismo):
         """

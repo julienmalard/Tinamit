@@ -1,7 +1,6 @@
 import os
 import unittest
 
-import numpy as np
 import numpy.testing as npt
 
 from Unidades import trads
@@ -35,18 +34,22 @@ class Test_Conectado(unittest.TestCase):
             mod_con.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)
             mod_con.conectar(var_mds='Lago', var_bf='Lago', mds_fuente=True)
 
-    def test_simular(símismo):
+    def test_intercambio_de_variables_en_simular(símismo):
+        """
+        Asegurarse que valores intercambiados tengan valores iguales en los resultados de ambos modelos.
+        """
+
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                mod.simular(tiempo_final=100, vars_interés=['bf_Lluvia', 'mds_Lluvia'])
-                egr_bf = mod.leer_resultados('bf_Lluvia')[1:]
+                mod.simular(tiempo_final=100, vars_interés=['bf_Aleatorio', 'mds_Aleatorio'])
+                egr_bf = mod.leer_resultados('bf_Aleatorio')[1:]
 
                 try:
-                    egr_mds = mod.mds.leer_resultados('Lluvia')[::12][1:]
+                    egr_mds = mod.mds.leer_resultados('Aleatorio')[::12][1:]
                 except NotImplementedError:
-                    egr_mds = mod.leer_resultados('mds_Lluvia')[1:]
+                    egr_mds = mod.leer_resultados('mds_Aleatorio')[1:]
 
-                npt.assert_almost_equal(egr_bf, egr_mds, 1)
+                npt.assert_allclose(egr_bf, egr_mds, rtol=0.001)
 
     def test_simular_paralelo(símismo):
 
@@ -69,8 +72,7 @@ class Test_Conectado(unittest.TestCase):
                 )
 
                 for c in resultados:
-                    with símismo.subTest(corrida=c):
-                        npt.assert_almost_equal(resultados[c]['mds_Lago'], referencia[c]['mds_Lago'], 1)
+                    npt.assert_allclose(referencia[c]['mds_Lago'], resultados[c]['mds_Lago'], rtol=0.001)
 
     @classmethod
     def tearDownClass(cls):
