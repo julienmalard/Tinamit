@@ -156,6 +156,9 @@ class Test_ModeloSenc(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        """
+        Limpiar todos los archivos temporarios.
+        """
 
         limpiar_mds()
 

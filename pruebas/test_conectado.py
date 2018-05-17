@@ -3,7 +3,7 @@ import unittest
 
 import numpy.testing as npt
 
-from Unidades import trads
+from tinamit.Unidades import trads
 from pruebas.test_mds import tipos_modelos, limpiar_mds
 from tinamit.BF import EnvolturaBF
 from tinamit.Conectado import Conectado
@@ -52,6 +52,9 @@ class Test_Conectado(unittest.TestCase):
                 npt.assert_allclose(egr_bf, egr_mds, rtol=0.001)
 
     def test_simular_paralelo(símismo):
+        """
+
+        """
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
@@ -76,6 +79,9 @@ class Test_Conectado(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        """
+        Limpiar todos los archivos temporarios.
+        """
 
         limpiar_mds()
 
