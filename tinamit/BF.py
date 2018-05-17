@@ -133,6 +133,12 @@ class EnvolturaBF(Modelo):
         """
         símismo.modelo.leer_vals()
 
+    def _leer_vals_inic(símismo):
+        pass
+
+    def _aplicar_cambios_vals_inic(símismo):
+        pass
+
     def act_vals_clima(símismo, n_paso, f):
         """
 
@@ -144,7 +150,7 @@ class EnvolturaBF(Modelo):
         """
         símismo.modelo.act_vals_clima(n_paso=n_paso, f=f)
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
         Inicializa el modelo biofísico interno, incluyendo la inicialización de variables.
 
@@ -222,13 +228,13 @@ class ModeloBF(Modelo):
         """
         raise NotImplementedError
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
         Esta función debe preparar el modelo para una simulación.
 
         """
 
-        símismo.leer_vals_inic()
+        pass
 
     def cerrar_modelo(símismo):
         """
@@ -264,13 +270,16 @@ class ModeloBF(Modelo):
 
         raise NotImplementedError
 
-    def leer_vals_inic(símismo):
+    def _leer_vals_inic(símismo):
         """
         Lee los valores iniciales de los variables.
 
         """
 
         raise NotImplementedError
+
+    def _aplicar_cambios_vals_inic(símismo):
+        pass  # El cambio se hace directamente del diccionario interno de valores al escribir el archivo de ingreso.
 
     def __getinitargs__(símismo):
         return tuple()
@@ -329,7 +338,7 @@ class ModeloImpaciente(ModeloBF):
         símismo.datos_internos = {var: None for var in símismo.variables if var in símismo.tipos_vars['Estacionales']}
 
         # Leer los valores iniciales
-        símismo.leer_vals_inic()
+        símismo._leer_vals_inic()
 
     def _cambiar_vals_modelo_interno(símismo, valores):
         """
@@ -474,7 +483,7 @@ class ModeloImpaciente(ModeloBF):
         """
         return "Mes"
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
         Esta función debe preparar el modelo para una simulación. Si necesitas esta función para tu subclase,
         no se te olvide llamar ``super().iniciar_modelo`` para no saltar la reinicialización de la estación y del mes.
@@ -525,7 +534,7 @@ class ModeloImpaciente(ModeloBF):
         """
         raise NotImplementedError
 
-    def leer_vals_inic(símismo):
+    def _leer_vals_inic(símismo):
         """
         Esta función lee los valores iniciales del modelo.
 
@@ -682,7 +691,7 @@ class ModeloFlexible(ModeloBF):
         """
         raise NotImplementedError
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
         Esta función debe preparar el modelo para una simulación.
 
@@ -730,7 +739,7 @@ class ModeloFlexible(ModeloBF):
 
         raise NotImplementedError
 
-    def leer_vals_inic(símismo):
+    def _leer_vals_inic(símismo):
         """
 
         """

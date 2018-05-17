@@ -21,7 +21,7 @@ class ModeloTikon(ModeloImpaciente):
     def _inic_dic_vars(símismo):
         pass
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         pass
 
     def avanzar_modelo(símismo):

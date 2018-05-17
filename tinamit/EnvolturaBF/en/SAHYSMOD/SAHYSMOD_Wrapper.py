@@ -96,7 +96,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         self.tipos_vars['IngrEstacionales'] = [codes_to_vars[x] for x in seasonal_inputs]
         self.tipos_vars['EgrEstacionales'] = [codes_to_vars[x] for x in seasonal_outputs]
 
-    def iniciar_modelo(self, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(self, tiempo_final, nombre_corrida):
         """
         Nothing specific to do apart from inicialising working and I/O directories.
         Variables have already been read in func:`_inic_dic_vars`.

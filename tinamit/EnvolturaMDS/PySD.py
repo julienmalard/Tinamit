@@ -21,7 +21,7 @@ class ModeloPySD(EnvolturaMDS):
             raise ValueError(_('PySD no sabe leer modelos del formato "{}". Debes darle un modelo ".mdl" o ".xmile".')
                              .format(ext))
 
-        símismo.conv_nombres = {}
+        símismo._conv_nombres = {}
         símismo.tiempo_final = None
         símismo.cont_simul = False
         símismo.paso_act = 0
@@ -31,7 +31,7 @@ class ModeloPySD(EnvolturaMDS):
 
     def _inic_dic_vars(símismo):
         símismo.variables.clear()
-        símismo.conv_nombres.clear()
+        símismo._conv_nombres.clear()
 
         for i, f in símismo.modelo.doc().iterrows():
             nombre = f['Real Name']
@@ -48,7 +48,7 @@ class ModeloPySD(EnvolturaMDS):
                     'info': f['Comment']
                 }
 
-                símismo.conv_nombres[nombre] = nombre_py
+                símismo._conv_nombres[nombre] = nombre_py
 
     def unidad_tiempo(símismo):
         docs = símismo.modelo.doc()
@@ -69,15 +69,27 @@ class ModeloPySD(EnvolturaMDS):
 
         return unid_tiempo
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _leer_vals_inic(símismo):
+
+        for v, d_v in símismo.variables.items():
+
+            nombre_py = símismo._conv_nombres[v]
+            val = getattr(símismo.modelo.components, nombre_py)()
+
+            símismo._act_vals_dic_var({v: val})
+
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         símismo.cont_simul = False
         símismo.tiempo_final = tiempo_final
         símismo.paso_act = 0
         símismo.vars_para_cambiar.clear()
-        símismo.vars_para_cambiar.update(símismo.vals_inic)
 
+        # Poner los variables y el tiempo a sus valores iniciales
         símismo.modelo.reload()
         símismo.modelo.initialize()
+
+    def _aplicar_cambios_vals_inic(símismo):
+        símismo.vars_para_cambiar.update(símismo.vals_inic)
 
     def _cambiar_vals_modelo_interno(símismo, valores):
         símismo.vars_para_cambiar.clear()
@@ -96,7 +108,7 @@ class ModeloPySD(EnvolturaMDS):
 
     def _leer_vals(símismo):
         for v in símismo.vars_saliendo:
-            nombre_py = símismo.conv_nombres[v]
+            nombre_py = símismo._conv_nombres[v]
             val = getattr(símismo.modelo.components, nombre_py)()
 
             if símismo.variables[v]['dims'] == (1,):

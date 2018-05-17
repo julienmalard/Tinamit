@@ -2,6 +2,7 @@ import os
 import unittest
 
 import numpy as np
+import numpy.testing as npt
 
 from Unidades import trads
 from pruebas.test_mds import tipos_modelos, limpiar_mds
@@ -45,37 +46,31 @@ class Test_Conectado(unittest.TestCase):
                 except NotImplementedError:
                     egr_mds = mod.leer_resultados('mds_Lluvia')[1:]
 
-                if not np.array_equal(np.round(egr_bf, 1), np.round(egr_mds, 1)):
-                    pass
-                símismo.assertTrue(np.array_equal(np.round(egr_bf, 1), np.round(egr_mds, 1)))
+                npt.assert_almost_equal(egr_bf, egr_mds, 1)
 
     def test_simular_paralelo(símismo):
 
-        global ejecutando_prueba_primera_vez
-        if 'ejecutando_prueba_primera_vez' not in globals():
-            ejecutando_prueba_primera_vez = 0
-        ejecutando_prueba_primera_vez += 1
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                t_final = 100
+                referencia = {}
+                mod.inic_val_var('Nivel lago inicial', 50)
+                mod.simular(tiempo_final=t_final, vars_interés='Lago')
+                referencia['Corrida Tinamït_lago_50'] = {'mds_Lago': mod.leer_resultados('Lago')}
 
-        if ejecutando_prueba_primera_vez == 1:
-            for ll, mod in símismo.modelos.items():
-                with símismo.subTest(mod=ll):
-                    t_final = 100
-                    sin_paral = {}
-                    mod.inic_val_var('Nivel lago inicial', 50)
-                    mod.simular(tiempo_final=t_final, vars_interés='Lago')
-                    sin_paral['Corrida Tinamït_lago_50'] = mod.leer_resultados('Lago')
+                mod.inic_val_var('Nivel lago inicial', 2000)
+                mod.simular(tiempo_final=t_final, vars_interés='Lago')
+                referencia['Corrida Tinamït_lago_2000'] = {'mds_Lago': mod.leer_resultados('Lago')}
 
-                    mod.inic_val_var('Nivel lago inicial', 2000)
-                    mod.simular(tiempo_final=t_final, vars_interés='Lago')
-                    sin_paral['Corrida Tinamït_lago_2000'] = mod.leer_resultados('Lago')
+                resultados = mod.simular_paralelo(
+                    tiempo_final=t_final,
+                    vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
+                    devolver='Lago'
+                )
 
-                    resultados = mod.simular_paralelo(
-                        tiempo_final=t_final,
-                        vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
-                        devolver='Lago'
-                    )
-
-                    símismo.assertDictEqual(sin_paral, resultados)
+                for c in resultados:
+                    with símismo.subTest(corrida=c):
+                        npt.assert_almost_equal(resultados[c]['mds_Lago'], referencia[c]['mds_Lago'], 1)
 
     @classmethod
     def tearDownClass(cls):

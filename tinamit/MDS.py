@@ -66,7 +66,7 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
         Este método se deja a las subclases de :class:`~tinamit.EnvolturaMDS.EnvolturaMDS` para implementar. Notar que la
         implementación de este método debe incluir la aplicación de valores iniciales.

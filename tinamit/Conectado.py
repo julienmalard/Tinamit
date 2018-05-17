@@ -492,6 +492,9 @@ class SuperConectado(Modelo):
             # Aplicar los cambios
             símismo.modelos[m_r].cambiar_vals(valores=dic_vals)
 
+    def _leer_vals_inic(símismo):
+        pass
+
     def _leer_vals(símismo):
         """
         Leamos los valores de los variables de los dos submodelos. Por la conexión entre los diccionarios de variables
@@ -503,7 +506,7 @@ class SuperConectado(Modelo):
         for mod in símismo.modelos.values():
             mod.leer_vals()  # Leer los valores de los variables.
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
         Inicia el modelo en preparación para una simulación.
 
@@ -744,6 +747,9 @@ class SuperConectado(Modelo):
                     pass
 
         raise IOError(_('Ningún de los submodelos pudieron leer los resultados de la corrida.'))
+
+    def _aplicar_cambios_vals_inic(símismo):
+        pass
 
     def __getinitargs__(símismo):
         return símismo.nombre,

@@ -2,6 +2,8 @@ import ctypes
 import os
 import struct
 import sys
+from functools import reduce
+from operator import mul
 from warnings import warn as avisar
 
 import numpy as np
@@ -245,7 +247,7 @@ class ModeloVensimMdl(EnvolturaMDS):
         unid_tiempo = símismo.dic_doc['cola'][i_f].split('\t')[-1].strip()
         return unid_tiempo
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         pass
 
     def _cambiar_vals_modelo_interno(símismo, valores):
@@ -451,7 +453,7 @@ class ModeloVensim(EnvolturaMDS):
 
         return unidades
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
         Acciones necesarias para iniciar el modelo VENSIM.
 
@@ -492,6 +494,15 @@ class ModeloVensim(EnvolturaMDS):
         # Aplicar los valores iniciales de variables editables
         símismo.cambiar_vals({var: val for var, val in símismo.vals_inic.items()
                               if var not in símismo.constantes})
+
+    def _leer_vals_inic(símismo):
+
+        símismo._leer_vals_de_vensim()
+
+    def _aplicar_cambios_vals_inic(símismo):
+        # Vensim tiene su manera personal de inicializar los variables iniciales, en _iniciar_modelo.
+        # Así que no haremos nada aquí.
+        pass
 
     def _cambiar_vals_modelo_interno(símismo, valores):
         """
@@ -571,27 +582,40 @@ class ModeloVensim(EnvolturaMDS):
 
         """
 
-        for var in símismo.vars_saliendo:
-            # Para cada variable que está conectado con el modelo biofísico...
+        # Para cada variable que está conectado con el modelo biofísico...
+        símismo._leer_vals_de_vensim(l_vars=list(símismo.vars_saliendo))
 
-            if símismo.variables[var]['dims'] == (1,):
+    def _leer_vals_de_vensim(símismo, l_vars=None):
+        if l_vars is None:
+            l_vars = list(símismo.variables)
+        elif isinstance(l_vars, list):
+            pass
+        elif isinstance(l_vars, str):
+            l_vars = [l_vars]
+        else:
+            raise TypeError(_('`l_vars` debe ser o un nombre de variable, o una lista de nombres de variables, y'
+                            'no "{}".').format(type(l_vars)))
+
+        for v in l_vars:
+            if símismo.obt_dims_var(v) == (1,):
                 # Si el variable no tiene dimensiones (subscriptos)...
 
                 # Leer su valor.
-                val = símismo._pedir_val_var(var)
+                val = símismo._pedir_val_var(v)
 
                 # Guardar en el diccionario interno.
-                símismo.variables[var]['val'] = val
+                símismo._act_vals_dic_var({v: val})
 
             else:
-                for n, s in enumerate(símismo.variables[var]['subscriptos']):
-                    var_s = var + s
+                matr_val = símismo.obt_val_actual_var(v)
+                for n, s in enumerate(símismo.variables[v]['subscriptos']):
+                    var_s = v + s
 
                     # Leer su valor.
                     val = símismo._pedir_val_var(var_s)
 
                     # Guardar en el diccionario interno.
-                    símismo.variables[var]['val'][n] = val  # Para hacer: opciones de dimensiones múltiples
+                    matr_val[n] = val  # Para hacer: opciones de dimensiones múltiples
 
     def cerrar_modelo(símismo):
         """

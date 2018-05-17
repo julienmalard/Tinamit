@@ -114,5 +114,5 @@ class EnvoltDSSAT(ModeloBF):
                  },
         }
 
-    def leer_vals_inic(símismo):
+    def _leer_vals_inic(símismo):
         pass

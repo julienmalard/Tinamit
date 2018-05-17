@@ -28,7 +28,7 @@ class Envoltura(ModeloBF):
                                         'dims': (1,)
                                         }
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         pass
 
     def unidad_tiempo(símismo):

@@ -55,8 +55,11 @@ class ModeloPrueba(ModeloBF):
             'dims': (1,)
         }
 
-    def leer_vals_inic(símismo):
-        pass
+    def _leer_vals_inic(símismo):
+        símismo.variables['Lluvia']['val'] = 1
+        símismo.variables['Lago']['val'] = 1000
+        símismo.variables['Escala']['val'] = 0
+        símismo.variables['Máx lluvia']['val'] = 10
 
     def paralelizable(símismo):
         return True

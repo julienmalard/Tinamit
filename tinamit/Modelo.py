@@ -99,7 +99,26 @@ class Modelo(object):
         """
         raise NotImplementedError
 
+    def _leer_vals_inic(símismo):
+        raise NotImplementedError
+
     def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+
+        símismo._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
+
+        símismo._leer_vals_inic()
+
+        símismo._act_vals_dic_var(símismo.vals_inic)
+        símismo._aplicar_cambios_vals_inic()
+
+    def _act_vals_dic_var(símismo, valores):
+        for var, val in valores.items():
+            if isinstance(símismo.variables[var]['val'], np.ndarray):
+                símismo.variables[var]['val'][:] = val
+            else:
+                símismo.variables[var]['val'] = val
+
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
         Esta función llama cualquier acción necesaria para preparar el modelo para la simulación. Esto incluye aplicar
         valores iniciales. En general es muy fácil y se hace simplemente con "símismo.cambiar_vals(símismo.vals_inic)",
@@ -112,6 +131,9 @@ class Modelo(object):
         :type nombre_corrida: str
 
         """
+        raise NotImplementedError
+
+    def _aplicar_cambios_vals_inic(símismo):
         raise NotImplementedError
 
     def especificar_var_saliendo(símismo, var):
@@ -261,6 +283,16 @@ class Modelo(object):
     def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
                          fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True,
                          dibujar=None, paralelo=True, devolver=None):
+
+        global ejecutando_prueba_primera_vez
+        if 'ejecutando_prueba_primera_vez' not in globals():
+            ejecutando_prueba_primera_vez = True
+
+        if not ejecutando_prueba_primera_vez:
+            return
+
+        ejecutando_prueba_primera_vez = False
+
         #
         if isinstance(vals_inic, dict):
             if all(x in símismo.modelos for x in vals_inic):
@@ -499,10 +531,7 @@ class Modelo(object):
         símismo.vals_inic[var] = val
 
         # Aplicar los valores iniciales al diccionario de valores actuales también.
-        if isinstance(símismo.variables[var]['val'], np.ndarray):
-            símismo.variables[var]['val'][:] = val
-        else:
-            símismo.variables[var]['val'] = val
+        símismo._act_vals_dic_var({var: val})
 
     def inic_vals_vars(símismo, dic_vals):
         """
@@ -580,11 +609,7 @@ class Modelo(object):
 
         """
 
-        for var in valores:
-            if isinstance(símismo.variables[var]['val'], np.ndarray):
-                símismo.variables[var]['val'][:] = valores[var]
-            else:
-                símismo.variables[var]['val'] = valores[var]
+        símismo._act_vals_dic_var(valores=valores)
 
         símismo._cambiar_vals_modelo_interno(valores=valores)
 
