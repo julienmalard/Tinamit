@@ -130,12 +130,12 @@ else:
 
     modelo.mds.conectar_var_clima(var='Tmin', var_clima='Temperatura mínima', conv=1)
     modelo.mds.conectar_var_clima(var='Tmax', var_clima='Temperatura máxima', conv=1)
-    modelo.estab_conv_meses(6)
+    modelo.estab_conv_unid_tiempo('mes', 6)
 
     vals_inic = {x: {'mds': v} for x, v in runs.items()}
     dibs = [dict(geog=Rechna_Doab, var='Watertable depth Tinamit', directorio='Maps'),
             dict(geog=Rechna_Doab, var='Soil salinity Tinamit CropA', colores=-1, directorio='Maps')]
 
-    modelo.simular_paralelo(paso=1, tiempo_final=100 * 2, fecha_inic='01/11/1989', lugar=location, clima=True,
-                            recalc=False, tcr=[0, 2.6, 4.5, 6.0, 8.5], vals_inic=vals_inic, combinar=True,
+    modelo.simular_paralelo(paso=1, tiempo_final=100 * 2, fecha_inic='01/11/1989', lugar=location,
+                            recalc_clima=False, clima=[0, 2.6, 4.5, 6.0, 8.5], vals_inic=vals_inic, combinar=True,
                             nombre_corrida='', dibujar=dibs, paralelo=True)

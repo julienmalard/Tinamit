@@ -4,12 +4,31 @@ import os
 
 import pint
 import pkg_resources
+from shutil import copyfile as copiar_archivo
 
 from tinamit import _
 from . import regu
 
 
-def _act_arch_trads(l_d_t, arch):
+archivo_json = pkg_resources.resource_filename('tinamit.Unidades', 'trads_unids.json')
+archivo_json_respaldo = pkg_resources.resource_filename('tinamit.Unidades', 'trads_unids_respl.json')
+
+if not os.path.isfile(archivo_json):
+    l_dic_trads = []
+else:
+    if os.path.isfile(archivo_json_respaldo):
+        with open(archivo_json_respaldo, encoding='UTF-8') as d_j:
+            l_dic_trads = json.load(d_j)  # type: list[dict]
+        copiar_archivo(archivo_json_respaldo, archivo_json)
+    else:
+        try:
+            with open(archivo_json, encoding='UTF-8') as d_j:
+                l_dic_trads = json.load(d_j)  # type: list[dict]
+        except json.JSONDecodeError:
+            l_dic_trads = []
+
+
+def _act_arch_trads(l_d_t):
     c_unids = set()
 
     for d in dir(regu.sys):
@@ -31,21 +50,21 @@ def _act_arch_trads(l_d_t, arch):
             d[l] = list(set(t))
     l_d_t[:] = [d for d in l_d_t if all(len(t) and all(len(i) for i in t) for l, t in d.items())]
 
-    with open(arch, 'w', encoding='UTF-8') as d:
-        json.dump(l_d_t, d, ensure_ascii=False, indent=2)
+    copiar_archivo(archivo_json, archivo_json_respaldo)
 
-
-archivo_json = pkg_resources.resource_filename('tinamit.Unidades', 'trads_unids.json')
-if not os.path.isfile(archivo_json):
-    l_dic_trads = []
-else:
     try:
-        with open(archivo_json, encoding='UTF-8') as d_j:
-            l_dic_trads = json.load(d_j)  # type: list[dict]
-    except json.JSONDecodeError:
-        l_dic_trads = []
+        with open(archivo_json, 'w', encoding='UTF-8') as d:
+            json.dump(l_d_t, d, ensure_ascii=False, indent=2)
+    except PermissionError:
+        pass
 
-_act_arch_trads(l_d_t=l_dic_trads, arch=archivo_json)
+    try:
+        os.remove(archivo_json_respaldo)
+    except (PermissionError, FileNotFoundError):
+        pass
+
+
+_act_arch_trads(l_d_t=l_dic_trads)
 
 
 def trad_unid(unid, leng_final, leng_orig=None):
@@ -110,7 +129,7 @@ def agregar_trad(unid, trad, leng_trad, leng_orig=None, guardar=True):
         raise TypeError()
 
     if guardar:
-        _act_arch_trads(l_dic_trads, archivo_json)
+        _act_arch_trads(l_dic_trads)
 
 
 def agregar_sinónimos(unid, sinónimos, leng=None, guardar=True):
@@ -123,7 +142,7 @@ def agregar_sinónimos(unid, sinónimos, leng=None, guardar=True):
         raise TypeError()
 
     if guardar:
-        _act_arch_trads(l_dic_trads, archivo_json)
+        _act_arch_trads(l_dic_trads)
 
 
 def _buscar_d_unid(unid, leng=None):

@@ -103,7 +103,7 @@ class Test_ModeloSenc(unittest.TestCase):
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                unids_mod = {v: d_v['líms'] for v, d_v in mod.variables.items()}
+                unids_mod = {v: mod.obt_lims_var(v) for v in mod.variables}
                 símismo.assertDictEqual(unids, unids_mod)
 
     def test_cmb_vals_inic_constante(símismo):

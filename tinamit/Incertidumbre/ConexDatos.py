@@ -298,7 +298,7 @@ class ConexDatos(object):
             símismo.modelo.simular(tiempo_final=tiempo_final, paso=paso,
                                    nombre_corrida='{}_{}'.format(nombre_corrida, lg),
                                    fecha_inic=fecha_inic, tcr=tcr,
-                                   recalc=recalc, clima=clima)
+                                   recalc_clima=recalc, clima=clima)
 
     def validar(símismo, tiempo_final, paso, nombre_corrida='Corrida Tinamït', fecha_inic=None, tcr=None,
                 recalc=False, clima=False, escala=None, en=None, por=None, orden=None, vars_valid=None):

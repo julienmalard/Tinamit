@@ -139,17 +139,6 @@ class EnvolturaBF(Modelo):
     def _aplicar_cambios_vals_inic(símismo):
         pass
 
-    def act_vals_clima(símismo, n_paso, f):
-        """
-
-        :param n_paso:
-        :type n_paso: int
-        :param f:
-        :type f:
-
-        """
-        símismo.modelo.act_vals_clima(n_paso=n_paso, f=f)
-
     def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
         Inicializa el modelo biofísico interno, incluyendo la inicialización de variables.
@@ -354,7 +343,7 @@ class ModeloImpaciente(ModeloBF):
 
     def act_vals_clima(símismo, n_paso, f):
         """
-        Actualiza los variables climáticos., según la estación.
+        Actualiza los variables climáticos, según la estación.
 
         :param n_paso: El número de pasos para avanzar
         :type n_paso: int

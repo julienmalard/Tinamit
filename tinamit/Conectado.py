@@ -254,7 +254,7 @@ class SuperConectado(Modelo):
             # Ahora, pedimos a los submodelos de hacer los cambios en los modelos externos, si hay.
             símismo.modelos[mod].cambiar_vals(valores={var: val})
 
-    def _conectar_clima(símismo, n_pasos, lugar, fecha_inic, tcr, recalc):
+    def _conectar_clima(símismo, n_pasos, lugar, fecha_inic, escenario, recalc):
         """
         Esta función conecta el clima de un lugar con el modelo Conectado.
 
@@ -264,8 +264,8 @@ class SuperConectado(Modelo):
         :type lugar: Lugar
         :param fecha_inic: La fecha inicial de la simulación.
         :type fecha_inic: ft.date | ft.datetime | str | int
-        :param tcr: El escenario climático según el sistema de la IPCC (2.6, 4.5, 6.0, o 8.5)
-        :type tcr: str | float
+        :param escenario: El escenario climático según el sistema de la IPCC (2.6, 4.5, 6.0, o 8.5)
+        :type escenario: str | float
 
         """
 
@@ -309,21 +309,7 @@ class SuperConectado(Modelo):
             raise ValueError(_('Debes especificar la conversión de la unidad de tiempo a meses o a días.'))
 
         # Obtener los datos de lugares
-        lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=tcr, regenerar=recalc)
-
-    def act_vals_clima(símismo, n_paso, f):
-        """
-        Actualiza los variables climáticos según la fecha.
-
-        :param n_paso: El número de pasos en adelante para cuales tenemos que obtener predicciones.
-        :type n_paso: int
-        :param f: La fecha actual.
-        :type f: ft.datetime | ft.date
-
-        """
-
-        for nombre, mod in símismo.modelos.items():
-            mod.act_vals_clima(n_paso=símismo.conv_tiempo[nombre] * n_paso, f=f)
+        lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=escenario, regenerar=recalc)
 
     def paralelizable(símismo):
         """
@@ -335,8 +321,8 @@ class SuperConectado(Modelo):
 
         return all(mod.paralelizable() for mod in símismo.modelos.values())
 
-    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None, tcr=None,
-                recalc=True, clima=False, vars_interés=None):
+    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None,
+                clima=None, recalc_clima=True, vars_interés=None):
         """
         Simula el modelo :class:`~tinamit.Conectado.SuperConectado`.
 
@@ -359,8 +345,8 @@ class SuperConectado(Modelo):
           el clima histórico.
         :type tcr: str | float | int
 
-        :param recalc: Si quieres recalcular los datos climáticos, si ya existen.
-        :type recalc: bool
+        :param recalc_clima: Si quieres recalcular los datos climáticos, si ya existen.
+        :type recalc_clima: bool
 
         :param clima: Si es una simulación de cambios climáticos o no.
         :type clima: bool
@@ -391,7 +377,21 @@ class SuperConectado(Modelo):
         # Todo el restode la simulación se hace como en la clase pariente
         return super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida,
                                fecha_inic=fecha_inic,
-                               lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, vars_interés=vars_interés)
+                               lugar=lugar, recalc_clima=recalc_clima, clima=clima, vars_interés=vars_interés)
+
+    def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
+                         fecha_inic=None, lugar=None, clima=None, recalc_clima=True, combinar=True, dibujar=None,
+                         paralelo=True, devolver=None):
+
+        # Si los valores iniciales si dieron en el formato {submodelo1: {dic vals}, ...}, ponerlo en una lista
+        # para que no pensemos que cada nombre de modelo es un nombre de corrida.
+        if isinstance(vals_inic, dict):
+            if all(x in símismo.modelos for x in vals_inic):
+                vals_inic = [vals_inic]
+
+        # Llamar la función correspondiente de la clase pariente.
+        return super().simular_paralelo(tiempo_final, paso, nombre_corrida, vals_inic, fecha_inic, lugar, clima,
+                                        recalc_clima, combinar, dibujar, paralelo, devolver)
 
     def inic_val_var(símismo, var, val):
 
@@ -680,12 +680,12 @@ class SuperConectado(Modelo):
                 if quitar:
                     símismo.conexiones.pop(n)
 
-    def estab_conv_meses(símismo, conv):
+    def estab_conv_unid_tiempo(símismo, unid_ref, factor):
 
-        super().estab_conv_meses(conv)
+        super().estab_conv_unid_tiempo(unid_ref, factor)
+
         for mod in símismo.modelos.values():
-            if mod.unidad_tiempo() == símismo.unidad_tiempo():
-                mod.estab_conv_meses(conv)
+            mod.estab_conv_unid_tiempo(unid_ref, factor)
 
     def valid_var(símismo, var):
         if var in símismo.variables:

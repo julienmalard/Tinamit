@@ -77,6 +77,31 @@ class Test_Conectado(unittest.TestCase):
                 for c in resultados:
                     npt.assert_allclose(referencia[c]['mds_Lago'], resultados[c]['mds_Lago'], rtol=0.001)
 
+    def test_simular_paralelo_sin_paralelo(símismo):
+        """
+        Comprobamos que :func:`SuperConectado.simular_paralelo` funcione igual con o sin paralelización.
+
+        """
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                t_final = 100
+
+                sin_paral = mod.simular_paralelo(
+                    tiempo_final=t_final,
+                    vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
+                    devolver='Lago',
+                    paralelo=False
+                )
+
+                con_paral = mod.simular_paralelo(
+                    tiempo_final=t_final,
+                    vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
+                    devolver='Lago'
+                )
+
+                for c in sin_paral:
+                    npt.assert_allclose(sin_paral[c]['mds_Lago'], con_paral[c]['mds_Lago'], rtol=0.001)
+
     @classmethod
     def tearDownClass(cls):
         """
