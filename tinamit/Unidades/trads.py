@@ -46,15 +46,17 @@ else:
         l_dic_trads = []
 
 _act_arch_trads(l_d_t=l_dic_trads, arch=archivo_json)
+_pluriales = ['s', 'es', 'ें', 'கள்', 'க்கள்']
 
 
 def trad_unid(unid, leng_final, leng_orig=None):
     unid = unid.lower()
 
-    if unid[-1] == 's':
-        l_u = [unid, unid[:-1]]
-    else:
-        l_u = [unid]
+    l_u = [unid]
+    for p in _pluriales:
+        if unid[-len(p)] == p:
+            l_u.append(unid[:len(p)])
+
 
     unid_t = None
     if leng_orig is None:
@@ -138,11 +140,13 @@ def _buscar_d_unid(unid, leng=None):
     else:
         d_unid = next((x for x in l_dic_trads if leng in x and unid in x[leng]), None)
         if d_unid is None:
-            pluriales = ['s', 'es', 'ें', 'கள்', 'க்கள்']
-            for p in pluriales:
+
+            for p in _pluriales:
                 t = len(p)
                 if unid[-t] == p:
                     d_unid = next((x for x in l_dic_trads if leng in x and unid[:-t] in x[leng]), None)
+                    if d_unid is not None:
+                        return d_unid
 
         if d_unid is None:
             raise ValueError(_('La unidad "{}" no existe en la lengua "{}".').format(unid, leng))
