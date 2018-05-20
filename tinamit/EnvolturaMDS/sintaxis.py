@@ -13,6 +13,9 @@ except ImportError:
     pm = None
 
 
+l_dialectos_potenciales = [resource_filename('tinamit.EnvolturaMDS', 'gram_ec_tinamït.g')]
+
+
 def sacar_variables(texto, rgx, n=None, excluir=None):
     """
     Esta ecuación saca los variables de un texto.
@@ -211,23 +214,26 @@ class _Transformador(Transformer):
 
 
 class Ecuación(object):
-    def __init__(símismo, ec, dialecto):
+    def __init__(símismo, ec, dialecto=None):
         símismo.ec = ec
-        símismo.dialecto = dialecto.lower()
 
-        if símismo.dialecto == 'tinamït':
-            gramática = resource_filename('tinamit.EnvolturaMDS', 'gram_ec_tinamït.g')
-        elif símismo.dialecto in ['modelovensimmdl', 'modelovensim']:
-            gramática = resource_filename('tinamit.EnvolturaMDS', 'gram_Vensim.g')
-        else:
-            raise ValueError('')
+        if dialecto is None:
+            dialecto = l_dialectos_potenciales
+        elif isinstance(dialecto, str):
+            dialecto = [dialecto]
 
-        with open(gramática) as gm:
-            anlzdr = Lark(gm, parser='lalr', start='ec')
-
-        try:
-            símismo.árbol = _Transformador().transform(anlzdr.parse(ec))[0]
-        except BaseException as e:
+        anlzdr = None
+        errores = []
+        for dial in dialecto:
+            try:
+                with open(dial) as gm:
+                    anlzdr = Lark(gm, parser='lalr', start='ec')
+                símismo.árbol = _Transformador().transform(anlzdr.parse(ec))[0]
+                símismo.dialecto = dial.lower()
+                break
+            except BaseException as e:
+                errores.append(e)
+        if anlzdr is None:
             raise ValueError('Error en la ecuación "{}". Detalles: {}'.format(ec, e))
 
     def variables(símismo):
@@ -515,28 +521,3 @@ def conv_fun(fun, dialecto_0, dialecto_1):
         return dic_funs[fun][dialecto_1]
     else:
         return dic_funs[dic_funs_inv[dialecto_0][fun]][dialecto_1]
-
-
-if __name__ == '__main__':
-
-    ecs = ['1', 'a', 'abv', "ab c", 'MIN(a[poli, canal],3)', '"abs()(\"#$0978"', '0.004/(5*12)',
-           'MIN(2+ 3, abc d + 4) * 1 + 3', '1 + 2 * 3',
-           'வண்க்கம்']
-
-    with open('C:\\Users\\jmalar1\\PycharmProjects\\Tinamit\\tinamit\\EnvolturaMDS\\gram_Vensim.g') as grm:
-        analizador = Lark(grm, parser='lalr', start='ec')
-
-    for Ec in ecs:
-        print('=============')
-        Ec = 'b/(educación+a)+c'
-        print(Ec)
-        árbol = analizador.parse(Ec)
-        print(árbol.pretty())
-        print(_Transformador().transform(árbol))
-        e = Ecuación(Ec, dialecto='Vensim')
-        print(e.gen_texto(paráms=['a', 'b', 'c']))
-
-        m = e.gen_mod_bayes(paráms=['a', 'b', 'c'], líms_paráms=[(None, None), (None, None), (None, None)],
-                            obs_x={'educación': np.array([1, 2, 3])}, obs_y=np.array([0, 0, 1]))
-        with m:
-            pm.sample()

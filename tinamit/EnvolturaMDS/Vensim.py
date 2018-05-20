@@ -320,7 +320,7 @@ class ModeloVensim(EnvolturaMDS):
 
         # Sacar las unidades y las dimensiones de los variables, e identificar los variables constantes
         for l in [símismo.editables, símismo.constantes, símismo.niveles, símismo.auxiliares, símismo.flujos,
-                  símismo.variables, símismo.dic_info_vars]:
+                  símismo.variables]:
             l.clear()
 
         editables = símismo.editables
@@ -328,7 +328,6 @@ class ModeloVensim(EnvolturaMDS):
         niveles = símismo.niveles
         auxiliares = símismo.auxiliares
         flujos = símismo.flujos
-        dic_info_vars = símismo.dic_info_vars
 
         # Primero, verificamos el tamañano de memoria necesario para guardar una lista de los nombres de los variables.
 
@@ -405,6 +404,11 @@ class ModeloVensim(EnvolturaMDS):
             # Leer la descripción del variable.
             info = símismo.obt_atrib_var(var, 2)
 
+            # Leer la ecuación del variable, sus hijos y sus parientes directamente de Vensim
+            ec = símismo.obt_atrib_var(var, 3)
+            hijos = símismo.obt_atrib_var(var, 5)
+            parientes = símismo.obt_atrib_var(var, 4)
+
             # Actualizar el diccionario de variables.
             # Para cada variable, creamos un diccionario especial, con su valor y unidades. Puede ser un variable
             # de ingreso si es de tipo editable ("Gaming"), y puede ser un variable de egreso si no es un valor
@@ -414,29 +418,30 @@ class ModeloVensim(EnvolturaMDS):
                        'ingreso': var in editables,
                        'dims': dims,
                        'subscriptos': nombres_subs,
+                       'ec': ec,
+                       'hijos': hijos,
+                       'parientes': parientes,
                        'egreso': var not in constantes,
                        'líms': rango,
                        'info': info}
 
-            # Guadar el diccionario del variable en el diccionario general de variables.
+            # Guardar el diccionario del variable en el diccionario general de variables.
             símismo.variables[var] = dic_var
-
-            # Guardar información adicional
-            hijos = símismo.obt_atrib_var(var, 5)
-            parientes = símismo.obt_atrib_var(var, 4)
-            ec = símismo.obt_atrib_var(var, 3)
-            dic_info_vars[var] = {
-                'hijos': hijos,
-                'parientes': parientes,
-                'ec': ec}
 
         # Actualizar los auxiliares
         for var in símismo.auxiliares.copy():
-            for hijo in dic_info_vars[var]['hijos']:
+            for hijo in símismo.variables[var]['hijos']:
                 if hijo in símismo.niveles:
                     flujos.append(var)
                     if var in auxiliares:
                         auxiliares.remove(var)
+
+    def _anal_rel_causal(símismo):
+        """
+        Con el dll de Vensim, no necesitamos el cógido de :class:`EnvolturaMDS` para detectar los
+        hijos y parientes de cada variable; ya hicimos todo eso en :func:`ModeloVensim._inic_dic_vars`.
+        """
+        pass
 
     def unidad_tiempo(símismo):
         """
