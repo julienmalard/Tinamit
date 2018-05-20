@@ -1,3 +1,5 @@
+from random import random as alea
+
 from tinamit.BF import ModeloBF
 
 
@@ -9,6 +11,7 @@ class ModeloPrueba(ModeloBF):
     def _incrementar(símismo, paso):
         símismo._act_vals_dic_var({'Lluvia': símismo.obt_val_actual_var('Lago') / 10 * paso})
         símismo._act_vals_dic_var({'Escala': símismo.obt_val_actual_var('Escala') + 1})
+        símismo._act_vals_dic_var({'Aleatorio': alea()})
 
     def _leer_vals(símismo):
         pass

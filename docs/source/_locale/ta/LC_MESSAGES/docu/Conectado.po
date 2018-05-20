@@ -63,7 +63,7 @@ msgstr ""
 #: ../../../tinamit/Conectado.py:docstring of
 #: tinamit.Conectado.SuperConectado.estab_conv_tiempo:0
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.estab_modelo:0
+#: tinamit.Conectado.SuperConectado.agregar_modelo:0
 #: ../../../tinamit/Conectado.py:docstring of
 #: tinamit.Conectado.SuperConectado.incrementar:0
 #: ../../../tinamit/Conectado.py:docstring of
@@ -283,7 +283,7 @@ msgid "El factor de conversión con la unidad de tiempo del otro modelo."
 msgstr ""
 
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.estab_modelo:1
+#: tinamit.Conectado.SuperConectado.agregar_modelo:1
 msgid ""
 "Esta función agrega un modelo al SuperConectado. Una vez que dos modelos "
 "estén agregados, se pueden conectar y simular juntos."
@@ -293,7 +293,7 @@ msgstr ""
 "சேர்க்கும் அப்புறம், இரண்டுமே இணைத்து அவற்றையை சேர்ந்து பாவனை செய்யட்டும்."
 
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.estab_modelo:4
+#: tinamit.Conectado.SuperConectado.agregar_modelo:4
 msgid "El modelo para agregar."
 msgstr "சேர்க்கப்படும் மாதிரி"
 
@@ -314,12 +314,12 @@ msgstr "நேரம் படி."
 #: tinamit.Conectado.SuperConectado._inic_dic_vars:1
 msgid ""
 "Esta función no es necesaria, porque "
-":func:`~tinamit.Conectado.Conectado.estab_modelo` ya llama las funciones "
+":func:`~tinamit.Conectado.Conectado.agregar_modelo` ya llama las funciones "
 "necesarias, :func:`~tinamit.Modelo._inic_dic_vars` de los submodelos."
 msgstr ""
 "இந்த செயல்பாடு தேவை இல்லை, எனென்றால் துணைமாதிரிகளின் தேவையான செயல்பாடுகள், "
 ":func:`~tinamit.Modelo._inic_dic_vars`, ஏற்கனவை "
-":func:`~tinamit.Conectado.Conectado.estab_modelo` ஆல் அழைப்படுத்தன."
+":func:`~tinamit.Conectado.Conectado.agregar_modelo` ஆல் அழைப்படுத்தன."
 
 #: ../../../tinamit/Conectado.py:docstring of
 #: tinamit.Conectado.SuperConectado.iniciar_modelo:1

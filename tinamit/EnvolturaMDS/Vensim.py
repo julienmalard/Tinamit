@@ -274,7 +274,7 @@ class ModeloVensim(EnvolturaMDS):
 
     instalado = dll_Vensim is not None
 
-    def __init__(símismo, archivo):
+    def __init__(símismo, archivo, nombre='mds'):
         """
         La función de inicialización del modelo. Creamos el vínculo con el DLL de VENSIM y cargamos el modelo
         especificado.
@@ -311,7 +311,7 @@ class ModeloVensim(EnvolturaMDS):
         símismo.editables = []
 
         # Inicializar ModeloVENSIM como una EnvolturaMDS.
-        super().__init__(archivo=archivo)
+        super().__init__(archivo=archivo, nombre=nombre)
 
     def _inic_dic_vars(símismo):
         """

@@ -59,7 +59,7 @@ msgstr ""
 #: ../../../tinamit/Conectado.py:docstring of
 #: tinamit.Conectado.SuperConectado.estab_conv_tiempo:0
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.estab_modelo:0
+#: tinamit.Conectado.SuperConectado.agregar_modelo:0
 #: ../../../tinamit/Conectado.py:docstring of
 #: tinamit.Conectado.SuperConectado.incrementar:0
 #: ../../../tinamit/Conectado.py:docstring of
@@ -271,14 +271,14 @@ msgid "El factor de conversión con la unidad de tiempo del otro modelo."
 msgstr ""
 
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.estab_modelo:1
+#: tinamit.Conectado.SuperConectado.agregar_modelo:1
 msgid ""
 "Esta función agrega un modelo al SuperConectado. Una vez que dos modelos "
 "estén agregados, se pueden conectar y simular juntos."
 msgstr ""
 
 #: ../../../tinamit/Conectado.py:docstring of
-#: tinamit.Conectado.SuperConectado.estab_modelo:4
+#: tinamit.Conectado.SuperConectado.agregar_modelo:4
 msgid "El modelo para agregar."
 msgstr ""
 
@@ -299,7 +299,7 @@ msgstr ""
 #: tinamit.Conectado.SuperConectado._inic_dic_vars:1
 msgid ""
 "Esta función no es necesaria, porque "
-":func:`~tinamit.Conectado.Conectado.estab_modelo` ya llama las funciones "
+":func:`~tinamit.Conectado.Conectado.agregar_modelo` ya llama las funciones "
 "necesarias, :func:`~tinamit.Modelo._inic_dic_vars` de los submodelos."
 msgstr ""
 

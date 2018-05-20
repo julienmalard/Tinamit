@@ -3,13 +3,16 @@ import unittest
 
 import numpy.testing as npt
 
-from tinamit.Unidades import trads
 from pruebas.test_mds import tipos_modelos, limpiar_mds
 from tinamit.BF import EnvolturaBF
-from tinamit.Conectado import Conectado
+from tinamit.Conectado import Conectado, SuperConectado
+from tinamit.EnvolturaMDS import ModeloPySD
+from tinamit.Unidades import trads
 
 dir_act = os.path.split(__file__)[0]
 arch_bf = os.path.join(dir_act, 'recursos/prueba_bf.py')
+arch_mds = os.path.join(dir_act, 'recursos/prueba_senc.mdl')
+arch_mod_vacío = os.path.join(dir_act, 'recursos/prueba_vacía.mdl')
 
 
 # Comprobar Conectado
@@ -33,6 +36,7 @@ class Test_Conectado(unittest.TestCase):
 
             mod_con.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)
             mod_con.conectar(var_mds='Lago', var_bf='Lago', mds_fuente=True)
+            mod_con.conectar(var_mds='Aleatorio', var_bf='Aleatorio', mds_fuente=False)
 
     def test_intercambio_de_variables_en_simular(símismo):
         """
@@ -85,10 +89,69 @@ class Test_Conectado(unittest.TestCase):
 
         limpiar_mds()
 
-# Comprobar SuperConectado
-
 
 # Comprobar 3+ modelos conectados
+class Test_3ModelosConectados(unittest.TestCase):
+    def test_conexión_horizontal(símismo):
+        """
+        Comprobar que la conexión de variables se haga correctamente con 3 submodelos conectados directamente
+        en el mismo :class:`SuperConectado`.
+        """
 
+        # Crear los 3 modelos
+        bf = EnvolturaBF(arch_bf, nombre='bf')
+        tercio = ModeloPySD(arch_mod_vacío, nombre='tercio')
+        mds = ModeloPySD(arch_mds, nombre='mds')
 
-# Comprobar modelos de estructura jerárquica
+        # El Conectado
+        conectado = SuperConectado()
+        for m in [bf, mds, tercio]:
+            conectado.agregar_modelo(m)
+
+        # Conectar variables entre dos de los modelos por el intermediario del tercero.
+        conectado.conectar_vars(var_fuente='Aleatorio', modelo_fuente='bf',
+                                var_recip='Aleatorio', modelo_recip='tercio')
+        conectado.conectar_vars(var_fuente='Aleatorio', modelo_fuente='tercio',
+                                var_recip='Aleatorio', modelo_recip='mds')
+
+        # Simular
+        res = conectado.simular(100, vars_interés=['bf_Aleatorio', 'mds_Aleatorio'])
+
+        # Comprobar que los resultados son iguales.
+        npt.assert_allclose(res['bf_Aleatorio'], res['mds_Aleatorio'], rtol=0.001)
+
+    # def test_conexión_jerárquica(símismo):
+    #     """
+    #     Comprobar que 3 modelos conectados de manera jerárquica a través de 2 :class:`SuperConectados` funcione
+    #     bien. No es la manera más fácil o directa de conectar 3+ modelos, pero es importante que pueda funcionar
+    #     esta manera también.
+    #     """
+    #
+    #     # Los tres modelos
+    #     bf = EnvolturaBF(arch_bf, nombre='bf')
+    #     tercio = ModeloPySD(arch_mod_vacío, nombre='tercio')
+    #     mds = ModeloPySD(arch_mds, nombre='mds')
+    #
+    #     # El primer Conectado
+    #     conectado_sub = SuperConectado(nombre='sub')
+    #     conectado_sub.agregar_modelo(tercio)
+    #     conectado_sub.agregar_modelo(mds)
+    #     conectado_sub.conectar_vars(
+    #         var_fuente='Aleatorio', modelo_fuente='tercio',
+    #         var_recip='Aleatorio', modelo_recip='mds'
+    #     )
+    #
+    #     # El segundo Conectado
+    #     conectado = SuperConectado()
+    #     conectado.agregar_modelo(bf)
+    #     conectado.agregar_modelo(conectado_sub)
+    #     conectado.conectar_vars(
+    #         var_fuente='Aleatorio', modelo_fuente='bf',
+    #         var_recip='tercio_Aleatorio', modelo_recip='sub'
+    #     )
+    #
+    #     # Correr la simulación
+    #     res = conectado.simular(100, vars_interés=['bf_Aleatorio', 'sub_mds_Aleatorio'])
+    #
+    #     # Verificar que los resultados sean iguales.
+    #     npt.assert_allclose(res['bf_Aleatorio'], res['sub_mds_Aleatorio'], rtol=0.001)

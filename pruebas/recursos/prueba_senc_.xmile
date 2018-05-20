@@ -68,13 +68,5 @@
 
         </variables>
 
-        <views>
-            <view scroll_x="0" scroll_y="0" zoom="200" converter_size="medium">
-                <aux x="143" y="77" color="blue" name="auxiliary"></aux>
-            </view>
-            <view name="interface" scroll_x="0" scroll_y="0" zoom="0" page_width="788" page_height="528">
-                <simulation_delay>0.1</simulation_delay>
-            </view>
-        </views>
     </model>
 </xmile>

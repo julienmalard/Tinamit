@@ -41,7 +41,7 @@ msgstr ""
 #: tinamit.Conectado.SuperConectado.conectar_vars
 #: tinamit.Conectado.SuperConectado.desconectar_vars
 #: tinamit.Conectado.SuperConectado.estab_conv_tiempo
-#: tinamit.Conectado.SuperConectado.estab_modelo
+#: tinamit.Conectado.SuperConectado.agregar_modelo
 #: tinamit.Conectado.SuperConectado.incrementar
 #: tinamit.Conectado.SuperConectado.simular
 msgid "Parámetros"
@@ -178,13 +178,13 @@ msgstr ""
 msgid "El factor de conversión con la unidad de tiempo del otro modelo."
 msgstr ""
 
-#: of tinamit.Conectado.SuperConectado.estab_modelo:1
+#: of tinamit.Conectado.SuperConectado.agregar_modelo:1
 msgid ""
 "Esta función agrega un modelo al SuperConectado. Una vez que dos modelos "
 "estén agregados, se pueden conectar y simular juntos."
 msgstr ""
 
-#: of tinamit.Conectado.SuperConectado.estab_modelo:4
+#: of tinamit.Conectado.SuperConectado.agregar_modelo:4
 msgid "El modelo para agregar."
 msgstr ""
 
@@ -201,7 +201,7 @@ msgstr ""
 
 #: of tinamit.Conectado.SuperConectado._inic_dic_vars:1
 msgid ""
-"Esta función no es necesaria, porque :func:`.estab_modelo` ya llama las "
+"Esta función no es necesaria, porque :func:`.agregar_modelo` ya llama las "
 "funciones :func:`~tinamit.Modelo._inic_dic_vars` de los submodelos."
 msgstr ""
 

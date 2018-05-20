@@ -33,10 +33,14 @@ class EnvolturaBF(Modelo):
         """
 
         if isinstance(modelo, str):
-            símismo.archivo = modelo
 
             if not os.path.isfile(modelo):
                 raise ValueError(_('El archivo "{}" no existe... :(').format(modelo))
+
+            if os.path.splitext(modelo)[1] != '.py':
+                raise ValueError(_('El archivo "{}" no parece ser un archivo Python.').format(modelo))
+
+            símismo.archivo = modelo
 
             dir_mod, nombre_mod = os.path.split(modelo)
             sys.path.append(dir_mod)

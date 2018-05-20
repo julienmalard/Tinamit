@@ -396,7 +396,7 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
     control.cargar(fuente='')
 
     otro_modelo = mds(archivo_mds='')
-    control.estab_modelo(otro_modelo)
+    control.agregar_modelo(otro_modelo)
     control.recalibrar_ecs(cód_lugar='0113')  # Calibrar todas las equationes y constantes anteriormente calibradas
 
     control.guardar(proyecto='otro archivo')
