@@ -35,7 +35,7 @@ def generar_mds(archivo, motor=None):
     # Verificar si podemos leer este tipo de archivo.
     if ext not in dic_motores:
         # Mensaje para modelos todavía no incluidos en Tinamit.
-        raise TypeError(_('El tipo de modelo "{}" no se acepta como modelo DS en Tinamit al momento. Si piensas'
+        raise ValueError(_('El tipo de modelo "{}" no se acepta como modelo DS en Tinamit al momento. Si piensas'
                           'que podrías contribuir aquí, ¡contáctenos!').format(ext))
     else:
         errores = {}

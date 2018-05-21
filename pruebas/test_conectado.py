@@ -66,11 +66,11 @@ class Test_Conectado(unittest.TestCase):
                 referencia = {}
                 mod.inic_val_var('Nivel lago inicial', 50)
                 mod.simular(tiempo_final=t_final, vars_interés='Lago')
-                referencia['Corrida Tinamït_lago_50'] = {'mds_Lago': mod.leer_resultados('Lago')}
+                referencia['lago_50'] = {'mds_Lago': mod.leer_resultados('Lago')}
 
                 mod.inic_val_var('Nivel lago inicial', 2000)
                 mod.simular(tiempo_final=t_final, vars_interés='Lago')
-                referencia['Corrida Tinamït_lago_2000'] = {'mds_Lago': mod.leer_resultados('Lago')}
+                referencia['lago_2000'] = {'mds_Lago': mod.leer_resultados('Lago')}
 
                 resultados = mod.simular_paralelo(
                     tiempo_final=t_final,
@@ -94,13 +94,15 @@ class Test_Conectado(unittest.TestCase):
                     tiempo_final=t_final,
                     vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
                     devolver='Lago',
+                    nombre_corrida='Corrida Tinamït Prueba sin paralelo',
                     paralelo=False
                 )
 
                 con_paral = mod.simular_paralelo(
                     tiempo_final=t_final,
                     vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
-                    devolver='Lago'
+                    devolver='Lago',
+                    nombre_corrida='Corrida Tinamït Prueba paralelo'
                 )
 
                 for c in sin_paral:
@@ -180,3 +182,11 @@ class Test_3ModelosConectados(unittest.TestCase):
 
         # Verificar que los resultados sean iguales.
         npt.assert_allclose(res['bf_Aleatorio'], res['sub_mds_Aleatorio'], rtol=0.001)
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Limpiar todos los archivos temporarios.
+        """
+
+        limpiar_mds()

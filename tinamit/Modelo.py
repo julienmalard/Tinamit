@@ -428,7 +428,8 @@ class Modelo(object):
 
             # Formatear las corridas con sus nombres de corridas.
             corridas = {'{}{}'.format(nombre_corrida + '_' if nombre_corrida else '', ll): ops
-                        for ll, ops in dic_ops.items()}
+                        for ll, ops in dic_ops.items()}  # type: dict[str, dict]
+            nmb_corridas_res = list(dic_ops)
 
             # Y, por fin, si solamente tenemos una corrida que hacer, asegurarse que tenga un nombre.
             if len(corridas) == 1 and list(corridas)[0] == '':
@@ -475,6 +476,7 @@ class Modelo(object):
                         }
                     for i in range(n_corridas)
                 }
+                nmb_corridas_res = l_nombres
 
             elif isinstance(nombre_corrida, list):
                 # Si tenemos una lista de nombres de corridas...
@@ -491,6 +493,7 @@ class Modelo(object):
                     nmb: {ll: op[i] if isinstance(op, list) else op for ll, op in opciones.items()}
                     for i, nmb in enumerate(nombre_corrida)
                 }
+                nmb_corridas_res = nombre_corrida
 
             else:
                 raise TypeError(_('El nombre de corrida debe ser o una cadena de texto, o una lista de cadenas '
@@ -550,7 +553,7 @@ class Modelo(object):
 
             # Formatear los resultados, si hay.
             if resultados is not None:
-                resultados = {corr: res for corr, res in zip(corridas, resultados)}
+                resultados = {corr: res for corr, res in zip(nmb_corridas_res, resultados)}
 
         else:
             # Sino simplemente correrlas una tras otra con `Modelo.simular()`
@@ -566,7 +569,7 @@ class Modelo(object):
             resultados = {}
 
             # Para cada corrida...
-            for corr, d_prms_corr in corridas.items():
+            for corr_res, (corr, d_prms_corr) in zip(nmb_corridas_res, corridas.items()):
                 símismo.inic_vals_vars(dic_vals=d_vals_inic[corr])
 
                 d_prms_corr['vars_interés'] = devolver
@@ -575,20 +578,18 @@ class Modelo(object):
                 res = símismo.simular(**d_prms_corr, nombre_corrida=corr)
 
                 if res is not None:
-                    resultados[corr] = res
+                    resultados[corr_res] = res
 
             if not len(resultados):
                 resultados = None
 
         if dibujar is not None:
-            # Para hacer: formalizar para todos los modelos
-            if símismo.__class__.__name__ == 'Conectado':
-                if not isinstance(dibujar, list):
-                    dibujar = [dibujar]
+            if not isinstance(dibujar, list):
+                dibujar = [dibujar]
 
-                for dib in dibujar:
-                    for corr in corridas:
-                        símismo.dibujar_mapa(corrida=corr, **dib)
+            for dib in dibujar:
+                for corr in corridas:
+                    símismo.dibujar_mapa(corrida=corr, **dib)  # para hacer: arreglar
             else:
                 raise NotImplementedError
 
