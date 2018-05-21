@@ -8,7 +8,7 @@ from tinamit.MDS import EnvolturaMDS
 
 class ModeloPySD(EnvolturaMDS):
 
-    def __init__(símismo, archivo):
+    def __init__(símismo, archivo, nombre='mds'):
 
         ext = os.path.splitext(archivo)[1]
         if ext == '.mdl':
@@ -27,7 +27,7 @@ class ModeloPySD(EnvolturaMDS):
         símismo.paso_act = 0
         símismo.vars_para_cambiar = {}
 
-        super().__init__(archivo)
+        super().__init__(archivo, nombre=nombre)
 
     def _inic_dic_vars(símismo):
         símismo.variables.clear()

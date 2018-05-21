@@ -56,7 +56,7 @@ class SuperConectado(Modelo):
         # Inicializamos el SuperConectado como todos los Modelos.
         super().__init__(nombre=nombre)
 
-    def estab_modelo(símismo, modelo):
+    def agregar_modelo(símismo, modelo):
         """
         Esta función agrega un modelo al SuperConectado. Una vez que dos modelos estén agregados, se pueden conectar
         y simular juntos.
@@ -85,7 +85,7 @@ class SuperConectado(Modelo):
 
     def _inic_dic_vars(símismo):
         """
-        Esta función no es necesaria, porque :func:`~tinamit.Conectado.Conectado.estab_modelo` ya llama las funciones
+        Esta función no es necesaria, porque :func:`~tinamit.Conectado.Conectado.agregar_modelo` ya llama las funciones
         necesarias, :func:`~tinamit.Modelo._inic_dic_vars` de los submodelos.
 
         """
@@ -473,7 +473,7 @@ class SuperConectado(Modelo):
         # Verificar si hubo error
         for m, e in dic_err.items():
             if e:
-                raise ChildProcessError(_('Hubo error en el modelo "{}".').format(m))
+                raise ChildProcessError(_('Hubo error en el modelo "{}": {}').format(m, e))
 
         # Leer egresos
         símismo.leer_vals()
@@ -500,7 +500,6 @@ class SuperConectado(Modelo):
         Leamos los valores de los variables de los dos submodelos. Por la conexión entre los diccionarios de variables
         de los submodelos y del :class:`~tinamit.Conectado.SuperConectado`, no hay necesidad de actualizar el
         diccionario del :class:`~tinamit.Modelo.SuperConectado` sí mismo.
-
         """
 
         for mod in símismo.modelos.values():
@@ -604,21 +603,34 @@ class SuperConectado(Modelo):
                 raise ValueError(_('El variable "{}" no existe en el modelo "{}".').format(v, m))
 
         # Y también asegurarse de que el variable no haya sido conectado como variable recipiente ya.
-        if any(x['var_recip'] == var_recip and x['mod_recip'] == modelo_recip for x in símismo.conexiones):
+        if any(x['var_recip'] == var_recip and x['modelo_recip'] == modelo_recip for x in símismo.conexiones):
             avisar(_('El variable "{}" del modelo "{}" ya está conectado como variable recipiente. '
                      'Borraremos la conexión anterior.').format(var_recip, modelo_recip))
 
-        # Identificar los nombres de los variables fuente y recipiente, tanto como sus unidades y dimensiones.
+        # Identificar los nombres de los variables fuente y recipiente, tanto como sus unidades, dimensiones y límites.
         unid_fuente = símismo.modelos[modelo_fuente].obt_unidades_var(var_fuente)
         unid_recip = símismo.modelos[modelo_recip].obt_unidades_var(var_recip)
 
-        dims_recip = símismo.modelos[modelo_recip].obt_dims_var(var_recip)
         dims_fuente = símismo.modelos[modelo_fuente].obt_dims_var(var_fuente)
+        dims_recip = símismo.modelos[modelo_recip].obt_dims_var(var_recip)
+
+        líms_fuente = símismo.modelos[modelo_fuente].obt_lims_var(var_fuente)
+        líms_recip = símismo.modelos[modelo_recip].obt_lims_var(var_recip)
 
         # Verificar que las dimensiones sean compatibles
         if dims_fuente != dims_recip:
             raise ValueError(_('Las dimensiones de los dos variables ({}: {}; {}: {}) no son compatibles.')
                              .format(var_fuente, dims_fuente, var_recip, dims_recip))
+
+        # Verificar que los límites sean compatibles
+        if líms_recip[0] is not None and líms_recip[0] > líms_fuente[0]:
+            avisar(_('Pensamos bien avisarte que el límite inferior ({l_r}) del variable recipiente "{v_r}" '
+                     'queda superior al límite inferior ({l_f}) del variable fuente "{v_f}" de la conexión.'
+                     ).format(v_r=var_recip, v_f=var_fuente, l_r=líms_recip[0], l_f=líms_fuente[0]))
+        if líms_recip[1] is not None and líms_recip[1] < líms_fuente[1]:
+            avisar(_('Pensamos bien avisarte que el límite superior ({l_r}) del variable recipiente "{v_r}" '
+                     'queda inferior al límite superior ({l_f}) del variable fuente "{v_f}" de la conexión.'
+                     ).format(v_r=var_recip, v_f=var_fuente, l_r=líms_recip[1], l_f=líms_fuente[1]))
 
         if conv is None:
             # Si no se especificó factor de conversión...
@@ -757,7 +769,7 @@ class SuperConectado(Modelo):
     def __copy__(símismo):
         copia = super().__copy__()
         for m in símismo.modelos.values():
-            copia.estab_modelo(copiar(m))
+            copia.agregar_modelo(copiar(m))
         for c in símismo.conexiones:
             copia.conectar_vars(**c)
 
@@ -783,7 +795,7 @@ class SuperConectado(Modelo):
         super().__setstate__(estado)
 
         for m in estado['modelos']:
-            símismo.estab_modelo(pickle.loads(m))
+            símismo.agregar_modelo(pickle.loads(m))
         for c in estado['conexiones']:
             símismo.conectar_vars(**c)
 
@@ -828,7 +840,7 @@ class Conectado(SuperConectado):
             raise TypeError(_('Debes dar o un modelo DS, o la dirección hacia el archivo de uno.'))
 
         # Conectamos el modelo DS.
-        símismo.estab_modelo(modelo=modelo_mds)
+        símismo.agregar_modelo(modelo=modelo_mds)
 
         # Y hacemos la referencia rápida.
         símismo.mds = modelo_mds
@@ -851,7 +863,7 @@ class Conectado(SuperConectado):
             raise TypeError(_('Debes dar o un modelo BF, o la dirección hacia el archivo de uno.'))
 
         # Conectamos el modelo biofísico.
-        símismo.estab_modelo(modelo=modelo_bf)
+        símismo.agregar_modelo(modelo=modelo_bf)
 
         # Y guardamos la referencia rápida.
         símismo.bf = modelo_bf

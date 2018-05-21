@@ -28,7 +28,7 @@ else:
             l_dic_trads = []
 
 
-def _act_arch_trads(l_d_t):
+def _act_arch_trads(l_d_t, arch):
     c_unids = set()
 
     for d in dir(regu.sys):
@@ -53,7 +53,7 @@ def _act_arch_trads(l_d_t):
     copiar_archivo(archivo_json, archivo_json_respaldo)
 
     try:
-        with open(archivo_json, 'w', encoding='UTF-8') as d:
+        with open(arch, 'w', encoding='UTF-8') as d:
             json.dump(l_d_t, d, ensure_ascii=False, indent=2)
     except PermissionError:
         pass
@@ -63,17 +63,18 @@ def _act_arch_trads(l_d_t):
     except (PermissionError, FileNotFoundError):
         pass
 
-
-_act_arch_trads(l_d_t=l_dic_trads)
+_act_arch_trads(l_d_t=l_dic_trads, arch=archivo_json)
+_pluriales = ['s', 'es', 'ें', 'கள்', 'க்கள்']
 
 
 def trad_unid(unid, leng_final, leng_orig=None):
     unid = unid.lower()
 
-    if unid[-1] == 's':
-        l_u = [unid, unid[:-1]]
-    else:
-        l_u = [unid]
+    l_u = [unid]
+    for p in _pluriales:
+        if unid[-len(p)] == p:
+            l_u.append(unid[:len(p)])
+
 
     unid_t = None
     if leng_orig is None:
@@ -129,7 +130,7 @@ def agregar_trad(unid, trad, leng_trad, leng_orig=None, guardar=True):
         raise TypeError()
 
     if guardar:
-        _act_arch_trads(l_dic_trads)
+        _act_arch_trads(l_dic_trads, archivo_json)
 
 
 def agregar_sinónimos(unid, sinónimos, leng=None, guardar=True):
@@ -142,7 +143,7 @@ def agregar_sinónimos(unid, sinónimos, leng=None, guardar=True):
         raise TypeError()
 
     if guardar:
-        _act_arch_trads(l_dic_trads)
+        _act_arch_trads(l_dic_trads, archivo_json)
 
 
 def _buscar_d_unid(unid, leng=None):
@@ -157,11 +158,13 @@ def _buscar_d_unid(unid, leng=None):
     else:
         d_unid = next((x for x in l_dic_trads if leng in x and unid in x[leng]), None)
         if d_unid is None:
-            pluriales = ['s', 'es', 'ें', 'கள்', 'க்கள்']
-            for p in pluriales:
+
+            for p in _pluriales:
                 t = len(p)
                 if unid[-t] == p:
                     d_unid = next((x for x in l_dic_trads if leng in x and unid[:-t] in x[leng]), None)
+                    if d_unid is not None:
+                        return d_unid
 
         if d_unid is None:
             raise ValueError(_('La unidad "{}" no existe en la lengua "{}".').format(unid, leng))

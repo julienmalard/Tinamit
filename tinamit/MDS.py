@@ -6,6 +6,7 @@ import re
 import numpy as np
 
 from tinamit import _
+from tinamit.EnvolturaMDS.sintaxis import Ecuación
 from tinamit.Modelo import Modelo
 
 
@@ -32,28 +33,38 @@ class EnvolturaMDS(Modelo):
         símismo.auxiliares = []
         símismo.internos = []  # variables internos al EnvolturaMDS (p. ej., TIMESTEP y TIME en Vensim)
 
-        # Un diccionario con un poco de información adicional sobre los variables. Debe tener las llaves "hijos",
-        # "parientes" y "ec".
-
-        símismo.dic_info_vars = {}
-
         # Acordarse de dónde venimos
         símismo.archivo = archivo
 
         # Modelos DS se identifican por el nombre 'mds'.
         super().__init__(nombre=nombre)
 
+        # Analizar los parientes e hijos de cada variable
+        símismo._anal_rel_causal()
+
     def _inic_dic_vars(símismo):
         """
         Este método se deja a las subclases de :class:`~tinamit.EnvolturaMDS.EnvolturaMDS` para implementar. Además de
         los diccionarios de variables normales, debe establecer `símismo.constantes`, `símismo.flujos`,
-        `símismo.niveles`, `símismo.editables`, `símismo.auxiliares`, y `símismo.dic_info_vars`. Este último
+        `símismo.niveles`, `símismo.editables`, y `símismo.auxiliares`. Este último
         debe tener las llaves "hijos", "parientes" y "ec".
 
         Ver :func:`Modelo.Modelo._inic_dic_vars` para más información.
         """
 
         raise NotImplementedError
+
+    def _anal_rel_causal(símismo):
+        for v, d_v in símismo.variables.items():
+            if 'ec' in d_v:
+                hijos = Ecuación(d_v['ec']).variables()
+
+                d_v['hijos'] = hijos
+                for h in hijos:
+                    d_h = símismo.variables[h]
+                    if 'parientes' not in d_h:
+                        d_h['parientes'] = []
+                    d_h['parientes'].append(v)
 
     def unidad_tiempo(símismo):
         """
