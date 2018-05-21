@@ -52,6 +52,9 @@
   {
     "en": [
       "year"
+    ],
+    "es": [
+      "año"
     ]
   },
   {
@@ -722,6 +725,9 @@
   {
     "en": [
       "month"
+    ],
+    "es": [
+      "mes"
     ]
   },
   {
@@ -1442,6 +1448,266 @@
   {
     "en": [
       "Gy"
+    ]
+  },
+  {
+    "en": [
+      "in_Hg"
+    ]
+  },
+  {
+    "en": [
+      "degC"
+    ]
+  },
+  {
+    "en": [
+      "degF"
+    ]
+  },
+  {
+    "en": [
+      "US_hundredweight"
+    ]
+  },
+  {
+    "en": [
+      "water_60F"
+    ]
+  },
+  {
+    "en": [
+      "Bq"
+    ]
+  },
+  {
+    "en": [
+      "cm_Hg"
+    ]
+  },
+  {
+    "en": [
+      "US_therm"
+    ]
+  },
+  {
+    "en": [
+      "inch_H2O_39F"
+    ]
+  },
+  {
+    "en": [
+      "mercury_60F"
+    ]
+  },
+  {
+    "en": [
+      "Z_0"
+    ]
+  },
+  {
+    "en": [
+      "US_ton"
+    ]
+  },
+  {
+    "en": [
+      "ton_TNT"
+    ]
+  },
+  {
+    "en": [
+      "H2O"
+    ]
+  },
+  {
+    "en": [
+      "cmH2O"
+    ]
+  },
+  {
+    "en": [
+      "Hg"
+    ]
+  },
+  {
+    "en": [
+      "footH2O"
+    ]
+  },
+  {
+    "en": [
+      "foot_H2O"
+    ]
+  },
+  {
+    "en": [
+      "water_4C"
+    ]
+  },
+  {
+    "en": [
+      "UK_ton"
+    ]
+  },
+  {
+    "en": [
+      "Gy"
+    ]
+  },
+  {
+    "en": [
+      "inch_Hg_60F"
+    ]
+  },
+  {
+    "en": [
+      "mm_Hg"
+    ]
+  },
+  {
+    "en": [
+      "UK_hundredweight"
+    ]
+  },
+  {
+    "en": [
+      "degR"
+    ]
+  },
+  {
+    "en": [
+      "inch_H2O_60F"
+    ]
+  },
+  {
+    "en": [
+      "cm_Hg"
+    ]
+  },
+  {
+    "en": [
+      "H2O"
+    ]
+  },
+  {
+    "en": [
+      "ton_TNT"
+    ]
+  },
+  {
+    "en": [
+      "water_4C"
+    ]
+  },
+  {
+    "en": [
+      "UK_hundredweight"
+    ]
+  },
+  {
+    "en": [
+      "foot_H2O"
+    ]
+  },
+  {
+    "en": [
+      "in_Hg"
+    ]
+  },
+  {
+    "en": [
+      "inch_Hg_60F"
+    ]
+  },
+  {
+    "en": [
+      "inch_H2O_60F"
+    ]
+  },
+  {
+    "en": [
+      "water_60F"
+    ]
+  },
+  {
+    "en": [
+      "Z_0"
+    ]
+  },
+  {
+    "en": [
+      "degC"
+    ]
+  },
+  {
+    "en": [
+      "Gy"
+    ]
+  },
+  {
+    "en": [
+      "US_hundredweight"
+    ]
+  },
+  {
+    "en": [
+      "Hg"
+    ]
+  },
+  {
+    "en": [
+      "US_ton"
+    ]
+  },
+  {
+    "en": [
+      "mm_Hg"
+    ]
+  },
+  {
+    "en": [
+      "degF"
+    ]
+  },
+  {
+    "en": [
+      "degR"
+    ]
+  },
+  {
+    "en": [
+      "mercury_60F"
+    ]
+  },
+  {
+    "en": [
+      "footH2O"
+    ]
+  },
+  {
+    "en": [
+      "Bq"
+    ]
+  },
+  {
+    "en": [
+      "inch_H2O_39F"
+    ]
+  },
+  {
+    "en": [
+      "cmH2O"
+    ]
+  },
+  {
+    "en": [
+      "UK_ton"
+    ]
+  },
+  {
+    "en": [
+      "US_therm"
     ]
   }
 ]

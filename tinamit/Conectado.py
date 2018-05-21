@@ -254,6 +254,10 @@ class SuperConectado(Modelo):
             # Ahora, pedimos a los submodelos de hacer los cambios en los modelos externos, si hay.
             símismo.modelos[mod].cambiar_vals(valores={var: val})
 
+            for c in símismo.conexiones:
+                if c['modelo_fuente'] == mod and c['var_fuente'] == var:
+                    símismo.modelos[c['modelo_recip']].cambiar_vals(valores={c['var_recip']: val * c['conv']})
+
     def _conectar_clima(símismo, n_pasos, lugar, fecha_inic, escenario, recalc):
         """
         Esta función conecta el clima de un lugar con el modelo Conectado.

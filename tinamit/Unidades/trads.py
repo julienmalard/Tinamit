@@ -72,9 +72,11 @@ def trad_unid(unid, leng_final, leng_orig=None):
 
     l_u = [unid]
     for p in _pluriales:
-        if unid[-len(p)] == p:
-            l_u.append(unid[:len(p)])
-
+        try:
+            if unid[-len(p)] == p:
+                l_u.append(unid[:-len(p)])
+        except IndexError:
+            pass
 
     unid_t = None
     if leng_orig is None:
@@ -161,10 +163,13 @@ def _buscar_d_unid(unid, leng=None):
 
             for p in _pluriales:
                 t = len(p)
-                if unid[-t] == p:
-                    d_unid = next((x for x in l_dic_trads if leng in x and unid[:-t] in x[leng]), None)
-                    if d_unid is not None:
-                        return d_unid
+                try:
+                    if unid[-t] == p:
+                        d_unid = next((x for x in l_dic_trads if leng in x and unid[:-t] in x[leng]), None)
+                        if d_unid is not None:
+                            return d_unid
+                except IndexError:
+                    pass
 
         if d_unid is None:
             raise ValueError(_('La unidad "{}" no existe en la lengua "{}".').format(unid, leng))

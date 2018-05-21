@@ -145,38 +145,38 @@ class Test_3ModelosConectados(unittest.TestCase):
         # Comprobar que los resultados son iguales.
         npt.assert_allclose(res['bf_Aleatorio'], res['mds_Aleatorio'], rtol=0.001)
 
-    # def test_conexión_jerárquica(símismo):
-    #     """
-    #     Comprobar que 3 modelos conectados de manera jerárquica a través de 2 :class:`SuperConectados` funcione
-    #     bien. No es la manera más fácil o directa de conectar 3+ modelos, pero es importante que pueda funcionar
-    #     esta manera también.
-    #     """
-    #
-    #     # Los tres modelos
-    #     bf = EnvolturaBF(arch_bf, nombre='bf')
-    #     tercio = ModeloPySD(arch_mod_vacío, nombre='tercio')
-    #     mds = ModeloPySD(arch_mds, nombre='mds')
-    #
-    #     # El primer Conectado
-    #     conectado_sub = SuperConectado(nombre='sub')
-    #     conectado_sub.agregar_modelo(tercio)
-    #     conectado_sub.agregar_modelo(mds)
-    #     conectado_sub.conectar_vars(
-    #         var_fuente='Aleatorio', modelo_fuente='tercio',
-    #         var_recip='Aleatorio', modelo_recip='mds'
-    #     )
-    #
-    #     # El segundo Conectado
-    #     conectado = SuperConectado()
-    #     conectado.agregar_modelo(bf)
-    #     conectado.agregar_modelo(conectado_sub)
-    #     conectado.conectar_vars(
-    #         var_fuente='Aleatorio', modelo_fuente='bf',
-    #         var_recip='tercio_Aleatorio', modelo_recip='sub'
-    #     )
-    #
-    #     # Correr la simulación
-    #     res = conectado.simular(100, vars_interés=['bf_Aleatorio', 'sub_mds_Aleatorio'])
-    #
-    #     # Verificar que los resultados sean iguales.
-    #     npt.assert_allclose(res['bf_Aleatorio'], res['sub_mds_Aleatorio'], rtol=0.001)
+    def test_conexión_jerárquica(símismo):
+        """
+        Comprobar que 3 modelos conectados de manera jerárquica a través de 2 :class:`SuperConectados` funcione
+        bien. No es la manera más fácil o directa de conectar 3+ modelos, pero es importante que pueda funcionar
+        esta manera también.
+        """
+
+        # Los tres modelos
+        bf = EnvolturaBF(arch_bf, nombre='bf')
+        tercio = ModeloPySD(arch_mod_vacío, nombre='tercio')
+        mds = ModeloPySD(arch_mds, nombre='mds')
+
+        # El primer Conectado
+        conectado_sub = SuperConectado(nombre='sub')
+        conectado_sub.agregar_modelo(tercio)
+        conectado_sub.agregar_modelo(mds)
+        conectado_sub.conectar_vars(
+            var_fuente='Aleatorio', modelo_fuente='tercio',
+            var_recip='Aleatorio', modelo_recip='mds'
+        )
+
+        # El segundo Conectado
+        conectado = SuperConectado()
+        conectado.agregar_modelo(bf)
+        conectado.agregar_modelo(conectado_sub)
+        conectado.conectar_vars(
+            var_fuente='Aleatorio', modelo_fuente='bf',
+            var_recip='tercio_Aleatorio', modelo_recip='sub'
+        )
+
+        # Correr la simulación
+        res = conectado.simular(100, vars_interés=['bf_Aleatorio', 'sub_mds_Aleatorio'])
+
+        # Verificar que los resultados sean iguales.
+        npt.assert_allclose(res['bf_Aleatorio'], res['sub_mds_Aleatorio'], rtol=0.001)

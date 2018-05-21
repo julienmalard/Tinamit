@@ -153,7 +153,7 @@ class Modelo(object):
 
         """
 
-        # Calcular la fecha final
+        # Calcular la fecha final  para hacer: utilizar conversiones ya especificadas y agregar años
         fecha_final = None
         n_días = None
         try:
@@ -172,7 +172,7 @@ class Modelo(object):
                 pass
 
         if fecha_final is None:
-            raise ValueError('')
+            raise ValueError(_('No pudimos convertir "{}" a días, meses o años.').format(símismo.unidad_tiempo()))
 
         # Obtener los datos de lugares
         lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=escenario, regenerar=recalc)
@@ -220,18 +220,20 @@ class Modelo(object):
         else:
             fecha_act = None
 
-        unid_ref = símismo._conv_unid_tiempo['unid_ref']
-        if unid_ref is None:
-            unid_ref = símismo.unidad_tiempo()
+        unid_ref_tiempo = símismo._conv_unid_tiempo['unid_ref']
+        if unid_ref_tiempo is None:
+            unid_ref_tiempo = símismo.unidad_tiempo()
         for u in ['año', 'mes', 'día']:
             try:
-                factor = convertir(de=unid_ref, a=u)
+                factor = convertir(de=unid_ref_tiempo, a=u)
                 if factor == 1:
-                    unid_ref = u
+                    unid_ref_tiempo = u
                     break
             except ValueError:
                 pass
-            raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a años, meses o días.').format(unid_ref))
+        if unid_ref_tiempo not in ['año', 'mes', 'día'] and fecha_inic is not None:
+            raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a años, meses o días.')
+                             .format(unid_ref_tiempo))
 
         # Verificar los nombres de los variables de interés
         if vars_interés is None:
@@ -258,11 +260,11 @@ class Modelo(object):
         for i in range(n_pasos):
 
             if fecha_inic is not None:
-                if unid_ref == 'año':
+                if unid_ref_tiempo == 'año':
                     fecha_próx = fecha_act + deltarelativo(year=paso)
-                elif unid_ref == 'mes':
+                elif unid_ref_tiempo == 'mes':
                     fecha_próx = fecha_act + deltarelativo(months=paso)
-                elif unid_ref == 'día':
+                elif unid_ref_tiempo == 'día':
                     fecha_próx = fecha_act + deltarelativo(days=paso)
                 else:
                     raise ValueError('')
@@ -286,7 +288,7 @@ class Modelo(object):
         símismo.cerrar_modelo()
 
         if vars_interés is not None:
-            return símismo.mem_vars
+            return copiar_profundo(símismo.mem_vars)
 
     def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
                          fecha_inic=None, lugar=None, clima=None, recalc_clima=True, combinar=True,
@@ -566,6 +568,8 @@ class Modelo(object):
             # Para cada corrida...
             for corr, d_prms_corr in corridas.items():
                 símismo.inic_vals_vars(dic_vals=d_vals_inic[corr])
+
+                d_prms_corr['vars_interés'] = devolver
 
                 # Después, simular el modelo.
                 res = símismo.simular(**d_prms_corr, nombre_corrida=corr)
