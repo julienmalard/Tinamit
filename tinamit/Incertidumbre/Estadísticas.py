@@ -1,18 +1,22 @@
+import itertools
 from warnings import warn as avisar
 
 import numpy as np
+import scipy.stats as estad
+from scipy.optimize import minimize
+from scipy.stats import gaussian_kde
+
+from EnvolturaMDS.sintaxis import Ecuación
+from tinamit import _
 
 try:
     import pymc3 as pm
 except ImportError:
     pm = None
-from scipy.optimize import minimize
-import scipy.stats as estad
-from scipy.stats import gaussian_kde
 
-from tinamit import _
-
-if pm is not None:
+if pm is None:
+    dists = None
+else:
     dists = {'Beta': {'sp': estad.beta, 'pm': pm.Beta,
                       'sp_a_pm': lambda p: {'alpha': p[0], 'beta': p[1]}},
              'Cauchy': {'sp': estad.cauchy, 'pm': pm.Cauchy,
@@ -42,9 +46,122 @@ if pm is not None:
              }
 
 
+class Calibrador(object):
+    def __init__(símismo, ec):
+
+        if isinstance(ec, Ecuación):
+            símismo.ec = ec
+        else:
+            símismo.ec = Ecuación(ec)
+
+    def calibrar(símismo, var_y, paráms, líms_paráms, otras_ecs, método, bd_datos, en=None,
+                 escala=None, ops_método=None):
+
+        if ops_método is None:
+            ops_método = {}
+
+        if método is None:
+            if pm is not None:
+                método = 'inferencia bayesiana'
+            else:
+                método = 'optimizar'
+        else:
+            método = método.lower()
+
+        lugares = bd_datos.geog_obt_lugares_en(en, escala=escala)
+        jerarquía = bd_datos.geog_obt_jerarquía(lugares)
+
+        vars_x = list(set(itertools.chain.from_iterable(
+            [Ecuación(e).variables for e in otras_ecs.values()] +
+            [x for x in símismo.ec.variables() if x not in otras_ecs and x not in paráms]
+        )))
+
+        if método == 'inferencia bayesiana':
+            return símismo._calibrar_bayesiana(
+                paráms=paráms, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms, otras_ecs=otras_ecs,
+                ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, jerarquía=jerarquía
+            )
+        elif método == 'optimizar':
+            return símismo._calibrar_opt(
+                paráms=paráms, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms, otras_ecs=otras_ecs,
+                ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, jerarquía=jerarquía
+            )
+        else:
+            raise ValueError(_('Método de calibración "{}" no reconocido.'))
+
+    def _calibrar_bayesiana(símismo, paráms, var_y, vars_x, líms_paráms, otras_ecs, ops_método,
+                            bd_datos, lugares, jerarquía):
+
+
+        mod_bayes, d_vars_obs = símismo.ec.gen_mod_bayes(
+            paráms=paráms, líms_paráms=líms_paráms,
+            obs_x=None, obs_y=None,
+            aprioris=None, binario=binario,
+            otras_ecs=otras_ecs
+        )
+        calibs = {None: líms_a_dists(líms_paráms)}
+
+        def obt_calib(lg):
+            ob = bd_datos.obt_datos_geog(lg, vars_x + var_y, excluir_faltan=True)
+            ob_x = ob[vars_x]
+            ob_y = ob[var_y]
+
+            if lg in calibs:
+                return calibs[lg]
+            else:
+                lg_sup = jerarquía[lg]
+                apr = obt_calib(lg_sup)
+                calibs[lg] = calib_bayes(mod_bayes, ob_x=ob_x, obs_y=ob_y, dists_aprioris=apr)
+                return calibs[lg]
+
+        for lgr in lugares:
+            if jerarquía is None:
+                obs = bd_datos.obt_datos_geog(lgr, vars_x + var_y, excluir_faltan=True)
+                obs_x = obs[vars_x]
+                obs_y = obs[var_y]
+
+                calibs[lgr] = calib_bayes(mod_bayes, obs_x=obs_x, obs_y=obs_y, dists_aprioris=calibs[None])
+            else:
+                obt_calib(lg=lgr)
+
+        return {l: c for l, c in calibs.items() if l in lugares}
+
+    def _calibrar_opt(símismo, paráms, var_y, vars_x, líms_paráms, otras_ecs, ops_método, bd_datos, lugares, jerarquía):
+
+        f_python = símismo.ec.gen_func_python(paráms=paráms, otras_ecs=otras_ecs)
+
+        if lugares is None:
+            obs = bd_datos.obt_datos(l_vars=vars_x + var_y, excluir_faltan=True)
+            resultados = optimizar(f_python, paráms=paráms, líms_paráms=líms_paráms,
+                                               obs_x=obs[vars_x], obs_y=obs[var_y], **ops_método)
+        else:
+            resultados = {}
+            for lg in lugares:
+                obs = bd_datos.obt_datos(l_vars=vars_x + var_y, lugares=lg, excluir_faltan=True)
+                if not len(obs):
+                    for nv in jerarquía:
+                        for mb in nv['miembros']:
+                            if lg in nv[mb]:
+                                obs = bd_datos.obt_datos(l_vars=vars_x + var_y, lugares=lg, excluir_faltan=True)
+                                if len(obs):
+                                    break
+                        if len(obs):
+                            break
+                if len(obs):
+                    resultados[lg] = optimizar(f_python, paráms=paráms, líms_paráms=líms_paráms,
+                                               obs_x=obs[vars_x], obs_y=obs[var_y], **ops_método)
+                else:
+                    avisar(_('No encontramos datos para el lugar "{}", ni siguiera en su jerarquía, y por eso'
+                             'no pudimos calibrarlo.').format(lg))
+                    resultados[lg] = {}
+
+        return resultados
+
+
 def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=None, binario=False, **ops):
     if pm is None:
         raise ImportError('')
+
     if dists_aprioris is not None:
 
         aprioris = []
@@ -80,19 +197,17 @@ def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=Non
             x = np.linspace(t[p].min() / escl - 1 * rango, t[p].max() / escl + 1 * rango, 1000)
             máx = x[np.argmax(fdp.evaluate(x))] * escl
             d_máx[p] = máx
-        except:
+        except BaseException:
             d_máx[p] = None
 
     return {p: {'val': d_máx[p], 'dist': t[p]} for p in paráms}
 
 
-def optimizar(obj_ec, paráms, líms_paráms, obs_x, obs_y, **ops):
+def optimizar(func, paráms, líms_paráms, obs_x, obs_y, **ops):
     try:
         med_ajuste = ops['med_ajuste']
     except KeyError:
         med_ajuste = 'rmec'
-
-    ec = obj_ec.gen_func_python()
 
     def f(p):
 
@@ -102,7 +217,7 @@ def optimizar(obj_ec, paráms, líms_paráms, obs_x, obs_y, **ops):
         else:
             raise ValueError('')
 
-        return f_ajuste(ec(p, obs_x), obs_y)
+        return f_ajuste(func(p, obs_x), obs_y)
 
     x0 = []
     for lp in líms_paráms:
@@ -121,13 +236,9 @@ def optimizar(obj_ec, paráms, líms_paráms, obs_x, obs_y, **ops):
     opt = minimize(f, x0=x0, bounds=líms_paráms, **ops)
 
     if not opt.success:
-        avisar(_('Error de optimización par aecuación "{}".').format(str(ec)))
+        avisar(_('Error de optimización para ecuación "{}".').format(str(func)))
 
     return {p: {'val': opt.x[i]} for i, p in enumerate(paráms)}
-
-
-def regresión(obj_ec, paráms, líms_paráms, obs_x, obs_y, **ops):
-    raise NotImplementedError
 
 
 def ajust_dist(datos, dists_potenciales):

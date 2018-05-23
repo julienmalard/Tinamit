@@ -12,6 +12,8 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
+from EnvolturaMDS.sintaxis import Ecuación
+from Incertidumbre.Estadísticas import Calibrador
 from tinamit import _, valid_nombre_arch
 from tinamit.Unidades.conv import convertir
 
@@ -27,6 +29,8 @@ class Modelo(object):
     # Una opción para precisar si un modelo está instalado en la computadora o no. Se usa en el caso de modelos que
     # dependen de un programa externo que podría no estar disponible en todas las computadoras que tienen Tinamït.
     instalado = True
+
+    leng_orig = 'es'
 
     def __init__(símismo, nombre):
         """
@@ -56,6 +60,7 @@ class Modelo(object):
 
         #
         símismo.calibs = {}
+        símismo.info_calibs = {'calibs': {}, 'micro calibs': {}}
 
         # Memorio de valores de variables (para leer los resultados más rápidamente después de una simulación).
         símismo.mem_vars = {}
@@ -75,7 +80,7 @@ class Modelo(object):
         # Listas de los nombres de los variables que sirven de conexión con otro modelo.
         símismo.vars_saliendo = set()
 
-        #
+        # Para manejar unidades de tiempo y su correspondencia con fechas iniciales.
         símismo._conv_unid_tiempo = {'unid_ref': None, 'factor': 1}
 
     def _inic_dic_vars(símismo):
@@ -135,10 +140,7 @@ class Modelo(object):
     def _aplicar_cambios_vals_inic(símismo):
         raise NotImplementedError
 
-    def especificar_var_saliendo(símismo, var):
-        símismo.vars_saliendo.add(var)
-
-    def _conectar_clima(símismo, n_pasos, lugar, fecha_inic, escenario, recalc):
+    def _conectar_clima(símismo, lugar, fecha_inic, fecha_final, escenario, recalc):
         """
         Esta función conecta el clima de un lugar con el modelo.
 
@@ -153,35 +155,73 @@ class Modelo(object):
 
         """
 
-        # Calcular la fecha final  para hacer: utilizar conversiones ya especificadas y agregar años
-        fecha_final = None
-        n_días = None
-        try:
-            n_días = convertir(de=símismo.unidad_tiempo(), a='días', val=n_pasos)
-        except ValueError:
-            pass
-
-        if n_días is not None:
-            fecha_final = fecha_inic + ft.timedelta(int(n_días))
-
-        else:
-            try:
-                n_meses = convertir(de=símismo.unidad_tiempo(), a='meses', val=n_pasos)
-                fecha_final = fecha_inic + deltarelativo(months=int(n_meses) + 1)
-            except ValueError:
-                pass
-
-        if fecha_final is None:
-            raise ValueError(_('No pudimos convertir "{}" a días, meses o años.').format(símismo.unidad_tiempo()))
-
         # Obtener los datos de lugares
         lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=escenario, regenerar=recalc)
 
     def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None,
                 recalc_clima=True, clima=None, vars_interés=None):
+        """
+
+        Parameters
+        ----------
+        tiempo_final :
+        paso :
+        nombre_corrida :
+        fecha_inic : ft.date
+        lugar :
+        recalc_clima :
+        clima :
+        vars_interés :
+
+        Returns
+        -------
+
+        """
 
         # Calcular el número de pasos necesario
         n_pasos = int(math.ceil(tiempo_final / paso))
+
+        # Si hay fecha inicial, tenemos que guardar cuenta de donde estamos en el calendario
+        if fecha_inic is None:
+            if clima is not None:
+                raise ValueError(_('Hay que especificar la fecha inicial para simulaciones de clima.'))
+        else:
+            if isinstance(fecha_inic, ft.datetime):
+                # Formatear la fecha inicial
+                fecha_inic = fecha_inic.date()
+            elif isinstance(fecha_inic, int):
+                año = fecha_inic
+                día = mes = 1
+                fecha_inic = ft.date(year=año, month=mes, day=día)
+            elif isinstance(fecha_inic, str):
+                try:
+                    fecha_inic = ft.datetime.strptime(fecha_inic, '%d/%m/%Y').date()
+                except ValueError:
+                    raise ValueError(_('La fecha inicial debe ser en el formato "día/mes/año", por ejemplo '
+                                       '"24/12/2017".'))
+        fecha_act = fecha_inic
+
+        # Preparar las unidades de tiempo
+        dic_trad_tiempo = {'año': 'year', 'mes': 'months', 'día': 'days'}
+        if fecha_inic is not None:
+            unid_ref_tiempo = símismo._conv_unid_tiempo['unid_ref']
+            if unid_ref_tiempo is None:
+                unid_ref_tiempo = símismo.unidad_tiempo()
+            for u in ['año', 'mes', 'día']:
+                try:
+                    factor = convertir(de=unid_ref_tiempo, a=u)
+                    if factor == 1:
+                        unid_ref_tiempo = u
+                        break
+                except ValueError:
+                    pass
+            if unid_ref_tiempo not in ['año', 'mes', 'día'] and fecha_inic is not None:
+                raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a años, meses o días.')
+                                 .format(unid_ref_tiempo))
+            fecha_final = fecha_inic + deltarelativo(*{dic_trad_tiempo[unid_ref_tiempo]: n_pasos})
+        else:
+            unid_ref_tiempo = None
+            fecha_final = None
 
         # Conectar el lugar
         símismo.lugar = lugar
@@ -189,51 +229,14 @@ class Modelo(object):
         # Conectar el clima, si necesario
         if clima is not None:
             if lugar is None:
-                raise ValueError(_('Hay que especificar un lugare para incorporar el clima.'))
+                raise ValueError(_('Hay que especificar un lugar para incorporar el clima.'))
             else:
-                if fecha_inic is None:
-                    raise ValueError(_('Hay que especificar la fecha inicial para simulaciones de clima.'))
-                elif isinstance(fecha_inic, ft.datetime):
-                    # Formatear la fecha inicial
-                    fecha_inic = fecha_inic.date()
-                elif isinstance(fecha_inic, int):
-                    año = fecha_inic
-                    día = mes = 1
-                    fecha_inic = ft.date(year=año, month=mes, day=día)
-                elif isinstance(fecha_inic, str):
-                    try:
-                        fecha_inic = ft.datetime.strptime(fecha_inic, '%d/%m/%Y').date()
-                    except ValueError:
-                        raise ValueError(_('La fecha inicial debe ser en el formato "día/mes/año", por ejemplo '
-                                           '"24/12/2017".'))
-
-                símismo._conectar_clima(n_pasos=n_pasos, lugar=lugar, fecha_inic=fecha_inic,
+                símismo._conectar_clima(lugar=lugar, fecha_inic=fecha_inic, fecha_final=fecha_final,
                                         escenario=clima, recalc=recalc_clima)
 
         # Iniciamos el modelo.
         símismo.corrida_activa = nombre_corrida
         símismo.iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
-
-        # Si hay fecha inicial, tenemos que guardar cuenta de donde estamos en el calendario
-        if fecha_inic is not None:
-            fecha_act = fecha_inic
-        else:
-            fecha_act = None
-
-        unid_ref_tiempo = símismo._conv_unid_tiempo['unid_ref']
-        if unid_ref_tiempo is None:
-            unid_ref_tiempo = símismo.unidad_tiempo()
-        for u in ['año', 'mes', 'día']:
-            try:
-                factor = convertir(de=unid_ref_tiempo, a=u)
-                if factor == 1:
-                    unid_ref_tiempo = u
-                    break
-            except ValueError:
-                pass
-        if unid_ref_tiempo not in ['año', 'mes', 'día'] and fecha_inic is not None:
-            raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a años, meses o días.')
-                             .format(unid_ref_tiempo))
 
         # Verificar los nombres de los variables de interés
         if vars_interés is None:
@@ -260,14 +263,7 @@ class Modelo(object):
         for i in range(n_pasos):
 
             if fecha_inic is not None:
-                if unid_ref_tiempo == 'año':
-                    fecha_próx = fecha_act + deltarelativo(year=paso)
-                elif unid_ref_tiempo == 'mes':
-                    fecha_próx = fecha_act + deltarelativo(months=paso)
-                elif unid_ref_tiempo == 'día':
-                    fecha_próx = fecha_act + deltarelativo(days=paso)
-                else:
-                    raise ValueError('')
+                fecha_próx = fecha_act + deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: paso})
 
                 # Actualizar variables de clima, si necesario
                 if clima:
@@ -898,6 +894,13 @@ class Modelo(object):
         var = símismo.valid_var(var)
         return símismo.variables[var]['dims']
 
+    def obt_ec_var(símismo, var):
+        var = símismo.valid_var(var)
+        try:
+            return símismo.variables[var]['ec']
+        except KeyError:
+            return
+
     def egresos(símismo):
         return [v for v, d_v in símismo.variables.items() if d_v['egreso']]
 
@@ -955,13 +958,172 @@ class Modelo(object):
         return False
 
     def actualizar_trads(símismo, auto_llenar=True):
-        raíz = arbole.Element('xliff')
+        raíz = arbole.Element('xliff', version='1.2')
+        arch = arbole.SubElement(raíz, 'file', datatype='Modelo Tinamït')
+        arch.set('source-language', símismo.leng_orig)
+        cuerpo = arbole.SubElement(arch, 'body')
+
+        for v in símismo.variables:
+            obj_trans = arbole.SubElement(cuerpo, 'trans-unit')
+            fnt = arbole.SubElement(obj_trans, 'source', lang=símismo.leng_orig)
 
     def cambiar_lengua(símismo, lengua):
         pass
 
     def agregar_lengua(símismo, lengua):
         pass
+
+    def micro_calib(símismo, var, método=None, escala=None):
+        símismo.info_calibs['micro_calibs'][var] = {
+            'escala': escala,
+            'método': método
+        }
+
+    def verificar_micro_calib(símismo, var, en=None, escala=None):
+        método = símismo.info_calibs['micro_calibs'][var]['método']
+        return símismo._calibrar_var(var=var, método=método, en=en, escala=escala)
+
+    def efectuar_micro_calibs(símismo, en=None, escala=None):
+        """
+
+        Parameters
+        ----------
+        en : str
+            Dónde hay que calibrar. Por ejemplo, calibrar en el departamento de Tz'olöj Ya'. Si no se especifica,
+            se tomará la región geográfica en su totalidad. Solamente aplica si la base de datos vinculada tiene
+            geografía asociada.
+
+        escala : str
+            La escala a la cual calibrar. Por ejemplo, calibrar al nivel municipal en el departamento de Tz'olöj Ya'.
+            Si no se especifica, se tomará la escala correspondiendo a `en`. Solamente aplica si la base de datos
+            vinculada tiene geografía asociada.
+
+        Returns
+        -------
+        dict
+            La calibración.
+        """
+
+        # Borramos calibraciones existentes
+        símismo.calibs.clear()
+
+        # Para cada microcalibración...
+        for var, d_c in símismo.info_calibs['micro_calibs'].items():
+
+            # Si todavía no se ha calibrado este variable...
+            if var not in símismo.calibs:
+
+                # El método de calibración
+                método = símismo.info_calibs['micro_calibs'][var]['método']
+
+                # Efectuar la calibración
+                calib = símismo._calibrar_var(var=var, método=método, en=en, escala=escala,
+                                              hermanos=True)
+
+                # Guardar las calibraciones para este variable y todos los otros variables que potencialmente
+                # fueron calibrados al mismo tiempo.
+                for v in calib:
+                    símismo.calibs[v] = calib[v]
+
+    def _calibrar_var(símismo, var, método, en=None, escala=None, hermanos=False):
+        l_vars = símismo._obt_vars_asociados(var, enforzar_datos=True, incluir_hermanos=hermanos)
+
+        mod_calib = Calibrador(ec=símismo.variables[var]['ec'])
+
+        resultado = mod_calib.calibrar(en=en, escala=escala, obj_ec=Ecuación(var),
+                                       otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars}, método=método,
+                                       bd_datos=símismo.datos)
+
+        return resultado
+
+    def _obt_vars_asociados(símismo, var, enforzar_datos=False, incluir_hermanos=False):
+        """
+        Obtiene los variables asociados con un variable de interés.
+
+        Parameters
+        ----------
+        var : str
+            El variable de interés.
+        enforzar_datos : bool
+            Si buscamos únicamente variables que tienen datos en la base de datos vinculada.
+        incluir_hermanos :
+            Si incluyemos los hermanos del variable (es decir, otros variables que se computan a base de los parientes
+            del variable de interés.
+
+        Returns
+        -------
+        set
+            El conjunto de todos los variables vinculados.
+
+        """
+
+        # La base de datos
+        bd_datos = bd_datos=símismo.datos if enforzar_datos else None
+
+        # Una función recursiva queda muy útil en casos así.
+        def _sacar_vars_recurs(v, d_vars, c_v=None):
+            """
+
+            Parameters
+            ----------
+            v : str
+            d_vars : dict
+            bd_datos :
+            c_v : set
+
+            Returns
+            -------
+
+            """
+
+            # Para evitar problemas de recursión en Python.
+            if c_v is None:
+                c_v = set()
+
+            # Verificar que el variable tenga ecuación
+            if 'ec' not in d_vars[v]:
+                raise ValueError(_('El variable "{}" no tiene ecuación.').format(v))
+
+            # Los parientes del variable
+            parientes = d_vars[v]['parientes']
+
+            # Agregar los parientes al conjunto de variables vinculados
+            c_v.add(parientes)
+
+            for p in parientes:
+                # Para cada pariente...
+
+                if bd_datos is not None and p not in bd_datos:
+                    # Si tenemos datos y este variable pariente no existe, tendremos que buscar sus parientes también.
+                    _sacar_vars_recurs(v=p, d_vars=d_vars, c_v=c_v)
+
+                if incluir_hermanos:
+                    # Si incluyemos a los hermanos, agregarlos y sus parientes aquí.
+                    h = d_vars[p]['hijos']
+                    c_v.add(h)
+                    _sacar_vars_recurs(v=h, d_vars=d_vars, c_v=c_v)
+
+            c_v.add(parientes)
+
+            return c_v
+
+        return _sacar_vars_recurs(
+            var, d_vars=símismo.variables,
+            hermanos=incluir_hermanos
+        )
+
+    def borrar_micro_calib(símismo, var):
+        try:
+            símismo.info_calibs['micro_calibs'].pop(var)
+        except KeyError:
+            raise ValueError(_('El variable "{}" no está asociado con una microcalibración.').format(var))
+
+    def borrar_info_calibs(símismo):
+        símismo.info_calibs['micro_calibs'].clear()
+        símismo.info_calibs['calibs'].clear()
+
+    def borrar_calibs_calc(símismo):
+        símismo.calibs.clear()
 
     def __str__(símismo):
         return símismo.nombre

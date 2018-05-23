@@ -20,16 +20,21 @@ class Test_Conectado(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """
+        Preparar los modelos genéricos necesarios para las pruebas.
+        """
 
-        # Generar las instancias de los modelos
+        # Generar las instancias de los modelos individuales y conectados
         cls.mods_mds = {ll: d['envlt'](d['prueba']) for ll, d in tipos_modelos.items()}
         cls.mod_bf = EnvolturaBF(arch_bf)
 
         cls.modelos = {ll: Conectado() for ll in cls.mods_mds}  # type: dict[str, Conectado]
 
+        # Agregar traducciones necesarias.
         trads.agregar_trad('year', 'año', leng_trad='es', leng_orig='en')
         trads.agregar_trad('month', 'mes', leng_trad='es', leng_orig='en')
 
+        # Conectar los modelos
         for mds, mod_con in cls.modelos.items():
             mod_con.estab_bf(cls.mod_bf)
             mod_con.estab_mds(cls.mods_mds[mds])
@@ -57,7 +62,7 @@ class Test_Conectado(unittest.TestCase):
 
     def test_simular_paralelo(símismo):
         """
-
+        Comprobar que simulaciones en paralelo den el mismo resultado que las mismas simulaciones individuales.
         """
 
         for ll, mod in símismo.modelos.items():

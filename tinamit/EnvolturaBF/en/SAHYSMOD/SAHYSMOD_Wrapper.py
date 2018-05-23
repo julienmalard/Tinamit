@@ -16,6 +16,8 @@ class ModeloSAHYSMOD(ModeloImpaciente):
     This is the wrapper for SAHYSMOD. At the moment, it only works for one polygon (no spatial models).
     """
 
+    leng_orig = 'en'
+
     def __init__(self, initial_data, sahysmod_exe=None):
         """
         Inicialises the SAHYSMOD wrapper. You must have SAHYSMOD already installed on your computer.

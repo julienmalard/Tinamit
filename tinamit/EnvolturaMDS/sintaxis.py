@@ -2,6 +2,7 @@ import math as mat
 
 import numpy as np
 import regex
+import theano
 from lark import Lark, Transformer
 from pkg_resources import resource_filename
 
@@ -14,130 +15,6 @@ except ImportError:
 
 
 l_dialectos_potenciales = [resource_filename('tinamit.EnvolturaMDS', 'gram_ec_tinamït.g')]
-
-
-def sacar_variables(texto, rgx, n=None, excluir=None):
-    """
-    Esta ecuación saca los variables de un texto.
-
-    :param texto: El texto de cual extraer los nombres de los variables.
-    :type texto: str
-
-    :param rgx: La expersión regex correspondiendo al formato de los variables.
-    :type rgx: str
-
-    :param n: El número máximo de variables que sacar.
-    :type n: int
-
-    :param excluir: Nombres de variables para excluir
-    :type excluir: list
-
-    :return: Una lista de los nombres de los variables.
-    :rtype: list
-
-    """
-
-    # Poner el variable excluir en el formato necesario.
-    if excluir is None:
-        excluir = []
-    if type(excluir) is str:
-        excluir = [excluir]
-
-    # Buscar los nombres
-    b = regex.finditer(rgx, texto)
-
-    # Quitar espacios extras
-    b = [x.groupdict()['var'].strip(' ') for x in b]
-
-    # Devolver una lista de nombres de variables únicos.
-    if n is None:
-        return [x for x in set(b) if x not in excluir]
-    else:
-        return [x for x in set(b[:n]) if x not in excluir]
-
-
-def sacar_arg(ec, regex_var, regex_fun, i=None):
-    """
-    Esta función saca los argumentos de una función.
-
-    :param ec: La ecuación que contiene una función.
-    :type ec: str
-
-    :param regex_var:
-    :type regex_var: str
-
-    :param regex_fun:
-    :type regex_fun: str
-
-    :param i: El índice del argumento que querremos extraer (opcional)
-    :type i: int
-
-    :return: Una lista de los argumentos de la función
-    :rtype: list[str] | str
-
-    """
-
-    # El principio de la función
-    princ_fun = regex.match(regex_fun, ec).end()
-
-    # El fin de la función
-    fin_fun = regex.search(r' *\).*$', ec).start()
-
-    # La parte de la ecuación con los argumentos de la función
-    sec_args = ec[princ_fun:fin_fun]
-
-    # Una lista de tuples con los índices de las ubicaciones de los variables
-    pos_vars = [m.span() for m in regex.finditer(regex_var, sec_args)]
-
-    # Una lista de las ubicaciones de TODAS las comas en el ecuación
-    pos_comas = [m.start() for m in regex.finditer(r',', sec_args)]
-
-    # Las índes de separación de argumentos de la función. Solo miramos las comas que NO hagan parte de un variable,
-    # y agregamos un 0 al principio, y el último índice del texto al final.
-    sep_args = [0] + [j for j in pos_comas if not any([p[0] <= j < p[1] for p in pos_vars])] + [len(sec_args)]
-
-    # Dividimos la ecuación en argumentos
-    args = [sec_args[p:sep_args[j + 1]] for j, p in enumerate(sep_args[:-1])]
-
-    # Y devolvemos el argumento pedido.
-    if i is None:
-        return args
-    else:
-        return args[i]
-
-
-def juntar_líns(l, cabeza=None, cola=None):
-    """
-    Esta función junta una lista de líneas de texto en una sola línea de texto.
-
-    :param l: La lexta de líneas de texto.
-    :type l: list[str]
-
-    :param cabeza:
-    :type cabeza:
-
-    :param cola:
-    :type cola:
-
-    :return: El texto combinado.
-    :rtype: str
-
-    """
-
-    # Quitar text no deseado del principio y del final
-    if cabeza is not None:
-        l[0] = regex.sub(r'^({})'.format(cabeza), '', l[0])
-    if cola is not None:
-        l[-1] = regex.sub(r'{}$'.format(cola), '', l[-1])
-
-    # Quitar tabulaciones y símbolos de final de línea
-    l = [x.lstrip('\t').rstrip('\n').rstrip('\\') for x in l]
-
-    # Combinar las líneas y quitar espacios al principio y al final
-    texto = ''.join(l).strip(' ')
-
-    # Devolver el texto combinado.
-    return texto
 
 
 def cortar_líns(texto, máx_car, lín_1=None, lín_otras=None):
@@ -234,7 +111,7 @@ class Ecuación(object):
             except BaseException as e:
                 errores.append(e)
         if anlzdr is None:
-            raise ValueError('Error en la ecuación "{}". Detalles: {}'.format(ec, e))
+            raise ValueError('Error en la ecuación "{}". Detalles: {}'.format(ec, errores))
 
     def variables(símismo):
 
@@ -271,7 +148,10 @@ class Ecuación(object):
 
         return _obt_vars(símismo.árbol)
 
-    def gen_func_python(símismo, paráms):
+    def gen_func_python(símismo, paráms, otras_ecs=None):
+
+        if otras_ecs is None:
+            otras_ecs = {}
 
         dialecto = símismo.dialecto
 
@@ -311,14 +191,25 @@ class Ecuación(object):
 
                     elif ll == 'var':
                         try:
-
                             í_var = l_prms.index(v)
 
                             return lambda p, vr: p[í_var]
 
                         except ValueError:
-                            # Si el variable no es un parámetro calibrable, debe ser un valor observado
-                            return lambda p, vr: vr[v]
+                            # Si el variable no es un parámetro calibrable, debe ser un valor observado, al menos
+                            # que esté espeficado por otra ecuación.
+                            if v in otras_ecs:
+
+                                ec = otras_ecs[v]
+                                if isinstance(ec, Ecuación):
+                                    árb = ec.árbol
+                                else:
+                                    árb = Ecuación(ec).árbol
+                                return _a_python(á=árb, l_prms=l_prms)
+
+                            else:
+                                return lambda p, vr: vr[v]
+
                     elif ll == 'neg':
                         comp = _a_python(v[1][1], l_prms=l_prms)
                         return lambda p, vr: -comp(p=p, vr=vr)
@@ -334,12 +225,22 @@ class Ecuación(object):
 
         return _a_python(símismo.árbol)
 
-    def gen_mod_bayes(símismo, paráms, líms_paráms, obs_x, obs_y, aprioris=None, binario=False):
+    def gen_mod_bayes(símismo, paráms, líms_paráms, obs_x, obs_y, aprioris=None, binario=False, otras_ecs=None):
 
         if pm is None:
             return ImportError(_('Hay que instalar PyMC3 para poder utilizar modelos bayesianos.'))
 
+        if obs_x is None:
+            obs_x = {}
+        if obs_y is None:
+            obs_y = {}
+
+        if otras_ecs is None:
+            otras_ecs = {}
+
         dialecto = símismo.dialecto
+
+        d_vars_obs = {}
 
         def _a_bayes(á, d_pm=None):
             if d_pm is None:
@@ -362,8 +263,8 @@ class Ecuación(object):
                         elif v[0] == '^':
                             return _a_bayes(v[1][0], d_pm=d_pm) ** _a_bayes(v[1][1], d_pm=d_pm)
                         else:
-                            return conv_fun(v[0], 'tinamït', 'pm')(
-                                *_a_bayes(v[1], d_pm=d_pm))  # para hacer: arreglar dialecto
+                            return conv_fun(v[0], dialecto, 'pm')(
+                                *_a_bayes(v[1], d_pm=d_pm))
 
                     elif ll == 'var':
                         try:
@@ -400,12 +301,28 @@ class Ecuación(object):
 
                         except ValueError:
 
-                            # Si el variable no es un parámetro calibrable, debe ser un valor observado
-                            return obs_x[v]
+                            # Si el variable no es un parámetro calibrable, debe ser un valor observado, al menos
+                            # que haya otra ecuación que lo describa
+                            if v in otras_ecs:
+                                ec = otras_ecs[v]
+                                if isinstance(ec, Ecuación):
+                                    árb = ec.árbol
+                                else:
+                                    árb = Ecuación(ec).árbol
+                                return _a_bayes(á=árb, d_pm=d_pm)
+
+                            else:
+                                # Si no se especificó otra ecuación para este variable, debe ser un valor observado.
+                                try:
+                                    return obs_x[v]
+                                except KeyError:
+                                    d_vars_obs[v] = theano.shared()
+                                    return d_vars_obs[v]
                     elif ll == 'neg':
                         return -_a_bayes(v, d_pm=d_pm)
                     else:
-                        raise TypeError('')
+                        raise ValueError(_('Llave "{ll}" desconocida en el árbol sintático de la ecuación "{ec}". '
+                                           'Éste es un error de programación en Tinamït.').format(ll=ll, ec=símismo))
 
             elif isinstance(á, list):
                 return [_a_bayes(x, d_pm=d_pm) for x in á]
@@ -426,7 +343,7 @@ class Ecuación(object):
             else:
                 pm.Normal(name='Y_obs', mu=mu, sd=sigma, observed=obs_y)
 
-        return modelo
+        return modelo, d_vars_obs
 
     def gen_texto(símismo, paráms=None):
 

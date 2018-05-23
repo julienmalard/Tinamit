@@ -559,7 +559,13 @@ class SuperConectado(Modelo):
                 'mod_fuente': mod_fuente, 'var_fuente': var_fuente, 'conv': conex['conv']
             }
 
-            símismo.modelos[mod_fuente].especificar_var_saliendo(var_fuente)
+            # Especificar el variable como variable egreso para la simulación, de manera recursiva si es una
+            # instancia de :class:`SuperConectado`.
+            obj_mod = símismo.modelos[mod_fuente]
+            if isinstance(obj_mod, SuperConectado):
+                obj_mod.especificar_var_saliendo(var_fuente)
+            else:
+                obj_mod.vars_saliendo.add(var_fuente)
 
         # Iniciar los submodelos también.
         for mod in símismo.modelos.values():
@@ -570,7 +576,11 @@ class SuperConectado(Modelo):
     def especificar_var_saliendo(símismo, var):
 
         mod, var_mod = símismo.resolver_nombre_var(var)
-        símismo.modelos[mod].especificar_var_saliendo(var_mod)
+        obj_mod = símismo.modelos[mod]
+        if isinstance(obj_mod, SuperConectado):
+            obj_mod.especificar_var_saliendo(var_mod)
+        else:
+            símismo.modelos[mod].vars_saliendo.add(var_mod)
 
     def cerrar_modelo(símismo):
         """

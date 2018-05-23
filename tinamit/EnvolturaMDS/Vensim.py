@@ -11,7 +11,7 @@ import regex
 
 from tinamit import _
 from tinamit.MDS import EnvolturaMDS, leer_egr_mds
-from .sintaxis import sacar_arg, sacar_variables, juntar_líns, cortar_líns
+from .sintaxis import cortar_líns
 
 try:
     import pymc3 as pm
