@@ -8,12 +8,13 @@ environment:
 install:
   - "%PYTHON%\\python.exe -m pip install --upgrade pip"
   - "%PYTHON%\\python.exe -m pip install wheel"
+  - "%PYTHON%\\python.exe -m pip install nose"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
 
-build: "Script"
+build: false
 
 test_script:
-  - "%PYTHON%\\python.exe setup.py test"
+  - "nosetests"
 
 after_test:
   - "%PYTHON%\\python.exe setup.py bdist_wheel"
