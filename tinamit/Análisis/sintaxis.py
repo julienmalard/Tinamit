@@ -13,8 +13,7 @@ try:
 except ImportError:
     pm = None
 
-
-l_dialectos_potenciales = [resource_filename('tinamit.EnvolturaMDS', 'gram_ec_tinamït.g')]
+l_dialectos_potenciales = [resource_filename('tinamit.Análisis', 'grams/gram_Vensim.g')]
 
 
 def cortar_líns(texto, máx_car, lín_1=None, lín_otras=None):
@@ -438,3 +437,38 @@ def conv_fun(fun, dialecto_0, dialecto_1):
         return dic_funs[fun][dialecto_1]
     else:
         return dic_funs[dic_funs_inv[dialecto_0][fun]][dialecto_1]
+
+
+# Funciones que hay que reemplazar con algo más elegante
+def juntar_líns(l, cabeza=None, cola=None):
+    """
+    Esta función junta una lista de líneas de texto en una sola línea de texto.
+
+    :param l: La lexta de líneas de texto.
+    :type l: list[str]
+
+    :param cabeza:
+    :type cabeza:
+
+    :param cola:
+    :type cola:
+
+    :return: El texto combinado.
+    :rtype: str
+
+    """
+
+    # Quitar text no deseado del principio y del final
+    if cabeza is not None:
+        l[0] = regex.sub(r'^({})'.format(cabeza), '', l[0])
+    if cola is not None:
+        l[-1] = regex.sub(r'{}$'.format(cola), '', l[-1])
+
+    # Quitar tabulaciones y símbolos de final de línea
+    l = [x.lstrip('\t').rstrip('\n').rstrip('\\') for x in l]
+
+    # Combinar las líneas y quitar espacios al principio y al final
+    texto = ''.join(l).strip(' ')
+
+    # Devolver el texto combinado.
+    return texto

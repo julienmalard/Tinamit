@@ -27,17 +27,26 @@ class மாதிரி(Modelo):
     def act_vals_clima(தன், படி_எண், தேதி):
         return super().act_vals_clima(n_paso=படி_எண், f=தேதி)
 
-    def simular(símismo, tiempo_final, paso=1, nombre_corrida="Corrida Tinamït", fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, vars_interés=None):
-        return super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, vars_interés=vars_interés)
+    def simular(símismo, tiempo_final, paso=1, nombre_corrida="Corrida Tinamït", fecha_inic=None, lugar=None, tcr=None,
+                recalc=True, clima=False, vars_interés=None):
+        return super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida,
+                               fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima,
+                               vars_interés=vars_interés)
 
-    def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida="Corrida Tinamït", vals_inic=None, fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True, dibujar=None, paralelo=True, devolver=None):
-        return super().simular_paralelo(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, vals_inic=vals_inic, fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, combinar=combinar, dibujar=dibujar, paralelo=paralelo, devolver=devolver)
+    def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida="Corrida Tinamït", vals_inic=None,
+                         fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, combinar=True, dibujar=None,
+                         paralelo=True, devolver=None):
+        return super().simular_paralelo(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida,
+                                        vals_inic=vals_inic, fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc,
+                                        clima=clima, combinar=combinar, dibujar=dibujar, paralelo=paralelo,
+                                        devolver=devolver)
 
     def estab_conv_meses(símismo, conv):
         return super().estab_conv_meses(conv=conv)
 
     def dibujar_mapa(símismo, geog, var, directorio, corrida=None, i_paso=None, colores=None, escala=None):
-        return super().dibujar_mapa(geog=geog, var=var, directorio=directorio, corrida=corrida, i_paso=i_paso, colores=colores, escala=escala)
+        return super().dibujar_mapa(geog=geog, var=var, directorio=directorio, corrida=corrida, i_paso=i_paso,
+                                    colores=colores, escala=escala)
 
     def valid_var(símismo, var):
         return super().valid_var(var=var)

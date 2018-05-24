@@ -1,5 +1,5 @@
-from tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT import vars_DSSAT
 from tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT import ModeloDSSAT
+from tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT import vars_DSSAT
 
 
 class டிஸ்ஸாட்_மாதிரி(ModeloDSSAT):
@@ -18,5 +18,6 @@ class டிஸ்ஸாட்_மாதிரி(ModeloDSSAT):
 
     def unidad_tiempo(símismo):
         return super().unidad_tiempo()
+
 
 vars_DSSAT = vars_DSSAT

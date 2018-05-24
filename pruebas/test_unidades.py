@@ -1,7 +1,7 @@
 import unittest
 
-from tinamit.Unidades.conv import convertir
 import tinamit.Unidades.trads as trads
+from tinamit.Unidades.conv import convertir
 
 
 class Test_ConvertirUnidades(unittest.TestCase):

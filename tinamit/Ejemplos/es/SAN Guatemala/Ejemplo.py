@@ -1,13 +1,13 @@
-import os
 import json
-
-import numpy as np
+import os
 import shutil
 
+import numpy as np
+
+from tinamit.Análisis.ConexDatos import ConexDatos
+from tinamit.Análisis.Datos import DatosIndividuales, DatosRegión, SuperBD
 from tinamit.EnvolturaMDS import generar_mds
 from tinamit.Geog.Geog import Geografía
-from tinamit.Incertidumbre.ConexDatos import ConexDatos
-from tinamit.Incertidumbre.Datos import DatosIndividuales, DatosRegión, SuperBD
 
 if __name__ == '__main__':  # Necesario para paralelización en Windows
     c = lambda x: os.path.join('C:\\Users\\jmalar1\\Documents\\Julien\\Bases de datos\\Iximulew', x)

@@ -10,8 +10,8 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
 
 from tinamit import _
+from tinamit.Análisis.Números import tx_a_núm
 from tinamit.Geog.Geog import Geografía
-from tinamit.Incertidumbre.Números import tx_a_núm
 
 
 class Datos(object):

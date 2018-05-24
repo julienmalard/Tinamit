@@ -1,6 +1,6 @@
-from tinamit.EnvolturaMDS.Vensim import comanda_vensim
 from tinamit.EnvolturaMDS.Vensim import ModeloVensim
 from tinamit.EnvolturaMDS.Vensim import ModeloVensimMdl
+from tinamit.EnvolturaMDS.Vensim import comanda_vensim
 
 
 class ModeloVensimMdl(ModeloVensimMdl):

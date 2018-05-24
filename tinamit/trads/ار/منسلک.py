@@ -13,8 +13,11 @@ class ہڑامنسلک(SuperConectado):
     def act_vals_clima(خود, n_paso, f):
         return super().act_vals_clima(n_paso=n_paso, f=f)
 
-    def simular(خود, tiempo_final, قدم=1, nombre_corrida="Corrida Tinamït", fecha_inic=None, lugar=None, tcr=None, recalc=True, clima=False, vars_interés=None):
-        return super().simular(tiempo_final=tiempo_final, paso=قدم, nombre_corrida=nombre_corrida, fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima, vars_interés=vars_interés)
+    def simular(خود, tiempo_final, قدم=1, nombre_corrida="Corrida Tinamït", fecha_inic=None, lugar=None, tcr=None,
+                recalc=True, clima=False, vars_interés=None):
+        return super().simular(tiempo_final=tiempo_final, paso=قدم, nombre_corrida=nombre_corrida,
+                               fecha_inic=fecha_inic, lugar=lugar, tcr=tcr, recalc=recalc, clima=clima,
+                               vars_interés=vars_interés)
 
     def iniciar_modelo(خود, tiempo_final, nombre_corrida):
         return super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
@@ -23,10 +26,12 @@ class ہڑامنسلک(SuperConectado):
         return super().cerrar_modelo()
 
     def conectar_vars(خود, modelo_fuente, var_fuente, var_recip, modelo_recip, conv=None):
-        return super().conectar_vars(modelo_fuente=modelo_fuente, conv=conv, var_fuente=var_fuente, var_recip=var_recip, modelo_recip=modelo_recip)
+        return super().conectar_vars(modelo_fuente=modelo_fuente, conv=conv, var_fuente=var_fuente, var_recip=var_recip,
+                                     modelo_recip=modelo_recip)
 
     def desconectar_vars(خود, var_fuente, modelo_fuente, modelo_recip=None, var_recip=None):
-        return super().desconectar_vars(var_fuente=var_fuente, modelo_fuente=modelo_fuente, modelo_recip=modelo_recip, var_recip=var_recip)
+        return super().desconectar_vars(var_fuente=var_fuente, modelo_fuente=modelo_fuente, modelo_recip=modelo_recip,
+                                        var_recip=var_recip)
 
     def paralelizable(símismo):
         return super().paralelizable()

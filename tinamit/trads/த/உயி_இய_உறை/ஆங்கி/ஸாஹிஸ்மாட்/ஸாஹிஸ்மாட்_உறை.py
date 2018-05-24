@@ -1,9 +1,9 @@
-from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import read_output_file
-from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import SAHYSMOD_output_vars
-from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import SAHYSMOD_input_vars
-from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import codes_to_vars
-from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import vars_SAHYSMOD
 from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import ModeloSAHYSMOD
+from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import SAHYSMOD_input_vars
+from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import SAHYSMOD_output_vars
+from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import codes_to_vars
+from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import read_output_file
+from tinamit.EnvolturaBF.en.SAHYSMOD.SAHYSMOD_Wrapper import vars_SAHYSMOD
 
 
 class ஸாஹிஸ்மாட்_மாதிரி(ModeloSAHYSMOD):
@@ -28,6 +28,7 @@ class ஸாஹிஸ்மாட்_மாதிரி(ModeloSAHYSMOD):
 
     def paralelizable(símismo):
         return super().paralelizable()
+
 
 ஸாஹிஸ்மாட்_மாறிகள் = vars_SAHYSMOD
 

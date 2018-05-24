@@ -63,7 +63,7 @@
                 <eqn>1500</eqn>
                 <units>m3</units>
                 <range min="0"/>
-                <doc>La cantidad inicial  de agua en el lago.</doc>
+                <doc>La cantidad inicial de agua en el lago.</doc>
             </aux>
 
         </variables>

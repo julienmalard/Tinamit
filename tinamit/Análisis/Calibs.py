@@ -6,8 +6,8 @@ import scipy.stats as estad
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
 
-from EnvolturaMDS.sintaxis import Ecuación
 from tinamit import _
+from tinamit.Análisis.sintaxis import Ecuación
 
 try:
     import pymc3 as pm
@@ -92,7 +92,6 @@ class Calibrador(object):
     def _calibrar_bayesiana(símismo, paráms, var_y, vars_x, líms_paráms, otras_ecs, ops_método,
                             bd_datos, lugares, jerarquía):
 
-
         mod_bayes, d_vars_obs = símismo.ec.gen_mod_bayes(
             paráms=paráms, líms_paráms=líms_paráms,
             obs_x=None, obs_y=None,
@@ -133,7 +132,7 @@ class Calibrador(object):
         if lugares is None:
             obs = bd_datos.obt_datos(l_vars=vars_x + var_y, excluir_faltan=True)
             resultados = optimizar(f_python, paráms=paráms, líms_paráms=líms_paráms,
-                                               obs_x=obs[vars_x], obs_y=obs[var_y], **ops_método)
+                                   obs_x=obs[vars_x], obs_y=obs[var_y], **ops_método)
         else:
             resultados = {}
             for lg in lugares:

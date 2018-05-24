@@ -1,5 +1,5 @@
 .. image:: tinamit/Interfaz/Imágenes/LogoCent.png
-   :scale: 80%
+    :scale: 80%
    :alt: Logo muy bonito. :)
 
 .. image:: https://badge.fury.io/py/tinamit.svg
@@ -9,7 +9,7 @@
     :target: https://travis-ci.org/julienmalard/Tinamit
 
 .. image:: https://coveralls.io/repos/github/julienmalard/Tinamit/badge.svg?branch=master
-   :target: https://coveralls.io/github/julienmalard/Tinamit?branch=master
+    :target: https://coveralls.io/github/julienmalard/Tinamit?branch=master
 
 Tinamit
 =======

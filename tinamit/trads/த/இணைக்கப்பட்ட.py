@@ -13,8 +13,11 @@ class மேலிணைக்கப்பட்ட(SuperConectado):
     def act_vals_clima(தன், படி_எண், தேதி):
         return super().act_vals_clima(n_paso=படி_எண், f=தேதி)
 
-    def simular(தன், கடைசி_நேரம், படி=1, பாவனைப்பெயர்="Corrida Tinamït", ஆரம்பும்_தேதி=None, இடம்=None, tcr=None, recalc=True, பருவநிலை=False, vars_interés=None):
-        return super().simular(tiempo_final=கடைசி_நேரம், paso=படி, nombre_corrida=பாவனைப்பெயர், fecha_inic=ஆரம்பும்_தேதி, lugar=இடம், tcr=tcr, recalc=recalc, clima=பருவநிலை, vars_interés=vars_interés)
+    def simular(தன், கடைசி_நேரம், படி=1, பாவனைப்பெயர்="Corrida Tinamït", ஆரம்பும்_தேதி=None, இடம்=None, tcr=None,
+                recalc=True, பருவநிலை=False, vars_interés=None):
+        return super().simular(tiempo_final=கடைசி_நேரம், paso=படி, nombre_corrida=பாவனைப்பெயர்,
+                               fecha_inic=ஆரம்பும்_தேதி, lugar=இடம், tcr=tcr, recalc=recalc, clima=பருவநிலை,
+                               vars_interés=vars_interés)
 
     def iniciar_modelo(தன், tiempo_final, nombre_corrida):
         return super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
@@ -23,10 +26,12 @@ class மேலிணைக்கப்பட்ட(SuperConectado):
         return super().cerrar_modelo()
 
     def conectar_vars(தன், modelo_fuente, var_fuente, var_recip, modelo_recip, conv=None):
-        return super().conectar_vars(modelo_fuente=modelo_fuente, conv=conv, var_fuente=var_fuente, var_recip=var_recip, modelo_recip=modelo_recip)
+        return super().conectar_vars(modelo_fuente=modelo_fuente, conv=conv, var_fuente=var_fuente, var_recip=var_recip,
+                                     modelo_recip=modelo_recip)
 
     def desconectar_vars(தன், var_fuente, modelo_fuente, modelo_recip=None, var_recip=None):
-        return super().desconectar_vars(var_fuente=var_fuente, modelo_fuente=modelo_fuente, modelo_recip=modelo_recip, var_recip=var_recip)
+        return super().desconectar_vars(var_fuente=var_fuente, modelo_fuente=modelo_fuente, modelo_recip=modelo_recip,
+                                        var_recip=var_recip)
 
     def paralelizable(símismo):
         return super().paralelizable()

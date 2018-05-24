@@ -12,8 +12,7 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
-from EnvolturaMDS.sintaxis import Ecuación
-from Incertidumbre.Estadísticas import Calibrador
+from Análisis.Calibs import Calibrador
 from tinamit import _, valid_nombre_arch
 from tinamit.Unidades.conv import convertir
 
@@ -974,13 +973,44 @@ class Modelo(object):
         pass
 
     def micro_calib(símismo, var, método=None, escala=None):
+
+        # Especificar la micro calibración.
         símismo.info_calibs['micro_calibs'][var] = {
             'escala': escala,
             'método': método
         }
 
     def verificar_micro_calib(símismo, var, en=None, escala=None):
+        """
+        Comprueba una microcalibración a pequeña (o grande) escala. Útil para comprobar calibraciones sin perder
+        mucho tiempo calculándolas para toda la región de interés.
+
+        Parameters
+        ----------
+        var : str
+            El variable de interés.
+
+        en : str
+            Dónde hay que calibrar. Por ejemplo, calibrar en el departamento de Tz'olöj Ya'. Si no se especifica,
+            se tomará la región geográfica en su totalidad. Solamente aplica si la base de datos vinculada tiene
+            geografía asociada.
+
+        escala : str
+            La escala a la cual calibrar. Por ejemplo, calibrar al nivel municipal en el departamento de Tz'olöj Ya'.
+            Si no se especifica, se tomará la escala correspondiendo a `en`. Solamente aplica si la base de datos
+            vinculada tiene geografía asociada.
+
+        Returns
+        -------
+        dict[str, dict]
+            La calibración completada.
+
+        """
+
+        # El método de calibración.
         método = símismo.info_calibs['micro_calibs'][var]['método']
+
+        # Efectuar la calibración del variable.
         return símismo._calibrar_var(var=var, método=método, en=en, escala=escala)
 
     def efectuar_micro_calibs(símismo, en=None, escala=None):
@@ -1026,13 +1056,19 @@ class Modelo(object):
                     símismo.calibs[v] = calib[v]
 
     def _calibrar_var(símismo, var, método, en=None, escala=None, hermanos=False):
+
+        # La lista de variables que hay que calibrar con este.
         l_vars = símismo._obt_vars_asociados(var, enforzar_datos=True, incluir_hermanos=hermanos)
 
+        # El objeto de calibración.
         mod_calib = Calibrador(ec=símismo.variables[var]['ec'])
 
-        resultado = mod_calib.calibrar(en=en, escala=escala, obj_ec=Ecuación(var),
-                                       otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars}, método=método,
-                                       bd_datos=símismo.datos)
+        # Efectuar la calibración.
+        resultado = mod_calib.calibrar(
+            var_y=var, paráms=paráms, líms_paráms=líms_paráms,
+            otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars},
+            método=método, bd_datos=símismo.datos, en=en, escala=escala
+        )
 
         return resultado
 
@@ -1055,30 +1091,44 @@ class Modelo(object):
         set
             El conjunto de todos los variables vinculados.
 
+        Raises
+        ------
+        ValueError
+            Si no todos los variables asociados tienen ecuación especificada.
+        RecursionError
+            Si `enforzar_datos == True` y no hay suficientemente datos disponibles para encontrar parientes con datos
+            para todos los variables asociados con el variable de interés.
         """
 
         # La base de datos
-        bd_datos = bd_datos=símismo.datos if enforzar_datos else None
+        bd_datos = bd_datos = símismo.datos if enforzar_datos else None
+
+        # El diccionario de variables
+        d_vars = símismo.variables
 
         # Una función recursiva queda muy útil en casos así.
-        def _sacar_vars_recurs(v, d_vars, c_v=None):
+        def _sacar_vars_recurs(v, c_v=None, sn_dts=None):
             """
-
+            Una función recursiva para sacar variables asociados con un variable de interés.
             Parameters
             ----------
             v : str
-            d_vars : dict
-            bd_datos :
+                El variable de interés.
             c_v : set
+                El conjunto de variables asociados (parámetro de recursión).
 
             Returns
             -------
+            set
+                El conjunto de variables asociados.
 
             """
 
             # Para evitar problemas de recursión en Python.
             if c_v is None:
                 c_v = set()
+            if sn_dts is None:
+                sn_dts = set()
 
             # Verificar que el variable tenga ecuación
             if 'ec' not in d_vars[v]:
@@ -1095,22 +1145,32 @@ class Modelo(object):
 
                 if bd_datos is not None and p not in bd_datos:
                     # Si tenemos datos y este variable pariente no existe, tendremos que buscar sus parientes también.
-                    _sacar_vars_recurs(v=p, d_vars=d_vars, c_v=c_v)
+
+                    # ...pero si ya encontramos este variable en otra recursión, quiere decir que no tenemos
+                    # suficientemente datos y que estamos andando en círculos.
+                    if p in sn_dts:
+                        raise RecursionError(
+                            _('Estamos andando en círculos buscando variables con datos disponibles. Debes '
+                              'especificar más datos. Puedes empezar con uno de estos variables: {}'
+                              ).format(', '.join(sn_dts))
+                        )
+
+                    # Acordarse que ya intentamos buscar parientes con datos para este variable
+                    sn_dts.add(p)
+
+                    # Seguir con la recursión
+                    _sacar_vars_recurs(v=p, c_v=c_v, sn_dts=sn_dts)
 
                 if incluir_hermanos:
                     # Si incluyemos a los hermanos, agregarlos y sus parientes aquí.
                     h = d_vars[p]['hijos']
                     c_v.add(h)
-                    _sacar_vars_recurs(v=h, d_vars=d_vars, c_v=c_v)
+                    _sacar_vars_recurs(v=h, c_v=c_v, sn_dts=sn_dts)
 
-            c_v.add(parientes)
-
+            # Devolver el conjunto de variables asociados
             return c_v
 
-        return _sacar_vars_recurs(
-            var, d_vars=símismo.variables,
-            hermanos=incluir_hermanos
-        )
+        return _sacar_vars_recurs(var)
 
     def borrar_micro_calib(símismo, var):
         try:

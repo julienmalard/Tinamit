@@ -2,7 +2,6 @@ import datetime as ft
 import pickle
 import threading
 from copy import copy as copiar
-from time import time as tiempo
 from warnings import warn as avisar
 
 import numpy as np

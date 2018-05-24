@@ -1,6 +1,6 @@
+from tinamit.MDS import EnvolturaMDS
 from tinamit.MDS import MDSEditable
 from tinamit.MDS import leer_egr_mds
-from tinamit.MDS import EnvolturaMDS
 
 
 class EnvolturaMDS(EnvolturaMDS):

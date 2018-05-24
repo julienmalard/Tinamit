@@ -25,7 +25,7 @@ conv_vars = {
 }
 
 
-# Una subclase traducida
+# Una subclase traducida, mientras que Lassi esté en desarrollo
 class Lugar(مقام):
     """
     Esta clase conecta con la clase مقام, o Lugar, del paquete taqdir.

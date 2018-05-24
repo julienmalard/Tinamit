@@ -3,10 +3,10 @@ from warnings import warn as avisar
 import numpy as np
 import pandas as pd
 
+from Análisis.sintaxis import Ecuación
 from tinamit import _
-from tinamit.EnvolturaMDS.sintaxis import Ecuación
-from tinamit.Incertidumbre.Datos import SuperBD
-from tinamit.Incertidumbre.Estadísticas import calib_bayes, optimizar, regresión
+from tinamit.Análisis.Calibs import calib_bayes, optimizar
+from tinamit.Análisis.Datos import SuperBD
 from tinamit.MDS import EnvolturaMDS
 
 try:

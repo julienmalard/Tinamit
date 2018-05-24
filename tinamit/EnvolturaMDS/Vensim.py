@@ -2,16 +2,14 @@ import ctypes
 import os
 import struct
 import sys
-from functools import reduce
-from operator import mul
 from warnings import warn as avisar
 
 import numpy as np
 import regex
 
+from tinamit.Análisis.sintaxis import cortar_líns, juntar_líns, Ecuación
 from tinamit import _
 from tinamit.MDS import EnvolturaMDS, leer_egr_mds
-from .sintaxis import cortar_líns
 
 try:
     import pymc3 as pm
@@ -116,11 +114,12 @@ class ModeloVensimMdl(EnvolturaMDS):
         for niv in símismo.niveles:
 
             # El primer argumento de la función INTEG de VENSIM
+            ec = Ecuación(símismo.variables[niv]['ec'])
             arg_integ = sacar_arg(símismo.variables[niv]['ec'], regex_var=símismo._regex_var,
                                   regex_fun=símismo.regex_fun, i=0)
 
             # Extraer los variables flujos
-            flujos = sacar_variables(arg_integ, rgx=símismo._regex_var, excluir=símismo.internos)
+            flujos = [v for v in Ecuación(arg_integ).variables() if v not in símismo.internos]
 
             for flujo in flujos:
                 # Para cada nivel en el modelo...
@@ -138,6 +137,9 @@ class ModeloVensimMdl(EnvolturaMDS):
         # Los constantes son los variables que quedan.
         símismo.constantes += [x for x in símismo.variables if x not in símismo.niveles and x not in símismo.flujos
                                and x not in símismo.auxiliares]
+
+    def _anal_rel_causal(símismo):
+        pass
 
     def _leer_var(símismo, l_texto):
         """
@@ -185,7 +187,7 @@ class ModeloVensimMdl(EnvolturaMDS):
             ec = juntar_líns([princ_ec] + l_texto[1:prim_unid])
 
         # Extraer los nombre de los variables parientes
-        dic_var['parientes'] = sacar_variables(texto=ec, rgx=símismo._regex_var, excluir=símismo.internos + [nombre])
+        dic_var['parientes'] = [v for v in Ecuación(ec).variables() if v not in símismo.internos + [nombre]]
 
         # Si no hay ecuación especificada, dar una ecuación vacía.
         if regex.match(r'A FUNCTION OF *\(', ec) is not None:
@@ -599,7 +601,7 @@ class ModeloVensim(EnvolturaMDS):
             l_vars = [l_vars]
         else:
             raise TypeError(_('`l_vars` debe ser o un nombre de variable, o una lista de nombres de variables, y'
-                            'no "{}".').format(type(l_vars)))
+                              'no "{}".').format(type(l_vars)))
 
         for v in l_vars:
             if símismo.obt_dims_var(v) == (1,):

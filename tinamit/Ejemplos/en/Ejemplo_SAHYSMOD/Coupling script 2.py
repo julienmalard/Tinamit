@@ -1,10 +1,8 @@
 import os
 
 from tinamit.Conectado import Conectado
-from tinamit.Geog.Geog import Lugar, Geografía
-
 from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
-
+from tinamit.Geog.Geog import Lugar, Geografía
 
 use_simple = True
 climate_change = True

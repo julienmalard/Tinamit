@@ -1,10 +1,10 @@
 import os
 import re
+import shutil
 from subprocess import run
 from warnings import warn
 
 import numpy as np
-import shutil
 
 from tinamit import obt_val_config, _
 from tinamit.BF import ModeloImpaciente

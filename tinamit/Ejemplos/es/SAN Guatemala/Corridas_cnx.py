@@ -1,8 +1,10 @@
-from tinamit.Geog.Geog import Lugar
-from tinamit.Conectado import Conectado
-import os
 import json
+import os
+
 import numpy as np
+
+from tinamit.Conectado import Conectado
+from tinamit.Geog.Geog import Lugar
 
 mod = Conectado()
 mod.estab_bf('DSSAT.py')

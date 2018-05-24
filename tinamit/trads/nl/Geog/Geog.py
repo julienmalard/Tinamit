@@ -17,7 +17,8 @@ class Lugar(Lugar):
         return super().observar_anuales(archivo=archivo, cols_datos=cols_datos, años=años, conv=conv)
 
     def prep_datos(símismo, fecha_inic, fecha_final, tcr, prefs=None, lím_prefs=False, regenerar=False):
-        return super().prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=tcr, prefs=prefs, lím_prefs=lím_prefs, regenerar=regenerar)
+        return super().prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=tcr, prefs=prefs,
+                                  lím_prefs=lím_prefs, regenerar=regenerar)
 
     def devolver_datos(símismo, vars_clima, f_inic, f_final):
         return super().devolver_datos(vars_clima=vars_clima, f_inic=f_inic, f_final=f_final)
@@ -29,13 +30,15 @@ class Lugar(Lugar):
 class Geografía(Geografía):
 
     def dibujar(símismo, archivo, valores=None, título=None, unidades=None, colores=None, escala_num=None):
-        return super().dibujar(archivo=archivo, valores=valores, título=título, unidades=unidades, colores=colores, escala_num=escala_num)
+        return super().dibujar(archivo=archivo, valores=valores, título=título, unidades=unidades, colores=colores,
+                               escala_num=escala_num)
 
     def agregar_forma(símismo, archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=None):
         return super().agregar_forma(archivo=archivo, nombre=nombre, tipo=tipo, alpha=alpha, color=color, llenar=llenar)
 
     def agregar_frm_regiones(símismo, archivo, col_id=None, col_orden=None, escala_geog=None):
-        return super().agregar_frm_regiones(archivo=archivo, col_id=col_id, col_orden=col_orden, escala_geog=escala_geog)
+        return super().agregar_frm_regiones(archivo=archivo, col_id=col_id, col_orden=col_orden,
+                                            escala_geog=escala_geog)
 
     def agregar_info_regiones(símismo, archivo, col_cód, orden_jer=None, grupos=None):
         return super().agregar_info_regiones(archivo=archivo, col_cód=col_cód, orden_jer=orden_jer, grupos=grupos)

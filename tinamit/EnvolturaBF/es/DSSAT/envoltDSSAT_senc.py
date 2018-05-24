@@ -3,7 +3,8 @@ from datetime import datetime as ft
 from subprocess import run as correr
 
 from pkg_resources import resource_filename
-from tinamit.BF import ModeloBF, EnvolturaBF
+
+from tinamit.BF import ModeloBF
 
 plantilla_wth = resource_filename('tinamit.EnvolturaBF.es.DSSAT', 'PLANTILLA.WTH')
 arch_DSSAT_WTH = 'C:\\DSSAT46\\Weather\\TNMT0101.WTH'

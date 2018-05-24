@@ -5,8 +5,8 @@ import re
 
 import numpy as np
 
+from tinamit.Análisis.sintaxis import Ecuación
 from tinamit import _
-from tinamit.EnvolturaMDS.sintaxis import Ecuación
 from tinamit.Modelo import Modelo
 
 
@@ -154,6 +154,12 @@ class EnvolturaMDS(Modelo):
         :rtype: np.ndarray
         """
 
+        raise NotImplementedError
+
+    def _leer_vals_inic(símismo):
+        raise NotImplementedError
+
+    def _aplicar_cambios_vals_inic(símismo):
         raise NotImplementedError
 
     def __getinitargs__(símismo):
