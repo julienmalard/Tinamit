@@ -12,7 +12,7 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
-from Análisis.Calibs import Calibrador
+from tinamit.Análisis.Calibs import Calibrador
 from tinamit import _, valid_nombre_arch
 from tinamit.Unidades.conv import convertir
 
