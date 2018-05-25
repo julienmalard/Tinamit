@@ -315,7 +315,7 @@ class Geografía(object):
 
         símismo.regiones[escala_geog] = {'af': af, 'orden_regs': orden, 'id': ids}
 
-    def agregar_info_regiones(símismo, archivo, col_cód='Código', dialecto_csv=csv.excel):
+    def agregar_info_regiones(símismo, archivo, col_cód='Código', codif_csv='windows-1252'):
 
         símismo.cód_a_lugar.clear()
         símismo.info_geog.clear()
@@ -323,9 +323,9 @@ class Geografía(object):
         símismo.escalas.clear()
 
         doc = []
-        with open(archivo, newline='') as d:
+        with open(archivo, newline='', encoding=codif_csv) as d:
 
-            l = csv.DictReader(d, dialect=dialecto_csv)  # El lector de csv
+            l = csv.DictReader(d)  # El lector de csv
 
             # Guardar la primera fila como nombres de columnas
             cols = l.fieldnames
