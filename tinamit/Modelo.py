@@ -58,6 +58,7 @@ class Modelo(object):
         símismo._inic_dic_vars()  # Iniciar los variables.
 
         #
+        símismo.datos = None
         símismo.calibs = {}
         símismo.info_calibs = {'calibs': {}, 'micro calibs': {}}
 
@@ -1055,7 +1056,13 @@ class Modelo(object):
                 for v in calib:
                     símismo.calibs[v] = calib[v]
 
+    def conectar_datos(símismo, datos):
+        símismo.datos = datos
+
     def _calibrar_var(símismo, var, método, en=None, escala=None, hermanos=False):
+
+        if símismo.datos is None:
+            raise ValueError()
 
         # La lista de variables que hay que calibrar con este.
         l_vars = símismo._obt_vars_asociados(var, enforzar_datos=True, incluir_hermanos=hermanos)

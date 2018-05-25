@@ -1,9 +1,7 @@
 import math as mat
-import os
 
 import numpy as np
 import regex
-import theano
 from lark import Lark, Transformer
 from pkg_resources import resource_filename
 
