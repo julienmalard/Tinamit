@@ -3,6 +3,7 @@ scipy
 matplotlib
 pandas
 python_dateutil
+pymc3>=3.4
 regex
 lark-parser
 lxml

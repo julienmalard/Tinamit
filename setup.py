@@ -140,6 +140,7 @@ setup(
         'scipy',
         'matplotlib',
         'pandas',
+        'pymc3>=3.4',
         'python_dateutil',
         'regex',
         'lark-parser',

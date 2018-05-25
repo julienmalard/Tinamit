@@ -457,12 +457,12 @@ dic_funs = {
                 'python': lambda cond, si, sino: si if cond else sino}
 }
 dic_ops = {
-    '>': {'vensim': '>', 'pm': pm.math.gt},
-    '<': {'vensim': '<', 'pm': pm.math.lt},
-    '>=': {'vensim': '>=', 'pm': pm.math.ge},
-    '<=': {'vensim': '<=', 'pm': pm.math.le},
-    '==': {'vensim': '=', 'pm': pm.math.eq},
-    '!=': {'vensim': '<>', 'pm': pm.math.neq},
+    '>': {'vensim': '>', 'pm': pm.math.gt if pm is not None else None},
+    '<': {'vensim': '<', 'pm': pm.math.lt if pm is not None else None},
+    '>=': {'vensim': '>=', 'pm': pm.math.ge if pm is not None else None},
+    '<=': {'vensim': '<=', 'pm': pm.math.le if pm is not None else None},
+    '==': {'vensim': '=', 'pm': pm.math.eq if pm is not None else None},
+    '!=': {'vensim': '<>', 'pm': pm.math.neq if pm is not None else None},
     '+': {'vensim': '+'},
     '-': {'vensim': '-'},
     '*': {'vensim': '*'},
