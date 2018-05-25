@@ -5,7 +5,6 @@ omit =
        */Interfaz/*
        */local/*
        */Ejemplos/*
-       */Incertidumbre/*
 
 [report]
 omit =
@@ -13,7 +12,6 @@ omit =
        */Interfaz/*
        */local/*
        */Ejemplos/*
-       */Incertidumbre/*
 
 exclude_lines =
     pragma: no cover

@@ -973,7 +973,7 @@ class Modelo(object):
     def agregar_lengua(símismo, lengua):
         pass
 
-    def micro_calib(símismo, var, método=None, escala=None):
+    def micro_calib(símismo, var, método=None, paráms=None, líms_paráms=None, escala=None):
 
         # Especificar la micro calibración.
         símismo.info_calibs['micro_calibs'][var] = {
