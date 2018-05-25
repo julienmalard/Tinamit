@@ -7,8 +7,8 @@ from warnings import warn as avisar
 import numpy as np
 import regex
 
-from tinamit.Análisis.sintaxis import cortar_líns, juntar_líns, Ecuación
 from tinamit import _
+from tinamit.Análisis.sintaxis import cortar_líns, Ecuación
 from tinamit.MDS import EnvolturaMDS, leer_egr_mds
 
 try:
@@ -33,21 +33,6 @@ else:
 
 
 class ModeloVensimMdl(EnvolturaMDS):
-    rgx_var_base = r'([\p{l}\p{m}]+[\p{l}\p{m}\p{n} ]*(?![\p{l}\p{m}\p{n} ]*\())|(".+"(?<!\\))'
-    _regex_var = r'(?<var>{var})(\[(?<subs>{var})\])?'.format(var=rgx_var_base)
-    regex_fun = r'[\p{l}\p{m}]+[\p{l}\p{m}\p{n} ]*(?= *\()'
-
-    # l = [' abd = 1', 'abc d[SUBS] = 1 * abd', '"A." = 1', '"ab3 *" = 1', '"-1\"f" = 1', 'a', 'é = A FUNCTION OF ()', 'வணக்கம்',
-    #      'a3b', '"5a"']
-    #
-    # for i in l:
-    #     print(i)
-    #     m = regex.match(_regex_var, i)
-    #
-    #     if m:
-    #         print(m.groupdict())
-    #         print(m.group())
-    #     print('===')
 
     instalado = False  # para hacer: Por el momento lo dejamos inactivado.
 
@@ -82,24 +67,46 @@ class ModeloVensimMdl(EnvolturaMDS):
         # Variables internos a VENSIM
         símismo.internos = ['FINAL TIME', 'TIME STEP', 'INITIAL TIME', 'SAVEPER', 'Time']
 
-        # Una lista de tuples que indican dónde empieza y termina cada variable
-        índs_vars = [(n, (n + 1) + next(i for i, l_v in enumerate(cuerpo[n + 1:]) if regex.match(r'\n', l_v)))
-                     for n, l in enumerate(cuerpo) if regex.match(r'{}='.format(símismo._regex_var), l)]
+        l_tx_vars = []
+        nuevo_var = True
+        for fl in cuerpo:
+            f = fl.strip().rstrip('\\')
+            if len(f):
+                if nuevo_var:
+                    l_tx_vars.append(f)
+                else:
+                    l_tx_vars[-1] += f
 
-        for ubic_var in índs_vars:
-            # Extraer la información del variable
-            nombre, dic_var = símismo._leer_var(l_texto=cuerpo[ubic_var[0]:ubic_var[1]])
+                nuevo_var = (f[-1] == '|')
 
-            if nombre not in símismo.variables:
-                símismo.variables[nombre] = dic_var
+        for tx_var in l_tx_vars:
+            tx_ec, tx_unids_líms, tx_info = tx_var.strip('|').split('~')
+            obj_ec = Ecuación(tx_ec, dialecto='vensim')
+            if obj_ec.tipo == 'sub':
+                continue
+            var = obj_ec.nombre
+            try:
+                tx_unids, tx_líms = tx_unids_líms.split('[')
+            except ValueError:
+                tx_unids = tx_unids_líms
+                tx_líms = ''
 
-        # Transferir los nombres de los variables parientes a los diccionarios de sus hijos correspondientes
-        for var, d_var in símismo.variables.items():
-            for pariente in d_var['parientes']:
-                try:
-                    símismo.variables[pariente]['hijos'].append(var)
-                except KeyError:
-                    pass
+            if len(tx_líms):
+                líms = tuple([float(x) if x.strip() != '?' else None for x in tx_líms.strip(']').split(',')][:2])
+            else:
+                líms = (None, None)
+
+            símismo.variables[var] = {
+                'val': None,
+                'unidades': tx_unids.strip(),
+                'ec': str(obj_ec),
+                'ingreso': None,
+                'dims': (1,),  # Para hacer
+                'líms': líms,
+                'subscriptos': None,  # Para hacer
+                'egreso': None,
+                'info': tx_info.strip()
+            }
 
         # Borrar lo que había antes en las listas siguientes:
         símismo.flujos.clear()
@@ -114,9 +121,8 @@ class ModeloVensimMdl(EnvolturaMDS):
         for niv in símismo.niveles:
 
             # El primer argumento de la función INTEG de VENSIM
-            ec = Ecuación(símismo.variables[niv]['ec'])
-            arg_integ = sacar_arg(símismo.variables[niv]['ec'], regex_var=símismo._regex_var,
-                                  regex_fun=símismo.regex_fun, i=0)
+            ec = Ecuación(símismo.variables[niv]['ec'], dialecto='vensim')
+            arg_integ = ec.sacar_args_func('INTEG', i=0)
 
             # Extraer los variables flujos
             flujos = [v for v in Ecuación(arg_integ).variables() if v not in símismo.internos]
@@ -137,79 +143,6 @@ class ModeloVensimMdl(EnvolturaMDS):
         # Los constantes son los variables que quedan.
         símismo.constantes += [x for x in símismo.variables if x not in símismo.niveles and x not in símismo.flujos
                                and x not in símismo.auxiliares]
-
-    def _anal_rel_causal(símismo):
-        pass
-
-    def _leer_var(símismo, l_texto):
-        """
-        Esta función toma un lista de las líneas de texto que especifican un variable y le extrae su información.
-
-        :param l_texto: Una lista del texto que corresponde a este variable.
-        :type l_texto: list
-
-        :return: El numbre del variable, y un diccionario con su información
-        :rtype: (str, dict)
-        """
-
-        # Identificar el nombre del variable
-        d_rgx = regex.match(símismo._regex_var, l_texto[0]).groupdict()
-        nombre = d_rgx['var'].strip()
-        subs = d_rgx['subs']
-
-        # El diccionario en el cual guardar todo
-        dic_var = {'val': None,
-                   'unidades': '',
-                   'ingreso': None,
-                   'dims': (1,),  # Para hacer
-                   'líms': (),
-                   'subscriptos': subs,
-                   'egreso': None,
-                   'hijos': [],
-                   'parientes': [],
-                   'info': ''}
-
-        # Sacar el inicio de la ecuación que puede empezar después del signo de igualdad.
-        m = regex.search(r'( *=)(.*)$', l_texto[0][len(nombre):])
-        princ_ec = m.groups()[1]
-
-        # El principio de las unidades
-        prim_unid = next(n for n, l in enumerate(l_texto) if regex.match(r'\t~\t', l))
-
-        # El principio de los comentarios
-        prim_com = next(n + (prim_unid + 1) for n, l in enumerate(l_texto[prim_unid + 1:]) if regex.match(r'\t~\t', l))
-
-        # Combinar las líneas de texto de la ecuación
-        try:
-            fin_ec = next(n for n, l in enumerate(l_texto) if regex.match(r'.*~~|\n$', l))
-            ec = juntar_líns([princ_ec] + l_texto[1:fin_ec + 1])
-        except StopIteration:
-            ec = juntar_líns([princ_ec] + l_texto[1:prim_unid])
-
-        # Extraer los nombre de los variables parientes
-        dic_var['parientes'] = [v for v in Ecuación(ec).variables() if v not in símismo.internos + [nombre]]
-
-        # Si no hay ecuación especificada, dar una ecuación vacía.
-        if regex.match(r'A FUNCTION OF *\(', ec) is not None:
-            dic_var['ec'] = ''
-        else:
-            dic_var['ec'] = ec
-
-        # Ahora sacamos las unidades y los límites.
-        l_unidades = juntar_líns(l_texto[prim_unid:prim_com], cabeza=r'\t~?\t')
-        unid_líms = l_unidades.split('[')
-        dic_var['unidades'] = unid_líms[0].strip()
-        try:
-            líms = unid_líms[1].strip(']').split(',')
-            dic_var['líms'] = tuple(float(l) if l.strip() != '?' else None for l in líms)
-        except IndexError:
-            dic_var['líms'] = (None, None)
-
-        # Y ahora agregamos todas las líneas que quedan para la sección de comentarios
-        dic_var['info'] = juntar_líns(l_texto[prim_com:], cabeza=r'\t~?\t', cola=r'\t\|')
-
-        # Devolver el variable decifrado.
-        return nombre, dic_var
 
     def _escribir_var(símismo, var):
         """

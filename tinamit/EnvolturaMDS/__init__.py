@@ -47,6 +47,8 @@ def generar_mds(archivo, motor=None):
             motores_potenciales = [x for x in dic_motores if x in motor]
 
         for env in motores_potenciales:
+            if env is ModeloVensimMdl:
+                return env(archivo)  # para hacer: quitar
             try:
                 return env(archivo)
             except BaseException as e:

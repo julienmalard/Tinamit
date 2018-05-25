@@ -3,7 +3,7 @@ from warnings import warn as avisar
 import numpy as np
 import pandas as pd
 
-from Análisis.sintaxis import Ecuación
+from tinamit.Análisis.sintaxis import Ecuación
 from tinamit import _
 from tinamit.Análisis.Calibs import calib_bayes, optimizar
 from tinamit.Análisis.Datos import SuperBD

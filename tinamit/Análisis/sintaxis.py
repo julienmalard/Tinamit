@@ -1,4 +1,5 @@
 import math as mat
+import os
 
 import numpy as np
 import regex
@@ -13,7 +14,9 @@ try:
 except ImportError:
     pm = None
 
-l_dialectos_potenciales = [resource_filename('tinamit.Análisis', 'grams/gram_Vensim.g')]
+l_dialectos_potenciales = {'vensim': resource_filename('tinamit.Análisis', 'grams/gram_Vensim.g')}
+l_grams_def_var = {}
+l_grams_var = {}
 
 
 def cortar_líns(texto, máx_car, lín_1=None, lín_otras=None):
@@ -85,32 +88,45 @@ class _Transformador(Transformer):
     def sub(x):
         return {'func': ['-', x]}
 
+    @staticmethod
+    def asign_var(x):
+        return {'var': x[0]['var'], 'ec': x[1]}
+
+    @staticmethod
+    def asign_sub(x):
+        return {'sub': x[0]['var'], 'nmbr_dims': x[1]}
+
     args = list
     ec = list
 
 
 class Ecuación(object):
-    def __init__(símismo, ec, dialecto=None):
-        símismo.ec = ec
+    def __init__(símismo, ec, nombre=None, dialecto=None):
 
         if dialecto is None:
-            dialecto = l_dialectos_potenciales
-        elif isinstance(dialecto, str):
-            dialecto = [dialecto]
+            dialecto = 'tinamït'
+        símismo.dialecto = dialecto
 
-        anlzdr = None
-        errores = []
-        for dial in dialecto:
+        símismo.nombre = nombre
+        símismo.tipo = 'var'
+        símismo.árbol = None
+
+        if dialecto not in l_grams_var:
+            with open(l_dialectos_potenciales[dialecto], encoding='UTF-8') as d:
+                l_grams_var[dialecto] = Lark(d, parser='lalr', start='ec')
+        anlzdr = l_grams_var[dialecto]
+
+        árbol = _Transformador().transform(anlzdr.parse(ec))
+        if isinstance(árbol, dict):
             try:
-                with open(dial) as gm:
-                    anlzdr = Lark(gm, parser='lalr', start='ec')
-                símismo.árbol = _Transformador().transform(anlzdr.parse(ec))[0]
-                símismo.dialecto = dial.lower()
-                break
-            except BaseException as e:
-                errores.append(e)
-        if anlzdr is None:
-            raise ValueError('Error en la ecuación "{}". Detalles: {}'.format(ec, errores))
+                símismo.nombre = árbol['var']
+                símismo.árbol = árbol['ec']
+            except KeyError:
+                símismo.nombre = árbol['sub']
+                símismo.árbol = árbol['nmbr_dims']
+                símismo.tipo = 'sub'
+        else:
+            símismo.árbol = árbol[0]
 
     def variables(símismo):
 
@@ -162,26 +178,33 @@ class Ecuación(object):
 
                     if ll == 'func':
 
-                        if v[0] == '+':
+                        if v[0] in dic_ops_inv[dialecto]:
                             comp_1 = _a_python(v[1][0], l_prms=l_prms)
                             comp_2 = _a_python(v[1][1], l_prms=l_prms)
+
+                        if v[0] == '+':
                             return lambda p, vr: comp_1(p=p, vr=vr) + comp_2(p=p, vr=vr)
                         elif v[0] == '/':
-                            comp_1 = _a_python(v[1][0], l_prms=l_prms)
-                            comp_2 = _a_python(v[1][1], l_prms=l_prms)
                             return lambda p, vr: comp_1(p=p, vr=vr) / comp_2(p=p, vr=vr)
                         elif v[0] == '-':
-                            comp_1 = _a_python(v[1][0], l_prms=l_prms)
-                            comp_2 = _a_python(v[1][1], l_prms=l_prms)
                             return lambda p, vr: comp_1(p=p, vr=vr) - comp_2(p=p, vr=vr)
                         elif v[0] == '*':
-                            comp_1 = _a_python(v[1][0], l_prms=l_prms)
-                            comp_2 = _a_python(v[1][1], l_prms=l_prms)
                             return lambda p, vr: comp_1(p=p, vr=vr) * comp_2(p=p, vr=vr)
                         elif v[0] == '^':
-                            comp_1 = _a_python(v[1][0], l_prms=l_prms)
-                            comp_2 = _a_python(v[1][1], l_prms=l_prms)
                             return lambda p, vr: comp_1(p=p, vr=vr) ** comp_2(p=p, vr=vr)
+                        elif v[0] == '>':
+                            return lambda p, vr: comp_1(p=p, vr=vr) > comp_2(p=p, vr=vr)
+                        elif v[0] == '<':
+                            return lambda p, vr: comp_1(p=p, vr=vr) < comp_2(p=p, vr=vr)
+                        elif v[0] == '>=':
+                            return lambda p, vr: comp_1(p=p, vr=vr) >= comp_2(p=p, vr=vr)
+                        elif v[0] == '<=':
+                            return lambda p, vr: comp_1(p=p, vr=vr) <= comp_2(p=p, vr=vr)
+                        elif v[0] == '==':
+                            return lambda p, vr: comp_1(p=p, vr=vr) == comp_2(p=p, vr=vr)
+                        elif v[0] == '!=':
+                            return lambda p, vr: comp_1(p=p, vr=vr) != comp_2(p=p, vr=vr)
+
                         else:
                             fun = conv_fun(v[0], dialecto, 'python')
                             comp = _a_python(v[1][1], l_prms=l_prms)
@@ -251,6 +274,12 @@ class Ecuación(object):
 
                     if ll == 'func':
 
+                        try:
+                            op_pm = conv_op(v[0], dialecto, 'pm')
+                            return op_pm(_a_bayes(v[1][0], d_pm=d_pm), _a_bayes(v[1][1], d_pm=d_pm))
+                        except KeyError:
+                            pass
+
                         if v[0] == '+':
                             return _a_bayes(v[1][0], d_pm=d_pm) + _a_bayes(v[1][1], d_pm=d_pm)
                         elif v[0] == '/':
@@ -261,6 +290,7 @@ class Ecuación(object):
                             return _a_bayes(v[1][0], d_pm=d_pm) * _a_bayes(v[1][1], d_pm=d_pm)
                         elif v[0] == '^':
                             return _a_bayes(v[1][0], d_pm=d_pm) ** _a_bayes(v[1][1], d_pm=d_pm)
+
                         else:
                             return conv_fun(v[0], dialecto, 'pm')(
                                 *_a_bayes(v[1], d_pm=d_pm))
@@ -337,65 +367,89 @@ class Ecuación(object):
 
             if binario:
                 x = pm.Normal(name='logit_prob', mu=mu, sd=sigma, shape=obs_y.shape, testval=np.full(obs_y.shape, 0))
-                pm.Bernoulli(name='Y_obs', p=pm.invlogit(-x), observed=obs_y)  #
+                pm.Bernoulli(name='Y_obs', logit_p=-x, observed=obs_y)  #
 
             else:
                 pm.Normal(name='Y_obs', mu=mu, sd=sigma, observed=obs_y)
 
         return modelo, d_vars_obs
 
-    def gen_texto(símismo, paráms=None):
+    def gen_texto(símismo):
 
         dialecto = símismo.dialecto
-        if paráms is None:
-            paráms = []
 
-        def _a_tx(á, d_v):
+        def _a_tx(á):
 
             if isinstance(á, dict):
                 for ll, v in á.items():
                     if ll == 'func':
-                        if v[0] == '+':
-                            return '({} + {})'.format(_a_tx(v[1][0], d_v=d_v), _a_tx(v[1][1], d_v=d_v))
-                        elif v[0] == '/':
-                            return '({} / {})'.format(_a_tx(v[1][0], d_v=d_v), _a_tx(v[1][1], d_v=d_v))
-                        elif v[0] == '-':
-                            return '({} - {})'.format(_a_tx(v[1][0], d_v=d_v), _a_tx(v[1][1], d_v=d_v))
-                        elif v[0] == '*':
-                            return '({} * {})'.format(_a_tx(v[1][0], d_v=d_v), _a_tx(v[1][1], d_v=d_v))
-                        elif v[0] == '^':
-                            return '({} ^ {})'.format(_a_tx(v[1][0], d_v=d_v), _a_tx(v[1][1], d_v=d_v))
-                        else:
-                            return '{nombre}({args})'.format(nombre=dic_funs_inv[dialecto][v[0]],
-                                                             args=_a_tx(v[1], d_v=d_v))
-                    elif ll == 'var':
                         try:
-                            nmbr = 'p[{}]'.format(paráms.index(v))
-                        except ValueError:
-                            if v in d_v:
-                                return d_v[v]
-                            else:
-                                nmbr = "d_x['v{}']".format(len(d_v))
+                            tx_op = dic_ops_inv[dialecto][v[0]]
+                            return '({a1} {o} {a2})'.format(a1=_a_tx(v[1][0]), o=tx_op, a2=_a_tx(v[1][1]))
+                        except KeyError:
+                            pass
 
-                        d_v[v] = nmbr
-                        return nmbr
+                        try:
+                            return '{nombre}({args})'.format(nombre=dic_funs_inv[dialecto][v[0]],
+                                                             args=_a_tx(v[1]))
+                        except KeyError:
+                            return '{nombre}({args})'.format(nombre=v[0], args=_a_tx(v[1]))
+
+                    elif ll == 'var':
+                        return v
                     elif ll == 'neg':
-                        return '-{}'.format(_a_tx(v, d_v=d_v))
+                        return '-{}'.format(_a_tx(v))
                     else:
                         raise TypeError('')
 
             elif isinstance(á, list):
-                return ', '.join([_a_tx(x, d_v=d_v) for x in á])
+                return ', '.join([_a_tx(x) for x in á])
             elif isinstance(á, int) or isinstance(á, float):
                 return str(á)
             else:
                 raise TypeError('')
 
-        d_vars = {}
-        return _a_tx(símismo.árbol, d_v=d_vars), d_vars
+        return _a_tx(símismo.árbol)
 
     def __str__(símismo):
-        return símismo.gen_texto()[0]
+        return símismo.gen_texto()
+
+    def sacar_args_func(símismo, func, i):
+
+        def _sacar_vars(á, l_v = None):
+            if l_v is None:
+                l_v = []
+            if isinstance(á, dict):
+                for ll, v in á.items():
+                    if ll == 'var':
+                        l_v.append(v)
+                    else:
+                        for p in v[1]:
+                            _sacar_vars(p, l_v=l_v)
+
+            elif isinstance(á, list):
+                [_sacar_vars(x, l_v=l_v) for x in á]
+            else:
+                pass
+            return l_v
+
+        def _buscar_func(á, f):
+
+            if isinstance(á, dict):
+                for ll, v in á.items():
+                    if ll == 'func':
+                        if v[0] == f:
+                            return _sacar_vars(v[1][i])
+                    else:
+                        for p in v[1]:
+                            _buscar_func(p, f=func)
+
+            elif isinstance(á, list):
+                [_buscar_func(x, f=func) for x in á]
+            else:
+                pass
+
+        return _buscar_func(símismo.árbol, f=func)
 
 
 dic_funs = {
@@ -416,13 +470,23 @@ dic_funs = {
     'asin': {'vensim': 'ARCSIN', 'python': mat.asin},
     'acos': {'vensim': 'ARCCOS', 'python': mat.acos},
     'atan': {'vensim': 'ARCTAN', 'python': mat.atan},
-
+    'si_sino': {'vensim': 'IF THEN ELSE', 'pm': pm.math.switch,
+                'python': lambda cond, si, sino: si if cond else sino}
+}
+dic_ops = {
+    '>': {'vensim': '>', 'pm': pm.math.gt},
+    '<': {'vensim': '<', 'pm': pm.math.lt},
+    '>=': {'vensim': '>=', 'pm': pm.math.ge},
+    '<=': {'vensim': '<=', 'pm': pm.math.le},
+    '==': {'vensim': '=', 'pm': pm.math.eq},
+    '!=': {'vensim': '<>', 'pm': pm.math.neq},
     '+': {'vensim': '+'},
     '-': {'vensim': '-'},
     '*': {'vensim': '*'},
     '^': {'vensim': '^'},
     '/': {'vensim': '/'}
 }
+
 
 dic_funs_inv = {}
 for f, d_fun in dic_funs.items():
@@ -431,12 +495,26 @@ for f, d_fun in dic_funs.items():
             dic_funs_inv[tipo] = {}
         dic_funs_inv[tipo][d] = f
 
+dic_ops_inv = {}
+for op, d_op in dic_ops.items():
+    for tipo, d in d_op.items():
+        if tipo not in dic_ops_inv:
+            dic_ops_inv[tipo] = {}
+        dic_ops_inv[tipo][d] = op
+
 
 def conv_fun(fun, dialecto_0, dialecto_1):
     if dialecto_0 == 'tinamït':
         return dic_funs[fun][dialecto_1]
     else:
         return dic_funs[dic_funs_inv[dialecto_0][fun]][dialecto_1]
+
+
+def conv_op(oper, dialecto_0, dialecto_1):
+    if dialecto_0 == 'tinamït':
+        return dic_ops[oper][dialecto_1]
+    else:
+        return dic_ops[dic_ops_inv[dialecto_0][oper]][dialecto_1]
 
 
 # Funciones que hay que reemplazar con algo más elegante

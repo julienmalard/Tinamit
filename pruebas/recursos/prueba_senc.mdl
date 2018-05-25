@@ -33,7 +33,7 @@ Lluvia= GAME (
 Nivel lago inicial=
 	1500
 	~	m3 [0,?]
-	~	La cantidad inicial  de agua en el lago.
+	~	La cantidad inicial  de ag   ua en el lago.
 	|
 
 ********************************************************
@@ -94,7 +94,7 @@ $192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,1
 27:2,
 34:0,
 4:Time
-5:Aleatorio
+5:Nivel lago inicial
 35:Date
 36:YYYY-MM-DD
 37:2000
