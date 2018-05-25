@@ -38,6 +38,9 @@ class ModeloVensimMdl(EnvolturaMDS):
 
     def __init__(símismo, archivo):
 
+        # Variables internos a VENSIM
+        símismo.internos = ['FINAL TIME', 'TIME STEP', 'INITIAL TIME', 'SAVEPER', 'Time']
+
         símismo.dic_doc = {'cabeza': [], 'cuerpo': [], 'cola': []}
 
         # Leer las tres secciones generales del archivo
@@ -63,9 +66,6 @@ class ModeloVensimMdl(EnvolturaMDS):
         símismo.variables.clear()
 
         cuerpo = símismo.dic_doc['cuerpo']
-
-        # Variables internos a VENSIM
-        símismo.internos = ['FINAL TIME', 'TIME STEP', 'INITIAL TIME', 'SAVEPER', 'Time']
 
         l_tx_vars = []
         nuevo_var = True
@@ -104,9 +104,18 @@ class ModeloVensimMdl(EnvolturaMDS):
                 'dims': (1,),  # Para hacer
                 'líms': líms,
                 'subscriptos': None,  # Para hacer
+                'hijos': obj_ec.variables(),
+                'parientes': [],
                 'egreso': None,
                 'info': tx_info.strip()
             }
+
+        for v, d_v in símismo.variables.items():
+            for h in d_v['hijos']:
+                if h not in símismo.internos:
+                    d_h = símismo.variables[h]
+                    if v not in d_h['parientes']:
+                        d_h['parientes'].append(v)
 
         # Borrar lo que había antes en las listas siguientes:
         símismo.flujos.clear()
@@ -122,15 +131,15 @@ class ModeloVensimMdl(EnvolturaMDS):
 
             # El primer argumento de la función INTEG de VENSIM
             ec = Ecuación(símismo.variables[niv]['ec'], dialecto='vensim')
-            arg_integ = ec.sacar_args_func('INTEG', i=0)
+            arg_integ = ec.sacar_args_func('INTEG', i=1)[0]
 
             # Extraer los variables flujos
-            flujos = [v for v in Ecuación(arg_integ).variables() if v not in símismo.internos]
+            flujos = [v for v in Ecuación(arg_integ, dialecto='vensim').variables() if v not in símismo.internos]
 
             for flujo in flujos:
                 # Para cada nivel en el modelo...
 
-                if flujo not in símismo.flujos:
+                if flujo not in símismo.flujos and flujo not in símismo.niveles:
                     # Agregar el flujo, si no está ya en la lista de flujos.
 
                     símismo.flujos.append(flujo)
@@ -141,8 +150,8 @@ class ModeloVensimMdl(EnvolturaMDS):
                                and len(d['parientes'])]
 
         # Los constantes son los variables que quedan.
-        símismo.constantes += [x for x in símismo.variables if x not in símismo.niveles and x not in símismo.flujos
-                               and x not in símismo.auxiliares]
+        símismo.constantes += [x for x, d in símismo.variables.items()
+                               if not len(d['parientes']) and not any(h in símismo.flujos for h in d['hijos'])]
 
     def _escribir_var(símismo, var):
         """

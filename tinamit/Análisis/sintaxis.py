@@ -374,9 +374,31 @@ class Ecuación(object):
 
         return modelo, d_vars_obs
 
-    def gen_texto(símismo):
+    def sacar_args_func(símismo, func, i):
 
+        árbol_ec_a_texto = símismo.árbol_ec_a_texto
         dialecto = símismo.dialecto
+
+        def _buscar_func(á, f):
+
+            if isinstance(á, dict):
+                for ll, v in á.items():
+                    if ll == 'func':
+                        if v[0] == f:
+                            return [árbol_ec_a_texto(x, dialecto=dialecto) for x in v[1][:i]]
+                    else:
+                        for p in v[1]:
+                            _buscar_func(p, f=func)
+
+            elif isinstance(á, list):
+                [_buscar_func(x, f=func) for x in á]
+            else:
+                pass
+
+        return _buscar_func(símismo.árbol, f=func)
+
+    @staticmethod
+    def árbol_ec_a_texto(árb, dialecto):
 
         def _a_tx(á):
 
@@ -409,47 +431,10 @@ class Ecuación(object):
             else:
                 raise TypeError('')
 
-        return _a_tx(símismo.árbol)
+        return _a_tx(árb)
 
     def __str__(símismo):
-        return símismo.gen_texto()
-
-    def sacar_args_func(símismo, func, i):
-
-        def _sacar_vars(á, l_v = None):
-            if l_v is None:
-                l_v = []
-            if isinstance(á, dict):
-                for ll, v in á.items():
-                    if ll == 'var':
-                        l_v.append(v)
-                    else:
-                        for p in v[1]:
-                            _sacar_vars(p, l_v=l_v)
-
-            elif isinstance(á, list):
-                [_sacar_vars(x, l_v=l_v) for x in á]
-            else:
-                pass
-            return l_v
-
-        def _buscar_func(á, f):
-
-            if isinstance(á, dict):
-                for ll, v in á.items():
-                    if ll == 'func':
-                        if v[0] == f:
-                            return _sacar_vars(v[1][i])
-                    else:
-                        for p in v[1]:
-                            _buscar_func(p, f=func)
-
-            elif isinstance(á, list):
-                [_buscar_func(x, f=func) for x in á]
-            else:
-                pass
-
-        return _buscar_func(símismo.árbol, f=func)
+        return símismo.árbol_ec_a_texto(símismo.árbol, símismo.dialecto)
 
 
 dic_funs = {

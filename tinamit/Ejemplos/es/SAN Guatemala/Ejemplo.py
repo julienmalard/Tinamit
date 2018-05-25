@@ -30,9 +30,7 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
                                   lugar='id')
 
     geog = Geografía('Iximulew')
-    geog.agregar_info_regiones(archivo='Geografía Iximulew.csv',
-                               orden_jer=['Departamento', 'Municipio'],
-                               col_cód='Código', grupos='Territorio')
+    geog.agregar_info_regiones(archivo='Geografía Iximulew.csv')
 
     datos_muni = DatosRegión('Datos municipales', archivo=c('Datos muni\\Datos Muni Iximulew.csv'), fecha='Año',
                              lugar='Código_lugar')
