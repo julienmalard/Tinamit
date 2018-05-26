@@ -682,7 +682,7 @@ class BD(object):
         símismo.archivo = archivo
 
         if not os.path.isfile(archivo):
-            raise FileNotFoundError
+            raise FileNotFoundError(_('El archivo "{}" no existe.').format(archivo))
 
         símismo.n_obs = símismo.calc_n_obs()
 

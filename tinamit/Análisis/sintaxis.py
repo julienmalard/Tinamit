@@ -453,7 +453,7 @@ dic_funs = {
     'asin': {'vensim': 'ARCSIN', 'python': mat.asin},
     'acos': {'vensim': 'ARCCOS', 'python': mat.acos},
     'atan': {'vensim': 'ARCTAN', 'python': mat.atan},
-    'si_sino': {'vensim': 'IF THEN ELSE', 'pm': pm.math.switch,
+    'si_sino': {'vensim': 'IF THEN ELSE', 'pm': pm.math.switch if pm is not None else None,
                 'python': lambda cond, si, sino: si if cond else sino}
 }
 dic_ops = {

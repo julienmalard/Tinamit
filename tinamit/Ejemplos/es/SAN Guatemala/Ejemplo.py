@@ -21,6 +21,9 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
     print('constantes', modelo.constantes)
     # print('vacíos', modelo.vacíos())
 
+    geog = Geografía('Iximulew')
+    geog.agregar_info_regiones(archivo='Geografía Iximulew.csv')
+
     ENCOVI_ind_2011 = DatosIndividuales('ENCOVI ind 2011', archivo=c('ENCOVIs\\2011\\BD Personas_final.csv'),
                                         fecha=2011,
                                         lugar='munidept')
@@ -28,9 +31,6 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
                                         lugar='munidept')
     ENCOVI_reg_2011 = DatosRegión('ENCOVI reg 2011', archivo=c('ENCOVIs\\2011\\BD regional_final.csv'), fecha=2011,
                                   lugar='id')
-
-    geog = Geografía('Iximulew')
-    geog.agregar_info_regiones(archivo='Geografía Iximulew.csv')
 
     datos_muni = DatosRegión('Datos municipales', archivo=c('Datos muni\\Datos Muni Iximulew.csv'), fecha='Año',
                              lugar='Código_lugar')

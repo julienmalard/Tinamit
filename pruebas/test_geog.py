@@ -29,6 +29,7 @@ class Test_Geografía(unittest.TestCase):
 
     def test_obt_lugares_en_región(símismo):
         lgs = símismo.geog.obt_lugares_en('7')
+        símismo.assertEqual(len(lgs), 19)
         símismo.assertTrue(all(símismo.geog.en_región(lg, '7') for lg in lgs))
 
     def test_obt_lugares_en_con_escala(símismo):

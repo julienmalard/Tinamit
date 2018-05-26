@@ -340,14 +340,14 @@ class Geografía(object):
         # Inferir el orden de la jerarquía
         órden = []
 
-        escalas = [x for x in cols if x != col_cód]
+        escalas = [x.lower() for x in cols if x != col_cód]
         símismo.escalas.extend(escalas)
 
         símismo.info_geog.update({esc: [] for esc in escalas})
 
         coescalas = []
         for f in doc:
-            coescalas_f = {ll for ll, v in f.items() if len(v) and ll in escalas}
+            coescalas_f = {ll.lower() for ll, v in f.items() if len(v) and ll.lower() in escalas}
             if not any(x == coescalas_f for x in coescalas):
                 coescalas.append(coescalas_f)
 
@@ -367,6 +367,8 @@ class Geografía(object):
 
         for f in doc:
             cód = f[col_cód]
+            for ll, v in f.copy().items():
+                f[ll.lower()] = f.pop(ll)
             escala = None
             for esc in órden[::-1]:
                 if isinstance(esc, str):
@@ -400,13 +402,13 @@ class Geografía(object):
         en = símismo._validar_código_lugar(en)
 
         if en is not None:
-            escl_en = símismo.cód_a_lugar[en]
+            escl_en = símismo.cód_a_lugar[en]['escala']
             return [x for x, d in símismo.cód_a_lugar.items()
                     if d['escala'].lower() == escala
-                    and escl_en in d['en'] and d['en'][escl_en].lower() == en.lower()]
+                    and escl_en in d['en'] and d['en'][escl_en] == en]
         else:
             return [x for x, d in símismo.cód_a_lugar.items()
-                    if d['escala'].lower() == escala]
+                    if d['escala'] == escala]
 
     def obt_escala_región(símismo, cód):
         return símismo.cód_a_lugar[cód]['escala']
@@ -437,7 +439,7 @@ class Geografía(object):
                 raise ValueError(_('La escala "{esc}" no existe en la geografía de "{geog}"')
                                  .format(esc=escala, geog=símismo.nombre))
 
-        return escala
+        return escala.lower()
 
     def _validar_código_lugar(símismo, cód):
 
