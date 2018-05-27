@@ -74,12 +74,21 @@ class Test_ModeloSenc(unittest.TestCase):
 
     def test_simul(símismo):
         """
-        Assegurarse que la simulación dió los resultados esperados.
+        Asegurarse que la simulación dió los resultados esperados.
         """
 
         val_simulado = símismo.envltmodelo.leer_resultados('Escala')
 
         símismo.assertTrue(np.array_equal(val_simulado, np.arange(0, 201)))
+
+    def test_nombre_inválido(símismo):
+        """
+        Asegurarse que nombres inválidos para modelos se corrijan automáticamente.
+        """
+
+        mod = EnvolturaBF(arch_bf, nombre='Nombre_inválido')
+
+        símismo.assertNotIn('_', mod.nombre)
 
 
 # Comprobar que la EnvolturasBF pueda leer el modelo BF de prueba en todas las formas posibles para cargar un modelo BF.
