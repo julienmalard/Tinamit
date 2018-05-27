@@ -12,8 +12,8 @@ from tinamit.Modelo import Modelo
 
 class EnvolturaMDS(Modelo):
     """
-    Esta clase sirve para representar modelo de dinámicas de los sistemas (EnvolturaMDS). Se debe crear una subclase para cada
-    tipo de EnvolturaMDS. Al momento, el único incluido es VENSIM.
+    Esta clase sirve para representar modelo de dinámicas de los sistemas (EnvolturasMDS). Se debe crear una subclase para cada
+    tipo de EnvolturasMDS. Al momento, el único incluido es VENSIM.
     """
 
     ext_arch_egr = '.csv'
@@ -40,7 +40,7 @@ class EnvolturaMDS(Modelo):
 
     def _inic_dic_vars(símismo):
         """
-        Este método se deja a las subclases de :class:`~tinamit.EnvolturaMDS.EnvolturaMDS` para implementar. Además de
+        Este método se deja a las subclases de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS` para implementar. Además de
         los diccionarios de variables normales, debe establecer `símismo.constantes`, `símismo.flujos`,
         `símismo.niveles`, `símismo.editables`, y `símismo.auxiliares`. Este último
         debe tener las llaves "hijos", "parientes" y "ec".
@@ -63,7 +63,7 @@ class EnvolturaMDS(Modelo):
 
     def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
         """
-        Este método se deja a las subclases de :class:`~tinamit.EnvolturaMDS.EnvolturaMDS` para implementar. Notar que la
+        Este método se deja a las subclases de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS` para implementar. Notar que la
         implementación de este método debe incluir la aplicación de valores iniciales.
 
         Ver :func:`Modelo.Modelo.iniciar_modelo` para más información.
@@ -79,7 +79,7 @@ class EnvolturaMDS(Modelo):
 
     def _cambiar_vals_modelo_interno(símismo, valores):
         """
-        Este método se deja a las subclases de :class:`~tinamit.EnvolturaMDS.EnvolturaMDS` para implementar.
+        Este método se deja a las subclases de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS` para implementar.
 
         Ver :func:`Modelo.Modelo.cambiar_vals_modelo` para más información.
 
@@ -91,7 +91,7 @@ class EnvolturaMDS(Modelo):
 
     def _incrementar(símismo, paso):
         """
-        Este método se deja a las subclases de :class:`~tinamit.EnvolturaMDS.EnvolturaMDS` para implementar.
+        Este método se deja a las subclases de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS` para implementar.
 
         Debe avanzar la simulación del modelo DS de ``paso`` unidades de tiempo.  Ver
         :func:`Modelo.Modelo.incrementar` para más información.
@@ -104,10 +104,10 @@ class EnvolturaMDS(Modelo):
 
     def _leer_vals(símismo):
         """
-        Este método se deja a las subclases de :class:`~tinamit.EnvolturaMDS.EnvolturaMDS` para implementar.
+        Este método se deja a las subclases de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS` para implementar.
 
-        Debe leer los valores de los variables en el modelo EnvolturaMDS. Si es más fácil, puede simplemente leer los valores
-        de los variables que están en la lista ``EnvolturaMDS.vars_saliendo`` (los variables del DS que están
+        Debe leer los valores de los variables en el modelo EnvolturasMDS. Si es más fácil, puede simplemente leer los valores
+        de los variables que están en la lista ``EnvolturasMDS.vars_saliendo`` (los variables del DS que están
         conectados con el modelo biofísico).
 
         Ver :func:`Modelo.Modelo.leer_vals` para más información.
@@ -117,7 +117,7 @@ class EnvolturaMDS(Modelo):
 
     def cerrar_modelo(símismo):
         """
-        Este método se deja a las subclases de :class:`~tinamit.EnvolturaMDS.EnvolturaMDS` para implementar.
+        Este método se deja a las subclases de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS` para implementar.
 
         Debe llamar acciones necesarias para terminar la simulación y cerrar el modelo DS, si aplican.
 
@@ -157,7 +157,7 @@ class MDSEditable(EnvolturaMDS):
 
 def leer_egr_mds(archivo, var, saltar_última_vdf=True):
     """
-    Lee archivos de egresos de simulaciones EnvolturaMDS.
+    Lee archivos de egresos de simulaciones EnvolturasMDS.
 
     :param archivo: El archivo de egresos.
     :type archivo: str

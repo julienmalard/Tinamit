@@ -812,7 +812,7 @@ class Modelo(object):
         :type var: str
         :param corrida: El nombre de la corrida para dibujar.
         :type corrida: str
-        :param directorio: El directorio, relativo al archivo EnvolturaMDS, donde hay que poner los dibujos.
+        :param directorio: El directorio, relativo al archivo EnvolturasMDS, donde hay que poner los dibujos.
         :type directorio: str
         :param i_paso: Los pasos a los cuales quieres dibujar los egresos.
         :type i_paso: list | tuple | int
@@ -1058,6 +1058,17 @@ class Modelo(object):
 
     def conectar_datos(símismo, datos):
         símismo.datos = datos
+
+    def conectar_var_a_datos(símismo, var, var_bd):
+        var = símismo.valid_var(var)
+        símismo.conex_var_datos[var] = var_bd
+
+    def desconectar_var_datos(símismo, var):
+        var = símismo.valid_var(var)
+        símismo.conex_var_datos.pop(var)
+
+    def desconectar_datos(símismo, datos):
+        símismo.datos = None
 
     def _calibrar_var(símismo, var, método, en=None, escala=None, hermanos=False):
 

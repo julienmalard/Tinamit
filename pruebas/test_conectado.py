@@ -6,7 +6,7 @@ import numpy.testing as npt
 from pruebas.test_mds import tipos_modelos, limpiar_mds
 from tinamit.BF import EnvolturaBF
 from tinamit.Conectado import Conectado, SuperConectado
-from tinamit.EnvolturaMDS import ModeloPySD
+from tinamit.EnvolturasMDS import ModeloPySD
 from tinamit.Unidades import trads
 
 dir_act = os.path.split(__file__)[0]

@@ -6,15 +6,15 @@ import numpy as np
 
 from tinamit.Análisis.ConexDatos import ConexDatos
 from tinamit.Análisis.Datos import DatosIndividuales, DatosRegión, SuperBD
-from tinamit.EnvolturaMDS import generar_mds
+from tinamit.EnvolturasMDS import generar_mds
 from tinamit.Geog.Geog import Geografía
 
 if __name__ == '__main__':  # Necesario para paralelización en Windows
     c = lambda x: os.path.join('C:\\Users\\jmalar1\\Documents\\Julien\\Bases de datos\\Iximulew', x)
-    # EnvolturaMDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
+    # EnvolturasMDS es una función que genera una instancia de ModeloMDS, tal como VENSIM
     modelo = generar_mds(archivo='Para Tinamït.mdl')
     print('vars', modelo.variables.keys())
-    print('internos', modelo.internos)  # variables internos al EnvolturaMDS (p. ej., TIMESTEP y TIME en VENSIM)
+    print('internos', modelo.internos)  # variables internos al EnvolturasMDS (p. ej., TIMESTEP y TIME en VENSIM)
     print('auxiliares', modelo.auxiliares)
     print('flujos', modelo.flujos)
     print('niveles', modelo.niveles)
@@ -384,7 +384,7 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
     control.escribir_modelo(archivo='')
     control.correr(nombre_corrida='')
     control.analizar_incert(nombre_corrida='',
-                            manera='natural')  # Utilizando la función de incertidumbre del programa de EnvolturaMDS
+                            manera='natural')  # Utilizando la función de incertidumbre del programa de EnvolturasMDS
     control.visualizar_corrida(var='')
 
     control.validar_MDS(año_inic=None, cód_lugar=['0112'], n_reps=100)  # Genera los análises de Barlas, gráficos, etc.

@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from tinamit.EnvolturaMDS import generar_mds, EnvolturaMDS, ModeloVensim, ModeloPySD, ModeloVensimMdl
+from tinamit.EnvolturasMDS import generar_mds, EnvolturaMDS, ModeloVensim, ModeloPySD, ModeloVensimMdl
 
 # Los tipos de modelos DS que queremos comprobar.
 tipos_modelos = {

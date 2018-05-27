@@ -254,7 +254,7 @@ class ModeloVensim(EnvolturaMDS):
         # Una lista de variables editables
         símismo.editables = []
 
-        # Inicializar ModeloVENSIM como una EnvolturaMDS.
+        # Inicializar ModeloVENSIM como una EnvolturasMDS.
         super().__init__(archivo=archivo, nombre=nombre)
 
     def _inic_dic_vars(símismo):
@@ -382,7 +382,7 @@ class ModeloVensim(EnvolturaMDS):
 
     def _anal_rel_causal(símismo):
         """
-        Con el dll de Vensim, no necesitamos el cógido de :class:`EnvolturaMDS` para detectar los
+        Con el dll de Vensim, no necesitamos el cógido de :class:`EnvolturasMDS` para detectar los
         hijos y parientes de cada variable; ya hicimos todo eso en :func:`ModeloVensim._inic_dic_vars`.
         """
         pass

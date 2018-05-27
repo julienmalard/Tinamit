@@ -9,7 +9,7 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 
 from tinamit import _
 from tinamit.BF import EnvolturaBF, ModeloBF
-from tinamit.EnvolturaMDS import generar_mds
+from tinamit.EnvolturasMDS import generar_mds
 from tinamit.Geog.Geog import Lugar
 from tinamit.MDS import EnvolturaMDS
 from tinamit.Modelo import Modelo
@@ -846,7 +846,7 @@ class Conectado(SuperConectado):
 
     def estab_mds(símismo, archivo_mds):
         """
-        Establecemos el modelo de dinámicas de los sistemas (:class:`~tinamit.EnvolturaMDS.EnvolturaMDS`).
+        Establecemos el modelo de dinámicas de los sistemas (:class:`~tinamit.EnvolturasMDS.EnvolturasMDS`).
 
         :param archivo_mds: El archivo del modelo DS, o el modelo sí mismo.
         :type archivo_mds: str | EnvolturaMDS
@@ -869,7 +869,7 @@ class Conectado(SuperConectado):
 
     def estab_bf(símismo, bf):
         """
-        Establece el modelo biofísico (:class:`~tinamit.BF.EnvolturaBF`).
+        Establece el modelo biofísico (:class:`~tinamit.BF.EnvolturasBF`).
 
         :param bf: El archivo con la clase del modelo biofísico. **Debe** ser un archivo de Python.
         :type bf: str | EnvolturaBF

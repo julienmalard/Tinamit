@@ -110,7 +110,7 @@ class Calibrador(object):
             else:
                 lg_sup = jerarquía[lg]
                 apr = obt_calib(lg_sup)
-                calibs[lg] = calib_bayes(mod_bayes, ob_x=ob_x, obs_y=ob_y, dists_aprioris=apr)
+                calibs[lg] = calib_bayes(mod_bayes, obs_x=ob_x, obs_y=ob_y, dists_aprioris=apr)
                 return calibs[lg]
 
         for lgr in lugares:
@@ -159,7 +159,7 @@ class Calibrador(object):
 
 def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=None, binario=False, **ops):
     if pm is None:
-        raise ImportError('')
+        raise ImportError(_('Debes instalar PyMC3 para poder hacer calibraciones con inferencia bayesiana.'))
 
     if dists_aprioris is not None:
 
@@ -179,8 +179,7 @@ def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=Non
     mod_bayes = obj_ec.gen_mod_bayes(paráms, líms_paráms, obs_x, obs_y, aprioris, binario=binario)
     with mod_bayes:
         ops_auto = {
-            'tune': 1000,
-            'chains': 1
+            'tune': 1000
         }
         ops_auto.update(ops)
         t = pm.sample(**ops_auto)

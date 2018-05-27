@@ -27,11 +27,24 @@ class Test_Geografía(unittest.TestCase):
         cód = símismo.geog.nombre_a_cód(nombre='Sololá', escala='departamento')
         símismo.assertEqual(cód, '7')
 
+    def test_nombre_a_cód_erróneo(símismo):
+        with símismo.assertRaises(ValueError):
+            símismo.geog.nombre_a_cód(nombre='¡Yo no existo!')
+
     def test_obt_lugares_en_región(símismo):
         lgs = símismo.geog.obt_lugares_en('7')
         símismo.assertEqual(len(lgs), 19)
         símismo.assertTrue(all(símismo.geog.en_región(lg, '7') for lg in lgs))
 
+    def test_obt_lugares_en_región_cód_numérico(símismo):
+        ref = símismo.geog.obt_lugares_en('1')
+        lgs = símismo.geog.obt_lugares_en(1)
+        símismo.assertListEqual(ref, lgs)
+
     def test_obt_lugares_en_con_escala(símismo):
         lgs = símismo.geog.obt_lugares_en(escala='departamento')
         símismo.assertListEqual(lgs, [str(x) for x in range(1, 23)])
+
+    def test_obt_lugares_en_con_escala_errónea(símismo):
+        with símismo.assertRaises(ValueError):
+            símismo.geog.obt_lugares_en(escala='¡Yo soy una escala que no existe!')

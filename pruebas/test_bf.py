@@ -82,7 +82,7 @@ class Test_ModeloSenc(unittest.TestCase):
         símismo.assertTrue(np.array_equal(val_simulado, np.arange(0, 201)))
 
 
-# Comprobar que la EnvolturaBF pueda leer el modelo BF de prueba en todas las formas posibles para cargar un modelo BF.
+# Comprobar que la EnvolturasBF pueda leer el modelo BF de prueba en todas las formas posibles para cargar un modelo BF.
 class Test_CrearEnvolturaBF(unittest.TestCase):
 
     def test_crear_desde_archivo(símismo):

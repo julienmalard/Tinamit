@@ -1,8 +1,8 @@
 import os
 
 from tinamit import _
-from tinamit.EnvolturaMDS.PySD import ModeloPySD
-from tinamit.EnvolturaMDS.Vensim import ModeloVensim, ModeloVensimMdl
+from tinamit.EnvolturasMDS.PySD import ModeloPySD
+from tinamit.EnvolturasMDS.Vensim import ModeloVensim, ModeloVensimMdl
 from tinamit.MDS import EnvolturaMDS
 
 dic_motores = {
@@ -19,7 +19,7 @@ dic_motores = {
 def generar_mds(archivo, motor=None):
     """
     Esta función genera una instancia de modelo de DS. Identifica el tipo de archivo por su extensión (p. ej., .vpm) y
-    después genera una instancia de la subclase apropiada de :class:`~tinamit.EnvolturaMDS.EnvolturaMDS`.
+    después genera una instancia de la subclase apropiada de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS`.
 
     :param archivo: El archivo del modelo DS.
     :type archivo: str

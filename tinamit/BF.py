@@ -179,6 +179,14 @@ class EnvolturaBF(Modelo):
     def __getinitargs__(símismo):
         return símismo.modelo,
 
+    @classmethod
+    def comprobar_leer_escribir_ingresos(símismo):
+        raise NotImplementedError
+
+    @classmethod
+    def comprobar_leer_egresos(símismo):
+        pass
+
 
 class ModeloBF(Modelo):
     """
@@ -257,7 +265,7 @@ class ModeloBF(Modelo):
         sino: ``símismo.variables[var1] = {...}``, ``símismo.variables[var2] = {...}``, etc.
 
         Al no hacer esto, romperás la conección entre los diccionarios de variables de :class:`ModeloBF` y
-        :class:`EnvolturaBF`, lo cual impedirá después la conexión de estos variables con el modelo DS.
+        :class:`EnvolturasBF`, lo cual impedirá después la conexión de estos variables con el modelo DS.
 
         """
 
@@ -508,7 +516,7 @@ class ModeloImpaciente(ModeloBF):
         sino: ``símismo.variables[var1] = {...}``, ``símismo.variables[var2] = {...}``, etc.
 
         Al no hacer esto, romperás la conección entre los diccionarios de variables de :class:`ModeloBF` y
-        :class:`EnvolturaBF`, lo cual impedirá después la conexión de estos variables con el modelo DS.
+        :class:`EnvolturasBF`, lo cual impedirá después la conexión de estos variables con el modelo DS.
 
         También debe actualizar ``símismo.tipos_vars``, poniendo en 'Ingresos' los nombres de todos los variables
         de ingreso, en 'Egresos' todos los variables de egreso, en 'IngrEstacionales' únicamente los variables de
@@ -725,7 +733,7 @@ class ModeloFlexible(ModeloBF):
         |  símismo.variables[var1] = {...}
         |  símismo.variables[var2] = {...}
 
-        Al no hacer esto, romperás la conección entre los diccionarios de variables de ClaseModeloBF y EnvolturaBF,
+        Al no hacer esto, romperás la conección entre los diccionarios de variables de ClaseModeloBF y EnvolturasBF,
         lo cual impedirá después la conexión de estos variables con el modelo DS.
 
         """

@@ -411,6 +411,8 @@ class Geografía(object):
                     if d['escala'] == escala]
 
     def obt_escala_región(símismo, cód):
+
+        cód = símismo._validar_código_lugar(cód)
         return símismo.cód_a_lugar[cód]['escala']
 
     def nombre_a_cód(símismo, nombre, escala=None):
@@ -418,14 +420,9 @@ class Geografía(object):
         escala = símismo._validar_escala(escala)
         nombre = nombre.lower()
 
-        if escala is None:
-            for cód, dic in símismo.cód_a_lugar.items():
-                if dic['nombre'].lower() == nombre:
-                    return cód
-        else:
-            for cód, dic in símismo.cód_a_lugar.items():
-                if dic['nombre'].lower() == nombre and dic['escala'].lower() == escala.lower():
-                    return cód
+        for cód, dic in símismo.cód_a_lugar.items():
+            if dic['nombre'].lower() == nombre and dic['escala'].lower() == escala.lower():
+                return cód
 
         raise ValueError(_('No encontramos región correspondiendo a "{}"').format(nombre))
 

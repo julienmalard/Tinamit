@@ -1,4 +1,4 @@
-from tinamit.EnvolturaBF.es.DSSAT.envoltDSSAT_senc import EnvoltDSSAT
+from tinamit.EnvolturasBF.es.DSSAT.envoltDSSAT_senc import EnvoltDSSAT
 
 
 class Modelo(EnvoltDSSAT):

@@ -89,7 +89,7 @@ class Datos(object):
         :type cód_vacío: str | int | float | list | set
 
         :return:
-        :rtype: dict
+        :rtype: pd.DataFrame
 
         """
 
@@ -100,9 +100,34 @@ class Datos(object):
             else:
                 códs_vacío_final.add(cód_vacío)
 
-        datos = símismo.bd.obt_datos(l_vars, cód_vacío=códs_vacío_final)
+        # Obtener los datos en formato NumPy
+        datos_np = símismo.bd.obt_datos(l_vars, cód_vacío=códs_vacío_final)
 
-        return datos
+        # Convertir en formato Pandas
+        bd_pd = pd.DataFrame(datos_np.T, columns=l_vars)
+
+        # Agregar una columna con el nombre de la base de datos y el lugar o lugares de observación
+        bd_pd['bd'] = símismo.nombre
+        bd_pd['lugar'] = símismo.lugares
+
+        # Agregar la fecha de observación
+        fechas = símismo.fechas
+        if isinstance(fechas, tuple):
+            # Puede ser...
+            if fechas[0] is not None:
+                # Una fecha original y una secuencia de no. de días relativos a la fecha original
+                bd_pd['fecha'] = pd.to_datetime(fechas[0]) + pd.to_timedelta(fechas[1], unit='d')
+            else:
+                # Una lista de años
+                bd_pd['fecha'] = pd.to_datetime(['{}-1-1'.format(str(x)) for x in fechas[1]])
+        elif fechas is None:
+            # Puede ser que no haya fecha
+            bd_pd['fecha'] = None
+        else:
+            # ...o puede ser que estén en formato de texto
+            bd_pd['fecha'] = pd.to_datetime(símismo.fechas)
+
+        return bd_pd
 
     def __str__(símismo):
         return símismo.nombre
@@ -147,132 +172,279 @@ class DatosRegión(Datos):
 
 
 class SuperBD(object):
+    """
+    Una :class:`SuperBD` reune varias bases de :class:`Datos` en un lugar cómodo para acceder a los datos.
+    """
 
     def __init__(símismo, nombre, bds=None, geog=None):
         """
 
-        :param nombre:
-        :type nombre: str
-        :param bds:
-        :type bds: list | Datos
-        :param geog:
-        :type geog: Geografía
+        Parameters
+        ----------
+        nombre: str
+            El nombre de la base de datos.
+        bds: list[Datos]
+            Una lista opcional de bases de :class:`Datos` para conectar.
+        geog: Geografía
+            Una :class:`Geografía` opcional que corresponde con los datos.
         """
 
+        # Guardar el nombre y la geografía
         símismo.nombre = nombre
         símismo.geog = geog
 
+        # Guardar las bases de datos
         if bds is None:
             símismo.bds = {}  # type: dict[Datos]
         else:
             if isinstance(bds, Datos):
                 bds = [bds]
-            if isinstance(bds, list):
-                símismo.bds = {d.nombre: d for d in bds}  # type: dict[str, Datos]
-            else:
-                raise TypeError('')
+            símismo.bds = {d.nombre: d for d in bds}  # type: dict[str, Datos]
 
+        # Información de variables (y de sus bases de datos correspondientes)
         símismo.vars = {}
-        símismo.receta = {'vars': símismo.vars, 'bds': []}
 
+        # Bases de datos internas
         símismo.datos_reg = None  # type: pd.DataFrame
         símismo.datos_reg_err = None  # type: pd.DataFrame
         símismo.datos_ind = None  # type: pd.DataFrame
+
+        # Si nuesta base de datos interna está actualizada o no.
         símismo.bd_lista = False
 
-    def agregar_datos(símismo, bd, bd_plantilla=None, auto_llenar=True):
+    def agregar_datos(símismo, bd, auto_conectar=True, bd_plantilla=None):
+        """
+        Agregar una base de datos.
+
+        Parameters
+        ----------
+        bd: Datos
+            Los datos para agregar.
+        auto_conectar: bool
+            Si conectamos las columnas de esta nueva base de datos automáticamente.
+        bd_plantilla: Datos | str | list[Datos | str]
+            Otra base existente (opcional) para emplear como plantilla para conectar los variables
+            de `bd`. No tiene efecto si `auto_conectar` es ``False``.
+
         """
 
-        :param bd:
-        :type bd: Datos
-        :param bd_plantilla:
-        :type bd_plantilla: str | list[str] | Datos
-        :param auto_llenar:
-        :type auto_llenar: bool
-
-        """
-
-        if bd in símismo.bds:
+        # Avisar si existía antes.
+        if bd.nombre in símismo.bds:
             avisar(_('Ya existía la base de datos "{}". Borramos la que estaba antes.').format(bd))
 
+        # Agregar la base de datos
         símismo.bds[bd.nombre] = bd
-        #  símismo.receta['bds'].append(bd.archivo_datos)
 
-        if auto_llenar:
+        # Conectar los variables automáticamente, si queremos
+        if auto_conectar:
             símismo.auto_llenar(bd=bd, bd_plantilla=bd_plantilla)
 
+        # Nuestras bases de datos internas ya no están actualizadas
         símismo.bd_lista = False
 
     def auto_llenar(símismo, bd, bd_plantilla):
+        """
+        Conecta los variables de una base de :class:`Datos` automáticamente.
+
+        Parameters
+        ----------
+        bd: Datos | str
+            La base de datos para conectar.
+        bd_plantilla: Datos | str
+            La base de datos existente para servir de plantilla. Si es ``None``, se emplearán
+            todas las bases de datos ya conectadas.
+
+        """
+
+        # Si `bd_plantilla` es ``None``, utilizar todas las bases de datos
         if bd_plantilla is None:
             bd_plantilla = [x for x in símismo.bds if x != bd]
+
+        # Convertir a lista si necesario
         if not isinstance(bd_plantilla, list):
             bd_plantilla = [bd_plantilla]
 
+        # Y convertir a nombres de bd
+        for í in range(len(bd_plantilla)):
+            bd_plantilla[í] = símismo._validar_bd(bd_plantilla[í])
+
+        # Hacer las conexiones.
         for var, d_var in símismo.vars.items():
+            # Para cada variable ya conectado...
             for b in d_var['fuente']:
+                # Para cada base de datos que sirve de fuente para este variable...
+
                 if b in bd_plantilla:
-                    if isinstance(b, Datos):
-                        b = b.nombre
+                    # Si la base de datos cuenta como plantilla...
+
+                    # Leer el nombre del variable en la base de datos original
                     var_bd = d_var['fuente'][b]['var_bd']
-                    cód_vacío = d_var['fuente'][b]['cód_vacío']
+
+                    # Si existe este variable en la nueva base de datos también, copiar la especificación.
                     if var_bd in bd.cols:
-                        d_var['fuente'][bd.nombre] = {'var_bd': var_bd, 'cód_vacío': cód_vacío}
+                        d_var['fuente'][bd.nombre] = {**d_var['fuente'][b]}
+
+                        # Ya pasar al próximo variable
                         continue
 
                     else:
+                        # Si no encontramos el variable en cualquier base de datos, avisarlo.
                         avisar(_('El variable existente "{}" no existe en la nueva base de datos "{}". No'
                                  'lo podremos copiar.').format(var_bd, bd.nombre))
 
+        # Ya no está actualizada nuestra base de datos interna.
         símismo.bd_lista = False
 
     def desconectar_datos(símismo, bd):
+        """
+        Desconectar una base de datos.
 
-        if isinstance(bd, Datos):
-            bd = bd.nombre
+        Parameters
+        ----------
+        bd: Datos | str
+            La base de datos para desconectar.
 
-        if bd not in símismo.bds:
-            raise ValueError('')
+        """
 
+        # Validar el nombre de la base de datos.
+        bd = símismo._validar_bd(bd)
+
+        # Quitarla.
         símismo.bds.pop(bd)
+
+        # Quitar la de todos los diccionarios de variables también.
         for var, d_var in símismo.vars.items():
             try:
                 d_var['fuente'].pop(bd)
             except KeyError:
                 pass
 
+        # Nuestas bases de datos internas ya necesitan ser actualizadas.
         símismo.bd_lista = False
 
-    def espec_var(símismo, var, var_bd=None, bds=None, cód_vacío='', var_err=None):
+    def _validar_bd(símismo, bd):
+        """
+        Valida un nombre de base de datos.
 
+        Parameters
+        ----------
+        bd: str | Datos | list[str | Datos].
+            La base de datos para validar, o una lista de estas.
+
+        Returns
+        -------
+        str:
+            El nombre validado
+
+        Raises
+        ------
+        ValueError
+            Si no estaba conectada una base de datos correspondiente.
+
+        """
+
+        # Convertir a lista, si necesario
+        if isinstance(bd, list):
+            l_bd = bd
+        else:
+            l_bd = [bd]
+
+        for í, b in enumerate(l_bd):
+            # Convertir a nombre, si necesario.
+            if isinstance(b, Datos):
+                l_bd[í] = b.nombre
+
+            # Verificaar que existe la base de datos.
+            if b not in símismo.bds:
+                raise ValueError(_('La base de datos "{}" no está conectada.').format(b))
+
+        # Devolver el nombre validado.
+        if isinstance(bd, list):
+            return l_bd
+        else:
+            return l_bd[0]
+
+    def _validar_var(símismo, var):
+        """
+        Valida el nombre de un variable, o una lista de nombres de variables.
+
+        Parameters
+        ----------
+        var: str | list[str]
+            El variable para verificar.
+
+        Returns
+        -------
+        str | list[str]
+            Los nombres de variables validados.
+        """
+
+        # Convertir a lista, si necesario
+        if isinstance(var, list):
+            l_var = var
+        else:
+            l_var = [var]
+
+        for í, v in enumerate(l_var):
+            # Verificar el nombre del variable
+            if v not in símismo.vars:
+                raise ValueError(_('El variable "{}" no existe.').format(var))
+
+        # Devolver el nombre validado.
+        if isinstance(var, list):
+            return l_var
+        else:
+            return var
+
+    def espec_var(símismo, var, var_bd=None, bds=None, cód_vacío='', var_err=None):
+        """
+        Crea un variable en la base de datos.
+
+        Parameters
+        ----------
+        var: str
+            El nombre del variable.
+        var_bd: str
+            El nombre de este variable en las bases de datos subyacentes, si difiere de `var`.
+        bds: str | Datos | list[str | Datos]
+            Las bases de datos en las cuales se encuentra este variable.
+        cód_vacío: str | list[str]
+            El código que corresponde a un valor que falta en la base de datos.
+        var_err: str
+            El nombre de otra columna en la base de datos con la magnitud del error en la medición
+            de este variable.
+
+        """
+
+        # Si no se especificó nombre distinto, es que debe ser lo mismo.
         if var_bd is None:
             var_bd = var
 
+        # Formatear la lista de bases de datos.
         if bds is None:
-            bds = list(símismo.bds)
+            bds = list(símismo.bds)  # Si no se especificó, las tomaremos todas.
         if not isinstance(bds, list):
-            bds = [bds]
+            bds = [bds]  # Convertir a lista
         for í, bd in enumerate(bds.copy()):
-            if isinstance(bd, Datos):
-                bds[í] = bd.nombre
-            elif isinstance(bd, str):
-                pass
-            else:
-                raise TypeError
+            bds[í] = símismo._validar_bd(bd)  # Validar las bases de datos
 
+        # Quitar las bases de datos que no contienen el variable de interés.
         for nm_bd in bds.copy():
-
             if var_bd not in símismo.bds[nm_bd].cols:
                 avisar(_('"{}" no existe en base de datos "{}".').format(var_bd, nm_bd))
                 bds.remove(nm_bd)
 
+        # Si no quedan bases de datos, tenemos complicación.
         if not len(bds):
             raise ValueError('El variable "{}" no existe en cualquiera de las bases de datos especificadas.'
                              .format(var_bd))
 
+        # Ahora, el verdadero trabajo.
         if var not in símismo.vars:
+            # Si no existía el variable antes, crear su diccionario de una vez.
             símismo.vars[var] = {'fuente': {bd: {'var': var_bd, 'cód_vacío': cód_vacío} for bd in bds}}
         else:
+            # Si ya existía, actualizar su diccionario existente.
             for bd in bds:
                 símismo.vars[var]['fuente'][bd] = {'var': var_bd, 'cód_vacío': cód_vacío}
 
@@ -284,93 +456,166 @@ class SuperBD(object):
         símismo.bd_lista = False
 
     def borrar_var(símismo, var, bds=None):
+        """
+        Borra un variable existente.
 
-        if var not in símismo.vars:
-            raise ValueError('')
+        Parameters
+        ----------
+        var: str
+            El variable para borrar.
+        bds: str | Datos | list[str | Datos]
 
+        """
+
+        # Verificar el nombre del variable
+        var = símismo._validar_var(var)
+
+        # Validar las bases de datos
+        bds = símismo._validar_bd(bds)
+
+        # Borrarlo
         if bds is None:
+            # Si no se especificó la base de datos, borrar el variable entero.
             símismo.vars.pop(var)
         else:
+            # Si se especificó la base de datos, borrar el variable únicamente para ésta
             if not isinstance(bds, list):
                 bds = [bds]
             for bd in bds:
-                if isinstance(bd, Datos):
-                    bd = bd.nombre
                 símismo.vars[var]['fuente'].pop(bd)
 
-        símismo.bd_lista = False
+        # Nuesta base de datos interna ya se debe limpiar.
+        símismo._limp_vars()
 
     def renombrar_var(símismo, var, nuevo_nombre):
+        """
+        Cambia el nombre de un variable.
 
-        if var not in símismo.vars:
-            raise ValueError('')
+        Parameters
+        ----------
+        var: str
+            El nombre actual del variable.
+        nuevo_nombre: str
+            El nuevo nombre.
+
+        """
+
+        # Validar el variable
+        var = símismo._validar_var(var)
+
+        # Verificar que el nuevo nombre no existe.
         if nuevo_nombre in símismo.vars:
             raise ValueError(_('El variable "{}" ya existe. Hay que borrarlo primero.').format(nuevo_nombre))
 
+        # Cambiar el nombre
         símismo.vars[nuevo_nombre] = símismo.vars.pop(var)
 
+        # Ya debemos actualizar nuestra base de datos interna.
         símismo.bd_lista = False
 
     def _limp_vars(símismo):
+        """
+        Limpia el diccionario de variables y las bases de datos internas.
 
-        # Asegurarse que no queden variables sin bases de datos en símismo.vars
-        for v in list(símismo.vars.keys()):
+        """
+
+        # Asegurarse que no queden variables sin bases de datos en `SuperBD.vars`.
+        for v in list(símismo.vars):
             d_v = símismo.vars[v]
+            # Si no quedan bases de datos asociadas, quitar el variable ahora.
             if len(d_v['fuente']) == 0:
                 símismo.vars.pop(v)
 
+        # Para simplificar el código
         datos_ind = símismo.datos_ind
         datos_reg = símismo.datos_reg
 
-        # Asegurarse que no queden variables (columas) en las bases de datos que no estén en símismo.vars
+        # Asegurarse que no queden variables (columas) en las bases de datos que no estén en `SuperBD.vars`.
         for bd_pd in [datos_ind, datos_reg]:
+            # Para cada base de datos Pandas...
             if bd_pd is not None:
-                cols = list(bd_pd)
-                for c in cols:
+                # Si existe...
+                for c in list(bd_pd):
+                    # Para cada columna...
                     if c not in list(símismo.vars) + ['bd', 'lugar', 'fecha']:
+                        # Si ya no existe como variable, quitar la columna.
                         bd_pd.drop(c, axis=1, inplace=True)
 
-        # Quitar observaciones en bases de datos que ya no están vinculadas
+        # Quitar observaciones que provienen de las bases de datos que ya no están vinculadas
         if símismo.datos_ind is not None:
             símismo.datos_ind = datos_ind[datos_ind['bd'].isin(símismo.bds)]
         if símismo.datos_reg is not None:
             símismo.datos_reg = datos_reg[datos_reg['bd'].isin(símismo.bds)]
 
-    def _gen_bd_intern(símismo):
+    @staticmethod
+    def _validar_fechas(fechas):
+        """
 
+        Parameters
+        ----------
+        fechas
+
+        Returns
+        -------
+
+        """
+
+        if fechas is not None:
+            if not isinstance(fechas, list):
+                fechas = [fechas]
+            for í, f in enumerate(fechas):
+                if isinstance(f, ft.date):
+                    pass
+                if isinstance(f, ft.datetime):
+                    fechas[í] = f.date()
+                elif isinstance(f, int):
+                    fechas[í] = ft.date(year=f, month=1, day=1)
+                elif isinstance(f, str):
+                    fechas[í] = ft.datetime.strptime(f, '%Y-%m-%d').date()
+
+        return fechas
+
+    def _gen_bd_intern(símismo):
+        """
+        Genera las bases de datos internas.
+
+        """
+
+        # Primero, limpiar los variables
         símismo._limp_vars()
+
+        # Borrar las bases de datos existentes
         símismo.datos_ind = símismo.datos_reg = None
 
         # Agregar datos
-        for nb, bd in símismo.bds.items():
+        for nmb, bd in símismo.bds.items():
+            # Para cada base de datos vinculada...
 
-            vars_interés = [it for it in símismo.vars.items() if nb in it[1]['fuente']]
-            l_vars = [it[0] for it in vars_interés]
+            # Sacar los variables de interés para esta base de datos
+            d_vars_interés = {v: d_v for v, d_v in símismo.vars.items() if nmb in d_v['fuente']}
 
-            if len(vars_interés):
-                l_vars_bd = [d_v['fuente'][nb]['var'] for _, d_v in vars_interés]
-                l_códs_vac = [d_v['fuente'][nb]['cód_vacío'] for _, d_v in vars_interés]
+            # Agregar los datos a las bases internas
+            if len(d_vars_interés):
 
-                datos_bd = np.array(bd.obt_datos(l_vars=l_vars_bd, cód_vacío=l_códs_vac)).T
+                # La lista de los nombres correspondientes en esta BD
+                l_vars_bd = [d_v['fuente'][nmb]['var'] for _, d_v in d_vars_interés.items()]
 
-                bd_pds_temp = pd.DataFrame(datos_bd, columns=l_vars)
+                # La lista de los códigos de datos vacíos corresondientes
+                l_códs_vac = [d_v['fuente'][nmb]['cód_vacío'] for _, d_v in d_vars_interés.items()]
 
-                bd_pds_temp['bd'] = nb
-                bd_pds_temp['lugar'] = bd.lugares
+                # Obtener los datos
+                bd_pds_temp = bd.obt_datos(l_vars=l_vars_bd, cód_vacío=l_códs_vac)
 
-                if isinstance(bd.fechas, tuple):
-                    if bd.fechas[0] is not None:
-                        bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas[0]) + pd.to_timedelta(bd.fechas[1], unit='d')
-                    else:
-                        bd_pds_temp['fecha'] = pd.to_datetime(['{}-1-1'.format(str(x)) for x in bd.fechas[1]])
-                elif bd.fechas is None:
-                    bd_pds_temp['fecha'] = None
-                else:
-                    bd_pds_temp['fecha'] = pd.to_datetime(bd.fechas)
+                # Convertir los nombres de los variables
+                bd_pds_temp.rename(
+                    index=str,
+                    columns={nmb: nv_nmb for nmb, nv_nmb in zip(l_vars_bd, list(d_vars_interés))},
+                    inplace=True
+                )
 
                 # Datos individuales
                 if isinstance(bd, DatosIndividuales):
-
+                    # Crear la BD o modificarla, según el caso.
                     if símismo.datos_ind is None:
                         símismo.datos_ind = bd_pds_temp
                     else:
@@ -378,34 +623,51 @@ class SuperBD(object):
 
                 # Datos regionales
                 else:
-
+                    # Crear la BD o modificarla, según el caso.
                     if símismo.datos_reg is None:
                         símismo.datos_reg = bd_pds_temp
                     else:
                         símismo.datos_reg = pd.concat([bd_pds_temp, símismo.datos_reg], ignore_index=True)
 
+                    # para hacer: arreglar
                     # Calcular errores
                     datos_err = np.array(
-                        [bd.obt_error(d_v['fuente'][nb]['var'], col_error=d_v['fuente'][nb]['col_error'])
-                         for v, d_v in vars_interés]
+                        [bd.obt_error(d_v['fuente'][nmb]['var'], col_error=d_v['fuente'][nmb]['col_error'])
+                         for v, d_v in d_vars_interés]
                     ).T
                     bd_pds_err_temp = bd_pds_temp.copy()
-                    bd_pds_err_temp[l_vars] = datos_err
+                    bd_pds_err_temp[list(d_vars_interés)] = datos_err
 
+                    # Crear la BD o modificarla, según el caso.
                     if símismo.datos_reg_err is None:
                         símismo.datos_reg_err = bd_pds_temp
                     else:
                         símismo.datos_reg_err.append(bd_pds_temp, ignore_index=True)
 
+        # Ya la base de datos sí está actualizada y lista para trabajar
         símismo.bd_lista = True
 
-    def obt_datos(símismo, l_vars, lugar=None, datos=None, fechas=None, excl_faltan=False):
+    def obt_datos(símismo, l_vars, lugar=None, bd_datos=None, fechas=None, excl_faltan=False,
+                  tipo='individual'):
+        """
 
+        Parameters
+        ----------
+        l_vars: list[str]
+        lugar: str
+        bd_datos:
+        fechas:
+        excl_faltan: bool
+        tipo: str
+
+        Returns
+        -------
+
+        """
         # Formatear la lista de variables deseados
+        l_vars = símismo._validar_var(l_vars)
         if not isinstance(l_vars, list):
             l_vars = [l_vars]
-        if any(v not in símismo.vars for v in l_vars):
-            raise ValueError(_('Variable no válido.'))
 
         # Formatear el código de lugar
         if lugar is not None:
@@ -413,55 +675,61 @@ class SuperBD(object):
                 lugar = [lugar]
 
         # Formatear los datos
-        if datos is not None:
-            if not isinstance(datos, list):
-                datos = [datos]
+        bd_datos = símismo._validar_bd(bd_datos)
+        if not isinstance(bd_datos, list):
+            bd_datos = [bd_datos]
 
         # Preparar las fechas
-        if fechas is not None:
-            if not isinstance(fechas, list):
-                fechas = [fechas]
-            for í, f in enumerate(fechas):
-                if isinstance(f, ft.date) or isinstance(f, ft.datetime):
-                    pass
-                elif isinstance(f, int):
-                    fechas[í] = ft.date(year=f, month=1, day=1)
+        fechas = símismo._validar_fechas(fechas)
 
         # Actualizar las bases de datos, si necesario
         if not símismo.bd_lista:
             símismo._gen_bd_intern()
 
-        egr = [None, None, None]
-        for í, bd in enumerate([símismo.datos_reg, símismo.datos_ind, símismo.datos_reg_err]):
+        if tipo == 'individual':
+            bd = símismo.datos_ind
+        elif tipo == 'regional':
+            bd = símismo.datos_reg
+        elif tipo == 'error regional':
+            bd = símismo.datos_reg_err
+        else:
+            raise ValueError
 
-            if bd is not None:
-                l_vars_disp = [v for v in l_vars if v in bd]
-                bd_sel = bd[l_vars_disp + ['bd', 'fecha', 'lugar']]
+        # Asegurarse que existe esta base de datos
+        if bd is None:
+            raise ValueError
 
-                if datos is not None:
-                    bd_sel = bd_sel[bd_sel['bd'].isin(datos)]
+        # Seleccionar los variables de interés
+        bd_sel = bd[l_vars + ['bd', 'fecha', 'lugar']]
 
-                if fechas is not None:
-                    bd_sel = bd_sel[bd_sel['fecha'].isin(fechas)]  # Arreglarme
+        # Seleccionar las observaciones que vienen de la base de datos subyacente de interés
+        if bd_datos is not None:
+            bd_sel = bd_sel[bd_sel['bd'].isin(bd_datos)]
 
-                if lugar is not None:
-                    bd_sel = bd_sel[bd_sel['lugar'].isin(lugar)]
+        # Seleccionar las observaciones que corresponden al lugar de interés
+        if lugar is not None:
+            bd_sel = bd_sel[bd_sel['lugar'].isin(lugar)]
 
-                if excl_faltan:
-                    bd_sel = bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha', 'bd', 'lugar']])
-                else:
-                    bd_sel = bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha', 'bd', 'lugar']],
-                                           how='all')
-                egr[í] = bd_sel
+        # Seleccionar las observaciones en las fechas de interés, e interpolar si necesario
+        if fechas is not None:
+            símismo._interpolar(bd_sel, fechas)
 
-        return {'regional': egr[0], 'error_regional': egr[2], 'individual': egr[1]}
+        # Excluir las observaciones que faltan
+        if excl_faltan:
+            # Si excluyemos las observaciones que faltan, guardar únicamente las filas con observacienes
+            # para todos los variables
+            bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha', 'bd', 'lugar']],
+                          inplace=True)
+        else:
+            # Sino, exlcuir únicamente las filas que faltans observaciones para todos los variables
+            bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha', 'bd', 'lugar']],
+                          how='all', inplace=True)
 
-    def obt_datos_ind(símismo, l_vars, lugar=None, datos=None, fechas=None, excl_faltan=False):
-        res = símismo.obt_datos(l_vars=l_vars, lugar=lugar, datos=datos, fechas=fechas, excl_faltan=excl_faltan)
-        return res['individual']
+        return bd_sel
 
-    def obt_datos_reg(símismo, l_vars, lugar=None, datos=None, fechas=None, interpolar=True):
-        res = símismo.obt_datos(l_vars=l_vars, lugar=lugar, datos=datos, fechas=fechas, excl_faltan=False)['regional']
+    def _interpolar(símismo, bd_pds, fechas):
+
+        # para hacer: Arreglarme e interpolar
 
         if interpolar:
             finalizados = None
@@ -512,7 +780,7 @@ class SuperBD(object):
 
     def graficar(símismo, var, fechas=None, cód_lugar=None, lugar=None, datos=None, escala=None, archivo=None):
 
-        dic_datos = símismo.obt_datos(l_vars=var, fechas=fechas, cód_lugar=cód_lugar, lugar=lugar, datos=datos,
+        dic_datos = símismo.obt_datos(l_vars=var, fechas=fechas, cód_lugar=cód_lugar, lugar=lugar, bd_datos=datos,
                                       escala=escala)
 
         fig = Figura()
@@ -567,7 +835,7 @@ class SuperBD(object):
 
     def graf_comparar(símismo, var_x, var_y, fechas=None, cód_lugar=None, lugar=None, datos=None, escala=None,
                       archivo=None):
-        datos = símismo.obt_datos(l_vars=[var_x, var_y], lugar=lugar, cód_lugar=cód_lugar, datos=datos, fechas=fechas,
+        datos = símismo.obt_datos(l_vars=[var_x, var_y], lugar=lugar, cód_lugar=cód_lugar, bd_datos=datos, fechas=fechas,
                                   escala=escala)
 
         fig = Figura()
@@ -609,7 +877,7 @@ class SuperBD(object):
         símismo.datos_reg = pd.read_json(dic['reg'])
         símismo.datos_reg_err = pd.read_json(dic['err'])
 
-    def exportar_datos(símismo, directorio=None):
+    def exportar_datos_csv(símismo, directorio=None):
         if directorio is None:
             raise NotImplementedError  # para hacer
 
@@ -621,40 +889,6 @@ class SuperBD(object):
             archivo = os.path.join(directorio, nmb + '.csv')
             bd_pd.to_csv(archivo)
 
-    def guardar(símismo, archivo=None):
-        if archivo is None:
-            raise NotImplementedError  # Para hacer
-
-        with open(archivo, encoding='UTF-8') as d:
-            json.dump(símismo.receta, d, ensure_ascii=False, sort_keys=True, indent=2)
-
-    @classmethod
-    def cargar(cls, archivo):
-
-        with open(archivo, encoding='UTF-8') as d:
-            receta = json.load(d)
-
-        nombre = os.path.splitext(os.path.split(archivo)[1])[0]
-
-        try:
-            d_bds = receta['bds']  # Para hacer
-            bds = [DatosRegión(**d) for d in d_bds['regionales']]
-            bds.append += [DatosIndividuales(**d) for d in d_bds['individuales']]
-
-        except KeyError:
-            bds = None
-
-        try:
-            geog = Geografía(receta['geog'][0])
-            geog.cargar(receta['geog'][1])  # Para hacer
-        except KeyError:
-            geog = None
-
-        superbd = cls(nombre=nombre, bds=bds, geog=geog)
-        superbd.vars = receta['vars']
-
-        return superbd
-
 
 def _gen_bd(archivo):
     """
@@ -665,12 +899,13 @@ def _gen_bd(archivo):
     :rtype: BD
     """
     ext = os.path.splitext(archivo)[1]
+
     if ext == '.txt' or ext == '.csv':
         return BDtexto(archivo)
     elif ext == '.sql':
-        return BDsql(archivo)
+        raise NotImplementedError
     else:
-        raise ValueError
+        raise ValueError(_('Formato de base de datos "{}" no reconocido.').format(ext))
 
 
 class BD(object):
@@ -909,47 +1144,3 @@ class BDtexto(BD):
             nombres_cols = next(lector)
 
         return nombres_cols
-
-
-class BDsql(BD):
-    """
-    Una clase para leer bases de datos en formato SQL.
-    """
-
-    def calc_n_obs(símismo):
-        """
-
-        :return:
-        :rtype:
-        """
-        raise NotImplementedError
-
-    def obt_datos(símismo, cols, prec_dec=None):
-        """
-
-        :param cols:
-        :type cols:
-        :param prec_dec:
-        :type prec_dec:
-        :return:
-        :rtype:
-        """
-        raise NotImplementedError
-
-    def obt_datos_tx(símismo, cols):
-        """
-
-        :param cols:
-        :type cols:
-        :return:
-        :rtype:
-        """
-        raise NotImplementedError
-
-    def obt_nombres_cols(símismo):
-        """
-
-        :return:
-        :rtype:
-        """
-        raise NotImplementedError

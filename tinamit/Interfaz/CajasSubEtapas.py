@@ -227,7 +227,7 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
 
         if 'modelo_fuente' in conexión:
             dic_conex = {
-                'mds_fuente': conexión['modelo_fuente'] == 'EnvolturaMDS',
+                'mds_fuente': conexión['modelo_fuente'] == 'EnvolturasMDS',
                 'var_mds': conexión['dic_vars']['mds'],
                 'var_bf': conexión['dic_vars']['bf'],
                 'conv': conexión['conv']

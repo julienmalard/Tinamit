@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as dib
 import numpy as np
 
-from tinamit.EnvolturaMDS import generar_mds, EnvolturaMDS
+from tinamit.EnvolturasMDS import generar_mds, EnvolturaMDS
 from tinamit.Geog.Geog import Geografía
 
 # Este escripto corre corridas del modelo basado en las calibraciones en Ejemplo.py
