@@ -17,30 +17,6 @@ l_grams_def_var = {}
 l_grams_var = {}
 
 
-def cortar_líns(texto, máx_car, lín_1=None, lín_otras=None):
-    lista = []
-
-    while len(texto):
-        if len(texto) <= máx_car:
-            l = texto
-        else:
-            dif = máx_car - texto
-
-            l = regex.search(r'(.*)\W.[%s,]' % dif, texto).groups()[0]
-
-        lista.append(l)
-        texto = texto[len(l):]
-
-    if lín_1 is not None:
-        lista[0] = lín_1 + lista[0]
-
-    if lín_otras is not None:
-        for n, l in enumerate(lista[1:]):
-            lista[n] = lín_otras + l
-
-    return lista
-
-
 class _Transformador(Transformer):
     @staticmethod
     def num(x):

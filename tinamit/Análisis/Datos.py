@@ -2,7 +2,6 @@ import csv
 import datetime as ft
 import json
 import os
-import shutil
 from warnings import warn as avisar
 
 import numpy as np
@@ -12,7 +11,6 @@ from matplotlib.figure import Figure as Figura
 
 from tinamit import _
 from tinamit.Análisis.Números import tx_a_núm
-from tinamit.Geog.Geog import Geografía
 
 
 class Datos(object):
@@ -485,7 +483,7 @@ class SuperBD(object):
             for bd in bds:
                 símismo.vars[var]['fuente'].pop(bd)
 
-        # Nuesta base de datos interna ya se debe limpiar.
+        # Limpiamos nuestra base de datos interna.
         símismo._limp_vars()
 
     def renombrar_var(símismo, var, nuevo_nombre):
@@ -554,32 +552,86 @@ class SuperBD(object):
 
         Parameters
         ----------
-        fechas
+        fechas: ft.date | ft.datetime | str | list | tuple
+            Si es una fecha o una cadena de texto, se interpretará como una fecha única de interés. Si es una lista,
+            se interpretará como una lista de fechas de interés. Si es una tupla, se interpretará como un **rango**
+            de fechas de interés.
 
         Returns
         -------
+        ft.date | ft.datetime | str | list | tuple:
+            Las fechas validadas.
 
         """
 
-        if fechas is not None:
-            if not isinstance(fechas, list):
-                fechas = [fechas]
-            for í, f in enumerate(fechas):
-                if isinstance(f, ft.date):
-                    pass
-                if isinstance(f, ft.datetime):
-                    fechas[í] = f.date()
-                elif isinstance(f, int):
-                    fechas[í] = ft.date(year=f, month=1, day=1)
-                elif isinstance(f, str):
-                    fechas[í] = ft.datetime.strptime(f, '%Y-%m-%d').date()
+        def verificar_fecha(fch):
+            """
+            Verifica un fecha.
+
+            Parameters
+            ----------
+            fch : str | ft.date | ft.datetime | int
+                La fecha para verificar.
+
+            Returns
+            -------
+            str | ft.date | ft.datetime
+                La fecha validada.
+
+            Raises
+            ------
+            ValueError
+                Si la fecha no es válida.
+
+            """
+
+            if isinstance(fch, ft.date) or isinstance(fch, ft.datetime):
+                return fch
+
+            elif isinstance(fch, int):
+                return ft.date(year=fch, month=1, day=1)
+
+            elif isinstance(fch, str):
+                try:
+                    ft.datetime.strptime(fch, '%Y-%m-%d').date()
+                    return fch
+                except ValueError:
+                    raise ValueError(_('La fecha "{}" no está en el formato "AAAA-MM-DD"').format(fch))
+
+        if fechas is None:
+            # Si tenemos nada, devolver nada
+            pass
+        elif isinstance(fechas, tuple):
+            # El caso de un rango de fechas
+
+            # Un rango debe tener 2 elementos, nada más, nada menos
+            if len(fechas) != 2:
+                raise ValueError(
+                    _('Se especificas un rango de fechas, el tuple debe tener exactamente 2 elemento,'
+                      'no "{}". Si quieres obtener datos para una serie de fechas, pasar un lista al'
+                      'parámetro `fechas` en vez.').format(len(fechas))
+                )
+
+            # Verificar que las fechas sean válidas
+            for f in fechas:
+                verificar_fecha(f)
+
+        elif isinstance(fechas, list):
+            # El caso de una lista de fechas de interés
+
+            # Verificar que las fechas sean válidas
+            for f in fechas:
+                verificar_fecha(f)
+
+        else:
+            # Sino, tenemos una única fecha
+            verificar_fecha(fechas)
 
         return fechas
 
     def _gen_bd_intern(símismo):
         """
         Genera las bases de datos internas.
-
         """
 
         # Primero, limpiar los variables
@@ -680,9 +732,6 @@ class SuperBD(object):
         if not isinstance(bd_datos, list):
             bd_datos = [bd_datos]
 
-        # Preparar las fechas
-        fechas = símismo._validar_fechas(fechas)
-
         # Actualizar las bases de datos, si necesario
         if not símismo.bd_lista:
             símismo._gen_bd_intern()
@@ -729,32 +778,40 @@ class SuperBD(object):
 
         return bd_sel
 
-    @staticmethod
-    def _filtrar_fechas(bd_pds, fechas, interpol_en=None):
+    def _filtrar_fechas(símismo, bd_pds, fechas, interpol_en=None):
         """
+        Filtra una base de datos Pandas por fecha, e interpola si necesario.
 
         Parameters
         ----------
         bd_pds: pd.DataFrame
-        fechas:
+            La base de datos. Debe contener las columnas `fecha` y `bd`.
+        fechas: str | tuple | list | ft.date | ft.datetime
+            La fecha o fechas de interés. Si es una tupla, se interpretará como **rango de interés**, si es lista,
+            se interpretará como lista de fechas de interés **individuales**.
         interpol_en: str
+            La columna de categoría (por ejemplo, el lugar) con la cual hay que interpolar. Si es ``None``, no se
+            interpolará.
 
         Returns
         -------
+        pd.DataFrame:
+            La base de datos filtrada e interpolada.
 
         """
+
+        # Preparar las fechas
+        fechas = símismo._validar_fechas(fechas)
 
         if interpol_en is None:
             # Si no podemos interpolar, simplemente escoger las columnas que corresponden a las fechas deseadas.
             if isinstance(fechas, tuple):
                 return bd_pds.loc[(bd_pds['fecha'] >= fechas[0]) & (bd_pds['fecha'] <= fechas[1])]
             elif isinstance(fechas, list):
-                return bd_pds.loc[(bd_pds['fecha'] in fechas)]
+                return bd_pds.loc[(bd_pds['fecha'].isin(fechas))]
             else:
                 return bd_pds.loc[(bd_pds['fecha'] == fechas)]
         else:
-
-            # Para hacer: tomar cuenta de `fechas`
 
             # Si hay que interpolar, tenemos trabajo
             if interpol_en not in bd_pds:
@@ -763,9 +820,20 @@ class SuperBD(object):
             # Categorías únicas en las cuales interpolar (por ejemplo, interpolar para cada lugar).
             categs_únicas = bd_pds[interpol_en].unique()
 
+            # Los variables para interpolar
+            l_vars = [x for x in bd_pds if x not in [categs_únicas, 'fecha', 'bd']]
+
+            if isinstance(fechas, tuple):
+                raise NotImplementedError
+            elif isinstance(fechas, list):
+                fechas_interés = fechas
+            else:
+                fechas_interés = [fechas]
+
+            # Para hacer: tomar cuenta de `fechas`
+
             # Calcular las interpolaciones
             finalizados = None
-            l_vars = [x for x in bd_pds if x not in [categs_únicas, 'fecha', 'bd']]
 
             # Para cada categoría...
             for c in categs_únicas:

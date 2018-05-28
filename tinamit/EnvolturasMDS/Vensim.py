@@ -8,7 +8,7 @@ import numpy as np
 import regex
 
 from tinamit import _
-from tinamit.Análisis.sintaxis import cortar_líns, Ecuación
+from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.MDS import EnvolturaMDS, leer_egr_mds
 
 try:
@@ -170,9 +170,9 @@ class ModeloVensimMdl(EnvolturaMDS):
         lím_línea = 80
 
         texto = [var + '=\n',
-                 cortar_líns(dic_var['ec'], lím_línea, lín_1='\t', lín_otras='\t\t'),
-                 cortar_líns(dic_var['unidades'], lím_línea, lín_1='\t', lín_otras='\t\t'),
-                 cortar_líns(dic_var['comentarios'], lím_línea, lín_1='\t~\t', lín_otras='\t\t'), '\t' + '|']
+                 _cortar_líns(dic_var['ec'], lím_línea, lín_1='\t', lín_otras='\t\t'),
+                 _cortar_líns(dic_var['unidades'], lím_línea, lín_1='\t', lín_otras='\t\t'),
+                 _cortar_líns(dic_var['comentarios'], lím_línea, lín_1='\t~\t', lín_otras='\t\t'), '\t' + '|']
 
         return texto
 
@@ -755,3 +755,27 @@ def comanda_vensim(func, args, mensaje_error=None, val_error=None, devolver=Fals
     # Devolver el valor devuelto por la función Vensim, si aplica.
     if devolver:
         return resultado
+
+
+def _cortar_líns(texto, máx_car, lín_1=None, lín_otras=None):
+    lista = []
+
+    while len(texto):
+        if len(texto) <= máx_car:
+            l = texto
+        else:
+            dif = máx_car - texto
+
+            l = regex.search(r'(.*)\W.[%s,]' % dif, texto).groups()[0]
+
+        lista.append(l)
+        texto = texto[len(l):]
+
+    if lín_1 is not None:
+        lista[0] = lín_1 + lista[0]
+
+    if lín_otras is not None:
+        for n, l in enumerate(lista[1:]):
+            lista[n] = lín_otras + l
+
+    return lista

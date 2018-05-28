@@ -179,13 +179,11 @@ class EnvolturaBF(Modelo):
     def __getinitargs__(símismo):
         return símismo.modelo,
 
-    @classmethod
     def comprobar_leer_escribir_ingresos(símismo):
-        raise NotImplementedError
+        return símismo.modelo.comprobar_leer_escribir_ingresos()
 
-    @classmethod
     def comprobar_leer_egresos(símismo):
-        pass
+        return símismo.modelo.comprobar_leer_egresos()
 
 
 class ModeloBF(Modelo):
@@ -284,6 +282,14 @@ class ModeloBF(Modelo):
 
     def __getinitargs__(símismo):
         return tuple()
+
+    @classmethod
+    def comprobar_leer_escribir_ingresos(símismo):
+        pass
+
+    @classmethod
+    def comprobar_leer_egresos(símismo):
+        pass
 
 
 class ModeloImpaciente(ModeloBF):
@@ -650,6 +656,14 @@ class ModeloImpaciente(ModeloBF):
 
     def __getinitargs__(símismo):
         return tuple()
+
+    @classmethod
+    def comprobar_leer_escribir_ingresos(símismo):
+        pass
+
+    @classmethod
+    def comprobar_leer_egresos(símismo):
+        pass
 
 
 class ModeloFlexible(ModeloBF):

@@ -2,6 +2,7 @@ import json
 import os
 from itertools import chain as cadena
 from shutil import copyfile as copiar_archivo
+from warnings import warn as avisar
 
 import pint
 import pkg_resources
@@ -180,6 +181,7 @@ def trad_unid(unid, leng_final, leng_orig=None):
 
     if unid_t is None or not len(unid_t):
         # Devolver la unidad no traducida si no encontramos nada
+        avisar(_('No pudimos traducir "{u}" a la lengua "{leng}"').format(u=unid, leng=leng_final))
         unid_t = unid
     else:
         # Devolver la traducción principal (no sinónimos) si encontramos algo

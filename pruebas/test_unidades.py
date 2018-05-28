@@ -49,6 +49,30 @@ class Test_TradsUnidades(unittest.TestCase):
     Pruebas de funciones de traducción de unidades.
     """
 
+    @classmethod
+    def setUpClass(cls):
+        """
+        Registrar una traducción ahora para poder comprobar traducciones después.
+        """
+
+        trads.agregar_trad(unid='year', trad='año', leng_trad='es', leng_orig='en')
+
+    def test_traducir(símismo):
+        """
+        Comprobar que podemos traducir.
+        """
+
+        res = trads.trad_unid('year', leng_final='es', leng_orig='en')
+        símismo.assertEqual(res, 'año')
+
+    def test_traducir_sin_especificar_leng(símismo):
+        """
+        Comprobar que podamos adividar la lengua original de una unidad.
+        """
+
+        res = trads.trad_unid('year', leng_final='es')
+        símismo.assertEqual(res, 'año')
+
     def test_agregar_sinónimo(símismo):
         """
         Comprobar que podemos agregar sinónimos de unidades.
@@ -93,7 +117,28 @@ class Test_TradsUnidades(unittest.TestCase):
         Comprobar que podemos agregar la traducción de una unidad según su sinónimo Pint.
         """
 
-        trads.agregar_trad(unid='m', trad='mètre', leng_trad='fr', guardar=False)
-        trads.agregar_trad(unid='m', trad='metro', leng_trad='es', guardar=False)
+        trads.agregar_trad(unid='l', trad='litre', leng_trad='fr', guardar=False)
+        trads.agregar_trad(unid='l', trad='litro', leng_trad='es', guardar=False)
 
-        símismo.assertEqual(convertir('mètres', a='metros'), 1)
+        símismo.assertEqual(convertir('litres', a='litros'), 1)
+
+    def test_trad_unidad_errónea(símismo):
+        """
+        Comprobar que devolvamos aviso para unidades que no existen en la lengua especificada.
+        """
+
+        with símismo.assertWarns(UserWarning):
+
+            # "Paj" no existe en español, es palabra kaqchikel.
+            res = trads.trad_unid('paj', leng_final='fr', leng_orig='es')
+
+        # Asegurarque que devolvimos el valor inicial para la unidad.
+        símismo.assertEqual(res, 'paj')
+
+    def test_trad_unidad_errónea_sin_especificar_leng(símismo):
+        """
+        Comprobar que devolvamos aviso error para unidades que no existen.
+        """
+
+        with símismo.assertWarns(UserWarning):
+            trads.trad_unid('¡Yo no existo!', leng_final='fr')
