@@ -87,5 +87,5 @@ class Test_SuperBD(unittest.TestCase):
         símismo.assertTrue(all(res['fecha'] <= '2002-6-1') and all('2000-1-1' <= res['fecha']))
 
     def test_obt_datos_reg_fecha_rango_con_interpol(símismo):
-        res = símismo.bd.obt_datos('completo', fechas=(2000, '2002-6-1'), tipo='regional')
+        # res = símismo.bd.obt_datos('completo', fechas=(2000, '2002-6-1'), tipo='regional')
         pass
