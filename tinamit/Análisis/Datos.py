@@ -211,7 +211,7 @@ class SuperBD(object):
         # Si nuesta base de datos interna está actualizada o no.
         símismo.bd_lista = False
 
-    def agregar_datos(símismo, bd, auto_conectar=True, bd_plantilla=None):
+    def conectar_datos(símismo, bd, auto_conectar=True, bd_plantilla=None):
         """
         Agregar una base de datos.
 
@@ -270,14 +270,14 @@ class SuperBD(object):
         # Hacer las conexiones.
         for var, d_var in símismo.vars.items():
             # Para cada variable ya conectado...
-            for b in d_var['fuente']:
+            for b in list(d_var['fuente']):
                 # Para cada base de datos que sirve de fuente para este variable...
 
                 if b in bd_plantilla:
                     # Si la base de datos cuenta como plantilla...
 
                     # Leer el nombre del variable en la base de datos original
-                    var_bd = d_var['fuente'][b]['var_bd']
+                    var_bd = d_var['fuente'][b]['var']
 
                     # Si existe este variable en la nueva base de datos también, copiar la especificación.
                     if var_bd in bd.cols:
@@ -342,6 +342,10 @@ class SuperBD(object):
 
         """
 
+        # Si no hay nada, devolver nada
+        if bd is None:
+            return None
+
         # Convertir a lista, si necesario
         if isinstance(bd, list):
             l_bd = bd
@@ -354,7 +358,7 @@ class SuperBD(object):
                 l_bd[í] = b.nombre
 
             # Verificaar que existe la base de datos.
-            if b not in símismo.bds:
+            if l_bd[í] not in símismo.bds:
                 raise ValueError(_('La base de datos "{}" no está conectada.').format(b))
 
         # Devolver el nombre validado.
@@ -675,7 +679,7 @@ class SuperBD(object):
                         símismo.datos_ind = pd.concat([bd_pds_temp, símismo.datos_ind], ignore_index=True)
 
                 # Datos regionales
-                else:
+                elif isinstance(bd, DatosRegión):
                     # Crear la BD o modificarla, según el caso.
                     if símismo.datos_reg is None:
                         símismo.datos_reg = bd_pds_temp
@@ -686,7 +690,7 @@ class SuperBD(object):
                     # Calcular errores
                     datos_err = np.array(
                         [bd.obt_error(d_v['fuente'][nmb]['var'], col_error=d_v['fuente'][nmb]['col_error'])
-                         for v, d_v in d_vars_interés]
+                         for v, d_v in d_vars_interés.items()]
                     ).T
                     bd_pds_err_temp = bd_pds_temp.copy()
                     bd_pds_err_temp[list(d_vars_interés)] = datos_err
@@ -1006,7 +1010,7 @@ class SuperBD(object):
         """
 
         # Preparar el nombre de archivo
-        archivo = símismo._validar_archivo(archivo)
+        archivo = símismo._validar_archivo(archivo, ext='.json')
 
         # Actualizar las bases de datos, si necesario
         if not símismo.bd_lista:
@@ -1017,28 +1021,32 @@ class SuperBD(object):
                'err': símismo.datos_reg_err.to_json()}
 
         # Guardar en UTF-8
-        with open(archivo, encoding='UTF-8') as d:
+        with open(archivo, 'w', encoding='UTF-8') as d:
             json.dump(dic, d, ensure_ascii=False)
 
-    def _validar_archivo(símismo, archivo='', debe_existir=False):
+    def _validar_archivo(símismo, archivo='', ext=None, debe_existir=False):
 
         archivo = os.path.abspath(archivo)
 
-        if not len(os.path.splitext(archivo)[1]):
-            archivo = os.path.join(archivo, símismo.nombre + '.json')
+        if ext is not None:
+            if not len(os.path.splitext(archivo)[1]):
+                archivo = os.path.join(archivo, símismo.nombre + ext)
 
         if debe_existir and not os.path.isfile(archivo):
             raise ValueError
         else:
-            directorio = os.path.split(archivo)[0]
+            if ext:
+                directorio = os.path.split(archivo)[0]
+            else:
+                directorio = archivo
             if not os.path.isdir(directorio):
                 os.makedirs(directorio)
 
         return archivo
 
     def cargar_datos(símismo, archivo=''):
-        if archivo is None:
-            raise NotImplementedError  # para hacer
+
+        archivo = símismo._validar_archivo(archivo, ext='.json', debe_existir=True)
 
         with open(archivo, encoding='UTF-8') as d:
             dic = json.load(d)
@@ -1047,16 +1055,24 @@ class SuperBD(object):
         símismo.datos_reg = pd.read_json(dic['reg'])
         símismo.datos_reg_err = pd.read_json(dic['err'])
 
-    def exportar_datos_csv(símismo, directorio=None):
-        if directorio is None:
-            raise NotImplementedError  # para hacer
+    def borrar_archivo_datos(símismo, archivo=''):
+
+        archivo = símismo._validar_archivo(archivo, ext='.json', debe_existir=True)
+
+        os.remove(archivo)
+
+    def exportar_datos_csv(símismo, directorio=''):
+
+        directorio = símismo._validar_archivo(directorio)
 
         # Actualizar las bases de datos, si necesario
         if not símismo.bd_lista:
             símismo._gen_bd_intern()
 
-        for nmb, bd_pd in {'ind': símismo.datos_ind, 'reg': símismo.datos_reg, 'error_reg': símismo.datos_reg_err}:
-            archivo = os.path.join(directorio, nmb + '.csv')
+        for nmb, bd_pd in {
+            'ind': símismo.datos_ind, 'reg': símismo.datos_reg, 'error_reg': símismo.datos_reg_err
+        }.items():
+            archivo = os.path.join(directorio, símismo.nombre + '_' + nmb + '.csv')
             bd_pd.to_csv(archivo)
 
 
