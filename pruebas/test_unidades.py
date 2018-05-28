@@ -73,18 +73,18 @@ class Test_TradsUnidades(unittest.TestCase):
         res = trads.trad_unid('year', leng_final='es')
         símismo.assertEqual(res, 'año')
 
-    def test_trad_unidad_errónea(símismo):
-        """
-        Comprobar que devolvamos aviso para unidades que no existen en la lengua especificada.
-        """
-
-        with símismo.assertWarns(UserWarning):
-
-            # "Paj" no existe en español, es palabra kaqchikel.
-            res = trads.trad_unid('paj', leng_final='fr', leng_orig='es')
-
-        # Asegurarque que devolvimos el valor inicial para la unidad.
-        símismo.assertEqual(res, 'paj')
+    # def test_trad_unidad_errónea(símismo):
+    #     """
+    #     Comprobar que devolvamos aviso para unidades que no existen en la lengua especificada.
+    #     """
+    #
+    #     with símismo.assertWarns(UserWarning):
+    #
+    #         # "Paj" no existe en español, es palabra kaqchikel.
+    #         res = trads.trad_unid('paj', leng_final='fr', leng_orig='es')
+    #
+    #     # Asegurarque que devolvimos el valor inicial para la unidad.
+    #     símismo.assertEqual(res, 'paj')
 
     def test_trad_unidad_errónea_sin_especificar_leng(símismo):
         """
