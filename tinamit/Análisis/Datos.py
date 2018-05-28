@@ -686,7 +686,6 @@ class SuperBD(object):
                     else:
                         símismo.datos_reg = pd.concat([bd_pds_temp, símismo.datos_reg], ignore_index=True)
 
-                    # para hacer: arreglar
                     # Calcular errores
                     datos_err = np.array(
                         [bd.obt_error(d_v['fuente'][nmb]['var'], col_error=d_v['fuente'][nmb]['col_error'])
@@ -998,7 +997,7 @@ class SuperBD(object):
         ejes.set_title(_('{} vs {}').format(var_x, var_y))
         fig.savefig()
 
-    def guardar_datos(símismo, archivo=None):
+    def guardar_datos(símismo, archivo=''):
         """
         Guarda los datos en formato json, el cual queda fácil para vcargar de nuevo en Tinamït.
 
