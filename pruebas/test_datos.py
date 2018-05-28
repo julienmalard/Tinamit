@@ -59,3 +59,7 @@ class Test_SuperBD(unittest.TestCase):
         # Limpiar
         for x in egresos:
             os.remove(x)
+
+    def test_obt_datos(símismo):
+        res = símismo.bd.obt_datos('completo')
+        símismo.assertSetEqual(set(res['lugar'].unique().tolist()), {'701', '708', '7'})
