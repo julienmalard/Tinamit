@@ -69,3 +69,23 @@ class Test_SuperBD(unittest.TestCase):
     def test_obt_datos_de_lugar(símismo):
         res = símismo.bd.obt_datos('completo', lugar='708')
         símismo.assertTrue(set(res['lugar'].unique().tolist()) == {'708'})
+
+    def test_obt_datos_excluir_faltan(símismo):
+        res = símismo.bd.obt_datos(['completo', 'incompleto'], excl_faltan=True)
+        símismo.assertFalse(res.isnull().values.any())
+
+    def test_obt_datos_fecha_única(símismo):
+        res = símismo.bd.obt_datos('completo', fechas=2000)
+        símismo.assertTrue(all(res['fecha'] == '2000-1-1'))
+
+    def test_obt_datos_fecha_lista(símismo):
+        res = símismo.bd.obt_datos('completo', fechas=[2000, 2002])
+        símismo.assertTrue(all(res['fecha'].isin(['2000-1-1', '2002-1-1'])))
+
+    def test_obt_datos_fecha_rango(símismo):
+        res = símismo.bd.obt_datos('completo', fechas=(2000, '2002-6-1'))
+        símismo.assertTrue(all(res['fecha'] <= '2002-6-1') and all('2000-1-1' <= res['fecha']))
+
+    def test_obt_datos_reg_fecha_rango_con_interpol(símismo):
+        res = símismo.bd.obt_datos('completo', fechas=(2000, '2002-6-1'), tipo='regional')
+        pass

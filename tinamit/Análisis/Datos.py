@@ -617,19 +617,22 @@ class SuperBD(object):
                 )
 
             # Verificar que las fechas sean válidas
+            l_fechas = []
             for f in fechas:
-                verificar_fecha(f)
+                l_fechas.append(verificar_fecha(f))
+
+            fechas = tuple(l_fechas)
 
         elif isinstance(fechas, list):
             # El caso de una lista de fechas de interés
 
             # Verificar que las fechas sean válidas
-            for f in fechas:
-                verificar_fecha(f)
+            for í in range(len(fechas)):
+                fechas[í] = verificar_fecha(fechas[í])
 
         else:
             # Sino, tenemos una única fecha
-            verificar_fecha(fechas)
+            fechas = verificar_fecha(fechas)
 
         return fechas
 
@@ -712,7 +715,7 @@ class SuperBD(object):
         l_vars: str | list[str]
         lugar: str
         bd_datos: str | Datos | list[str | Datos]
-        fechas: ft.date | str | list[ft.data | str]
+        fechas: ft.date | ft.datetime | int | str | list | tuple
         excl_faltan: bool
         tipo: str
 
@@ -739,6 +742,7 @@ class SuperBD(object):
         if not símismo.bd_lista:
             símismo._gen_bd_intern()
 
+        tipo = tipo.lower()
         if tipo == 'individual':
             bd = símismo.datos_ind
         elif tipo == 'regional':
@@ -824,7 +828,7 @@ class SuperBD(object):
             categs_únicas = bd_pds[interpol_en].unique()
 
             # Los variables para interpolar
-            l_vars = [x for x in bd_pds if x not in [categs_únicas, 'fecha', 'bd']]
+            l_vars = [x for x in bd_pds if x not in [interpol_en, 'fecha', 'bd']]
 
             if isinstance(fechas, tuple):
                 raise NotImplementedError
@@ -1016,7 +1020,7 @@ class SuperBD(object):
             símismo._gen_bd_intern()
 
         # Convertir los datos a json
-        dic = {'ind': símismo.datos_ind.to_json(), 'reg': símismo.datos_reg.to_json(),
+        dic = {'ind': símismo.datos_ind.to_json(date_format='epoch'), 'reg': símismo.datos_reg.to_json(),
                'err': símismo.datos_reg_err.to_json()}
 
         # Guardar en UTF-8
@@ -1050,9 +1054,9 @@ class SuperBD(object):
         with open(archivo, encoding='UTF-8') as d:
             dic = json.load(d)
 
-        símismo.datos_ind = pd.read_json(dic['ind'])
-        símismo.datos_reg = pd.read_json(dic['reg'])
-        símismo.datos_reg_err = pd.read_json(dic['err'])
+        símismo.datos_ind = pd.read_json(dic['ind'], convert_dates=['fecha'])
+        símismo.datos_reg = pd.read_json(dic['reg'], convert_dates=['fecha'])
+        símismo.datos_reg_err = pd.read_json(dic['err'], convert_dates=['fecha'])
         for bd in [símismo.datos_ind, símismo.datos_reg, símismo.datos_reg_err]:
             bd['lugar'] = bd['lugar'].astype(str)
 

@@ -79,26 +79,24 @@ def tx_a_núm(texto):
                     # Si no encontramos nada, seguir con la próxima lengua
                     continue
 
-                # Grupos de números y de sus bases (unidades)
-                grupos = resultados[:-1]
-
                 # Dividir en números y en unidades
                 núms = [_trad_texto(g.group('núm'), núms=l_núms, sep_dec=sep_dec) if g.group('núm') is not None else 1
-                        for g in grupos]
+                        for g in resultados]
                 unids = [_trad_texto(g.group('unid'), núms=[b[1] for b in bases], vals=[b[0] for b in bases],
                                      sep_dec=sep_dec)
-                         if g.group('unid') is not None else 1 for g in grupos]
-
-                # Calcular el valor de cada número con su base.
-                vals = [int(núms[i] * u) for i, u in enumerate(unids)]
+                         if g.group('unid') is not None and len(g.group('unid')) else 1 for g in resultados]
 
                 # Agregar o multiplicar valores, como necesario.
-                val_entero = vals[0]
-                for i, v in enumerate(vals[1:]):
-                    if unids[i + 1] > unids[i]:
-                        val_entero *= v
+                val_entero = 0
+                for í, (n, u) in enumerate(zip(núms, unids)):
+                    if í == 0:
+                        val_entero = n * u
                     else:
-                        val_entero += v
+                        if u > unids[í - 1]:
+                            val_entero = (val_entero + n) * u
+                        else:
+                            val_entero = val_entero + (n * u)
+                val_entero = int(val_entero)
 
                 # Calcular el número traducido
                 if dec is not None:
