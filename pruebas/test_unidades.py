@@ -1,3 +1,4 @@
+import sys
 import unittest
 
 import tinamit.Unidades.trads as trads
@@ -73,26 +74,30 @@ class Test_TradsUnidades(unittest.TestCase):
         res = trads.trad_unid('year', leng_final='es')
         símismo.assertEqual(res, 'año')
 
-    # def test_trad_unidad_errónea(símismo):
-    #     """
-    #     Comprobar que devolvamos aviso para unidades que no existen en la lengua especificada.
-    #     """
-    #
-    #     with símismo.assertWarns(UserWarning):
-    #
-    #         # "Paj" no existe en español, es palabra kaqchikel.
-    #         res = trads.trad_unid('paj', leng_final='fr', leng_orig='es')
-    #
-    #     # Asegurarque que devolvimos el valor inicial para la unidad.
-    #     símismo.assertEqual(res, 'paj')
+    def test_trad_unidad_errónea(símismo):
+        """
+        Comprobar que devolvamos aviso para unidades que no existen en la lengua especificada.
+        """
+
+        if 'linux' not in sys.platform:
+
+            with símismo.assertWarns(UserWarning):
+
+                # "Paj" no existe en español, es palabra kaqchikel.
+                res = trads.trad_unid('paj', leng_final='fr', leng_orig='es')
+        else:
+            res = trads.trad_unid('paj', leng_final='fr', leng_orig='es')
+
+        # Asegurarque que devolvimos el valor inicial para la unidad.
+        símismo.assertEqual(res, 'paj')
 
     def test_trad_unidad_errónea_sin_especificar_leng(símismo):
         """
         Comprobar que devolvamos aviso error para unidades que no existen.
         """
-
-        with símismo.assertWarns(UserWarning):
-            trads.trad_unid('¡Yo no existo!', leng_final='fr')
+        if 'linux' not in sys.platform:
+            with símismo.assertWarns(UserWarning):
+                trads.trad_unid('¡Yo no existo!', leng_final='fr')
 
     def test_agregar_sinónimo(símismo):
         """
