@@ -11,6 +11,9 @@ install:
   - "%PYTHON%\\python.exe -m pip install --upgrade setuptools"
   - "%PYTHON%\\python.exe -m pip install --upgrade wheel"
   - "%PYTHON%\\python.exe -m pip install nose"
+  - "%PYTHON%\\python.exe -m pip show pip"
+  - "%PYTHON%\\python.exe -m pip show wheel"
+  - "%PYTHON%\\python.exe -m pip show setuptools"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
 
 build: false
