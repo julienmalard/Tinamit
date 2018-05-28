@@ -16,3 +16,7 @@ class Test_TradsUnids(unittest.TestCase):
 
     def test_traducir_notación_científica(símismo):
         símismo.assertAlmostEqual(tx_a_núm('-१२३४५.६७८९e-१'), -1234.56789)
+
+    def test_traducir_sistema_bases(símismo):
+        pass
+        # símismo.assertEqual(tx_a_núm('௰௨௲௩௱௪௰௫.௬௭௮௯'), 12345.6789)

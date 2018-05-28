@@ -40,7 +40,7 @@ def tx_a_núm(texto):
             bases = None
 
         # Intentar traducir literalmente, número por número
-        for sep_dec in l_sep_dec:
+        for sep_dec in l_sep_dec:  # type: str
             try:
                 núm = _trad_texto(texto=texto, núms=l_núms, sep_dec=sep_dec)
                 # ¿Funcionó? ¡Perfecto!
@@ -53,14 +53,18 @@ def tx_a_núm(texto):
         if bases is not None:
             # Intentar ver si puede ser un sistema de bases (unidades).
 
+            sep_dec = None
             try:
-
                 # Ver si hay de separar decimales
-                try:
-                    entero, dec = texto.split(sep_dec)
-                except ValueError:
+                entero = dec = None
+                for sep_dec in l_sep_dec:
+                    try:
+                        entero, dec = texto.split(sep_dec)
+                        break
+                    except ValueError:
+                        pass
+                if entero is None:
                     entero = texto
-                    dec = None
 
                 # Expresiones RegEx para esta lengua
                 regex_núm = r'[{}]'.format(''.join([n for n in l_núms]))
@@ -79,12 +83,14 @@ def tx_a_núm(texto):
                 grupos = resultados[:-1]
 
                 # Dividir en números y en unidades
-                núms = [_trad_texto(g.group('núm'), núms=l_núms, sep_dec=sep_dec) for g in grupos]
-                unids = [_trad_texto(g.group('unid'), núms=[b[1] for b in bases], sep_dec=sep_dec)
-                         for g in grupos]
+                núms = [_trad_texto(g.group('núm'), núms=l_núms, sep_dec=sep_dec) if g.group('núm') is not None else 1
+                        for g in grupos]
+                unids = [_trad_texto(g.group('unid'), núms=[b[1] for b in bases], vals=[b[0] for b in bases],
+                                     sep_dec=sep_dec)
+                         if g.group('unid') is not None else 1 for g in grupos]
 
                 # Calcular el valor de cada número con su base.
-                vals = [núms[i] * u for i, u in enumerate(unids)]
+                vals = [int(núms[i] * u) for i, u in enumerate(unids)]
 
                 # Agregar o multiplicar valores, como necesario.
                 val_entero = vals[0]
@@ -119,7 +125,7 @@ def tx_a_núm(texto):
     raise ValueError('No se pudo decifrar el número %s' % texto)
 
 
-def _trad_texto(texto, núms, sep_dec, txt=False):
+def _trad_texto(texto, núms, sep_dec, vals=None, txt=False):
     """
     Esta función traduce un texto a un valor numérico o de texto (formato latino).
 
@@ -135,15 +141,18 @@ def _trad_texto(texto, núms, sep_dec, txt=False):
     :rtype: float | txt
     """
 
+    if vals is None:
+        vals = range(len(núms))
+
     if all([x in núms + [sep_dec] for x in texto]):
         # Si todos los carácteres en el texto están reconocidos...
 
         # Cambiar el separador de decimal a un punto.
         texto = texto.replace(sep_dec, '.')
 
-        for n, d in enumerate(núms):
+        for v, n in zip(vals, núms):
             # Reemplazar todos los números también.
-            texto = texto.replace(d, str(n))
+            texto = texto.replace(n, str(v))
 
         # Devolver el resultado, o en texto, o en formato numeral.
         if txt:
@@ -186,7 +195,3 @@ dic_trads = {'Latino': {'núms': ('0', '1', '2', '3', '4', '5', '6', '7', '8', '
              '日本語': {'núms': ('〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'),
                      'sep_dec': ['.', ',']},
              }
-
-if __name__ == '__main__':
-    print(tx_a_núm('2.03485730137359e-11'))
-    print(tx_a_núm('2.03485730137359E-11'))
