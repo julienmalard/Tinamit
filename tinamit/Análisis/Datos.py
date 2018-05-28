@@ -732,7 +732,7 @@ class SuperBD(object):
 
         # Formatear los datos
         bd_datos = símismo._validar_bd(bd_datos)
-        if not isinstance(bd_datos, list):
+        if bd_datos is not None and not isinstance(bd_datos, list):
             bd_datos = [bd_datos]
 
         # Actualizar las bases de datos, si necesario
@@ -1053,6 +1053,8 @@ class SuperBD(object):
         símismo.datos_ind = pd.read_json(dic['ind'])
         símismo.datos_reg = pd.read_json(dic['reg'])
         símismo.datos_reg_err = pd.read_json(dic['err'])
+        for bd in [símismo.datos_ind, símismo.datos_reg, símismo.datos_reg_err]:
+            bd['lugar'] = bd['lugar'].astype(str)
 
     def borrar_archivo_datos(símismo, archivo=''):
 

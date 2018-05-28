@@ -63,3 +63,9 @@ class Test_SuperBD(unittest.TestCase):
     def test_obt_datos(símismo):
         res = símismo.bd.obt_datos('completo')
         símismo.assertSetEqual(set(res['lugar'].unique().tolist()), {'701', '708', '7'})
+
+        símismo.assertIn('completo', res)
+
+    def test_obt_datos_de_lugar(símismo):
+        res = símismo.bd.obt_datos('completo', lugar='708')
+        símismo.assertTrue(set(res['lugar'].unique().tolist()) == {'708'})
