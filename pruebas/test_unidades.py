@@ -78,7 +78,7 @@ class Test_TradsUnidades(unittest.TestCase):
         """
         Comprobar que devolvamos aviso para unidades que no existen en la lengua especificada.
         """
-        print(sys.platform)
+
         if 'linux' not in sys.platform:
 
             with símismo.assertWarns(UserWarning):
@@ -95,7 +95,7 @@ class Test_TradsUnidades(unittest.TestCase):
         """
         Comprobar que devolvamos aviso error para unidades que no existen.
         """
-        print(sys.platform)
+
         if 'linux' not in sys.platform:
             with símismo.assertWarns(UserWarning):
                 trads.trad_unid('¡Yo no existo!', leng_final='fr')
