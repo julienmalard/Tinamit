@@ -73,6 +73,27 @@ class Test_TradsUnidades(unittest.TestCase):
         res = trads.trad_unid('year', leng_final='es')
         símismo.assertEqual(res, 'año')
 
+    def test_trad_unidad_errónea(símismo):
+        """
+        Comprobar que devolvamos aviso para unidades que no existen en la lengua especificada.
+        """
+
+        with símismo.assertWarns(UserWarning):
+
+            # "Paj" no existe en español, es palabra kaqchikel.
+            res = trads.trad_unid('paj', leng_final='fr', leng_orig='es')
+
+        # Asegurarque que devolvimos el valor inicial para la unidad.
+        símismo.assertEqual(res, 'paj')
+
+    def test_trad_unidad_errónea_sin_especificar_leng(símismo):
+        """
+        Comprobar que devolvamos aviso error para unidades que no existen.
+        """
+
+        with símismo.assertWarns(UserWarning):
+            trads.trad_unid('¡Yo no existo!', leng_final='fr')
+
     def test_agregar_sinónimo(símismo):
         """
         Comprobar que podemos agregar sinónimos de unidades.
@@ -122,23 +143,19 @@ class Test_TradsUnidades(unittest.TestCase):
 
         símismo.assertEqual(convertir('litres', a='litros'), 1)
 
-    def test_trad_unidad_errónea(símismo):
+    def test_agregar_trad_errónea(símismo):
         """
-        Comprobar que devolvamos aviso para unidades que no existen en la lengua especificada.
-        """
-
-        with símismo.assertWarns(UserWarning):
-
-            # "Paj" no existe en español, es palabra kaqchikel.
-            res = trads.trad_unid('paj', leng_final='fr', leng_orig='es')
-
-        # Asegurarque que devolvimos el valor inicial para la unidad.
-        símismo.assertEqual(res, 'paj')
-
-    def test_trad_unidad_errónea_sin_especificar_leng(símismo):
-        """
-        Comprobar que devolvamos aviso error para unidades que no existen.
+        Comprobar que tenemos error al agregar traducciones para unidades que no existen en la lengua especificada.
         """
 
-        with símismo.assertWarns(UserWarning):
-            trads.trad_unid('¡Yo no existo!', leng_final='fr')
+        with símismo.assertRaises(ValueError):
+            # "Year" no existe en castellano.
+            trads.agregar_trad(unid='year', trad="année", leng_trad='fr', leng_orig='es')
+
+    def test_agregar_trad_errónea_sin_especificar_leng(símismo):
+        """
+        Comprobar que tenemos error al agregar traducciones para unidades que no existen en cualquier idioma.
+        """
+
+        with símismo.assertRaises(ValueError):
+            trads.agregar_trad(unid='¡Yo no existo!', trad="Je n'existe pas !", leng_trad='fr')
