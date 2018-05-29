@@ -103,3 +103,26 @@ class Test_SuperBD(unittest.TestCase):
         res = símismo.bd.obt_datos(['incompleto', 'completo'], fechas=(2000, '2002-6-1'), tipo='regional')
         símismo.assertTrue(res.shape[0] > 0)
         símismo.assertTrue(all(res['fecha'] <= '2002-6-1') and all('2000-1-1' <= res['fecha']))
+
+    def test_graficar(símismo):
+        símismo.bd.graficar_hist('completo')
+        símismo.assertTrue(os.path.isfile('./completo.jpg'))
+
+    def test_graficar_línea(símismo):
+        símismo.bd.graficar_línea(var='completo', archivo='línea completo.jpg')
+        símismo.assertTrue(os.path.isfile('./línea completo.jpg'))
+
+    def test_graficar_comparar(símismo):
+        símismo.bd.graf_comparar(var_x='completo', var_y='incompleto')
+        símismo.assertTrue(os.path.isfile('./completo_incompleto.jpg'))
+
+    @classmethod
+    def tearDownClass(cls):
+        for c in os.walk('./'):
+            for a in c[2]:
+                nmbr, ext = os.path.splitext(a)
+                try:
+                    if ext in ['.jpg', '.jpeg', '.png']:
+                        os.remove(a)
+                except PermissionError:
+                    pass
