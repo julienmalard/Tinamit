@@ -139,6 +139,7 @@ setup(
         'numpy',
         'scipy',
         'matplotlib',
+        'pillow',
         'pandas',
         'pymc3>=3.4',
         'python_dateutil',
@@ -153,7 +154,8 @@ setup(
     ],
 
     dependency_links=[
-        "git+git://github.com/julienmalard/pysd.git"
+        "git+git://github.com/julienmalard/pysd.git",
+        "git+git://github.com/julienmalard/taqdir.git"
     ],
     setup_requires=['Babel', 'polib'],
     zip_safe=False,
