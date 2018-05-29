@@ -791,25 +791,32 @@ class SuperBD(object):
 
         return bd_sel
 
-    def _interpolar(símismo, bd_pds, fechas, interpol_en):
+    def _interpolar(símismo, bd_pds, fechas, interpol_en, estricto=False):
         """
+        Efectua interpolaciones temporales.
 
         Parameters
         ----------
-        bd_pds :
+        bd_pds : pd.DataFrame
+            La base de datos en la cual interpolar.
         fechas :
         interpol_en: str
             La columna de categoría (por ejemplo, el lugar) con la cual hay que interpolar.
+        estricto: bool
+            Si enforzamos interpolaciones estríctas (únicamente las con datos disponibles a ambos lados de las fechas
+            de interés), o si simplemente hacemos lo mejor posible sin preocuparse demasiado.
 
         Returns
         -------
-
+        pd.DataFrame
+            Una nueva base de datos, únicamente con las fechas interpoladas.
         """
 
-        #
+        # Si no estamos interpolando, paramos aquí.
         if interpol_en is None:
             return bd_pds
 
+        # Asegurarse que la columna de categorías para la interpolacion existe.
         if interpol_en not in bd_pds:
             raise ValueError(_('El variable "{}" no existe en esta base de datos.').format(interpol_en))
 
@@ -829,7 +836,7 @@ class SuperBD(object):
         else:
             fechas_interés = [fechas]  # Asegurar que sea lista
 
-        # Calcular las interpolaciones
+        # ¡Ahora, calcular las interpolaciones!
 
         finalizados = pd.DataFrame(columns=bd_pds.columns)  # Para los resultados
 
@@ -930,10 +937,13 @@ class SuperBD(object):
 
         # Escoger las columnas que corresponden a las fechas deseadas.
         if isinstance(fechas, tuple):
+            fechas = tuple(pd.to_datetime(x) for x in fechas)
             return bd_pds.loc[(bd_pds['fecha'] >= fechas[0]) & (bd_pds['fecha'] <= fechas[1])]
         elif isinstance(fechas, list):
+            fechas = [pd.to_datetime(x) for x in fechas]
             return bd_pds.loc[(bd_pds['fecha'].isin(fechas))]
         else:
+            fechas = pd.to_datetime(fechas)
             return bd_pds.loc[(bd_pds['fecha'] == fechas)]
 
     def graficar(símismo, var, fechas=None, cód_lugar=None, lugar=None, datos=None, escala=None, archivo=None):
