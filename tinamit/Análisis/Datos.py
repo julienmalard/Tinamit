@@ -648,7 +648,7 @@ class SuperBD(object):
         símismo._limp_vars()
 
         # Borrar las bases de datos existentes
-        símismo.datos_ind = símismo.datos_reg = None
+        símismo.datos_ind = símismo.datos_reg = símismo.datos_reg_err = None
 
         # Agregar datos
         for nmb, bd in símismo.bds.items():
@@ -702,15 +702,15 @@ class SuperBD(object):
 
                     # Crear la BD o modificarla, según el caso.
                     if símismo.datos_reg_err is None:
-                        símismo.datos_reg_err = bd_pds_temp
+                        símismo.datos_reg_err = bd_pds_err_temp
                     else:
-                        símismo.datos_reg_err.append(bd_pds_temp, ignore_index=True)
+                        símismo.datos_reg_err.append(bd_pds_err_temp, ignore_index=True)
 
         # Ya la base de datos sí está actualizada y lista para trabajar
         símismo.bd_lista = True
 
     def obt_datos(símismo, l_vars, lugar=None, bd_datos=None, fechas=None, excl_faltan=False,
-                  tipo='individual'):
+                  tipo='individual', interpolar=True, interpolar_estricto=False):
         """
 
         Parameters
@@ -721,6 +721,8 @@ class SuperBD(object):
         fechas: ft.date | ft.datetime | int | str | list | tuple
         excl_faltan: bool
         tipo: str
+        interpolar: bool
+        interpolar_estricto: bool
 
         Returns
         -------
@@ -775,8 +777,12 @@ class SuperBD(object):
             bd_sel = bd_sel[bd_sel['lugar'].isin(lugar)]
 
         # Interpolar si necesario
-        bd_sel = símismo._interpolar(bd_sel, fechas,
-                        interpol_en='lugar' if tipo in ['regional', 'error regional'] else None)
+        if interpolar:
+            bd_sel = símismo._interpolar(
+                bd_sel, fechas,
+                interpol_en='lugar' if tipo in ['regional', 'error regional'] else None,
+                estricto=interpolar_estricto
+            )
 
         # Seleccionar las observaciones en las fechas de interés
         if fechas is not None:
@@ -795,7 +801,8 @@ class SuperBD(object):
 
         return bd_sel
 
-    def _interpolar(símismo, bd_pds, fechas, interpol_en, estricto=False):
+    @staticmethod
+    def _interpolar(bd_pds, fechas, interpol_en, estricto=False):
         """
         Efectua interpolaciones temporales.
 
@@ -862,7 +869,6 @@ class SuperBD(object):
 
             # Agregar las nuevas fechas si necesario.
             if len(nuevas_fechas):
-
                 # Nuevos datos (vacíos)
                 nuevos_datos = {'fecha': pd.to_datetime(nuevas_fechas), interpol_en: c, 'bd': 'interpolado'}
 
@@ -906,7 +912,7 @@ class SuperBD(object):
                 # las fechas que faltaban se encontraban afuera de los límites de los datos disponibles,
                 # simplemente copiar el último valor disponible (y avisar).
                 todavía_faltan = proms_fecha.columns[proms_fecha.isnull().any()].tolist()
-                if len(todavía_faltan):
+                if len(todavía_faltan) and not estricto:
                     avisar(_('No pudimos interpolar de manera segura para todos los variables. Tomaremos los'
                              'valores más cercanos posibles.\nVariables problemáticos: "{}"')
                            .format(', '.join(todavía_faltan)))
@@ -917,7 +923,8 @@ class SuperBD(object):
 
         return finalizados
 
-    def _filtrar_fechas(símismo, bd_pds, fechas):
+    @staticmethod
+    def _filtrar_fechas(bd_pds, fechas):
         """
         Filtra una base de datos Pandas por fecha.
 
@@ -944,80 +951,94 @@ class SuperBD(object):
         else:
             return bd_pds.loc[(bd_pds['fecha'] == fechas)]
 
-    def graficar(símismo, var, fechas=None, cód_lugar=None, lugar=None, datos=None, escala=None, archivo=None):
+    def graficar_hist(símismo, var, fechas=None, lugar=None, bd_datos=None, tipo='individual', archivo=None):
 
-        dic_datos = símismo.obt_datos(l_vars=var, fechas=fechas, cód_lugar=cód_lugar, lugar=lugar, bd_datos=datos,
-                                      escala=escala)
+        tipo = tipo.lower()
+
+        if archivo is None:
+            archivo = var + '.jpg'
+        archivo = símismo._validar_archivo(archivo, ext='.jpg')
+
+        datos = símismo.obt_datos(l_vars=var, lugar=lugar, bd_datos=bd_datos, fechas=fechas, tipo=tipo)
 
         fig = Figura()
-        TelaFigura(Figura)
+        TelaFigura(fig)
         ejes = fig.add_subplot(111)
         ejes.set_aspect('equal')
 
-        if escala.lower() == 'individual':
-            d_ind = dic_datos['individual']
-            fechas = d_ind['fecha'].unique()
-            lugares = d_ind['lugar'].unique()
-
-            for l in lugares:
-                for f in fechas:
-                    ejes.hist(d_ind[d_ind['lugar'] == l and d_ind['fecha'] == f][var], label='{}, {}'.format(l, f))
-
-            ejes.set_xlabel(var)
-            ejes.set_ylabel(_('Freq'))
-            ejes.legend()
-
-        else:
-            d_reg = dic_datos['regional']
-            d_err = dic_datos['error_regional']
-
-            fechas = d_reg['fecha']
-            n_fechas = len(fechas.unique())
-            lugares = d_reg['lugar'].unique()
-            n_lugares = len(lugares)
-
-            if n_fechas > 1:
-                for l in lugares:
-                    y = d_reg[d_reg['lugar'] == l][var]
-                    err = d_err[d_err['lugar'] == l][var]
-
-                    l = ejes.plot_date(fechas, y, label=l)
-                    color = l.get_color()
-                    ejes.fill_between(fechas, y - err / 2, y + err / 2, facecolor=color, alpha=0.5)
-
-                ejes.set_xlabel(_('Fecha'))
-                ejes.set_ylabel(var)
-                ejes.legend()
-
-            else:
-                ejes.bar(n_lugares, d_reg[var])
-                ejes.set_ylabel(var)
-                ejes.set_xlabel(_('Lugar'))
-                ejes.set_xticks(range(n_lugares))
-                ejes.set_xticklabels(lugares)
+        ejes.set_xlabel(var)
+        ejes.set_ylabel(_('Freq'))
 
         ejes.set_title(var)
-        fig.savefig()
 
-    def graf_comparar(símismo, var_x, var_y, fechas=None, cód_lugar=None, lugar=None, datos=None, escala=None,
-                      archivo=None):
-        datos = símismo.obt_datos(l_vars=[var_x, var_y], lugar=lugar, cód_lugar=cód_lugar, bd_datos=datos,
-                                  fechas=fechas,
-                                  escala=escala)
+        ejes.hist(datos[var])
+
+        fig.savefig(archivo)
+
+    def graficar_línea(símismo, var, fechas=None, lugar=None, bd_datos=None, archivo=None):
+
+        if archivo is None:
+            archivo = var + '.jpg'
+        archivo = símismo._validar_archivo(archivo, ext='.jpg')
+
+        datos = símismo.obt_datos(l_vars=var, fechas=fechas, lugar=lugar, bd_datos=bd_datos, tipo='regional')
+        datos_error = símismo.obt_datos(l_vars=var, fechas=fechas, lugar=lugar, bd_datos=bd_datos,
+                                        tipo='error regional')
 
         fig = Figura()
-        TelaFigura(Figura)
+        TelaFigura(fig)
         ejes = fig.add_subplot(111)
-        ejes.set_aspect('equal')
 
-        if escala.lower() == 'individual':
-            ejes.plot(datos['individual'][var_x], datos['individual'][var_y])
+        fechas = datos['fecha']
+        n_fechas = len(fechas.unique())
+        lugares = datos['lugar'].unique()
+        n_lugares = len(lugares)
+
+        if n_fechas > 1:
+            for l in lugares:
+                y = datos[datos['lugar'] == l][var]
+                fechas_l = datos[datos['lugar'] == l]['fecha']
+                err = datos_error[datos_error['lugar'] == l][var]
+
+                l = ejes.plot_date(fechas_l, y, label=l, fmt='-')
+                if err.shape == y.shape:
+                    color = l[0].get_color()
+                    ejes.fill_between(fechas_l, y - err / 2, y + err / 2, facecolor=color, alpha=0.5)
+
+            ejes.set_xlabel(_('Fecha'))
+            ejes.set_ylabel(var)
 
         else:
-            ejes.plot(datos['regional'][var_x], datos['regional'][var_y])
+            ejes.bar(n_lugares, datos[var])
+            ejes.set_ylabel(var)
+            ejes.set_xlabel(_('Lugar'))
+            ejes.set_xticks(range(n_lugares))
+            ejes.set_xticklabels(lugares)
+
+        ejes.legend()
+        ejes.set_title(var)
+        fig.savefig(archivo)
+
+    def graf_comparar(símismo, var_x, var_y, fechas=None, lugar=None, bd_datos=None, archivo=None):
+
+        if archivo is None:
+            archivo = var_x + '_' + var_y + '.jpg'
+        archivo = símismo._validar_archivo(archivo, ext='.jpg')
+
+        datos = símismo.obt_datos(l_vars=[var_x, var_y], lugar=lugar, bd_datos=bd_datos, fechas=fechas)
+
+        fig = Figura()
+        TelaFigura(fig)
+        ejes = fig.add_subplot(111)
+
+        ejes.scatter(datos[var_x], datos[var_y])
+
+        ejes.set_xlabel(var_x)
+        ejes.set_ylabel(var_y)
+
 
         ejes.set_title(_('{} vs {}').format(var_x, var_y))
-        fig.savefig()
+        fig.savefig(archivo)
 
     def guardar_datos(símismo, archivo=''):
         """
@@ -1050,6 +1071,9 @@ class SuperBD(object):
         archivo = os.path.abspath(archivo)
 
         if ext is not None:
+            if ext[0] != '.':
+                ext = '.' + ext
+
             if not len(os.path.splitext(archivo)[1]):
                 archivo = os.path.join(archivo, símismo.nombre + ext)
 
