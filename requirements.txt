@@ -11,5 +11,6 @@ Babel
 polib
 pint
 pyshp
+pillow
 git+git://github.com/julienmalard/taqdir.git@master
 git+git://github.com/julienmalard/pysd.git@master
