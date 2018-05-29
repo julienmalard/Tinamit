@@ -1,6 +1,6 @@
 import os
 import unittest
-
+import numpy.testing as npt
 
 from tinamit.Análisis.Datos import DatosIndividuales, DatosRegión, SuperBD
 
@@ -86,6 +86,20 @@ class Test_SuperBD(unittest.TestCase):
         res = símismo.bd.obt_datos('completo', fechas=(2000, '2002-6-1'))
         símismo.assertTrue(all(res['fecha'] <= '2002-6-1') and all('2000-1-1' <= res['fecha']))
 
+    def test_obt_datos_reg_con_interpol_no_necesario(símismo):
+        res = símismo.bd.obt_datos('completo', fechas=(2000, '2002-6-1'), tipo='regional')
+        símismo.assertTrue(res.shape[0] > 0)
+        símismo.assertTrue(all(res['fecha'] <= '2002-6-1') and all('2000-1-1' <= res['fecha']))
+
+    def test_obt_datos_reg_fecha_única_con_interpol(símismo):
+        res = símismo.bd.obt_datos(['incompleto', 'completo'], fechas=2001, tipo='regional')
+
+        # Verificar interpolaciones
+        npt.assert_allclose(res.loc[res.lugar == '708'][res.fecha == '2001-1-1']['completo'].values, 1.500684)
+        npt.assert_allclose(res.loc[res.lugar == '7'][res.fecha == '2001-1-1']['incompleto'].values, 23.3394,
+                            rtol=0.001)
+
     def test_obt_datos_reg_fecha_rango_con_interpol(símismo):
-        # res = símismo.bd.obt_datos('completo', fechas=(2000, '2002-6-1'), tipo='regional')
-        pass
+        res = símismo.bd.obt_datos(['incompleto', 'completo'], fechas=(2000, '2002-6-1'), tipo='regional')
+        símismo.assertTrue(res.shape[0] > 0)
+        símismo.assertTrue(all(res['fecha'] <= '2002-6-1') and all('2000-1-1' <= res['fecha']))

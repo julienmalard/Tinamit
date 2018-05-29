@@ -870,11 +870,14 @@ class SuperBD(object):
                 # ...y agregarla a la base de datos de la categoría actual.
                 bd_categ = bd_categ.append(nuevas_filas)
 
-            # Interpolar únicamente si quedan valores que faltan para las fechas de interés
-            if bd_categ.loc[bd_categ['fecha'].isin(f_interés_categ)][l_vars].isnull().values.any():
+            # Calcular el promedio de los valores de observaciones por categoría y por fecha
+            proms_fecha = bd_categ.groupby(['fecha']).mean()  # type: pd.DataFrame
+            proms_fecha[interpol_en] = c
+            proms_fecha['bd'] = 'interpolado'
+            proms_fecha['fecha'] = proms_fecha.index
 
-                # Calcular el promedio de los valores de observaciones por categoría y por fecha
-                proms_fecha = bd_categ.groupby(['fecha']).mean()  # type: pd.DataFrame
+            # Interpolar únicamente si quedan valores que faltan para las fechas de interés
+            if proms_fecha.loc[proms_fecha['fecha'].isin(f_interés_categ)][l_vars].isnull().values.any():
 
                 # Aplicar valores para variables sin fechas asociadas (por ejemplo, tamaños de municipio)
                 sin_fecha = bd_pds[bd_pds.fecha.isnull()]
@@ -902,7 +905,7 @@ class SuperBD(object):
                     proms_fecha.interpolate(limit_direction='both', inplace=True)
 
             # Agregar a los resultados finales
-            finalizados = finalizados.append(bd_categ.dropna(how='any'))
+            finalizados = finalizados.append(proms_fecha, ignore_index=True)
 
         return finalizados
 
