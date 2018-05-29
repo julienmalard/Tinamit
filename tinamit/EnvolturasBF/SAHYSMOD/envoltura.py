@@ -41,7 +41,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
         # The path from which to read and write input and output data will be set later on according to the run name
         símismo.egreso = None  # type: str
-        símismo.egreso = None  # type: str
+        símismo.ingreso = None  # type: str
         símismo.direc_trabajo = None  # type: str
 
         # Prepare the command to the SAHYSMOD executable
@@ -89,10 +89,10 @@ class ModeloSAHYSMOD(ModeloImpaciente):
             shutil.rmtree(símismo.direc_trabajo)
         os.makedirs(símismo.direc_trabajo)
         símismo.egreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.out')
-        símismo.egreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.inp')
+        símismo.ingreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.inp')
 
         # Generar la comanda de corrida (para después)
-        args = dict(SAHYSMOD=símismo.SAHYSMOD_exe, ingreso=símismo.egreso, egreso=símismo.egreso)
+        args = dict(SAHYSMOD=símismo.SAHYSMOD_exe, ingreso=símismo.ingreso, egreso=símismo.egreso)
         símismo.comanda = '"{SAHYSMOD}" "{ingreso}" "{egreso}"'.format(**args)
 
         super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
@@ -135,7 +135,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
             vec[vec == -1] = 0
 
         # Y finalmente, escribir el archivo de valores de ingreso
-        escribir_desde_dic_paráms(dic_paráms=símismo.dic_ingr, archivo_obj=símismo.egreso)
+        escribir_desde_dic_paráms(dic_paráms=símismo.dic_ingr, archivo_obj=símismo.ingreso)
 
     def leer_archivo_egr(símismo, n_años_egr):
 
