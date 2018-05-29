@@ -597,8 +597,7 @@ class SuperBD(object):
 
             elif isinstance(fch, str):
                 try:
-                    ft.datetime.strptime(fch, '%Y-%m-%d').date()
-                    return fch
+                    return ft.datetime.strptime(fch, '%Y-%m-%d').date()
                 except ValueError:
                     raise ValueError(_('La fecha "{}" no está en el formato "AAAA-MM-DD"').format(fch))
 
@@ -738,10 +737,14 @@ class SuperBD(object):
         if bd_datos is not None and not isinstance(bd_datos, list):
             bd_datos = [bd_datos]
 
+        # Preparar las fechas
+        fechas = símismo._validar_fechas(fechas)
+
         # Actualizar las bases de datos, si necesario
         if not símismo.bd_lista:
             símismo._gen_bd_intern()
 
+        # Formatear tipo
         tipo = tipo.lower()
         if tipo == 'individual':
             bd = símismo.datos_ind
@@ -750,11 +753,11 @@ class SuperBD(object):
         elif tipo == 'error regional':
             bd = símismo.datos_reg_err
         else:
-            raise ValueError
+            raise ValueError(_('`tipo` debe ser uno de "{}"').format('"individual", "regional", o "error regional".'))
 
         # Asegurarse que existe esta base de datos
         if bd is None:
-            raise ValueError
+            raise ValueError(_('No tenemos datos para la base de datos "{}".').format(tipo))
 
         # Seleccionar los variables de interés
         bd_sel = bd[l_vars + ['bd', 'fecha', 'lugar']]
@@ -767,10 +770,13 @@ class SuperBD(object):
         if lugar is not None:
             bd_sel = bd_sel[bd_sel['lugar'].isin(lugar)]
 
-        # Seleccionar las observaciones en las fechas de interés, e interpolar si necesario
+        # Interpolar si necesario
+        bd_sel = símismo._interpolar(bd_sel, fechas,
+                        interpol_en='lugar' if tipo in ['regional', 'error regional'] else None)
+
+        # Seleccionar las observaciones en las fechas de interés
         if fechas is not None:
-            col_id = 'lugar' if tipo in ['regional', 'error regional'] else None
-            bd_sel = símismo._filtrar_fechas(bd_sel, fechas, interpol_en=col_id)
+            bd_sel = símismo._filtrar_fechas(bd_sel, fechas)
 
         # Excluir las observaciones que faltan
         if excl_faltan:
@@ -785,9 +791,124 @@ class SuperBD(object):
 
         return bd_sel
 
-    def _filtrar_fechas(símismo, bd_pds, fechas, interpol_en=None):
+    def _interpolar(símismo, bd_pds, fechas, interpol_en):
         """
-        Filtra una base de datos Pandas por fecha, e interpola si necesario.
+
+        Parameters
+        ----------
+        bd_pds :
+        fechas :
+        interpol_en: str
+            La columna de categoría (por ejemplo, el lugar) con la cual hay que interpolar.
+
+        Returns
+        -------
+
+        """
+
+        #
+        if interpol_en is None:
+            return bd_pds
+
+        if interpol_en not in bd_pds:
+            raise ValueError(_('El variable "{}" no existe en esta base de datos.').format(interpol_en))
+
+        # Categorías únicas en las cuales interpolar (por ejemplo, interpolar para cada lugar).
+        categs_únicas = bd_pds[interpol_en].unique()
+
+        # Los variables para interpolar
+        l_vars = [x for x in bd_pds if x not in [interpol_en, 'fecha', 'bd']]
+
+        # Preparar las fechas de interés.
+        if fechas is None:
+            fechas_interés = []  # Utilizar únicamente las fechas ya en la base de datos
+        elif isinstance(fechas, tuple):
+            fechas_interés = None  # En caso de rango, se calculará por cada categoría de interpolación
+        elif isinstance(fechas, list):
+            fechas_interés = fechas  # Una lista de fechas
+        else:
+            fechas_interés = [fechas]  # Asegurar que sea lista
+
+        # Calcular las interpolaciones
+
+        finalizados = pd.DataFrame(columns=bd_pds.columns)  # Para los resultados
+
+        # Para cada categoría...
+        for c in categs_únicas:
+
+            # Tomar únicamente las filas que corresponden con la categoría actual.
+            bd_categ = bd_pds.loc[bd_pds[interpol_en] == c]
+
+            # Calcular las fechas de interés para esta categoría, si necesario
+            if fechas_interés is not None:
+                f_interés_categ = fechas_interés
+            else:
+                # Tomar las fechas de esta categoría que están en el rango
+                f_interés_categ = [
+                    f for f in pd.to_datetime(bd_categ['fecha']).dt.date.unique().tolist()
+                    if fechas[0] <= f <= fechas[1]
+                ]
+
+            # Las nuevas fechas de interés que hay que a la base de datos
+            nuevas_fechas = [x for x in f_interés_categ if not (bd_categ['fecha'] == pd.Timestamp(x)).any()]
+
+            # Agregar las nuevas fechas si necesario.
+            if len(nuevas_fechas):
+
+                # Nuevos datos (vacíos)
+                nuevos_datos = {'fecha': pd.to_datetime(nuevas_fechas), interpol_en: c, 'bd': 'interpolado'}
+
+                # Crear una base de datos
+                nuevas_filas = pd.DataFrame(
+                    data=nuevos_datos,
+                    columns=l_vars + ['fecha', 'bd', interpol_en],
+                )
+
+                # Asegurar el tipo correcto para los variables
+                nuevas_filas = nuevas_filas.astype(dtype={x: 'float' for x in l_vars})
+
+                # ...y agregarla a la base de datos de la categoría actual.
+                bd_categ = bd_categ.append(nuevas_filas)
+
+            # Interpolar únicamente si quedan valores que faltan para las fechas de interés
+            if bd_categ.loc[bd_categ['fecha'].isin(f_interés_categ)][l_vars].isnull().values.any():
+
+                # Calcular el promedio de los valores de observaciones por categoría y por fecha
+                proms_fecha = bd_categ.groupby(['fecha']).mean()  # type: pd.DataFrame
+
+                # Aplicar valores para variables sin fechas asociadas (por ejemplo, tamaños de municipio)
+                sin_fecha = bd_pds[bd_pds.fecha.isnull()]
+                if sin_fecha.shape[0] > 0:
+                    proms_sin_fecha = sin_fecha.loc[sin_fecha[categs_únicas] == c].mean().to_frame().T
+                    proms_fecha.fillna(
+                        value={ll: v[0] for ll, v in proms_sin_fecha.to_dict(orient='list').items()},
+                        inplace=True
+                    )
+
+                # Ordenar
+                proms_fecha.sort_index(inplace=True)
+
+                # Por fin, interpolar
+                proms_fecha.interpolate(method='time', inplace=True)
+
+                # Si quedaron combinaciones de variables y de fechas para las cuales no pudimos interpolar porque
+                # las fechas que faltaban se encontraban afuera de los límites de los datos disponibles,
+                # simplemente copiar el último valor disponible (y avisar).
+                todavía_faltan = proms_fecha.columns[proms_fecha.isnull().any()].tolist()
+                if len(todavía_faltan):
+                    avisar(_('No pudimos interpolar de manera segura para todos los variables. Tomaremos los'
+                             'valores más cercanos posibles.\nVariables problemáticos: "{}"')
+                           .format(', '.join(todavía_faltan)))
+                    proms_fecha.interpolate(limit_direction='both', inplace=True)
+
+            # Agregar a los resultados finales
+            finalizados = finalizados.append(bd_categ.dropna(how='any'))
+
+        return finalizados
+
+    def _filtrar_fechas(símismo, bd_pds, fechas):
+        """
+        Filtra una base de datos Pandas por fecha.
 
         Parameters
         ----------
@@ -796,9 +917,6 @@ class SuperBD(object):
         fechas: str | tuple | list | ft.date | ft.datetime
             La fecha o fechas de interés. Si es una tupla, se interpretará como **rango de interés**, si es lista,
             se interpretará como lista de fechas de interés **individuales**.
-        interpol_en: str
-            La columna de categoría (por ejemplo, el lugar) con la cual hay que interpolar. Si es ``None``, no se
-            interpolará.
 
         Returns
         -------
@@ -807,124 +925,13 @@ class SuperBD(object):
 
         """
 
-        # Preparar las fechas
-        fechas = símismo._validar_fechas(fechas)
-
-        if interpol_en is None:
-            # Si no podemos interpolar, simplemente escoger las columnas que corresponden a las fechas deseadas.
-            if isinstance(fechas, tuple):
-                return bd_pds.loc[(bd_pds['fecha'] >= fechas[0]) & (bd_pds['fecha'] <= fechas[1])]
-            elif isinstance(fechas, list):
-                return bd_pds.loc[(bd_pds['fecha'].isin(fechas))]
-            else:
-                return bd_pds.loc[(bd_pds['fecha'] == fechas)]
+        # Escoger las columnas que corresponden a las fechas deseadas.
+        if isinstance(fechas, tuple):
+            return bd_pds.loc[(bd_pds['fecha'] >= fechas[0]) & (bd_pds['fecha'] <= fechas[1])]
+        elif isinstance(fechas, list):
+            return bd_pds.loc[(bd_pds['fecha'].isin(fechas))]
         else:
-
-            # Si hay que interpolar, tenemos trabajo
-            if interpol_en not in bd_pds:
-                raise ValueError
-
-            # Categorías únicas en las cuales interpolar (por ejemplo, interpolar para cada lugar).
-            categs_únicas = bd_pds[interpol_en].unique()
-
-            # Los variables para interpolar
-            l_vars = [x for x in bd_pds if x not in [interpol_en, 'fecha', 'bd']]
-
-            if isinstance(fechas, tuple):
-                raise NotImplementedError
-            elif isinstance(fechas, list):
-                fechas_interés = fechas
-            else:
-                fechas_interés = [fechas]
-
-            # Para hacer: tomar cuenta de `fechas`
-
-            # Calcular las interpolaciones
-            finalizados = None
-
-            # Para cada categoría...
-            for c in categs_únicas:
-                # Calcular el promedio de los valores de observaciones por categoría y por fecha
-                proms_fecha = bd_pds.loc[bd_pds[interpol_en] == c].groupby(['fecha']).mean()  # type: pd.DataFrame
-
-                # Si quedamos con datos...
-                if proms_fecha.shape[0] > 0:
-
-                    # Aplicar valores para variables sin fechas asociadas
-                    sin_fecha = bd_pds[bd_pds.fecha.isnull()]
-                    if sin_fecha.shape[0] > 0:
-                        proms_sin_fecha = sin_fecha.loc[sin_fecha[categs_únicas] == c].mean().to_frame().T
-                        proms_fecha.fillna(
-                            value={ll: v[0] for ll, v in proms_sin_fecha.to_dict(orient='list').items()},
-                            inplace=True
-                        )
-
-                    # Ahora, interpolar
-                    mín = proms_fecha.index.min()  # Fecha mínima
-                    máx = proms_fecha.index.max()  # Fecha máxima
-
-                    # Calcular el rango temporal en el cual tenemos datos para todos los variables
-                    for v in l_vars:
-                        # Para cada variable...
-
-                        # Las fechas para las cuales tenemos observaciones
-                        compl_v = proms_fecha.dropna(subset=[v])[v]
-
-                        # Las fechas máximas y mínimas para este variable
-                        mín_v = compl_v.index.min()
-                        máx_v = compl_v.index.max()
-
-                        # Ajustar el máximo y mínimo global
-                        mín = max(mín, mín_v)
-                        máx = min(máx, máx_v)
-
-                    # Las fechas en la base de datos para las cuales podemos interpolar
-                    l_fechas_fin = [í for í in proms_fecha.index if mín <= í <= máx]
-
-                    if len(l_fechas_fin):
-                        # Si podemos interpolar...
-
-                        # Agregar nuevas filas para los valores interpolados, si necesario.
-                        nuevas_filas = pd.DataFrame(
-                            columns=l_vars,
-                            index=pd.to_datetime(
-                                [x for x in l_fechas_fin if x not in proms_fecha.index])  # Únicament nuevas fechas
-                        )
-
-                        # Agregar las nuevas filas
-                        proms_fecha = proms_fecha.append(nuevas_filas)
-
-                        # Ordenar
-                        proms_fecha = proms_fecha.sort_index()
-
-                        # Por fin, interpolar
-                        proms_fecha = proms_fecha.interpolate(method='time')
-
-                        # Aplicar la categoría actual a las nuevas filas
-                        proms_fecha[categs_únicas] = c
-
-                        # Sacar únicamente las fechas de interés.
-                        proms_fecha = proms_fecha.loc[l_fechas_fin]
-
-                    else:
-                        # Si no pudimos interpolar correctamente...
-                        # Para hacer: si podemos interpolar solamente una parte de `fechas`
-                        avisar('No se pudo interpolar entre datos "{}". Nos basaremos simplemente en los datos '
-                               'observados sin tener cuenta de la fecha de observación.'.format(l_vars))
-
-                        # Ordenar
-                        proms_fecha = proms_fecha.sort_index()
-
-                        # Interpolar lo mejor que pudimos
-                        proms_fecha.interpolate(limit_direction='both', inplace=True)
-
-                    # Agregar a los resultados finales
-                    if finalizados is None:
-                        finalizados = proms_fecha.dropna(how='any')  # Quitar datos que faltan #para hacer: ¿por qué?
-                    else:
-                        finalizados = finalizados.append(proms_fecha.dropna(how='any'))
-
-            return finalizados
+            return bd_pds.loc[(bd_pds['fecha'] == fechas)]
 
     def graficar(símismo, var, fechas=None, cód_lugar=None, lugar=None, datos=None, escala=None, archivo=None):
 
