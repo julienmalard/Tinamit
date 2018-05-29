@@ -590,16 +590,20 @@ class SuperBD(object):
             """
 
             if isinstance(fch, ft.date) or isinstance(fch, ft.datetime):
-                return fch
+                pass
 
             elif isinstance(fch, int):
-                return ft.date(year=fch, month=1, day=1)
+                fch = ft.date(year=fch, month=1, day=1)
 
             elif isinstance(fch, str):
                 try:
-                    return ft.datetime.strptime(fch, '%Y-%m-%d').date()
+                    fch = ft.datetime.strptime(fch, '%Y-%m-%d').date()
                 except ValueError:
                     raise ValueError(_('La fecha "{}" no está en el formato "AAAA-MM-DD"').format(fch))
+            else:
+                raise TypeError(_('Tipo de fecha "{}" no reconocido.').format(type(fch)))
+
+            return pd.to_datetime(fch)
 
         if fechas is None:
             # Si tenemos nada, devolver nada
@@ -851,10 +855,7 @@ class SuperBD(object):
                 f_interés_categ = fechas_interés
             else:
                 # Tomar las fechas de esta categoría que están en el rango
-                f_interés_categ = [
-                    f for f in pd.to_datetime(bd_categ['fecha']).dt.date.unique().tolist()
-                    if fechas[0] <= f <= fechas[1]
-                ]
+                f_interés_categ = list(set([f for f in bd_categ['fecha'] if fechas[0] <= f <= fechas[1]]))
 
             # Las nuevas fechas de interés que hay que a la base de datos
             nuevas_fechas = [x for x in f_interés_categ if not (bd_categ['fecha'] == pd.Timestamp(x)).any()]
@@ -937,13 +938,10 @@ class SuperBD(object):
 
         # Escoger las columnas que corresponden a las fechas deseadas.
         if isinstance(fechas, tuple):
-            fechas = tuple(pd.to_datetime(x) for x in fechas)
             return bd_pds.loc[(bd_pds['fecha'] >= fechas[0]) & (bd_pds['fecha'] <= fechas[1])]
         elif isinstance(fechas, list):
-            fechas = [pd.to_datetime(x) for x in fechas]
             return bd_pds.loc[(bd_pds['fecha'].isin(fechas))]
         else:
-            fechas = pd.to_datetime(fechas)
             return bd_pds.loc[(bd_pds['fecha'] == fechas)]
 
     def graficar(símismo, var, fechas=None, cód_lugar=None, lugar=None, datos=None, escala=None, archivo=None):
