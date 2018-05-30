@@ -8,7 +8,7 @@ import numpy as np
 
 from tinamit import obt_val_config, _
 from tinamit.BF import ModeloImpaciente
-from EnvolturasBF.SAHYSMOD.sahysmodIE import leer_info_dic_paráms, escribir_desde_dic_paráms
+from .sahysmodIE import leer_info_dic_paráms, escribir_desde_dic_paráms
 
 
 class ModeloSAHYSMOD(ModeloImpaciente):
