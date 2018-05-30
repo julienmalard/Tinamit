@@ -47,18 +47,40 @@ else:
 
 
 class Calibrador(object):
-    def __init__(símismo, ec):
+    def __init__(símismo, ec, otras_ecs=None):
 
         if isinstance(ec, Ecuación):
+            if otras_ecs is not None:
+                raise ValueError
             símismo.ec = ec
         else:
-            símismo.ec = Ecuación(ec)
+            símismo.ec = Ecuación(ec, otras_ecs=otras_ecs)
 
-    def calibrar(símismo, var_y, paráms, líms_paráms, método, bd_datos, en=None,
+    def calibrar(símismo, bd_datos, paráms=None, líms_paráms=None, método=None, en=None,
                  escala=None, ops_método=None):
 
         if ops_método is None:
             ops_método = {}
+
+        vars_ec = símismo.ec.variables()
+        var_y = símismo.ec.nombre
+        if var_y not in bd_datos.vars:
+            raise ValueError(_('El variable "{}" no parece existir en la base de datos.').format(var_y))
+
+        if paráms is None:
+            paráms = [x for x in vars_ec if x not in bd_datos.vars]
+        vars_x = [v for v in vars_ec if v not in paráms]
+
+        if líms_paráms is None:
+            líms_paráms = {}
+        for p in paráms:
+            if p not in líms_paráms:
+                líms_paráms[p] = (None, None)
+            elif líms_paráms[p] is None:
+                líms_paráms[p] = (None, None)
+            elif not len(líms_paráms[p]) == 2:
+                raise ValueError(_('Los límites de parámetros deben tener dos elementos: (mínimo, máximo). Utilizar'
+                                   '``None`` para ± infinidad: (None, 10); (0, None).'))
 
         if método is None:
             if pm is not None:
@@ -74,32 +96,26 @@ class Calibrador(object):
         except ValueError:
             lugares = jerarquía = None
 
-        vars_x = list(set(itertools.chain.from_iterable(
-            [Ecuación(e).variables for e in otras_ecs.values()] +
-            [x for x in símismo.ec.variables() if x not in otras_ecs and x not in paráms]
-        )))
-
         if método == 'inferencia bayesiana':
             return símismo._calibrar_bayesiana(
-                paráms=paráms, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms, otras_ecs=otras_ecs,
+                paráms=paráms, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms,
                 ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, jerarquía=jerarquía
             )
         elif método == 'optimizar':
             return símismo._calibrar_opt(
-                paráms=paráms, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms, otras_ecs=otras_ecs,
+                paráms=paráms, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms,
                 ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, jerarquía=jerarquía
             )
         else:
             raise ValueError(_('Método de calibración "{}" no reconocido.'))
 
-    def _calibrar_bayesiana(símismo, paráms, var_y, vars_x, líms_paráms, otras_ecs, ops_método,
+    def _calibrar_bayesiana(símismo, paráms, var_y, vars_x, líms_paráms, ops_método,
                             bd_datos, lugares, jerarquía):
 
         mod_bayes, d_vars_obs = símismo.ec.gen_mod_bayes(
             paráms=paráms, líms_paráms=líms_paráms,
             obs_x=None, obs_y=None,
-            aprioris=None, binario=binario,
-            otras_ecs=otras_ecs
+            aprioris=None, binario=binario
         )
         calibs = {None: líms_a_dists(líms_paráms)}
 
@@ -128,23 +144,25 @@ class Calibrador(object):
 
         return {l: c for l, c in calibs.items() if l in lugares}
 
-    def _calibrar_opt(símismo, paráms, var_y, vars_x, líms_paráms, otras_ecs, ops_método, bd_datos, lugares, jerarquía):
+    def _calibrar_opt(símismo, paráms, var_y, vars_x, líms_paráms, ops_método, bd_datos, lugares, jerarquía):
 
-        f_python = símismo.ec.gen_func_python(paráms=paráms, otras_ecs=otras_ecs)
+        f_python = símismo.ec.gen_func_python(paráms=paráms)
+
+        l_vars = vars_x + [var_y]
 
         if lugares is None:
-            obs = bd_datos.obt_datos(l_vars=vars_x + var_y, excluir_faltan=True)
+            obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True)
             resultados = optimizar(f_python, paráms=paráms, líms_paráms=líms_paráms,
                                    obs_x=obs[vars_x], obs_y=obs[var_y], **ops_método)
         else:
             resultados = {}
             for lg in lugares:
-                obs = bd_datos.obt_datos(l_vars=vars_x + var_y, lugares=lg, excluir_faltan=True)
+                obs = bd_datos.obt_datos(l_vars=l_vars, lugares=lg, excluir_faltan=True)
                 if not len(obs):
                     for nv in jerarquía:
                         for mb in nv['miembros']:
                             if lg in nv[mb]:
-                                obs = bd_datos.obt_datos(l_vars=vars_x + var_y, lugares=lg, excluir_faltan=True)
+                                obs = bd_datos.obt_datos(l_vars=l_vars, lugares=lg, excluir_faltan=True)
                                 if len(obs):
                                     break
                         if len(obs):
@@ -221,7 +239,8 @@ def optimizar(func, paráms, líms_paráms, obs_x, obs_y, **ops):
         return f_ajuste(func(p, obs_x), obs_y)
 
     x0 = []
-    for lp in líms_paráms:
+    for p in paráms:
+        lp = líms_paráms[p]
         if lp[0] is None:
             if lp[1] is None:
                 x0.append(0)
@@ -234,7 +253,7 @@ def optimizar(func, paráms, líms_paráms, obs_x, obs_y, **ops):
                 x0.append((lp[0] + lp[1]) / 2)
 
     x0 = np.array(x0)
-    opt = minimize(f, x0=x0, bounds=líms_paráms, **ops)
+    opt = minimize(f, x0=x0, bounds=[líms_paráms[p] for p in paráms], **ops)
 
     if not opt.success:
         avisar(_('Error de optimización para ecuación "{}".').format(str(func)))

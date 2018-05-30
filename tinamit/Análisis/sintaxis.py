@@ -77,8 +77,44 @@ class _Transformador(Transformer):
     ec = list
 
 
+def _subst_en_árbol(á, var, obj):
+    if isinstance(á, dict):
+
+        for ll, v in á.items():
+
+            if ll == 'func':
+                if v[0] in ['+', '-', '/', '*', '^']:
+                    _subst_en_árbol(v[1][0], var=var, obj=obj)
+                    _subst_en_árbol(v[1][1], var=var, obj=obj)
+
+                else:
+                    for x in v[1]:
+                        _subst_en_árbol(x, var=var, obj=obj)
+
+            elif ll == 'var':
+                if v == var:
+                    á[ll] = obj
+
+            elif ll == 'neg':
+                pass
+
+            else:
+                raise TypeError('')
+
+    elif isinstance(á, list):
+        for x in á:
+            _subst_en_árbol(x, var=var, obj=obj)
+    elif isinstance(á, int) or isinstance(á, float):
+        pass
+    else:
+        raise TypeError('{}'.format(type(á)))
+
+
 class Ecuación(object):
-    def __init__(símismo, ec, nombre=None, dialecto=None):
+    def __init__(símismo, ec, otras_ecs=None, nombre=None, dialecto=None):
+
+        if otras_ecs is None:
+            otras_ecs = {}
 
         if dialecto is None:
             dialecto = 'tinamït'
@@ -94,6 +130,9 @@ class Ecuación(object):
         anlzdr = l_grams_var[dialecto]
 
         árbol = _Transformador().transform(anlzdr.parse(ec))
+        for v_otr, ec_otr in otras_ecs.items():
+            _subst_en_árbol(á=árbol, var=v_otr, obj=Ecuación(ec_otr).árbol)
+
         if isinstance(árbol, dict):
             try:
                 símismo.nombre = árbol['var']
@@ -159,28 +198,30 @@ class Ecuación(object):
                             comp_1 = _a_python(v[1][0], l_prms=l_prms)
                             comp_2 = _a_python(v[1][1], l_prms=l_prms)
 
-                        if v[0] == '+':
-                            return lambda p, vr: comp_1(p=p, vr=vr) + comp_2(p=p, vr=vr)
-                        elif v[0] == '/':
-                            return lambda p, vr: comp_1(p=p, vr=vr) / comp_2(p=p, vr=vr)
-                        elif v[0] == '-':
-                            return lambda p, vr: comp_1(p=p, vr=vr) - comp_2(p=p, vr=vr)
-                        elif v[0] == '*':
-                            return lambda p, vr: comp_1(p=p, vr=vr) * comp_2(p=p, vr=vr)
-                        elif v[0] == '^':
-                            return lambda p, vr: comp_1(p=p, vr=vr) ** comp_2(p=p, vr=vr)
-                        elif v[0] == '>':
-                            return lambda p, vr: comp_1(p=p, vr=vr) > comp_2(p=p, vr=vr)
-                        elif v[0] == '<':
-                            return lambda p, vr: comp_1(p=p, vr=vr) < comp_2(p=p, vr=vr)
-                        elif v[0] == '>=':
-                            return lambda p, vr: comp_1(p=p, vr=vr) >= comp_2(p=p, vr=vr)
-                        elif v[0] == '<=':
-                            return lambda p, vr: comp_1(p=p, vr=vr) <= comp_2(p=p, vr=vr)
-                        elif v[0] == '==':
-                            return lambda p, vr: comp_1(p=p, vr=vr) == comp_2(p=p, vr=vr)
-                        elif v[0] == '!=':
-                            return lambda p, vr: comp_1(p=p, vr=vr) != comp_2(p=p, vr=vr)
+                            if v[0] == '+':
+                                return lambda p, vr: comp_1(p=p, vr=vr) + comp_2(p=p, vr=vr)
+                            elif v[0] == '/':
+                                return lambda p, vr: comp_1(p=p, vr=vr) / comp_2(p=p, vr=vr)
+                            elif v[0] == '-':
+                                return lambda p, vr: comp_1(p=p, vr=vr) - comp_2(p=p, vr=vr)
+                            elif v[0] == '*':
+                                return lambda p, vr: comp_1(p=p, vr=vr) * comp_2(p=p, vr=vr)
+                            elif v[0] == '^':
+                                return lambda p, vr: comp_1(p=p, vr=vr) ** comp_2(p=p, vr=vr)
+                            elif v[0] == '>':
+                                return lambda p, vr: comp_1(p=p, vr=vr) > comp_2(p=p, vr=vr)
+                            elif v[0] == '<':
+                                return lambda p, vr: comp_1(p=p, vr=vr) < comp_2(p=p, vr=vr)
+                            elif v[0] == '>=':
+                                return lambda p, vr: comp_1(p=p, vr=vr) >= comp_2(p=p, vr=vr)
+                            elif v[0] == '<=':
+                                return lambda p, vr: comp_1(p=p, vr=vr) <= comp_2(p=p, vr=vr)
+                            elif v[0] == '==':
+                                return lambda p, vr: comp_1(p=p, vr=vr) == comp_2(p=p, vr=vr)
+                            elif v[0] == '!=':
+                                return lambda p, vr: comp_1(p=p, vr=vr) != comp_2(p=p, vr=vr)
+                            else:
+                                raise ValueError(v[0])
 
                         else:
                             fun = conv_fun(v[0], dialecto, 'python')
@@ -455,6 +496,9 @@ for f, d_fun in dic_funs.items():
         if tipo not in dic_funs_inv:
             dic_funs_inv[tipo] = {}
         dic_funs_inv[tipo][d] = f
+    if 'tinamït' not in dic_funs_inv:
+        dic_funs_inv['tinamït'] = {}
+    dic_funs_inv['tinamït'][f] = f
 
 dic_ops_inv = {}
 for op, d_op in dic_ops.items():
@@ -462,6 +506,9 @@ for op, d_op in dic_ops.items():
         if tipo not in dic_ops_inv:
             dic_ops_inv[tipo] = {}
         dic_ops_inv[tipo][d] = op
+    if 'tinamït' not in dic_ops_inv:
+        dic_ops_inv['tinamït'] = {}
+    dic_ops_inv['tinamït'][op] = op
 
 
 def conv_fun(fun, dialecto_0, dialecto_1):
