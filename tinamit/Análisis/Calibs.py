@@ -1,4 +1,3 @@
-import itertools
 from warnings import warn as avisar
 
 import numpy as np
@@ -18,31 +17,44 @@ if pm is None:
     dists = None
 else:
     dists = {'Beta': {'sp': estad.beta, 'pm': pm.Beta,
-                      'sp_a_pm': lambda p: {'alpha': p[0], 'beta': p[1]}},
+                      'sp_a_pm': lambda p: {'alpha': p[0], 'beta': p[1]},
+                      'líms': (0, 1)},
              'Cauchy': {'sp': estad.cauchy, 'pm': pm.Cauchy,
-                        'sp_a_pm': lambda p: {'alpha': p[0], 'beta': p[1]}},
+                        'sp_a_pm': lambda p: {'alpha': p[0], 'beta': p[1]},
+                      'líms': (None, None)},
              'Chi2': {'sp': estad.chi2, 'pm': pm.ChiSquared,
-                      'sp_a_pm': lambda p: {'df': p[0]}},
+                      'sp_a_pm': lambda p: {'df': p[0]},
+                      'líms': (0, None)},
              'Exponencial': {'sp': estad.expon, 'pm': pm.Exponential,
-                             'sp_a_pm': lambda p: {'lam': 1 / p[1]}},
+                             'sp_a_pm': lambda p: {'lam': 1 / p[1]},
+                      'líms': (0, None)},
              'Gamma': {'sp': estad.gamma, 'pm': pm.Gamma,
-                       'sp_a_pm': lambda p: {'alpha': p[0], 'beta': 1 / p[2]}},
+                       'sp_a_pm': lambda p: {'alpha': p[0], 'beta': 1 / p[2]},
+                      'líms': (0, None)},
              'Laplace': {'sp': estad.laplace, 'pm': pm.Laplace,
-                         'sp_a_pm': lambda p: {'mu': p[0], 'b': p[1]}},
+                         'sp_a_pm': lambda p: {'mu': p[0], 'b': p[1]},
+                      'líms': (None, None)},
              'LogNormal': {'sp': estad.lognorm, 'pm': pm.Lognormal,
-                           'sp_a_pm': lambda p: {'mu': p[1], 'sd': p[2]}},
+                           'sp_a_pm': lambda p: {'mu': p[1], 'sd': p[2]},
+                      'líms': (0, None)},
              'MitadCauchy': {'sp': estad.halfcauchy, 'pm': pm.HalfCauchy,
-                             'sp_a_pm': lambda p: {'beta': p[1]}},
+                             'sp_a_pm': lambda p: {'beta': p[1]},
+                      'líms': (0, None)},
              'MitadNormal': {'sp': estad.halfnorm, 'pm': pm.HalfNormal,
-                             'sp_a_pm': lambda p: {'sd': p[1]}},
+                             'sp_a_pm': lambda p: {'sd': p[1]},
+                      'líms': (0, None)},
              'Normal': {'sp': estad.norm, 'pm': pm.Normal,
-                        'sp_a_pm': lambda p: {'mu': p[0], 'sd': p[1]}},
+                        'sp_a_pm': lambda p: {'mu': p[0], 'sd': p[1]},
+                      'líms': (None, None)},
              'T': {'sp': estad.t, 'pm': pm.StudentT,
-                   'sp_a_pm': lambda p: {'nu': p[0], 'mu': p[1], 'sd': p[2]}},
+                   'sp_a_pm': lambda p: {'nu': p[0], 'mu': p[1], 'sd': p[2]},
+                      'líms': (None, None)},
              'Uniforme': {'sp': estad.uniform, 'pm': pm.Uniform,
-                          'sp_a_pm': lambda p: {'lower': p[0], 'upper': p[0] + p[1]}},
+                          'sp_a_pm': lambda p: {'lower': p[0], 'upper': p[0] + p[1]},
+                      'líms': (0, 1)},
              'Weibull': {'sp': estad.weibull_min, 'pm': pm.Weibull,
-                         'sp_a_pm': lambda p: {'alpha': p[0], 'beta': p[2]}},
+                         'sp_a_pm': lambda p: {'alpha': p[0], 'beta': p[2]},
+                      'líms': (0, None)},
              }
 
 
@@ -56,7 +68,7 @@ class Calibrador(object):
         else:
             símismo.ec = Ecuación(ec, otras_ecs=otras_ecs)
 
-    def calibrar(símismo, bd_datos, paráms=None, líms_paráms=None, método=None, en=None,
+    def calibrar(símismo, bd_datos, paráms=None, líms_paráms=None, método=None, binario=False, en=None,
                  escala=None, ops_método=None):
 
         if ops_método is None:
@@ -98,53 +110,65 @@ class Calibrador(object):
 
         if método == 'inferencia bayesiana':
             return símismo._calibrar_bayesiana(
-                paráms=paráms, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms,
+                paráms=paráms, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms, binario=binario,
                 ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, jerarquía=jerarquía
             )
         elif método == 'optimizar':
-            return símismo._calibrar_opt(
+            return símismo._calibrar_optim(
                 paráms=paráms, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms,
                 ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, jerarquía=jerarquía
             )
         else:
-            raise ValueError(_('Método de calibración "{}" no reconocido.'))
+            raise ValueError(_('Método de calibración "{}" no reconocido.').format(método))
 
-    def _calibrar_bayesiana(símismo, paráms, var_y, vars_x, líms_paráms, ops_método,
-                            bd_datos, lugares, jerarquía):
+    def _calibrar_bayesiana(símismo, paráms, var_y, vars_x, líms_paráms, binario, ops_método,
+                            bd_datos, lugares, jerarquía, mod_jerárquico=False):
 
-        mod_bayes, d_vars_obs = símismo.ec.gen_mod_bayes(
-            paráms=paráms, líms_paráms=líms_paráms,
-            obs_x=None, obs_y=None,
-            aprioris=None, binario=binario
-        )
-        calibs = {None: líms_a_dists(líms_paráms)}
+        if pm is None:
+            raise ImportError(_('Debes instalar PyMC3 para poder hacer calibraciones con inferencia bayesiana.'))
 
-        def obt_calib(lg):
-            ob = bd_datos.obt_datos_geog(lg, vars_x + var_y, excluir_faltan=True)
-            ob_x = ob[vars_x]
-            ob_y = ob[var_y]
+        l_vars = vars_x + [var_y]
 
-            if lg in calibs:
-                return calibs[lg]
+        if lugares is None:
+            obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True)
+            t = _calibrar_mod_bayes(
+                ec=símismo.ec, líms_paráms=líms_paráms, obs=obs, vars_x=vars_x, var_y=var_y,
+                binario=binario, aprioris=None, ops=ops_método
+            )
+            resultados = _procesar_calib_bayes(t, paráms=paráms)
+
+        else:
+            if mod_jerárquico:
+                raise NotImplementedError
             else:
-                lg_sup = jerarquía[lg]
-                apr = obt_calib(lg_sup)
-                calibs[lg] = calib_bayes(mod_bayes, obs_x=ob_x, obs_y=ob_y, dists_aprioris=apr)
-                return calibs[lg]
+                def _calibrar_jerárchico_manual(lugar, jrq, clbs=None):
+                    if clbs is None:
+                        clbs = {}
 
-        for lgr in lugares:
-            if jerarquía is None:
-                obs = bd_datos.obt_datos_geog(lgr, vars_x + var_y, excluir_faltan=True)
-                obs_x = obs[vars_x]
-                obs_y = obs[var_y]
+                    if lugar is not None:
+                        obs_lg = obs[obs['lugar'] == lugar]
 
-                calibs[lgr] = calib_bayes(mod_bayes, obs_x=obs_x, obs_y=obs_y, dists_aprioris=calibs[None])
-            else:
-                obt_calib(lg=lgr)
+                        pariente = jrq[lugar]
+                        if pariente not in clbs:
+                            _calibrar_jerárchico_manual(pariente, jrq=jrq, clbs=clbs)
+                        aprs = _gen_a_prioris(líms=líms_paráms, dic_clbs=jrq[pariente]['dist'])
+                    else:
+                        obs_lg = obs
+                        aprs = None
 
-        return {l: c for l, c in calibs.items() if l in lugares}
+                    traza = _calibrar_mod_bayes(
+                        ec=símismo.ec, líms_paráms=líms_paráms, obs=obs_lg, vars_x=vars_x, var_y=var_y,
+                        binario=binario, aprioris=aprs, ops=ops_método
+                    )
+                    clbs[lugar] = _procesar_calib_bayes(traza=traza, paráms=paráms)
 
-    def _calibrar_opt(símismo, paráms, var_y, vars_x, líms_paráms, ops_método, bd_datos, lugares, jerarquía):
+                resultados = {}
+                for lg in lugares:
+                    _calibrar_jerárchico_manual(lugar=lg, jrq=jerarquía, clbs=resultados)
+
+        return resultados
+
+    def _calibrar_optim(símismo, paráms, var_y, vars_x, líms_paráms, ops_método, bd_datos, lugares, jerarquía):
 
         f_python = símismo.ec.gen_func_python(paráms=paráms)
 
@@ -152,8 +176,8 @@ class Calibrador(object):
 
         if lugares is None:
             obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True)
-            resultados = optimizar(f_python, paráms=paráms, líms_paráms=líms_paráms,
-                                   obs_x=obs[vars_x], obs_y=obs[var_y], **ops_método)
+            resultados = _optimizar(f_python, paráms=paráms, líms_paráms=líms_paráms,
+                                    obs_x=obs[vars_x], obs_y=obs[var_y], **ops_método)
         else:
             resultados = {}
             for lg in lugares:
@@ -168,8 +192,8 @@ class Calibrador(object):
                         if len(obs):
                             break
                 if len(obs):
-                    resultados[lg] = optimizar(f_python, paráms=paráms, líms_paráms=líms_paráms,
-                                               obs_x=obs[vars_x], obs_y=obs[var_y], **ops_método)
+                    resultados[lg] = _optimizar(f_python, paráms=paráms, líms_paráms=líms_paráms,
+                                                obs_x=obs[vars_x], obs_y=obs[var_y], **ops_método)
                 else:
                     avisar(_('No encontramos datos para el lugar "{}", ni siguiera en su jerarquía, y por eso'
                              'no pudimos calibrarlo.').format(lg))
@@ -178,51 +202,56 @@ class Calibrador(object):
         return resultados
 
 
-def calib_bayes(obj_ec, paráms, líms_paráms, obs_x, obs_y, dists_aprioris=None, binario=False, **ops):
-    if pm is None:
-        raise ImportError(_('Debes instalar PyMC3 para poder hacer calibraciones con inferencia bayesiana.'))
+def _gen_a_prioris(líms, dic_clbs):
+    aprioris = {}
+    for p, dic in dic_clbs.items():
+        lp = líms[p]
 
-    if dists_aprioris is not None:
+        ajust_sp = _ajust_dist(datos=dic['dist'], líms=lp)
+        nombre = ajust_sp['tipo']
+        dist_pm = dists[nombre]['pm']
 
-        aprioris = []
-        for p, dic in dists_aprioris.items():
-            ajust_sp = ajust_dist(datos=dic['dist'], dists_potenciales={ll: v['sp'] for ll, v in dists.items()})
-            nombre = ajust_sp['tipo']
-            dist_pm = dists[nombre]['pm']
+        prms_sp = ajust_sp['prms']
+        prms_pm = dists[nombre]['sp_a_pm'](prms_sp)
 
-            prms_sp = ajust_sp['prms']
-            prms_pm = dists[nombre]['sp_a_pm'](prms_sp)
+        aprioris[p] = (dist_pm, prms_pm)
 
-            aprioris.append((dist_pm, prms_pm))
-    else:
-        aprioris = None
+    return aprioris
 
-    mod_bayes = obj_ec.gen_mod_bayes(paráms, líms_paráms, obs_x, obs_y, aprioris, binario=binario)
+def _calibrar_mod_bayes(ec, líms_paráms, obs, vars_x, var_y, binario, aprioris, ops):
+    mod_bayes = ec.gen_mod_bayes(
+        líms_paráms=líms_paráms,
+        obs_x=obs[vars_x], obs_y=obs[var_y],
+        aprioris=aprioris, binario=binario
+    )
     with mod_bayes:
         ops_auto = {
-            'tune': 1000
+            'tune': 1000,
+            'cores': 1
         }
         ops_auto.update(ops)
         t = pm.sample(**ops_auto)
+    return t
 
+def _procesar_calib_bayes(traza, paráms):
     d_máx = {}
     for p in paráms:
-        escl = np.max(t[p])
-        rango = escl - np.min(t[p])
+        escl = np.max(traza[p])
+        rango = escl - np.min(traza[p])
         if escl < 10e10:
             escl = 1
         try:
-            fdp = gaussian_kde(t[p] / escl)
-            x = np.linspace(t[p].min() / escl - 1 * rango, t[p].max() / escl + 1 * rango, 1000)
+            fdp = gaussian_kde(traza[p] / escl)
+            x = np.linspace(traza[p].min() / escl - 1 * rango, traza[p].max() / escl + 1 * rango, 1000)
             máx = x[np.argmax(fdp.evaluate(x))] * escl
             d_máx[p] = máx
         except BaseException:
             d_máx[p] = None
 
-    return {p: {'val': d_máx[p], 'dist': t[p]} for p in paráms}
+    return {p: {'val': d_máx[p], 'dist': traza[p]} for p in paráms}
 
 
-def optimizar(func, paráms, líms_paráms, obs_x, obs_y, **ops):
+def _optimizar(func, paráms, líms_paráms, obs_x, obs_y, **ops):
     try:
         med_ajuste = ops['med_ajuste']
     except KeyError:
@@ -261,29 +290,31 @@ def optimizar(func, paráms, líms_paráms, obs_x, obs_y, **ops):
     return {p: {'val': opt.x[i]} for i, p in enumerate(paráms)}
 
 
-def ajust_dist(datos, dists_potenciales):
+def _ajust_dist(datos, líms):
     mejor_ajuste = {'p': 0, 'tipo': None}
+
+    dists_potenciales = {ll: v['sp'] for ll, v in dists.items() if _líms_compat(líms, v['líms'])}
 
     for nombre_dist, dist_sp in dists_potenciales.items():
 
         if nombre_dist == 'Beta':
-            restric = {'floc': 0, 'fscale': 1}
+            restric = {'floc': líms[0], 'fscale': líms[1] - líms[0]}
         elif nombre_dist == 'Cauchy':
             restric = {}
         elif nombre_dist == 'Chi2':
-            restric = {'floc': 0, 'fscale': 1}
+            restric = {'floc': líms[0], 'fscale': líms[1] - líms[0]}
         elif nombre_dist == 'Exponencial':
-            restric = {'floc': 0}
+            restric = {'floc': líms[0]}
         elif nombre_dist == 'Gamma':
-            restric = {'floc': 0}
+            restric = {'floc': líms[0]}
         elif nombre_dist == 'Laplace':
             restric = {}
         elif nombre_dist == 'LogNormal':
             restric = {'fs': 1}
         elif nombre_dist == 'MitadCauchy':
-            restric = {'floc': 0}
+            restric = {'floc': líms[0]}
         elif nombre_dist == 'MitadNormal':
-            restric = {'floc': 0}
+            restric = {'floc': líms[0]}
         elif nombre_dist == 'Normal':
             restric = {}
         elif nombre_dist == 'T':
@@ -291,7 +322,7 @@ def ajust_dist(datos, dists_potenciales):
         elif nombre_dist == 'Uniforme':
             restric = {}
         elif nombre_dist == 'Weibull':
-            restric = {'floc': 0}
+            restric = {'floc': líms[0]}
         else:
             raise ValueError
 
@@ -317,3 +348,11 @@ def ajust_dist(datos, dists_potenciales):
 
     # Devolver la distribución con el mejor ajuste, tanto como el valor de su ajuste.
     return mejor_ajuste
+
+
+def _líms_compat(l_1, l_2):
+    l_1 = [None if x is None or np.isinf(x) else 0 for x in l_1]
+    l_2 = [None if x is None or np.isinf(x) else 0 for x in l_2]
+
+    return l_1 == l_2
+

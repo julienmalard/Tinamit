@@ -8,16 +8,17 @@ from tinamit.Análisis.Datos import DatosIndividuales, SuperBD
 
 
 class Test_Calibrador(unittest.TestCase):
-    # métodos = ['optimizar', 'inferencia bayesiana']
-    métodos = ['optimizar']
+    métodos = ['optimizar', 'inferencia bayesiana']
     ec = 'y = a*x + b'
     paráms = {'a': 2.4, 'b': -5}
     clbrd = Calibrador(ec=ec)
 
     @classmethod
     def setUpClass(cls):
-        datos_x = np.random.rand(100)
-        datos_y = cls.paráms['a'] * datos_x + cls.paráms['b'] + np.random.rand(100) * 0.01
+        n_obs = 100
+        datos_x = np.random.rand(n_obs)
+
+        datos_y = cls.paráms['a'] * datos_x + cls.paráms['b'] + np.random.rand(n_obs) * 0.01
         bd_pds = pd.DataFrame({'y': datos_y, 'x': datos_x})
         bd_datos = DatosIndividuales('Datos Generados', bd_pds)
 
