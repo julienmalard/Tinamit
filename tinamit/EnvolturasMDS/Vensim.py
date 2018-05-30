@@ -207,7 +207,7 @@ class ModeloVensimMdl(EnvolturaMDS):
         pass
 
 
-class ModeloVensim(EnvolturaMDS):
+class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
     """
     Esta es la envoltura para modelos de tipo VENSIM. Puede leer y controlar (casi) cualquier modelo VENSIM para que
     se pueda emplear en Tinamit.
