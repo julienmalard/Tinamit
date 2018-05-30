@@ -12,7 +12,10 @@ try:
 except ImportError:
     pm = None
 
-l_dialectos_potenciales = {'vensim': resource_filename('tinamit.Análisis', 'grams/gram_Vensim.g')}
+l_dialectos_potenciales = {
+    'vensim': resource_filename('tinamit.Análisis', 'grams/gram_Vensim.g'),
+    'tinamït': resource_filename('tinamit.Análisis', 'grams/gram_Vensim.g')  # Por el momento, es lo mismo
+}
 l_grams_def_var = {}
 l_grams_var = {}
 
@@ -445,7 +448,6 @@ dic_ops = {
     '^': {'vensim': '^'},
     '/': {'vensim': '/'}
 }
-
 
 dic_funs_inv = {}
 for f, d_fun in dic_funs.items():

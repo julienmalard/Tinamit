@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
+from tinamit.Geog.Geog import Geografía
 
 from tinamit import _
 from tinamit.Análisis.Números import tx_a_núm
@@ -21,7 +22,7 @@ class Datos(object):
         :type nombre: str
 
         :param archivo:
-        :type archivo: str
+        :type archivo: str | pd.DataFrame
 
         :param fecha:
         :type fecha: str | ft.date | ft.datetime | int
@@ -99,11 +100,8 @@ class Datos(object):
             else:
                 códs_vacío_final.add(cód_vacío)
 
-        # Obtener los datos en formato NumPy
-        datos_np = símismo.bd.obt_datos(l_vars, cód_vacío=códs_vacío_final)
-
-        # Convertir en formato Pandas
-        bd_pd = pd.DataFrame(datos_np.T, columns=l_vars)
+        # Obtener los datos en formato Pandas
+        bd_pd = símismo.bd.obt_datos(l_vars, cód_vacío=códs_vacío_final)
 
         # Agregar una columna con el nombre de la base de datos y el lugar o lugares de observación
         bd_pd['bd'] = símismo.nombre
@@ -137,7 +135,7 @@ class DatosIndividuales(Datos):
     No tiene funcionalidad específica, pero esta clase queda muy útil para identificar el tipo de datos.
     """
 
-    def __init__(símismo, nombre, archivo, fecha, lugar, cód_vacío=None):
+    def __init__(símismo, nombre, archivo, fecha=None, lugar=None, cód_vacío=None):
         super().__init__(nombre=nombre, archivo=archivo, fecha=fecha, lugar=lugar, cód_vacío=cód_vacío)
 
 
@@ -182,7 +180,7 @@ class SuperBD(object):
         ----------
         nombre: str
             El nombre de la base de datos.
-        bds: list[Datos]
+        bds: list[Datos] | Datos
             Una lista opcional de bases de :class:`Datos` para conectar.
         geog: Geografía
             Una :class:`Geografía` opcional que corresponde con los datos.
@@ -190,7 +188,7 @@ class SuperBD(object):
 
         # Guardar el nombre y la geografía
         símismo.nombre = nombre
-        símismo.geog = geog
+        símismo.geog = geog  # type: Geografía
 
         # Guardar las bases de datos
         if bds is None:
@@ -696,7 +694,7 @@ class SuperBD(object):
                     datos_err = np.array(
                         [bd.obt_error(d_v['fuente'][nmb]['var'], col_error=d_v['fuente'][nmb]['col_error'])
                          for v, d_v in d_vars_interés.items()]
-                    ).T
+                    )
                     bd_pds_err_temp = bd_pds_temp.copy()
                     bd_pds_err_temp[list(d_vars_interés)] = datos_err
 
@@ -951,6 +949,29 @@ class SuperBD(object):
         else:
             return bd_pds.loc[(bd_pds['fecha'] == fechas)]
 
+    def geog_obt_lugares_en(símismo, en=None, escala=None):
+        """
+
+        Parameters
+        ----------
+        en : str
+        escala : str
+
+        Returns
+        -------
+
+        """
+        if símismo.geog is not None:
+            return símismo.geog.obt_lugares_en(en=en, escala=escala)
+        else:
+            raise ValueError(_('Tienes que conectar una geografía a la base de datos primero.'))
+
+    def geog_obt_jerarquía(símismo, en=None, escala=None):
+        if símismo.geog is not None:
+            return símismo.geog.obt_jerarquía(en=en, escala=escala)
+        else:
+            raise ValueError(_('Tienes que conectar una geografía a la base de datos primero.'))
+
     def graficar_hist(símismo, var, fechas=None, lugar=None, bd_datos=None, tipo='individual', archivo=None):
 
         tipo = tipo.lower()
@@ -1131,14 +1152,19 @@ def _gen_bd(archivo):
     :return:
     :rtype: BD
     """
-    ext = os.path.splitext(archivo)[1]
 
-    if ext == '.txt' or ext == '.csv':
-        return BDtexto(archivo)
-    elif ext == '.sql':
-        raise NotImplementedError
+    if isinstance(archivo, pd.DataFrame):
+        return BDpandas(archivo)
+
     else:
-        raise ValueError(_('Formato de base de datos "{}" no reconocido.').format(ext))
+        ext = os.path.splitext(archivo)[1]
+
+        if ext == '.txt' or ext == '.csv':
+            return BDtexto(archivo)
+        elif ext == '.sql':
+            raise NotImplementedError
+        else:
+            raise ValueError(_('Formato de base de datos "{}" no reconocido.').format(ext))
 
 
 class BD(object):
@@ -1149,7 +1175,7 @@ class BD(object):
     def __init__(símismo, archivo):
         símismo.archivo = archivo
 
-        if not os.path.isfile(archivo):
+        if isinstance(archivo, str) and not os.path.isfile(archivo):
             raise FileNotFoundError(_('El archivo "{}" no existe.').format(archivo))
 
         símismo.n_obs = símismo.calc_n_obs()
@@ -1170,7 +1196,7 @@ class BD(object):
         :param prec_dec:
         :type prec_dec: int
         :return:
-        :rtype: np.ndarray
+        :rtype: pd.DataFrame
         """
         raise NotImplementedError
 
@@ -1338,7 +1364,7 @@ class BDtexto(BD):
             else:
                 m_datos.round(prec_dec, out=m_datos)
 
-        return m_datos
+        return pd.DataFrame(m_datos.T, columns=cols)
 
     def obt_datos_tx(símismo, cols):
         """
@@ -1377,3 +1403,19 @@ class BDtexto(BD):
             nombres_cols = next(lector)
 
         return nombres_cols
+
+
+class BDpandas(BD):
+
+    def obt_nombres_cols(símismo):
+        return list(símismo.archivo)
+
+    def obt_datos(símismo, cols, prec_dec=None, cód_vacío=None):
+        return símismo.archivo[cols]
+
+    def obt_datos_tx(símismo, cols):
+        return símismo.archivo[cols].astype(str)
+
+    def calc_n_obs(símismo):
+        return símismo.archivo.shape[0]
+

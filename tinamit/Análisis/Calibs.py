@@ -54,7 +54,7 @@ class Calibrador(object):
         else:
             símismo.ec = Ecuación(ec)
 
-    def calibrar(símismo, var_y, paráms, líms_paráms, otras_ecs, método, bd_datos, en=None,
+    def calibrar(símismo, var_y, paráms, líms_paráms, método, bd_datos, en=None,
                  escala=None, ops_método=None):
 
         if ops_método is None:
@@ -68,8 +68,11 @@ class Calibrador(object):
         else:
             método = método.lower()
 
-        lugares = bd_datos.geog_obt_lugares_en(en, escala=escala)
-        jerarquía = bd_datos.geog_obt_jerarquía(lugares)
+        try:
+            lugares = bd_datos.geog_obt_lugares_en(en, escala=escala)
+            jerarquía = bd_datos.geog_obt_jerarquía(lugares)
+        except ValueError:
+            lugares = jerarquía = None
 
         vars_x = list(set(itertools.chain.from_iterable(
             [Ecuación(e).variables for e in otras_ecs.values()] +

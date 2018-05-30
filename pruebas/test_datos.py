@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 import unittest
 import numpy.testing as npt
 
@@ -8,6 +9,14 @@ from tinamit.Análisis.Datos import DatosIndividuales, DatosRegión, SuperBD
 dir_act = os.path.split(__file__)[0]
 arch_reg = os.path.join(dir_act, 'recursos/datos/datos_reg.csv')
 arch_indiv = os.path.join(dir_act, 'recursos/datos/datos_indiv.csv')
+
+
+class Test_Datos(unittest.TestCase):
+    def test_de_pandas(símismo):
+        bd_pds = pd.DataFrame({'y': [1,2,3], 'x': [4,5,6]})
+        bd_datos = DatosIndividuales('Datos Generados', bd_pds)
+        datos = bd_datos.obt_datos(['x', 'y'])
+        npt.assert_allclose(datos['x'], [4,5,6])
 
 
 class Test_SuperBD(unittest.TestCase):
