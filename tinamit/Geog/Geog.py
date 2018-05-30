@@ -396,7 +396,17 @@ class Geografía(object):
                     dic['en'][esc] = símismo.nombre_a_cód(nombre=lg_en, escala=esc)
 
     def obt_lugares_en(símismo, en=None, escala=None):
-        """"""
+        """
+
+        Parameters
+        ----------
+        en : str | int
+        escala : str
+
+        Returns
+        -------
+
+        """
 
         escala = símismo._validar_escala(escala)
         en = símismo._validar_código_lugar(en)
@@ -409,6 +419,51 @@ class Geografía(object):
         else:
             return [x for x, d in símismo.cód_a_lugar.items()
                     if d['escala'] == escala]
+
+    def _validar_orden_jerárquico(símismo, escala, orden):
+
+        if orden is None:
+            orden = [x if isinstance(x, str) else x[0] for x in símismo.orden_jerárquico]
+            hasta = orden.index(escala)
+            orden = orden[:hasta+1]
+
+        elif isinstance(orden, str):
+            orden = [orden]
+
+        if orden[0] != escala:
+            orden = [escala] + orden
+
+        return orden
+
+    def obt_jerarquía(símismo, en=None, escala=None, orden_jerárquico=None):
+        escala = símismo._validar_escala(escala)
+        en = símismo._validar_código_lugar(en)
+
+        orden_jerárquico = símismo._validar_orden_jerárquico(escala, orden_jerárquico)
+
+        lugares = símismo.obt_lugares_en(en=en, escala=escala)
+
+        jerarquía = {}
+
+        cód_a_lugar = símismo.cód_a_lugar
+
+        def agr_a_jrq(lgr):
+            if lgr not in jerarquía:
+                for esc in orden_jerárquico[::-1]:
+                    try:
+                        pariente = cód_a_lugar[lgr]['en'][esc]
+                        jerarquía[lgr] = pariente
+                        agr_a_jrq(pariente)
+                        return
+                    except KeyError:
+                        pass
+
+                jerarquía[lgr] = None
+
+        for lg in lugares:
+            agr_a_jrq(lg)
+
+        return jerarquía
 
     def obt_escala_región(símismo, cód):
 
