@@ -13,6 +13,11 @@ class Test_EnvolturasBF(unittest.TestCase):
             if inspect.isclass(obj) and issubclass(obj, ModeloBF):
                 cls.envolturas_disp[nombre] = obj
 
+    def test_dic_vars(símismo):
+        for nmb, obj in símismo.envolturas_disp.items():
+            with símismo.subTest(envlt=nmb):
+                return
+
     def test_leer_escribir_ingresos(símismo):
         for nmb, obj in símismo.envolturas_disp.items():
             with símismo.subTest(envlt=nmb):

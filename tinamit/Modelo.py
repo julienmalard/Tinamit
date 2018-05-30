@@ -12,8 +12,8 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
-from tinamit.Análisis.Calibs import Calibrador
 from tinamit import _, valid_nombre_arch
+from tinamit.Análisis.Calibs import Calibrador
 from tinamit.Unidades.conv import convertir
 
 
@@ -979,7 +979,9 @@ class Modelo(object):
         # Especificar la micro calibración.
         símismo.info_calibs['micro_calibs'][var] = {
             'escala': escala,
-            'método': método
+            'método': método,
+            'paráms': paráms,
+            'líms_paráms': líms_paráms
         }
 
     def verificar_micro_calib(símismo, var, en=None, escala=None):
@@ -1009,11 +1011,8 @@ class Modelo(object):
 
         """
 
-        # El método de calibración.
-        método = símismo.info_calibs['micro_calibs'][var]['método']
-
         # Efectuar la calibración del variable.
-        return símismo._calibrar_var(var=var, método=método, en=en, escala=escala)
+        return símismo._calibrar_var(var=var, en=en, escala=escala)
 
     def efectuar_micro_calibs(símismo, en=None, escala=None):
         """
@@ -1045,12 +1044,8 @@ class Modelo(object):
             # Si todavía no se ha calibrado este variable...
             if var not in símismo.calibs:
 
-                # El método de calibración
-                método = símismo.info_calibs['micro_calibs'][var]['método']
-
                 # Efectuar la calibración
-                calib = símismo._calibrar_var(var=var, método=método, en=en, escala=escala,
-                                              hermanos=True)
+                calib = símismo._calibrar_var(var=var, en=en, escala=escala, hermanos=True)
 
                 # Guardar las calibraciones para este variable y todos los otros variables que potencialmente
                 # fueron calibrados al mismo tiempo.
@@ -1071,7 +1066,7 @@ class Modelo(object):
     def desconectar_datos(símismo, datos):
         símismo.datos = None
 
-    def _calibrar_var(símismo, var, método, en=None, escala=None, hermanos=False):
+    def _calibrar_var(símismo, var, en=None, escala=None, hermanos=False):
 
         if símismo.datos is None:
             raise ValueError()
@@ -1080,13 +1075,25 @@ class Modelo(object):
         l_vars = símismo._obt_vars_asociados(var, enforzar_datos=True, incluir_hermanos=hermanos)
 
         # El objeto de calibración.
-        mod_calib = Calibrador(ec=símismo.variables[var]['ec'])
+        ec = var + '=' + símismo.variables[var]['ec']
+        mod_calib = Calibrador(
+            ec=ec, otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars}
+        )
+
+        # El método de calibración
+        método = símismo.info_calibs['micro_calibs'][var]['método']
+        líms_paráms = símismo.info_calibs['micro_calibs'][var]['líms_paráms']
+        paráms = símismo.info_calibs['micro_calibs'][var]['paráms']
+
+        if líms_paráms is None:
+            if paráms is not None:
+                líms_paráms = {p: símismo.variables[p]['líms'] for p in paráms}
+            else:
+                líms_paráms = {p: símismo.variables[p]['líms'] for p in símismo.variables}
 
         # Efectuar la calibración.
         resultado = mod_calib.calibrar(
-            var_y=var, paráms=paráms, líms_paráms=líms_paráms,
-            otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars},
-            método=método, bd_datos=símismo.datos, en=en, escala=escala
+            paráms=paráms, líms_paráms=líms_paráms, método=método, bd_datos=símismo.datos, en=en, escala=escala
         )
 
         return resultado

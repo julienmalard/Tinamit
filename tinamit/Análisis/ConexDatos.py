@@ -5,7 +5,7 @@ import pandas as pd
 
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit import _
-from tinamit.Análisis.Calibs import calib_bayes, optimizar
+from tinamit.Análisis.Calibs import calib_bayes, _optimizar
 from tinamit.Análisis.Datos import SuperBD
 from tinamit.MDS import EnvolturaMDS
 
@@ -257,7 +257,7 @@ class ConexDatos(object):
                                              **ops_método)
 
                 elif método == 'optimizar':
-                    resultados = optimizar(obj_ec, paráms, líms_paráms, x, y, **ops_método)
+                    resultados = _optimizar(obj_ec, paráms, líms_paráms, x, y, **ops_método)
 
                 elif método == 'regresión':
                     resultados = regresión(obj_ec, paráms, líms_paráms, x, y, **ops_método)

@@ -21,40 +21,40 @@ else:
                       'líms': (0, 1)},
              'Cauchy': {'sp': estad.cauchy, 'pm': pm.Cauchy,
                         'sp_a_pm': lambda p: {'alpha': p[0], 'beta': p[1]},
-                      'líms': (None, None)},
+                        'líms': (None, None)},
              'Chi2': {'sp': estad.chi2, 'pm': pm.ChiSquared,
                       'sp_a_pm': lambda p: {'df': p[0]},
                       'líms': (0, None)},
              'Exponencial': {'sp': estad.expon, 'pm': pm.Exponential,
                              'sp_a_pm': lambda p: {'lam': 1 / p[1]},
-                      'líms': (0, None)},
+                             'líms': (0, None)},
              'Gamma': {'sp': estad.gamma, 'pm': pm.Gamma,
                        'sp_a_pm': lambda p: {'alpha': p[0], 'beta': 1 / p[2]},
-                      'líms': (0, None)},
+                       'líms': (0, None)},
              'Laplace': {'sp': estad.laplace, 'pm': pm.Laplace,
                          'sp_a_pm': lambda p: {'mu': p[0], 'b': p[1]},
-                      'líms': (None, None)},
+                         'líms': (None, None)},
              'LogNormal': {'sp': estad.lognorm, 'pm': pm.Lognormal,
                            'sp_a_pm': lambda p: {'mu': p[1], 'sd': p[2]},
-                      'líms': (0, None)},
+                           'líms': (0, None)},
              'MitadCauchy': {'sp': estad.halfcauchy, 'pm': pm.HalfCauchy,
                              'sp_a_pm': lambda p: {'beta': p[1]},
-                      'líms': (0, None)},
+                             'líms': (0, None)},
              'MitadNormal': {'sp': estad.halfnorm, 'pm': pm.HalfNormal,
                              'sp_a_pm': lambda p: {'sd': p[1]},
-                      'líms': (0, None)},
+                             'líms': (0, None)},
              'Normal': {'sp': estad.norm, 'pm': pm.Normal,
                         'sp_a_pm': lambda p: {'mu': p[0], 'sd': p[1]},
-                      'líms': (None, None)},
+                        'líms': (None, None)},
              'T': {'sp': estad.t, 'pm': pm.StudentT,
                    'sp_a_pm': lambda p: {'nu': p[0], 'mu': p[1], 'sd': p[2]},
-                      'líms': (None, None)},
+                   'líms': (None, None)},
              'Uniforme': {'sp': estad.uniform, 'pm': pm.Uniform,
                           'sp_a_pm': lambda p: {'lower': p[0], 'upper': p[0] + p[1]},
-                      'líms': (0, 1)},
+                          'líms': (0, 1)},
              'Weibull': {'sp': estad.weibull_min, 'pm': pm.Weibull,
                          'sp_a_pm': lambda p: {'alpha': p[0], 'beta': p[2]},
-                      'líms': (0, None)},
+                         'líms': (0, None)},
              }
 
 
@@ -85,13 +85,18 @@ class Calibrador(object):
 
         if líms_paráms is None:
             líms_paráms = {}
+
+        líms_paráms_final= {}
         for p in paráms:
             if p not in líms_paráms:
-                líms_paráms[p] = (None, None)
+                líms_paráms_final[p] = (None, None)
             elif líms_paráms[p] is None:
-                líms_paráms[p] = (None, None)
-            elif not len(líms_paráms[p]) == 2:
-                raise ValueError(_('Los límites de parámetros deben tener dos elementos: (mínimo, máximo). Utilizar'
+                líms_paráms_final[p] = (None, None)
+            else:
+                if len(líms_paráms[p]) == 2:
+                    líms_paráms_final[p] = líms_paráms[p]
+                else:
+                    raise ValueError(_('Los límites de parámetros deben tener dos elementos: (mínimo, máximo). Utilizar'
                                    '``None`` para ± infinidad: (None, 10); (0, None).'))
 
         if método is None:
@@ -218,6 +223,7 @@ def _gen_a_prioris(líms, dic_clbs):
 
     return aprioris
 
+
 def _calibrar_mod_bayes(ec, líms_paráms, obs, vars_x, var_y, binario, aprioris, ops):
     mod_bayes = ec.gen_mod_bayes(
         líms_paráms=líms_paráms,
@@ -232,6 +238,7 @@ def _calibrar_mod_bayes(ec, líms_paráms, obs, vars_x, var_y, binario, aprioris
         ops_auto.update(ops)
         t = pm.sample(**ops_auto)
     return t
+
 
 def _procesar_calib_bayes(traza, paráms):
     d_máx = {}
@@ -257,7 +264,7 @@ def _optimizar(func, paráms, líms_paráms, obs_x, obs_y, **ops):
     except KeyError:
         med_ajuste = 'rmec'
 
-    def f(p):
+    def f(prm):
 
         if med_ajuste.lower() == 'rmec':
             def f_ajuste(y, y_o):
@@ -265,7 +272,7 @@ def _optimizar(func, paráms, líms_paráms, obs_x, obs_y, **ops):
         else:
             raise ValueError('')
 
-        return f_ajuste(func(p, obs_x), obs_y)
+        return f_ajuste(func(prm, obs_x), obs_y)
 
     x0 = []
     for p in paráms:
@@ -355,4 +362,3 @@ def _líms_compat(l_1, l_2):
     l_2 = [None if x is None or np.isinf(x) else 0 for x in l_2]
 
     return l_1 == l_2
-
