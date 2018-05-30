@@ -1,10 +1,5 @@
 [run]
 source = tinamit
-omit =
-       */trads/*
-       */Interfaz/*
-       */local/*
-       */Ejemplos/*
 
 [report]
 omit =
@@ -15,6 +10,7 @@ omit =
 
 exclude_lines =
     pragma: no cover
+    pragma: sin cobertura
     def __repr__
     raise NotImplementedError
     if __name__ == .__main__.:
