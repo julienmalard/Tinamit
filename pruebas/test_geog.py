@@ -48,3 +48,22 @@ class Test_Geografía(unittest.TestCase):
     def test_obt_lugares_en_con_escala_errónea(símismo):
         with símismo.assertRaises(ValueError):
             símismo.geog.obt_lugares_en(escala='¡Yo soy una escala que no existe!')
+
+    def test_obt_jerarquía(símismo):
+
+        jrq = símismo.geog.obt_jerarquía(escala='municipio')
+        munis = símismo.geog.obt_lugares_en(escala='municipio')
+        trtrs = símismo.geog.obt_lugares_en(escala='territorio')
+        deptos = símismo.geog.obt_lugares_en(escala='departamento')
+
+        símismo.assertTrue(set(munis + trtrs).issubset(set(jrq)) or set(munis + deptos).issubset(set(jrq)))
+        símismo.assertTrue(all([jrq[x] is None for x in jrq if x not in munis]))
+
+    def test_obt_jerarquía_con_orden(símismo):
+
+        jrq = símismo.geog.obt_jerarquía(escala='municipio', orden_jerárquico=['departamento'])
+        munis = símismo.geog.obt_lugares_en(escala='municipio')
+        deptos = símismo.geog.obt_lugares_en(escala='departamento')
+
+        símismo.assertTrue(set(munis + deptos).issubset(set(jrq)))
+        símismo.assertTrue(all([jrq[d] is None for d in deptos]))
