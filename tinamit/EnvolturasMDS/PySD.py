@@ -39,11 +39,13 @@ class ModeloPySD(EnvolturaMDS):
                 nombre_py = f['Py Name']
                 unidades = f['Unit']
                 líms = literal_eval(f['Lims'])
+                ec = f['Eqn']
 
                 símismo.variables[nombre] = {
                     'val': getattr(símismo.modelo.components, nombre_py)(),
                     'dims': (1,),  # Para hacer
                     'unidades': unidades,
+                    'ec': ec,
                     'líms': líms,
                     'info': f['Comment']
                 }
@@ -62,10 +64,10 @@ class ModeloPySD(EnvolturaMDS):
                 f = d.readline()
                 while f != 'def time_step():\n':
                     f = d.readline()
-                f = d.readline()
-                while f.strip() in ['"""', 'TIME STEP', '']:
+                for i in range(6):
                     f = d.readline()
                 unid_tiempo = f.strip()
+
 
         return unid_tiempo
 
