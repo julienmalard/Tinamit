@@ -197,3 +197,21 @@ class Test_GenerarMDS(unittest.TestCase):
                 except ValueError:
                     # No hay problema si el MDS no se pudo leer en la computadora actual. De pronto no estaba instalado.
                     pass
+
+    def test_generación_auto_mds_con_error_extensión(símismo):
+        # Comprobar que extensiones no reconocidas devuelvan un error.
+
+        with símismo.assertRaises(ValueError):
+            generar_mds('Modelo con extensión no reconocida.abc')
+
+    def test_generación_auto_mds_con_motor_especificado(símismo):
+        # Comprobar la generación de modelos DS con el motor de simulación especificado.
+
+        mod = generar_mds(tipos_modelos['PySDVensim']['prueba'], motor=ModeloPySD)
+        símismo.assertIsInstance(mod, ModeloPySD)
+
+    def test_generación_auto_mds_modelo_erróneo(símismo):
+        # Asegurarse que un archivo erróneo devuelva un error.
+
+        with símismo.assertRaises(ValueError):
+            generar_mds('Yo no existo.mdl')

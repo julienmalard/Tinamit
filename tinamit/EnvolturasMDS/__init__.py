@@ -44,15 +44,13 @@ def generar_mds(archivo, motor=None):
         else:
             if not isinstance(motor, list):
                 motor = [motor]
-            motores_potenciales = [x for x in dic_motores if x in motor]
+            motores_potenciales = [x for x in dic_motores[ext] if x in motor]
 
         for env in motores_potenciales:
-            if env is ModeloVensimMdl:
-                return env(archivo)  # para hacer: quitar
             try:
                 return env(archivo)
             except BaseException as e:
                 errores[env.__name__] = e
 
         raise ValueError(_('El modelo "{}" no se pudo leer. Intentamos las envolturas siguientes, pero no funcionaron:'
-                           '{}').format(''.join(['\n\t{}: {}'.format(env, e) for env, e in errores.items()])))
+                           '{}').format(archivo, ''.join(['\n\t{}: {}'.format(env, e) for env, e in errores.items()])))

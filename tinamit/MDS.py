@@ -26,6 +26,9 @@ class EnvolturaMDS(Modelo):
         :type archivo: str
         """
 
+        if not os.path.isfile(archivo):
+            raise FileNotFoundError(_('El archivo "{}" no existe.').format(archivo))
+
         # Listas vacías para distintos tipos de variables.
         símismo.constantes = []
         símismo.niveles = []
