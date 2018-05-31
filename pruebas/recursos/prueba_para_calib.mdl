@@ -1,0 +1,81 @@
+{UTF-8}
+Factor a=
+	1
+	~	 [0,?]
+	~		|
+
+Factor b=
+	0
+	~	
+	~		|
+
+X=
+	0
+	~	
+	~		|
+
+Y=
+	Factor a*X+Factor b
+	~	
+	~		|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 200
+	~	mes
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 0
+	~	mes
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP
+	~	mes [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 1
+	~	mes [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,100,0
+10,1,Factor a,454,154,28,11,8,3,0,0,0,0,0,0
+10,2,Factor b,458,296,28,11,8,3,0,0,0,0,0,0
+10,3,X,456,228,8,11,8,3,0,0,0,0,0,0
+10,4,Y,622,235,8,11,8,3,0,0,0,0,0,0
+1,5,1,4,1,0,0,0,0,128,0,-1--1--1,,1|(535,202)|
+1,6,2,4,1,0,0,0,0,128,0,-1--1--1,,1|(545,272)|
+1,7,3,4,1,0,0,0,0,128,0,-1--1--1,,1|(529,234)|
+///---\\\
+:L<%^E!@
+9:Current
+22:Month,Mes,Meses
+23:0
+15:0,0,0,0,0,0
+19:100,0
+27:2,
+34:0,
+4:Time
+5:Factor a
+35:Date
+36:YYYY-MM-DD
+37:2000
+38:1
+39:1
+40:2
+41:0
+42:1
+24:0
+25:200
+26:200

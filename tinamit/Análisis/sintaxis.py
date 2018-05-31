@@ -77,33 +77,33 @@ class _Transformador(Transformer):
     ec = list
 
 
-def _subst_en_árbol(á, var, obj):
+def _subst_var_en_árbol(á, mp):
     if isinstance(á, dict):
 
         for ll, v in á.items():
 
             if ll == 'func':
                 if v[0] in ['+', '-', '/', '*', '^']:
-                    _subst_en_árbol(v[1][0], var=var, obj=obj)
-                    _subst_en_árbol(v[1][1], var=var, obj=obj)
+                    _subst_var_en_árbol(v[1][0], mp=mp)
+                    _subst_var_en_árbol(v[1][1], mp=mp)
 
                 else:
                     for x in v[1]:
-                        _subst_en_árbol(x, var=var, obj=obj)
+                        _subst_var_en_árbol(x, mp=mp)
 
             elif ll == 'var':
-                if v == var:
-                    á[ll] = obj
-
+                if v in mp:
+                    á[ll] = mp[v]
             elif ll == 'neg':
                 pass
-
+            elif ll == 'ec':
+                _subst_var_en_árbol(á=v, mp=mp)
             else:
-                raise TypeError('')
+                raise TypeError(ll)
 
     elif isinstance(á, list):
         for x in á:
-            _subst_en_árbol(x, var=var, obj=obj)
+            _subst_var_en_árbol(x, mp=mp)
     elif isinstance(á, int) or isinstance(á, float):
         pass
     else:
@@ -111,10 +111,13 @@ def _subst_en_árbol(á, var, obj):
 
 
 class Ecuación(object):
-    def __init__(símismo, ec, otras_ecs=None, nombre=None, dialecto=None):
+    def __init__(símismo, ec, otras_ecs=None, nombres_equiv=None, nombre=None, dialecto=None):
 
         if otras_ecs is None:
             otras_ecs = {}
+
+        if nombres_equiv is None:
+            nombres_equiv = {}
 
         if dialecto is None:
             dialecto = 'tinamït'
@@ -130,8 +133,10 @@ class Ecuación(object):
         anlzdr = l_grams_var[dialecto]
 
         árbol = _Transformador().transform(anlzdr.parse(ec))
-        for v_otr, ec_otr in otras_ecs.items():
-            _subst_en_árbol(á=árbol, var=v_otr, obj=Ecuación(ec_otr).árbol)
+
+        _subst_var_en_árbol(á=árbol, mp={v_otr: Ecuación(ec_otr).árbol for v_otr, ec_otr in otras_ecs.items()})
+
+        _subst_var_en_árbol(á=árbol, mp=nombres_equiv)
 
         if isinstance(árbol, dict):
             try:
@@ -193,10 +198,10 @@ class Ecuación(object):
                 for ll, v in á.items():
 
                     if ll == 'func':
-                        
+
                         try:
                             op = conv_op(v[0], dialecto, 'tinamït')
-                        
+
                             comp_1 = _a_python(v[1][0], l_prms=l_prms)
                             comp_2 = _a_python(v[1][1], l_prms=l_prms)
 
@@ -408,13 +413,13 @@ class Ecuación(object):
                 for ll, v in á.items():
                     if ll == 'func':
                         try:
-                            tx_op = dic_ops_inv[dialecto][v[0]]
+                            tx_op = conv_op(v[0], dialecto, 'tinamït')
                             return '({a1} {o} {a2})'.format(a1=_a_tx(v[1][0]), o=tx_op, a2=_a_tx(v[1][1]))
                         except KeyError:
                             pass
 
                         try:
-                            return '{nombre}({args})'.format(nombre=dic_funs_inv[dialecto][v[0]],
+                            return '{nombre}({args})'.format(nombre=conv_fun(v[0], dialecto, 'tinamït'),
                                                              args=_a_tx(v[1]))
                         except KeyError:
                             return '{nombre}({args})'.format(nombre=v[0], args=_a_tx(v[1]))

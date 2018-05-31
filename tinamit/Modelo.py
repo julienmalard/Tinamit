@@ -62,6 +62,7 @@ class Modelo(object):
         símismo.datos = None
         símismo.calibs = {}
         símismo.info_calibs = {'calibs': {}, 'micro calibs': {}}
+        símismo.conex_var_datos = {}
 
         # Memorio de valores de variables (para leer los resultados más rápidamente después de una simulación).
         símismo.mem_vars = {}
@@ -974,10 +975,16 @@ class Modelo(object):
     def agregar_lengua(símismo, lengua):
         pass
 
-    def micro_calib(símismo, var, método=None, paráms=None, líms_paráms=None, escala=None):
+    def especificar_micro_calib(símismo, var, método=None, paráms=None, líms_paráms=None, escala=None):
+
+        # Verificar el variable
+        var = símismo.valid_var(var)
+
+        if 'ec' not in símismo.variables[var]:
+            raise ValueError(_('El variable "{}" no tiene ecuación asociada.').format(var))
 
         # Especificar la micro calibración.
-        símismo.info_calibs['micro_calibs'][var] = {
+        símismo.info_calibs['micro calibs'][var] = {
             'escala': escala,
             'método': método,
             'paráms': paráms,
@@ -1039,7 +1046,7 @@ class Modelo(object):
         símismo.calibs.clear()
 
         # Para cada microcalibración...
-        for var, d_c in símismo.info_calibs['micro_calibs'].items():
+        for var, d_c in símismo.info_calibs['micro calibs'].items():
 
             # Si todavía no se ha calibrado este variable...
             if var not in símismo.calibs:
@@ -1063,7 +1070,7 @@ class Modelo(object):
         var = símismo.valid_var(var)
         símismo.conex_var_datos.pop(var)
 
-    def desconectar_datos(símismo, datos):
+    def desconectar_datos(símismo):
         símismo.datos = None
 
     def _calibrar_var(símismo, var, en=None, escala=None, hermanos=False):
@@ -1072,18 +1079,20 @@ class Modelo(object):
             raise ValueError()
 
         # La lista de variables que hay que calibrar con este.
-        l_vars = símismo._obt_vars_asociados(var, enforzar_datos=True, incluir_hermanos=hermanos)
+        # l_vars = símismo._obt_vars_asociados(var, enforzar_datos=True, incluir_hermanos=hermanos)
+        l_vars = {}  # para hacer: arreglar problemas de determinar paráms vs. otras ecuaciones
 
         # El objeto de calibración.
         ec = var + '=' + símismo.variables[var]['ec']
         mod_calib = Calibrador(
-            ec=ec, otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars}
+            ec=ec, otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars},
+            nombres_equiv=símismo.conex_var_datos
         )
 
         # El método de calibración
-        método = símismo.info_calibs['micro_calibs'][var]['método']
-        líms_paráms = símismo.info_calibs['micro_calibs'][var]['líms_paráms']
-        paráms = símismo.info_calibs['micro_calibs'][var]['paráms']
+        método = símismo.info_calibs['micro calibs'][var]['método']
+        líms_paráms = símismo.info_calibs['micro calibs'][var]['líms_paráms']
+        paráms = símismo.info_calibs['micro calibs'][var]['paráms']
 
         if líms_paráms is None:
             if paráms is not None:
@@ -1092,9 +1101,17 @@ class Modelo(object):
                 líms_paráms = {p: símismo.variables[p]['líms'] for p in símismo.variables}
 
         # Efectuar la calibración.
-        resultado = mod_calib.calibrar(
+        calib = mod_calib.calibrar(
             paráms=paráms, líms_paráms=líms_paráms, método=método, bd_datos=símismo.datos, en=en, escala=escala
         )
+
+        # Reformatear los resultados
+        resultado = {}
+        for lg, d_lg in calib.items():
+            for p in d_lg:
+                if p not in resultado:
+                    resultado[p] = {}
+                resultado[p][lg] = d_lg[p]
 
         return resultado
 
@@ -1164,12 +1181,13 @@ class Modelo(object):
             parientes = d_vars[v]['parientes']
 
             # Agregar los parientes al conjunto de variables vinculados
-            c_v.add(parientes)
+            c_v.update(parientes)
 
             for p in parientes:
                 # Para cada pariente...
 
-                if bd_datos is not None and p not in bd_datos:
+                p_bd = símismo.conex_var_datos[p] if p in símismo.conex_var_datos else p
+                if bd_datos is not None and p_bd not in bd_datos:
                     # Si tenemos datos y este variable pariente no existe, tendremos que buscar sus parientes también.
 
                     # ...pero si ya encontramos este variable en otra recursión, quiere decir que no tenemos
@@ -1189,9 +1207,11 @@ class Modelo(object):
 
                 if incluir_hermanos:
                     # Si incluyemos a los hermanos, agregarlos y sus parientes aquí.
-                    h = d_vars[p]['hijos']
-                    c_v.add(h)
-                    _sacar_vars_recurs(v=h, c_v=c_v, sn_dts=sn_dts)
+                    hijos = d_vars[p]['hijos']
+                    c_v.update(hijos)
+                    for h in hijos:
+                        if h not in c_v:
+                            _sacar_vars_recurs(v=h, c_v=c_v, sn_dts=sn_dts)
 
             # Devolver el conjunto de variables asociados
             return c_v
@@ -1200,12 +1220,12 @@ class Modelo(object):
 
     def borrar_micro_calib(símismo, var):
         try:
-            símismo.info_calibs['micro_calibs'].pop(var)
+            símismo.info_calibs['micro calibs'].pop(var)
         except KeyError:
             raise ValueError(_('El variable "{}" no está asociado con una microcalibración.').format(var))
 
     def borrar_info_calibs(símismo):
-        símismo.info_calibs['micro_calibs'].clear()
+        símismo.info_calibs['micro calibs'].clear()
         símismo.info_calibs['calibs'].clear()
 
     def borrar_calibs_calc(símismo):

@@ -104,18 +104,16 @@ class ModeloVensimMdl(EnvolturaMDS):
                 'dims': (1,),  # Para hacer
                 'líms': líms,
                 'subscriptos': None,  # Para hacer
-                'hijos': obj_ec.variables(),
-                'parientes': [],
+                'hijos': [],
+                'parientes': obj_ec.variables(),
                 'egreso': None,
                 'info': tx_info.strip()
             }
 
         for v, d_v in símismo.variables.items():
-            for h in d_v['hijos']:
-                if h not in símismo.internos:
-                    d_h = símismo.variables[h]
-                    if v not in d_h['parientes']:
-                        d_h['parientes'].append(v)
+            for p in d_v['parientes']:
+                d_p = símismo.variables[p]
+                d_p['hijos'].append(v)
 
         # Borrar lo que había antes en las listas siguientes:
         símismo.flujos.clear()
@@ -379,13 +377,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                     flujos.append(var)
                     if var in auxiliares:
                         auxiliares.remove(var)
-
-    def _anal_rel_causal(símismo):
-        """
-        Con el dll de Vensim, no necesitamos el cógido de :class:`EnvolturasMDS` para detectar los
-        hijos y parientes de cada variable; ya hicimos todo eso en :func:`ModeloVensim._inic_dic_vars`.
-        """
-        pass
 
     def unidad_tiempo(símismo):
         """

@@ -251,7 +251,7 @@ class Geografía(object):
     Esta clase representa la geografía de un lugares.
     """
 
-    def __init__(símismo, nombre):
+    def __init__(símismo, nombre, archivo=None):
 
         símismo.nombre = nombre
         símismo.regiones = {}
@@ -262,6 +262,9 @@ class Geografía(object):
         símismo.cód_a_lugar = {}
 
         símismo.escalas = []
+
+        if archivo is not None:
+            símismo.agregar_info_regiones(archivo)
 
     def agregar_forma(símismo, archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=None):
         if nombre is None:

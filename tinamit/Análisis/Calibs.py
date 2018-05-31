@@ -59,14 +59,9 @@ else:
 
 
 class Calibrador(object):
-    def __init__(símismo, ec, otras_ecs=None):
+    def __init__(símismo, ec, otras_ecs=None, nombres_equiv=None):
 
-        if isinstance(ec, Ecuación):
-            if otras_ecs is not None:
-                raise ValueError
-            símismo.ec = ec
-        else:
-            símismo.ec = Ecuación(ec, otras_ecs=otras_ecs)
+        símismo.ec = Ecuación(ec, otras_ecs=otras_ecs, nombres_equiv=nombres_equiv)
 
     def calibrar(símismo, bd_datos, paráms=None, líms_paráms=None, método=None, binario=False, en=None,
                  escala=None, ops_método=None):
@@ -86,7 +81,7 @@ class Calibrador(object):
         if líms_paráms is None:
             líms_paráms = {}
 
-        líms_paráms_final= {}
+        líms_paráms_final = {}
         for p in paráms:
             if p not in líms_paráms:
                 líms_paráms_final[p] = (None, None)
@@ -97,7 +92,7 @@ class Calibrador(object):
                     líms_paráms_final[p] = líms_paráms[p]
                 else:
                     raise ValueError(_('Los límites de parámetros deben tener dos elementos: (mínimo, máximo). Utilizar'
-                                   '``None`` para ± infinidad: (None, 10); (0, None).'))
+                                       '``None`` para ± infinidad: (None, 10); (0, None).'))
 
         if método is None:
             if pm is not None:
@@ -109,18 +104,18 @@ class Calibrador(object):
 
         try:
             lugares = bd_datos.geog_obt_lugares_en(en, escala=escala)
-            jerarquía = bd_datos.geog_obt_jerarquía(lugares)
+            jerarquía = bd_datos.geog_obt_jerarquía(en, escala=escala)
         except ValueError:
             lugares = jerarquía = None
 
         if método == 'inferencia bayesiana':
             return símismo._calibrar_bayesiana(
-                paráms=paráms, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms, binario=binario,
+                paráms=paráms, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms_final, binario=binario,
                 ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, jerarquía=jerarquía
             )
         elif método == 'optimizar':
             return símismo._calibrar_optim(
-                paráms=paráms, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms,
+                paráms=paráms, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms_final,
                 ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, jerarquía=jerarquía
             )
         else:
@@ -156,7 +151,7 @@ class Calibrador(object):
                         pariente = jrq[lugar]
                         if pariente not in clbs:
                             _calibrar_jerárchico_manual(pariente, jrq=jrq, clbs=clbs)
-                        aprs = _gen_a_prioris(líms=líms_paráms, dic_clbs=jrq[pariente]['dist'])
+                        aprs = _gen_a_prioris(líms=líms_paráms, dic_clbs=clbs[pariente]['dist'])
                     else:
                         obs_lg = obs
                         aprs = None
@@ -174,7 +169,23 @@ class Calibrador(object):
         return resultados
 
     def _calibrar_optim(símismo, paráms, var_y, vars_x, líms_paráms, ops_método, bd_datos, lugares, jerarquía):
+        """
 
+        Parameters
+        ----------
+        paráms :
+        var_y :
+        vars_x :
+        líms_paráms :
+        ops_método :
+        bd_datos : SuperBD
+        lugares :
+        jerarquía :
+
+        Returns
+        -------
+
+        """
         f_python = símismo.ec.gen_func_python(paráms=paráms)
 
         l_vars = vars_x + [var_y]
@@ -184,27 +195,39 @@ class Calibrador(object):
             resultados = _optimizar(f_python, paráms=paráms, líms_paráms=líms_paráms,
                                     obs_x=obs[vars_x], obs_y=obs[var_y], **ops_método)
         else:
+            obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True)
+
+            def _calibrar_jerárchico_manual(lugar, jrq, clbs=None):
+                if clbs is None:
+                    clbs = {}
+
+                if lugar is None:
+                    obs_lg = obs
+                else:
+                    lgs_potenciales = bd_datos.geog.obt_lugares_en(lugar)
+                    obs_lg = obs[obs['lugar'].isin(lgs_potenciales + [lugar])]
+                if len(obs_lg):
+                    resultados[lugar] = _optimizar(
+                        f_python, paráms=paráms, líms_paráms=líms_paráms,
+                        obs_x=obs_lg[vars_x], obs_y=obs_lg[var_y], **ops_método
+                    )
+                else:
+                    try:
+                        pariente = jrq[lugar]
+                        if pariente not in clbs:
+                            _calibrar_jerárchico_manual(lugar=pariente, jrq=jrq, clbs=clbs)
+                        resultados[lugar] = clbs[pariente]
+
+                    except KeyError:
+                        avisar(_('No encontramos datos para el lugar "{}", ni siguiera en su jerarquía, y por eso'
+                                 'no pudimos calibrarlo.').format(lugar))
+                        resultados[lugar] = {}
+
             resultados = {}
             for lg in lugares:
-                obs = bd_datos.obt_datos(l_vars=l_vars, lugares=lg, excluir_faltan=True)
-                if not len(obs):
-                    for nv in jerarquía:
-                        for mb in nv['miembros']:
-                            if lg in nv[mb]:
-                                obs = bd_datos.obt_datos(l_vars=l_vars, lugares=lg, excluir_faltan=True)
-                                if len(obs):
-                                    break
-                        if len(obs):
-                            break
-                if len(obs):
-                    resultados[lg] = _optimizar(f_python, paráms=paráms, líms_paráms=líms_paráms,
-                                                obs_x=obs[vars_x], obs_y=obs[var_y], **ops_método)
-                else:
-                    avisar(_('No encontramos datos para el lugar "{}", ni siguiera en su jerarquía, y por eso'
-                             'no pudimos calibrarlo.').format(lg))
-                    resultados[lg] = {}
+                _calibrar_jerárchico_manual(lugar=lg, jrq=jerarquía, clbs=resultados)
 
-        return resultados
+        return {ll: v for ll, v in resultados.items() if ll in lugares}
 
 
 def _gen_a_prioris(líms, dic_clbs):

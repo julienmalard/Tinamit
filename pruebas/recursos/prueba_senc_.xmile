@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <xmile xmlns="http://www.systemdynamics.org/XMILE" version="1.0" level="3">
     <header>
-        <smile version="1.0"></smile>
+        <smile version="1.0"/>
         <name>eval_order</name>
         <uuid>554973ab-f992-4869-8aa8-9cf90e6e3158</uuid>
         <vendor>SDLabs</vendor>
@@ -12,14 +12,14 @@
         <stop>200</stop>
         <dt>1</dt>
     </sim_specs>
-    <dimensions></dimensions>
+    <dimensions/>
     <model_units>
         <unit name="mes">
             <alias>mes</alias>
             <alias>month</alias>
         </unit>
     </model_units>
-    <equation_prefs xmlns="isee" order_by="module"></equation_prefs>
+    <equation_prefs xmlns="isee" order_by="module"/>
     <model>
         <variables>
             <flow name="Evaporación">

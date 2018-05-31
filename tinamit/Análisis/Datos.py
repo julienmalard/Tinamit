@@ -1143,6 +1143,9 @@ class SuperBD(object):
             archivo = os.path.join(directorio, símismo.nombre + '_' + nmb + '.csv')
             bd_pd.to_csv(archivo)
 
+    def __contains__(símismo, item):
+        return item in símismo.vars
+
 
 def _gen_bd(archivo):
     """

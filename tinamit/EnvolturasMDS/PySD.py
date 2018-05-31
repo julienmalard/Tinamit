@@ -2,6 +2,7 @@ import os
 from ast import literal_eval
 
 import pysd
+from Análisis.sintaxis import Ecuación
 from tinamit import _
 from tinamit.MDS import EnvolturaMDS
 
@@ -14,9 +15,11 @@ class ModeloPySD(EnvolturaMDS):
         if ext == '.mdl':
             símismo.tipo = '.mdl'
             símismo.modelo = pysd.read_vensim(archivo)
+            símismo.internos = ['FINAL TIME', 'TIME STEP', 'SAVEPER', 'INITIAL TIME']
         elif ext in ['.xmile', '.xml']:
             símismo.tipo = '.xmile'
             símismo.modelo = pysd.read_xmile(archivo)
+            símismo.internos = []
         else:
             raise ValueError(_('PySD no sabe leer modelos del formato "{}". Debes darle un modelo ".mdl" o ".xmile".')
                              .format(ext))
@@ -35,7 +38,7 @@ class ModeloPySD(EnvolturaMDS):
 
         for i, f in símismo.modelo.doc().iterrows():
             nombre = f['Real Name']
-            if nombre not in ['FINAL TIME', 'TIME STEP', 'SAVEPER', 'INITIAL TIME']:
+            if nombre not in símismo.internos:
                 nombre_py = f['Py Name']
                 unidades = f['Unit']
                 líms = literal_eval(f['Lims'])
@@ -46,11 +49,18 @@ class ModeloPySD(EnvolturaMDS):
                     'dims': (1,),  # Para hacer
                     'unidades': unidades,
                     'ec': ec,
+                    'hijos': [],
+                    'parientes': Ecuación(ec).variables(),
                     'líms': líms,
                     'info': f['Comment']
                 }
 
                 símismo._conv_nombres[nombre] = nombre_py
+
+        for v, d_v in símismo.variables.items():
+            for p in d_v['parientes']:
+                d_p = símismo.variables[p]
+                d_p['hijos'].append(v)
 
     def unidad_tiempo(símismo):
         docs = símismo.modelo.doc()
@@ -67,7 +77,6 @@ class ModeloPySD(EnvolturaMDS):
                 for i in range(6):
                     f = d.readline()
                 unid_tiempo = f.strip()
-
 
         return unid_tiempo
 
