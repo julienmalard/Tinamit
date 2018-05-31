@@ -19,7 +19,7 @@ métodos = ['optimizar', 'inferencia bayesiana']
 
 class Test_Calibrador(unittest.TestCase):
     ec = 'y = a*x + b'
-    paráms = {'a': 2.4, 'b': -5}
+    paráms = {'Factor a': 2.4, 'Factor b': -5}
     clbrd = Calibrador(ec=ec)
 
     @classmethod
@@ -27,7 +27,7 @@ class Test_Calibrador(unittest.TestCase):
         n_obs = 100
         datos_x = np.random.rand(n_obs)
 
-        datos_y = cls.paráms['a'] * datos_x + cls.paráms['b'] + np.random.rand(n_obs) * 0.01
+        datos_y = cls.paráms['Factor a'] * datos_x + cls.paráms['Factor b'] + np.random.rand(n_obs) * 0.01
         bd_pds = pd.DataFrame({'y': datos_y, 'x': datos_x})
         bd_datos = DatosIndividuales('Datos Generados', bd_pds)
 
@@ -45,16 +45,16 @@ class Test_Calibrador(unittest.TestCase):
 
 class Test_CalibEnModelo(unittest.TestCase):
     paráms = {
-        '701': {'a': 3.4, 'b': -1.5},
-        '708': {'a': 3, 'b': -1.1},
-        '1001': {'a': 10, 'b': -3},
+        '701': {'Factor a': 3.4, 'Factor b': -1.5},
+        '708': {'Factor a': 3, 'Factor b': -1.1},
+        '1001': {'Factor a': 10, 'Factor b': -3},
     }
 
     @classmethod
     def setUpClass(cls):
 
         datos_x = {'701': np.random.rand(500), '708': np.random.rand(25), '1001': np.random.rand(500)}
-        datos_y = {lg: datos_x[lg] * d['a'] + d['b'] for lg, d in cls.paráms.items()}  # y = a*x + b
+        datos_y = {lg: datos_x[lg] * d['Factor a'] + d['Factor b'] for lg, d in cls.paráms.items()}  # y = a*x + b
         lugares = [x for ll, v in datos_x.items() for x in [ll] * v.size]
         x = [i for v in datos_x.values() for i in v]
         y = [i for v in datos_y.values() for i in v]
@@ -80,8 +80,8 @@ class Test_CalibEnModelo(unittest.TestCase):
                 for lg in símismo.paráms:
                     for p in símismo.paráms[lg]:
                         val = símismo.paráms[lg][p]
-                        est = símismo.mod.calibs[p][lg]
-                        símismo.assertTrue(round(val, 1) == est)
+                        est = símismo.mod.calibs[p][lg]['val']
+                        símismo.assertTrue(round(est, 1) == val)
 
                 símismo.mod.borrar_micro_calib('Y')
 
