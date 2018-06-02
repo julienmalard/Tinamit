@@ -21,6 +21,10 @@ l_grams_var = {}
 
 
 class _Transformador(Transformer):
+    """
+    Transformador de árboles sintácticos Lark a diccionarios Python.
+    """
+
     @staticmethod
     def num(x):
         return float(x[0])
@@ -75,39 +79,6 @@ class _Transformador(Transformer):
 
     args = list
     ec = list
-
-
-def _subst_var_en_árbol(á, mp):
-    if isinstance(á, dict):
-
-        for ll, v in á.items():
-
-            if ll == 'func':
-                if v[0] in ['+', '-', '/', '*', '^']:
-                    _subst_var_en_árbol(v[1][0], mp=mp)
-                    _subst_var_en_árbol(v[1][1], mp=mp)
-
-                else:
-                    for x in v[1]:
-                        _subst_var_en_árbol(x, mp=mp)
-
-            elif ll == 'var':
-                if v in mp:
-                    á[ll] = mp[v]
-            elif ll == 'neg':
-                pass
-            elif ll == 'ec':
-                _subst_var_en_árbol(á=v, mp=mp)
-            else:
-                raise TypeError(ll)
-
-    elif isinstance(á, list):
-        for x in á:
-            _subst_var_en_árbol(x, mp=mp)
-    elif isinstance(á, int) or isinstance(á, float):
-        pass
-    else:
-        raise TypeError('{}'.format(type(á)))
 
 
 class Ecuación(object):
@@ -200,7 +171,7 @@ class Ecuación(object):
                     if ll == 'func':
 
                         try:
-                            op = conv_op(v[0], dialecto, 'tinamït')
+                            op = _conv_op(v[0], dialecto, 'tinamït')
 
                             comp_1 = _a_python(v[1][0], l_prms=l_prms)
                             comp_2 = _a_python(v[1][1], l_prms=l_prms)
@@ -231,7 +202,7 @@ class Ecuación(object):
                                 raise ValueError(v[0])
 
                         except KeyError:
-                            fun = conv_fun(v[0], dialecto, 'python')
+                            fun = _conv_fun(v[0], dialecto, 'python')
                             comp = _a_python(v[1][1], l_prms=l_prms)
 
                             return lambda p, vr: fun(*comp(p=p, vr=vr))
@@ -331,7 +302,7 @@ class Ecuación(object):
                     if ll == 'func':
 
                         try:
-                            op_pm = conv_op(v[0], dialecto, 'pm')
+                            op_pm = _conv_op(v[0], dialecto, 'pm')
                             return op_pm(_a_bayes(v[1][0], d_pm=d_pm), _a_bayes(v[1][1], d_pm=d_pm))
                         except KeyError:
                             pass
@@ -348,7 +319,7 @@ class Ecuación(object):
                             return _a_bayes(v[1][0], d_pm=d_pm) ** _a_bayes(v[1][1], d_pm=d_pm)
 
                         else:
-                            return conv_fun(v[0], dialecto, 'pm')(*_a_bayes(v[1], d_pm=d_pm))
+                            return _conv_fun(v[0], dialecto, 'pm')(*_a_bayes(v[1], d_pm=d_pm))
 
                     elif ll == 'var':
                         try:
@@ -392,7 +363,7 @@ class Ecuación(object):
 
     def sacar_args_func(símismo, func, i):
 
-        árbol_ec_a_texto = símismo.árbol_ec_a_texto
+        árbol_ec_a_texto = símismo._árb_a_txt
         dialecto = símismo.dialecto
 
         def _buscar_func(á, f):
@@ -413,47 +384,132 @@ class Ecuación(object):
 
         return _buscar_func(símismo.árbol, f=func)
 
-    @staticmethod
-    def árbol_ec_a_texto(árb, dialecto):
-
-        def _a_tx(á):
-
-            if isinstance(á, dict):
-                for ll, v in á.items():
-                    if ll == 'func':
-                        try:
-                            tx_op = conv_op(v[0], dialecto, 'tinamït')
-                            return '({a1} {o} {a2})'.format(a1=_a_tx(v[1][0]), o=tx_op, a2=_a_tx(v[1][1]))
-                        except KeyError:
-                            pass
-
-                        try:
-                            return '{nombre}({args})'.format(nombre=conv_fun(v[0], dialecto, 'tinamït'),
-                                                             args=_a_tx(v[1]))
-                        except KeyError:
-                            return '{nombre}({args})'.format(nombre=v[0], args=_a_tx(v[1]))
-
-                    elif ll == 'var':
-                        return v
-                    elif ll == 'neg':
-                        return '-{}'.format(_a_tx(v))
-                    else:
-                        raise TypeError('')
-
-            elif isinstance(á, list):
-                return ', '.join([_a_tx(x) for x in á])
-            elif isinstance(á, int) or isinstance(á, float):
-                return str(á)
-            else:
-                raise TypeError('')
-
-        return _a_tx(árb)
-
     def __str__(símismo):
-        return símismo.árbol_ec_a_texto(símismo.árbol, símismo.dialecto)
+        return _árb_a_txt(símismo.árbol, símismo.dialecto)
 
 
-dic_funs = {
+# Funciones auxiliares para ecuaciones.
+def _subst_var_en_árbol(á, mp):
+    """
+    Substituye variables en un árbol sintáctico. Funciona de manera recursiva.
+
+    Parameters
+    ----------
+    á: dict
+        El árbol sintáctico.
+    mp: dict
+        Un diccionario con nombres de variables y sus substituciones.
+
+    """
+
+    # Recursar a través del árbol.
+    if isinstance(á, dict):
+        # Si es diccionario, visitar todas sus ramas (llaves)
+
+        for ll, v in á.items():
+
+            if ll == 'func':
+                # Para funciones, simplemente recursar a través de todos sus argumentos.
+                for x in v[1]:
+                    _subst_var_en_árbol(x, mp=mp)
+
+            elif ll == 'var':
+                # Para variables, subsituir si necesario.
+                if v in mp:
+                    á[ll] = mp[v]
+
+            elif ll == 'neg' or ll == 'ec':
+                # Para negativos y ecuaciones, seguir adelante
+                _subst_var_en_árbol(v, mp=mp)
+
+            else:
+                # Dar error si encontramos algo que no reconocimos.
+                raise TypeError(_('Componente de ecuación "{}" no reconocido.').format(ll))
+
+    elif isinstance(á, list):
+        # Para listas, recursar a través de cada elemento
+        for x in á:
+            _subst_var_en_árbol(x, mp=mp)
+
+    elif isinstance(á, int) or isinstance(á, float):
+        pass  # No hay nada que hacer para números.
+
+    else:
+        # El caso muy improbable de un error.
+        raise TypeError(_('Componente de ecuación "{}" no reconocido.').format(type(á)))
+
+
+def _árb_a_txt(árb, dialecto):
+    """
+    Convierte un árbol sintáctico de ecuación a formato texto. Funciona como función recursiva.
+
+    Parameters
+    ----------
+    árb: dict
+        El árbol sintáctico
+    dialecto: str
+        El dialecto del árbol.
+
+    Returns
+    -------
+    str:
+        La ecuación en formato texto.
+
+    """
+
+    # Simplificar el código
+    dl = dialecto
+
+    # Pasar a través todas las posibilidades para el árbol y sus ramas
+    if isinstance(árb, dict):
+        # Si es diccionario, pasar a través de todas sus ramas (llaves)
+        for ll, v in árb.items():
+            if ll == 'func':
+                # Si es función, intentar tratarlo como operador primero
+                try:
+                    # Intentar convertir a dialecto Tinamït
+                    tx_op = _conv_op(v[0], dialecto, 'tinamït')
+
+                    # Devolver el texto correspondiendo a un operado (y recursar a través de los dos argumentos).
+                    return '({a1} {o} {a2})'.format(a1=_árb_a_txt(v[1][0], dl), o=tx_op, a2=_árb_a_txt(v[1][1], dl))
+                except KeyError:
+                    pass  # Si no funcionó, tal vez no es operador.
+
+                try:
+                    # Intentar convertirlo, como nombre de función, a dialecto Tïnamit
+                    return '{nombre}({args})'.format(nombre=_conv_fun(v[0], dialecto, 'tinamït'),
+                                                     args=_árb_a_txt(v[1], dl))
+                except KeyError:
+                    # Si no funcionó, simplemente formatearlo con el nombre original de la función.
+                    return '{nombre}({args})'.format(nombre=v[0], args=_árb_a_txt(v[1], dl))
+
+            elif ll == 'var':
+                # Si es variable, simplemente devolver el nombre del variable
+                return v
+
+            elif ll == 'neg':
+                # Formatear negativos
+                return '-{}'.format(_árb_a_txt(v, dl))
+
+            else:
+                # Si no es función, variable o negativo, tenemos error.
+                raise TypeError(_('Componente "{}" del árbol no reconocido.'))
+
+    elif isinstance(árb, list):
+        # Si es lista (por ejemplo, un lista de parámetros de una ecuación), recursar a través de sus elementos.
+        return ', '.join([_árb_a_txt(x, dl) for x in árb])
+
+    elif isinstance(árb, int) or isinstance(árb, float):
+        # Números se devuelven así
+        return str(árb)
+
+    else:
+        # Si no es diccionario, lista, o número, no sé lo que es.
+        raise TypeError(_('Tipo de componente "{}" no reconocido en el árbol sintáctico.').format(type(árb)))
+
+
+# Un diccionario con conversiones de funciones reconocidas. Si quieres activar más funciones, agregarlas aqui.
+_dic_funs = {
     'mín': {'vensim': 'MIN', 'pm': pm.math.minimum if pm is not None else None, 'python': min},
     'máx': {'vensim': 'MAX', 'pm': pm.math.maximum if pm is not None else None, 'python': max},
     'abs': {'vensim': 'ABS', 'pm': pm.math.abs_ if pm is not None else None, 'python': abs},
@@ -474,7 +530,9 @@ dic_funs = {
     'si_sino': {'vensim': 'IF THEN ELSE', 'pm': pm.math.switch if pm is not None else None,
                 'python': lambda cond, si, sino: si if cond else sino}
 }
-dic_ops = {
+
+# Diccionario de operadores. Notar que algunos se traducen por funciones en PyMC3.
+_dic_ops = {
     '>': {'vensim': '>', 'pm': pm.math.gt if pm is not None else None},
     '<': {'vensim': '<', 'pm': pm.math.lt if pm is not None else None},
     '>=': {'vensim': '>=', 'pm': pm.math.ge if pm is not None else None},
@@ -489,31 +547,68 @@ dic_ops = {
 }
 
 
-def conv_fun(fun, dialecto_0, dialecto_1):
-    if dialecto_1 == dialecto_0:
+# Funciones auxiliares
+def _conv_fun(fun, dialecto_orig, dialecto_final):
+    """
+    Traduce una función a otro dialecto.
+
+    Parameters
+    ----------
+    fun: str
+        La función para traducir.
+    dialecto_orig: str
+        El dialecto original de la función.
+    dialecto_final: str
+        El dialecto final deseado.
+
+    Returns
+    -------
+    str
+        La función traducida.
+    """
+
+    if dialecto_final == dialecto_orig:
         return fun
-    if dialecto_0 == 'tinamït':
-        return dic_funs[fun][dialecto_1]
+    if dialecto_orig == 'tinamït':
+        return _dic_funs[fun][dialecto_final]
     else:
-        if dialecto_1 == 'tinamït':
-            return next(ll for ll, d in dic_funs.items() if d[dialecto_0] == fun)
+        if dialecto_final == 'tinamït':
+            return next(ll for ll, d in _dic_funs.items() if d[dialecto_orig] == fun)
         else:
-            return next(d[dialecto_1] for ll, d in dic_funs.items() if d[dialecto_0] == fun)
+            return next(d[dialecto_final] for ll, d in _dic_funs.items() if d[dialecto_orig] == fun)
 
 
-def conv_op(oper, dialecto_0, dialecto_1):
-    if dialecto_1 == dialecto_0:
+def _conv_op(oper, dialecto_orig, dialecto_final):
+    """
+    Traduce un operador a otro dialecto.
+
+    Parameters
+    ----------
+    oper: str
+        El operador para traducir.
+    dialecto_orig: str
+        El dialecto original del operador.
+    dialecto_final: str
+        El dialecto final deseado.
+
+    Returns
+    -------
+    str
+        El operador traducido.
+    """
+
+    if dialecto_final == dialecto_orig:
         return oper
-    if dialecto_0 == 'tinamït':
-        return dic_ops[oper][dialecto_1]
+    if dialecto_orig == 'tinamït':
+        return _dic_ops[oper][dialecto_final]
     else:
-        if dialecto_1 == 'tinamït':
-            return  next(ll for ll, d in dic_ops.items() if d[dialecto_0] == oper)
+        if dialecto_final == 'tinamït':
+            return next(ll for ll, d in _dic_ops.items() if d[dialecto_orig] == oper)
         else:
-            return next(d[dialecto_1] for ll, d in dic_ops.items() if d[dialecto_0] == oper)
+            return next(d[dialecto_final] for ll, d in _dic_ops.items() if d[dialecto_orig] == oper)
 
 
-# Funciones que hay que reemplazar con algo más elegante
+# Para hacer: Funciones que hay que reemplazar con algo más elegante
 def juntar_líns(l, cabeza=None, cola=None):
     """
     Esta función junta una lista de líneas de texto en una sola línea de texto.
