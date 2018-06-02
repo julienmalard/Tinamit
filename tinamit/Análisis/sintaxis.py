@@ -82,8 +82,29 @@ class _Transformador(Transformer):
 
 
 class Ecuación(object):
-    def __init__(símismo, ec, otras_ecs=None, nombres_equiv=None, nombre=None, dialecto=None):
+    """
+    Un objeto para manejar ecuaciones dinámicas.
+    """
 
+    def __init__(símismo, ec, nombre=None, otras_ecs=None, nombres_equiv=None, dialecto=None):
+        """
+        Inicializa un objeto de ecuación.
+
+        Parameters
+        ----------
+        ec: str
+            La ecuación en formato texto.
+        nombre: str
+            El nombre del variable, si no está especificado en la ecuación sí misma.
+        otras_ecs: dict[str, str]
+            Un diccionario de ecuaciones para substituir para variables en la ecuación principal.
+        nombres_equiv: dict[str, str]
+            Un diccionario de cambios de nombres de variables para efectuar.
+        dialecto: str
+            El dialecto de la ecuación. Si no se especifica, se adivinará.
+        """
+
+        # Formatear parámetros vacíos
         if otras_ecs is None:
             otras_ecs = {}
 
@@ -92,156 +113,75 @@ class Ecuación(object):
 
         if dialecto is None:
             dialecto = 'tinamït'
+
+        # Guardar el dialecto y el nombre
         símismo.dialecto = dialecto
-
         símismo.nombre = nombre
-        símismo.tipo = 'var'
-        símismo.árbol = None
 
+        # Si es una ecuación de vaariable o de subscripto
+        símismo.tipo = 'var'
+
+        # Cargar la gramática
         if dialecto not in l_grams_var:
             with open(l_dialectos_potenciales[dialecto], encoding='UTF-8') as d:
                 l_grams_var[dialecto] = Lark(d, parser='lalr', start='ec')
-        anlzdr = l_grams_var[dialecto]
 
+        # Analizar la ecuación
+        anlzdr = l_grams_var[dialecto]
         árbol = _Transformador().transform(anlzdr.parse(ec))
 
+        # Aplicar subsituciones de ecuaciones de variables
         _subst_var_en_árbol(á=árbol, mp={v_otr: Ecuación(ec_otr).árbol for v_otr, ec_otr in otras_ecs.items()})
 
+        # Aplicar substituciones de nombres
         _subst_var_en_árbol(á=árbol, mp=nombres_equiv)
 
+        # Analizar los resultados
         if isinstance(árbol, dict):
+            # Si la ecuación incluía el nombre del variable y...
             try:
+                # Intentar para declaración de variables
                 símismo.nombre = árbol['var']
                 símismo.árbol = árbol['ec']
             except KeyError:
+                # Si no funcionó, debe sser declaración de subsripto
                 símismo.nombre = árbol['sub']
                 símismo.árbol = árbol['nmbr_dims']
                 símismo.tipo = 'sub'
         else:
+            # Si no había el nombre del variable y, simplemente aplicamos el árbol.
             símismo.árbol = árbol[0]
 
     def variables(símismo):
+        """
+        Devuelve una lista de los variable de esta ecuación.
 
-        def _obt_vars(á):
-            if isinstance(á, dict):
-
-                for ll, v in á.items():
-
-                    if ll == 'func':
-                        if v[0] in ['+', '-', '/', '*', '^']:
-                            vrs = _obt_vars(v[1][0])
-                            vrs.update(_obt_vars(v[1][1]))
-
-                            return vrs
-
-                        else:
-                            return set([i for x in v[1] for i in _obt_vars(x)])
-
-                    elif ll == 'var':
-                        return {v}
-
-                    elif ll == 'neg':
-                        return set()
-
-                    else:
-                        raise TypeError('')
-
-            elif isinstance(á, list):
-                return {z for x in á for z in _obt_vars(x)}
-            elif isinstance(á, int) or isinstance(á, float):
-                return set()
-            else:
-                raise TypeError('{}'.format(type(á)))
+        Returns
+        -------
+        set
+            Un conjunto con todos los variables presentes en esta ecuación.
+        """
 
         return _obt_vars(símismo.árbol)
 
-    def gen_func_python(símismo, paráms, otras_ecs=None):
+    def gen_func_python(símismo, paráms):
+        """
+        Genera una función dinámica Python basada en la ecuación. La función generada tomará dos argumentos:
+            1. p: una lista con valores para parámetros en el orden especificado en `paráms`.
+            2. vr: Un diccionario con valores para cada variable presente en la ecuación y no incluido en `paráms`.
 
-        if otras_ecs is None:
-            otras_ecs = {}
+        Parameters
+        ----------
+        paráms: list
+            La lista de parámetros.
 
-        dialecto = símismo.dialecto
+        Returns
+        -------
+        callable:
+            La función dinámica Python.
+        """
 
-        def _a_python(á, l_prms=paráms):
-
-            if isinstance(á, dict):
-
-                for ll, v in á.items():
-
-                    if ll == 'func':
-
-                        try:
-                            op = _conv_op(v[0], dialecto, 'tinamït')
-
-                            comp_1 = _a_python(v[1][0], l_prms=l_prms)
-                            comp_2 = _a_python(v[1][1], l_prms=l_prms)
-
-                            if op == '+':
-                                return lambda p, vr: comp_1(p=p, vr=vr) + comp_2(p=p, vr=vr)
-                            elif op == '/':
-                                return lambda p, vr: comp_1(p=p, vr=vr) / comp_2(p=p, vr=vr)
-                            elif op == '-':
-                                return lambda p, vr: comp_1(p=p, vr=vr) - comp_2(p=p, vr=vr)
-                            elif op == '*':
-                                return lambda p, vr: comp_1(p=p, vr=vr) * comp_2(p=p, vr=vr)
-                            elif op == '^':
-                                return lambda p, vr: comp_1(p=p, vr=vr) ** comp_2(p=p, vr=vr)
-                            elif op == '>':
-                                return lambda p, vr: comp_1(p=p, vr=vr) > comp_2(p=p, vr=vr)
-                            elif op == '<':
-                                return lambda p, vr: comp_1(p=p, vr=vr) < comp_2(p=p, vr=vr)
-                            elif op == '>=':
-                                return lambda p, vr: comp_1(p=p, vr=vr) >= comp_2(p=p, vr=vr)
-                            elif op == '<=':
-                                return lambda p, vr: comp_1(p=p, vr=vr) <= comp_2(p=p, vr=vr)
-                            elif op == '==':
-                                return lambda p, vr: comp_1(p=p, vr=vr) == comp_2(p=p, vr=vr)
-                            elif op == '!=':
-                                return lambda p, vr: comp_1(p=p, vr=vr) != comp_2(p=p, vr=vr)
-                            else:
-                                raise ValueError(v[0])
-
-                        except KeyError:
-                            fun = _conv_fun(v[0], dialecto, 'python')
-                            comp = _a_python(v[1][1], l_prms=l_prms)
-
-                            return lambda p, vr: fun(*comp(p=p, vr=vr))
-
-                    elif ll == 'var':
-                        try:
-                            í_var = l_prms.index(v)
-
-                            return lambda p, vr: p[í_var]
-
-                        except ValueError:
-                            # Si el variable no es un parámetro calibrable, debe ser un valor observado, al menos
-                            # que esté espeficado por otra ecuación.
-                            if v in otras_ecs:
-
-                                ec = otras_ecs[v]
-                                if isinstance(ec, Ecuación):
-                                    árb = ec.árbol
-                                else:
-                                    árb = Ecuación(ec).árbol
-                                return _a_python(á=árb, l_prms=l_prms)
-
-                            else:
-                                return lambda p, vr: vr[v]
-
-                    elif ll == 'neg':
-                        comp = _a_python(v[1][1], l_prms=l_prms)
-                        return lambda p, vr: -comp(p=p, vr=vr)
-                    else:
-                        raise TypeError('')
-
-            elif isinstance(á, list):
-                return [_a_python(x) for x in á]
-            elif isinstance(á, int) or isinstance(á, float):
-                return lambda p, vr: á
-            else:
-                raise TypeError('{}'.format(type(á)))
-
-        return _a_python(símismo.árbol)
+        return _árb_a_python(símismo.árbol, l_prms=paráms, dialecto=símismo.dialecto)
 
     def gen_mod_bayes(símismo, líms_paráms, obs_x, obs_y, aprioris=None, binario=False):
 
@@ -389,6 +329,9 @@ class Ecuación(object):
 
 
 # Funciones auxiliares para ecuaciones.
+_error_comp_ec = _('Componente de ecuación "{}" no reconocido.')
+
+
 def _subst_var_en_árbol(á, mp):
     """
     Substituye variables en un árbol sintáctico. Funciona de manera recursiva.
@@ -424,7 +367,7 @@ def _subst_var_en_árbol(á, mp):
 
             else:
                 # Dar error si encontramos algo que no reconocimos.
-                raise TypeError(_('Componente de ecuación "{}" no reconocido.').format(ll))
+                raise TypeError(_error_comp_ec.format(ll))
 
     elif isinstance(á, list):
         # Para listas, recursar a través de cada elemento
@@ -436,16 +379,16 @@ def _subst_var_en_árbol(á, mp):
 
     else:
         # El caso muy improbable de un error.
-        raise TypeError(_('Componente de ecuación "{}" no reconocido.').format(type(á)))
+        raise TypeError(_error_comp_ec.format(type(á)))
 
 
-def _árb_a_txt(árb, dialecto):
+def _árb_a_txt(á, dialecto):
     """
     Convierte un árbol sintáctico de ecuación a formato texto. Funciona como función recursiva.
 
     Parameters
     ----------
-    árb: dict
+    á: dict
         El árbol sintáctico
     dialecto: str
         El dialecto del árbol.
@@ -461,9 +404,9 @@ def _árb_a_txt(árb, dialecto):
     dl = dialecto
 
     # Pasar a través todas las posibilidades para el árbol y sus ramas
-    if isinstance(árb, dict):
+    if isinstance(á, dict):
         # Si es diccionario, pasar a través de todas sus ramas (llaves)
-        for ll, v in árb.items():
+        for ll, v in á.items():
             if ll == 'func':
                 # Si es función, intentar tratarlo como operador primero
                 try:
@@ -493,19 +436,176 @@ def _árb_a_txt(árb, dialecto):
 
             else:
                 # Si no es función, variable o negativo, tenemos error.
-                raise TypeError(_('Componente "{}" del árbol no reconocido.'))
+                raise TypeError(_error_comp_ec.format(ll))
 
-    elif isinstance(árb, list):
+    elif isinstance(á, list):
         # Si es lista (por ejemplo, un lista de parámetros de una ecuación), recursar a través de sus elementos.
-        return ', '.join([_árb_a_txt(x, dl) for x in árb])
+        return ', '.join([_árb_a_txt(x, dl) for x in á])
 
-    elif isinstance(árb, int) or isinstance(árb, float):
+    elif isinstance(á, int) or isinstance(á, float):
         # Números se devuelven así
-        return str(árb)
+        return str(á)
 
     else:
         # Si no es diccionario, lista, o número, no sé lo que es.
-        raise TypeError(_('Tipo de componente "{}" no reconocido en el árbol sintáctico.').format(type(árb)))
+        raise TypeError(_error_comp_ec.format(type(á)))
+
+
+def _árb_a_python(á, l_prms, dialecto):
+    """
+    Función recursiva para convertir el árbol sintáctico a función Python.
+
+    Parameters
+    ----------
+    á: dict
+        El árbol sintáctico.
+    l_prms: list
+        La lista de parámetros.
+    dialecto: str
+        El dialecto de la ecuación.
+
+    Returns
+    -------
+    callable:
+        La ecuación dinámico Python.
+
+    """
+
+    # Simplificar el código.
+    dl = dialecto
+
+    # Pasar a través del árbol
+    if isinstance(á, dict):
+
+        for ll, v in á.items():
+            # Para cada rama del diccionario...
+
+            if ll == 'func':
+                # Si es función, intentar como operado primero.
+                try:
+                    op = _conv_op(v[0], dialecto, 'tinamït')
+
+                    # Recursar a través de los componentes del operador ahora. Es importante hacerlo antes de
+                    # las expresiones ``lambda``; sino se llamará `_árb_a_python` sí mismo cada vez que se llama
+                    # la función generada.
+                    comp_1 = _árb_a_python(v[1][0], l_prms, dl)
+                    comp_2 = _árb_a_python(v[1][1], l_prms, dl)
+
+                    # Convertir el operado a función Python dinámica.
+                    if op == '+':
+                        return lambda p, vr: comp_1(p=p, vr=vr) + comp_2(p=p, vr=vr)
+                    elif op == '/':
+                        return lambda p, vr: comp_1(p=p, vr=vr) / comp_2(p=p, vr=vr)
+                    elif op == '-':
+                        return lambda p, vr: comp_1(p=p, vr=vr) - comp_2(p=p, vr=vr)
+                    elif op == '*':
+                        return lambda p, vr: comp_1(p=p, vr=vr) * comp_2(p=p, vr=vr)
+                    elif op == '^':
+                        return lambda p, vr: comp_1(p=p, vr=vr) ** comp_2(p=p, vr=vr)
+                    elif op == '>':
+                        return lambda p, vr: comp_1(p=p, vr=vr) > comp_2(p=p, vr=vr)
+                    elif op == '<':
+                        return lambda p, vr: comp_1(p=p, vr=vr) < comp_2(p=p, vr=vr)
+                    elif op == '>=':
+                        return lambda p, vr: comp_1(p=p, vr=vr) >= comp_2(p=p, vr=vr)
+                    elif op == '<=':
+                        return lambda p, vr: comp_1(p=p, vr=vr) <= comp_2(p=p, vr=vr)
+                    elif op == '==':
+                        return lambda p, vr: comp_1(p=p, vr=vr) == comp_2(p=p, vr=vr)
+                    elif op == '!=':
+                        return lambda p, vr: comp_1(p=p, vr=vr) != comp_2(p=p, vr=vr)
+                    else:
+                        # Si no sabemos lo que tenemos, hay error.
+                        raise ValueError(_('Operador "{}" no reconocido').format(v[0]))
+
+                except KeyError:
+                    # Si no era operado, es función de verdad.
+                    fun = _conv_fun(v[0], dialecto, 'python')  # Traducir la función a Python
+                    comp = _árb_a_python(v[1][1], l_prms, dl)  # Recursar a través de los argumentos de la función
+
+                    # Devolver la función dinámica
+                    return lambda p, vr: fun(*comp(p=p, vr=vr))
+
+            elif ll == 'var':
+                try:
+                    # Si el variable existe en la lista de parámetros, obtenerlo de `p`.
+                    í_var = l_prms.index(v)
+
+                    return lambda p, vr: p[í_var]
+
+                except ValueError:
+                    # Si el variable no es un parámetro calibrable, debe ser un valor observado.
+                    return lambda p, vr: vr[v]
+
+            elif ll == 'neg':
+                # Aplicar negativos
+                comp = _árb_a_python(v[1][1], l_prms, dl)
+                return lambda p, vr: -comp(p=p, vr=vr)
+
+            else:
+                # Avisar si hubo error.
+                raise TypeError(_error_comp_ec.format(ll))
+
+    elif isinstance(á, list):
+        # Recursar a través de los elementos de una lista.
+        return [_árb_a_python(x, l_prms, dl) for x in á]
+
+    elif isinstance(á, int) or isinstance(á, float):
+        # Devolver números así
+        return lambda p, vr: á
+
+    else:
+        # Avisar si hubo error.
+        raise TypeError(_error_comp_ec.format(á))
+
+
+def _obt_vars(á):
+    """
+    Devuelve los variables presentes en un árbol sintáctico de ecuación.
+
+    Parameters
+    ----------
+    á: dict
+        El árbol sintáctico.
+
+    Returns
+    -------
+    set:
+        El conjunto de variables presentes.
+    """
+
+    # Pasar a través del árbol
+    if isinstance(á, dict):
+        # Para cada rama del árbol...
+
+        for ll, v in á.items():
+
+            if ll == 'func':
+                # Iterar a través de los argumentos de la función.
+                return set([i for x in v[1] for i in _obt_vars(x)])
+
+            elif ll == 'var':
+                # Devolver el variable
+                return {v}
+
+            elif ll == 'neg':
+                # Hacer nada
+                return set()
+
+            else:
+                # Hubo error
+                raise TypeError(_error_comp_ec.format(ll))
+
+    elif isinstance(á, list):
+        # Pasar a través de cada itema de la lista
+        return {z for x in á for z in _obt_vars(x)}
+
+    elif isinstance(á, int) or isinstance(á, float):
+        # No hay nada que hacer para números
+        return set()
+    else:
+        # Hubo error
+        raise TypeError(_error_comp_ec.format(type(á)))
 
 
 # Un diccionario con conversiones de funciones reconocidas. Si quieres activar más funciones, agregarlas aqui.
@@ -563,7 +663,7 @@ def _conv_fun(fun, dialecto_orig, dialecto_final):
 
     Returns
     -------
-    str
+    str | callable
         La función traducida.
     """
 
@@ -593,7 +693,7 @@ def _conv_op(oper, dialecto_orig, dialecto_final):
 
     Returns
     -------
-    str
+    str | callable
         El operador traducido.
     """
 
