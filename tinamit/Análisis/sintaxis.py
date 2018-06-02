@@ -313,6 +313,15 @@ class Ecuación(object):
                 egr[p] = dist_pm
             return egr
 
+        def _gen_d_vars_pm_jer():
+            egr = {}
+
+            for p, líms in líms_paráms.items():
+                for nv in niveles:
+                    pass
+
+            return egr
+
         def _a_bayes(á, d_pm):
 
             if isinstance(á, dict):

@@ -141,6 +141,7 @@ setup(
         'matplotlib',
         'pillow',
         'pandas',
+        'theano',
         'pymc3>=3.4',
         'python_dateutil',
         'regex',

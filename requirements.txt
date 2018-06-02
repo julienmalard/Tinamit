@@ -12,5 +12,6 @@ polib
 pint
 pyshp
 pillow
+theano
 git+git://github.com/julienmalard/taqdir.git@master
 git+git://github.com/julienmalard/pysd.git@master

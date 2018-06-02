@@ -110,7 +110,7 @@ class Calibrador(object):
 
         if método == 'inferencia bayesiana':
             return símismo._calibrar_bayesiana(
-                paráms=paráms, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms_final, binario=binario,
+                var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms_final, binario=binario,
                 ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, jerarquía=jerarquía
             )
         elif método == 'optimizar':
@@ -121,50 +121,57 @@ class Calibrador(object):
         else:
             raise ValueError(_('Método de calibración "{}" no reconocido.').format(método))
 
-    def _calibrar_bayesiana(símismo, paráms, var_y, vars_x, líms_paráms, binario, ops_método,
+    def _calibrar_bayesiana(símismo, var_y, vars_x, líms_paráms, binario, ops_método,
                             bd_datos, lugares, jerarquía, mod_jerárquico=False):
 
         if pm is None:
             raise ImportError(_('Debes instalar PyMC3 para poder hacer calibraciones con inferencia bayesiana.'))
 
         l_vars = vars_x + [var_y]
+        obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True)
 
         if lugares is None:
-            obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True)
-            t = _calibrar_mod_bayes(
+            resultados = _calibrar_mod_bayes(
                 ec=símismo.ec, líms_paráms=líms_paráms, obs=obs, vars_x=vars_x, var_y=var_y,
                 binario=binario, aprioris=None, ops=ops_método
             )
-            resultados = _procesar_calib_bayes(t, paráms=paráms)
 
         else:
             if mod_jerárquico:
                 raise NotImplementedError
             else:
-                def _calibrar_jerárchico_manual(lugar, jrq, clbs=None):
+                def _calibrar_jerárquíco_manual(lugar, jrq, clbs=None):
                     if clbs is None:
                         clbs = {}
 
-                    if lugar is not None:
-                        obs_lg = obs[obs['lugar'] == lugar]
-
-                        pariente = jrq[lugar]
-                        if pariente not in clbs:
-                            _calibrar_jerárchico_manual(pariente, jrq=jrq, clbs=clbs)
-                        aprs = _gen_a_prioris(líms=líms_paráms, dic_clbs=clbs[pariente]['dist'])
-                    else:
+                    if lugar is None:
                         obs_lg = obs
-                        aprs = None
+                        aprs = pariente = None
+                    else:
+                        lgs_potenciales = bd_datos.geog.obt_lugares_en(lugar)
+                        obs_lg = obs[obs['lugar'].isin(lgs_potenciales + [lugar])]
+                        try:
+                            pariente = jrq[lugar]
+                            if pariente not in clbs:
+                                _calibrar_jerárquíco_manual(lugar=pariente, jrq=jrq, clbs=clbs)
+                            aprs = _gen_a_prioris(líms=líms_paráms, dic_clbs=clbs[pariente])
+                        except KeyError:
+                            raise ValueError(
+                                _('El lugar "{}" no está bien inscrito en la jerarquía general.')
+                                   .format(lugar)
+                            )
 
-                    traza = _calibrar_mod_bayes(
-                        ec=símismo.ec, líms_paráms=líms_paráms, obs=obs_lg, vars_x=vars_x, var_y=var_y,
-                        binario=binario, aprioris=aprs, ops=ops_método
-                    )
-                    clbs[lugar] = _procesar_calib_bayes(traza=traza, paráms=paráms)
+                    if len(obs_lg):
+                        clbs[lugar] = _calibrar_mod_bayes(
+                            ec=símismo.ec, líms_paráms=líms_paráms, obs=obs_lg, vars_x=vars_x, var_y=var_y,
+                            binario=binario, aprioris=aprs, ops=ops_método
+                        )
+                    else:
+                        clbs[lugar] = clbs[pariente]
 
                 resultados = {}
                 for lg in lugares:
-                    _calibrar_jerárchico_manual(lugar=lg, jrq=jerarquía, clbs=resultados)
+                    _calibrar_jerárquíco_manual(lugar=lg, jrq=jerarquía, clbs=resultados)
 
         return resultados
 
@@ -226,8 +233,10 @@ class Calibrador(object):
             resultados = {}
             for lg in lugares:
                 _calibrar_jerárchico_manual(lugar=lg, jrq=jerarquía, clbs=resultados)
-
-        return {ll: v for ll, v in resultados.items() if ll in lugares}
+        if lugares is not None:
+            return {ll: v for ll, v in resultados.items() if ll in lugares}
+        else:
+            return resultados
 
 
 def _gen_a_prioris(líms, dic_clbs):
@@ -260,7 +269,8 @@ def _calibrar_mod_bayes(ec, líms_paráms, obs, vars_x, var_y, binario, aprioris
         }
         ops_auto.update(ops)
         t = pm.sample(**ops_auto)
-    return t
+
+    return _procesar_calib_bayes(t, paráms=list(líms_paráms))
 
 
 def _procesar_calib_bayes(traza, paráms):

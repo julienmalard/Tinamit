@@ -10,16 +10,23 @@ from tinamit.Análisis.Datos import DatosIndividuales, SuperBD
 from tinamit.EnvolturasMDS.PySD import ModeloPySD
 from tinamit.Geog.Geog import Geografía
 
+try:
+    import pymc3 as pm
+except ImportError:
+    pm = None
+
 dir_act = os.path.split(__file__)[0]
 arch_csv_geog = os.path.join(dir_act, 'recursos/prueba_geog.csv')
 arch_mds = os.path.join(dir_act, 'recursos/prueba_para_calib.mdl')
 
-métodos = ['optimizar', 'inferencia bayesiana']
+métodos = ['optimizar']
+if pm is not None:
+    métodos.append('inferencia bayesiana')
 
 
 class Test_Calibrador(unittest.TestCase):
     ec = 'y = a*x + b'
-    paráms = {'Factor a': 2.4, 'Factor b': -5}
+    paráms = {'a': 2.4, 'b': -5}
     clbrd = Calibrador(ec=ec)
 
     @classmethod
@@ -27,7 +34,7 @@ class Test_Calibrador(unittest.TestCase):
         n_obs = 100
         datos_x = np.random.rand(n_obs)
 
-        datos_y = cls.paráms['Factor a'] * datos_x + cls.paráms['Factor b'] + np.random.rand(n_obs) * 0.01
+        datos_y = cls.paráms['a'] * datos_x + cls.paráms['b'] + np.random.rand(n_obs) * 0.01
         bd_pds = pd.DataFrame({'y': datos_y, 'x': datos_x})
         bd_datos = DatosIndividuales('Datos Generados', bd_pds)
 
@@ -86,9 +93,8 @@ class Test_CalibEnModelo(unittest.TestCase):
                 símismo.mod.borrar_micro_calib('Y')
 
     def test_calibración_bayes_mod_jerárquíco(símismo):
-        for m in métodos:
-            with símismo.subTest(método=m):
-                pass
+        if 'inferencia bayesiana' in métodos:
+            pass
 
     @classmethod
     def tearDownClass(cls):

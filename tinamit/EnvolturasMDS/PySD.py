@@ -2,7 +2,7 @@ import os
 from ast import literal_eval
 
 import pysd
-from Análisis.sintaxis import Ecuación
+from tinamit.Análisis.sintaxis import Ecuación
 from tinamit import _
 from tinamit.MDS import EnvolturaMDS
 
