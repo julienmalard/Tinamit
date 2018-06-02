@@ -78,7 +78,7 @@ class Test_CalibEnModelo(unittest.TestCase):
         cls.mod.conectar_var_a_datos('X', var_bd='x')
         cls.mod.conectar_var_a_datos('Y', var_bd='y')
 
-    def test_calibración_geog_jerárquíca(símismo):
+    def test_calibración_geog_con_escalas(símismo):
         for m in métodos:
             with símismo.subTest(método=m):
                 símismo.mod.especificar_micro_calib(var='Y', método=m)
@@ -94,7 +94,17 @@ class Test_CalibEnModelo(unittest.TestCase):
 
     def test_calibración_bayes_mod_jerárquíco(símismo):
         if 'inferencia bayesiana' in métodos:
-            pass
+            símismo.mod.especificar_micro_calib(var='Y', método='inferencia bayesiana',
+                                                ops_método={'mod_jerárquico': True})
+            símismo.mod.efectuar_micro_calibs()
+
+            for lg in símismo.paráms:
+                for p in símismo.paráms[lg]:
+                    val = símismo.paráms[lg][p]
+                    est = símismo.mod.calibs[p][lg]['val']
+                    símismo.assertTrue(round(est, 1) == val)
+
+            símismo.mod.borrar_micro_calib('Y')
 
     @classmethod
     def tearDownClass(cls):
