@@ -180,7 +180,9 @@ class Calibrador(object):
         if método == 'inferencia bayesiana':
             if 'mod_jerárquico' not in ops_método or ops_método['mod_jerárquico'] is None:
                 ops_método['mod_jerárquico'] = True
-        mod_jerárquico = ops_método.pop('mod_jerárquico')
+            mod_jerárquico = ops_método.pop('mod_jerárquico')
+        else:
+            mod_jerárquico = False
 
         # Intentar obtener información geográfica, si posible.
         try:
@@ -205,8 +207,8 @@ class Calibrador(object):
             raise ValueError(_('Método de calibración "{}" no reconocido.').format(método))
 
     @staticmethod
-    def _calibrar_bayesiana(ec, var_y, vars_x, líms_paráms, binario,
-                            bd_datos, lugares, jerarquía, mod_jerárquico, ops_método):
+    def _calibrar_bayesiana(ec, var_y, vars_x, líms_paráms, binario, bd_datos, lugares, jerarquía,
+                            mod_jerárquico, ops_método):
         """
         Efectua la calibración bayesiana.
 
@@ -240,6 +242,7 @@ class Calibrador(object):
 
         """
 
+        # Si no tenemos PyMC3, no podemos hacer inferencia bayesiana.
         if pm is None:
             raise ImportError(_('Debes instalar PyMC3 para poder hacer calibraciones con inferencia bayesiana.'))
 
@@ -248,27 +251,33 @@ class Calibrador(object):
         l_vars = vars_x + [var_y]
         obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True)
 
-        # Generar un modelo bayesiano de base,
-        mod_bayes = ec.gen_mod_bayes(
+        # Generar un modelo bayesiano de base, con un diccionario de variables compartidos para cambiar datos.
+        mod_bayes, d_vars_compart = ec.gen_mod_bayes(
             líms_paráms=líms_paráms, obs=obs, vars_x=vars_x, var_y=var_y,
             binario=binario, aprioris=None, mod_jerárquico=mod_jerárquico
         )
 
         # Calibrar según la situación
         if lugares is None:
-            # Si no hay lugares, calibrar el modelo de una vez.
+            # Si no hay lugares, calibrar el modelo de una vez. (No hay necesidad de cambiar los datos.)
             resultados = _calibrar_mod_bayes(mod_bayes, paráms=paráms, ops=ops_método)
 
         else:
             # Si hay distribución geográfica, es un poco más complicado.
             if mod_jerárquico:
                 # Si estamos implementando un modelo jerárquico...
-                mod_bayes_jrq = ec.gen_mod_bayes(jerarquía=True)
-                resultados = _calibrar_mod_bayes(mod_bayes_jrq, paráms=paráms, ops=ops_método)
+                mod_bayes_jrq, _d = ec.gen_mod_bayes(jerarquía=True)
+                res_calib = _calibrar_mod_bayes(mod_bayes_jrq, paráms=paráms, ops=ops_método)
+
+                # Formatear los resultados
+                resultados = {}
+                for p in paráms:
+                    resultados[p] = {lg: res_calib[p][í] for í, lg in enumerate(lugares)}
 
             else:
                 # Si no estamos haciendo un único modelo jerárquico, hay que emularlo manualmente.
 
+                # Una función recursiva para poder calibrar de manera jerárquica.
                 def _calibrar_jerárquíco_manual(lugar, jrq, clbs=None):
                     """
                     Una función recursiva para emular un modelo jerárquico.
@@ -293,7 +302,7 @@ class Calibrador(object):
                         clbs = {None: {'mod': mod_bayes}}  # Empezar con el modelo original
 
                     if lugar is None:
-                        # Si estamos al cumbre de la jerarquía...
+                        # Si estamos al punto más alto de la jerarquía...
 
                         obs_lg = obs  # Tomar todos los datos
                         pariente = None  # No tenemos pariente
@@ -319,7 +328,7 @@ class Calibrador(object):
                                 aprs = _gen_a_prioris(líms=líms_paráms, dic_clbs=clbs[pariente])
 
                                 # Generar un nuevo modelo Bayes con los nuevos a prioris y guardarlo
-                                clbs[pariente]['mod'] = ec.gen_mod_bayes(
+                                clbs[pariente]['mod'], _d = ec.gen_mod_bayes(
                                     líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y], binario=binario,
                                     aprioris=aprs
                                 )
@@ -337,7 +346,7 @@ class Calibrador(object):
                     if len(obs_lg):
                         # Si tenemos datos con los cuales calibrar, hacerlo ahora
                         clbs[lugar] = _calibrar_mod_bayes(
-                            mod_bayes=mod_lg, obs_x=obs[vars_x], obs_y=obs[var_y], paráms=paráms, ops=ops_método
+                            mod_bayes=mod_lg, paráms=paráms, ops=ops_método, obs=obs, vars_compartidos=d_vars_compart
                         )
 
                     else:
@@ -398,42 +407,79 @@ class Calibrador(object):
         # Todas las observaciones
         obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True)
 
+        # Calibrar según la situación
         if lugares is None:
             # Si no hay lugares, optimizar de una vez con todas las observaciones.
-            resultados = _optimizar(f_python, paráms=paráms, líms_paráms=líms_paráms,
-                                    obs_x=obs[vars_x], obs_y=obs[var_y], **ops_método)
+            resultados = _optimizar(f_python, líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
+                                    **ops_método)
         else:
             # Si hay lugares...
 
+            # Una función recursiva para calibrar según la jerarquía
             def _calibrar_jerárchico_manual(lugar, jrq, clbs=None):
+                """
+                Una función recursiva que permite calibrar en una jerarquía, tomando optimizaciones de niveles más
+                altos si no consigue datos para niveles más bajos.
+
+                Parameters
+                ----------
+                lugar: str
+                    El lugar en cual calibrar.
+                jrq: dict
+                    La jerarquía.
+                clbs: dict
+                    El diccionario de los resultados de la calibración. (Parámetro recursivo.)
+
+                """
+
+                # Para la recursión
                 if clbs is None:
                     clbs = {}
 
                 if lugar is None:
+                    # Si estamos al nivel más alto de la jerarquía, tomar todos los datos.
                     obs_lg = obs
+                    inic = pariente = None  # Y no tenemos ni estimos iniciales, ni región pariente
                 else:
+                    # Sino, tomar los datos de esta región únicamente.
                     lgs_potenciales = bd_datos.geog.obt_lugares_en(lugar)
                     obs_lg = obs[obs['lugar'].isin(lgs_potenciales + [lugar])]
-                if len(obs_lg):
-                    resultados[lugar] = _optimizar(
-                        f_python, paráms=paráms, líms_paráms=líms_paráms,
-                        obs_x=obs_lg[vars_x], obs_y=obs_lg[var_y], **ops_método
-                    )
-                else:
+
+                    # Intentar sacar información del nivel superior en la jerarquía
                     try:
-                        pariente = jrq[lugar]
+                        pariente = jrq[lugar]  # El nivel inmediatemente superior
+
+                        # Calibrar recursivamente si necesario
                         if pariente not in clbs:
                             _calibrar_jerárchico_manual(lugar=pariente, jrq=jrq, clbs=clbs)
-                        resultados[lugar] = clbs[pariente]
+
+                        # Tomar la calibración superior como punto inicial para facilitar la búsqueda
+                        inic = [clbs[pariente][p]['val'] for p in paráms]
 
                     except KeyError:
+                        # Error improbable con la jerarquía.
                         avisar(_('No encontramos datos para el lugar "{}", ni siguiera en su jerarquía, y por eso'
                                  'no pudimos calibrarlo.').format(lugar))
-                        resultados[lugar] = {}
+                        resultados[lugar] = {}  # Calibración vacía
+                        return  # Si hubo error en la jerarquía, no hay nada más que hacer para este lugar.
 
+                # Ahora, calibrar.
+                if len(obs_lg):
+                    # Si tenemos observaciones, calibrar con esto.
+                    resultados[lugar] = _optimizar(
+                        f_python, líms_paráms=líms_paráms,
+                        obs_x=obs_lg[vars_x], obs_y=obs_lg[var_y], inic=inic, **ops_método
+                    )
+                else:
+                    # Si no tenemos observaciones, copiar la calibración del pariente
+                    resultados[lugar] = clbs[pariente]
+
+            # Calibrar para cada lugar
             resultados = {}
             for lg in lugares:
                 _calibrar_jerárchico_manual(lugar=lg, jrq=jerarquía, clbs=resultados)
+
+        # Devolver únicamente los lugares de interés.
         if lugares is not None:
             return {ll: v for ll, v in resultados.items() if ll in lugares}
         else:
@@ -457,47 +503,128 @@ def _gen_a_prioris(líms, dic_clbs):
     return aprioris
 
 
-def _calibrar_mod_bayes(mod_bayes, vars_compartidos, obs, paráms, ops):
+def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops=None):
+    """
+    Esta función calibra un modelo bayes.
 
+    Parameters
+    ----------
+    mod_bayes: pm.Modelo
+        El modelo para calibrar.
+    paráms: list[str]
+        Una lista de los nombres de los parámetros de interés para sacar de la traza del modelo.
+    obs: dict
+        Base de datos observados.
+    vars_compartidos: dict
+        Un diccionario con los variables compartidos Theano en los cuales podemos poner nuevas observaciones.
+    ops: dict
+        Opciones adicionales para pasar a pm.Modelo.sample.
+
+    Returns
+    -------
+
+    """
+
+    # El diccionario de opciones adicionales.
+    if ops is None:
+        ops = {}
+
+    # Si hay variables de datos compartidos, poner los nuevos datos.
     for var, var_pymc in vars_compartidos:
         var_pymc.set_value(obs[var])
 
+    # Crear el diccionarion de argumentos
     ops_auto = {
         'tune': 1000,
         'cores': 1
     }
     ops_auto.update(ops)
 
+    # Efectuar la calibración
     with mod_bayes:
-
         t = pm.sample(**ops_auto)
 
+    # Devolver los datos procesados
     return _procesar_calib_bayes(t, paráms=paráms)
 
 
 def _procesar_calib_bayes(traza, paráms):
+    """
+    Procesa los resultados de una calibración bayes. Con base en la traza PyMC3, calcula el punto de probabilidad más
+    alta para cada parámetro de interés.
+
+    Parameters
+    ----------
+    traza: pm.Trace
+        La traza PyMC3.
+    paráms: list
+        La lista de parámetros de interés.
+
+    Returns
+    -------
+    dict
+        Los resultados procesados.
+    """
+
+    # El diccionario para los resultados
     d_máx = {}
+
+    # Calcular el punto de probabilidad máxima
     for p in paráms:
+        # Para cada parámetro...
+
+        # Ajustar el rango, si es muy grande (necesario para las funciones que siguen)
         escl = np.max(traza[p])
         rango = escl - np.min(traza[p])
         if escl < 10e10:
-            escl = 1
+            escl = 1  # Si no es muy grande, no hay necesidad de ajustar
+
+        # Intentar calcular la densidad máxima.
         try:
+            # Se me olvidó cómo funciona esta parte.
             fdp = gaussian_kde(traza[p] / escl)
             x = np.linspace(traza[p].min() / escl - 1 * rango, traza[p].max() / escl + 1 * rango, 1000)
             máx = x[np.argmax(fdp.evaluate(x))] * escl
             d_máx[p] = máx
+
         except BaseException:
             d_máx[p] = None
 
+    # Devolver los resultados procesados.
     return {p: {'val': d_máx[p], 'dist': traza[p]} for p in paráms}
 
 
-def _optimizar(func, paráms, líms_paráms, obs_x, obs_y, **ops):
+def _optimizar(func, líms_paráms, obs_x, obs_y, inic=None, **ops):
+    """
+    Optimiza una función basándose en observaciones.
+
+    Parameters
+    ----------
+    func: Callable
+        La función para optimizar.
+    líms_paráms: dict[str, tuple]
+        Un diccionario de los parámetros y de sus límites.
+    obs_x: pd.DataFrame
+        Las observaciones de los variables x.
+    obs_y: pd.Series | np.array
+        Las observaciones correspondientes del variable y.
+    inic: list | np.array
+        Los valores iniciales para la optimización.
+    ops: dict
+        Opciones para pasar a la función de optimización.
+
+    Returns
+    -------
+    dict
+        Los parámetros optimizados.
+    """
+
     try:
-        med_ajuste = ops['med_ajuste']
+        med_ajuste = ops.pop('med_ajuste')
     except KeyError:
         med_ajuste = 'rmec'
+
+    paráms = list(líms_paráms)
 
     def f(prm):
 
@@ -509,19 +636,23 @@ def _optimizar(func, paráms, líms_paráms, obs_x, obs_y, **ops):
 
         return f_ajuste(func(prm, obs_x), obs_y)
 
-    x0 = []
-    for p in paráms:
-        lp = líms_paráms[p]
-        if lp[0] is None:
-            if lp[1] is None:
-                x0.append(0)
+    if inic is not None:
+        x0 = inic
+    else:
+
+        x0 = []
+        for p in paráms:
+            lp = líms_paráms[p]
+            if lp[0] is None:
+                if lp[1] is None:
+                    x0.append(0)
+                else:
+                    x0.append(lp[1])
             else:
-                x0.append(lp[1])
-        else:
-            if lp[1] is None:
-                x0.append(lp[0])
-            else:
-                x0.append((lp[0] + lp[1]) / 2)
+                if lp[1] is None:
+                    x0.append(lp[0])
+                else:
+                    x0.append((lp[0] + lp[1]) / 2)
 
     x0 = np.array(x0)
     opt = minimize(f, x0=x0, bounds=[líms_paráms[p] for p in paráms], **ops)

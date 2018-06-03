@@ -2,6 +2,7 @@ import math as mat
 
 import numpy as np
 import regex
+import theano
 from lark import Lark, Transformer
 from pkg_resources import resource_filename
 
@@ -177,21 +178,17 @@ class Ecuación(object):
 
         Returns
         -------
-        callable:
+        Callable:
             La función dinámica Python.
         """
 
         return _árb_a_python(símismo.árbol, l_prms=paráms, dialecto=símismo.dialecto)
 
-    def gen_mod_bayes(símismo, líms_paráms, obs_x, obs_y, aprioris=None, binario=False):
+    def gen_mod_bayes(símismo, líms_paráms, obs_x, obs_y, aprioris=None, binario=False, mod_jerárquico=False,
+                      lugares_jrq=None, jrq=None):
 
         if pm is None:
             return ImportError(_('Hay que instalar PyMC3 para poder utilizar modelos bayesianos.'))
-
-        if obs_x is None:
-            obs_x = {}
-        if obs_y is None:
-            obs_y = {}
 
         dialecto = símismo.dialecto
 
@@ -233,6 +230,7 @@ class Ecuación(object):
 
             return egr
 
+        d_vars_compart = {}
         def _a_bayes(á, d_pm):
 
             if isinstance(á, dict):
@@ -269,10 +267,12 @@ class Ecuación(object):
 
                             # Si el variable no es un parámetro calibrable, debe ser un valor observado
                             try:
-                                return obs_x[v]
+                                d_vars_compart[v] = theano.shared(obs_x[v])
+                                return d_vars_compart[v]
                             except KeyError:
                                 raise ValueError(_('El variable "{}" no es un parámetro, y no se encuentra'
                                                    'en la base de datos observados tampoco.').format(v))
+
                     elif ll == 'neg':
                         return -_a_bayes(v, d_pm=d_pm)
                     else:
@@ -288,7 +288,11 @@ class Ecuación(object):
 
         modelo = pm.Model()
         with modelo:
-            d_vars_pm = _gen_d_vars_pm()
+            if not mod_jerárquico:
+                d_vars_pm = _gen_d_vars_pm()
+            else:
+                d_vars_pm = _gen_d_vars_pm_jer()
+
             mu = _a_bayes(símismo.árbol, d_vars_pm)
             sigma = pm.HalfNormal(name='sigma', sd=max(obs_y.abs()))
 
@@ -299,20 +303,54 @@ class Ecuación(object):
             else:
                 pm.Normal(name='Y_obs', mu=mu, sd=sigma, observed=obs_y)
 
-        return modelo
+        return modelo, d_vars_compart
 
     def sacar_args_func(símismo, func, i):
+        """
+        Devuelve uno o más argumentos de una función presente en el árbol de la Ecuacion, en formato texto.
 
-        árbol_ec_a_texto = símismo._árb_a_txt
+        Parameters
+        ----------
+        func: str
+            La función cuyos argumentos buscamos.
+        i: int
+            El número de argumentos que querremos.
+
+        Returns
+        -------
+        list[str]
+            El argumento de la función.
+
+        """
+
+        # Para simplificar el código.
         dialecto = símismo.dialecto
 
         def _buscar_func(á, f):
+            """
+            Una función recursiva.
+
+            Parameters
+            ----------
+            á: dict
+                El árbol sintáctico en el cual buscar.
+            f: str
+                La función de interés.
+
+            Returns
+            -------
+            list[str]
+                Los argumentos de la función.
+
+            """
 
             if isinstance(á, dict):
+                # Visitar cada rama del diccionario de manera recursiva
                 for ll, v in á.items():
                     if ll == 'func':
+                        # Si es función, verificar si es la función de interés.
                         if v[0] == f:
-                            return [árbol_ec_a_texto(x, dialecto=dialecto) for x in v[1][:i]]
+                            return [_árb_a_txt(x, dialecto=dialecto) for x in v[1][:i]]
                     else:
                         for p in v[1]:
                             _buscar_func(p, f=func)
@@ -320,8 +358,10 @@ class Ecuación(object):
             elif isinstance(á, list):
                 [_buscar_func(x, f=func) for x in á]
             else:
+                # Sino, no tenemos nada que hacer.
                 pass
 
+        # Aplicar la función recursiva.
         return _buscar_func(símismo.árbol, f=func)
 
     def __str__(símismo):
@@ -466,7 +506,7 @@ def _árb_a_python(á, l_prms, dialecto):
 
     Returns
     -------
-    callable:
+    Callable:
         La ecuación dinámico Python.
 
     """
@@ -663,7 +703,7 @@ def _conv_fun(fun, dialecto_orig, dialecto_final):
 
     Returns
     -------
-    str | callable
+    str | Callable
         La función traducida.
     """
 
@@ -693,7 +733,7 @@ def _conv_op(oper, dialecto_orig, dialecto_final):
 
     Returns
     -------
-    str | callable
+    str | Callable
         El operador traducido.
     """
 
