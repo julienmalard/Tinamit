@@ -251,22 +251,81 @@ class Calibrador(object):
         l_vars = vars_x + [var_y]
         obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True)
 
-        # Generar un modelo bayesiano de base, con un diccionario de variables compartidos para cambiar datos.
-        mod_bayes, d_vars_compart = ec.gen_mod_bayes(
-            líms_paráms=líms_paráms, obs=obs, vars_x=vars_x, var_y=var_y,
-            binario=binario, aprioris=None, mod_jerárquico=mod_jerárquico
-        )
-
         # Calibrar según la situación
         if lugares is None:
-            # Si no hay lugares, calibrar el modelo de una vez. (No hay necesidad de cambiar los datos.)
+            # Si no hay lugares, generar y calibrar el modelo de una vez.
+            mod_bayes = ec.gen_mod_bayes(
+                líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
+                binario=binario, aprioris=None, vars_compart=False, nv_jerarquía=None
+            )
+
             resultados = _calibrar_mod_bayes(mod_bayes, paráms=paráms, ops=ops_método)
 
         else:
             # Si hay distribución geográfica, es un poco más complicado.
             if mod_jerárquico:
                 # Si estamos implementando un modelo jerárquico...
-                mod_bayes_jrq, _d = ec.gen_mod_bayes(jerarquía=True)
+
+                # Primero, crear una lista de las relaciones jerárquicas, el cual se necesita para crear el modelo
+                # jerárquico bayes.
+                def _gen_nv_jerarquía(jrq, egr=None, nv_ant=None):
+                    """
+                    Genera una lista de relaciones jerárquicas para el modelo bayes. Cada elemento en la lista es
+                    una lista de índices de cada región en el nivel superior de la jerarquía. El último elemento
+                    de la lista representa los índices de las observaciones.
+
+                    Parameters
+                    ----------
+                    jrq: dict
+                        La jerarquía.
+                    egr: list
+                        Parámetro para la recursión.
+                    nv_ant: list
+                        Un lista de los nombres del nivel superior en la jerarquía. Parámetro de recursión.
+
+                    Returns
+                    -------
+                    list[np.ndarray]
+                        Los índices de cada región, en orden de niveles jerárquicos.
+                    """
+
+                    # Empezar con el primer nivel
+                    if nv_ant is None:
+                        nv_ant = [None]
+
+                    # Empezar con egresos vacíos
+                    if egr is None:
+                        egr = []
+
+                    # Calcular el índice de cada lugar, en orden alfabético, en el nivel inmediatamente superior en la
+                    # jerarquía.
+                    nv_act = [x for x in sorted(jrq) if jrq[x] in nv_ant]
+
+                    # Agregar a los egresos
+                    if len(nv_act):
+                        # Si no es el último nivel de la jerarquía, agregar éste
+                        egr.append(np.array([nv_ant.index(jrq[x]) for x in nv_act]))
+
+                        # Recursarr en los niveles inferiores
+                        _gen_nv_jerarquía(jrq, egr=egr, nv_ant=nv_act)
+
+                    else:
+                        # Si era el último nivel, agregar los ínices de las observaciones
+                        egr.append(np.array([nv_ant.index(x) for x in obs['lugar']]))
+
+                    # Devolver el resultado
+                    return egr
+
+                # Generar la lista de relaciones jerárquicas
+                nv_jerarquía = _gen_nv_jerarquía(jerarquía)
+
+                # Generar el modelo bayes
+                mod_bayes_jrq = ec.gen_mod_bayes(
+                    líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
+                    aprioris=None, binario=binario, vars_compart=False, nv_jerarquía=nv_jerarquía
+                )
+
+                # Calibrar
                 res_calib = _calibrar_mod_bayes(mod_bayes_jrq, paráms=paráms, ops=ops_método)
 
                 # Formatear los resultados
@@ -276,6 +335,12 @@ class Calibrador(object):
 
             else:
                 # Si no estamos haciendo un único modelo jerárquico, hay que emularlo manualmente.
+
+                # Generar un modelo bayesiano de base, con un diccionario de variables compartidos para cambiar datos.
+                mod_bayes, d_vars_compart = ec.gen_mod_bayes(
+                    líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
+                    binario=binario, aprioris=None, vars_compart=True, nv_jerarquía=None
+                )
 
                 # Una función recursiva para poder calibrar de manera jerárquica.
                 def _calibrar_jerárquíco_manual(lugar, jrq, clbs=None):
@@ -299,14 +364,19 @@ class Calibrador(object):
                     """
 
                     if clbs is None:
-                        clbs = {None: {'mod': mod_bayes}}  # Empezar con el modelo original
+                        clbs = {
+                            None: {'mod': mod_bayes, 'vars_compart': d_vars_compart}  # Empezar con el modelo original
+                        }
 
                     if lugar is None:
                         # Si estamos al punto más alto de la jerarquía...
 
                         obs_lg = obs  # Tomar todos los datos
                         pariente = None  # No tenemos pariente
-                        mod_lg = clbs[None]['mod']  # Empezar con el mismo modelo de base
+
+                        # Empezar con el mismo modelo de base
+                        mod_lg = clbs[None]['mod']
+                        vars_comp_lg = clbs[None]['vars_compart']
 
                     else:
                         # Sino, hay un nivel superior en la jerarquía
@@ -328,25 +398,27 @@ class Calibrador(object):
                                 aprs = _gen_a_prioris(líms=líms_paráms, dic_clbs=clbs[pariente])
 
                                 # Generar un nuevo modelo Bayes con los nuevos a prioris y guardarlo
-                                clbs[pariente]['mod'], _d = ec.gen_mod_bayes(
+                                mod_lg, vars_comp_lg = ec.gen_mod_bayes(
                                     líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y], binario=binario,
-                                    aprioris=aprs
+                                    aprioris=aprs, vars_compart=True, nv_jerarquía=None
                                 )
-
-                            # Emplear el modelo pariente como base para la calibración
-                            mod_lg = clbs[pariente]['mod']
+                                clbs[pariente]['mod'] = mod_lg
+                                clbs[pariente]['vars_compart'] = vars_comp_lg
+                            else:
+                                # Emplear el modelo pariente como base para la calibración
+                                mod_lg = clbs[pariente]['mod']
+                                vars_comp_lg = clbs[pariente]['vars_compart']
 
                         except KeyError:
                             # Si no existe, hay error.
                             raise ValueError(
-                                _('El lugar "{}" no está bien inscrito en la jerarquía general.')
-                                    .format(lugar)
+                                _('El lugar "{}" no está bien inscrito en la jerarquía general.').format(lugar)
                             )
 
                     if len(obs_lg):
                         # Si tenemos datos con los cuales calibrar, hacerlo ahora
                         clbs[lugar] = _calibrar_mod_bayes(
-                            mod_bayes=mod_lg, paráms=paráms, ops=ops_método, obs=obs, vars_compartidos=d_vars_compart
+                            mod_bayes=mod_lg, paráms=paráms, ops=ops_método, obs=obs, vars_compartidos=vars_comp_lg
                         )
 
                     else:
@@ -362,7 +434,10 @@ class Calibrador(object):
                     _calibrar_jerárquíco_manual(lugar=lg, jrq=jerarquía, clbs=dic_calibs)
 
                 # Quitar los modelos de los resultados
-                resultados = {lg: {ll: v for ll, v in d.items() if ll != 'mod'} for lg, d in dic_calibs.items()}
+                resultados = {
+                    lg: {ll: v for ll, v in d.items() if ll not in ['mod', 'vars_compart']}
+                    for lg, d in dic_calibs.items()
+                }
 
         # Devolver únicamente los lugares de interés (y no lugares de más arriba en la jerarquía).
         return {ll: v for ll, v in resultados.items() if ll in lugares}
@@ -487,19 +562,48 @@ class Calibrador(object):
 
 
 def _gen_a_prioris(líms, dic_clbs):
-    aprioris = {}
-    for p, dic in dic_clbs.items():
-        lp = líms[p]
+    """
+    Genera a prioris, basándose en los límites de los parámetros y en una calibración anterior. Devolvemos la clase
+    de la distribución y sus parámetros de forma en una tupla (en vez de crear la distribución sí misma de una vez
+    aquí) porque las distribuciones de PyMC3 se deben crear adentro de un bloque de contexto de modelo PyMC3, al cual
+    no tenemos acceso aquí por el momento.
 
+    Parameters
+    ----------
+    líms: dict[str, tuple]
+        Un diccionario de los límites teoréticos de cada parámetro.
+    dic_clbs: dict
+        Un diccionario con los resultados procesados de una calibración anterior.
+
+    Returns
+    -------
+    dict[str, tuple]
+        Un diccionario con la distribución (clase PyMC3), y sus parámetros, de cada parámetro de interés.
+    """
+
+    # Para los resultados
+    aprioris = {}
+
+    for p, dic in dic_clbs.items():
+        # Para cada parámetro de interés...
+
+        lp = líms[p]  # Sus límites teoréticos.
+
+        # Encontrar la distribución compatible con los límites y con el mejor ajusto con la calibración anterior.
         ajust_sp = _ajust_dist(datos=dic['dist'], líms=lp)
         nombre = ajust_sp['tipo']
+
+        # El objeto PyMC3 correspondiendo a esta distribución
         dist_pm = dists[nombre]['pm']
 
+        # Extraer y convertir los parámetros de la distribución PyMC3
         prms_sp = ajust_sp['prms']
         prms_pm = dists[nombre]['sp_a_pm'](prms_sp)
 
+        # Guardar el resultado
         aprioris[p] = (dist_pm, prms_pm)
 
+    # Devolver el diccionario de distribuciones a prioris.
     return aprioris
 
 
@@ -530,8 +634,9 @@ def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops
         ops = {}
 
     # Si hay variables de datos compartidos, poner los nuevos datos.
-    for var, var_pymc in vars_compartidos:
-        var_pymc.set_value(obs[var])
+    if vars_compartidos is not None:
+        for var, var_pymc in vars_compartidos:
+            var_pymc.set_value(obs[var])
 
     # Crear el diccionarion de argumentos
     ops_auto = {
@@ -619,57 +724,115 @@ def _optimizar(func, líms_paráms, obs_x, obs_y, inic=None, **ops):
         Los parámetros optimizados.
     """
 
+    # Leer el método de ajusto.
     try:
-        med_ajuste = ops.pop('med_ajuste')
+        med_ajusto = ops.pop('med_ajusto')
     except KeyError:
-        med_ajuste = 'rmec'
+        med_ajusto = 'rmec'
 
+    # La lista de parámetros de interés.
     paráms = list(líms_paráms)
 
+    # Crear la función objetiva que minimizaremos (SciPy solamente puede minimizar).
     def f(prm):
+        """
+        Una función objetiva que SciPy puede minimizar.
 
-        if med_ajuste.lower() == 'rmec':
-            def f_ajuste(y, y_o):
+        Parameters
+        ----------
+        prm: list | np.ndarray
+            Los parámetros para calibrar
+
+        Returns
+        -------
+        np.ndarray
+            El ajusto del modelo con los parámetros actuales.
+
+        """
+
+        # Definir la función de ajusto.
+        if med_ajusto.lower() == 'rmec':
+            # Raíz media del error cuadrado
+            def f_ajusto(y, y_o):
                 return np.sqrt(np.sum(np.square(y - y_o)) / len(y))
+
         else:
-            raise ValueError('')
+            # Implementar otras medidas de ajusto aquí.
+            raise ValueError(_('La medida de ajusto "{}" no se reconoció.').format(med_ajusto))
 
-        return f_ajuste(func(prm, obs_x), obs_y)
+        # Devolver el ajusto de la función con los parámetros actuales.
+        return f_ajusto(func(prm, obs_x), obs_y)
 
+    # Generar los estimos iniciales, si necesario
     if inic is not None:
+        # No es necesario
         x0 = inic
     else:
-
+        # Sí es necesario
         x0 = []
         for p in paráms:
-            lp = líms_paráms[p]
+            # Para cada parámetro...
+            lp = líms_paráms[p]  # Sus límites
+
+            # Calcular un punto razonable para empezar la búsqueda
             if lp[0] is None:
                 if lp[1] is None:
+                    # El caso (-inf, +inf): empezaremos en 0
                     x0.append(0)
                 else:
+                    # El caso (-inf, R]: empezaremos en R
                     x0.append(lp[1])
             else:
                 if lp[1] is None:
+                    # El caso [R, +inf): empezaremos en R
                     x0.append(lp[0])
                 else:
+                    # El caso [R1, R2]: empezaremos en el promedio de R1 y R2
                     x0.append((lp[0] + lp[1]) / 2)
 
+    # Convertir a matriz NumPy
     x0 = np.array(x0)
+
+    # Optimizar
     opt = minimize(f, x0=x0, bounds=[líms_paráms[p] for p in paráms], **ops)
 
+    # Avisar si la optimización no funcionó tan bien como lo esperamos.
     if not opt.success:
         avisar(_('Error de optimización para ecuación "{}".').format(str(func)))
 
+    # Devolver los resultados en el formato correcto.
     return {p: {'val': opt.x[i]} for i, p in enumerate(paráms)}
 
 
 def _ajust_dist(datos, líms):
-    mejor_ajuste = {'p': 0, 'tipo': None}
+    """
+    Basándose en límites teoréticos y datos de una traza, escoger la mejor distribución teorética para representar
+    la traza.
 
+    Parameters
+    ----------
+    datos: np.array
+        La traza de datos.
+    líms: tuple
+        Los límites de la distribución.
+
+    Returns
+    -------
+    dict[str, str]
+        Un diccionario de la mejor distribución, sus parámetros ajustados y una medida de su ajusto.
+    """
+
+    # Empezemos el mejor ajusto en 0.
+    mejor_ajusto = {'p': 0, 'tipo': None}
+
+    # Tomaremos únicamente las distribuciones teoréticamente compatibles con los límites del parámetro.
     dists_potenciales = {ll: v['sp'] for ll, v in dists.items() if _líms_compat(líms, v['líms'])}
 
+    # Buscar la mejor distribución
     for nombre_dist, dist_sp in dists_potenciales.items():
+        # Para cada distribución posible...
 
+        # Establecer los parámetros que no queremos calibrar, según el caso.
         if nombre_dist == 'Beta':
             restric = {'floc': líms[0], 'fscale': líms[1] - líms[0]}
         elif nombre_dist == 'Cauchy':
@@ -697,34 +860,60 @@ def _ajust_dist(datos, líms):
         elif nombre_dist == 'Weibull':
             restric = {'floc': líms[0]}
         else:
-            raise ValueError
+            raise ValueError(_('Distribución "{}" no reconocida.').format(nombre_dist))
 
+        # Intentar ajustar la distribución.
         try:
             tupla_prms = dist_sp.fit(datos, **restric)
-        except:
+        except BaseException:
+            # Es posible que SciPy, en vez de una respuesta, nos devuelve un error muy obscuro. En general pasa
+            # si le damos unos muy, muy mal ajustables a la distribución. En este caso, seguimoms en adelante sin
+            # la distribución que no quiso cooperar.
             tupla_prms = None
 
+        # Si logramos un ajusto...
         if tupla_prms is not None:
-            # Medir el ajuste de la distribución
+            # Medir el ajusto de la distribución
             p = estad.kstest(rvs=datos, cdf=dist_sp(*tupla_prms).cdf)[1]
 
-            # Si el ajuste es mejor que el mejor ajuste anterior...
-            if p > mejor_ajuste['p'] or mejor_ajuste['tipo'] is None:
+            # Si el ajusto es mejor que el mejor ajusto anterior...
+            if p > mejor_ajusto['p'] or mejor_ajusto['tipo'] is None:
                 # Guardarlo
-                mejor_ajuste['p'] = p
-                mejor_ajuste['prms'] = tupla_prms
-                mejor_ajuste['tipo'] = nombre_dist
+                mejor_ajusto['p'] = p
+                mejor_ajusto['prms'] = tupla_prms
+                mejor_ajusto['tipo'] = nombre_dist
 
-    # Si no logramos un buen aujste, avisar al usuario.
-    if mejor_ajuste['p'] <= 0.10:
-        avisar('El ajuste de la mejor distribución quedó muy mal (p = {}).'.format(round(mejor_ajuste['p'], 4)))
+    # Si no logramos un buen ajusto, avisarle al usuario.
+    if mejor_ajusto['p'] <= 0.10:
+        avisar(
+            _('El ajusto de la mejor distribución ("{d}") quedó muy mal (p = {p}). Un buen valor sería > 0.1'
+              ).format(d=mejor_ajusto['d'], p=round(mejor_ajusto['p'], 4))
+        )
 
-    # Devolver la distribución con el mejor ajuste, tanto como el valor de su ajuste.
-    return mejor_ajuste
+    # Devolver la distribución con el mejor ajusto, tanto como el valor de su ajusto.
+    return mejor_ajusto
 
 
 def _líms_compat(l_1, l_2):
+    """
+    Verifica si dos límites de parámetro son compatibles o no.
+
+    Parameters
+    ----------
+    l_1: tuple
+        El primer límite.
+    l_2: tuple
+        El otro límite.
+
+    Returns
+    -------
+    bool
+        Si son compatibles o no.
+    """
+
+    # Cambiar ±inf a None y números a 0.
     l_1 = [None if x is None or np.isinf(x) else 0 for x in l_1]
     l_2 = [None if x is None or np.isinf(x) else 0 for x in l_2]
 
+    # Verificar si son compatibles
     return l_1 == l_2

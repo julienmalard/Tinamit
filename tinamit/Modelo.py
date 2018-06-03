@@ -975,7 +975,8 @@ class Modelo(object):
     def agregar_lengua(símismo, lengua):
         pass
 
-    def especificar_micro_calib(símismo, var, método=None, paráms=None, líms_paráms=None, escala=None):
+    def especificar_micro_calib(símismo, var, método=None, paráms=None, líms_paráms=None, escala=None,
+                                ops_método=None):
 
         # Verificar el variable
         var = símismo.valid_var(var)
@@ -987,6 +988,7 @@ class Modelo(object):
         símismo.info_calibs['micro calibs'][var] = {
             'escala': escala,
             'método': método,
+            'ops_método': ops_método,
             'paráms': paráms,
             'líms_paráms': líms_paráms
         }
@@ -1083,9 +1085,8 @@ class Modelo(object):
         l_vars = {}  # para hacer: arreglar problemas de determinar paráms vs. otras ecuaciones
 
         # El objeto de calibración.
-        ec = var + '=' + símismo.variables[var]['ec']
         mod_calib = Calibrador(
-            ec=ec, otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars},
+            ec=símismo.variables[var]['ec'], var_y=var, otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars},
             nombres_equiv=símismo.conex_var_datos
         )
 
@@ -1094,6 +1095,7 @@ class Modelo(object):
         líms_paráms = símismo.info_calibs['micro calibs'][var]['líms_paráms']
         paráms = símismo.info_calibs['micro calibs'][var]['paráms']
 
+        # Aplicar límites automáticos
         if líms_paráms is None:
             if paráms is not None:
                 líms_paráms = {p: símismo.variables[p]['líms'] for p in paráms}

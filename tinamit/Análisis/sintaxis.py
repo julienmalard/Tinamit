@@ -115,9 +115,9 @@ class Ecuación(object):
         if dialecto is None:
             dialecto = 'tinamït'
 
-        # Guardar el dialecto y el nombre
+        # Guardar el dialecto y el nombre (convertir al nombre equivalente si necesario)
         símismo.dialecto = dialecto
-        símismo.nombre = nombre
+        símismo.nombre = nombre if nombre not in nombres_equiv else nombres_equiv[nombre]
 
         # Si es una ecuación de vaariable o de subscripto
         símismo.tipo = 'var'
@@ -184,49 +184,83 @@ class Ecuación(object):
 
         return _árb_a_python(símismo.árbol, l_prms=paráms, dialecto=símismo.dialecto)
 
-    def gen_mod_bayes(símismo, líms_paráms, obs_x, obs_y, aprioris=None, binario=False, mod_jerárquico=False,
-                      lugares_jrq=None, jrq=None):
+    def gen_mod_bayes(símismo, líms_paráms, obs_x, obs_y, aprioris=None, binario=False, vars_compart=False,
+                      nv_jerarquía=None):
 
         if pm is None:
             return ImportError(_('Hay que instalar PyMC3 para poder utilizar modelos bayesianos.'))
 
+        if vars_compart and nv_jerarquía is not None:
+            raise ValueError(_('PyMC3 no nos deja generar modelos jerárquicos con variables compartidos de datos '
+                               'cambiables.'))
+
         dialecto = símismo.dialecto
 
-        def _gen_d_vars_pm():
+        def _gen_d_vars_pm(tmñ=None, prfj=''):
             egr = {}
             for p, líms in líms_paráms.items():
 
                 if aprioris is None:
                     if líms[0] is None:
                         if líms[1] is None:
-                            dist_pm = pm.Flat(p, testval=0)
+                            dist_pm = pm.Flat(prfj + p, shape=tmñ)
                         else:
-                            dist_pm = líms[1] - pm.HalfFlat(p, testval=1)
+                            if líms[1] == 0:
+                                dist_pm = -pm.HalfFlat(prfj + p, shape=tmñ)
+                            else:
+                                dist_pm = líms[1] - pm.HalfFlat(prfj + p, shape=tmñ)
                     else:
                         if líms[1] is None:
-                            dist_pm = líms[0] + pm.HalfFlat(p, testval=1)
+                            if líms[0] == 0:
+                                dist_pm = pm.HalfFlat(prfj + p, shape=tmñ)
+                            else:
+                                dist_pm = líms[0] + pm.HalfFlat(prfj + p, shape=tmñ)
                         else:
-                            dist_pm = pm.Uniform(name=p, lower=líms[0], upper=líms[1])
+                            dist_pm = pm.Uniform(prfj + p, lower=líms[0], upper=líms[1], shape=tmñ)
                 else:
                     dist, prms = aprioris[p]
                     if (líms[0] is not None or líms[1] is not None) and dist != pm.Uniform:
                         acotada = pm.Bound(dist, lower=líms[0], upper=líms[1])
-                        dist_pm = acotada(p, **prms)
+                        dist_pm = acotada(prfj + p, shape=tmñ, **prms)
                     else:
                         if dist == pm.Uniform:
                             prms['lower'] = max(prms['lower'], líms[0])
                             prms['upper'] = min(prms['upper'], líms[1])
-                        dist_pm = dist(p, **prms)
+                        dist_pm = dist(prfj + p, shape=tmñ, **prms)
 
                 egr[p] = dist_pm
             return egr
 
         def _gen_d_vars_pm_jer():
+            dists_base = _gen_d_vars_pm(tmñ=(1,))
+
             egr = {}
 
             for p, líms in líms_paráms.items():
-                for nv in niveles:
-                    pass
+                mu = dists_base[p]
+                sg = pm.HalfCauchy(name='sg_{}'.format(p), beta=5, shape=(1,))  # type: pm.model.TransformedRV
+                if líms[0] is líms[1] is None:
+                    for í, nv in enumerate(nv_jerarquía[:-1]):
+                        tmñ_nv = nv.shape
+                        if í == (len(nv_jerarquía) - 1):
+                            nmbr = p
+                        else:
+                            nmbr = 'mu_{}_nv_{}'.format(p, í)
+                        mu = pm.Normal(name=nmbr, mu=mu[nv], sd=sg[nv], shape=tmñ_nv)
+                        sg = pm.HalfCauchy(name='sg_{}_nv_{}'.format(p, í), beta=5, shape=tmñ_nv)
+                else:
+                    for í, nv in enumerate(nv_jerarquía[:-1]):
+                        tmñ_nv = nv.shape
+                        if í == (len(nv_jerarquía) - 1):
+                            nmbr = p
+                        else:
+                            nmbr = 'mu_{}_nv_{}'.format(p, í)
+
+                        acotada = pm.Bound(pm.Normal, lower=líms[0], upper=líms[1])
+                        mu = acotada(nmbr, mu=mu[nv], sd=sg[nv], shape=tmñ_nv)
+                        sg = pm.HalfCauchy(name='sg_{}_nv_{}'.format(p, í), beta=5, shape=tmñ_nv)
+
+                egr[p] = mu
 
             return egr
 
@@ -261,14 +295,23 @@ class Ecuación(object):
 
                     elif ll == 'var':
                         try:
-                            return d_pm[v]
+                            if nv_jerarquía is None:
+                                return d_pm[v]
+                            else:
+                                return d_pm[v][nv_jerarquía[-1]]
 
                         except KeyError:
 
                             # Si el variable no es un parámetro calibrable, debe ser un valor observado
                             try:
-                                d_vars_compart[v] = theano.shared(obs_x[v])
-                                return d_vars_compart[v]
+                                if vars_compart:
+                                    # Crear un variable especial theano que nos permitirá cambiar los valores
+                                    # observados después.
+                                    d_vars_compart[v] = theano.shared(obs_x[v])
+                                    return d_vars_compart[v]
+                                else:
+                                    return obs_x[v]
+
                             except KeyError:
                                 raise ValueError(_('El variable "{}" no es un parámetro, y no se encuentra'
                                                    'en la base de datos observados tampoco.').format(v))
@@ -288,22 +331,27 @@ class Ecuación(object):
 
         modelo = pm.Model()
         with modelo:
-            if not mod_jerárquico:
+            if nv_jerarquía is None:
                 d_vars_pm = _gen_d_vars_pm()
             else:
                 d_vars_pm = _gen_d_vars_pm_jer()
 
             mu = _a_bayes(símismo.árbol, d_vars_pm)
-            sigma = pm.HalfNormal(name='sigma', sd=max(obs_y.abs()))
+            sigma = pm.HalfNormal(name='sigma', sd=max(1, (obs_y.max() - obs_y.min())))
 
             if binario:
+                # noinspection PyTypeChecker
                 x = pm.Normal(name='logit_prob', mu=mu, sd=sigma, shape=obs_y.shape, testval=np.full(obs_y.shape, 0))
                 pm.Bernoulli(name='Y_obs', logit_p=-x, observed=obs_y)  #
 
             else:
+                # noinspection PyTypeChecker
                 pm.Normal(name='Y_obs', mu=mu, sd=sigma, observed=obs_y)
 
-        return modelo, d_vars_compart
+        if vars_compart:
+            return modelo, d_vars_compart
+        else:
+            return modelo
 
     def sacar_args_func(símismo, func, i):
         """
