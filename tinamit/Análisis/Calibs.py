@@ -179,7 +179,7 @@ class Calibrador(object):
         # Para calibración bayesiana, emplear modelos jerárquicos si no se especificó el contrario.
         if método == 'inferencia bayesiana':
             if 'mod_jerárquico' not in ops_método or ops_método['mod_jerárquico'] is None:
-                ops_método['mod_jerárquico'] = True
+                ops_método['mod_jerárquico'] = False
             mod_jerárquico = ops_método.pop('mod_jerárquico')
         else:
             mod_jerárquico = False
@@ -336,14 +336,8 @@ class Calibrador(object):
             else:
                 # Si no estamos haciendo un único modelo jerárquico, hay que emularlo manualmente.
 
-                # Generar un modelo bayesiano de base, con un diccionario de variables compartidos para cambiar datos.
-                mod_bayes, d_vars_compart = ec.gen_mod_bayes(
-                    líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
-                    binario=binario, aprioris=None, vars_compart=True, nv_jerarquía=None
-                )
-
                 # Una función recursiva para poder calibrar de manera jerárquica.
-                def _calibrar_jerárquíco_manual(lugar, jrq, clbs=None):
+                def _calibrar_jerárquíco_manual(lugar, jrq, clbs=None, d_mods=None):
                     """
                     Una función recursiva para emular un modelo jerárquico.
 
@@ -363,10 +357,10 @@ class Calibrador(object):
                         Las calibraciones.
                     """
 
+                    if d_mods is None:
+                        d_mods = {}
                     if clbs is None:
-                        clbs = {
-                            None: {'mod': mod_bayes, 'vars_compart': d_vars_compart}  # Empezar con el modelo original
-                        }
+                        clbs = {}
 
                     if lugar is None:
                         # Si estamos al punto más alto de la jerarquía...
@@ -374,9 +368,16 @@ class Calibrador(object):
                         obs_lg = obs  # Tomar todos los datos
                         pariente = None  # No tenemos pariente
 
-                        # Empezar con el mismo modelo de base
-                        mod_lg = clbs[None]['mod']
-                        vars_comp_lg = clbs[None]['vars_compart']
+                        # Empezar con el modelo de base
+                        mod_lg, vars_comp_lg = ec.gen_mod_bayes(
+                            líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y], binario=binario,
+                            aprioris=None, vars_compart=True, nv_jerarquía=None
+                        )
+
+                        d_mods[None] = {
+                            'mod': mod_lg,
+                            'vars_compart': vars_comp_lg
+                        }
 
                     else:
                         # Sino, hay un nivel superior en la jerarquía
@@ -390,24 +391,35 @@ class Calibrador(object):
                             pariente = jrq[lugar]  # El nivel superior (pariente)
 
                             # Si todavía no se calibró éste, calibrarlo de manera recursiva.
-                            if pariente not in clbs:
+                            if pariente not in d_mods:
+
                                 # Calibrar el pariente
-                                _calibrar_jerárquíco_manual(lugar=pariente, jrq=jrq, clbs=clbs)
+                                _calibrar_jerárquíco_manual(lugar=pariente, jrq=jrq, clbs=clbs, d_mods=d_mods)
 
-                                # Generar a prioris de la calibración
-                                aprs = _gen_a_prioris(líms=líms_paráms, dic_clbs=clbs[pariente])
+                                if pariente in jrq and clbs[pariente] == clbs[jrq[pariente]]:
+                                    d_mods[pariente] = d_mods[jrq[pariente]]
+                                    mod_lg = d_mods[pariente]['mod']
+                                    vars_comp_lg = d_mods[pariente]['vars_compart']
 
-                                # Generar un nuevo modelo Bayes con los nuevos a prioris y guardarlo
-                                mod_lg, vars_comp_lg = ec.gen_mod_bayes(
-                                    líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y], binario=binario,
-                                    aprioris=aprs, vars_compart=True, nv_jerarquía=None
-                                )
-                                clbs[pariente]['mod'] = mod_lg
-                                clbs[pariente]['vars_compart'] = vars_comp_lg
+                                else:
+                                    # Generar a prioris de la calibración
+                                    aprs = _gen_a_prioris(líms=líms_paráms, dic_clbs=clbs[pariente])
+
+                                    # Generar un nuevo modelo Bayes con los nuevos a prioris y guardarlo
+                                    mod_lg, vars_comp_lg = ec.gen_mod_bayes(
+                                        líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y], binario=binario,
+                                        aprioris=aprs, vars_compart=True, nv_jerarquía=None
+                                    )
+
+                                    d_mods[pariente] = {
+                                        'mod': mod_lg,
+                                        'vars_compart': vars_comp_lg
+                                    }
+
                             else:
                                 # Emplear el modelo pariente como base para la calibración
-                                mod_lg = clbs[pariente]['mod']
-                                vars_comp_lg = clbs[pariente]['vars_compart']
+                                mod_lg = d_mods[pariente]['mod']
+                                vars_comp_lg = d_mods[pariente]['vars_compart']
 
                         except KeyError:
                             # Si no existe, hay error.
@@ -418,7 +430,7 @@ class Calibrador(object):
                     if len(obs_lg):
                         # Si tenemos datos con los cuales calibrar, hacerlo ahora
                         clbs[lugar] = _calibrar_mod_bayes(
-                            mod_bayes=mod_lg, paráms=paráms, ops=ops_método, obs=obs, vars_compartidos=vars_comp_lg
+                            mod_bayes=mod_lg, paráms=paráms, ops=ops_método, obs=obs_lg, vars_compartidos=vars_comp_lg
                         )
 
                     else:
@@ -429,9 +441,10 @@ class Calibrador(object):
                     return clbs
 
                 # Efectuar las calibraciones para todos los lugares.
-                dic_calibs = {None: {'mod': mod_bayes}}
+                dic_calibs = {}
+                dic_modelos = {}
                 for lg in lugares:
-                    _calibrar_jerárquíco_manual(lugar=lg, jrq=jerarquía, clbs=dic_calibs)
+                    _calibrar_jerárquíco_manual(lugar=lg, jrq=jerarquía, clbs=dic_calibs, d_mods=dic_modelos)
 
                 # Quitar los modelos de los resultados
                 resultados = {
@@ -584,10 +597,10 @@ def _gen_a_prioris(líms, dic_clbs):
     # Para los resultados
     aprioris = {}
 
-    for p, dic in dic_clbs.items():
+    for p, lp in líms.items():
         # Para cada parámetro de interés...
 
-        lp = líms[p]  # Sus límites teoréticos.
+        dic = dic_clbs[p]  # El diccionario de calibraciones para este parámetro
 
         # Encontrar la distribución compatible con los límites y con el mejor ajusto con la calibración anterior.
         ajust_sp = _ajust_dist(datos=dic['dist'], líms=lp)
@@ -635,7 +648,7 @@ def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops
 
     # Si hay variables de datos compartidos, poner los nuevos datos.
     if vars_compartidos is not None:
-        for var, var_pymc in vars_compartidos:
+        for var, var_pymc in vars_compartidos.items():
             var_pymc.set_value(obs[var])
 
     # Crear el diccionarion de argumentos
@@ -798,7 +811,7 @@ def _optimizar(func, líms_paráms, obs_x, obs_y, inic=None, **ops):
 
     # Avisar si la optimización no funcionó tan bien como lo esperamos.
     if not opt.success:
-        avisar(_('Error de optimización para ecuación "{}".').format(str(func)))
+        avisar(_('Error de optimización.'))
 
     # Devolver los resultados en el formato correcto.
     return {p: {'val': opt.x[i]} for i, p in enumerate(paráms)}
@@ -838,7 +851,7 @@ def _ajust_dist(datos, líms):
         elif nombre_dist == 'Cauchy':
             restric = {}
         elif nombre_dist == 'Chi2':
-            restric = {'floc': líms[0], 'fscale': líms[1] - líms[0]}
+            restric = {'floc': líms[0]}
         elif nombre_dist == 'Exponencial':
             restric = {'floc': líms[0]}
         elif nombre_dist == 'Gamma':

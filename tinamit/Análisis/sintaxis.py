@@ -159,7 +159,7 @@ class Ecuación(object):
 
         Returns
         -------
-        set
+        set:
             Un conjunto con todos los variables presentes en esta ecuación.
         """
 
@@ -190,13 +190,9 @@ class Ecuación(object):
         if pm is None:
             return ImportError(_('Hay que instalar PyMC3 para poder utilizar modelos bayesianos.'))
 
-        if vars_compart and nv_jerarquía is not None:
-            raise ValueError(_('PyMC3 no nos deja generar modelos jerárquicos con variables compartidos de datos '
-                               'cambiables.'))
-
         dialecto = símismo.dialecto
 
-        def _gen_d_vars_pm(tmñ=None, prfj=''):
+        def _gen_d_vars_pm(tmñ=(), prfj=''):
             egr = {}
             for p, líms in líms_paráms.items():
 
@@ -265,6 +261,7 @@ class Ecuación(object):
             return egr
 
         d_vars_compart = {}
+
         def _a_bayes(á, d_pm):
 
             if isinstance(á, dict):
@@ -307,10 +304,10 @@ class Ecuación(object):
                                 if vars_compart:
                                     # Crear un variable especial theano que nos permitirá cambiar los valores
                                     # observados después.
-                                    d_vars_compart[v] = theano.shared(obs_x[v])
+                                    d_vars_compart[v] = theano.shared(obs_x[v].values)
                                     return d_vars_compart[v]
                                 else:
-                                    return obs_x[v]
+                                    return obs_x[v].values
 
                             except KeyError:
                                 raise ValueError(_('El variable "{}" no es un parámetro, y no se encuentra'
@@ -339,14 +336,20 @@ class Ecuación(object):
             mu = _a_bayes(símismo.árbol, d_vars_pm)
             sigma = pm.HalfNormal(name='sigma', sd=max(1, (obs_y.max() - obs_y.min())))
 
+            if vars_compart:
+                v_obs_y = theano.shared(obs_y.values)
+                d_vars_compart[símismo.nombre] = v_obs_y
+            else:
+                v_obs_y = obs_y.values
+
             if binario:
                 # noinspection PyTypeChecker
                 x = pm.Normal(name='logit_prob', mu=mu, sd=sigma, shape=obs_y.shape, testval=np.full(obs_y.shape, 0))
-                pm.Bernoulli(name='Y_obs', logit_p=-x, observed=obs_y)  #
+                pm.Bernoulli(name='Y_obs', logit_p=-x, observed=v_obs_y)  #
 
             else:
                 # noinspection PyTypeChecker
-                pm.Normal(name='Y_obs', mu=mu, sd=sigma, observed=obs_y)
+                pm.Normal(name='Y_obs', mu=mu, sd=sigma, observed=v_obs_y)
 
         if vars_compart:
             return modelo, d_vars_compart

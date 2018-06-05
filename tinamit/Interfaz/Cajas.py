@@ -2,6 +2,7 @@ import io
 import json
 import os
 import tkinter as tk
+import webbrowser
 from tkinter import filedialog as diálogo
 
 from tinamit import cambiar_lengua
@@ -42,7 +43,7 @@ class CajaInic(tk.Frame):
 
     @staticmethod
     def acción_bt_ayuda():
-        os.startfile(os.path.join(dir_raíz, 'Documentación.pdf'))
+        webbrowser.open('tinamit.rtfd.io')
 
 
 class CajaLeng(tk.Frame):
