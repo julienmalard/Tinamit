@@ -105,7 +105,7 @@ class Test_TradsUnidades(unittest.TestCase):
         Comprobar que podemos agregar sinónimos de unidades.
         """
 
-        trads.agregar_sinónimos(unid='foot', sinónimos='feet', leng='en', guardar=False)
+        trads.agregar_sinónimos(unid='foot', sinónimos='feet', leng='en', guardar=True)
         símismo.assertEqual(convertir(de='foot', a='feet'), 1)
 
     def test_agregar_sinónimo_listas(símismo):

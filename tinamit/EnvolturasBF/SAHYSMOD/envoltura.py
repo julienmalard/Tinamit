@@ -5,21 +5,29 @@ from subprocess import run
 from warnings import warn
 
 import numpy as np
+import pkg_resources
 
 from tinamit import obt_val_config, _
 from tinamit.BF import ModeloImpaciente
-from .sahysmodIE import leer_info_dic_paráms, escribir_desde_dic_paráms
+from ._sahysmodIE import leer_info_dic_paráms, escribir_desde_dic_paráms
 
 
 class ModeloSAHYSMOD(ModeloImpaciente):
     """
-
+    Envoltura para modelos SAHYSMOD.
     """
 
-    leng_orig = 'en'
+    leng_orig = 'en'  # La lengua de los nombres y descripción de los variables (y NO la del código aquí)
 
-    def __init__(símismo, datos_iniciales, exe_sahysmod=None):
+    prb_datos_inic = pkg_resources.resource_filename(__name__, 'recursos/prb_datos_inic.inp')
+    dic_prb_datos_inic = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_datos_inic.json')
+    prb_arch_egr = pkg_resources.resource_filename(__name__, 'recursos/prb_egresos.out')
+    dic_prb_egr = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_egr.json')
 
+    def __init__(símismo, datos_iniciales=None, exe_sahysmod=None):
+
+        if datos_iniciales is None:
+            datos_iniciales = símismo.prb_datos_inic
 
         símismo.argsinic = (datos_iniciales, exe_sahysmod)
 
@@ -40,8 +48,6 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         símismo.direc_base = os.path.split(datos_iniciales)[0]
 
         # The path from which to read and write input and output data will be set later on according to the run name
-        símismo.egreso = None  # type: str
-        símismo.ingreso = None  # type: str
         símismo.direc_trabajo = None  # type: str
 
         # Prepare the command to the SAHYSMOD executable
@@ -52,19 +58,22 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
         # Set climatic variables. Actually, "variable" for the moment.
         símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total',
-                                conv=0.001)
+                                   conv=0.001)
 
     def _inic_dic_vars(símismo):
 
         símismo.variables.clear()
 
         for nombre, dic in vars_SAHYSMOD.items():
-            símismo.variables[nombre] = {'val': None,
-                                    'unidades': dic['unids'],
-                                    'ingreso': dic['ingr'],
-                                    'egreso': dic['egr'],
-                                    'dims': (1,)  # Se cambiará después para variables espaciales
-                                    }
+            símismo.variables[nombre] = {
+                'val': None,
+                'unidades': dic['unids'],
+                'ingreso': dic['ingr'],
+                'egreso': dic['egr'],
+                'dims': (1,),  # Se cambiará después para variables espaciales
+                'líms': None,
+                'info': ''
+            }
 
         # Establecer los ingresos y egresos estacionales
         egresos_estacionales = [x for x in vars_egreso_SAHYSMOD if x[-1] == '#']
@@ -88,11 +97,11 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         if os.path.isdir(símismo.direc_trabajo):
             shutil.rmtree(símismo.direc_trabajo)
         os.makedirs(símismo.direc_trabajo)
-        símismo.egreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.out')
-        símismo.ingreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.inp')
+        símismo.arch_egreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.out')
+        símismo.arch_ingreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.inp')
 
         # Generar la comanda de corrida (para después)
-        args = dict(SAHYSMOD=símismo.SAHYSMOD_exe, ingreso=símismo.ingreso, egreso=símismo.egreso)
+        args = dict(SAHYSMOD=símismo.SAHYSMOD_exe, ingreso=símismo.arch_ingreso, egreso=símismo.arch_egreso)
         símismo.comanda = '"{SAHYSMOD}" "{ingreso}" "{egreso}"'.format(**args)
 
         super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
@@ -100,24 +109,24 @@ class ModeloSAHYSMOD(ModeloImpaciente):
     def avanzar_modelo(símismo):
 
         # Limpiar archivos de egresos que podrían estar allí
-        if os.path.isfile(símismo.egreso):
-            os.remove(símismo.egreso)
+        if os.path.isfile(símismo.arch_egreso):
+            os.remove(símismo.arch_egreso)
 
         # Correr la comanda desde la línea de comanda
         run(símismo.comanda, cwd=símismo.direc_trabajo)
 
         # Verificar que SAHYSMOD generó egresos.
-        if not os.path.isfile(símismo.egreso):
+        if not os.path.isfile(símismo.arch_egreso):
             raise FileNotFoundError(_('El modelo SAHYSMOD no genero egreso. Esto probablemente quiere decir que '
                                       'tuvo problema. ¡Diviértete! :)'))
 
     def cerrar_modelo(símismo):
-        
+
         for f in os.listdir(símismo.direc_trabajo):
             if re.match('Name(0|[0-9]{2})$', f):
                 os.remove(f)
 
-    def escribir_archivo_ingr(símismo, n_años_simul, dic_ingr):
+    def _escribir_archivo_ingr(símismo, n_años_simul, dic_ingr, archivo):
 
         # Establecer el número de años de simulación
         símismo.dic_ingr['NY'] = n_años_simul
@@ -135,11 +144,11 @@ class ModeloSAHYSMOD(ModeloImpaciente):
             vec[vec == -1] = 0
 
         # Y finalmente, escribir el archivo de valores de ingreso
-        escribir_desde_dic_paráms(dic_paráms=símismo.dic_ingr, archivo_obj=símismo.ingreso)
+        escribir_desde_dic_paráms(dic_paráms=símismo.dic_ingr, archivo_obj=archivo)
 
-    def leer_archivo_egr(símismo, n_años_egr):
+    def leer_archivo_egr(símismo, n_años_egr, archivo):
 
-        dic_egr = leer_arch_egr(archivo=símismo.egreso, n_est=símismo.n_estaciones, n_p=símismo.n_polí,
+        dic_egr = leer_arch_egr(archivo=archivo, n_est=símismo.n_estaciones, n_p=símismo.n_polí,
                                 n_años=n_años_egr)
 
         for cr in ['CrA#', 'CrB#', 'CrU#', 'Cr4#', 'A#', 'B#', 'U#']:
@@ -153,30 +162,30 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # Crear una máscara boleana para cada valor potencial de Kr y llenarlo con la salinidad correspondiente
         kr0 = (kr == 0)
         salin_suelo[kr0] = dic_egr['A#'][kr0] * dic_egr['CrA#'][kr0] + \
-                        dic_egr['B#'][kr0] * dic_egr['CrB#'][kr0] + \
-                        dic_egr['U#'][kr0] * dic_egr['CrU#'][kr0]
+                           dic_egr['B#'][kr0] * dic_egr['CrB#'][kr0] + \
+                           dic_egr['U#'][kr0] * dic_egr['CrU#'][kr0]
 
         kr1 = (kr == 1)
         salin_suelo[kr1] = dic_egr['CrU#'][kr1] * dic_egr['U#'][kr1] + \
-                        dic_egr['C1*#'][kr1] * (1 - dic_egr['U#'][kr1])
+                           dic_egr['C1*#'][kr1] * (1 - dic_egr['U#'][kr1])
 
         kr2 = (kr == 2)
         salin_suelo[kr2] = dic_egr['CrA#'][kr2] * dic_egr['A#'][kr2] + \
-                        dic_egr['C2*#'][kr2] * (1 - dic_egr['A#'][kr2])
+                           dic_egr['C2*#'][kr2] * (1 - dic_egr['A#'][kr2])
 
         kr3 = (kr == 3)
         salin_suelo[kr3] = dic_egr['CrB#'][kr3] * dic_egr['B#'][kr3] + \
-                        dic_egr['C3*#'][kr3] * (1 - dic_egr['B#'][kr3])
+                           dic_egr['C3*#'][kr3] * (1 - dic_egr['B#'][kr3])
 
         kr4 = (kr == 4)
         salin_suelo[kr4] = dic_egr['Cr4#'][kr4]
 
         para_llenar = [{'mask': kr0, 'cr': ['Cr4#']},
-                   {'mask': kr1, 'cr': ['CrA#', 'CrB#', 'Cr4#']},
-                   {'mask': kr2, 'cr': ['CrB#', 'CrU#', 'Cr4#']},
-                   {'mask': kr3, 'cr': ['CrA#', 'CrU#', 'Cr4#']},
-                   {'mask': kr4, 'cr': ['CrA#', 'CrB#', 'CrU#']}
-                   ]
+                       {'mask': kr1, 'cr': ['CrA#', 'CrB#', 'Cr4#']},
+                       {'mask': kr2, 'cr': ['CrB#', 'CrU#', 'Cr4#']},
+                       {'mask': kr3, 'cr': ['CrA#', 'CrU#', 'Cr4#']},
+                       {'mask': kr4, 'cr': ['CrA#', 'CrB#', 'CrU#']}
+                       ]
 
         for d in para_llenar:
             l_cr = d['cr']
@@ -191,10 +200,13 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # Devolver el diccionario final
         return dic_final
 
-    def leer_archivo_vals_inic(símismo):
+    def leer_archivo_vals_inic(símismo, archivo=None):
+
+        if archivo is None:
+            archivo = símismo.datos_inic
 
         # Leer el archivo de ingreso
-        dic_ingr = leer_info_dic_paráms(archivo_fnt=símismo.datos_inic)
+        dic_ingr = leer_info_dic_paráms(archivo_fnt=archivo)
         símismo.dic_ingr.clear()
         símismo.dic_ingr.update(dic_ingr)  # Guardar valores para escribir el archivo de valores iniciales en el futuro
 
@@ -411,20 +423,20 @@ def leer_arch_egr(archivo, n_est, n_p, n_años):
         for est in range(n_est):
             for estación_polí in range(n_p):  # Leer el egreso de las estaciones del último año
 
-                poly = []
+                polí = []
                 while re.match(' #', l) is None:
-                    poly.append(l)
+                    polí.append(l)
                     l = d.readline()
 
                 l = d.readline()  # Avanzar una línea más para la próxima estación
 
                 for cód in vars_egreso_SAHYSMOD:
-                    var_out = cód.replace('#', '').replace('*', '\*')
+                    var_egr = cód.replace('#', '').replace('*', '\*')
 
-                    for line in poly:
+                    for línea in polí:
 
-                        line += ' '
-                        m = re.search(' %s += +([^ ]*)' % var_out, line)
+                        línea += ' '
+                        m = re.search(' %s += +([^ ]*)' % var_egr, línea)
 
                         if m:
                             val = m.groups()[0]
@@ -435,7 +447,7 @@ def leer_arch_egr(archivo, n_est, n_p, n_años):
                                     val = float(val)
                                 except ValueError:
                                     raise ValueError(
-                                        _('El variable "{}" no se pudo leer del egreso SAHYSMOD').format(var_out)
+                                        _('El variable "{}" no se pudo leer del egreso SAHYSMOD').format(var_egr)
                                     )
                             dic_datos[cód][(est, estación_polí)] = val
                             break

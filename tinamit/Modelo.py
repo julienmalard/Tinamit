@@ -14,6 +14,7 @@ from lxml import etree as arbole
 import tinamit.Geog.Geog as Geog
 from tinamit import _, valid_nombre_arch
 from tinamit.Análisis.Calibs import Calibrador
+from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.Unidades.conv import convertir
 
 
@@ -1084,9 +1085,14 @@ class Modelo(object):
         # l_vars = símismo._obt_vars_asociados(var, enforzar_datos=True, incluir_hermanos=hermanos)
         l_vars = {}  # para hacer: arreglar problemas de determinar paráms vs. otras ecuaciones
 
+        # Preparar la ecuación
+        ec = símismo.variables[var]['ec']
+        if not len(Ecuación(ec).variables()):
+            raise NotImplementedError  # Falta implementar el caso de un constante
+
         # El objeto de calibración.
         mod_calib = Calibrador(
-            ec=símismo.variables[var]['ec'], var_y=var, otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars},
+            ec=ec, var_y=var, otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars},
             nombres_equiv=símismo.conex_var_datos
         )
 

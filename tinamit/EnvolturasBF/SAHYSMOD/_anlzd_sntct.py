@@ -28,19 +28,26 @@ SOFTWARE.
 # !/bin/python
 
 import itertools
-# anlzd_sntct.py
+##########
+import sys
+from ast import literal_eval
+
+import numpy as np
+
+
+# _anlzd_sntct.py
 #
 # Este módulo analiza archivos en formato de texto a base de una plantilla de la sintaxis y convierte entre varios
 # formatos.
 #
 # Ejemplo de uso en línea de comanda:
 #
-# python anlzd_sntct.py -r ejemplo_in.txt ejemplo1.tmpl
+# python _anlzd_sntct.py -r ejemplo_in.txt ejemplo1.tmpl
 #
 # Analizará ejemplo_in.txt y devolverá un diccionario de los parámetros analizados.
 # Es únicamente útil así para la depuración.
 #
-# python anlzd_sntct.py -c ejemplo_in.txt ejemplo1.tmpl ejemplo_egr.txt ejemplo2.tmpl
+# python _anlzd_sntct.py -c ejemplo_in.txt ejemplo1.tmpl ejemplo_egr.txt ejemplo2.tmpl
 #
 # Convertirá ejemplo_in.txt (en formato ejemplo1) a formato ejemplo2, y lo escribirá en ejemplo_egr.txt
 #
@@ -49,12 +56,6 @@ import itertools
 # jerome.boisvert-chouinard@mail.mcgill.ca
 # Traducido y modificado por Julien Malard (julien.malard@mail.mcgill.ca)
 #
-
-##########
-import sys
-from ast import literal_eval
-
-import numpy as np
 
 
 def anal_línea_l(línea, nombres_parámetros, dic_parámetros):
@@ -172,6 +173,8 @@ def construir_línea(nombresParáms, especLínea, dicParáms, dicConfig, paráms
         línea = construir_línea_f(nombresParáms, especLínea[1], dicParáms)
     elif especLínea[0] == 'D':
         línea = build_d_línea(nombresParáms, especLínea[1], dicParáms)
+    else:
+        raise ValueError(especLínea[0])
     if 'CSVPAD' in dicConfig.keys():
         diff = dicConfig['CSVPAD'] - 1 - línea.count(',')
         if diff > 0:
@@ -189,7 +192,9 @@ def _crearMatrizDeZeros(*dims):
         return matr
 
 
-def leer_archivo(nombre_archContenido, nombre_archPlantilla, paráms_ent):
+def leer_archivo(nombre_archContenido, nombre_archPlantilla, paráms_ent=None):
+    if paráms_ent is None:
+        paráms_ent = []
 
     dic_paráms = {'#': []}
     configDic = {}
@@ -202,7 +207,7 @@ def leer_archivo(nombre_archContenido, nombre_archPlantilla, paráms_ent):
             elif línea_plantilla[0] != '#':
                 templateTuple = literal_eval(línea_plantilla.strip())
                 if templateTuple[0][0:4] != 'FOR[':
-                    línea_contenido = archContenido.readlines().strip('\n')
+                    línea_contenido = archContenido.readline().strip('\n')
                     anal_línea(línea_contenido, templateTuple[1], templateTuple[0], dic_paráms)
                 else:
                     dims = [i.strip(']') for i in templateTuple[0].split('[')][1:]
@@ -222,7 +227,7 @@ def leer_archivo(nombre_archContenido, nombre_archPlantilla, paráms_ent):
                     for indices in itertools.product(*iterdims):
                         dicTemp = {}
                         for especLínea in tupleEspecLínea:
-                            línea_contenido = archContenido.readlines().strip('\n')
+                            línea_contenido = archContenido.readline().strip('\n')
                             anal_línea(línea_contenido, especLínea[1], especLínea[0], dicTemp)
                             for nombreParám in especLínea[1]:
                                 nombreParám = nombreParám.strip("*")
@@ -254,8 +259,9 @@ def escribir_archivo(dicParáms, nombre_archContenido, nombre_archPlantilla, par
             elif templatelínea[0] != '#':
                 tuplaPlantilla = literal_eval(templatelínea.strip())
                 if tuplaPlantilla[0][0:4] != 'FOR[':
-                    archContenido.write(construir_línea(tuplaPlantilla[1], tuplaPlantilla[0], dicParáms, dicConfig,
-                                                   paráms_ent))
+                    archContenido.write(
+                        construir_línea(tuplaPlantilla[1], tuplaPlantilla[0], dicParáms, dicConfig, paráms_ent)
+                    )
                 else:
                     dims = [i.strip(']') for i in tuplaPlantilla[0].split('[')][1:]
                     for i in range(len(dims)):
@@ -276,7 +282,8 @@ def escribir_archivo(dicParáms, nombre_archContenido, nombre_archPlantilla, par
 
                                 dicTemp[nombreParám] = p_d
 
-                            archContenido.write(construir_línea(especLínea[1], especLínea[0], dicTemp, dicConfig, paráms_ent))
+                            archContenido.write(
+                                construir_línea(especLínea[1], especLínea[0], dicTemp, dicConfig, paráms_ent))
     return nombre_archContenido
 
 

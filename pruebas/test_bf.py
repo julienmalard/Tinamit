@@ -11,8 +11,6 @@ arch_bf = os.path.join(dir_act, 'recursos/prueba_bf.py')
 
 
 # Comprobar que el modelo BF de prueba corre corectamente
-
-
 class Test_ModeloSenc(unittest.TestCase):
     """
     Verifica el funcionamiento de los programas de MDS.

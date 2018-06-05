@@ -1,9 +1,10 @@
 import datetime as ft
 import inspect
+import json
 import math as mat
 import os
 import sys
-from copy import copy as copiar
+from copy import copy as copiar, deepcopy as copiar_profundo
 from importlib import import_module as importar_mod
 from warnings import warn as avisar
 
@@ -179,18 +180,15 @@ class EnvolturaBF(Modelo):
     def __getinitargs__(símismo):
         return símismo.modelo,
 
-    def comprobar_leer_escribir_ingresos(símismo):
-        return símismo.modelo.comprobar_leer_escribir_ingresos()
-
-    def comprobar_leer_egresos(símismo):
-        return símismo.modelo.comprobar_leer_egresos()
-
 
 class ModeloBF(Modelo):
     """
     Se debe desarrollar una subclase de esta clase para cada tipo modelo biofísico que se quiere volver compatible
     con Tinamit.
     """
+
+    prb_datos_inic = dic_prb_datos_inic = None
+    prb_arch_egr = dic_prb_egr = None
 
     def __init__(símismo):
         """
@@ -283,13 +281,25 @@ class ModeloBF(Modelo):
     def __getinitargs__(símismo):
         return tuple()
 
-    @classmethod
-    def comprobar_leer_escribir_ingresos(símismo):
-        pass
+    def cargar_ref_ejemplo_vals_inic(símismo):
+        if not os.path.isfile(símismo.dic_prb_datos_inic):
+            avisar(_('\nNo encontramos diccionario con los valores corectos de referencia para comprobar que el'
+                     '\nmodelo sí esté leyendo bien los datos iniciales. Lo generaremos con base en el los valores'
+                     '\nactualmente leídos por el modelo. Asegúrate que los valores generados en'
+                     '\n\t"{}"'
+                     '\nestén correctos, y si no lo son, bórralo. En el futuro, se empleará este archivo para '
+                     '\ncomprobar la función de lectura de datos iniciales.').format(símismo.dic_prb_datos_inic))
+            d_vals = copiar_profundo(símismo.variables)
+            for v, d_v in d_vals.items():
+                if isinstance(d_v['val'], np.ndarray):
+                    d_v['val'] = d_v['val'].tolist()
+            with open(símismo.dic_prb_datos_inic, 'w', encoding='UTF-8') as d:
+                json.dump(d_vals, d, ensure_ascii=False, indent=2, sort_keys=True)
 
-    @classmethod
-    def comprobar_leer_egresos(símismo):
-        pass
+        with open(símismo.dic_prb_datos_inic, encoding='UTF-8') as d:
+            d_vals = json.load(d)
+
+        return d_vals
 
 
 class ModeloImpaciente(ModeloBF):
@@ -308,6 +318,9 @@ class ModeloImpaciente(ModeloBF):
         Esta función correrá automáticamente con la inclusión de `super().__init__()` en la función `__init__()` de las
         subclases de esta clase.
         """
+
+        símismo.arch_egreso = None  # type: str
+        símismo.arch_ingreso = None  # type: str
 
         # Número y duración de las estaciones del año. Para modelos puramente اعداد_مہینہ, puedes utilizar 12 y 1.
         # Se deben modificar, si necesario, en la función leer_archivo_vals_inic() de la subclase.
@@ -567,7 +580,7 @@ class ModeloImpaciente(ModeloBF):
                 else:
                     símismo.variables[var]['val'][:] = datos
 
-    def leer_archivo_vals_inic(símismo):
+    def leer_archivo_vals_inic(símismo, archivo=None):
         """
         Esta función devuelve un diccionario con los valores leídos del archivo de valores iniciales.
         :return: Un diccionario de los variables iniciales y sus valores, con el número de polígonos (para modelos
@@ -576,7 +589,7 @@ class ModeloImpaciente(ModeloBF):
         """
         raise NotImplementedError
 
-    def leer_egr(símismo, n_años_egr):
+    def leer_egr(símismo, n_años_egr, archivo=None):
         """
         Lee los egresos del modelo y los guarda en los diccionarios internos apropiados.
 
@@ -586,8 +599,11 @@ class ModeloImpaciente(ModeloBF):
 
         """
 
+        if archivo is None:
+            archivo = símismo.arch_egreso
+
         # Leer el archivo de egreso
-        dic_egr = símismo.leer_archivo_egr(n_años_egr=n_años_egr)
+        dic_egr = símismo.leer_archivo_egr(n_años_egr=n_años_egr, archivo=archivo)
 
         # Para simplificar el código
         estacionales = símismo.tipos_vars['EgrEstacionales']
@@ -605,12 +621,15 @@ class ModeloImpaciente(ModeloBF):
 
             símismo.variables[var]['val'][:] = dic_egr[var]
 
-    def escribir_ingr(símismo, n_años_simul):
+    def escribir_ingr(símismo, n_años_simul, archivo=None):
         """
         Escribe un archivo de ingresos del modelo en el formato que lee el modelo externo.
         :param n_años_simul: El número de años para la simulación siguiente.
         :type n_años_simul: int
         """
+
+        if archivo is None:
+            archivo = símismo.arch_ingreso
 
         dic_ingr = {}
 
@@ -627,9 +646,9 @@ class ModeloImpaciente(ModeloBF):
             else:
                 dic_ingr[var] = símismo.variables[var]['val']
 
-        símismo.escribir_archivo_ingr(n_años_simul=n_años_simul, dic_ingr=dic_ingr)
+        símismo._escribir_archivo_ingr(n_años_simul=n_años_simul, dic_ingr=dic_ingr, archivo=archivo)
 
-    def leer_archivo_egr(símismo, n_años_egr):
+    def leer_archivo_egr(símismo, n_años_egr, archivo):
         """
         Lee un archivo de egresos del modelo.
 
@@ -641,7 +660,7 @@ class ModeloImpaciente(ModeloBF):
 
         raise NotImplementedError
 
-    def escribir_archivo_ingr(símismo, n_años_simul, dic_ingr):
+    def _escribir_archivo_ingr(símismo, n_años_simul, dic_ingr, archivo):
         """
         Escribe un archivo de ingresos para el modelo, en un formato que lee el modelo externo.
 
@@ -654,16 +673,29 @@ class ModeloImpaciente(ModeloBF):
 
         raise NotImplementedError
 
+    def cargar_ref_ejemplo_egr(símismo):
+        if not os.path.isfile(símismo.dic_prb_egr):
+            avisar(_('\nNo encontramos diccionario con los valores corectos de referencia para comprobar que el'
+                     '\nmodelo sí esté leyendo bien los egresos de modelos. Lo generaremos con base en el los valores'
+                     '\nactualmente leídos por el modelo. Asegúrate que los valores generados en'
+                     '\n\t"{}"'
+                     '\nestén correctos, y si no lo son, bórralo. En el futuro, se empleará este archivo para '
+                     '\ncomprobar la función de lectura de egresos.').format(símismo.dic_prb_egr))
+            d_egr = símismo.leer_archivo_egr(n_años_egr=1, archivo=símismo.prb_arch_egr)
+            for var, val in d_egr.items():
+                if isinstance(val, np.ndarray):
+                    d_egr[var] = val.tolist()
+
+            with open(símismo.dic_prb_egr, 'w', encoding='UTF-8') as d:
+                json.dump(d_egr, d, ensure_ascii=False, indent=2, sort_keys=True)
+
+        with open(símismo.dic_prb_egr, encoding='UTF-8') as d:
+            d_egr = json.load(d)
+
+        return d_egr
+
     def __getinitargs__(símismo):
         return tuple()
-
-    @classmethod
-    def comprobar_leer_escribir_ingresos(símismo):
-        pass
-
-    @classmethod
-    def comprobar_leer_egresos(símismo):
-        pass
 
 
 class ModeloFlexible(ModeloBF):

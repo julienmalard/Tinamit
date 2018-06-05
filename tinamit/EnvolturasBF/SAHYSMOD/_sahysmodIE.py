@@ -27,7 +27,7 @@ SOFTWARE.
 
 # !/bin/python
 
-# sahysmodIE.py
+# _sahysmodIE.py
 
 import os
 import sys
@@ -35,10 +35,10 @@ import sys
 import numpy as np
 from pkg_resources import resource_filename
 
-from . import anlzd_sntct
+from . import _anlzd_sntct
 
-PLANTILLACSV = resource_filename(__name__, 'sahysmod.csv.tmpl')
-PLANTILLAINP = resource_filename(__name__, 'sahysmod.inp.tmpl')
+PLANTILLACSV = resource_filename(__name__, 'recursos/sahysmod.csv.tmpl')
+PLANTILLAINP = resource_filename(__name__, 'recursos/sahysmod.inp.tmpl')
 
 parámsParaTransponer = [
     'A',
@@ -111,7 +111,7 @@ def leer_info_dic_paráms(archivo_fnt):
     plantilla_fnt = PLANTILLACSV if archivo_fnt[-3:] == 'csv' else PLANTILLAINP
 
     # Leer el archivo de ingresos.
-    dic_paráms = anlzd_sntct.leer_archivo(archivo_fnt, plantilla_fnt, paráms_ent=paráms_enteros)
+    dic_paráms = _anlzd_sntct.leer_archivo(archivo_fnt, plantilla_fnt, paráms_ent=paráms_enteros)
     transponer_paráms(dic_paráms)  # Transpose parameters that require it.
 
     n_en_s = []
@@ -134,7 +134,7 @@ def leer_info_dic_paráms(archivo_fnt):
 def escribir_desde_dic_paráms(dic_paráms, archivo_obj, csv=False):
     plantilla_obj = PLANTILLACSV if csv else PLANTILLAINP
 
-    anlzd_sntct.escribir_archivo(dic_paráms, archivo_obj, plantilla_obj, paráms_ent=paráms_enteros)
+    _anlzd_sntct.escribir_archivo(dic_paráms, archivo_obj, plantilla_obj, paráms_ent=paráms_enteros)
 
 
 def central(archivo_fnt, archivo_obj):

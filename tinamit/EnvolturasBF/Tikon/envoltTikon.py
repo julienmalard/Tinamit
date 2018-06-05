@@ -6,7 +6,7 @@ class ModeloTikon(ModeloImpaciente):
 
     """
 
-    def escribir_archivo_ingr(símismo, n_años_simul, dic_ingr):
+    def _escribir_archivo_ingr(símismo, n_años_simul, dic_ingr):
         pass
 
     def leer_archivo_vals_inic(símismo):
