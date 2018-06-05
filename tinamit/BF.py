@@ -11,7 +11,7 @@ from warnings import warn as avisar
 import numpy as np
 from dateutil.relativedelta import relativedelta as deltarelativo
 
-from tinamit import _
+from tinamit import _, obt_val_config
 from tinamit.Modelo import Modelo
 from .Unidades.conv import convertir
 
@@ -190,12 +190,35 @@ class ModeloBF(Modelo):
     prb_datos_inic = dic_prb_datos_inic = None
     prb_arch_egr = dic_prb_egr = None
 
+    requísitos = {}
+
     def __init__(símismo):
         """
         Esta función correrá automáticamente con la inclusión de `super().__init__()` en la función `__init__()` de las
         subclases de esta clase.
         """
+
+        for req, d_req in símismo.requísitos.items():
+            if 'val' not in d_req:
+                res = obt_val_config(llave=d_req['cód_conf'], mnsj=d_req['mnsj'])
+                if res is not None:
+                    d_req['val'] = res
+
+        símismo.instalado = all('val' in d for d in símismo.requísitos.values())
+        if not símismo.instalado:
+            avisar(_('El modelo "{m}" no está completamente instalado. No podrás correr simulaciones.')
+                   .format(m=símismo.__class__.__name__))
+
         super().__init__(nombre='modeloBF')
+
+    def _obt_val_config(símismo, cód_conf):
+        if cód_conf not in símismo.requísitos:
+            raise ValueError(_('El variable de configuradión "{v}" no existe en el diccionario de requísitos '
+                               'para este modelo.').format(v=cód_conf))
+        try:
+            return símismo.requísitos[cód_conf]['val']
+        except KeyError:
+            raise KeyError(_('Todavía no existe valor de configuración para "{v}".').format(v=cód_conf))
 
     def _cambiar_vals_modelo_interno(símismo, valores):
         """
@@ -231,7 +254,9 @@ class ModeloBF(Modelo):
 
         """
 
-        pass
+        if not símismo.instalado:
+            raise OSError(_('El modelo "{}" se debe instalar corectamente antes de hacer simulaciones.')
+                          .format(símismo.__class__.__name__))
 
     def cerrar_modelo(símismo):
         """

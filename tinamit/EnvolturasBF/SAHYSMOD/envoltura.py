@@ -24,6 +24,17 @@ class ModeloSAHYSMOD(ModeloImpaciente):
     prb_arch_egr = pkg_resources.resource_filename(__name__, 'recursos/prb_egresos.out')
     dic_prb_egr = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_egr.json')
 
+    requísitos = {
+        'exe_sahysmod': {
+            'cód_conf': 'exe_sahysmod',
+            'mnsj':
+                _('Debes especificar la ubicación del ejecutable SAHYSMOD para poder hacer\n'
+                  'simulaciones con modelos SAHYSMOD.\n'
+                  'Llamar la función siguiente:\n'
+                  '\ttinamit.poner_val_config_arch("exe_sahysmod", "C:\\Camino\\hacia\\mi\\SAHYSMODConsole.exe")')
+        }
+    }
+
     def __init__(símismo, datos_iniciales=None, exe_sahysmod=None):
 
         if datos_iniciales is None:
@@ -31,13 +42,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
         símismo.argsinic = (datos_iniciales, exe_sahysmod)
 
-        # Find the SAHYSMOD executable path, if necessary.
-        if exe_sahysmod is None:
-            exe_sahysmod = obt_val_config('exe_sahysmod', mnsj=_('Especificar la ubicación de tu modelo (.exe) '
-                                                                 'SAHYSMOD.'))
-        símismo.SAHYSMOD_exe = exe_sahysmod
-
-        # Number of (internal) polygons in the model
+        # Número de polígonos internos
         símismo.n_polí = None
 
         # Empty dictionary to store input data later on
@@ -56,6 +61,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # Inicialise as the parent class.
         super().__init__()
 
+        símismo.SAHYSMOD_exe = símismo._obt_val_config('exe_sahysmod')
         # Set climatic variables. Actually, "variable" for the moment.
         símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total',
                                    conv=0.001)

@@ -97,6 +97,12 @@ def poner_val_config(llave, val):
     _escribir_json(_configs, _dir_config)
 
 
+def poner_val_config_arch(llave, val):
+    if not os.path.isfile(val):
+        raise FileNotFoundError(_('El archivo "{}" no existe. :(').format(val))
+    poner_val_config(llave=llave, val=val)
+
+
 # Funciones fáciles para opciones de lenguas.
 _dir_local = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'local', '_fuente')
 
