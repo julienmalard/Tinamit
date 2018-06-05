@@ -37,7 +37,6 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
     def __init__(símismo, datos_iniciales=None, exe_sahysmod=None):
 
-
         if datos_iniciales is None:
             datos_iniciales = símismo.prb_datos_inic
 

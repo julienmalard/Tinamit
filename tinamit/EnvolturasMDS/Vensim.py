@@ -204,6 +204,24 @@ class ModeloVensimMdl(EnvolturaMDS):
     def cerrar_modelo(símismo):
         pass
 
+    def publicar_vpm(símismo):
+
+        try:
+            dll = ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
+        except OSError:
+            raise OSError('Esta computadora no cuenta con el DLL de VENSIM DSS.')
+
+        comanda_vensim(dll.vensim_command, 'SPECIAL>LOADMODEL|%s' % símismo.archivo_mds)
+        símismo.guardar_mds()
+
+        archivo_vpm = os.path.join(os.path.split(símismo.archivo_mds)[0], 'Tinamit.vpm')
+
+        archivo_frm = os.path.join(os.path.split(os.path.dirname(__file__))[0], 'VENSIM.frm')
+
+        comanda_vensim(dll.vensim_command, ('FILE>PUBLISH|%s' % archivo_frm))
+
+        símismo.vpm = ModeloVENSIMvpm(archivo_mds=archivo_vpm)
+
 
 class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
     """

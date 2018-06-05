@@ -79,7 +79,7 @@ def construir_línea_l(nombres_parámetros, dic_parámetros):
     return línea + '\n'
 
 
-def parse_f_línea(línea, nombres_parámetros, anchura_cols, dic_parámetros):
+def anal_línea_f(línea, nombres_parámetros, anchura_cols, dic_parámetros):  # pragma: sin cobertura
     cursor = 0
     matrizParáms = 0
 
@@ -97,7 +97,7 @@ def parse_f_línea(línea, nombres_parámetros, anchura_cols, dic_parámetros):
     return dic_parámetros
 
 
-def construir_línea_f(nombresParáms, anchuraCols, dicParáms):
+def construir_línea_f(nombresParáms, anchuraCols, dicParáms):  # pragma: sin cobertura
     líneaEgr = ''
     matrizParáms = 0
     for i in range(len(anchuraCols)):
@@ -156,7 +156,7 @@ def anal_línea(línea, nombresParáms, especLínea, dicParáms):
     if especLínea[0] == 'L':
         anal_línea_l(línea, nombresParáms, dicParáms)
     elif especLínea[0] == 'F':
-        parse_f_línea(línea, nombresParáms, especLínea[1], dicParáms)
+        anal_línea_f(línea, nombresParáms, especLínea[1], dicParáms)
     elif especLínea[0] == 'D':
         anal_línea_d(línea, nombresParáms, especLínea[1], dicParáms)
     return dicParáms
@@ -287,7 +287,7 @@ def escribir_archivo(dicParáms, nombre_archContenido, nombre_archPlantilla, par
     return nombre_archContenido
 
 
-def central(*args):
+def central(*args):  # pragma: sin cobertura
     if args[1] == '-r':
         dicParáms = leer_archivo(args[2], args[3])
         print(dicParáms[args[4]])

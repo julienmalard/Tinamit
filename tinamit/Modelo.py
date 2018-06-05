@@ -1100,6 +1100,7 @@ class Modelo(object):
         método = símismo.info_calibs['micro calibs'][var]['método']
         líms_paráms = símismo.info_calibs['micro calibs'][var]['líms_paráms']
         paráms = símismo.info_calibs['micro calibs'][var]['paráms']
+        ops = símismo.info_calibs['micro calibs'][var]['ops_método']
 
         # Aplicar límites automáticos
         if líms_paráms is None:
@@ -1110,7 +1111,8 @@ class Modelo(object):
 
         # Efectuar la calibración.
         calib = mod_calib.calibrar(
-            paráms=paráms, líms_paráms=líms_paráms, método=método, bd_datos=símismo.datos, en=en, escala=escala
+            paráms=paráms, líms_paráms=líms_paráms, método=método, bd_datos=símismo.datos, en=en, escala=escala,
+            ops_método=ops
         )
 
         # Reformatear los resultados

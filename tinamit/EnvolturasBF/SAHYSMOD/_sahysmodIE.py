@@ -137,7 +137,7 @@ def escribir_desde_dic_paráms(dic_paráms, archivo_obj, csv=False):
     _anlzd_sntct.escribir_archivo(dic_paráms, archivo_obj, plantilla_obj, paráms_ent=paráms_enteros)
 
 
-def central(archivo_fnt, archivo_obj):
+def central(archivo_fnt, archivo_obj):  # pragma: sin cobertura
     dic_paráms = leer_info_dic_paráms(archivo_fnt=archivo_fnt)
 
     escribir_desde_dic_paráms(dic_paráms=dic_paráms, archivo_obj=archivo_obj,
