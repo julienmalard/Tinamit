@@ -37,6 +37,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
     def __init__(símismo, datos_iniciales=None, exe_sahysmod=None):
 
+
         if datos_iniciales is None:
             datos_iniciales = símismo.prb_datos_inic
 
@@ -45,24 +46,27 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # Número de polígonos internos
         símismo.n_polí = None
 
-        # Empty dictionary to store input data later on
+        # Directorio vacío para guardar datos de ingresos después
         símismo.dic_ingr = {}
 
-        # Set the working directory to write model output, and remember where the initial data is stored.
+        # Poner el directorio de trabajo (donde escribiremos los egresos del modelo), y acordarse de dónde se ubican
+        # los datos iniciales.
         símismo.datos_inic = datos_iniciales
         símismo.direc_base = os.path.split(datos_iniciales)[0]
 
-        # The path from which to read and write input and output data will be set later on according to the run name
+        # Estableceremos el directorio para escribir y leer ingresos y egresos según el nombre de la corrida más tarde
         símismo.direc_trabajo = None  # type: str
 
-        # Prepare the command to the SAHYSMOD executable
+        # Estableceremos la comanda SAHYSMOD más tarde también
         símismo.comanda = None
 
-        # Inicialise as the parent class.
+        # Inicializar la clase pariente.
         super().__init__()
 
+        # Buscar la ubicación del modelo SAHYSMOD.
         símismo.SAHYSMOD_exe = símismo._obt_val_config('exe_sahysmod')
-        # Set climatic variables. Actually, "variable" for the moment.
+
+        # Establecer los variables climáticos.
         símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total',
                                    conv=0.001)
 

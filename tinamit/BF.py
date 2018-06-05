@@ -198,9 +198,9 @@ class ModeloBF(Modelo):
         subclases de esta clase.
         """
 
-        for req, d_req in símismo.requísitos.items():
+        for d_req in símismo.requísitos.values():
             if 'val' not in d_req:
-                res = obt_val_config(llave=d_req['cód_conf'], mnsj=d_req['mnsj'])
+                res = obt_val_config(llave=d_req['cód_conf'], mnsj_err=d_req['mnsj'], suprm_err=True)
                 if res is not None:
                     d_req['val'] = res
 
@@ -218,7 +218,7 @@ class ModeloBF(Modelo):
         try:
             return símismo.requísitos[cód_conf]['val']
         except KeyError:
-            raise KeyError(_('Todavía no existe valor de configuración para "{v}".').format(v=cód_conf))
+            avisar(_('Todavía no existe valor de configuración para "{v}".').format(v=cód_conf))
 
     def _cambiar_vals_modelo_interno(símismo, valores):
         """

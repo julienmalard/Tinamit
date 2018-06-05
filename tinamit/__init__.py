@@ -1,6 +1,7 @@
 import gettext
 import json
 import os
+from warnings import warn as avisar
 
 from pkg_resources import resource_filename
 
@@ -43,50 +44,40 @@ except (FileNotFoundError, json.decoder.JSONDecodeError):
     _escribir_json(_configs, _dir_config)
 
 
-def obt_val_config(llave, tipo='arch', pedir=True, mnsj=None):
+def obt_val_config(llave, tipo=None, mnsj_err=None, suprm_err=False):
     """
 
     :param llave:
     :type llave: str
-    :param tipo:
-    :type tipo: str
-    :param pedir:
-    :type pedir: bool
-    :param mnsj:
-    :type mnsj: str
+    :param mnsj_err:
+    :type mnsj_err: str
     :return:
     :rtype: str | float | int
     """
 
     def verificar(v, tp):
-        if tp.lower() == 'arch':
-            if not os.path.isfile(v):
-                return False
-        elif tp.lower() == 'dir':
-            if not os.path.isdir(v):
-                return False
-        else:
+        if tp is None:
             return True
-        return True
+        if tp.lower() == 'arch':
+            return os.path.isfile(v)
+        elif tp.lower() == 'dir':
+            return os.path.isdir(v)
+        else:
+            raise ValueError
 
-    if pedir:
-
-        try:
-            val = _configs[llave]
-        except KeyError:
-            val = input(_('Entregar el valor para {}').format(llave) if mnsj is None else mnsj)
-
-        while not verificar(val, tipo):
-            val = input(_('"{}" no es un valor aceptable para "{}".\n\tIntente de nuevo:').format(val, llave))
-
-        poner_val_config(llave, val)
-
-    else:
-        try:
-            val = _configs[llave]
-            if not verificar(val, tipo):
+    try:
+        val = _configs[llave]
+        if not verificar(val, tipo):
+            if suprm_err:
+                avisar(mnsj_err)
+                return
+            else:
                 raise FileNotFoundError(_('El archivo "" no existe.').format(val))
-        except KeyError:
+    except KeyError:
+        if suprm_err:
+            avisar(mnsj_err)
+            return
+        else:
             raise KeyError(_('Tinamït no tiene variable "{}" de configuración.').format(llave))
 
     return val
