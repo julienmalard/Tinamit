@@ -29,6 +29,7 @@ class Test_ModeloSenc(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        print('Test_ModeloSenc')
 
         # Generar las instancias de los modelos
         cls.modelos = {ll: d['envlt'](d['prueba']) for ll, d in tipos_modelos.items()}  # type: dict[str, EnvolturaMDS]

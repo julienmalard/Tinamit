@@ -4,6 +4,7 @@ import unittest
 
 
 class Test_TradsUnids(unittest.TestCase):
+    print('Test_TradsUnids')
 
     def test_traducir_entero(símismo):
         símismo.assertEqual(tx_a_núm('१२३४५'), 12345)

@@ -12,6 +12,7 @@ class Test_Geografía(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        print('Test_Geografía')
         cls.geog = Geografía(nombre='Prueba Guatemala')
         cls.geog.agregar_info_regiones(archivo=arch_csv_geog)
 

@@ -9,6 +9,7 @@ class Test_ConvertirUnidades(unittest.TestCase):
     """
     Comprobar la conversión de unidades.
     """
+    print('Test_ConvertirUnidades')
 
     def test_convertir_unids_equivalentes(símismo):
         # Unidades equivalentes deberían dar un factor de conversión de 1.

@@ -12,6 +12,7 @@ arch_indiv = os.path.join(dir_act, 'recursos/datos/datos_indiv.csv')
 
 
 class Test_Datos(unittest.TestCase):
+    print('Test_Datos')
     def test_de_pandas(símismo):
         bd_pds = pd.DataFrame({'y': [1,2,3], 'x': [4,5,6]})
         bd_datos = DatosIndividuales('Datos Generados', bd_pds)
@@ -20,6 +21,7 @@ class Test_Datos(unittest.TestCase):
 
 
 class Test_SuperBD(unittest.TestCase):
+    print('Test_SuperBD')
 
     @classmethod
     def setUpClass(cls):
