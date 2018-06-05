@@ -1,5 +1,6 @@
 import os
 import unittest
+from warnings import warn
 
 import numpy as np
 import pandas as pd
@@ -31,7 +32,7 @@ class Test_Calibrador(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        print('Test_Calibrador')
+        warn('Test_Calibrador')
         n_obs = 100
         datos_x = np.random.rand(n_obs)
 
@@ -60,7 +61,7 @@ class Test_CalibEnModelo(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        print('Test_CalibEnModelo')
+        warn('Test_CalibEnModelo')
 
         datos_x = {'701': np.random.rand(500), '708': np.random.rand(25), '1001': np.random.rand(500)}
         datos_y = {lg: datos_x[lg] * d['Factor a'] + d['Factor b'] for lg, d in cls.paráms.items()}  # y = a*x + b

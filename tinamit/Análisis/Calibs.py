@@ -390,9 +390,13 @@ class Calibrador(object):
                             else:
                                 # Calibrar el pariente
                                 _calibrar_jerárquíco_manual(lugar=pariente, jrq=jrq, clbs=clbs, d_apr=d_apr)
-
-                                # Generar a prioris de la calibración
-                                aprs = _gen_a_prioris(líms=líms_paráms, dic_clbs=clbs[pariente])
+                                # Evitar recalcular aprioris si no cambió la distribución desde el nivel superior
+                                if pariente in jrq and clbs[pariente] is clbs[jrq[pariente]]:
+                                    d_apr[pariente] = d_apr[jrq[pariente]]
+                                else:
+                                    # Generar a prioris de la calibración
+                                    d_apr[pariente] = _gen_a_prioris(líms=líms_paráms, dic_clbs=clbs[pariente])
+                                aprs = d_apr[pariente]
 
                         except KeyError:
                             # Si no existe, hay error.
@@ -421,9 +425,10 @@ class Calibrador(object):
                     return clbs
 
                 # Efectuar las calibraciones para todos los lugares.
+                dic_apr = {}
                 resultados = {}
                 for lg in lugares:
-                    _calibrar_jerárquíco_manual(lugar=lg, jrq=jerarquía, clbs=resultados)
+                    _calibrar_jerárquíco_manual(lugar=lg, jrq=jerarquía, clbs=resultados, d_apr=dic_apr)
 
         # Devolver únicamente los lugares de interés (y no lugares de más arriba en la jerarquía).
         if lugares is not None:

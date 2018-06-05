@@ -1,6 +1,6 @@
 import os
 import unittest
-
+from warnings import warn
 
 from tinamit.Geog.Geog import Geografía
 
@@ -12,7 +12,7 @@ class Test_Geografía(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        print('Test_Geografía')
+        warn('Test_Geografía')
         cls.geog = Geografía(nombre='Prueba Guatemala')
         cls.geog.agregar_info_regiones(archivo=arch_csv_geog)
 

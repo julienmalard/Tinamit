@@ -1,5 +1,6 @@
 import os
 import unittest
+from warnings import warn
 
 import numpy.testing as npt
 
@@ -23,7 +24,7 @@ class Test_Conectado(unittest.TestCase):
         """
         Preparar los modelos genéricos necesarios para las pruebas.
         """
-        print('Test_Conectado')
+        warn('Test_Conectado')
 
         # Generar las instancias de los modelos individuales y conectados
         cls.mods_mds = {ll: d['envlt'](d['prueba']) for ll, d in tipos_modelos.items()}
@@ -125,7 +126,7 @@ class Test_Conectado(unittest.TestCase):
 
 # Comprobar 3+ modelos conectados
 class Test_3ModelosConectados(unittest.TestCase):
-    print('Test_3ModelosConectados')
+    warn('Test_3ModelosConectados')
     def test_conexión_horizontal(símismo):
         """
         Comprobar que la conexión de variables se haga correctamente con 3 submodelos conectados directamente
