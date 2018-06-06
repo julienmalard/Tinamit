@@ -1,8 +1,9 @@
 import os
 import unittest
-from warnings import warn
 
-from tinamit.EnvolturasMDS import generar_mds, EnvolturaMDS, ModeloVensim, ModeloPySD, ModeloVensimMdl
+from tinamit.EnvolturasMDS import ModeloVensim, ModeloPySD, ModeloVensimMdl, generar_mds
+from tinamit.MDS import EnvolturaMDS
+
 
 # Los tipos de modelos DS que queremos comprobar.
 tipos_modelos = {
@@ -30,7 +31,6 @@ class Test_ModeloSenc(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        warn('Test_ModeloSenc')
 
         # Generar las instancias de los modelos
         cls.modelos = {ll: d['envlt'](d['prueba']) for ll, d in tipos_modelos.items()}  # type: dict[str, EnvolturaMDS]

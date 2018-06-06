@@ -33,8 +33,7 @@ else:
 
 
 class ModeloVensimMdl(EnvolturaMDS):
-
-    instalado = False  # para hacer: Por el momento lo dejamos inactivado.
+    instalado = True
 
     def __init__(símismo, archivo):
 
@@ -150,6 +149,15 @@ class ModeloVensimMdl(EnvolturaMDS):
         # Los constantes son los variables que quedan.
         símismo.constantes += [x for x, d in símismo.variables.items()
                                if not len(d['parientes']) and not any(h in símismo.flujos for h in d['hijos'])]
+
+    def _leer_resultados(símismo, var, corrida):
+        pass
+
+    def _leer_vals_inic(símismo):
+        pass
+
+    def _aplicar_cambios_vals_inic(símismo):
+        pass
 
     def _escribir_var(símismo, var):
         """

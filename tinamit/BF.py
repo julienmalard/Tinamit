@@ -315,7 +315,7 @@ class ModeloBF(Modelo):
                      '\nestén correctos, y si no lo son, bórralo. En el futuro, se empleará este archivo para '
                      '\ncomprobar la función de lectura de datos iniciales.').format(símismo.dic_prb_datos_inic))
             d_vals = copiar_profundo(símismo.variables)
-            for v, d_v in d_vals.items():
+            for d_v in d_vals.values():
                 if isinstance(d_v['val'], np.ndarray):
                     d_v['val'] = d_v['val'].tolist()
             with open(símismo.dic_prb_datos_inic, 'w', encoding='UTF-8') as d:

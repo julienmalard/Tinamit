@@ -1,7 +1,7 @@
 from tinamit.BF import ModeloFlexible
 
 
-class ModeloDSSAT(ModeloFlexible):
+class ModeloDSSAT(ModeloFlexible):  # pragma: sin cobertura
 
     def __init__(símismo, exe_DSSAT, archivo_ingr):
         super().__init__()

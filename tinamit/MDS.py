@@ -5,7 +5,6 @@ import re
 
 import numpy as np
 
-from tinamit.Análisis.sintaxis import Ecuación
 from tinamit import _
 from tinamit.Modelo import Modelo
 
@@ -155,7 +154,47 @@ class EnvolturaMDS(Modelo):
 
 
 class MDSEditable(EnvolturaMDS):
-    pass
+    def __init__(símismo, archivo, nombre='mds'):
+        from EnvolturasMDS import generar_mds
+        símismo.mod = generar_mds(archivo=archivo)
+        símismo.editado = False
+        super().__init__(archivo=archivo, nombre=nombre)
+
+    def _inic_dic_vars(símismo):
+        return símismo.mod._inic_dic_vars()
+
+    def unidad_tiempo(símismo):
+        raise NotImplementedError
+
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+        from EnvolturasMDS import generar_mds
+        if símismo.mod is None or símismo.editado:
+            símismo.publicar_modelo()
+            símismo.mod = generar_mds()
+
+    def _cambiar_vals_modelo_interno(símismo, valores):
+        return símismo.mod._cambiar_vals_modelo_interno(valores=valores)
+
+    def _incrementar(símismo, paso):
+        return símismo.mod._incrementar(paso=paso)
+
+    def _leer_vals(símismo):
+        return símismo.mod._leer_vals()
+
+    def cerrar_modelo(símismo):
+        return símismo.mod.cerrar_modelo()
+
+    def _leer_resultados(símismo, var, corrida):
+        return símismo.mod._leer_resultados(var=var, corrida=corrida)
+
+    def _leer_vals_inic(símismo):
+        return símismo.mod._leer_vals_inic()
+
+    def _aplicar_cambios_vals_inic(símismo):
+        return símismo.mod._aplicar_cambios_vals_inic()
+
+    def publicar_modelo(símismo):
+        raise NotImplementedError
 
 
 def leer_egr_mds(archivo, var, saltar_última_vdf=True):

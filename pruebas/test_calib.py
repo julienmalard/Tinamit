@@ -1,6 +1,6 @@
+import numpy.testing as npt
 import os
 import unittest
-from warnings import warn
 
 import numpy as np
 import pandas as pd
@@ -32,7 +32,6 @@ class Test_Calibrador(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        warn('Test_Calibrador')
         n_obs = 100
         datos_x = np.random.rand(n_obs)
 
@@ -61,10 +60,10 @@ class Test_CalibEnModelo(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        warn('Test_CalibEnModelo')
-
-        datos_x = {'701': np.random.rand(500), '708': np.random.rand(25), '1001': np.random.rand(500)}
-        datos_y = {lg: datos_x[lg] * d['Factor a'] + d['Factor b'] for lg, d in cls.paráms.items()}  # y = a*x + b
+        n_obs = {'701': 500, '708': 50, '1001': 500}
+        datos_x = {lg: np.random.rand(n) for lg, n in n_obs.items()}
+        datos_y = {lg: datos_x[lg] * d['Factor a'] + d['Factor b'] + np.random.rand(n_obs[lg]) * 0.1
+                   for lg, d in cls.paráms.items()}  # y = a*x + b
         lugares = [x for ll, v in datos_x.items() for x in [ll] * v.size]
         x = [i for v in datos_x.values() for i in v]
         y = [i for v in datos_y.values() for i in v]
@@ -91,21 +90,22 @@ class Test_CalibEnModelo(unittest.TestCase):
                     for p in símismo.paráms[lg]:
                         val = símismo.paráms[lg][p]
                         est = símismo.mod.calibs[p][lg]['val']
-                        símismo.assertTrue(round(est, 1) == val)
+                        npt.assert_allclose(est, val, rtol=0.1)
 
                 símismo.mod.borrar_micro_calib('Y')
 
-    def test_calibración_bayes_mod_jerárquíco(símismo):
+    def test_calibración_geog_sin_mod_jerárquíco(símismo):
         if 'inferencia bayesiana' in métodos:
-            símismo.mod.especificar_micro_calib(var='Y', método='inferencia bayesiana',
-                                                ops_método={'mod_jerárquico': True})
+            símismo.mod.especificar_micro_calib(
+                var='Y', método='inferencia bayesiana', ops_método={'mod_jerárquico': False}
+            )
             símismo.mod.efectuar_micro_calibs()
 
             for lg in símismo.paráms:
                 for p in símismo.paráms[lg]:
                     val = símismo.paráms[lg][p]
                     est = símismo.mod.calibs[p][lg]['val']
-                    símismo.assertTrue(round(est, 1) == val)
+                    npt.assert_allclose(est, val, rtol=0.1)
 
             símismo.mod.borrar_micro_calib('Y')
 

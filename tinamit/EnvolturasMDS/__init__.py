@@ -3,7 +3,6 @@ import os
 from tinamit import _
 from tinamit.EnvolturasMDS.PySD import ModeloPySD
 from tinamit.EnvolturasMDS.Vensim import ModeloVensim, ModeloVensimMdl
-from tinamit.MDS import EnvolturaMDS
 
 dic_motores = {
     '.vpm': [ModeloVensim],

@@ -184,8 +184,7 @@ class Ecuación(object):
 
         return _árb_a_python(símismo.árbol, l_prms=paráms, dialecto=símismo.dialecto)
 
-    def gen_mod_bayes(símismo, líms_paráms, obs_x, obs_y, aprioris=None, binario=False, vars_compart=False,
-                      nv_jerarquía=None):
+    def gen_mod_bayes(símismo, líms_paráms, obs_x, obs_y, aprioris=None, binario=False, nv_jerarquía=None):
 
         if pm is None:
             return ImportError(_('Hay que instalar PyMC3 para poder utilizar modelos bayesianos.'))
@@ -273,7 +272,7 @@ class Ecuación(object):
                         try:
                             op_pm = _conv_op(v[0], dialecto, 'pm')
                             return op_pm(_a_bayes(v[1][0], d_pm=d_pm), _a_bayes(v[1][1], d_pm=d_pm))
-                        except KeyError:
+                        except (KeyError, StopIteration):
                             pass
 
                         if v[0] == '+':
@@ -301,13 +300,7 @@ class Ecuación(object):
 
                             # Si el variable no es un parámetro calibrable, debe ser un valor observado
                             try:
-                                if vars_compart:
-                                    # Crear un variable especial theano que nos permitirá cambiar los valores
-                                    # observados después.
-                                    d_vars_compart[v] = theano.shared(obs_x[v].values)
-                                    return d_vars_compart[v]
-                                else:
-                                    return obs_x[v].values
+                                return obs_x[v].values
 
                             except KeyError:
                                 raise ValueError(_('El variable "{}" no es un parámetro, y no se encuentra'
@@ -336,25 +329,16 @@ class Ecuación(object):
             mu = _a_bayes(símismo.árbol, d_vars_pm)
             sigma = pm.HalfNormal(name='sigma', sd=max(1, (obs_y.max() - obs_y.min())))
 
-            if vars_compart:
-                v_obs_y = theano.shared(obs_y.values)
-                d_vars_compart[símismo.nombre] = v_obs_y
-            else:
-                v_obs_y = obs_y.values
-
             if binario:
                 # noinspection PyTypeChecker
                 x = pm.Normal(name='logit_prob', mu=mu, sd=sigma, shape=obs_y.shape, testval=np.full(obs_y.shape, 0))
-                pm.Bernoulli(name='Y_obs', logit_p=-x, observed=v_obs_y)  #
+                pm.Bernoulli(name='Y_obs', logit_p=-x, observed=obs_y.values)  #
 
             else:
                 # noinspection PyTypeChecker
-                pm.Normal(name='Y_obs', mu=mu, sd=sigma, observed=v_obs_y)
+                pm.Normal(name='Y_obs', mu=mu, sd=sigma, observed=obs_y.values)
 
-        if vars_compart:
-            return modelo, d_vars_compart
-        else:
-            return modelo
+        return modelo
 
     def sacar_args_func(símismo, func, i):
         """
@@ -506,14 +490,14 @@ def _árb_a_txt(á, dialecto):
 
                     # Devolver el texto correspondiendo a un operado (y recursar a través de los dos argumentos).
                     return '({a1} {o} {a2})'.format(a1=_árb_a_txt(v[1][0], dl), o=tx_op, a2=_árb_a_txt(v[1][1], dl))
-                except KeyError:
+                except (KeyError, StopIteration):
                     pass  # Si no funcionó, tal vez no es operador.
 
                 try:
                     # Intentar convertirlo, como nombre de función, a dialecto Tïnamit
                     return '{nombre}({args})'.format(nombre=_conv_fun(v[0], dialecto, 'tinamït'),
                                                      args=_árb_a_txt(v[1], dl))
-                except KeyError:
+                except (KeyError, StopIteration):
                     # Si no funcionó, simplemente formatearlo con el nombre original de la función.
                     return '{nombre}({args})'.format(nombre=v[0], args=_árb_a_txt(v[1], dl))
 
@@ -557,7 +541,7 @@ def _árb_a_python(á, l_prms, dialecto):
 
     Returns
     -------
-    Callable:
+    Callable
         La ecuación dinámico Python.
 
     """
@@ -609,7 +593,7 @@ def _árb_a_python(á, l_prms, dialecto):
                         # Si no sabemos lo que tenemos, hay error.
                         raise ValueError(_('Operador "{}" no reconocido').format(v[0]))
 
-                except KeyError:
+                except (KeyError, StopIteration):
                     # Si no era operado, es función de verdad.
                     fun = _conv_fun(v[0], dialecto, 'python')  # Traducir la función a Python
                     comp = _árb_a_python(v[1][1], l_prms, dl)  # Recursar a través de los argumentos de la función

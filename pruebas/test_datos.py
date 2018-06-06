@@ -1,5 +1,4 @@
 import os
-from warnings import warn
 
 import pandas as pd
 import unittest
@@ -23,7 +22,6 @@ class Test_Datos(unittest.TestCase):
 
 
 class Test_SuperBD(unittest.TestCase):
-    warn('Test_SuperBD')
 
     @classmethod
     def setUpClass(cls):

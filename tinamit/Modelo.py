@@ -1118,6 +1118,8 @@ class Modelo(object):
         # Reformatear los resultados
         resultado = {}
         for lg, d_lg in calib.items():
+            if d_lg is None:
+                continue
             for p in d_lg:
                 if p not in resultado:
                     resultado[p] = {}

@@ -9,7 +9,7 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 
 from tinamit import _
 from tinamit.BF import EnvolturaBF, ModeloBF
-from tinamit.EnvolturasMDS import generar_mds
+from EnvolturasMDS.auto_mds import generar_mds
 from tinamit.Geog.Geog import Lugar
 from tinamit.MDS import EnvolturaMDS
 from tinamit.Modelo import Modelo

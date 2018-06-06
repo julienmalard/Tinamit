@@ -1,6 +1,5 @@
 import os
 import unittest
-from warnings import warn
 
 import numpy as np
 
@@ -19,7 +18,6 @@ class Test_ModeloSenc(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        warn('Test_ModeloSenc')
         # Generar la Envoltura BF
         cls.envltmodelo = EnvolturaBF(arch_bf)
 
@@ -93,7 +91,6 @@ class Test_ModeloSenc(unittest.TestCase):
 
 # Comprobar que la EnvolturasBF pueda leer el modelo BF de prueba en todas las formas posibles para cargar un modelo BF.
 class Test_CrearEnvolturaBF(unittest.TestCase):
-    warn('Test_CrearEnvolturaBF')
     def test_crear_desde_archivo(símismo):
         # Comprobar creación de la envoltura desde un archivo que contiene un modelo BF.
         envlt = EnvolturaBF(arch_bf)

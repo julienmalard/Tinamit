@@ -264,7 +264,7 @@ class Geografía(object):
         símismo.escalas = []
 
         if archivo is not None:
-            símismo.agregar_info_regiones(archivo)
+            símismo.espec_escalas_regiones(archivo)
 
     def agregar_forma(símismo, archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=None):
         if nombre is None:
@@ -276,49 +276,38 @@ class Geografía(object):
                                    'alpha': alpha,
                                    'tipo': tipo}
 
-    def agregar_frm_regiones(símismo, archivo, col_id=None, col_orden=None, escala_geog=None):
+    def agregar_frm_regiones(símismo, archivo, col_id=None, escala_geog=None):
         """
 
         :param archivo:
         :type archivo:
         :param col_id:
         :type col_id:
-        :param col_orden:
-        :type col_orden:
         :return:
         :rtype:
         """
 
         if escala_geog is None:
-            escala_geog = 'Principal'
+            for escl in símismo.escalas:
+                símismo.obt
+            escala_geog = None
 
         af = sf.Reader(archivo)
 
         attrs = af.fields[1:]
         nombres_attr = [field[0] for field in attrs]
 
-        if col_orden is not None:
-            try:
-                orden = np.array([x.record[nombres_attr.index(col_orden)] for x in af.shapeRecords()])
-            except ValueError:
-                raise ValueError(_('La columna "{}" no existe en la base de datos.').format(col_orden))
-
-            orden -= np.min(orden)
-
-        else:
-            orden = range(len(af.records()))
-
         if col_id is not None:
             try:
-                ids = np.array([x.record[nombres_attr.index(col_orden)] for x in af.shapeRecords()])
+                ids = np.array([x.record[nombres_attr.index(col_id)] for x in af.shapeRecords()])
             except ValueError:
-                raise ValueError(_('La columna "{}" no existe en la base de datos.').format(col_orden))
+                raise ValueError(_('La columna "{}" no existe en la base de datos.').format(col_id))
         else:
-            ids = None
+            ids = range(len(af.records()))
 
-        símismo.regiones[escala_geog] = {'af': af, 'orden_regs': orden, 'id': ids}
+        símismo.regiones[escala_geog] = {'af': af, 'id': ids}
 
-    def agregar_info_regiones(símismo, archivo, col_cód='Código', codif_csv='windows-1252'):
+    def espec_escalas_regiones(símismo, archivo, col_cód='Código', codif_csv='windows-1252'):
 
         símismo.cód_a_lugar.clear()
         símismo.info_geog.clear()
@@ -428,7 +417,7 @@ class Geografía(object):
         if orden is None:
             orden = [x if isinstance(x, str) else x[0] for x in símismo.orden_jerárquico]
             hasta = orden.index(escala)
-            orden = orden[:hasta+1]
+            orden = orden[:hasta + 1]
 
         elif isinstance(orden, str):
             orden = [orden]
@@ -509,7 +498,7 @@ class Geografía(object):
                              .format(cód=cód, geog=símismo.nombre))
         return cód
 
-    def dibujar(símismo, archivo, valores=None, título=None, unidades=None, colores=None, escala_num=None):
+    def dibujar(símismo, archivo, valores=None, ids=None, título=None, unidades=None, colores=None, escala_num=None):
         """
         Dibuja la Geografía.
 
@@ -544,14 +533,27 @@ class Geografía(object):
         ejes.set_aspect('equal')
 
         if valores is not None:
-            d_regiones = None
-            for escala, d_reg in símismo.regiones.items():
-                if len(d_reg['orden_regs']) == valores.shape[0]:
-                    d_regiones = d_reg
-                    continue
 
-            if d_regiones is None:
-                raise ValueError(_('El número de regiones en los datos no concuerdan con la geografía del lugar.'))
+            if ids is not None:
+                escls_ids = set(símismo.obt_escala_región(id) for id in ids)
+                if len(escls_ids) != 1:
+                    raise ValueError(
+                        _('Todos los códigos de lugares en `ids` deben corresponder a la misma escala'
+                          '\nespacial de la geografía, pero los tuyos tienen una mezcla de las escalas'
+                          '\nsiguientes:'
+                          '\n\t{}').format(', '.join(escls_ids))
+                    )
+                d_regiones = símismo.regiones[list(escls_ids)[0]]
+
+            else:
+                d_regiones = None
+                for escala, d_reg in símismo.regiones.items():
+                    if len(d_reg['orden_regs']) == valores.shape[0]:
+                        d_regiones = d_reg
+                        continue
+
+                if d_regiones is None:
+                    raise ValueError(_('El número de regiones en los datos no concuerdan con la geografía del lugar.'))
 
             regiones = d_regiones['af']
             orden = d_regiones['orden_regs']

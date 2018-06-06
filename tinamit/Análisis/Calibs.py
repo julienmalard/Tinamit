@@ -179,7 +179,7 @@ class Calibrador(object):
         # Para calibración bayesiana, emplear modelos jerárquicos si no se especificó el contrario.
         if método == 'inferencia bayesiana':
             if 'mod_jerárquico' not in ops_método or ops_método['mod_jerárquico'] is None:
-                ops_método['mod_jerárquico'] = False
+                ops_método['mod_jerárquico'] = True
             mod_jerárquico = ops_método.pop('mod_jerárquico')
         else:
             mod_jerárquico = False
@@ -256,7 +256,7 @@ class Calibrador(object):
             # Si no hay lugares, generar y calibrar el modelo de una vez.
             mod_bayes = ec.gen_mod_bayes(
                 líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
-                binario=binario, aprioris=None, vars_compart=False, nv_jerarquía=None
+                binario=binario, aprioris=None, nv_jerarquía=None
             )
 
             resultados = _calibrar_mod_bayes(mod_bayes, paráms=paráms, ops=ops_método)
@@ -322,7 +322,7 @@ class Calibrador(object):
                 # Generar el modelo bayes
                 mod_bayes_jrq = ec.gen_mod_bayes(
                     líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
-                    aprioris=None, binario=binario, vars_compart=False, nv_jerarquía=nv_jerarquía
+                    aprioris=None, binario=binario, nv_jerarquía=nv_jerarquía
                 )
 
                 # Calibrar
@@ -334,101 +334,23 @@ class Calibrador(object):
                     resultados[p] = {lg: res_calib[p][í] for í, lg in enumerate(lugares)}
 
             else:
-                # Si no estamos haciendo un único modelo jerárquico, hay que emularlo manualmente.
-
-                # Una función recursiva para poder calibrar de manera jerárquica.
-                def _calibrar_jerárquíco_manual(lugar, jrq, clbs=None, d_apr=None):
-                    """
-                    Una función recursiva para emular un modelo jerárquico.
-
-                    Parameters
-                    ----------
-                    lugar: list
-                        La lista de lugares.
-                    jrq: dict
-                        La jerarquía de los lugares.
-                    clbs: dict
-                        Las calibraciones efectuadas.
-                        función.
-
-                    Returns
-                    -------
-                    dict
-                        Las calibraciones.
-                    """
-
-                    if d_apr is None:
-                        d_apr = {}
-                    if clbs is None:
-                        clbs = {}
-
-                    if lugar is None:
-                        # Si estamos al punto más alto de la jerarquía...
-
-                        obs_lg = obs  # Tomar todos los datos
-                        pariente = None  # No tenemos pariente
-
-                        aprs = None
-
-                    else:
-                        # Sino, hay un nivel superior en la jerarquía
-
-                        # Obtener los datos correspondiendo a este nivel
-                        lgs_potenciales = bd_datos.geog.obt_lugares_en(lugar)
-                        obs_lg = obs[obs['lugar'].isin(lgs_potenciales + [lugar])]
-
-                        # Intentar obtener la calibración del nivel superior.
-                        try:
-                            pariente = jrq[lugar]  # El nivel superior (pariente)
-
-                            # Si todavía no se calibró éste, calibrarlo de manera recursiva.
-                            if pariente in d_apr:
-
-                                # Emplear el modelo pariente como base para la calibración
-                                aprs = d_apr[pariente]
-
-                            else:
-                                # Calibrar el pariente
-                                _calibrar_jerárquíco_manual(lugar=pariente, jrq=jrq, clbs=clbs, d_apr=d_apr)
-                                # Evitar recalcular aprioris si no cambió la distribución desde el nivel superior
-                                if pariente in jrq and clbs[pariente] is clbs[jrq[pariente]]:
-                                    d_apr[pariente] = d_apr[jrq[pariente]]
-                                else:
-                                    # Generar a prioris de la calibración
-                                    d_apr[pariente] = _gen_a_prioris(líms=líms_paráms, dic_clbs=clbs[pariente])
-                                aprs = d_apr[pariente]
-
-                        except KeyError:
-                            # Si no existe, hay error.
-                            raise ValueError(
-                                _('El lugar "{}" no está bien inscrito en la jerarquía general.').format(lugar)
-                            )
-
-                    if len(obs_lg):
-                        # PyMC3 tiene problemas con tamaños de variables. Por eso, vamos a tener
-                        # que recrear el modelo para cada calibración por el momento.
-                        mod_lg = ec.gen_mod_bayes(
-                            líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y], binario=binario,
-                            aprioris=aprs, vars_compart=False, nv_jerarquía=None
-                        )
-                        # Si tenemos datos con los cuales calibrar, hacerlo ahora
-                        clbs[lugar] = _calibrar_mod_bayes(
-                            mod_bayes=mod_lg, paráms=paráms, ops=ops_método,
-                            obs=obs_lg,  # vars_compartidos=vars_comp_lg
-                        )
-
-                    else:
-                        # Si no hay datos con los cuales calibrar, copiar el diccionario del pariente.
-                        clbs[lugar] = clbs[pariente]
-
-                    # Devolver la calibración
-                    return clbs
+                # Si no estamos haciendo un único modelo jerárquico, hay que calibrar cada lugar individualmente.
 
                 # Efectuar las calibraciones para todos los lugares.
-                dic_apr = {}
                 resultados = {}
                 for lg in lugares:
-                    _calibrar_jerárquíco_manual(lugar=lg, jrq=jerarquía, clbs=resultados, d_apr=dic_apr)
+                    lgs_potenciales = bd_datos.geog.obt_lugares_en(lg)
+                    obs_lg = obs[obs['lugar'].isin(lgs_potenciales + [lg])]
+                    if len(obs_lg):
+                        mod_bayes = ec.gen_mod_bayes(
+                            líms_paráms=líms_paráms, obs_x=obs_lg[vars_x], obs_y=obs_lg[var_y],
+                            binario=binario, aprioris=None, nv_jerarquía=None
+                        )
+                        resultados[lg] = _calibrar_mod_bayes(
+                            mod_bayes=mod_bayes, paráms=paráms, ops=ops_método, obs=obs_lg
+                        )
+                    else:
+                        resultados[lg] = None
 
         # Devolver únicamente los lugares de interés (y no lugares de más arriba en la jerarquía).
         if lugares is not None:

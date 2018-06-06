@@ -10,7 +10,7 @@ plantilla_wth = resource_filename('tinamit.EnvolturasBF.es.DSSAT', 'PLANTILLA.WT
 arch_DSSAT_WTH = 'C:\\DSSAT46\\Weather\\TNMT0101.WTH'
 
 
-class EnvoltDSSAT(ModeloBF):
+class EnvoltDSSAT(ModeloBF):  # pragma: sin cobertura
 
     def __init__(símismo, archivo_ingr='DSSBatch.v46', exe_DSSAT='C:\\DSSAT46\\DSCSM046.EXE'):
         super().__init__()

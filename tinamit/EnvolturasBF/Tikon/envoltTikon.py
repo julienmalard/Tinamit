@@ -1,7 +1,7 @@
 from tinamit.BF import ModeloImpaciente
 
 
-class ModeloTikon(ModeloImpaciente):
+class ModeloTikon(ModeloImpaciente):  # pragma: sin cobertura
     """
 
     """

@@ -1,20 +1,21 @@
 import os
 import unittest
-from warnings import warn
+
+import numpy as np
 
 from tinamit.Geog.Geog import Geografía
 
 dir_act = os.path.split(__file__)[0]
 arch_csv_geog = os.path.join(dir_act, 'recursos/prueba_geog.csv')
+arch_frm_regiones = os.path.join(dir_act, 'recursos/frm/munis.shp')
 
 
 class Test_Geografía(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        warn('Test_Geografía')
         cls.geog = Geografía(nombre='Prueba Guatemala')
-        cls.geog.agregar_info_regiones(archivo=arch_csv_geog)
+        cls.geog.espec_escalas_regiones(archivo=arch_csv_geog)
 
     def test_nombre_a_cód_no_ambig(símismo):
         cód = símismo.geog.nombre_a_cód(nombre='Panajachel')
@@ -51,7 +52,6 @@ class Test_Geografía(unittest.TestCase):
             símismo.geog.obt_lugares_en(escala='¡Yo soy una escala que no existe!')
 
     def test_obt_jerarquía(símismo):
-
         jrq = símismo.geog.obt_jerarquía(escala='municipio')
         munis = símismo.geog.obt_lugares_en(escala='municipio')
         trtrs = símismo.geog.obt_lugares_en(escala='territorio')
@@ -61,10 +61,14 @@ class Test_Geografía(unittest.TestCase):
         símismo.assertTrue(all([jrq[x] is None for x in jrq if x not in munis]))
 
     def test_obt_jerarquía_con_orden(símismo):
-
         jrq = símismo.geog.obt_jerarquía(escala='municipio', orden_jerárquico=['departamento'])
         munis = símismo.geog.obt_lugares_en(escala='municipio')
         deptos = símismo.geog.obt_lugares_en(escala='departamento')
 
         símismo.assertTrue(set(munis + deptos).issubset(set(jrq)))
         símismo.assertTrue(all([jrq[d] is None for d in deptos]))
+
+    def test_agregar_forma_regiones(símismo):
+        símismo.geog.agregar_frm_regiones(arch_frm_regiones, col_id='COD_MUNI')
+        lugares = símismo.geog.obt_lugares_en(escala='municipio')
+        símismo.geog.dibujar(archivo='prueba.jpg', valores=np.random.rand(len(lugares)), ids=lugares)

@@ -6,7 +6,7 @@ import numpy as np
 
 from tinamit.Análisis.ConexDatos import ConexDatos
 from tinamit.Análisis.Datos import DatosIndividuales, DatosRegión, SuperBD
-from tinamit.EnvolturasMDS import generar_mds
+from EnvolturasMDS.auto_mds import generar_mds
 from tinamit.Geog.Geog import Geografía
 
 if __name__ == '__main__':  # Necesario para paralelización en Windows
@@ -22,7 +22,7 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
     # print('vacíos', modelo.vacíos())
 
     geog = Geografía('Iximulew')
-    geog.agregar_info_regiones(archivo='Geografía Iximulew.csv')
+    geog.espec_escalas_regiones(archivo='Geografía Iximulew.csv')
 
     ENCOVI_ind_2011 = DatosIndividuales('ENCOVI ind 2011', archivo=c('ENCOVIs\\2011\\BD Personas_final.csv'),
                                         fecha=2011,

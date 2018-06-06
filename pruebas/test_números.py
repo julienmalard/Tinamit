@@ -1,12 +1,9 @@
-from warnings import warn
-
 from tinamit.Análisis.Números import tx_a_núm
 
 import unittest
 
 
 class Test_TradsUnids(unittest.TestCase):
-    warn('Test_TradsUnids')
 
     def test_traducir_entero(símismo):
         símismo.assertEqual(tx_a_núm('१२३४५'), 12345)

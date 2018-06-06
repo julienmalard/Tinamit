@@ -4,7 +4,8 @@ import os
 import matplotlib.pyplot as dib
 import numpy as np
 
-from tinamit.EnvolturasMDS import generar_mds, EnvolturaMDS
+from tinamit.EnvolturasMDS import EnvolturaMDS
+from EnvolturasMDS.auto_mds import generar_mds
 from tinamit.Geog.Geog import Geografía
 
 # Este escripto corre corridas del modelo basado en las calibraciones en Ejemplo.py
@@ -21,9 +22,9 @@ with open(os.path.join(dir_base, 'calib.json'), encoding='UTF-8', mode='r') as d
 
 modelo_mds = generar_mds(archivo='Para Tinamït.vpm')
 geog = Geografía('Iximulew')
-geog.agregar_info_regiones(archivo='Geografía Iximulew.csv',
-                           orden_jer=['Departamento', 'Municipio'],
-                           col_cód='Código', grupos='Territorio')
+geog.espec_escalas_regiones(archivo='Geografía Iximulew.csv',
+                            orden_jer=['Departamento', 'Municipio'],
+                            col_cód='Código', grupos='Territorio')
 
 vars_interés = []
 munis = {m: geog.árbol_geog_inv[m]['Territorio'] for m in geog.obt_lugares_en()}
