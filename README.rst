@@ -11,6 +11,10 @@
 .. image:: https://coveralls.io/repos/github/julienmalard/Tinamit/badge.svg?branch=master
     :target: https://coveralls.io/github/julienmalard/Tinamit?branch=master
 
+.. image:: https://api.codacy.com/project/badge/Grade/bf248090bd464a0898f637b5ca56d185
+   :alt: Codacy
+   :target: https://app.codacy.com/app/julienmalard/Tinamit?utm_source=github.com&utm_medium=referral&utm_content=julienmalard/Tinamit&utm_campaign=badger
+
 Tinamit
 =======
 Programa para conectar modelos socioeconómicos (dinámicas de los sistemas) con modelos biofísicos.
@@ -32,8 +36,3 @@ Autores
 
 * `Julien Malard <https://www.researchgate.net/profile/Julien_Malard>`_; Correo: julien.malard@mail.mcgill.ca
 * `محمّد اظہر انعام بیگ <https://www.researchgate.net/profile/Azhar_Baig>`_; Correo: muhammad.baig@mail.mcgill.ca
-
-
-.. image:: https://api.codacy.com/project/badge/Grade/bf248090bd464a0898f637b5ca56d185
-   :alt: Codacy Badge
-   :target: https://app.codacy.com/app/julienmalard/Tinamit?utm_source=github.com&utm_medium=referral&utm_content=julienmalard/Tinamit&utm_campaign=badger
