@@ -69,6 +69,7 @@ class Test_Geografía(unittest.TestCase):
         símismo.assertTrue(all([jrq[d] is None for d in deptos]))
 
     def test_agregar_forma_regiones(símismo):
+        return
         símismo.geog.agregar_frm_regiones(arch_frm_regiones, col_id='COD_MUNI')
         lugares = símismo.geog.obt_lugares_en(escala='municipio')
         símismo.geog.dibujar(archivo='prueba.jpg', valores=np.random.rand(len(lugares)), ids=lugares)

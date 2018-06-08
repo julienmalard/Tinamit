@@ -233,7 +233,7 @@ class Ecuación(object):
 
             for p, líms in líms_paráms.items():
                 mu = dists_base[p]
-                sg = pm.HalfCauchy(name='sg_{}'.format(p), beta=5, shape=(1,))  # type: pm.model.TransformedRV
+                sg = pm.HalfNormal(name='sg_{}'.format(p), sd=10, shape=(1,))  # type: pm.model.TransformedRV
                 if líms[0] is líms[1] is None:
                     for í, nv in enumerate(nv_jerarquía[:-1]):
                         tmñ_nv = nv.shape
@@ -242,7 +242,7 @@ class Ecuación(object):
                         else:
                             nmbr = 'mu_{}_nv_{}'.format(p, í)
                         mu = pm.Normal(name=nmbr, mu=mu[nv], sd=sg[nv], shape=tmñ_nv)
-                        sg = pm.HalfCauchy(name='sg_{}_nv_{}'.format(p, í), beta=5, shape=tmñ_nv)
+                        sg = pm.HalfNormal(name='sg_{}_nv_{}'.format(p, í), sd=10, shape=tmñ_nv)
                 else:
                     for í, nv in enumerate(nv_jerarquía[:-1]):
                         tmñ_nv = nv.shape
@@ -253,7 +253,7 @@ class Ecuación(object):
 
                         acotada = pm.Bound(pm.Normal, lower=líms[0], upper=líms[1])
                         mu = acotada(nmbr, mu=mu[nv], sd=sg[nv], shape=tmñ_nv)
-                        sg = pm.HalfCauchy(name='sg_{}_nv_{}'.format(p, í), beta=5, shape=tmñ_nv)
+                        sg = pm.HalfNormal(name='sg_{}_nv_{}'.format(p, í), sd=10, shape=tmñ_nv)
 
                 egr[p] = mu
 

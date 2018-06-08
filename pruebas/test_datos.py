@@ -13,7 +13,6 @@ arch_indiv = os.path.join(dir_act, 'recursos/datos/datos_indiv.csv')
 
 
 class Test_Datos(unittest.TestCase):
-    warn('Test_Datos')
     def test_de_pandas(símismo):
         bd_pds = pd.DataFrame({'y': [1,2,3], 'x': [4,5,6]})
         bd_datos = DatosIndividuales('Datos Generados', bd_pds)
@@ -78,7 +77,7 @@ class Test_SuperBD(unittest.TestCase):
         símismo.assertIn('completo', res)
 
     def test_obt_datos_de_lugar(símismo):
-        res = símismo.bd.obt_datos('completo', lugar='708')
+        res = símismo.bd.obt_datos('completo', lugares='708')
         símismo.assertTrue(set(res['lugar'].unique().tolist()) == {'708'})
 
     def test_obt_datos_excluir_faltan(símismo):

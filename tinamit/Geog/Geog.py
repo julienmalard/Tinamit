@@ -349,7 +349,7 @@ class Geografía(object):
             siguientes = {x.pop() for x in coescalas if len(x) == 1}
             if not len(siguientes):
                 raise ValueError(_('Parece que hay un error con el archivo de información regional.'))
-            órden.append(list(siguientes) if len(siguientes) > 1 else siguientes.pop())
+            órden.append(sorted(list(siguientes)) if len(siguientes) > 1 else siguientes.pop())
             for cn in coescalas.copy():
                 cn.difference_update(siguientes)
                 if not len(cn):

@@ -707,14 +707,14 @@ class SuperBD(object):
         # Ya la base de datos sí está actualizada y lista para trabajar
         símismo.bd_lista = True
 
-    def obt_datos(símismo, l_vars, lugar=None, bd_datos=None, fechas=None, excl_faltan=False,
-                  tipo='individual', interpolar=True, interpolar_estricto=False):
+    def obt_datos(símismo, l_vars, lugares=None, bd_datos=None, fechas=None, excl_faltan=False,
+                  tipo='individual', interpolar=True, interpolar_estricto=False, lugares_estrictos=False):
         """
 
         Parameters
         ----------
         l_vars: str | list[str]
-        lugar: str
+        lugares: str | set[str] | list[str]
         bd_datos: str | Datos | list[str | Datos]
         fechas: ft.date | ft.datetime | int | str | list | tuple
         excl_faltan: bool
@@ -732,9 +732,16 @@ class SuperBD(object):
             l_vars = [l_vars]
 
         # Formatear el código de lugar
-        if lugar is not None:
-            if not isinstance(lugar, list):
-                lugar = [lugar]
+        if lugares is not None:
+            if isinstance(lugares, str) or isinstance(lugares, int):
+                lugares = {lugares}
+            elif isinstance(lugares, list):
+                lugares = set(lugares)
+
+            if not lugares_estrictos:
+                for lg in lugares.copy():
+                    sub_lgs = símismo.geog.obt_lugares_en(lg)
+                    lugares.update(sub_lgs)
 
         # Formatear los datos
         bd_datos = símismo._validar_bd(bd_datos)
@@ -771,8 +778,8 @@ class SuperBD(object):
             bd_sel = bd_sel[bd_sel['bd'].isin(bd_datos)]
 
         # Seleccionar las observaciones que corresponden al lugar de interés
-        if lugar is not None:
-            bd_sel = bd_sel[bd_sel['lugar'].isin(lugar)]
+        if lugares is not None:
+            bd_sel = bd_sel[bd_sel['lugares'].isin(lugares)]
 
         # Interpolar si necesario
         if interpolar:
@@ -980,7 +987,7 @@ class SuperBD(object):
             archivo = var + '.jpg'
         archivo = símismo._validar_archivo(archivo, ext='.jpg')
 
-        datos = símismo.obt_datos(l_vars=var, lugar=lugar, bd_datos=bd_datos, fechas=fechas, tipo=tipo)
+        datos = símismo.obt_datos(l_vars=var, lugares=lugar, bd_datos=bd_datos, fechas=fechas, tipo=tipo)
 
         fig = Figura()
         TelaFigura(fig)
@@ -1002,8 +1009,8 @@ class SuperBD(object):
             archivo = var + '.jpg'
         archivo = símismo._validar_archivo(archivo, ext='.jpg')
 
-        datos = símismo.obt_datos(l_vars=var, fechas=fechas, lugar=lugar, bd_datos=bd_datos, tipo='regional')
-        datos_error = símismo.obt_datos(l_vars=var, fechas=fechas, lugar=lugar, bd_datos=bd_datos,
+        datos = símismo.obt_datos(l_vars=var, fechas=fechas, lugares=lugar, bd_datos=bd_datos, tipo='regional')
+        datos_error = símismo.obt_datos(l_vars=var, fechas=fechas, lugares=lugar, bd_datos=bd_datos,
                                         tipo='error regional')
 
         fig = Figura()
@@ -1046,7 +1053,7 @@ class SuperBD(object):
             archivo = var_x + '_' + var_y + '.jpg'
         archivo = símismo._validar_archivo(archivo, ext='.jpg')
 
-        datos = símismo.obt_datos(l_vars=[var_x, var_y], lugar=lugar, bd_datos=bd_datos, fechas=fechas)
+        datos = símismo.obt_datos(l_vars=[var_x, var_y], lugares=lugar, bd_datos=bd_datos, fechas=fechas)
 
         fig = Figura()
         TelaFigura(fig)

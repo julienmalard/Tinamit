@@ -268,11 +268,9 @@ class Calibrador(object):
 
                 # Primero, crear una lista de las relaciones jerárquicas, el cual se necesita para crear el modelo
                 # jerárquico bayes.
+
                 def _gen_nv_jerarquía(jrq, egr=None, nv_ant=None):
                     """
-                    Genera una lista de relaciones jerárquicas para el modelo bayes. Cada elemento en la lista es
-                    una lista de índices de cada región en el nivel superior de la jerarquía. El último elemento
-                    de la lista representa los índices de las observaciones.
 
                     Parameters
                     ----------
@@ -285,8 +283,7 @@ class Calibrador(object):
 
                     Returns
                     -------
-                    list[np.ndarray]
-                        Los índices de cada región, en orden de niveles jerárquicos.
+                    list:
                     """
 
                     # Empezar con el primer nivel
@@ -297,21 +294,16 @@ class Calibrador(object):
                     if egr is None:
                         egr = []
 
-                    # Calcular el índice de cada lugar, en orden alfabético, en el nivel inmediatamente superior en la
-                    # jerarquía.
-                    nv_act = [x for x in sorted(jrq) if jrq[x] in nv_ant]
+                    nv_act = [x for x in jrq if jrq[x] in nv_ant]
 
-                    # Agregar a los egresos
                     if len(nv_act):
-                        # Si no es el último nivel de la jerarquía, agregar éste
-                        egr.append(np.array([nv_ant.index(jrq[x]) for x in nv_act]))
+                        nv_act += [x for x in nv_ant if x in lugares and x not in nv_act]
+
+                        # Agregar a los egresos
+                        egr.append(nv_act)
 
                         # Recursarr en los niveles inferiores
                         _gen_nv_jerarquía(jrq, egr=egr, nv_ant=nv_act)
-
-                    else:
-                        # Si era el último nivel, agregar los ínices de las observaciones
-                        egr.append(np.array([nv_ant.index(x) for x in obs['lugar']]))
 
                     # Devolver el resultado
                     return egr
@@ -319,11 +311,40 @@ class Calibrador(object):
                 # Generar la lista de relaciones jerárquicas
                 nv_jerarquía = _gen_nv_jerarquía(jerarquía)
 
+                nv_jerarquía.insert(0, [None])
+
+                for í, nv in list(enumerate(nv_jerarquía))[::-1]:
+
+                    if í == (len(nv_jerarquía) - 1):
+
+                        nv[:] = [x for x in nv if len(obs[obs['lugar'].isin(bd_datos.geog.obt_lugares_en(x) + [x])])]
+                    else:
+
+                        nv[:] = [x for x in nv if x in [jerarquía[y] for y in nv_jerarquía[í + 1]]]
+
+                í_nv_jerarquía = [np.array([nv_jerarquía[í - 1].index(jerarquía[x]) for x in y])
+                                  for í, y in list(enumerate(nv_jerarquía))[:0:-1]]
+                í_nv_jerarquía.insert(0, np.array([nv_jerarquía[-1].index(x) for x in obs['lugar']]))
+
                 # Generar el modelo bayes
                 mod_bayes_jrq = ec.gen_mod_bayes(
                     líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
-                    aprioris=None, binario=binario, nv_jerarquía=nv_jerarquía
+                    aprioris=None, binario=binario, nv_jerarquía=í_nv_jerarquía[::-1]
                 )
+                var_res_lugares = {}
+                for lg in lugares:
+                    if lg in nv_jerarquía[-1]:
+                        var_res_lugares[lg] = (0, nv_jerarquía[-1].index(lg))
+                    else:
+                        for í, nv in enumerate(nv_jerarquía[1::-1]):
+                            id_nv = lg
+                            while id_nv is not None:
+                                id_nv = jerarquía[id_nv]
+                                if id_nv in nv:
+                                    var_res_lugares[lg] = (í + 1, nv.index(id_nv))
+                                    break
+                            if lg in var_res_lugares:
+                                break
 
                 # Calibrar
                 res_calib = _calibrar_mod_bayes(mod_bayes_jrq, paráms=paráms, ops=ops_método)
