@@ -498,52 +498,6 @@ class Calibrador(object):
             return resultados
 
 
-def _gen_a_prioris(líms, dic_clbs):
-    """
-    Genera a prioris, basándose en los límites de los parámetros y en una calibración anterior. Devolvemos la clase
-    de la distribución y sus parámetros de forma en una tupla (en vez de crear la distribución sí misma de una vez
-    aquí) porque las distribuciones de PyMC3 se deben crear adentro de un bloque de contexto de modelo PyMC3, al cual
-    no tenemos acceso aquí por el momento.
-
-    Parameters
-    ----------
-    líms: dict[str, tuple]
-        Un diccionario de los límites teoréticos de cada parámetro.
-    dic_clbs: dict
-        Un diccionario con los resultados procesados de una calibración anterior.
-
-    Returns
-    -------
-    dict[str, tuple]
-        Un diccionario con la distribución (clase PyMC3), y sus parámetros, de cada parámetro de interés.
-    """
-
-    # Para los resultados
-    aprioris = {}
-
-    for p, lp in líms.items():
-        # Para cada parámetro de interés...
-
-        dic = dic_clbs[p]  # El diccionario de calibraciones para este parámetro
-
-        # Encontrar la distribución compatible con los límites y con el mejor ajusto con la calibración anterior.
-        ajust_sp = _ajust_dist(datos=dic['dist'], líms=lp)
-        nombre = ajust_sp['tipo']
-
-        # El objeto PyMC3 correspondiendo a esta distribución
-        dist_pm = dists[nombre]['pm']
-
-        # Extraer y convertir los parámetros de la distribución PyMC3
-        prms_sp = ajust_sp['prms']
-        prms_pm = dists[nombre]['sp_a_pm'](prms_sp)
-
-        # Guardar el resultado
-        aprioris[p] = (dist_pm, prms_pm)
-
-    # Devolver el diccionario de distribuciones a prioris.
-    return aprioris
-
-
 def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops=None):
     """
     Esta función calibra un modelo bayes.
@@ -613,6 +567,8 @@ def _procesar_calib_bayes(traza, paráms):
 
     # Calcular el punto de probabilidad máxima
     for p in paráms:
+        from warnings import warn
+        warn(traza[p].shape)  # para hacer: quitar
         # Para cada parámetro...
 
         # Ajustar el rango, si es muy grande (necesario para las funciones que siguen)
@@ -739,118 +695,3 @@ def _optimizar(func, líms_paráms, obs_x, obs_y, inic=None, **ops):
 
     # Devolver los resultados en el formato correcto.
     return {p: {'val': opt.x[i]} for i, p in enumerate(paráms)}
-
-
-def _ajust_dist(datos, líms):
-    """
-    Basándose en límites teoréticos y datos de una traza, escoger la mejor distribución teorética para representar
-    la traza.
-
-    Parameters
-    ----------
-    datos: np.array
-        La traza de datos.
-    líms: tuple
-        Los límites de la distribución.
-
-    Returns
-    -------
-    dict[str, str]
-        Un diccionario de la mejor distribución, sus parámetros ajustados y una medida de su ajusto.
-    """
-
-    # Empezemos el mejor ajusto en 0.
-    mejor_ajusto = {'p': 0, 'tipo': None}
-
-    # Tomaremos únicamente las distribuciones teoréticamente compatibles con los límites del parámetro.
-    dists_potenciales = {ll: v['sp'] for ll, v in dists.items() if _líms_compat(líms, v['líms'])}
-
-    # Buscar la mejor distribución
-    for nombre_dist, dist_sp in dists_potenciales.items():
-        # Para cada distribución posible...
-
-        # Establecer los parámetros que no queremos calibrar, según el caso.
-        if nombre_dist == 'Beta':
-            restric = {'floc': líms[0], 'fscale': líms[1] - líms[0]}
-        elif nombre_dist == 'Cauchy':
-            restric = {}
-        elif nombre_dist == 'Chi2':
-            restric = {'floc': líms[0]}
-        elif nombre_dist == 'Exponencial':
-            restric = {'floc': líms[0]}
-        elif nombre_dist == 'Gamma':
-            restric = {'floc': líms[0]}
-        elif nombre_dist == 'Laplace':
-            restric = {}
-        elif nombre_dist == 'LogNormal':
-            restric = {'fs': 1}
-        elif nombre_dist == 'MitadCauchy':
-            restric = {'floc': líms[0]}
-        elif nombre_dist == 'MitadNormal':
-            restric = {'floc': líms[0]}
-        elif nombre_dist == 'Normal':
-            restric = {}
-        elif nombre_dist == 'T':
-            restric = {}
-        elif nombre_dist == 'Uniforme':
-            restric = {}
-        elif nombre_dist == 'Weibull':
-            restric = {'floc': líms[0]}
-        else:
-            raise ValueError(_('Distribución "{}" no reconocida.').format(nombre_dist))
-
-        # Intentar ajustar la distribución.
-        try:
-            tupla_prms = dist_sp.fit(datos, **restric)
-        except BaseException:
-            # Es posible que SciPy, en vez de una respuesta, nos devuelve un error muy obscuro. En general pasa
-            # si le damos unos muy, muy mal ajustables a la distribución. En este caso, seguimoms en adelante sin
-            # la distribución que no quiso cooperar.
-            tupla_prms = None
-
-        # Si logramos un ajusto...
-        if tupla_prms is not None:
-            # Medir el ajusto de la distribución
-            p = estad.kstest(rvs=datos, cdf=dist_sp(*tupla_prms).cdf)[1]
-
-            # Si el ajusto es mejor que el mejor ajusto anterior...
-            if p > mejor_ajusto['p'] or mejor_ajusto['tipo'] is None:
-                # Guardarlo
-                mejor_ajusto['p'] = p
-                mejor_ajusto['prms'] = tupla_prms
-                mejor_ajusto['tipo'] = nombre_dist
-
-    # Si no logramos un buen ajusto, avisarle al usuario.
-    if mejor_ajusto['p'] <= 0.10:
-        avisar(
-            _('El ajusto de la mejor distribución ("{d}") quedó muy mal (p = {p}). Un buen valor sería > 0.1'
-              ).format(d=mejor_ajusto['d'], p=round(mejor_ajusto['p'], 4))
-        )
-
-    # Devolver la distribución con el mejor ajusto, tanto como el valor de su ajusto.
-    return mejor_ajusto
-
-
-def _líms_compat(l_1, l_2):
-    """
-    Verifica si dos límites de parámetro son compatibles o no.
-
-    Parameters
-    ----------
-    l_1: tuple
-        El primer límite.
-    l_2: tuple
-        El otro límite.
-
-    Returns
-    -------
-    bool
-        Si son compatibles o no.
-    """
-
-    # Cambiar ±inf a None y números a 0.
-    l_1 = [None if x is None or np.isinf(x) else 0 for x in l_1]
-    l_2 = [None if x is None or np.isinf(x) else 0 for x in l_2]
-
-    # Verificar si son compatibles
-    return l_1 == l_2

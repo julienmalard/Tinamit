@@ -714,7 +714,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         return leer_egr_mds(archivo, var)
 
 
-def comanda_vensim(func, args, mensaje_error=None, val_error=None, devolver=False):
+def comanda_vensim(func, args, mensaje_error=None, val_error=None, devolver=False):  # pragma: no cobertura
     """
     Esta función sirve para llamar todo tipo de comanda VENSIM.
 
