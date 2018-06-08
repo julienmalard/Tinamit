@@ -14,6 +14,10 @@
 .. image:: https://api.codacy.com/project/badge/Grade/bf248090bd464a0898f637b5ca56d185
    :alt: Codacy
    :target: https://app.codacy.com/app/julienmalard/Tinamit?utm_source=github.com&utm_medium=referral&utm_content=julienmalard/Tinamit&utm_campaign=badger
+   
+.. image:: https://api.codeclimate.com/v1/badges/cd1b1bf43ee40c270604/maintainability
+   :target: https://codeclimate.com/github/julienmalard/Tinamit/maintainability
+   :alt: Maintainability
 
 Tinamit
 =======
