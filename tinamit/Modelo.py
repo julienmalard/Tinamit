@@ -1243,6 +1243,9 @@ class Modelo(object):
     def borrar_calibs_calc(símismo):
         símismo.calibs.clear()
 
+    def comprobar_val_extrm(símismo, var_extrm, val_extrm, var_prb, val_prb):
+        pass
+
     def __str__(símismo):
         return símismo.nombre
 
