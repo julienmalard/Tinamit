@@ -568,7 +568,7 @@ def _procesar_calib_bayes(traza, paráms):
     # Calcular el punto de probabilidad máxima
     for p in paráms:
         from warnings import warn
-        warn(traza[p].shape)  # para hacer: quitar
+        warn(str(traza[p].shape))  # para hacer: quitar
         # Para cada parámetro...
 
         # Ajustar el rango, si es muy grande (necesario para las funciones que siguen)
