@@ -9,7 +9,7 @@ import regex
 
 from tinamit import _
 from tinamit.Análisis.sintaxis import Ecuación
-from tinamit.MDS import EnvolturaMDS, leer_egr_mds
+from tinamit.MDS import EnvolturaMDS, MDSEditable, leer_egr_mds
 
 try:
     import pymc3 as pm
@@ -32,8 +32,7 @@ else:
     dll_Vensim = None
 
 
-class ModeloVensimMdl(EnvolturaMDS):
-    instalado = True
+class ModeloVensimMdl(MDSEditable):
 
     def __init__(símismo, archivo):
 
@@ -150,15 +149,6 @@ class ModeloVensimMdl(EnvolturaMDS):
         símismo.constantes += [x for x, d in símismo.variables.items()
                                if not len(d['parientes']) and not any(h in símismo.flujos for h in d['hijos'])]
 
-    def _leer_resultados(símismo, var, corrida):
-        pass
-
-    def _leer_vals_inic(símismo):
-        pass
-
-    def _aplicar_cambios_vals_inic(símismo):
-        pass
-
     def _escribir_var(símismo, var):
         """
 
@@ -182,36 +172,14 @@ class ModeloVensimMdl(EnvolturaMDS):
 
         return texto
 
-    def calib_ec(símismo, var, ec=None, paráms=None, método=None):
-
-        if símismo.bd is None:
-            raise ValueError('')
-        if símismo.conex_datos is None:
-            símismo.conex_datos = ConexDatos(bd=símismo.bd, modelo=símismo)
-
-        símismo.conex_datos.calib_var(var=var, ec=ec, paráms=paráms, método=método)
-
     def unidad_tiempo(símismo):
         # Para hacer: algo mucho más elegante
         i_f = next(i for i, f in enumerate(símismo.dic_doc['cola']) if 'INITIAL TIME' in f) + 1
         unid_tiempo = símismo.dic_doc['cola'][i_f].split('\t')[-1].strip()
         return unid_tiempo
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
-        pass
-
-    def _cambiar_vals_modelo_interno(símismo, valores):
-        pass
-
-    def _incrementar(símismo, paso):
-        pass
-
-    def _leer_vals(símismo):
-        pass
-
-    def cerrar_modelo(símismo):
-        pass
-
+    def publicar_modelo(símismo):
+        símismo.publicar_vpm()
     def publicar_vpm(símismo):
 
         try:
@@ -227,8 +195,6 @@ class ModeloVensimMdl(EnvolturaMDS):
         archivo_frm = os.path.join(os.path.split(os.path.dirname(__file__))[0], 'VENSIM.frm')
 
         comanda_vensim(dll.vensim_command, ('FILE>PUBLISH|%s' % archivo_frm))
-
-        símismo.vpm = ModeloVENSIMvpm(archivo_mds=archivo_vpm)
 
 
 class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura

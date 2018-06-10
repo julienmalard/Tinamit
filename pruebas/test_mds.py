@@ -129,7 +129,7 @@ class Test_ModeloSenc(unittest.TestCase):
             v = 'Aleatorio'
             d_v = símismo.info_vars[v]
 
-            with símismo.subTest(mod=11):
+            with símismo.subTest(mod=ll):
                 símismo.assertEqual(mod.leer_resultados(v)[0], d_v['val_inic'])
 
     def test_cambiar_vals_inic_nivel(símismo):
@@ -192,7 +192,7 @@ class Test_GenerarMDS(unittest.TestCase):
         # Verificamos que funcione la generación automática de modelos DS a base de un archivo.
 
         for m, d in tipos_modelos.items():
-            with símismo.subTest(ext=os.path.splitext(d['prueba'])[1]):
+            with símismo.subTest(ext=os.path.splitext(d['prueba'])[1], envlt=d['envlt'].__name__):
                 try:
                     mod = generar_mds(d['prueba'])  # Generar el modelo
                     símismo.assertIsInstance(mod, EnvolturaMDS)

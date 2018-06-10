@@ -22,9 +22,9 @@ with open(os.path.join(dir_base, 'calib.json'), encoding='UTF-8', mode='r') as d
 
 modelo_mds = generar_mds(archivo='Para Tinamït.vpm')
 geog = Geografía('Iximulew')
-geog.espec_escalas_regiones(archivo='Geografía Iximulew.csv',
-                            orden_jer=['Departamento', 'Municipio'],
-                            col_cód='Código', grupos='Territorio')
+geog.espec_estruct_geog(archivo='Geografía Iximulew.csv',
+                        orden_jer=['Departamento', 'Municipio'],
+                        col_cód='Código', grupos='Territorio')
 
 vars_interés = []
 munis = {m: geog.árbol_geog_inv[m]['Territorio'] for m in geog.obt_lugares_en()}

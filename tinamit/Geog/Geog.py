@@ -1,6 +1,7 @@
 import csv
 import datetime as ft
 import os
+from warnings import warn as avisar
 
 import matplotlib.colors as colors
 import numpy as np
@@ -9,9 +10,9 @@ import shapefile as sf
 from matplotlib import cm
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
-
 from taqdir.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
 from taqdir.مقام import مقام
+
 from tinamit import _
 
 # Ofrecemos la oportunidad de utilizar تقدیر, taqdir, en español
@@ -254,8 +255,8 @@ class Geografía(object):
     def __init__(símismo, nombre, archivo=None):
 
         símismo.nombre = nombre
-        símismo.regiones = {}
-        símismo.objetos = {}
+        símismo.formas_reg = {}
+        símismo.formas = {}
 
         símismo.orden_jerárquico = []
         símismo.info_geog = {}
@@ -264,19 +265,19 @@ class Geografía(object):
         símismo.escalas = []
 
         if archivo is not None:
-            símismo.espec_escalas_regiones(archivo)
+            símismo.espec_estruct_geog(archivo)
 
     def agregar_forma(símismo, archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=None):
         if nombre is None:
             nombre = os.path.splitext(os.path.split(archivo)[1])[0]
 
-        símismo.objetos[nombre] = {'obj': sf.Reader(archivo),
-                                   'color': color,
-                                   'llenar': llenar,
-                                   'alpha': alpha,
-                                   'tipo': tipo}
+        símismo.formas[nombre] = {'obj': sf.Reader(archivo),
+                                  'color': color,
+                                  'llenar': llenar,
+                                  'alpha': alpha,
+                                  'tipo': tipo}
 
-    def agregar_frm_regiones(símismo, archivo, col_id=None, escala_geog=None):
+    def agregar_frm_regiones(símismo, archivo, col_id, escala_geog=None):
         """
 
         :param archivo:
@@ -286,28 +287,36 @@ class Geografía(object):
         :return:
         :rtype:
         """
-
-        if escala_geog is None:
-            for escl in símismo.escalas:
-                símismo.obt
-            escala_geog = None
-
         af = sf.Reader(archivo)
 
         attrs = af.fields[1:]
         nombres_attr = [field[0] for field in attrs]
 
-        if col_id is not None:
-            try:
-                ids = np.array([x.record[nombres_attr.index(col_id)] for x in af.shapeRecords()])
-            except ValueError:
-                raise ValueError(_('La columna "{}" no existe en la base de datos.').format(col_id))
-        else:
-            ids = range(len(af.records()))
+        try:
+            ids = np.array([x.record[nombres_attr.index(col_id)] for x in af.shapeRecords()])
+        except ValueError:
+            raise ValueError(_('La columna "{}" no existe en la base de datos.').format(col_id))
+        ids_no_existen = [id_ for id_ in ids if str(id_) not in símismo.cód_a_lugar]
+        if len(ids_no_existen):
+            avisar(_('Las formas con id "{}" no se encuentran en la geografía actual.'))
+        escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids if id_ not in ids_no_existen)
+        if len(escls_ids) != 1:
+            raise ValueError
 
-        símismo.regiones[escala_geog] = {'af': af, 'id': ids}
+        if escala_geog is None:
+            escala_geog = list(escls_ids)[0]
+        elif escala_geog != list(escls_ids)[0]:
+            raise ValueError
 
-    def espec_escalas_regiones(símismo, archivo, col_cód='Código', codif_csv='windows-1252'):
+        símismo.formas_reg[escala_geog] = {'af': af, 'ids': ids}
+
+    def quitar_forma(símismo, forma):
+        try:
+            símismo.formas.pop(forma)
+        except KeyError:
+            símismo.formas_reg.pop(forma)
+
+    def espec_estruct_geog(símismo, archivo, col_cód='Código', codif_csv='windows-1252'):
 
         símismo.cód_a_lugar.clear()
         símismo.info_geog.clear()
@@ -412,6 +421,17 @@ class Geografía(object):
             return [x for x, d in símismo.cód_a_lugar.items()
                     if d['escala'] == escala]
 
+    def obt_todos_lugares_en(símismo, en=None):
+        en = símismo._validar_código_lugar(en)
+        if en is not None:
+            escl_en = símismo.cód_a_lugar[en]['escala']
+            sub_lgs = [x for x, d in símismo.cód_a_lugar.items() if escl_en in d['en'] and d['en'][escl_en] == en]
+            for s_lg in sub_lgs.copy():
+                sub_lgs += símismo.obt_todos_lugares_en(en=s_lg)
+            return list(set(sub_lgs))
+        else:
+            return list(símismo.cód_a_lugar)
+
     def _validar_orden_jerárquico(símismo, escala, orden):
 
         if orden is None:
@@ -490,8 +510,7 @@ class Geografía(object):
         if cód is None:
             return None
 
-        elif isinstance(cód, int):
-            cód = str(cód)
+        cód = str(cód)
 
         if cód not in símismo.cód_a_lugar:
             raise ValueError(_('El código "{cód}" no existe en la geografía actual de "{geog}".')
@@ -505,7 +524,7 @@ class Geografía(object):
         :param archivo: Dónde hay que guardar el mapa.
         :type archivo: str
         :param valores: Los valores para dibujar.
-        :type valores: np.ndarray
+        :type valores: np.ndarray | dict
         :param título: El título del mapa.
         :type título: str
         :param unidades: Las unidades de los valores.
@@ -534,40 +553,58 @@ class Geografía(object):
 
         if valores is not None:
 
-            if ids is not None:
-                escls_ids = set(símismo.obt_escala_región(id) for id in ids)
-                if len(escls_ids) != 1:
-                    raise ValueError(
-                        _('Todos los códigos de lugares en `ids` deben corresponder a la misma escala'
-                          '\nespacial de la geografía, pero los tuyos tienen una mezcla de las escalas'
-                          '\nsiguientes:'
-                          '\n\t{}').format(', '.join(escls_ids))
-                    )
-                d_regiones = símismo.regiones[list(escls_ids)[0]]
+            if isinstance(valores, np.ndarray):
+                if ids is None:
+                    raise ValueError
+                else:
+                    escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids)
+                if valores.shape[0] != len(ids):
+                    raise ValueError
+                dic_valores = {id_: valores[í] for í, id_ in enumerate(ids)}
 
             else:
-                d_regiones = None
-                for escala, d_reg in símismo.regiones.items():
-                    if len(d_reg['orden_regs']) == valores.shape[0]:
-                        d_regiones = d_reg
-                        continue
+                escls_ids = set(símismo.obt_escala_región(id_) for id_ in valores)
+                dic_valores = valores
 
-                if d_regiones is None:
-                    raise ValueError(_('El número de regiones en los datos no concuerdan con la geografía del lugar.'))
+            if len(escls_ids) != 1:
+                raise ValueError(
+                    _('Todos los códigos de lugares en `ids` deben corresponder a la misma escala'
+                      '\nespacial de la geografía, pero los tuyos tienen una mezcla de las escalas'
+                      '\nsiguientes:'
+                      '\n\t{}').format(', '.join(escls_ids))
+                )
+            d_frm_reg = símismo.formas_reg[list(escls_ids)[0]]
 
-            regiones = d_regiones['af']
-            orden = d_regiones['orden_regs']
+            #    for escala, d_reg in símismo.formas_reg.items():
+            #        if len(d_reg['orden_regs']) == valores.shape[0]:
+            #            d_frm_reg = d_reg
+            #            continue
+            #
+            #    if d_frm_reg is None:
+            #        raise ValueError(_('El número de regiones en los datos no concuerdan con la geografía del lugar.'))
 
-            n_regiones = len(regiones.shapes())
-            if len(valores) != n_regiones:
-                raise ValueError(_('El número de regiones no corresponde con el tamñao de los valores.'))
+            regiones = d_frm_reg['af']
+            ids_frm = d_frm_reg['ids'].astype(str)
+
+            ids_faltan_frm = [x for x in dic_valores if x not in ids_frm]
+            if len(ids_faltan_frm):
+                avisar(_('Las regiones siguientes no se encuentran en el archivo de forma y por lo tanto'
+                         '\nno se podrán dibujar: "{}"').format(', '.join(ids_faltan_frm)))
+                dic_valores = {ll: v for ll, v in dic_valores.items() if ll not in ids_faltan_frm}
+
+            vec_valores = np.array([x for x in dic_valores.values()])
+            orden = [list(dic_valores).index(str(x)) if str(x) in list(dic_valores) else np.nan for x in ids_frm]
+
+            # n_regiones = len(regiones.shapes())
+            # if len(valores) != n_regiones:
+            #     raise ValueError(_('El número de regiones no corresponde con el tamaño de los valores.'))
 
             if escala_num is None:
-                escala_num = (np.min(valores), np.max(valores))
-            if len(escala_num) != 2:
+                escala_num = (np.min(vec_valores), np.max(vec_valores))
+            elif len(escala_num) != 2:
                 raise ValueError
 
-            vals_norm = (valores - escala_num[0]) / (escala_num[1] - escala_num[0])
+            vals_norm = (vec_valores - escala_num[0]) / (escala_num[1] - escala_num[0])
 
             d_clrs = _gen_d_mapacolores(colores=colores)
 
@@ -584,7 +621,7 @@ class Geografía(object):
             else:
                 fig.colorbar(cpick)
 
-        for nombre, d_obj in símismo.objetos.items():
+        for nombre, d_obj in símismo.formas.items():
 
             tipo = d_obj['tipo']
 
@@ -637,12 +674,12 @@ def _dibujar_shp(ejes, frm, colores, orden=None, alpha=1.0, llenar=True):
     :type llenar: bool
     """
 
-    n_formas = len(frm.shapes())
-
     if orden is not None:
-        regiones = [x for _, x in sorted(zip(orden, frm.shapes()))]
+        regiones = [x for o, x in sorted([t for t in zip(orden, frm.shapes()) if not np.isnan(t[0])])]
     else:
         regiones = frm.shapes()
+
+    n_formas = len(regiones)
 
     if isinstance(colores, str) or isinstance(colores, tuple):
         colores = [colores] * n_formas

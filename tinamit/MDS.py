@@ -155,28 +155,54 @@ class EnvolturaMDS(Modelo):
 
 class MDSEditable(EnvolturaMDS):
     def __init__(símismo, archivo, nombre='mds'):
-        from EnvolturasMDS import generar_mds
-        símismo.mod = generar_mds(archivo=archivo)
+        from tinamit.EnvolturasMDS import generar_mds
+        símismo.mod = None  # type: EnvolturaMDS
+        símismo._estab_mod(generar_mds(archivo=archivo))
+
         símismo.editado = False
         super().__init__(archivo=archivo, nombre=nombre)
 
+    def _estab_mod(símismo, mod):
+        """
+
+        Parameters
+        ----------
+        mod: EnvolturaMDS
+
+        Returns
+        -------
+
+        """
+        símismo.mod = mod
+        símismo.mem_vars = mod.mem_vars
+
+    def _act_vals_dic_var(símismo, valores):
+        símismo.mod._act_vals_dic_var(valores=valores)
+        super()._act_vals_dic_var(valores)
+
     def _inic_dic_vars(símismo):
-        return símismo.mod._inic_dic_vars()
+        raise NotImplementedError
 
     def unidad_tiempo(símismo):
         raise NotImplementedError
 
     def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
-        from EnvolturasMDS import generar_mds
+        from tinamit.EnvolturasMDS import generar_mds
         if símismo.mod is None or símismo.editado:
             símismo.publicar_modelo()
-            símismo.mod = generar_mds()
+            símismo._estab_mod(generar_mds())
+            símismo.editado = False
+        símismo.mod._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
 
     def _cambiar_vals_modelo_interno(símismo, valores):
         return símismo.mod._cambiar_vals_modelo_interno(valores=valores)
 
     def _incrementar(símismo, paso):
         return símismo.mod._incrementar(paso=paso)
+
+    def inic_val_var(símismo, var, val):
+        símismo.mod.inic_val_var(var=var, val=val)
+        super().inic_val_var(var, val)
 
     def _leer_vals(símismo):
         return símismo.mod._leer_vals()

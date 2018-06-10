@@ -221,7 +221,7 @@ class Modelo(object):
             if unid_ref_tiempo not in ['año', 'mes', 'día'] and fecha_inic is not None:
                 raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a años, meses o días.')
                                  .format(unid_ref_tiempo))
-            fecha_final = fecha_inic + deltarelativo(*{dic_trad_tiempo[unid_ref_tiempo]: n_pasos})
+            fecha_final = fecha_inic + deltarelativo(*{dic_trad_tiempo[unid_ref_tiempo]: n_pasos})  # type: ft.date
         else:
             unid_ref_tiempo = None
             fecha_final = None

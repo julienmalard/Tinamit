@@ -22,7 +22,7 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
     # print('vacíos', modelo.vacíos())
 
     geog = Geografía('Iximulew')
-    geog.espec_escalas_regiones(archivo='Geografía Iximulew.csv')
+    geog.espec_estruct_geog(archivo='Geografía Iximulew.csv')
 
     ENCOVI_ind_2011 = DatosIndividuales('ENCOVI ind 2011', archivo=c('ENCOVIs\\2011\\BD Personas_final.csv'),
                                         fecha=2011,

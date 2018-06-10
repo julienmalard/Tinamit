@@ -86,11 +86,10 @@ class Test_CalibEnModelo(unittest.TestCase):
                 símismo.mod.especificar_micro_calib(var='Y', método=m)
                 símismo.mod.efectuar_micro_calibs()
 
-                for lg in símismo.paráms:
-                    for p in símismo.paráms[lg]:
-                        val = símismo.paráms[lg][p]
-                        est = símismo.mod.calibs[p][lg]['val']
-                        npt.assert_allclose(est, val, rtol=0.1)
+                val = [símismo.paráms[lg][p] for lg in símismo.paráms for p in símismo.paráms[lg]]
+                est = [símismo.mod.calibs[p][lg]['val'] for lg in símismo.paráms for p in símismo.paráms[lg]]
+
+                npt.assert_allclose(est, val, rtol=0.1)
 
                 símismo.mod.borrar_micro_calib('Y')
 
@@ -101,11 +100,10 @@ class Test_CalibEnModelo(unittest.TestCase):
             )
             símismo.mod.efectuar_micro_calibs()
 
-            for lg in símismo.paráms:
-                for p in símismo.paráms[lg]:
-                    val = símismo.paráms[lg][p]
-                    est = símismo.mod.calibs[p][lg]['val']
-                    npt.assert_allclose(est, val, rtol=0.1)
+            val = [símismo.paráms[lg][p] for lg in símismo.paráms for p in símismo.paráms[lg]]
+            est = [símismo.mod.calibs[p][lg]['val'] for lg in símismo.paráms for p in símismo.paráms[lg]]
+
+            npt.assert_allclose(est, val, rtol=0.1)
 
             símismo.mod.borrar_micro_calib('Y')
 

@@ -2,7 +2,6 @@ import math as mat
 
 import numpy as np
 import regex
-import theano
 from lark import Lark, Transformer
 from pkg_resources import resource_filename
 
@@ -238,22 +237,24 @@ class Ecuación(object):
                     for í, nv in enumerate(nv_jerarquía[:-1]):
                         tmñ_nv = nv.shape
                         if í == (len(nv_jerarquía) - 1):
-                            nmbr = p
+                            nmbr_mu = p
                         else:
-                            nmbr = 'mu_{}_nv_{}'.format(p, í)
-                        mu = pm.Normal(name=nmbr, mu=mu[nv], sd=sg[nv], shape=tmñ_nv)
-                        sg = pm.HalfNormal(name='sg_{}_nv_{}'.format(p, í), sd=10, shape=tmñ_nv)
+                            nmbr_mu = 'mu_{}_nv_{}'.format(p, len(nv_jerarquía) - 1 - í)
+                        nmbr_sg = 'sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 1 - í)
+                        mu = pm.Normal(name=nmbr_mu, mu=mu[nv], sd=sg[nv], shape=tmñ_nv)
+                        sg = pm.HalfNormal(name=nmbr_sg.format(p, í), sd=10, shape=tmñ_nv)
                 else:
                     for í, nv in enumerate(nv_jerarquía[:-1]):
                         tmñ_nv = nv.shape
                         if í == (len(nv_jerarquía) - 1):
-                            nmbr = p
+                            nmbr_mu = p
                         else:
-                            nmbr = 'mu_{}_nv_{}'.format(p, í)
+                            nmbr_mu = 'mu_{}_nv_{}'.format(p, len(nv_jerarquía) - 1 - í)
+                        nmbr_sg = 'sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 1 - í)
 
                         acotada = pm.Bound(pm.Normal, lower=líms[0], upper=líms[1])
-                        mu = acotada(nmbr, mu=mu[nv], sd=sg[nv], shape=tmñ_nv)
-                        sg = pm.HalfNormal(name='sg_{}_nv_{}'.format(p, í), sd=10, shape=tmñ_nv)
+                        mu = acotada(nmbr_mu, mu=mu[nv], sd=sg[nv], shape=tmñ_nv)
+                        sg = pm.HalfNormal(name=nmbr_sg.format(p, í), sd=10, shape=tmñ_nv)
 
                 egr[p] = mu
 

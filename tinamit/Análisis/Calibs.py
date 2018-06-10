@@ -334,7 +334,7 @@ class Calibrador(object):
                 var_res_lugares = {}
                 for lg in lugares:
                     if lg in nv_jerarquía[-1]:
-                        var_res_lugares[lg] = (0, nv_jerarquía[-1].index(lg))
+                        var_res_lugares[lg] = nv_jerarquía[-1].index(lg)
                     else:
                         for í, nv in enumerate(nv_jerarquía[1::-1]):
                             id_nv = lg
@@ -346,13 +346,37 @@ class Calibrador(object):
                             if lg in var_res_lugares:
                                 break
 
+                prms_extras = list({
+                    'mu_{p}_nv_{í}'.format(p=p, í=x[0]) for x in set(var_res_lugares.values()) if isinstance(x, tuple)
+                    for p in paráms
+                })
+
                 # Calibrar
-                res_calib = _calibrar_mod_bayes(mod_bayes_jrq, paráms=paráms, ops=ops_método)
+                res_calib = _calibrar_mod_bayes(mod_bayes_jrq, paráms=paráms + prms_extras, ops=ops_método)
+                # res_calib = {p: {'val': None, 'dist': np.random.random((1000, 3))} for p in paráms}
+                # res_calib['Factor a']['val'] = np.array([3.4, 3, 10])
+                # res_calib['Factor b']['val'] = np.array([-1.5, -1.1, -3])
+                # res_calib.update(
+                #     {p: {'val': np.random.rand(2), 'dist': np.random.random((1000, 2))} for p in prms_extras if
+                #      p[-1] == '1'})
+                # res_calib.update(
+                #     {p: {'val': np.random.rand(1), 'dist': np.random.random((1000, 1))} for p in prms_extras if
+                #      p[-1] == '2'})
+
 
                 # Formatear los resultados
                 resultados = {}
-                for p in paráms:
-                    resultados[p] = {lg: res_calib[p][í] for í, lg in enumerate(lugares)}
+                for lg in lugares:
+                    ubic_res = var_res_lugares[lg]
+
+                    if isinstance(ubic_res, int):
+                        resultados[lg] = {p: {ll: v[..., ubic_res] for ll, v in res_calib[p].items()} for p in paráms}
+                    else:
+                        nv, í = ubic_res
+                        resultados[lg] = {
+                            p: {ll: v[..., í] for ll, v in res_calib['mu_{}_nv_{}'.format(p, nv)].items()}
+                            for p in paráms
+                        }
 
             else:
                 # Si no estamos haciendo un único modelo jerárquico, hay que calibrar cada lugar individualmente.
@@ -360,7 +384,7 @@ class Calibrador(object):
                 # Efectuar las calibraciones para todos los lugares.
                 resultados = {}
                 for lg in lugares:
-                    lgs_potenciales = bd_datos.geog.obt_lugares_en(lg)
+                    lgs_potenciales = bd_datos.geog.obt_todos_lugares_en(lg)
                     obs_lg = obs[obs['lugar'].isin(lgs_potenciales + [lg])]
                     if len(obs_lg):
                         mod_bayes = ec.gen_mod_bayes(
@@ -454,7 +478,7 @@ class Calibrador(object):
                     inic = pariente = None  # Y no tenemos ni estimos iniciales, ni región pariente
                 else:
                     # Sino, tomar los datos de esta región únicamente.
-                    lgs_potenciales = bd_datos.geog.obt_lugares_en(lugar)
+                    lgs_potenciales = bd_datos.geog.obt_todos_lugares_en(lugar)
                     obs_lg = obs[obs['lugar'].isin(lgs_potenciales + [lugar])]
 
                     # Intentar sacar información del nivel superior en la jerarquía
@@ -565,28 +589,37 @@ def _procesar_calib_bayes(traza, paráms):
     # El diccionario para los resultados
     d_máx = {}
 
-    # Calcular el punto de probabilidad máxima
-    for p in paráms:
-        from warnings import warn
-        warn(str(traza[p].shape))  # para hacer: quitar
-        # Para cada parámetro...
-
+    def procesar_trz(trz):
         # Ajustar el rango, si es muy grande (necesario para las funciones que siguen)
-        escl = np.max(traza[p])
-        rango = escl - np.min(traza[p])
+        escl = np.max(trz)
+        rango = escl - np.min(trz)
         if escl < 10e10:
             escl = 1  # Si no es muy grande, no hay necesidad de ajustar
 
         # Intentar calcular la densidad máxima.
         try:
             # Se me olvidó cómo funciona esta parte.
-            fdp = gaussian_kde(traza[p] / escl)
-            x = np.linspace(traza[p].min() / escl - 1 * rango, traza[p].max() / escl + 1 * rango, 1000)
+            fdp = gaussian_kde(trz / escl)
+            x = np.linspace(trz.min() / escl - 1 * rango, trz.max() / escl + 1 * rango, 1000)
             máx = x[np.argmax(fdp.evaluate(x))] * escl
-            d_máx[p] = máx
+            return máx
 
         except BaseException:
-            d_máx[p] = None
+            return np.nan
+
+    # Calcular el punto de probabilidad máxima
+    for p in paráms:
+        # Para cada parámetro...
+
+        dims = traza[p].shape
+        if len(dims) == 1:
+            d_máx[p] = procesar_trz(traza[p])
+        elif len(dims) == 2:
+            d_máx[p] = np.empty(len(dims))
+            for e in range(dims[1]):
+                d_máx[p][e] = procesar_trz(traza[p][:, e])
+        else:
+            raise ValueError
 
     # Devolver los resultados procesados.
     return {p: {'val': d_máx[p], 'dist': traza[p]} for p in paráms}
