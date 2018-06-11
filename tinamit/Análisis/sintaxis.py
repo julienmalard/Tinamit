@@ -190,43 +190,44 @@ class Ecuación(object):
 
         dialecto = símismo.dialecto
 
-        def _gen_d_vars_pm(tmñ=(), prfj=''):
+        def _gen_d_vars_pm(tmñ=(), fmt_nmbrs='{}'):
             egr = {}
             for p, líms in líms_paráms.items():
-
+                nmbr = fmt_nmbrs.format(p)
                 if aprioris is None:
                     if líms[0] is None:
                         if líms[1] is None:
-                            dist_pm = pm.Flat(prfj + p, shape=tmñ)
+                            dist_pm = pm.Flat(nmbr, shape=tmñ)
                         else:
                             if líms[1] == 0:
-                                dist_pm = -pm.HalfFlat(prfj + p, shape=tmñ)
+                                dist_pm = -pm.HalfFlat(nmbr, shape=tmñ)
                             else:
-                                dist_pm = líms[1] - pm.HalfFlat(prfj + p, shape=tmñ)
+                                dist_pm = líms[1] - pm.HalfFlat(nmbr, shape=tmñ)
                     else:
                         if líms[1] is None:
                             if líms[0] == 0:
-                                dist_pm = pm.HalfFlat(prfj + p, shape=tmñ)
+                                dist_pm = pm.HalfFlat(nmbr, shape=tmñ)
                             else:
-                                dist_pm = líms[0] + pm.HalfFlat(prfj + p, shape=tmñ)
+                                dist_pm = líms[0] + pm.HalfFlat(nmbr, shape=tmñ)
                         else:
-                            dist_pm = pm.Uniform(prfj + p, lower=líms[0], upper=líms[1], shape=tmñ)
+                            dist_pm = pm.Uniform(nmbr, lower=líms[0], upper=líms[1], shape=tmñ)
                 else:
                     dist, prms = aprioris[p]
                     if (líms[0] is not None or líms[1] is not None) and dist != pm.Uniform:
                         acotada = pm.Bound(dist, lower=líms[0], upper=líms[1])
-                        dist_pm = acotada(prfj + p, shape=tmñ, **prms)
+                        dist_pm = acotada(nmbr, shape=tmñ, **prms)
                     else:
                         if dist == pm.Uniform:
                             prms['lower'] = max(prms['lower'], líms[0])
                             prms['upper'] = min(prms['upper'], líms[1])
-                        dist_pm = dist(prfj + p, shape=tmñ, **prms)
+                        dist_pm = dist(nmbr, shape=tmñ, **prms)
 
                 egr[p] = dist_pm
             return egr
 
         def _gen_d_vars_pm_jer():
-            dists_base = _gen_d_vars_pm(tmñ=(1,))
+            dists_base = _gen_d_vars_pm(tmñ=(len(nv_jerarquía[-1]),),
+                                        fmt_nmbrs='mu_{}_nv_' + str(len(nv_jerarquía) - 1))
 
             egr = {}
 
@@ -236,21 +237,21 @@ class Ecuación(object):
                 if líms[0] is líms[1] is None:
                     for í, nv in enumerate(nv_jerarquía[:-1]):
                         tmñ_nv = nv.shape
-                        if í == (len(nv_jerarquía) - 1):
+                        if í == (len(nv_jerarquía) - 2):
                             nmbr_mu = p
                         else:
-                            nmbr_mu = 'mu_{}_nv_{}'.format(p, len(nv_jerarquía) - 1 - í)
-                        nmbr_sg = 'sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 1 - í)
+                            nmbr_mu = 'mu_{}_nv_{}'.format(p, len(nv_jerarquía) - 2 - í)
+                        nmbr_sg = 'sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 2 - í)
                         mu = pm.Normal(name=nmbr_mu, mu=mu[nv], sd=sg[nv], shape=tmñ_nv)
                         sg = pm.HalfNormal(name=nmbr_sg.format(p, í), sd=10, shape=tmñ_nv)
                 else:
                     for í, nv in enumerate(nv_jerarquía[:-1]):
                         tmñ_nv = nv.shape
-                        if í == (len(nv_jerarquía) - 1):
+                        if í == (len(nv_jerarquía) - 2):
                             nmbr_mu = p
                         else:
-                            nmbr_mu = 'mu_{}_nv_{}'.format(p, len(nv_jerarquía) - 1 - í)
-                        nmbr_sg = 'sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 1 - í)
+                            nmbr_mu = 'mu_{}_nv_{}'.format(p, len(nv_jerarquía) - 2 - í)
+                        nmbr_sg = 'sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 2 - í)
 
                         acotada = pm.Bound(pm.Normal, lower=líms[0], upper=líms[1])
                         mu = acotada(nmbr_mu, mu=mu[nv], sd=sg[nv], shape=tmñ_nv)

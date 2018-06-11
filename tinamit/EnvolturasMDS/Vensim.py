@@ -16,7 +16,7 @@ try:
 except ImportError:
     pm = None
 
-if sys.platform[:3] == 'win':  # pragma: no cobertura
+if sys.platform[:3] == 'win':  # pragma: sin cobertura
     try:
         ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
         dll_Vensim = 'C:\\Windows\\System32\\vendll32.dll'
@@ -180,7 +180,8 @@ class ModeloVensimMdl(MDSEditable):
 
     def publicar_modelo(símismo):
         símismo.publicar_vpm()
-    def publicar_vpm(símismo):
+
+    def publicar_vpm(símismo):  # pragma: sin cobertura
 
         try:
             dll = ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')

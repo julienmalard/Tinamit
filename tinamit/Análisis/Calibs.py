@@ -512,6 +512,7 @@ class Calibrador(object):
             return resultados
 
 
+# Unas funciones auxiliares
 def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops=None):
     """
     Esta función calibra un modelo bayes.
