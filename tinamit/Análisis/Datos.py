@@ -738,9 +738,9 @@ class SuperBD(object):
             elif isinstance(lugares, list):
                 lugares = set(lugares)
 
-            if not lugares_estrictos:
+            if not lugares_estrictos and símismo.geog is not None:
                 for lg in lugares.copy():
-                    sub_lgs = símismo.geog.obt_lugares_en(lg)
+                    sub_lgs = símismo.geog.obt_todos_lugares_en(lg)
                     lugares.update(sub_lgs)
 
         # Formatear los datos
@@ -779,7 +779,7 @@ class SuperBD(object):
 
         # Seleccionar las observaciones que corresponden al lugar de interés
         if lugares is not None:
-            bd_sel = bd_sel[bd_sel['lugares'].isin(lugares)]
+            bd_sel = bd_sel[bd_sel['lugar'].isin(lugares)]
 
         # Interpolar si necesario
         if interpolar:

@@ -353,16 +353,6 @@ class Calibrador(object):
 
                 # Calibrar
                 res_calib = _calibrar_mod_bayes(mod_bayes_jrq, paráms=paráms + prms_extras, ops=ops_método)
-                # res_calib = {p: {'val': None, 'dist': np.random.random((1000, 3))} for p in paráms}
-                # res_calib['Factor a']['val'] = np.array([3.4, 3, 10])
-                # res_calib['Factor b']['val'] = np.array([-1.5, -1.1, -3])
-                # res_calib.update(
-                #     {p: {'val': np.random.rand(2), 'dist': np.random.random((1000, 2))} for p in prms_extras if
-                #      p[-1] == '1'})
-                # res_calib.update(
-                #     {p: {'val': np.random.rand(1), 'dist': np.random.random((1000, 1))} for p in prms_extras if
-                #      p[-1] == '2'})
-
 
                 # Formatear los resultados
                 resultados = {}
@@ -615,7 +605,7 @@ def _procesar_calib_bayes(traza, paráms):
         if len(dims) == 1:
             d_máx[p] = procesar_trz(traza[p])
         elif len(dims) == 2:
-            d_máx[p] = np.empty(len(dims))
+            d_máx[p] = np.empty(dims[1])
             for e in range(dims[1]):
                 d_máx[p][e] = procesar_trz(traza[p][:, e])
         else:

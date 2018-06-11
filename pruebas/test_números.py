@@ -19,3 +19,6 @@ class Test_TradsUnids(unittest.TestCase):
 
     def test_traducir_sistema_bases(símismo):
         símismo.assertEqual(tx_a_núm('௰௨௲௩௱௪௰௫.௬௭௮௯'), 12345.6789)
+
+    def test_traducir_sistema_bases_notación_científica(símismo):
+        símismo.assertEqual(tx_a_núm('௰௨௲௩௱௪௰௫.௬௭௮௯e௧'), 123456.789)

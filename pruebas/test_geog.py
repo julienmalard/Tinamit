@@ -1,14 +1,19 @@
+import datetime as ft
 import os
 import unittest
 
 import numpy as np
+import numpy.testing as npt
 
-from tinamit.Geog.Geog import Geografía
+from tinamit.Geog.Geog import Geografía, Lugar
 
 dir_act = os.path.split(__file__)[0]
 arch_csv_geog = os.path.join(dir_act, 'recursos/prueba_geog.csv')
 arch_frm_regiones = os.path.join(dir_act, 'recursos/frm/munis.shp')
 arch_frm_otra = os.path.join(dir_act, 'recursos/frm/otra_frm.shp')
+arch_clim_diario = os.path.join(dir_act, 'recursos/datos/clim_diario.csv')
+arch_clim_mensual = os.path.join(dir_act, 'recursos/datos/clim_mensual.csv')
+arch_clim_anual = os.path.join(dir_act, 'recursos/datos/clim_anual.csv')
 
 
 class Test_Geografía(unittest.TestCase):
@@ -99,4 +104,31 @@ class Test_Geografía(unittest.TestCase):
 
 class Test_Lugar(unittest.TestCase):
     def test_observar_diarios(símismo):
-        pass
+        lugar = Lugar(lat=0, long=0, elev=0)
+        lugar.observar_diarios(arch_clim_diario, cols_datos={'Precipitación': 'Lluvia'},
+                               conv={'Precipitación': 1}, c_fecha='Fecha')
+        f_inic = ft.datetime(2018, 1, 1).date()
+        f_final = ft.datetime(2018, 1, 31).date()
+        lugar.prep_datos(fecha_inic=f_inic, fecha_final=f_final)
+        res = lugar.devolver_datos('Precipitación', f_inic=f_inic, f_final=f_final)
+        npt.assert_array_equal(res['Precipitación'], [1] * 15 + [0] * 16)
+
+    def test_observar_mensuales(símismo):
+        lugar = Lugar(lat=0, long=0, elev=0)
+        lugar.observar_mensuales(arch_clim_mensual, cols_datos={'Precipitación': 'Lluvia'},
+                                 conv={'Precipitación': 1}, meses='Mes', años='Año')
+        f_inic = ft.datetime(2018, 1, 1).date()
+        f_final = ft.datetime(2018, 1, 31).date()
+        lugar.prep_datos(fecha_inic=f_inic, fecha_final=f_final)
+        res = lugar.devolver_datos('Precipitación', f_inic=f_inic, f_final=f_final)
+        npt.assert_array_equal(res['Precipitación'], np.ones(31))
+
+    def test_observar_anuales(símismo):
+        lugar = Lugar(lat=0, long=0, elev=0)
+        lugar.observar_anuales(arch_clim_anual, cols_datos={'Precipitación': 'Lluvia'},
+                               conv={'Precipitación': 1}, años='Año')
+        f_inic = ft.datetime(2018, 1, 1).date()
+        f_final = ft.datetime(2018, 1, 31).date()
+        lugar.prep_datos(fecha_inic=f_inic, fecha_final=f_final)
+        res = lugar.devolver_datos('Precipitación', f_inic=f_inic, f_final=f_final)
+        npt.assert_array_equal(res['Precipitación'], np.ones(31))

@@ -157,7 +157,7 @@ class Lugar(مقام):
         obs = سال_مشا(مسل=archivo, س_اعداد=d_cols, تبادلوں=d_conv, س_سال=años)
         símismo.مشاہدہ_کرنا(obs)
 
-    def prep_datos(símismo, fecha_inic, fecha_final, tcr, prefs=None, lím_prefs=False, regenerar=False):
+    def prep_datos(símismo, fecha_inic, fecha_final, tcr=0, prefs=None, lím_prefs=False, regenerar=False):
         """
         Esta función actualiza el diccionario interno de datos climáticos del Lugar, listo para una simulación.
         Intentará obtener datos de todas fuentes posibles, incluso observaciones y modelos de predicciones climáticas.
@@ -185,7 +185,7 @@ class Lugar(مقام):
         Esta función devuelve datos ya calculados por :func:`~tinamit.Geog.Geog.Lugar.prep_datos`.
 
         :param vars_clima: Una lista de variables climáticos de interés.
-        :type vars_clima: list[str]
+        :type vars_clima: list[str] | str
         :param f_inic: La fecha inicial.
         :type f_inic: ft.datetime | ft.date
         :param f_final: La fecha final.
@@ -196,6 +196,9 @@ class Lugar(مقام):
         bd = símismo.اعداد_دن  # type: pd.DataFrame
         datos_interés = bd.loc[f_inic:f_final]
 
+        if not isinstance(vars_clima, list):
+            vars_clima = [vars_clima]
+
         for v in vars_clima:
             if v not in conv_vars:
                 raise ValueError(_('El variable "{}" está erróneo. Debe ser uno de:\n'
@@ -203,7 +206,7 @@ class Lugar(مقام):
 
         v_conv = [conv_vars[v] for v in vars_clima]
 
-        return datos_interés[v_conv]
+        return datos_interés[v_conv].rename(index=str, columns={conv_vars[v]: v for v in vars_clima})
 
     def comb_datos(símismo, vars_clima, combin, f_inic, f_final):
         """

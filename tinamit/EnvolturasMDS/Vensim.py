@@ -16,7 +16,7 @@ try:
 except ImportError:
     pm = None
 
-if sys.platform[:3] == 'win':
+if sys.platform[:3] == 'win':  # pragma: no cobertura
     try:
         ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
         dll_Vensim = 'C:\\Windows\\System32\\vendll32.dll'
@@ -680,7 +680,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         return leer_egr_mds(archivo, var)
 
 
-def comanda_vensim(func, args, mensaje_error=None, val_error=None, devolver=False):  # pragma: no cobertura
+def comanda_vensim(func, args, mensaje_error=None, val_error=None, devolver=False):  # pragma: sin cobertura
     """
     Esta función sirve para llamar todo tipo de comanda VENSIM.
 
