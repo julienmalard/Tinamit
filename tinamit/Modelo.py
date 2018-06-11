@@ -242,6 +242,7 @@ class Modelo(object):
         símismo.iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
 
         # Verificar los nombres de los variables de interés
+        símismo.vars_saliendo.clear()
         if vars_interés is None:
             vars_interés = []
         else:

@@ -53,10 +53,6 @@ class SuperConectado(Modelo):
         símismo.conv_tiempo_dudoso = False  # Para acordarse si Tinamït tuvo que adivinar la conversión o no.
         símismo.mod_base_tiempo = None
 
-        # Para hilos
-        símismo._paso_0 = True
-        símismo._emplear_hilos = False
-
         # Inicializamos el SuperConectado como todos los Modelos.
         super().__init__(nombre=nombre)
 
@@ -526,10 +522,6 @@ class SuperConectado(Modelo):
 
         # Borrar lo que podría haber allí desde antes.
         símismo.conex_rápida.clear()
-
-        # Para ayudar a decidir si vamos a emplear hilos o no.
-        símismo._emplear_hilos = False
-        símismo._paso_0 = True
 
         for m in símismo.modelos.values():
             m.vars_saliendo.clear()

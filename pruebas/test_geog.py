@@ -95,3 +95,8 @@ class Test_Geografía(unittest.TestCase):
         símismo.geog.dibujar(archivo='prueba.jpg', valores=np.random.rand(len(lugares)), ids=lugares)
         símismo.assertTrue(os.path.isfile('prueba.jpg'))
         os.remove('prueba.jpg')
+
+
+class Test_Lugar(unittest.TestCase):
+    def test_observar_diarios(símismo):
+        pass

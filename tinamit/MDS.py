@@ -155,12 +155,13 @@ class EnvolturaMDS(Modelo):
 
 class MDSEditable(EnvolturaMDS):
     def __init__(símismo, archivo, nombre='mds'):
+        super().__init__(archivo=archivo, nombre=nombre)
+
         from tinamit.EnvolturasMDS import generar_mds
         símismo.mod = None  # type: EnvolturaMDS
         símismo._estab_mod(generar_mds(archivo=archivo))
 
         símismo.editado = False
-        super().__init__(archivo=archivo, nombre=nombre)
 
     def _estab_mod(símismo, mod):
         """
@@ -174,7 +175,9 @@ class MDSEditable(EnvolturaMDS):
 
         """
         símismo.mod = mod
-        símismo.mem_vars = mod.mem_vars
+        mod.mem_vars = símismo.mem_vars
+        mod.vars_saliendo = símismo.vars_saliendo
+        mod.variables = símismo.variables
 
     def _act_vals_dic_var(símismo, valores):
         símismo.mod._act_vals_dic_var(valores=valores)
