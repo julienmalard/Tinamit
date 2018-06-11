@@ -81,6 +81,10 @@ class Test_CalibEnModelo(unittest.TestCase):
         cls.mod.conectar_var_a_datos('Y', var_bd='y')
 
     def test_calibración_geog_con_escalas(símismo):
+        """
+        Calibramos una geografía con distintas escalas (municipios y departamentos).
+        """
+
         for m in métodos:
             with símismo.subTest(método=m):
                 símismo.mod.especificar_micro_calib(var='Y', método=m)
