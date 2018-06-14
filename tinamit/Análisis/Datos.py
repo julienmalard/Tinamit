@@ -10,7 +10,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
 from tinamit.Geog.Geog import Geografía
 
-from tinamit import _
+from tinamit import _, detectar_codif
 from tinamit.Análisis.Números import tx_a_núm
 
 
@@ -1260,19 +1260,6 @@ class BD(object):
 
         """
 
-        # Una lista de lso formatos de fecha posibles. Esta función intentará de leer los datos de fechas con cada
-        # formato en esta lista y, si encuentra un que funciona, parará allí.
-        separadores = ['-', '/', ' ', '.']
-
-        f = ['%d{0}%m{0}%y', '%m{0}%d{0}%y', '%d{0}%m{0}%Y', '%m{0}%d{0}%Y',
-             '%d{0}%b{0}%y', '%m{0}%b{0}%y', '%d{0}%b{0}%Y', '%b{0}%d{0}%Y',
-             '%d{0}%B{0}%y', '%m{0}%B{0}%y', '%d{0}%B{0}%Y', '%m{0}%B{0}%Y',
-             '%y{0}%m{0}%d', '%y{0}%d{0}%m', '%Y{0}%m{0}%d', '%Y{0}%d{0}%m',
-             '%y{0}%b{0}%d', '%y{0}%d{0}%b', '%Y{0}%b{0}%d', '%Y{0}%d{0}%b',
-             '%y{0}%B{0}%d', '%y{0}%d{0}%B', '%Y{0}%B{0}%d', '%Y{0}%d{0}%B']
-
-        formatos_posibles = [x.format(s) for s in separadores for x in f]
-
         # Primero, si los datos de fechas están en formato simplemente numérico...
         if all([x.isdigit() for x in lista_fechas]):
 
@@ -1284,43 +1271,23 @@ class BD(object):
 
         else:
             # Sino, intentar de leer el formato de fecha
-            fechas = None
+            fechas = leer_fechas(lista_fechas)
 
-            # Intentar con cada formato en la lista de formatos posibles
-            for formato in formatos_posibles:
+            # Ya tenemos que encontrar la primera fecha y calcular la posición relativa de las
+            # otras con referencia en esta.
 
-                try:
-                    # Intentar de convertir todas las fechas a objetos ft.datetime
-                    fechas = [ft.datetime.strptime(x, formato).date() for x in lista_fechas]
+            # La primera fecha de la base de datos. Este paso se queda un poco lento, así que para largas bases de
+            # datos podría ser útil suponer que la primera fila también contiene la primera fecha.
+            fecha_inic_datos = min(fechas)
 
-                    # Si funcionó, parar aquí
-                    break
+            # Si tenemos prisa, mejor lo hagamos así:
+            # fecha_inic_datos = min(fechas[0], fechas[-1])
 
-                except ValueError:
-                    # Si no funcionó, intentar el próximo formato
-                    continue
+            # La posición relativa de todas las fechas a esta
+            lista_fechas = [(x - fecha_inic_datos).days for x in fechas]
 
-            # Si todavía no lo hemos logrado, tenemos un problema.
-            if fechas is None:
-                raise ValueError(
-                    'No puedo leer los datos de fechas. ¿Mejor le eches un vistazo a tu base de datos?')
-
-            else:
-                # Pero si está bien, ya tenemos que encontrar la primera fecha y calcular la posición relativa de las
-                # otras con referencia en esta.
-
-                # La primera fecha de la base de datos. Este paso se queda un poco lento, así que para largas bases de
-                # datos podría ser útil suponer que la primera fila también contiene la primera fecha.
-                fecha_inic_datos = min(fechas)
-
-                # Si tenemos prisa, mejor lo hagamos así:
-                # fecha_inic_datos = min(fechas[0], fechas[-1])
-
-                # La posición relativa de todas las fechas a esta
-                lista_fechas = [(x - fecha_inic_datos).days for x in fechas]
-
-                # Convertir a vector Numpy
-                vec_fch_núm = np.array(lista_fechas, dtype=int)
+            # Convertir a vector Numpy
+            vec_fch_núm = np.array(lista_fechas, dtype=int)
 
         return fecha_inic_datos, vec_fch_núm
 
@@ -1330,12 +1297,17 @@ class BDtexto(BD):
     Una clase para leer bases de datos en formato texto delimitado por comas (.csv).
     """
 
+    def __init__(símismo, archivo):
+
+        símismo.codif = detectar_codif(archivo)
+        super().__init__(archivo=archivo)
+
     def calc_n_obs(símismo):
         """
 
         :rtype: int
         """
-        with open(símismo.archivo) as d:
+        with open(símismo.archivo, encoding=símismo.codif) as d:
             n_filas = sum(1 for f in d if len(f)) - 1  # Sustrayemos la primera fila
 
         return n_filas
@@ -1360,7 +1332,7 @@ class BDtexto(BD):
 
         m_datos = np.empty((len(cols), símismo.n_obs))
 
-        with open(símismo.archivo) as d:
+        with open(símismo.archivo, encoding=símismo.codif) as d:
             lector = csv.DictReader(d)
             for n_f, f in enumerate(lector):
                 m_datos[:, n_f] = [tx_a_núm(f[c]) if f[c] not in cód_vacío else np.nan for c in cols]
@@ -1389,7 +1361,7 @@ class BDtexto(BD):
 
         l_datos = [[''] * símismo.n_obs] * len(cols)
 
-        with open(símismo.archivo) as d:
+        with open(símismo.archivo, encoding=símismo.codif) as d:
             lector = csv.DictReader(d)
             for n_f, f in enumerate(lector):
                 for i_c, c in enumerate(cols):
@@ -1407,7 +1379,7 @@ class BDtexto(BD):
         :rtype: list[str]
         """
 
-        with open(símismo.archivo) as d:
+        with open(símismo.archivo, encoding=símismo.codif) as d:
             lector = csv.reader(d)
 
             nombres_cols = next(lector)
@@ -1429,3 +1401,48 @@ class BDpandas(BD):
     def calc_n_obs(símismo):
         return símismo.archivo.shape[0]
 
+
+def leer_fechas(fechas):
+    # Una lista de lso formatos de fecha posibles. Esta función intentará de leer los datos de fechas con cada
+    # formato en esta lista y, si encuentra un que funciona, parará allí.
+    separadores = ['-', '/', ' ', '.']
+
+    f = ['%d{0}%m{0}%y', '%m{0}%d{0}%y', '%d{0}%m{0}%Y', '%m{0}%d{0}%Y',
+         '%d{0}%b{0}%y', '%m{0}%b{0}%y', '%d{0}%b{0}%Y', '%b{0}%d{0}%Y',
+         '%d{0}%B{0}%y', '%m{0}%B{0}%y', '%d{0}%B{0}%Y', '%m{0}%B{0}%Y',
+         '%y{0}%m{0}%d', '%y{0}%d{0}%m', '%Y{0}%m{0}%d', '%Y{0}%d{0}%m',
+         '%y{0}%b{0}%d', '%y{0}%d{0}%b', '%Y{0}%b{0}%d', '%Y{0}%d{0}%b',
+         '%y{0}%B{0}%d', '%y{0}%d{0}%B', '%Y{0}%B{0}%d', '%Y{0}%d{0}%B']
+
+    formatos_posibles = [x.format(s) for s in separadores for x in f]
+
+    if isinstance(fechas, list):
+        lista_fechas = fechas
+    else:
+        lista_fechas = [fechas]
+
+    # Intentar con cada formato en la lista de formatos posibles
+    fechas_ft = None
+    for formato in formatos_posibles:
+
+        try:
+            # Intentar de convertir todas las fechas a objetos ft.datetime
+            fechas_ft = [ft.datetime.strptime(x, formato).date() for x in lista_fechas]
+
+            # Si funcionó, parar aquí
+            break
+
+        except ValueError:
+            # Si no funcionó, intentar el próximo formato
+            continue
+
+    # Si todavía no lo hemos logrado, tenemos un problema.
+    if fechas_ft is None:
+        raise ValueError(
+            'No puedo leer los datos de fechas. ¿Mejor le eches un vistazos?'
+            '\n"{}"'.format(', '.join(lista_fechas)))
+
+    if isinstance(fechas, list):
+        return fechas_ft
+    else:
+        return fechas_ft[0]

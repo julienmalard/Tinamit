@@ -3,6 +3,7 @@ import json
 import os
 from warnings import warn as avisar
 
+from chardet import UniversalDetector
 from pkg_resources import resource_filename
 
 # Cosas básicas
@@ -169,3 +170,12 @@ def valid_nombre_arch(nombre):
         nombre = nombre.replace(x, '_')
 
     return nombre.strip()
+
+
+def detectar_codif(archivo):
+    detector = UniversalDetector()
+    for línea in open(archivo, 'rb').readlines():
+        detector.feed(línea)
+        if detector.done: break
+    detector.close()
+    return detector.result['encoding']

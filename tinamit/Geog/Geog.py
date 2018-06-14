@@ -13,7 +13,7 @@ from matplotlib.figure import Figure as Figura
 from taqdir.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
 from taqdir.مقام import مقام
 
-from tinamit import _
+from tinamit import _, detectar_codif
 
 # Ofrecemos la oportunidad de utilizar تقدیر, taqdir, en español
 
@@ -213,19 +213,24 @@ class Lugar(مقام):
         Esta función combina datos climáticos entre dos fechas.
 
         :param vars_clima: Los variables de clima de interés.
-        :type vars_clima: list[str]
+        :type vars_clima: list[str] | str
         :param combin: Cómo hay que combinar (promedio o total)
-        :type combin: list[str]
+        :type combin: list[str] | str
         :param f_inic: La fecha inicial
         :type f_inic: ft.datetime | ft.date
         :param f_final: La fecha final
         :type f_final: ft.datetime | ft.date
         :return: Un diccionario con los resultados.
-        :rtype: dict[np.ndarray]
+        :rtype: dict[float]
         """
 
         bd = símismo.اعداد_دن  # type: pd.DataFrame
         datos_interés = bd.loc[f_inic:f_final]
+
+        if isinstance(combin, str):
+            combin = [combin]
+        if isinstance(vars_clima, str):
+            vars_clima = [vars_clima]
 
         resultados = {}
         for v, c in zip(vars_clima, combin):
@@ -245,7 +250,7 @@ class Lugar(مقام):
             elif c == 'total':
                 resultados[v] = datos_interés[v_conv].sum()
             else:
-                raise ValueError
+                raise ValueError(_('El método de combinación de datos debe ser "prom" o "total".'))
 
         return resultados
 
@@ -319,7 +324,7 @@ class Geografía(object):
         except KeyError:
             símismo.formas_reg.pop(forma)
 
-    def espec_estruct_geog(símismo, archivo, col_cód='Código', codif_csv='windows-1252'):
+    def espec_estruct_geog(símismo, archivo, col_cód='Código'):
 
         símismo.cód_a_lugar.clear()
         símismo.info_geog.clear()
@@ -327,6 +332,7 @@ class Geografía(object):
         símismo.escalas.clear()
 
         doc = []
+        codif_csv = detectar_codif(archivo)
         with open(archivo, newline='', encoding=codif_csv) as d:
 
             l = csv.DictReader(d)  # El lector de csv

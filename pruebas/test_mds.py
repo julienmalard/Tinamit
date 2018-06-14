@@ -212,6 +212,9 @@ class Test_GenerarMDS(unittest.TestCase):
         mod = generar_mds(tipos_modelos['PySDVensim']['prueba'], motor=ModeloPySD)
         símismo.assertIsInstance(mod, ModeloPySD)
 
+        mod = generar_mds(tipos_modelos['PySDVensim']['prueba'], motor=ModeloVensimMdl)
+        símismo.assertIsInstance(mod, ModeloVensimMdl)
+
     def test_generación_auto_mds_modelo_erróneo(símismo):
         # Asegurarse que un archivo erróneo devuelva un error.
 

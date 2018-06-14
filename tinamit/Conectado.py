@@ -765,7 +765,7 @@ class SuperConectado(Modelo):
                 except NotImplementedError:
                     pass
 
-        for m, obj_m in símismo.modelos.items():
+        for obj_m in símismo.modelos.values():
             if var in obj_m.variables:
                 try:
                     return obj_m._leer_resultados(var, corrida)

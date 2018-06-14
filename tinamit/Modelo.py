@@ -12,6 +12,7 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
+from Análisis.Datos import leer_fechas
 from tinamit import _, valid_nombre_arch
 from tinamit.Análisis.Calibs import Calibrador
 from tinamit.Análisis.sintaxis import Ecuación
@@ -171,7 +172,7 @@ class Modelo(object):
         paso :
         nombre_corrida :
         fecha_inic : ft.date
-        lugar :
+        lugar : Geog.Lugar
         recalc_clima :
         clima :
         vars_interés :
@@ -181,13 +182,22 @@ class Modelo(object):
 
         """
 
+        # Conectar el lugar
+        símismo.lugar = lugar
+
         # Calcular el número de pasos necesario
         n_pasos = int(math.ceil(tiempo_final / paso))
+
+        # Preparar las unidades de tiempo
+        dic_trad_tiempo = {'año': 'year', 'mes': 'months', 'día': 'days'}
+        fecha_act = fecha_inic
 
         # Si hay fecha inicial, tenemos que guardar cuenta de donde estamos en el calendario
         if fecha_inic is None:
             if clima is not None:
                 raise ValueError(_('Hay que especificar la fecha inicial para simulaciones de clima.'))
+            unid_ref_tiempo = None
+
         else:
             if isinstance(fecha_inic, ft.datetime):
                 # Formatear la fecha inicial
@@ -197,16 +207,8 @@ class Modelo(object):
                 día = mes = 1
                 fecha_inic = ft.date(year=año, month=mes, day=día)
             elif isinstance(fecha_inic, str):
-                try:
-                    fecha_inic = ft.datetime.strptime(fecha_inic, '%d/%m/%Y').date()
-                except ValueError:
-                    raise ValueError(_('La fecha inicial debe ser en el formato "día/mes/año", por ejemplo '
-                                       '"24/12/2017".'))
-        fecha_act = fecha_inic
-
-        # Preparar las unidades de tiempo
-        dic_trad_tiempo = {'año': 'year', 'mes': 'months', 'día': 'days'}
-        if fecha_inic is not None:
+                fecha_inic = leer_fechas(fecha_inic)
+            fecha_act = fecha_inic
             unid_ref_tiempo = símismo._conv_unid_tiempo['unid_ref']
             if unid_ref_tiempo is None:
                 unid_ref_tiempo = símismo.unidad_tiempo()
@@ -218,24 +220,21 @@ class Modelo(object):
                         break
                 except ValueError:
                     pass
-            if unid_ref_tiempo not in ['año', 'mes', 'día'] and fecha_inic is not None:
+            if unid_ref_tiempo not in ['año', 'mes', 'día']:
                 raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a años, meses o días.')
                                  .format(unid_ref_tiempo))
-            fecha_final = fecha_inic + deltarelativo(*{dic_trad_tiempo[unid_ref_tiempo]: n_pasos})  # type: ft.date
-        else:
-            unid_ref_tiempo = None
-            fecha_final = None
+            fecha_final = fecha_inic + deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: n_pasos})  # type: ft.date
 
-        # Conectar el lugar
-        símismo.lugar = lugar
+            if lugar is not None and clima is None:
+                clima = 0
 
-        # Conectar el clima, si necesario
-        if clima is not None:
-            if lugar is None:
-                raise ValueError(_('Hay que especificar un lugar para incorporar el clima.'))
-            else:
-                símismo._conectar_clima(lugar=lugar, fecha_inic=fecha_inic, fecha_final=fecha_final,
-                                        escenario=clima, recalc=recalc_clima)
+            # Conectar el clima, si necesario
+            if clima is not None:
+                if lugar is None:
+                    raise ValueError(_('Hay que especificar un lugar para incorporar el clima.'))
+                else:
+                    símismo._conectar_clima(lugar=lugar, fecha_inic=fecha_inic, fecha_final=fecha_final,
+                                            escenario=clima, recalc=recalc_clima)
 
         # Iniciamos el modelo.
         símismo.corrida_activa = nombre_corrida
@@ -253,6 +252,15 @@ class Modelo(object):
                 vars_interés[i] = var
                 símismo.vars_saliendo.add(var)
 
+        if fecha_inic is not None:
+            fecha_próx = fecha_act + deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: paso})
+
+            # Actualizar variables de clima, si necesario
+            if clima is not None:
+                símismo.act_vals_clima(fecha_act, fecha_próx)
+
+            fecha_act = fecha_próx
+
         símismo.mem_vars.clear()
         for v in vars_interés:
             dims = símismo.obt_dims_var(v)
@@ -260,20 +268,12 @@ class Modelo(object):
                 símismo.mem_vars[v] = np.empty(n_pasos + 1)
             else:
                 símismo.mem_vars[v] = np.empty((n_pasos + 1, *símismo.obt_dims_var(v)))
+            símismo.mem_vars[v][:] = np.nan
 
             símismo.mem_vars[v][0] = símismo.obt_val_actual_var(v)
 
         # Hasta llegar al tiempo final, incrementamos el modelo.
         for i in range(n_pasos):
-
-            if fecha_inic is not None:
-                fecha_próx = fecha_act + deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: paso})
-
-                # Actualizar variables de clima, si necesario
-                if clima:
-                    símismo.act_vals_clima(fecha_act, fecha_próx)
-
-                fecha_act = fecha_próx
 
             # Incrementar el modelo
             símismo.incrementar(paso)
@@ -283,6 +283,16 @@ class Modelo(object):
                 símismo.leer_vals()
             for v in vars_interés:
                 símismo.mem_vars[v][i + 1] = símismo.obt_val_actual_var(v)
+
+            if i != (n_pasos - 1):
+                if fecha_inic is not None:
+                    fecha_próx = fecha_act + deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: paso})
+
+                    # Actualizar variables de clima, si necesario
+                    if clima is not None:
+                        símismo.act_vals_clima(fecha_act, fecha_próx)
+
+                    fecha_act = fecha_próx
 
         # Después de la simulación, cerramos el modelo.
         símismo.cerrar_modelo()
@@ -765,6 +775,8 @@ class Modelo(object):
         if n_días > 1:
             avisar('El paso es de {} días. Puede ser que las predicciones climáticas pierdan '
                    'en precisión.'.format(n_días))
+
+        f_1 = f_1 - deltarelativo(days=1)
 
         # La lista de variables climáticos
         vars_clima = list(símismo.vars_clima)

@@ -113,6 +113,16 @@ class Test_Lugar(unittest.TestCase):
         res = lugar.devolver_datos('Precipitación', f_inic=f_inic, f_final=f_final)
         npt.assert_array_equal(res['Precipitación'], [1] * 15 + [0] * 16)
 
+    def test_comb_datos(símismo):
+        lugar = Lugar(lat=0, long=0, elev=0)
+        lugar.observar_diarios(arch_clim_diario, cols_datos={'Precipitación': 'Lluvia'},
+                               conv={'Precipitación': 1}, c_fecha='Fecha')
+        f_inic = ft.datetime(2018, 1, 1).date()
+        f_final = ft.datetime(2018, 1, 31).date()
+        lugar.prep_datos(fecha_inic=f_inic, fecha_final=f_final)
+        res = lugar.comb_datos('Precipitación', combin='total', f_inic=f_inic, f_final=f_final)
+        símismo.assertEqual(res['Precipitación'], 15)
+
     def test_observar_mensuales(símismo):
         lugar = Lugar(lat=0, long=0, elev=0)
         lugar.observar_mensuales(arch_clim_mensual, cols_datos={'Precipitación': 'Lluvia'},

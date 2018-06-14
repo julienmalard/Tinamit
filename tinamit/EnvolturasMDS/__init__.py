@@ -20,11 +20,17 @@ def generar_mds(archivo, motor=None):
     Esta función genera una instancia de modelo de DS. Identifica el tipo de archivo por su extensión (p. ej., .vpm) y
     después genera una instancia de la subclase apropiada de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS`.
 
-    :param archivo: El archivo del modelo DS.
-    :type archivo: str
+    Parameters
+    ----------
+    archivo : str
+        El archivo del modelo DS.
+    motor : type | list[type]
+        Las clases de envoltura MDS que quieres considerar para generar este modelo.
 
-    :return: Un modelo DS.
-    :rtype: EnvolturaMDS
+    Returns
+    -------
+    EnvolturaMDS:
+        Un modelo DS.
 
     """
 
