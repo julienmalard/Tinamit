@@ -8,10 +8,10 @@ import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
-from tinamit.Geog.Geog import Geografía
 
 from tinamit import _, detectar_codif
 from tinamit.Análisis.Números import tx_a_núm
+from tinamit.Geog.Geog import Geografía
 
 
 class Datos(object):
@@ -27,8 +27,6 @@ class Datos(object):
         :param fecha:
         :type fecha: str | ft.date | ft.datetime | int
 
-        :param ar:
-        :type año: int | float
 
         :param lugar:
         :type lugar: str
@@ -1063,7 +1061,6 @@ class SuperBD(object):
 
         ejes.set_xlabel(var_x)
         ejes.set_ylabel(var_y)
-
 
         ejes.set_title(_('{} vs {}').format(var_x, var_y))
         fig.savefig(archivo)

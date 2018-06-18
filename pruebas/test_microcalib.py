@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 from pruebas.test_mds import limpiar_mds
-from tinamit.Análisis.Calibs import Calibrador
+from tinamit.Análisis.Calibs import CalibradorEc
 from tinamit.Análisis.Datos import DatosIndividuales, SuperBD
 from tinamit.EnvolturasMDS.PySD import ModeloPySD
 from tinamit.Geog.Geog import Geografía
@@ -28,7 +28,7 @@ if pm is not None:
 class Test_Calibrador(unittest.TestCase):
     ec = 'y = a*x + b'
     paráms = {'a': 2.4, 'b': -5}
-    clbrd = Calibrador(ec=ec)
+    clbrd = CalibradorEc(ec=ec)
 
     @classmethod
     def setUpClass(cls):

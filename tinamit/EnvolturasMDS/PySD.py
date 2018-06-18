@@ -89,14 +89,17 @@ class ModeloPySD(EnvolturaMDS):
             símismo._act_vals_dic_var({v: val})
 
     def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
-        símismo.cont_simul = False
-        símismo.tiempo_final = tiempo_final
-        símismo.paso_act = 0
-        símismo.vars_para_cambiar.clear()
 
         # Poner los variables y el tiempo a sus valores iniciales
         símismo.modelo.reload()
         símismo.modelo.initialize()
+
+        símismo.cont_simul = False
+        símismo.tiempo_final = tiempo_final
+        símismo.paso_act = símismo.modelo.time._t
+        símismo.vars_para_cambiar.clear()
+
+
 
     def _aplicar_cambios_vals_inic(símismo):
         símismo.vars_para_cambiar.update(símismo.vals_inic)
@@ -107,14 +110,15 @@ class ModeloPySD(EnvolturaMDS):
 
     def _incrementar(símismo, paso):
         símismo.paso_act += paso
-
         if símismo.cont_simul:
             símismo.modelo.run(initial_condition='current', params=símismo.vars_para_cambiar,
                                return_timestamps=símismo.paso_act)
         else:
             símismo.modelo.run(return_timestamps=símismo.paso_act, params=símismo.vars_para_cambiar)
+            símismo.cont_simul = True
 
-        símismo.cont_simul = True
+        símismo.vars_para_cambiar.clear()
+
 
     def _leer_vals(símismo):
         for v in símismo.vars_saliendo:

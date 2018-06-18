@@ -1,6 +1,7 @@
 import datetime as ft
 import math
 import os
+import pandas as pd
 import pickle
 import re
 from copy import deepcopy as copiar_profundo
@@ -14,7 +15,7 @@ from lxml import etree as arbole
 import tinamit.Geog.Geog as Geog
 from tinamit.Análisis.Datos import leer_fechas
 from tinamit import _, valid_nombre_arch
-from tinamit.Análisis.Calibs import Calibrador
+from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.Unidades.conv import convertir
 
@@ -298,7 +299,7 @@ class Modelo(object):
         símismo.cerrar_modelo()
 
         if vars_interés is not None:
-            return copiar_profundo(símismo.mem_vars)
+            return pd.DataFrame(símismo.mem_vars)
 
     def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
                          fecha_inic=None, lugar=None, clima=None, recalc_clima=True, combinar=True,
@@ -1078,7 +1079,9 @@ class Modelo(object):
     def conectar_datos(símismo, datos):
         símismo.datos = datos
 
-    def conectar_var_a_datos(símismo, var, var_bd):
+    def conectar_var_a_datos(símismo, var, var_bd=None):
+        if var_bd is None:
+            var_bd = var
         var = símismo.valid_var(var)
         símismo.conex_var_datos[var] = var_bd
 
@@ -1104,7 +1107,7 @@ class Modelo(object):
             raise NotImplementedError  # Falta implementar el caso de un constante
 
         # El objeto de calibración.
-        mod_calib = Calibrador(
+        mod_calib = CalibradorEc(
             ec=ec, var_y=var, otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars},
             nombres_equiv=símismo.conex_var_datos
         )
@@ -1255,6 +1258,11 @@ class Modelo(object):
 
     def borrar_calibs_calc(símismo):
         símismo.calibs.clear()
+
+    def calibrar(símismo, paráms, líms_paráms=None, método='optimizar'):
+        calibrador = CalibradorMod(símismo)
+        calibrador.calibrar(paráms=paráms, método=método, líms_paráms=líms_paráms)
+        calibrador
 
     def __str__(símismo):
         return símismo.nombre

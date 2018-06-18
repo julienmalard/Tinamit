@@ -1,7 +1,9 @@
+import re
 from warnings import warn as avisar
 
 import numpy as np
 import scipy.stats as estad
+import spotpy
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
 
@@ -58,7 +60,7 @@ else:
              }
 
 
-class Calibrador(object):
+class CalibradorEc(object):
     """
     Un objeto para manejar la calibración de ecuaciones.
     """
@@ -512,6 +514,68 @@ class Calibrador(object):
             return resultados
 
 
+class CalibradorMod(object):
+    def __init__(símismo, mod):
+        """
+
+        Parameters
+        ----------
+        mod : Modelo.Modelo
+        """
+        símismo.mod = mod
+
+    def calibrar(símismo, paráms, método, líms_paráms=None):
+
+        método = método.lower()
+        mod = símismo.mod
+
+        if líms_paráms is None:
+            líms_paráms = {}
+        for p in paráms:
+            if p not in líms_paráms:
+                líms_paráms[p] = símismo.mod.obt_lims_var(p)
+        líms_paráms = {ll: v for ll, v in líms_paráms.items() if ll in paráms}
+
+        obs = símismo.mod.datos
+        t_final = len(obs) - 1  # 1 paso menos por las condiciones iniciales
+        mu_obs = obs.mean().values
+        sg_obs = obs.std().values
+        if método == 'optimizar':
+            def f(prm, obs_x):
+                mod.inic_vals_vars({p: v for p, v in zip(paráms, prm)})
+                res = mod.simular(tiempo_final=t_final, vars_interés=list(obs)).values
+                return ((res - mu_obs) / sg_obs).ravel()
+
+            obs_y = ((obs.values - mu_obs) / sg_obs).ravel()
+            return _optimizar(func=f, líms_paráms=líms_paráms, obs_x=None, obs_y=obs_y)
+        elif método in _algs_spotpy:
+            mod_spotpy = ModSpotPy(mod=mod, líms_paráms=líms_paráms, obs=obs)
+            muestreador = _algs_spotpy[método](mod_spotpy, dbname='CalibTinamït', dbformat='csv')
+            muestreador.sample(100)
+            trzs = spotpy.analyser.load_csv_results('CalibTinamït')
+            res = {p: trzs[[c for c in trzs.dtype.names if c.startswith('par')][í]] for í, p in enumerate(líms_paráms)}
+            sim = {p: trzs[[c for c in trzs.dtype.names if c.startswith('sim')]] for í, p in enumerate(líms_paráms)}
+            return res
+            """
+            n_obs = len(list(obs))
+            cols_sim = [c for c in trzs.dtype.names if c.startswith('sim')]
+            # for í_o in range(n_obs):
+            í_o = 1
+            
+            dib.clf()
+            rango_prob = (trzs['like1'].min(), trzs['like1'].max())
+            n_it = 100
+            for it in range(n_it):
+                x = [trzs[c][í] for í in range(len(trzs)) for c in cols_sim][í_o::n_obs][len(obs) * it:len(obs) * (it + 1)]
+                í_color = (trzs['like1'][it] - rango_prob[0]) / (rango_prob[1] - rango_prob[0])
+                print(í_color)
+                dib.plot(x, linewidth=0.5, color=dib.cm.RdYlBu(í_color))
+            dib.plot(mod_spotpy.evaluation()[í_o::n_obs], color='green', linewidth=3)
+            """
+        else:
+            raise ValueError
+
+
 # Unas funciones auxiliares
 def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops=None):
     """
@@ -715,7 +779,65 @@ def _optimizar(func, líms_paráms, obs_x, obs_y, inic=None, **ops):
 
     # Avisar si la optimización no funcionó tan bien como lo esperamos.
     if not opt.success:
-        avisar(_('Error de optimización.'))
+        avisar(_('Es posible que haya un error de optimización. Mejor le eches un vistazo a los resultados.'))
 
     # Devolver los resultados en el formato correcto.
     return {p: {'val': opt.x[i]} for i, p in enumerate(paráms)}
+
+
+_algs_spotpy = {
+    'fast': spotpy.algorithms.fast,
+    'dream': spotpy.algorithms.dream,
+    'mc': spotpy.algorithms.mc,
+    'mcmc': spotpy.algorithms.mcmc,
+    'mle': spotpy.algorithms.mle,
+    'lhs': spotpy.algorithms.lhs,
+    'sa': spotpy.algorithms.sa,
+    'sceua': spotpy.algorithms.sceua,
+    'rope': spotpy.algorithms.rope,
+    'abc': spotpy.algorithms.abc,
+    'fscabc': spotpy.algorithms.fscabc,
+
+}
+
+
+class ModSpotPy(object):
+    def __init__(símismo, mod, líms_paráms, obs):
+        """
+
+        Parameters
+        ----------
+        mod : Modelo.Modelo
+        líms_paráms : dict
+        obs: pd.DataFrame
+        """
+
+        símismo.paráms = [
+            spotpy.parameter.Uniform(re.sub('\W|^(?=\d)', '_', p), low=d[0], high=d[1], optguess=(d[0] + d[1]) / 2)
+            for p, d in líms_paráms.items()
+        ]
+        símismo.nombres_paráms = list(líms_paráms)
+        símismo.mod = mod
+        símismo.mu_obs = obs.mean().values
+        símismo.sg_obs = obs.std().values
+        símismo.obs_norm = ((obs.values - símismo.mu_obs) / símismo.sg_obs).ravel()
+        símismo.vars_interés = list(obs)
+        símismo.t_final = len(obs) - 1
+
+    def parameters(símismo):
+        return spotpy.parameter.generate(símismo.paráms)
+
+    def simulation(símismo, x):
+        símismo.mod.inic_vals_vars({ll: x_i for ll, x_i in zip(símismo.nombres_paráms, x)})
+        res = símismo.mod.simular(tiempo_final=símismo.t_final, vars_interés=list(símismo.vars_interés)).values
+
+        return ((res - símismo.mu_obs) / símismo.sg_obs).ravel()
+
+    def evaluation(símismo):
+        return símismo.obs_norm
+
+    def objectivefunction(símismo, simulation, evaluation, params=None):
+        # like = spotpy.likelihoods.gaussianLikelihoodMeasErrorOut(evaluation,simulation)
+        like = spotpy.objectivefunctions.nashsutcliffe(evaluation, simulation)
+
+        return like
