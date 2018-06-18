@@ -385,7 +385,7 @@ class SuperConectado(Modelo):
 
     def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
                          fecha_inic=None, lugar=None, clima=None, recalc_clima=True, combinar=True, dibujar=None,
-                         paralelo=True, devolver=None):
+                         paralelo=True, vars_interés=None):
 
         # Si los valores iniciales si dieron en el formato {submodelo1: {dic vals}, ...}, ponerlo en una lista
         # para que no pensemos que cada nombre de modelo es un nombre de corrida.
@@ -395,7 +395,7 @@ class SuperConectado(Modelo):
 
         # Llamar la función correspondiente de la clase pariente.
         return super().simular_paralelo(tiempo_final, paso, nombre_corrida, vals_inic, fecha_inic, lugar, clima,
-                                        recalc_clima, combinar, dibujar, paralelo, devolver)
+                                        recalc_clima, combinar, dibujar, paralelo, vars_interés)
 
     def inic_val_var(símismo, var, val):
 
@@ -754,21 +754,21 @@ class SuperConectado(Modelo):
 
         return mod, var
 
-    def _leer_resultados(símismo, var, corrida):
+    def leer_resultados(símismo, var=None, corrida=None):
 
         if var in símismo.variables:
             mod, v = símismo.resolver_nombre_var(var)
 
             if mod in símismo.modelos and v in símismo.modelos[mod].variables:
                 try:
-                    return símismo.modelos[mod]._leer_resultados(v, corrida)
+                    return símismo.modelos[mod].leer_arch_resultados(corrida, var=var)
                 except NotImplementedError:
                     pass
 
         for obj_m in símismo.modelos.values():
             if var in obj_m.variables:
                 try:
-                    return obj_m._leer_resultados(var, corrida)
+                    return obj_m.leer_arch_resultados(var, archivo)
                 except NotImplementedError:
                     pass
 

@@ -1,9 +1,10 @@
 import os
 import unittest
 
+import numpy.testing as npt
+
 from tinamit.EnvolturasMDS import ModeloVensim, ModeloPySD, ModeloVensimMdl, generar_mds
 from tinamit.MDS import EnvolturaMDS
-
 
 # Los tipos de modelos DS que queremos comprobar.
 tipos_modelos = {
@@ -143,7 +144,7 @@ class Test_ModeloSenc(unittest.TestCase):
                     símismo.info_vars['Nivel lago inicial']['val_inic']
                 )
 
-    def test_simul(símismo):
+    def test_resultados_simul(símismo):
         """
         Assegurarse que la simulación dió los resultados esperados.
         """
@@ -156,6 +157,24 @@ class Test_ModeloSenc(unittest.TestCase):
                 # Debería ser aproximativamente igual a 100
                 símismo.assertEqual(round(val_simulado, 3), 100)
 
+    def test_escribir_leer_arch_resultados(símismo):
+        for ll, mod in símismo.modelos.items():
+            for frmt in ['.json', '.csv']:
+                with símismo.subTest(mod=ll, frmt=frmt):
+                    arch = ll + '_prb'
+                    mod.guardar_resultados(nombre=arch, frmt=frmt)
+                    leídos = EnvolturaMDS.leer_arch_resultados(archivo=arch, var='Lago')
+                    refs = mod.leer_resultados('Lago')
+                    npt.assert_equal(leídos, refs)
+                    os.remove(arch + frmt)
+
+    def test_leer_resultados_vdf_vensim(símismo):
+        if ModeloVensim.instalado:
+            mod = símismo.modelos['dllVensim']
+            leídos = mod.leer_arch_resultados(archivo=mod.corrida_activa + '.vdf', var='Lago')
+            refs = mod.leer_resultados(var='Lago')
+            npt.assert_allclose(leídos, refs, rtol=1e-3)
+
     @classmethod
     def tearDownClass(cls):
         """
@@ -165,23 +184,38 @@ class Test_ModeloSenc(unittest.TestCase):
         limpiar_mds()
 
 
-def limpiar_mds():
-    # Limpiamos todos los documentos temporarios generados por los programas de modelos DS.
-    for c in os.walk('../recursos'):
-        for a in c[2]:
-            nmbr, ext = os.path.splitext(a)
-            try:
-                if 'Corrida Tinamït' in nmbr:
-                    os.remove(a)
-                elif ext in ['.2mdl', '.vdf']:
-                    os.remove(a)
-                elif a == 'prueba_senc.py':
-                    os.remove(a)
-                elif a == 'prueba_senc_.py':
-                    os.remove(a)
-            except PermissionError:
-                pass
+class Test_OpcionesSimul(unittest.TestCase):
+    """
+    Verifica el funcionamiento de las simulaciones de de MDS.
+    """
 
+    @classmethod
+    def setUpClass(cls):
+
+        # Generar las instancias de los modelos
+        cls.modelos = {ll: d['envlt'](d['prueba']) for ll, d in tipos_modelos.items()}  # type: dict[str, EnvolturaMDS]
+
+    def test_simul_con_paso_2(símismo):
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                res_paso_2 = mod.simular(tiempo_final=100, paso=2, vars_interés=['Lago'])['Lago']
+                res_paso_1 = mod.simular(tiempo_final=100, paso=1, vars_interés=['Lago'])['Lago'][::2]
+                npt.assert_equal(res_paso_1, res_paso_2)
+
+    def test_simul_con_paso_inválido(símismo):
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                with símismo.assertRaises(ValueError):
+                    mod.simular(tiempo_final=100, paso=0)
+
+    def test_simul_exprés(símismo):
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                mod.combin_incrs = False
+                res_por_paso = mod.simular(tiempo_final=100, paso=1, vars_interés=['Lago'])['Lago']
+                mod.combin_incrs = True
+                res_exprés = mod.simular(tiempo_final=100, paso=1, vars_interés=['Lago'])['Lago']
+                npt.assert_equal(res_por_paso, res_exprés)
 
 class Test_GenerarMDS(unittest.TestCase):
     """
@@ -204,7 +238,7 @@ class Test_GenerarMDS(unittest.TestCase):
         # Comprobar que extensiones no reconocidas devuelvan un error.
 
         with símismo.assertRaises(ValueError):
-            generar_mds('Modelo con extensión no reconocida.abc')
+            generar_mds('Modelo con extensión no reconocida.வணக்கம்')
 
     def test_generación_auto_mds_con_motor_especificado(símismo):
         # Comprobar la generación de modelos DS con el motor de simulación especificado.
@@ -220,3 +254,21 @@ class Test_GenerarMDS(unittest.TestCase):
 
         with símismo.assertRaises(ValueError):
             generar_mds('Yo no existo.mdl')
+
+
+def limpiar_mds():
+    # Limpiamos todos los documentos temporarios generados por los programas de modelos DS.
+    for c in os.walk('../recursos'):
+        for a in c[2]:
+            nmbr, ext = os.path.splitext(a)
+            try:
+                if 'Corrida Tinamït' in nmbr:
+                    os.remove(a)
+                elif ext in ['.2mdl', '.vdf']:
+                    os.remove(a)
+                elif a == 'prueba_senc.py':
+                    os.remove(a)
+                elif a == 'prueba_senc_.py':
+                    os.remove(a)
+            except PermissionError:
+                pass

@@ -46,7 +46,7 @@ msgstr ""
 #: tinamit.MDS.EnvolturaMDS.cambiar_var tinamit.MDS.EnvolturaMDS.incrementar
 #: tinamit.MDS.EnvolturaMDS.iniciar_modelo
 #: tinamit.MDS.ModeloVENSIM._cambiar_vals_modelo_interno
-#: tinamit.MDS.ModeloVENSIM.comanda_vensim tinamit.MDS.ModeloVENSIM.incrementar
+#: tinamit.MDS.ModeloVENSIM.cmd_vensim tinamit.MDS.ModeloVENSIM.incrementar
 #: tinamit.MDS.ModeloVENSIM.iniciar_modelo tinamit.MDS.generar_mds
 msgid "Parámetros"
 msgstr ""
@@ -163,33 +163,33 @@ msgstr ""
 msgid "Cierre la simulación VENSIM."
 msgstr ""
 
-#: of tinamit.MDS.ModeloVENSIM.comanda_vensim:1
+#: of tinamit.MDS.ModeloVENSIM.cmd_vensim:1
 msgid "Esta función sirve para llamar todo tipo de comanda VENSIM."
 msgstr ""
 
-#: of tinamit.MDS.ModeloVENSIM.comanda_vensim:3
+#: of tinamit.MDS.ModeloVENSIM.cmd_vensim:3
 msgid "La función DLL a llamar."
 msgstr ""
 
-#: of tinamit.MDS.ModeloVENSIM.comanda_vensim:6
+#: of tinamit.MDS.ModeloVENSIM.cmd_vensim:6
 msgid "Los argumento a pasar a la función. Si no hay, usar una lista vacía."
 msgstr ""
 
-#: of tinamit.MDS.ModeloVENSIM.comanda_vensim:9
+#: of tinamit.MDS.ModeloVENSIM.cmd_vensim:9
 msgid "El mensaje de error para mostrar si hay un error en la comanda."
 msgstr ""
 
-#: of tinamit.MDS.ModeloVENSIM.comanda_vensim:12
+#: of tinamit.MDS.ModeloVENSIM.cmd_vensim:12
 msgid ""
 "Un valor de regreso VENSIM que indica un error para esta función. Si se "
 "deja ``None``, todos"
 msgstr ""
 
-#: of tinamit.MDS.ModeloVENSIM.comanda_vensim:13
+#: of tinamit.MDS.ModeloVENSIM.cmd_vensim:13
 msgid "valores que no son 1 se considerarán como erróneas."
 msgstr ""
 
-#: of tinamit.MDS.ModeloVENSIM.comanda_vensim:17
+#: of tinamit.MDS.ModeloVENSIM.cmd_vensim:17
 msgid "Si se debe devolver el valor devuelto por VENSIM o no."
 msgstr ""
 
