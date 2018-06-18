@@ -56,7 +56,7 @@ msgstr ""
 #: ../../../tinamit/MDS.py:docstring of tinamit.MDS.ModeloVensim.incrementar:0
 #: ../../../tinamit/MDS.py:docstring of
 #: tinamit.MDS.ModeloVensim.iniciar_modelo:0 ../../../tinamit/MDS.py:docstring
-#: of tinamit.MDS.comanda_vensim:0 ../../../tinamit/MDS.py:docstring of
+#: of tinamit.MDS.cmd_vensim:0 ../../../tinamit/MDS.py:docstring of
 #: tinamit.MDS.generar_mds:0 ../../../tinamit/MDS.py:docstring of
 #: tinamit.MDS.leer_egr_mds:0
 msgid "Parámetros"
@@ -279,29 +279,29 @@ msgid ""
 "en la sección de DLL (Suplemento DSS)"
 msgstr ""
 
-#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.comanda_vensim:1
+#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.cmd_vensim:1
 msgid "Esta función sirve para llamar todo tipo de comanda VENSIM."
 msgstr ""
 
-#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.comanda_vensim:3
+#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.cmd_vensim:3
 msgid "La función DLL a llamar."
 msgstr ""
 
-#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.comanda_vensim:6
+#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.cmd_vensim:6
 msgid "Los argumento a pasar a la función. Si no hay, usar una lista vacía."
 msgstr ""
 
-#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.comanda_vensim:9
+#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.cmd_vensim:9
 msgid "El mensaje de error para mostrar si hay un error en la comanda."
 msgstr ""
 
-#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.comanda_vensim:12
+#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.cmd_vensim:12
 msgid ""
 "Un valor de regreso VENSIM que indica un error para esta función. Si se deja"
 " ``None``, todos valores que no son 1 se considerarán como erróneas."
 msgstr ""
 
-#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.comanda_vensim:16
+#: ../../../tinamit/MDS.py:docstring of tinamit.MDS.cmd_vensim:16
 msgid "Si se debe devolver el valor devuelto por VENSIM o no."
 msgstr ""
 

@@ -8,6 +8,7 @@ from tinamit.MDS import EnvolturaMDS
 
 
 class ModeloPySD(EnvolturaMDS):
+    combin_incrs = True
 
     def __init__(símismo, archivo, nombre='mds'):
 
@@ -117,15 +118,24 @@ class ModeloPySD(EnvolturaMDS):
         símismo.cont_simul = True
 
     def _leer_vals(símismo):
+        valores = {}
         for v in símismo.vars_saliendo:
             nombre_py = símismo._conv_nombres[v]
             val = getattr(símismo.modelo.components, nombre_py)()
+            valores[v] = val
 
-            if símismo.variables[v]['dims'] == (1,):
-                # Si el variable no tiene dimensiones (subscriptos)...
-                símismo.variables[v]['val'] = val
-            else:
-                símismo.variables[v]['val'][:] = val
+        símismo._act_vals_dic_var(valores)
+
+    def leer_arch_resultados(símismo, archivo, var=None):
+
+        if archivo != símismo.corrida_activa:
+            raise ValueError(_('PySD solamente puede leer los resultados de la última corrida.'))
+        if isinstance(var, str):
+            var = [var]
+        var = [símismo.valid_var(v) for v in var]
+
+        nombre_py = símismo._conv_nombres[vars]
+        return getattr(símismo.modelo.components, nombre_py)()
 
     def cerrar_modelo(símismo):
         pass

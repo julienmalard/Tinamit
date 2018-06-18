@@ -80,7 +80,7 @@ class Test_Conectado(unittest.TestCase):
                 resultados = mod.simular_paralelo(
                     tiempo_final=t_final,
                     vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
-                    devolver='Lago'
+                    vars_interés='Lago'
                 )
 
                 for c in resultados:
@@ -98,7 +98,7 @@ class Test_Conectado(unittest.TestCase):
                 sin_paral = mod.simular_paralelo(
                     tiempo_final=t_final,
                     vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
-                    devolver='Lago',
+                    vars_interés='Lago',
                     nombre_corrida='Corrida Tinamït Prueba sin paralelo',
                     paralelo=False
                 )
@@ -106,7 +106,7 @@ class Test_Conectado(unittest.TestCase):
                 con_paral = mod.simular_paralelo(
                     tiempo_final=t_final,
                     vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
-                    devolver='Lago',
+                    vars_interés='Lago',
                     nombre_corrida='Corrida Tinamït Prueba paralelo'
                 )
 
@@ -122,8 +122,10 @@ class Test_Conectado(unittest.TestCase):
         limpiar_mds()
 
 
-# Comprobar 3+ modelos conectados
 class Test_3ModelosConectados(unittest.TestCase):
+    """
+    Comprobar 3+ modelos conectados.
+    """
     def test_conexión_horizontal(símismo):
         """
         Comprobar que la conexión de variables se haga correctamente con 3 submodelos conectados directamente

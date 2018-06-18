@@ -213,7 +213,7 @@ msgid ""
 "después de terminar una simulación. Debes especificar \"vars_interés\" "
 "cuando corres la simulación para poder acceder a los resultados después. "
 "Si estás desarrollando esta envoltura y quieres agregar esta "
-"funcionalidad, debes implementar la función \"._leer_resultados()\" en tu"
+"funcionalidad, debes implementar la función \".leer_arch_resultados()\" en tu"
 " envoltura."
 msgstr ""
 

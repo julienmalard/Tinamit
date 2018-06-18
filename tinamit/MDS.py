@@ -15,8 +15,6 @@ class EnvolturaMDS(Modelo):
     tipo de EnvolturasMDS. Al momento, el único incluido es VENSIM.
     """
 
-    ext_arch_egr = '.csv'
-
     def __init__(símismo, archivo, nombre='mds'):
         """
         Iniciamos el modelo DS.
@@ -128,20 +126,6 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def _leer_resultados(símismo, var, corrida):
-        """
-        Esta función lee los resultados desde un archivo de egresos del modelo DS.
-
-        :param corrida: El nombre de la corrida. Debe corresponder al nombre del archivo de egresos.
-        :type corrida: str
-        :param var: El variable de interés.
-        :type var: str
-        :return: Una matriz de los valores del variable de interés.
-        :rtype: np.ndarray
-        """
-
-        raise NotImplementedError
-
     def _leer_vals_inic(símismo):
         raise NotImplementedError
 
@@ -213,8 +197,8 @@ class MDSEditable(EnvolturaMDS):
     def cerrar_modelo(símismo):
         return símismo.mod.cerrar_modelo()
 
-    def _leer_resultados(símismo, var, corrida):
-        return símismo.mod._leer_resultados(var=var, corrida=corrida)
+    def leer_arch_resultados(símismo, archivo, var=None):
+        return símismo.mod.leer_arch_resultados(archivo=archivo, var=var)
 
     def _leer_vals_inic(símismo):
         return símismo.mod._leer_vals_inic()
@@ -224,58 +208,3 @@ class MDSEditable(EnvolturaMDS):
 
     def publicar_modelo(símismo):
         raise NotImplementedError
-
-
-def leer_egr_mds(archivo, var, saltar_última_vdf=True):
-    """
-    Lee archivos de egresos de simulaciones EnvolturasMDS.
-
-    :param archivo: El archivo de egresos.
-    :type archivo: str
-    :param var: El variable de interés
-    :type var: str
-    :return: Una matriz con los valores del variable de interés.
-    :rtype: np.ndarray
-    """
-
-    ext = os.path.splitext(archivo)[1]
-    if ext == '':
-        ext = '.vdf'
-        archivo += ext
-
-    datos = []
-
-    if ext == '.vdf':
-        ext = '.csv'
-        archivo_csv = os.path.split(archivo)[1].replace('.vdf', '.csv')
-
-        dll_vensim = ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
-
-        dll_vensim.vensim_command('MENU>VDF2CSV|{vdffile}|{CSVfile}'
-                                  .format(vdffile=archivo, CSVfile=archivo_csv).encode())
-
-        archivo = archivo.replace('.vdf', '.csv')
-        if saltar_última_vdf:
-            with open(archivo, 'r', encoding='UTF-8') as d:
-                lect = csv.reader(d)
-                filas = [f[:-1] if len(f) > 2 else f for f in lect]
-            with open(archivo, 'w', encoding='UTF-8', newline='') as d:
-                escr = csv.writer(d)
-                escr.writerows(filas)
-
-    if ext == '.csv':
-        with open(archivo, encoding='UTF-8') as d:
-            lector = csv.reader(d)
-            filas = [f for f in lector if re.match('{}(\[.*\])?$'.format(var), f[0])]
-
-        for f in filas:
-            datos.append(f[1:])
-
-    else:
-        raise ValueError(_('El formato de datos "{}" no se puede leer al momento.').format(ext))
-
-    datos = np.array(datos, dtype=float).swapaxes(0, -1)
-    if datos.shape[-1] == 1:
-        datos = datos[..., 0]
-
-    return datos

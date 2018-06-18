@@ -1,4 +1,6 @@
+import csv
 import datetime as ft
+import json
 import math
 import os
 import pickle
@@ -13,7 +15,7 @@ from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
 from tinamit.Análisis.Datos import leer_fechas
-from tinamit import _, valid_nombre_arch
+from tinamit import _, valid_nombre_arch, detectar_codif
 from tinamit.Análisis.Calibs import Calibrador
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.Unidades.conv import convertir
@@ -32,6 +34,8 @@ class Modelo(object):
     instalado = True
 
     leng_orig = 'es'
+
+    combin_incrs = False
 
     def __init__(símismo, nombre):
         """
@@ -163,7 +167,7 @@ class Modelo(object):
         lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=escenario, regenerar=recalc)
 
     def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None,
-                recalc_clima=True, clima=None, vars_interés=None):
+                recalc_clima=True, clima=None, vars_interés=None, guardar=False):
         """
 
         Parameters
@@ -176,6 +180,7 @@ class Modelo(object):
         recalc_clima :
         clima :
         vars_interés :
+        guardar: bool
 
         Returns
         -------
@@ -186,6 +191,10 @@ class Modelo(object):
         símismo.lugar = lugar
 
         # Calcular el número de pasos necesario
+        if int(paso) != paso:
+            raise ValueError(_('`paso` debe ser un número entero.'))
+        if paso < 1:
+            raise ValueError(_('El paso debe ser superior a 1.'))
         n_pasos = int(math.ceil(tiempo_final / paso))
 
         # Preparar las unidades de tiempo
@@ -300,15 +309,21 @@ class Modelo(object):
         if vars_interés is not None:
             return copiar_profundo(símismo.mem_vars)
 
+        if guardar:
+            símismo.guardar_resultados()
+
     def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
                          fecha_inic=None, lugar=None, clima=None, recalc_clima=True, combinar=True,
-                         dibujar=None, paralelo=True, devolver=None):
+                         dibujar=None, paralelo=True, vars_interés=None, guardar=False):
 
         # Formatear los nombres de variables a devolver.
-        if devolver is not None:
-            if isinstance(devolver, str):
-                devolver = [devolver]
-            devolver = [símismo.valid_var(v) for v in devolver]
+        if vars_interés is not None:
+            if isinstance(vars_interés, str):
+                vars_interés = [vars_interés]
+            vars_interés = [símismo.valid_var(v) for v in vars_interés]
+        else:
+            if guardar is None:
+                avisar(_('No podremos guardar datos porque no especificaste `vars_interés`.'))
 
         # Poner las opciones de simulación en un diccionario.
         opciones = {'paso': paso, 'fecha_inic': fecha_inic, 'lugar': lugar, 'vals_inic': vals_inic,
@@ -407,15 +422,15 @@ class Modelo(object):
                 for í, n in enumerate(í_ops):
 
                     # Sacamos el nombre de la opción actual
-                    nmb_op = l_nmbs_ops_var[í]
-                    op = opciones[nmb_op]  # El valor de la opción
+                    nmbr_op = l_nmbs_ops_var[í]
+                    op = opciones[nmbr_op]  # El valor de la opción
 
                     # Aplicar los cambios al diccionario transitorio de opciones
                     if isinstance(op, list):
                         # Si la opción está en formato de lista...
 
                         # Guardar su valor
-                        ops[nmb_op] = op[n]
+                        ops[nmbr_op] = op[n]
 
                         # Y cambiar su nombre
                         nombre[í] = str(str(op[n]) if not (isinstance(op[n], list) or isinstance(op[n], dict))
@@ -426,7 +441,7 @@ class Modelo(object):
 
                         # Guardar nu nombre y valor
                         id_op = list(op)[n]
-                        ops[nmb_op] = op[id_op]
+                        ops[nmbr_op] = op[id_op]
                         nombre[í] = id_op
 
                     else:
@@ -439,7 +454,7 @@ class Modelo(object):
             # Formatear las corridas con sus nombres de corridas.
             corridas = {'{}{}'.format(nombre_corrida + '_' if nombre_corrida else '', ll): ops
                         for ll, ops in dic_ops.items()}  # type: dict[str, dict]
-            nmb_corridas_res = list(dic_ops)
+            nmbr_corridas_res = list(dic_ops)
 
             # Y, por fin, si solamente tenemos una corrida que hacer, asegurarse que tenga un nombre.
             if len(corridas) == 1 and list(corridas)[0] == '':
@@ -486,7 +501,7 @@ class Modelo(object):
                         }
                     for i in range(n_corridas)
                 }
-                nmb_corridas_res = l_nombres
+                nmbr_corridas_res = l_nombres
 
             elif isinstance(nombre_corrida, list):
                 # Si tenemos una lista de nombres de corridas...
@@ -503,7 +518,7 @@ class Modelo(object):
                     nmb: {ll: op[i] if isinstance(op, list) else op for ll, op in opciones.items()}
                     for i, nmb in enumerate(nombre_corrida)
                 }
-                nmb_corridas_res = nombre_corrida
+                nmbr_corridas_res = nombre_corrida
 
             else:
                 raise TypeError(_('El nombre de corrida debe ser o una cadena de texto, o una lista de cadenas '
@@ -550,7 +565,7 @@ class Modelo(object):
             for corr, d_prms_corr in corridas.items():
                 d_args = {ll: copiar_profundo(v) for ll, v in d_prms_corr.items()}
                 d_args['nombre_corrida'] = corr
-                d_args['vars_interés'] = devolver
+                d_args['vars_interés'] = vars_interés
 
                 l_trabajos.append((copia_mod, copiar_profundo(d_vals_inic[corr]), d_args))
 
@@ -563,7 +578,7 @@ class Modelo(object):
 
             # Formatear los resultados, si hay.
             if resultados is not None:
-                resultados = {corr: res for corr, res in zip(nmb_corridas_res, resultados)}
+                resultados = {corr: res for corr, res in zip(nmbr_corridas_res, resultados)}
 
         else:
             # Sino simplemente correrlas una tras otra con `Modelo.simular()`
@@ -579,10 +594,10 @@ class Modelo(object):
             resultados = {}
 
             # Para cada corrida...
-            for corr_res, (corr, d_prms_corr) in zip(nmb_corridas_res, corridas.items()):
+            for corr_res, (corr, d_prms_corr) in zip(nmbr_corridas_res, corridas.items()):
                 símismo.inic_vals_vars(dic_vals=d_vals_inic[corr])
 
-                d_prms_corr['vars_interés'] = devolver
+                d_prms_corr['vars_interés'] = vars_interés
 
                 # Después, simular el modelo.
                 res = símismo.simular(**d_prms_corr, nombre_corrida=corr)
@@ -603,7 +618,74 @@ class Modelo(object):
             else:
                 raise NotImplementedError
 
+        if guardar:
+            for corr, res in resultados:
+                símismo.guardar_resultados(dic_res=res, nombre=corr)
+
         return resultados
+
+    def guardar_resultados(símismo, dic_res=None, nombre=None, frmt='json', var=None):
+        """
+
+        Parameters
+        ----------
+        dic_res: dict[str, np.ndarray]
+        nombre
+        frmt
+
+        Returns
+        -------
+
+        """
+        if dic_res is None:
+            dic_res = símismo.mem_vars
+        if not len(dic_res):
+            raise ValueError(_('No hay datos de simulación disponibles para guardar. :('))
+        if nombre is None:
+            nombre = símismo.corrida_activa
+        if var is None:
+            l_vars = list(dic_res)
+        elif isinstance(var, str):
+            l_vars = [var]
+        else:
+            l_vars = var
+
+        faltan = [x for x in l_vars if x not in dic_res]
+        if len(faltan):
+            raise ValueError(_('Los variables siguientes no existen en los datos:'
+                               '\n{}').format(', '.join(faltan)))
+
+        n_pasos = list(dic_res.values())[0].shape[0]
+        if not all((val.shape[0] == n_pasos for val in dic_res.values())):
+            raise ValueError(_('No todos los variables tienen el mismo número de datos.'))
+
+        if 'tiempo' not in dic_res:
+            dic_res['tiempo'] = np.arange(n_pasos)
+
+        if frmt[0] != '.':
+            frmt = '.' + frmt
+        arch = valid_nombre_arch(nombre + frmt)
+        if frmt == '.json':
+            contenido = {ll: v.tolist() for ll, v in dic_res.items() if ll in l_vars}
+            with open(arch, 'w', encoding='UTF-8') as a:
+                json.dump(contenido, a)
+        elif frmt == '.csv':
+
+            with open(arch, 'w', encoding='UTF-8', newline='') as a:
+                escr = csv.writer(a)
+
+                escr.writerow(['tiempo'] + dic_res['tiempo'].tolist())
+                for var, vals in dic_res.items():
+                    if var not in l_vars:
+                        continue
+                    if len(vals.shape) == 1:
+                        escr.writerow([var] + vals.tolist())
+                    else:
+                        for í in range(vals.shape[1]):
+                            escr.writerow(['{}[{}]'.format(var, í)] + vals[:,í].tolist())
+
+        else:
+            raise ValueError(_('Formato de resultados "{}" no reconocido.').format(frmt))
 
     def _incrementar(símismo, paso):
         """
@@ -844,7 +926,7 @@ class Modelo(object):
         # Preparar el nombre del variable para uso en el nombre del archivo.
         nombre_var = valid_nombre_arch(var)
 
-        bd = símismo.leer_resultados(corrida, var)
+        bd = símismo.leer_resultados(var=var, corrida=corrida)
 
         if isinstance(i_paso, tuple):
             i_paso = list(i_paso)
@@ -934,10 +1016,28 @@ class Modelo(object):
     def vars_estado_inicial(símismo):
         return [v for v, d_v in símismo.variables.items() if d_v['estado_inicial']]
 
-    def leer_resultados(símismo, var, corrida=None):
+
+
+    def leer_resultados(símismo, var=None, corrida=None):
+        """
+
+        Parameters
+        ----------
+        var: str | list[str]
+        corrida: str
+
+        Returns
+        -------
+
+        """
+
+        if isinstance(var, str):
+            l_vars = [var]
+        else:
+            l_vars = var
 
         # Verificar que existe el variable en este modelo.
-        var = símismo.valid_var(var)
+        l_vars = [símismo.valid_var(v) for v in l_vars]
 
         # Si no se especificó corrida especial, tomaremos la corrida más recién.
         if corrida is None:
@@ -946,20 +1046,75 @@ class Modelo(object):
             else:
                 corrida = símismo.corrida_activa
 
-                # Leer de la memoria temporaria, si estamos interesadas en la corrida más recién
+        res = None
+        # Leer de la memoria temporaria, si estamos interesadas en la corrida más recién
         if corrida == símismo.corrida_activa:
-            if var in símismo.mem_vars:
-                return símismo.mem_vars[var]
+            try:
+                res = {v: símismo.mem_vars[v] for v in l_vars}
+            except KeyError:
+                pass
+        if res is None:
+            res = símismo.leer_arch_resultados(archivo=corrida, var=l_vars)
 
-        return símismo._leer_resultados(var, corrida)
+        if isinstance(var, str):
+            return res[var]
+        else:
+            return res
 
-    def _leer_resultados(símismo, var, corrida):
-        raise NotImplementedError(_(
-            'Modelos de tipo "{}" no pueden leer los resultados de una corrida después de terminar una simulación. '
-            'Debes especificar "vars_interés" cuando corres la simulación para poder acceder a los resultados después. '
-            'Si estás desarrollando esta envoltura y quieres agregar esta funcionalidad, debes implementar la '
-            'función "._leer_resultados()" en tu envoltura.'
-        ).format(símismo.__class__))
+    @classmethod
+    def leer_arch_resultados(cls, archivo, var=None):
+
+        if isinstance(var, str):
+            l_vars = [var]
+        else:
+            l_vars = var
+
+        corr, ext = os.path.splitext(archivo)
+        if len(ext):
+            ext_potenciales = [ext]
+        else:
+            ext_potenciales = ['.json', '.csv']
+        res = None
+        for ex in ext_potenciales:
+            arch = corr + ex
+            if not os.path.isfile(arch):
+                continue
+            codif = detectar_codif(arch)
+            if ex == '.json':
+                with open(arch, 'r', encoding=codif) as d:
+                    res = json.load(d)
+                res = {ll: np.array(v) for ll, v in res.items() if ll in l_vars}
+                break
+            elif ex == '.csv':
+                res = {}
+                with open(arch, encoding=codif) as d:
+                    lector = csv.reader(d)
+                    for f in lector:
+                        grp = re.match('(.*)(\[.*\])$', f[0])
+                        if grp:
+                            v = grp.group(1)
+                            if v in res:
+                                res[v].append(f[1:])
+                            else:
+                                res[v] = [f[1:]]
+                        else:
+                            if f[0] in var:
+                                res[f[0]] = np.array(f[1:], dtype=float)
+                for var, val in res.items():
+                    if isinstance(val, list):
+                        res[var] = np.array(val, dtype=float).swapaxes(0, -1)  # eje 0: tiempo, ejes 1+: dims
+                res = {ll: np.array(v, dtype=float) for ll, v in res.items()}
+                break
+            else:
+                raise ValueError(_('El formato de datos "{}" no se puede leer al momento.').format(ext))
+
+        if res is None:
+            raise FileNotFoundError(_('No se encontró archivo de resultados para "{}".').format(archivo))
+
+        if isinstance(var, str):
+            return res[var]
+        else:
+            return res
 
     def paralelizable(símismo):
         """
@@ -968,7 +1123,7 @@ class Modelo(object):
 
         :return: Si el modelo se puede paralelizar (con corridas de nombres distintos) sin encontrar dificultades
           técnicas (por ejemplo, si hay riesgo que las corridas paralelas terminen escribiendo en los mismos
-          documents de egresos).
+          archivos de egreso).
         :rtype: bool
         """
         return False
