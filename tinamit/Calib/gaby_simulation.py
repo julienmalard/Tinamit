@@ -78,8 +78,9 @@ def get_result():
 '''
 
 def simulation(sampling_parameters, tiempo_final, nombre):
-    run = {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,
+    run = {'Capacity per tubewell': 100.8, 'Fw': 0.5, 'Policy Canal lining': 0,
                             'Policy RH': 0, 'Policy Irrigation improvement': 0}
+    #'Fw': 0.8
     # 3. Now create the model
     # Create a coupled model instance
     modelo = Conectado()
@@ -127,7 +128,7 @@ def simulation(sampling_parameters, tiempo_final, nombre):
 
     return modelo.simular_paralelo(paso=1, tiempo_final=tiempo_final, nombre_corrida=nombre,
                                    vals_inic=sampling_parameters, devolver='Watertable depth Tinamit', paralelo=True)
-
+#devolver='Watertable depth Tinamit'
 #print(vals_inic)
 
 '''
