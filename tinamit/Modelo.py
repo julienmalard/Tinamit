@@ -15,7 +15,7 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
-from Análisis.Valids import validar_resultados
+from tinamit.Análisis.Valids import validar_resultados
 from tinamit import _, valid_nombre_arch, detectar_codif
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
 from tinamit.Análisis.Datos import leer_fechas, SuperBD, Datos, DatosRegión

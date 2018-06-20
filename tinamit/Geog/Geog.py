@@ -1,6 +1,7 @@
 import csv
 import datetime as ft
 import os
+from collections import OrderedDict
 from warnings import warn as avisar
 
 import matplotlib.colors as colors
@@ -331,33 +332,33 @@ class Geografía(object):
         símismo.orden_jerárquico.clear()
         símismo.escalas.clear()
 
-        doc = []
+        col_cód = col_cód.lower()
+
         codif_csv = detectar_codif(archivo)
         with open(archivo, newline='', encoding=codif_csv) as d:
 
             l = csv.DictReader(d)  # El lector de csv
 
             # Guardar la primera fila como nombres de columnas
-            cols = l.fieldnames
+            cols = [x.lower().strip() for x in l.fieldnames]
 
             if col_cód not in cols:
                 raise ValueError(_('La columna de código de región especificada ({}) no concuerda con los nombres de '
                                    'columnas del archivo ({}).').format(col_cód, ', '.join(cols)))
 
-            for f in l:
-                doc.append(f)
+            doc = [OrderedDict((ll.lower().strip(), v.strip()) for ll, v in f.items()) for f in l]
 
         # Inferir el orden de la jerarquía
         órden = []
 
-        escalas = [x.lower() for x in cols if x != col_cód]
+        escalas = [x for x in cols if x != col_cód]
         símismo.escalas.extend(escalas)
 
         símismo.info_geog.update({esc: [] for esc in escalas})
 
         coescalas = []
         for f in doc:
-            coescalas_f = {ll.lower() for ll, v in f.items() if len(v) and ll.lower() in escalas}
+            coescalas_f = {ll for ll, v in f.items() if len(v) and ll in escalas}
             if not any(x == coescalas_f for x in coescalas):
                 coescalas.append(coescalas_f)
 
@@ -377,8 +378,6 @@ class Geografía(object):
 
         for f in doc:
             cód = f[col_cód]
-            for ll, v in f.copy().items():
-                f[ll.lower()] = f.pop(ll)
             escala = None
             for esc in órden[::-1]:
                 if isinstance(esc, str):
