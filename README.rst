@@ -1,15 +1,15 @@
 .. image:: tinamit/Interfaz/Imágenes/LogoCent.png
-    :scale: 80%
+   :scale: 80%
    :alt: Logo muy bonito. :)
 
 .. image:: https://badge.fury.io/py/tinamit.svg
-    :target: https://badge.fury.io/py/tinamit
+   :target: https://badge.fury.io/py/tinamit
 
 .. image:: https://travis-ci.org/julienmalard/Tinamit.svg?branch=master
-    :target: https://travis-ci.org/julienmalard/Tinamit
+   :target: https://travis-ci.org/julienmalard/Tinamit
 
 .. image:: https://coveralls.io/repos/github/julienmalard/Tinamit/badge.svg?branch=master
-    :target: https://coveralls.io/github/julienmalard/Tinamit?branch=master
+   :target: https://coveralls.io/github/julienmalard/Tinamit?branch=master
 
 .. image:: https://api.codacy.com/project/badge/Grade/bf248090bd464a0898f637b5ca56d185
    :alt: Codacy
