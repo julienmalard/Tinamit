@@ -151,7 +151,8 @@ setup(
         'pyshp',
         'taqdir',
         'pysd',
-        'lxml'
+        'lxml',
+        'spotpy'
     ],
 
     dependency_links=[

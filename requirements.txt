@@ -13,5 +13,6 @@ pint
 pyshp
 pillow
 theano
+spotpy
 git+git://github.com/julienmalard/taqdir.git@master
 git+git://github.com/julienmalard/pysd.git@master
