@@ -64,7 +64,9 @@ contactos con suceptibles = Individuos Suceptibles * taza de contacto
 	~	Person/Year
 	~		|
 
-Individuos Suceptibles = INTEG(-infecciones,1e+007)
+Individuos Suceptibles= INTEG (
+	-infecciones,
+		1000)
 	~	Person
 	~		|
 
@@ -130,7 +132,7 @@ $192-192-192,0,Arial|14||0-0-0|92-92-92|160-160-160|-1--1--1|-1--1--1|96,96,100,
 27:0,
 34:0,
 4:Time
-5:número inicial infectado
+5:fracción población infectada
 24:1960
 25:2010
 26:2010

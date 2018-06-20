@@ -50,15 +50,9 @@ class Test_Conectado(unittest.TestCase):
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                mod.simular(tiempo_final=100, vars_interés=['bf_Aleatorio', 'mds_Aleatorio'])
-                egr_bf = mod.leer_resultados('bf_Aleatorio')[1:]
+                egr = mod.simular(tiempo_final=100, vars_interés=['bf_Aleatorio', 'mds_Aleatorio'])
 
-                try:
-                    egr_mds = mod.mds.leer_resultados('Aleatorio')[::12][1:]
-                except NotImplementedError:
-                    egr_mds = mod.leer_resultados('mds_Aleatorio')[1:]
-
-                npt.assert_allclose(egr_bf, egr_mds, rtol=0.001)
+                npt.assert_equal(egr['bf_Aleatorio'], egr['mds_Aleatorio'])
 
     def test_simular_paralelo(símismo):
         """

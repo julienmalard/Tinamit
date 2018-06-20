@@ -26,7 +26,7 @@ class Test_SuperBD(unittest.TestCase):
     def setUpClass(cls):
         bd_región = DatosRegión(nombre='prueba regional', archivo=arch_reg, fecha='fecha', lugar='lugar')
         bd_indiv = DatosIndividuales(nombre='prueba individual', archivo=arch_indiv, fecha='fecha', lugar='lugar')
-        cls.bd = SuperBD(nombre='BD Central', bds=[bd_región, bd_indiv])
+        cls.bd = SuperBD(nombre='BD Central', bds=[bd_región, bd_indiv], auto_conectar=True)
 
         cls.bd.espec_var(var='completo', var_bd='var_completo')
         cls.bd.espec_var(var='incompleto', var_bd='var_incompleto')
@@ -134,5 +134,5 @@ class Test_SuperBD(unittest.TestCase):
                 try:
                     if ext in ['.jpg', '.jpeg', '.png']:
                         os.remove(a)
-                except PermissionError:
+                except (FileNotFoundError, PermissionError):
                     pass

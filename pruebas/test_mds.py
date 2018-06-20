@@ -215,7 +215,8 @@ class Test_OpcionesSimul(unittest.TestCase):
                 res_por_paso = mod.simular(tiempo_final=100, paso=1, vars_interés=['Lago'])['Lago']
                 mod.combin_incrs = True
                 res_exprés = mod.simular(tiempo_final=100, paso=1, vars_interés=['Lago'])['Lago']
-                npt.assert_equal(res_por_paso, res_exprés)
+                npt.assert_allclose(res_por_paso, res_exprés, 1e-3)
+
 
 class Test_GenerarMDS(unittest.TestCase):
     """

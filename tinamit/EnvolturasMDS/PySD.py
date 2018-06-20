@@ -2,13 +2,12 @@ import os
 from ast import literal_eval
 
 import pysd
-from tinamit.Análisis.sintaxis import Ecuación
 from tinamit import _
+from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.MDS import EnvolturaMDS
 
 
 class ModeloPySD(EnvolturaMDS):
-    combin_incrs = True
 
     def __init__(símismo, archivo, nombre='mds'):
 
@@ -30,8 +29,10 @@ class ModeloPySD(EnvolturaMDS):
         símismo.cont_simul = False
         símismo.paso_act = 0
         símismo.vars_para_cambiar = {}
+        símismo._res_recién = None  # pd.DataFrame
 
         super().__init__(archivo, nombre=nombre)
+        símismo.combin_incrs = True
 
     def _inic_dic_vars(símismo):
         símismo.variables.clear()
@@ -100,8 +101,6 @@ class ModeloPySD(EnvolturaMDS):
         símismo.paso_act = símismo.modelo.time._t
         símismo.vars_para_cambiar.clear()
 
-
-
     def _aplicar_cambios_vals_inic(símismo):
         símismo.vars_para_cambiar.update(símismo.vals_inic)
 
@@ -109,24 +108,29 @@ class ModeloPySD(EnvolturaMDS):
         símismo.vars_para_cambiar.clear()
         símismo.vars_para_cambiar.update(valores)
 
-    def _incrementar(símismo, paso):
+    def _incrementar(símismo, paso, guardar_cada=None):
+        guardar_cada = guardar_cada or paso
+        pasos_devolv = list(range(símismo.paso_act, símismo.paso_act + 1 + paso, guardar_cada))
         símismo.paso_act += paso
+
         if símismo.cont_simul:
-            símismo.modelo.run(initial_condition='current', params=símismo.vars_para_cambiar,
-                               return_timestamps=símismo.paso_act)
+            símismo._res_recién = símismo.modelo.run(
+                initial_condition='current', params=símismo.vars_para_cambiar,
+                return_timestamps=pasos_devolv, return_columns=símismo.vars_saliendo
+            )
         else:
-            símismo.modelo.run(return_timestamps=símismo.paso_act, params=símismo.vars_para_cambiar)
+            símismo._res_recién = símismo.modelo.run(
+                return_timestamps=pasos_devolv, params=símismo.vars_para_cambiar,
+                return_columns=símismo.vars_saliendo
+            )
             símismo.cont_simul = True
 
         símismo.vars_para_cambiar.clear()
 
-
     def _leer_vals(símismo):
         valores = {}
         for v in símismo.vars_saliendo:
-            nombre_py = símismo._conv_nombres[v]
-            val = getattr(símismo.modelo.components, nombre_py)()
-            valores[v] = val
+            valores[v] = símismo._res_recién[v].values[-1]
 
         símismo._act_vals_dic_var(valores)
 
@@ -134,12 +138,14 @@ class ModeloPySD(EnvolturaMDS):
 
         if archivo != símismo.corrida_activa:
             raise ValueError(_('PySD solamente puede leer los resultados de la última corrida.'))
-        if isinstance(var, str):
-            var = [var]
-        var = [símismo.valid_var(v) for v in var]
+        if var is None:
+            l_vars = list(símismo._res_recién)
+        elif isinstance(var, str):
+            l_vars = [var]
+        else:
+            l_vars = var
 
-        nombre_py = símismo._conv_nombres[vars]
-        return getattr(símismo.modelo.components, nombre_py)()
+        return {v: símismo._res_recién[v].values for v in l_vars}
 
     def cerrar_modelo(símismo):
         pass

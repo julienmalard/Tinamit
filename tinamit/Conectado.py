@@ -176,7 +176,7 @@ class SuperConectado(Modelo):
 
         # Aplicar los factores calculados.
         for i, m in enumerate(l_mods):
-            símismo.conv_tiempo[m] = factores_conv[i]
+            símismo.conv_tiempo[m] = int(factores_conv[i])
 
         # La unidad de base para el SuperConectado es la que tiene factor de conversión de 1.
         unid_base = next(d_unids[m] for m, c in símismo.conv_tiempo.items() if c == 1)
@@ -326,7 +326,7 @@ class SuperConectado(Modelo):
         return all(mod.paralelizable() for mod in símismo.modelos.values())
 
     def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None,
-                clima=None, recalc_clima=True, vars_interés=None):
+                clima=None, recalc_clima=True, vars_interés=None, guardar=False):
         """
         Simula el modelo :class:`~tinamit.Conectado.SuperConectado`.
 
@@ -381,11 +381,12 @@ class SuperConectado(Modelo):
         # Todo el restode la simulación se hace como en la clase pariente
         return super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida,
                                fecha_inic=fecha_inic,
-                               lugar=lugar, recalc_clima=recalc_clima, clima=clima, vars_interés=vars_interés)
+                               lugar=lugar, recalc_clima=recalc_clima, clima=clima, vars_interés=vars_interés,
+                               guardar=guardar)
 
     def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
                          fecha_inic=None, lugar=None, clima=None, recalc_clima=True, combinar=True, dibujar=None,
-                         paralelo=True, vars_interés=None):
+                         paralelo=True, vars_interés=None, guardar=False):
 
         # Si los valores iniciales si dieron en el formato {submodelo1: {dic vals}, ...}, ponerlo en una lista
         # para que no pensemos que cada nombre de modelo es un nombre de corrida.
@@ -395,7 +396,7 @@ class SuperConectado(Modelo):
 
         # Llamar la función correspondiente de la clase pariente.
         return super().simular_paralelo(tiempo_final, paso, nombre_corrida, vals_inic, fecha_inic, lugar, clima,
-                                        recalc_clima, combinar, dibujar, paralelo, vars_interés)
+                                        recalc_clima, combinar, dibujar, paralelo, vars_interés, guardar=guardar)
 
     def inic_val_var(símismo, var, val):
 
@@ -428,7 +429,7 @@ class SuperConectado(Modelo):
             for mod in símismo.modelos.values():
                 mod.limp_vals_inic()
 
-    def _incrementar(símismo, paso):
+    def _incrementar(símismo, paso, guardar_cada=None):
         """
         Esta función avanza los dos submodelos conectados de intervalo de tiempo ``paso``. Emplea el módulo
         :py:mod:`threading` para correr los dos submodelos en paralelo, así ahorando tiempo.
@@ -755,24 +756,39 @@ class SuperConectado(Modelo):
         return mod, var
 
     def leer_resultados(símismo, var=None, corrida=None):
+        if corrida is None:
+            if símismo.corrida_activa is None:
+                raise ValueError(_('Debes especificar una corrida.'))
+            else:
+                corrida = símismo.corrida_activa
 
         if var in símismo.variables:
+            try:
+                return super().leer_resultados(var=var, corrida=corrida)
+            except ValueError:
+                pass
+
             mod, v = símismo.resolver_nombre_var(var)
 
             if mod in símismo.modelos and v in símismo.modelos[mod].variables:
                 try:
-                    return símismo.modelos[mod].leer_arch_resultados(corrida, var=var)
-                except NotImplementedError:
+                    return símismo.modelos[mod].leer_resultados(var=v, corrida=corrida)
+                except FileNotFoundError:
                     pass
+        else:
+            var_compl = next(
+                ('{}_{}'.format(m, var) for m in símismo.modelos if '{}_{}'.format(m, var) in símismo.mem_vars),
+                None)
+            if var_compl is not None:
+                return super().leer_resultados(var=var_compl, corrida=corrida)
+            for obj_m in símismo.modelos.values():
+                if var in obj_m.variables:
+                    try:
+                        return obj_m.leer_resultados(var=var, corrida=corrida)
+                    except FileNotFoundError:
+                        pass
 
-        for obj_m in símismo.modelos.values():
-            if var in obj_m.variables:
-                try:
-                    return obj_m.leer_arch_resultados(var, archivo)
-                except NotImplementedError:
-                    pass
-
-        raise IOError(_('Ningún de los submodelos pudieron leer los resultados de la corrida.'))
+        raise FileNotFoundError(_('Ningún de los submodelos pudieron leer los resultados de la corrida.'))
 
     def _aplicar_cambios_vals_inic(símismo):
         pass

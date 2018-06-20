@@ -171,7 +171,7 @@ class SuperBD(object):
     Una :class:`SuperBD` reune varias bases de :class:`Datos` en un lugar cómodo para acceder a los datos.
     """
 
-    def __init__(símismo, nombre, bds=None, geog=None):
+    def __init__(símismo, nombre, bds=None, geog=None, auto_conectar=True):
         """
 
         Parameters
@@ -188,13 +188,8 @@ class SuperBD(object):
         símismo.nombre = nombre
         símismo.geog = geog  # type: Geografía
 
-        # Guardar las bases de datos
-        if bds is None:
-            símismo.bds = {}  # type: dict[Datos]
-        else:
-            if isinstance(bds, Datos):
-                bds = [bds]
-            símismo.bds = {d.nombre: d for d in bds}  # type: dict[str, Datos]
+        # Las bases de datos
+        símismo.bds = {}  # type: dict[str, Datos]
 
         # Información de variables (y de sus bases de datos correspondientes)
         símismo.vars = {}
@@ -207,7 +202,14 @@ class SuperBD(object):
         # Si nuesta base de datos interna está actualizada o no.
         símismo.bd_lista = False
 
-    def conectar_datos(símismo, bd, auto_conectar=True, bd_plantilla=None):
+        # Guardar las bases de datos
+        if bds is not None:
+            if isinstance(bds, Datos):
+                bds = [bds]
+            for bd in bds:
+                símismo.conectar_datos(bd, auto_conectar=auto_conectar)
+
+    def conectar_datos(símismo, bd, auto_conectar=True):
         """
         Agregar una base de datos.
 
@@ -217,9 +219,6 @@ class SuperBD(object):
             Los datos para agregar.
         auto_conectar: bool
             Si conectamos las columnas de esta nueva base de datos automáticamente.
-        bd_plantilla: Datos | str | list[Datos | str]
-            Otra base existente (opcional) para emplear como plantilla para conectar los variables
-            de `bd`. No tiene efecto si `auto_conectar` es ``False``.
 
         """
 
@@ -232,12 +231,14 @@ class SuperBD(object):
 
         # Conectar los variables automáticamente, si queremos
         if auto_conectar:
-            símismo.auto_llenar(bd=bd, bd_plantilla=bd_plantilla)
+            for var in bd.cols:
+                if var not in ['lugar', 'fecha']:
+                    símismo.espec_var(var=var, bds=bd)
 
         # Nuestras bases de datos internas ya no están actualizadas
         símismo.bd_lista = False
 
-    def auto_llenar(símismo, bd, bd_plantilla):
+    def conectar_como(símismo, bd, bd_plantilla=None):
         """
         Conecta los variables de una base de :class:`Datos` automáticamente.
 
@@ -663,14 +664,12 @@ class SuperBD(object):
                 l_códs_vac = [d_v['fuente'][nmb]['cód_vacío'] for _, d_v in d_vars_interés.items()]
 
                 # Obtener los datos
-                bd_pds_temp = bd.obt_datos(l_vars=l_vars_bd, cód_vacío=l_códs_vac)
+                bd_pds_datos = bd.obt_datos(l_vars=list(set(l_vars_bd)), cód_vacío=l_códs_vac)
 
                 # Convertir los nombres de los variables
-                bd_pds_temp.rename(
-                    index=str,
-                    columns={nmb: nv_nmb for nmb, nv_nmb in zip(l_vars_bd, list(d_vars_interés))},
-                    inplace=True
-                )
+                bd_pds_temp = bd_pds_datos[['bd', 'lugar', 'fecha']].copy()
+                for nmb_vr, nv_nmb in zip(l_vars_bd, list(d_vars_interés)):
+                    bd_pds_temp[nv_nmb] = bd_pds_datos[nmb_vr]
 
                 # Datos individuales
                 if isinstance(bd, DatosIndividuales):
@@ -829,7 +828,8 @@ class SuperBD(object):
         # Si no estamos interpolando, paramos aquí.
         if interpol_en is None:
             return bd_pds
-
+        if bd_pds['fecha'].isnull().all():
+            return bd_pds
         # Asegurarse que la columna de categorías para la interpolacion existe.
         if interpol_en not in bd_pds:
             raise ValueError(_('El variable "{}" no existe en esta base de datos.').format(interpol_en))
@@ -858,7 +858,10 @@ class SuperBD(object):
         for c in categs_únicas:
 
             # Tomar únicamente las filas que corresponden con la categoría actual.
-            bd_categ = bd_pds.loc[bd_pds[interpol_en] == c]
+            if c is None:
+                bd_categ = bd_pds.loc[bd_pds[interpol_en].isnull()]
+            else:
+                bd_categ = bd_pds.loc[bd_pds[interpol_en] == c]
 
             # Calcular las fechas de interés para esta categoría, si necesario
             if fechas_interés is not None:
@@ -1390,7 +1393,9 @@ class BDpandas(BD):
         return list(símismo.archivo)
 
     def obt_datos(símismo, cols, prec_dec=None, cód_vacío=None):
-        return símismo.archivo[cols]
+        if not isinstance(cols, list):
+            cols = [cols]
+        return símismo.archivo[cols].copy()
 
     def obt_datos_tx(símismo, cols):
         return símismo.archivo[cols].astype(str)

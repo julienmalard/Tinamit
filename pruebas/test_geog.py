@@ -8,7 +8,7 @@ import numpy.testing as npt
 from tinamit.Geog.Geog import Geografía, Lugar
 
 dir_act = os.path.split(__file__)[0]
-arch_csv_geog = os.path.join(dir_act, 'recursos/prueba_geog.csv')
+arch_csv_geog = os.path.join(dir_act, 'recursos/datos/prueba_geog.csv')
 arch_frm_regiones = os.path.join(dir_act, 'recursos/frm/munis.shp')
 arch_frm_otra = os.path.join(dir_act, 'recursos/frm/otra_frm.shp')
 arch_clim_diario = os.path.join(dir_act, 'recursos/datos/clim_diario.csv')

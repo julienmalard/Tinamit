@@ -26,7 +26,7 @@ class EnvoltDSSAT(ModeloBF):  # pragma: sin cobertura
     def _cambiar_vals_modelo_interno(símismo, valores):
         pass
 
-    def _incrementar(símismo, paso):
+    def _incrementar(símismo, paso, guardar_cada=None):
         correr(símismo.comanda, cwd='C:\\DSSAT46\\maize')
 
     def act_vals_clima(símismo, n_paso, f):

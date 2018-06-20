@@ -22,23 +22,20 @@ class Test_CalibModelo(unittest.TestCase):
         for var, val in cls.paráms.items():
             cls.mod.inic_val_var(var, val)
 
-        cls.datos = pd.DataFrame(
-            cls.mod.simular(
+        cls.datos = cls.mod.simular(
                 tiempo_final=100,
                 vars_interés=['Individuos Suceptibles', 'Individuos Infectados', 'Individuos Resistentes']
             )
-        )
 
-    def test_calibrar_con_optimización_rcem(símismo):
+    def test_calibrar_validar(símismo):
         símismo.mod.conectar_datos(símismo.datos)
-        símismo.mod.conectar_var_a_datos(var='Individuos Suceptibles')
         símismo.mod.calibrar(
             paráms=list(símismo.paráms),
             líms_paráms={
                 'taza de contacto': (0, 100),
-                'taza de infección': (0.005, 0.009),
+                'taza de infección': (0, 0.02),
                 'número inicial infectado': (0, 50),
-                'taza de recuperación': (0.01, 0.05)
-            },
-            método='mc'
+                'taza de recuperación': (0, 0.1)
+            }
         )
+        símismo.assertTrue(símismo.mod.validar()['éxito'])

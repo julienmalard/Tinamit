@@ -120,7 +120,7 @@ class EnvolturaBF(Modelo):
 
         símismo.modelo._cambiar_vals_modelo_interno(valores=valores)
 
-    def _incrementar(símismo, paso):
+    def _incrementar(símismo, paso, guardar_cada=None):
         """
         Esta función avanza el modelo por un periodo de tiempo especificado en `paso`.
 
@@ -154,6 +154,7 @@ class EnvolturaBF(Modelo):
 
         # Inicializar el modelo.
         símismo.modelo.lugar = símismo.lugar
+        símismo.modelo.corrida_activa = nombre_corrida
         símismo.modelo.iniciar_modelo(tiempo_final, nombre_corrida)
 
         # Aplicar valores iniciales después de la inicialización del modelo. Simplemente llamamos la función
@@ -230,11 +231,15 @@ class ModeloBF(Modelo):
         """
         raise NotImplementedError
 
-    def _incrementar(símismo, paso):
+    def _incrementar(símismo, paso, guardar_cada=None):
         """
         Esta función debe incrementar el modelo de `paso` unidades de tiempo.
         :param paso: El número de pasos
         :type paso: int
+
+        Parameters
+        ----------
+        guardar_cada :
         """
 
         raise NotImplementedError
@@ -454,7 +459,7 @@ class ModeloImpaciente(ModeloBF):
                 # Avanzar la fecha
                 f_inic = f_final
 
-    def _incrementar(símismo, paso):
+    def _incrementar(símismo, paso, guardar_cada=None):
         """
         Incrementa el modelo, tomando valores de variables desde el diccionario de valores internos.
         Si necesitamos avanzar la simulación del modelo externo, lo hace ahora y después lee los resultados.
@@ -746,8 +751,11 @@ class ModeloFlexible(ModeloBF):
         """
         raise NotImplementedError
 
-    def _incrementar(símismo, paso):
+    def _incrementar(símismo, paso, guardar_cada=None):
         """
+        Parameters
+        ----------
+        guardar_cada :
 
 
         """

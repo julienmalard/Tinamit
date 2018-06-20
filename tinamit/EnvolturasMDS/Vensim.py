@@ -204,8 +204,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
     Necesitarás la __versión__ DSS de VENSIM para que funcione en Tinamit.
     """
 
-    combin_incrs = True
-
     instalado = dll_Vensim is not None
 
     def __init__(símismo, archivo, nombre='mds'):
@@ -246,6 +244,8 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         # Inicializar ModeloVENSIM como una EnvolturasMDS.
         super().__init__(archivo=archivo, nombre=nombre)
+
+        símismo.combin_incrs = True
 
     def _inic_dic_vars(símismo):
         """
@@ -474,7 +474,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                                args='SIMULATE>SETVAL|%s = %f' % (var_s, val_s),
                                mensaje_error=_('Error cambiando el variable %s.') % var_s)
 
-    def _incrementar(símismo, paso):
+    def _incrementar(símismo, paso, guardar_cada=None):
         """
         Esta función avanza la simulación VENSIM de ``paso`` pasos.
 

@@ -89,7 +89,7 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def _incrementar(símismo, paso):
+    def _incrementar(símismo, paso, guardar_cada=None):
         """
         Este método se deja a las subclases de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS` para implementar.
 
@@ -144,6 +144,7 @@ class MDSEditable(EnvolturaMDS):
         from tinamit.EnvolturasMDS import generar_mds
         símismo.mod = None  # type: EnvolturaMDS
         símismo._estab_mod(generar_mds(archivo=archivo))
+        símismo.combin_incrs = símismo.mod.combin_incrs
 
         símismo.editado = False
 
@@ -179,13 +180,15 @@ class MDSEditable(EnvolturaMDS):
             símismo.publicar_modelo()
             símismo._estab_mod(generar_mds())
             símismo.editado = False
+
+        símismo.mod.corrida_activa = nombre_corrida
         símismo.mod._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
 
     def _cambiar_vals_modelo_interno(símismo, valores):
         return símismo.mod._cambiar_vals_modelo_interno(valores=valores)
 
-    def _incrementar(símismo, paso):
-        return símismo.mod._incrementar(paso=paso)
+    def _incrementar(símismo, paso, guardar_cada=None):
+        return símismo.mod._incrementar(paso=paso, guardar_cada=guardar_cada)
 
     def inic_val_var(símismo, var, val):
         símismo.mod.inic_val_var(var=var, val=val)
@@ -208,3 +211,6 @@ class MDSEditable(EnvolturaMDS):
 
     def publicar_modelo(símismo):
         raise NotImplementedError
+
+    def paralelizable(símismo):
+        return símismo.mod.paralelizable()

@@ -8,7 +8,7 @@ class ModeloPrueba(ModeloBF):
     def _cambiar_vals_modelo_interno(símismo, valores):
         pass
 
-    def _incrementar(símismo, paso):
+    def _incrementar(símismo, paso, guardar_cada=None):
         símismo._act_vals_dic_var({'Lluvia': símismo.obt_val_actual_var('Lago') / 10 * paso})
         símismo._act_vals_dic_var({'Escala': símismo.obt_val_actual_var('Escala') + 1})
         símismo._act_vals_dic_var({'Aleatorio': alea()})

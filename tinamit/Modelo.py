@@ -15,9 +15,10 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
-from tinamit.Análisis.Datos import leer_fechas
+from Análisis.Valids import validar_resultados
 from tinamit import _, valid_nombre_arch, detectar_codif
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
+from tinamit.Análisis.Datos import leer_fechas, SuperBD, Datos, DatosRegión
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.Unidades.conv import convertir
 
@@ -35,8 +36,6 @@ class Modelo(object):
     instalado = True
 
     leng_orig = 'es'
-
-    combin_incrs = False
 
     def __init__(símismo, nombre):
         """
@@ -66,10 +65,11 @@ class Modelo(object):
         símismo._inic_dic_vars()  # Iniciar los variables.
 
         #
-        símismo.datos = None
+        símismo.datos = None  # type: SuperBD
         símismo.calibs = {}
         símismo.info_calibs = {'calibs': {}, 'micro calibs': {}}
         símismo.conex_var_datos = {}
+        símismo.combin_incrs = False
 
         # Memorio de valores de variables (para leer los resultados más rápidamente después de una simulación).
         símismo.mem_vars = {}
@@ -116,6 +116,8 @@ class Modelo(object):
         raise NotImplementedError
 
     def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+
+        símismo.corrida_activa = nombre_corrida
 
         símismo._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
 
@@ -282,30 +284,42 @@ class Modelo(object):
 
             símismo.mem_vars[v][0] = símismo.obt_val_actual_var(v)
 
-        # Hasta llegar al tiempo final, incrementamos el modelo.
-        for i in range(n_pasos):
+        if clima is None and símismo.combin_incrs:
+            símismo.incrementar(paso=n_pasos * paso, guardar_cada=paso)
+            # Después de la simulación, cerramos el modelo.
+            símismo.cerrar_modelo()
+            res = símismo.leer_arch_resultados(archivo=nombre_corrida, var=vars_interés)
+            for var, val in símismo.mem_vars.items():
+                if res[var].shape[0] == n_pasos + 1:
+                    val[:] = res[var]
+                else:
+                    val[:] = res[var][::paso]
 
-            # Incrementar el modelo
-            símismo.incrementar(paso)
+        else:
+            # Hasta llegar al tiempo final, incrementamos el modelo.
+            for i in range(n_pasos):
 
-            # Guardar valores de variables de interés
-            if len(vars_interés):
-                símismo.leer_vals()
-            for v in vars_interés:
-                símismo.mem_vars[v][i + 1] = símismo.obt_val_actual_var(v)
+                # Incrementar el modelo
+                símismo.incrementar(paso)
 
-            if i != (n_pasos - 1):
-                if fecha_inic is not None:
-                    fecha_próx = fecha_act + deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: paso})
+                # Guardar valores de variables de interés
+                if len(vars_interés):
+                    símismo.leer_vals()
+                for v in vars_interés:
+                    símismo.mem_vars[v][i + 1] = símismo.obt_val_actual_var(v)
 
-                    # Actualizar variables de clima, si necesario
-                    if clima is not None:
-                        símismo.act_vals_clima(fecha_act, fecha_próx)
+                if i != (n_pasos - 1):
+                    if fecha_inic is not None:
+                        fecha_próx = fecha_act + deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: paso})
 
-                    fecha_act = fecha_próx
+                        # Actualizar variables de clima, si necesario
+                        if clima is not None:
+                            símismo.act_vals_clima(fecha_act, fecha_próx)
 
-        # Después de la simulación, cerramos el modelo.
-        símismo.cerrar_modelo()
+                        fecha_act = fecha_próx
+
+            # Después de la simulación, cerramos el modelo.
+            símismo.cerrar_modelo()
 
         if vars_interés is not None:
             return copiar_profundo(símismo.mem_vars)
@@ -533,9 +547,10 @@ class Modelo(object):
         d_vals_inic = {ll: v.pop('vals_inic') for ll, v in corridas.items()}
 
         # Ahora, hacemos las simulaciones
+        resultados = {}  # El diccionario de resultados
 
         # Detectar si el modelo y todos sus submodelos son paralelizables
-        if símismo.paralelizable() and paralelo:
+        if paralelo and símismo.paralelizable():
             # ...si lo son...
 
             # Este código un poco ridículo queda necesario para la paralelización en Windows. Si no estuviera aquí,
@@ -572,14 +587,16 @@ class Modelo(object):
 
             # Hacer las corridas en paralelo
             with Reserva() as r:
-                resultados = r.map(_correr_modelo, l_trabajos)
+                res_paralelo = r.map(_correr_modelo, l_trabajos)
 
             # Ya terminamos la parte difícil. Desde ahora, sí permitiremos otras ejecuciones de esta función.
             ejecutando_simulación_paralela_por_primera_vez = True
 
             # Formatear los resultados, si hay.
-            if resultados is not None:
-                resultados = {corr: res for corr, res in zip(nmbr_corridas_res, resultados)}
+            if res_paralelo is not None:
+                resultados.update({corr: res for corr, res in zip(nmbr_corridas_res, res_paralelo)})
+            else:
+                resultados = None
 
         else:
             # Sino simplemente correrlas una tras otra con `Modelo.simular()`
@@ -590,9 +607,6 @@ class Modelo(object):
                          'Si tus modelos sí son paralelizables, crear un método nombrado `.paralelizable()` '
                          'que devuelve ``True`` en tu clase de modelo para activar la paralelización.'
                          ).format(símismo.nombre))
-
-            # El diccionario de resultados
-            resultados = {}
 
             # Para cada corrida...
             for corr_res, (corr, d_prms_corr) in zip(nmbr_corridas_res, corridas.items()):
@@ -683,12 +697,12 @@ class Modelo(object):
                         escr.writerow([var] + vals.tolist())
                     else:
                         for í in range(vals.shape[1]):
-                            escr.writerow(['{}[{}]'.format(var, í)] + vals[:,í].tolist())
+                            escr.writerow(['{}[{}]'.format(var, í)] + vals[:, í].tolist())
 
         else:
             raise ValueError(_('Formato de resultados "{}" no reconocido.').format(frmt))
 
-    def _incrementar(símismo, paso):
+    def _incrementar(símismo, paso, guardar_cada=None):
         """
         Esta función debe avanzar el modelo por un periodo de tiempo especificado.
 
@@ -698,9 +712,9 @@ class Modelo(object):
         """
         raise NotImplementedError
 
-    def incrementar(símismo, paso):
+    def incrementar(símismo, paso, guardar_cada=None):
         símismo.vals_actualizadas = False
-        símismo._incrementar(paso=paso)
+        símismo._incrementar(paso=paso, guardar_cada=guardar_cada)
 
     def leer_vals(símismo):
 
@@ -1017,8 +1031,6 @@ class Modelo(object):
     def vars_estado_inicial(símismo):
         return [v for v, d_v in símismo.variables.items() if d_v['estado_inicial']]
 
-
-
     def leer_resultados(símismo, var=None, corrida=None):
         """
 
@@ -1099,11 +1111,11 @@ class Modelo(object):
                             else:
                                 res[v] = [f[1:]]
                         else:
-                            if f[0] in var:
+                            if f[0] in l_vars:
                                 res[f[0]] = np.array(f[1:], dtype=float)
-                for var, val in res.items():
+                for vr, val in res.items():
                     if isinstance(val, list):
-                        res[var] = np.array(val, dtype=float).swapaxes(0, -1)  # eje 0: tiempo, ejes 1+: dims
+                        res[vr] = np.array(val, dtype=float).swapaxes(0, -1)  # eje 0: tiempo, ejes 1+: dims
                 res = {ll: np.array(v, dtype=float) for ll, v in res.items()}
                 break
             else:
@@ -1232,7 +1244,16 @@ class Modelo(object):
                     símismo.calibs[v] = calib[v]
 
     def conectar_datos(símismo, datos):
-        símismo.datos = datos
+        if isinstance(datos, SuperBD):
+            símismo.datos = datos
+        elif isinstance(datos, Datos):
+            símismo.datos = SuperBD('Autogen', bds=datos)
+        elif isinstance(datos, pd.DataFrame):
+            símismo.datos = SuperBD('Autogen', bds=DatosRegión('Autogen', datos))
+        elif isinstance(datos, dict):
+            símismo.datos = SuperBD('Autogen', bds=DatosRegión('Autogen', pd.DataFrame(datos)))
+        else:
+            raise TypeError
 
     def conectar_var_a_datos(símismo, var, var_bd=None):
         if var_bd is None:
@@ -1327,7 +1348,7 @@ class Modelo(object):
         """
 
         # La base de datos
-        bd_datos = bd_datos = símismo.datos if enforzar_datos else None
+        bd_datos = símismo.datos if enforzar_datos else None
 
         # El diccionario de variables
         d_vars = símismo.variables
@@ -1414,10 +1435,63 @@ class Modelo(object):
     def borrar_calibs_calc(símismo):
         símismo.calibs.clear()
 
-    def calibrar(símismo, paráms, líms_paráms=None, método='optimizar'):
+    def calibrar(símismo, paráms, líms_paráms=None, var=None, n_iter=500, método='mc'):
+
+        if var is None:
+            l_vars = None
+        elif isinstance(var, str):
+            l_vars = [símismo.valid_var(var)]
+        else:
+            l_vars = [símismo.valid_var(v) for v in var]
+
+        if líms_paráms is None:
+            líms_paráms = {}
+        for p in paráms:
+            if p not in líms_paráms:
+                líms_paráms[p] = símismo.obt_lims_var(p)
+        líms_paráms = {ll: v for ll, v in líms_paráms.items() if ll in paráms}
+
         calibrador = CalibradorMod(símismo)
-        calibrador.calibrar(paráms=paráms, método=método, líms_paráms=líms_paráms)
-        calibrador
+        d_calibs = calibrador.calibrar(
+            paráms=paráms, método=método, líms_paráms=líms_paráms, n_iter=n_iter, l_vars=l_vars
+        )
+        símismo.calibs.update(d_calibs)
+
+    def validar(símismo, var=None, t_final=None):
+
+        if var is None:
+            l_vars = [v for v in símismo.datos.vars if v in símismo.variables or v in símismo.conex_var_datos.values()]
+        elif isinstance(var, str):
+            l_vars = [var]
+        else:
+            l_vars = var
+        l_vars = [símismo.valid_var(v) for v in l_vars]
+
+        obs = símismo.datos.obt_datos(l_vars, tipo='regional')[l_vars]
+        if t_final is None:
+            t_final = len(obs) - 1
+        d_vals_prms = {p: d_p['dist'] for p, d_p in símismo.calibs.items()}
+        n_vals = len(list(d_vals_prms.values())[0])
+        vals_inic = [{p: v[í] for p, v in d_vals_prms.items()} for í in range(n_vals)]
+        res_simul = símismo.simular_paralelo(
+            t_final, vals_inic=vals_inic, vars_interés=l_vars, combinar=False, paralelo=False
+        )
+
+        matrs_simul = {vr: np.array([d[vr] for d in res_simul.values()]) for vr in l_vars}
+
+        resultados = validar_resultados(obs=obs, matrs_simul=matrs_simul)
+        return resultados
+
+        for í_o in range(n_obs):
+            dib.clf()
+            n_it = len(trzs_buenas)
+            for it in range(n_it):
+                x = [trzs_buenas[c][í] for í in range(len(trzs_buenas)) for c in cols_sim][í_o::n_obs][
+                    len(obs) * it:len(obs) * (it + 1)]
+                í_color = (trzs_buenas['like1'][it] - rango_prob[0]) / (rango_prob[1] - rango_prob[0])
+                dib.plot(x, linewidth=0.5, color=dib.cm.RdYlBu(í_color))
+            dib.plot(mod_spotpy.evaluation()[í_o::n_obs], color='green', linewidth=3)
+            dib.savefig(list(obs)[í_o])
 
     def __str__(símismo):
         return símismo.nombre

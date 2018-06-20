@@ -6,6 +6,7 @@ import scipy.stats as estad
 import spotpy
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
+import matplotlib.pyplot as dib
 
 from tinamit import _
 from tinamit.Análisis.sintaxis import Ecuación
@@ -524,56 +525,42 @@ class CalibradorMod(object):
         """
         símismo.mod = mod
 
-    def calibrar(símismo, paráms, método, líms_paráms=None):
+    def calibrar(símismo, paráms, líms_paráms, método, l_vars, n_iter):
 
         método = método.lower()
         mod = símismo.mod
 
-        if líms_paráms is None:
-            líms_paráms = {}
-        for p in paráms:
-            if p not in líms_paráms:
-                líms_paráms[p] = símismo.mod.obt_lims_var(p)
-        líms_paráms = {ll: v for ll, v in líms_paráms.items() if ll in paráms}
+        if l_vars is None:
+            l_vars = list(símismo.mod.datos.vars)
+        cnx = símismo.mod.conex_var_datos
+        l_vars = [cnx[v] if v in cnx else v for v in l_vars]
+        obs = símismo.mod.datos.obt_datos(l_vars, tipo='regional')[l_vars]
 
-        obs = símismo.mod.datos
-        t_final = len(obs) - 1  # 1 paso menos por las condiciones iniciales
-        mu_obs = obs.mean().values
-        sg_obs = obs.std().values
-        if método == 'optimizar':
-            def f(prm, obs_x):
-                mod.inic_vals_vars({p: v for p, v in zip(paráms, prm)})
-                res = mod.simular(tiempo_final=t_final, vars_interés=list(obs)).values
-                return ((res - mu_obs) / sg_obs).ravel()
-
-            obs_y = ((obs.values - mu_obs) / sg_obs).ravel()
-            return _optimizar(func=f, líms_paráms=líms_paráms, obs_x=None, obs_y=obs_y)
-        elif método in _algs_spotpy:
+        if método in _algs_spotpy:
             mod_spotpy = ModSpotPy(mod=mod, líms_paráms=líms_paráms, obs=obs)
             muestreador = _algs_spotpy[método](mod_spotpy, dbname='CalibTinamït', dbformat='csv')
-            muestreador.sample(100)
+            muestreador.sample(n_iter)
             trzs = spotpy.analyser.load_csv_results('CalibTinamït')
-            res = {p: trzs[[c for c in trzs.dtype.names if c.startswith('par')][í]] for í, p in enumerate(líms_paráms)}
-            sim = {p: trzs[[c for c in trzs.dtype.names if c.startswith('sim')]] for í, p in enumerate(líms_paráms)}
+
+            cols_prm = [c for c in trzs.dtype.names if c.startswith('par')]
+            if método not in ['mcmc', 'dream']:
+                buenas = [trzs['like1'] >= 0.80]
+                trzs_buenas = trzs[buenas]
+            else:
+                trzs_buenas = trzs
+            rango_prob = (trzs_buenas['like1'].min(), trzs_buenas['like1'].max())
+            pesos = (trzs_buenas['like1'] - rango_prob[0]) / (rango_prob[1] - rango_prob[0])
+
+            res = {}
+            for í_p, p in enumerate(paráms):
+                t = np.array([t[cols_prm[í_p]] for t in trzs_buenas])
+                res[p] = {'dist': t, 'val': _calc_máx_trz(t), 'peso': pesos}
+
             return res
-            """
-            n_obs = len(list(obs))
-            cols_sim = [c for c in trzs.dtype.names if c.startswith('sim')]
-            # for í_o in range(n_obs):
-            í_o = 1
-            
-            dib.clf()
-            rango_prob = (trzs['like1'].min(), trzs['like1'].max())
-            n_it = 100
-            for it in range(n_it):
-                x = [trzs[c][í] for í in range(len(trzs)) for c in cols_sim][í_o::n_obs][len(obs) * it:len(obs) * (it + 1)]
-                í_color = (trzs['like1'][it] - rango_prob[0]) / (rango_prob[1] - rango_prob[0])
-                print(í_color)
-                dib.plot(x, linewidth=0.5, color=dib.cm.RdYlBu(í_color))
-            dib.plot(mod_spotpy.evaluation()[í_o::n_obs], color='green', linewidth=3)
-            """
+
         else:
-            raise ValueError
+            raise ValueError(_('Método de calibración "{}" no reconocido.').format(método))
+
 
 
 # Unas funciones auxiliares
@@ -644,40 +631,41 @@ def _procesar_calib_bayes(traza, paráms):
     # El diccionario para los resultados
     d_máx = {}
 
-    def procesar_trz(trz):
-        # Ajustar el rango, si es muy grande (necesario para las funciones que siguen)
-        escl = np.max(trz)
-        rango = escl - np.min(trz)
-        if escl < 10e10:
-            escl = 1  # Si no es muy grande, no hay necesidad de ajustar
-
-        # Intentar calcular la densidad máxima.
-        try:
-            # Se me olvidó cómo funciona esta parte.
-            fdp = gaussian_kde(trz / escl)
-            x = np.linspace(trz.min() / escl - 1 * rango, trz.max() / escl + 1 * rango, 1000)
-            máx = x[np.argmax(fdp.evaluate(x))] * escl
-            return máx
-
-        except BaseException:
-            return np.nan
-
     # Calcular el punto de probabilidad máxima
     for p in paráms:
         # Para cada parámetro...
 
         dims = traza[p].shape
         if len(dims) == 1:
-            d_máx[p] = procesar_trz(traza[p])
+            d_máx[p] = _calc_máx_trz(traza[p])
         elif len(dims) == 2:
             d_máx[p] = np.empty(dims[1])
             for e in range(dims[1]):
-                d_máx[p][e] = procesar_trz(traza[p][:, e])
+                d_máx[p][e] = _calc_máx_trz(traza[p][:, e])
         else:
             raise ValueError
 
     # Devolver los resultados procesados.
     return {p: {'val': d_máx[p], 'dist': traza[p]} for p in paráms}
+
+
+def _calc_máx_trz(trz):
+    # Ajustar el rango, si es muy grande (necesario para las funciones que siguen)
+    escl = np.max(trz)
+    rango = escl - np.min(trz)
+    if escl < 10e10:
+        escl = 1  # Si no es muy grande, no hay necesidad de ajustar
+
+    # Intentar calcular la densidad máxima.
+    try:
+        # Se me olvidó cómo funciona esta parte.
+        fdp = gaussian_kde(trz / escl)
+        x = np.linspace(trz.min() / escl - 1 * rango, trz.max() / escl + 1 * rango, 1000)
+        máx = x[np.argmax(fdp.evaluate(x))] * escl
+        return máx
+
+    except BaseException:
+        return np.nan
 
 
 def _optimizar(func, líms_paráms, obs_x, obs_y, inic=None, **ops):
@@ -829,7 +817,8 @@ class ModSpotPy(object):
 
     def simulation(símismo, x):
         símismo.mod.inic_vals_vars({ll: x_i for ll, x_i in zip(símismo.nombres_paráms, x)})
-        res = símismo.mod.simular(tiempo_final=símismo.t_final, vars_interés=list(símismo.vars_interés)).values
+        res = símismo.mod.simular(tiempo_final=símismo.t_final, vars_interés=list(símismo.vars_interés))
+        res = np.array([res[v] for v in símismo.vars_interés]).T
 
         return ((res - símismo.mu_obs) / símismo.sg_obs).ravel()
 
