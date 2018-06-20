@@ -24,7 +24,6 @@ conv_vars = {
     'Temperatura promedia': 'درجہ_حرارت_اوسط'
 }
 
-
 # Una subclase traducida
 class Lugar(مقام):
     """
@@ -424,7 +423,7 @@ class Geografía(object):
                 escl_col = fig.colorbar(cpick)
 
             if categs is not None:
-                escl_col.set_label(_('Parámetro'))
+                escl_col.set_label(_('Parameter')) #Parámetro
                 escl_col.set_ticks(np.linspace(escala_num[0], escala_num[1], escala_num[1] - escala_num[0] + 1))
                 escl_col.set_ticklabels(categs)
 
@@ -582,7 +581,6 @@ def _gen_d_mapacolores(colores):
                  range(0, n_colores))}
 
     return dic_c
-
 
 def _formatos_auto(a, tipo):
     """

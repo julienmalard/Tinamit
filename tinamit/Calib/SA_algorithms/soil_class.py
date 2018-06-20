@@ -74,28 +74,48 @@ soil_class = {
 
 # print(soil_class[str(1)])
 
+p_riv_class = ['head', 'head', 'head', 'head', 'head', 'head', 'head', 'head', 'head', 'head', 'head', 'head', 'head',
+               'head', 'middle', 'middle', 'head', 'middle', 'Tail', 'middle', 'middle', 'middle', 'middle', 'middle',
+               'middle', 'head', 'head', 'Tail', 'middle', 'middle', 'middle', 'middle', 'middle', 'Tail', 'Tail',
+               'middle', 'Tail', 'Tail', 'Tail', 'Tail', 'head', 'Tail', 'Tail', 'head', 'Tail', 'head', 'middle',
+               'Tail', 'middle', 'Tail', 'Tail', 'head', 'Tail', 'Tail', 'Tail', 'middle', 'head', 'head', 'head',
+               'head', 'head', 'head', 'Tail', 'Tail', 'head', 'head', 'head', 'middle', 'middle', 'head', 'head',
+               'middle', 'middle', 'Tail', 'head', 'head', 'middle', 'head', 'head', 'middle', 'middle', 'middle',
+               'middle', 'middle', 'middle', 'middle', 'middle', 'middle', 'middle', 'middle', 'middle', 'middle',
+               'head', 'middle', 'middle', 'middle', 'middle', 'middle', 'middle', 'middle', 'middle', 'middle',
+               'middle', 'head', 'Tail', 'Tail', 'Tail', 'head', 'Tail', 'Tail', 'middle', 'middle', 'middle',
+               'Tail', 'Tail', 'head', 'middle', 'middle', 'middle', 'Tail', 'Tail', 'middle', 'middle', 'Tail',
+               'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'middle', 'middle', 'Tail', 'Tail', 'Tail', 'head',
+               'head', 'middle', 'head', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail',
+               'Tail', 'middle', 'middle', 'Tail', 'middle', 'head', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail',
+               'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'middle', 'head', 'middle', 'middle', 'Tail', 'Tail',
+               'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'head', 'Tail',
+               'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'middle',
+               'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'Tail', 'head', 'middle', 'Tail', 'Tail',
+               'Tail', 'Tail', 'Tail']
+
 p_soil_class = [1,
                 1,
                 2,
                 2,
                 3,
                 2,
-                2,
-                2,
-                3,
+                2, #7
                 2,
                 3,
-                3,
-                2,
                 2,
                 3,
                 3,
+                2,
+                2,
+                3,
+                3,#16
                 1,
                 2,
                 3,
                 2,
                 2,
-                3,
+                3,#22
                 1,
                 1,
                 2,
@@ -216,7 +236,7 @@ p_soil_class = [1,
                 3,
                 3,
                 4,
-                4,
+                4,#143
                 4,
                 2,
                 2,
@@ -289,6 +309,7 @@ p_soil_class = [1,
                 1,
                 1,
                 1]
+#print(p_soil_class[0], p_soil_class[10], p_soil_class[5])
 
 p_neighbors = [
     # up, right, down, left
@@ -509,6 +530,22 @@ p_neighbors = [
     [210, 255, 254, 214],
 ]
 
+All_Classes = ['H1', 'H2', 'H3', 'M1', 'M2', 'M3', 'M4', 'T1', 'T2', 'T3', 'T4']
+
+H1 = [0, 1, 16, 26, 43, 51, 65, 107, 135, 136, 138, 168, 184, 208]
+H2 = [2, 3, 5, 6, 7, 9, 12, 13, 25, 56, 57, 60, 61, 64, 66, 74, 75, 77, 78, 92, 103, 115, 154]
+H3 = [4, 8, 10, 11, 40, 45, 58, 59, 69, 70]
+H4 = []
+M1 = [22, 23, 28, 35, 84, 94, 98, 99, 100, 116, 117, 131, 137, 150, 198, 209]
+M2 = [17, 19, 20, 24, 29, 30, 48, 68, 71, 72, 76, 83, 85, 86, 88, 89, 90, 91, 101, 102, 121, 122, 130, 151, 153, 167, 169, 170] #deleted poly_87
+M3 = [14, 15, 21, 31, 32, 46, 55, 67, 79, 80, 81, 82, 93, 95, 96, 97, 110, 111, 112, 118]
+M4 = [87] #87
+T1 = [36, 47, 108, 109, 114, 123, 124, 126, 127, 132, 134, 182, 183, 185, 197, 199, 200, 205, 206, 207, 212, 213, 214]
+T2 = [37, 38, 41, 42, 44, 50, 52, 53, 62, 63, 73, 104, 105, 106, 113, 128, 129, 133, 144, 145, 146, 148, 149, 152, 165, 166, 171, 172, 173, 176, 177, 186, 187, 188, 189, 190, 191, 192, 194, 195, 196, 201, 204, 210, 211]
+T3 = [18, 27, 33, 34, 39, 49, 54, 119, 120, 125, 139, 140, 155]
+T4 = [141, 142, 143, 147, 156, 157, 158, 159, 160, 161, 162, 163, 164, 174, 175, 178, 179, 180, 181, 193, 202, 203]
+
+
 def get_p_soil_class(poly_id, location = -1):
     if poly_id == None or poly_id > 215 or poly_id < 0:
         print('Error: poly_id is not valid!')
@@ -531,7 +568,7 @@ def get_soil_type(poly_id, location = -1):
     if location == -1:
         return p_soil_class[poly_id]
     else:
-        # the real polygon start with 1, so there needs minus 1
+        # the real polygon start with 1, so there needs -1
         neighbor = p_neighbors[poly_id][location] - 1
         if neighbor > 214:
             neighbor = poly_id
