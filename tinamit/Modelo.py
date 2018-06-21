@@ -1482,17 +1482,6 @@ class Modelo(object):
         resultados = validar_resultados(obs=obs, matrs_simul=matrs_simul)
         return resultados
 
-        for í_o in range(n_obs):
-            dib.clf()
-            n_it = len(trzs_buenas)
-            for it in range(n_it):
-                x = [trzs_buenas[c][í] for í in range(len(trzs_buenas)) for c in cols_sim][í_o::n_obs][
-                    len(obs) * it:len(obs) * (it + 1)]
-                í_color = (trzs_buenas['like1'][it] - rango_prob[0]) / (rango_prob[1] - rango_prob[0])
-                dib.plot(x, linewidth=0.5, color=dib.cm.RdYlBu(í_color))
-            dib.plot(mod_spotpy.evaluation()[í_o::n_obs], color='green', linewidth=3)
-            dib.savefig(list(obs)[í_o])
-
     def __str__(símismo):
         return símismo.nombre
 

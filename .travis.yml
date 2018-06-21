@@ -8,10 +8,12 @@ os:
 install:
   - pip install --upgrade pip setuptools wheel
   - pip install -r requirements.txt
-  - pip install coveralls codecov
+  - pip install coveralls codecov codacy-coverage
 
 script:
   - cd pruebas
   - nosetests --with-coverage --cover-package=tinamit
   - coveralls --rcfile=.coveragerc
   - codecov
+  - export CODACY_PROJECT_TOKEN=%CODACY%
+  - python-codacy-coverage -r coverage.xml

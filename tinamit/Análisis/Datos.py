@@ -1320,7 +1320,7 @@ class BDtexto(BD):
         :param prec_dec:
         :type prec_dec: int
         :return:
-        :rtype: np.ndarray
+        :rtype: pd.DataFrame
         """
         if not isinstance(cols, list):
             cols = [cols]

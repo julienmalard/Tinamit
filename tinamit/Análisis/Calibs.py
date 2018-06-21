@@ -1,3 +1,4 @@
+import os
 import re
 from warnings import warn as avisar
 
@@ -6,8 +7,8 @@ import scipy.stats as estad
 import spotpy
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
-import matplotlib.pyplot as dib
 
+from tinamit.Análisis.Datos import BDtexto
 from tinamit import _
 from tinamit.Análisis.sintaxis import Ecuación
 
@@ -537,25 +538,30 @@ class CalibradorMod(object):
         obs = símismo.mod.datos.obt_datos(l_vars, tipo='regional')[l_vars]
 
         if método in _algs_spotpy:
+            arch_spotpy = 'CalibTinamït_{}.csv'.format(np.random.randint(1000000))
             mod_spotpy = ModSpotPy(mod=mod, líms_paráms=líms_paráms, obs=obs)
             muestreador = _algs_spotpy[método](mod_spotpy, dbname='CalibTinamït', dbformat='csv')
             muestreador.sample(n_iter)
-            trzs = spotpy.analyser.load_csv_results('CalibTinamït')
+            egr_spotpy = BDtexto(arch_spotpy)
 
-            cols_prm = [c for c in trzs.dtype.names if c.startswith('par')]
+            cols_prm = [c for c in egr_spotpy.obt_nombres_cols() if c.startswith('par')]
+            trzs = egr_spotpy.obt_datos(cols_prm)
+            probs = egr_spotpy.obt_datos('like1')
             if método not in ['mcmc', 'dream']:
-                buenas = [trzs['like1'] >= 0.80]
-                trzs_buenas = trzs[buenas]
-            else:
-                trzs_buenas = trzs
-            rango_prob = (trzs_buenas['like1'].min(), trzs_buenas['like1'].max())
-            pesos = (trzs_buenas['like1'] - rango_prob[0]) / (rango_prob[1] - rango_prob[0])
+                buenas = (probs >= 0.80).values[:, 0]
+                trzs = trzs[buenas]
+                probs = probs[buenas]
+
+            rango_prob = (probs.min(), probs.max())
+            pesos = (probs - rango_prob[0]) / (rango_prob[1] - rango_prob[0])
 
             res = {}
-            for í_p, p in enumerate(paráms):
-                t = np.array([t[cols_prm[í_p]] for t in trzs_buenas])
-                res[p] = {'dist': t, 'val': _calc_máx_trz(t), 'peso': pesos}
+            for p in paráms:
+                col_p = ('par' + p).replace(' ', '_')
+                res[p] = {'dist': trzs[col_p].values, 'val': _calc_máx_trz(trzs[col_p]), 'peso': pesos.values}
 
+            if os.path.isfile(arch_spotpy):
+                os.remove(arch_spotpy)
             return res
 
         else:
@@ -650,6 +656,9 @@ def _procesar_calib_bayes(traza, paráms):
 
 
 def _calc_máx_trz(trz):
+    if len(trz) == 1:
+        return trz[0]
+
     # Ajustar el rango, si es muy grande (necesario para las funciones que siguen)
     escl = np.max(trz)
     rango = escl - np.min(trz)

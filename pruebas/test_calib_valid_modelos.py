@@ -1,8 +1,6 @@
 import os
 import unittest
 
-import pandas as pd
-
 from tinamit.EnvolturasMDS import generar_mds
 
 dir_act = os.path.split(__file__)[0]
