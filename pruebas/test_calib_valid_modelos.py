@@ -38,6 +38,7 @@ class Test_CalibModelo(unittest.TestCase):
         )
         símismo.assertTrue(símismo.mod.validar()['éxito'])
 
+    @classmethod
     def tearDownClass(cls):
         # Limpiamos todos los documentos temporarios generados por los algoritmos de calibración.
         for c in os.walk('.'):
