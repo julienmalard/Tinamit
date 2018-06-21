@@ -37,3 +37,14 @@ class Test_CalibModelo(unittest.TestCase):
             }
         )
         símismo.assertTrue(símismo.mod.validar()['éxito'])
+
+    def tearDownClass(cls):
+        # Limpiamos todos los documentos temporarios generados por los algoritmos de calibración.
+        for c in os.walk('.'):
+            for a in c[2]:
+                nmbr, ext = os.path.splitext(a)
+                if nmbr.startswith('CalibTinamït') and ext == '.csv':
+                    try:
+                        os.remove(a)
+                    except (PermissionError, FileNotFoundError):
+                        pass

@@ -541,13 +541,19 @@ class CalibradorMod(object):
             arch_spotpy = 'CalibTinamït_{}'.format(np.random.randint(1000000))
             mod_spotpy = ModSpotPy(mod=mod, líms_paráms=líms_paráms, obs=obs)
             muestreador = _algs_spotpy[método](mod_spotpy, dbname=arch_spotpy, dbformat='csv')
-            muestreador.sample(n_iter)
+            if método == 'dream':
+                muestreador.sample(repetitions=2000 + n_iter, runs_after_convergence=n_iter)
+            else:
+                muestreador.sample(n_iter)
             egr_spotpy = BDtexto(arch_spotpy + '.csv')
 
             cols_prm = [c for c in egr_spotpy.obt_nombres_cols() if c.startswith('par')]
             trzs = egr_spotpy.obt_datos(cols_prm)
             probs = egr_spotpy.obt_datos('like1')
-            if método not in ['mcmc', 'dream']:
+            if método == 'dream':
+                trzs = trzs[-n_iter:]
+                probs = probs[-n_iter:]
+            elif método != 'mcmc':
                 buenas = (probs >= 0.80).values[:, 0]
                 trzs = trzs[buenas]
                 probs = probs[buenas]

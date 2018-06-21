@@ -172,10 +172,12 @@ def valid_nombre_arch(nombre):
     return nombre.strip()
 
 
-def detectar_codif(archivo):
+def detectar_codif(archivo, máx_líneas=None):
     detector = UniversalDetector()
-    for línea in open(archivo, 'rb').readlines():
+    for í, línea in enumerate(open(archivo, 'rb').readlines()):
         detector.feed(línea)
+        if máx_líneas is not None and í == (máx_líneas - 1):
+            break
         if detector.done: break
     detector.close()
     return detector.result['encoding']

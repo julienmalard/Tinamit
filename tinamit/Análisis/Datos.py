@@ -1299,7 +1299,7 @@ class BDtexto(BD):
 
     def __init__(símismo, archivo):
 
-        símismo.codif = detectar_codif(archivo)
+        símismo.codif = detectar_codif(archivo, máx_líneas=1)
         super().__init__(archivo=archivo)
 
     def calc_n_obs(símismo):
@@ -1335,7 +1335,7 @@ class BDtexto(BD):
         with open(símismo.archivo, encoding=símismo.codif) as d:
             lector = csv.DictReader(d)
             for n_f, f in enumerate(lector):
-                m_datos[:, n_f] = [tx_a_núm(f[c]) if f[c] not in cód_vacío else np.nan for c in cols]
+                m_datos[:, n_f] = [tx_a_núm(f[c].strip()) if f[c].strip() not in cód_vacío else np.nan for c in cols]
 
         if len(cols) == 1:
             m_datos = m_datos[0]
