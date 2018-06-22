@@ -2,10 +2,12 @@ import os
 
 from tinamit.Conectado import Conectado
 from tinamit.Geog.Geog import Lugar, Geografía
-from tinamit.EnvolturaBF.en.SAHYSMOD import SAHYSMOD_Wrapper as SW
+from tinamit.EnvolturasBF import ModeloSAHYSMOD
 import numpy as np
 # from tinamit.Calib.SA_algorithms import test as t
 from tinamit.Calib.SA_algorithms import parameters_sa as P
+
+# mod = ModeloSAHYSMOD(datos_iniciales='')
 
 # def setup_parameters(sampling_parameters=None, n_seasons=1):
 #
@@ -20,7 +22,7 @@ from tinamit.Calib.SA_algorithms import parameters_sa as P
 #
 #     # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
 #     modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Tinamit_sub_v4.vpm'))
-#     modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'SAHYSMOD.py'))
+#     modelo.estab_bf(os.path.join(os.path.split(__file__f)[0], 'SAHYSMOD.py'))
 #     modelo.estab_conv_tiempo(mod_base='mds', conv=6)
 #
 #     print(len(modelo.bf.variables)) #104
@@ -78,9 +80,10 @@ def get_result():
 '''
 
 def simulation(sampling_parameters, tiempo_final, nombre):
-    run = {'Capacity per tubewell': 100.8, 'Fw': 0.5, 'Policy Canal lining': 0,
+    run = {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,
                             'Policy RH': 0, 'Policy Irrigation improvement': 0}
-    #'Fw': 0.8
+    #'Fw': 0.5
+
     # 3. Now create the model
     # Create a coupled model instance
     modelo = Conectado()

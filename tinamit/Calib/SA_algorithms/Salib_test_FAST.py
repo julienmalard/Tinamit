@@ -513,7 +513,7 @@ def noninfluential_param_of_wtd(fa, sensitivity_output):
     :return:
     '''
     for j in range(fa.n_poly):
-        sensitivity_of_ab = fa.load_sensitivity_data(
+        sensitivity_output = fa.load_sensitivity_data(
             os.path.join(fa.root_path, f'trend_SA\\ab\\Fast_sensitivity_{fa.name}_{j}.out'))
 
         # noninfluential_param_of_wtd = [
@@ -525,18 +525,42 @@ def noninfluential_param_of_wtd(fa, sensitivity_output):
         #                                 for season in sensitivity_of_ab[0]]
 
         noninfluential_param_of_wtd = []
-        for ab in sensitivity_of_ab[0]:
+        for ab in sensitivity_output[0]:
             for i in ab: #i = 2 dict for a/b= 2(s1/st) * 23, i = a or b
                 ab_trend = []
                 for j in range(fa.n_paras): #j = 23
                     if i['S1'][j] < 0.01 and (i['ST'][j] - i['S1'][j])< 0.1:
                         #print(fa.problem['names'][j], (i['S1'][j], i['ST'][j] ))
-                        ab_trend.append({fa.problem['names'][j]: (i['S1'][j], (i['ST'][j] - i['S1'][j])})
-                noninfluential_param_of_wtd.append(ab_trend)
-        for i, param in enumerate(noninfluential_param_of_wtd):
-            print(f'ab{i+1}', f'non:{len(param)},influential:{23 - len(param)}', param)
-
+        #                 ab_trend.append({fa.problem['names'][j]: (i['S1'][j], (i['ST'][j] - i['S1'][j])})
+        #         noninfluential_param_of_wtd.append(ab_trend)
+        # for i, param in enumerate(noninfluential_param_of_wtd):
+        #     print(f'ab{i+1}', f'non:{len(param)},influential:{23 - len(param)}', param)
         print()
+
+        # sensitivity_of_ab = fa.load_sensitivity_data(
+        #     os.path.join(fa.root_path, f'trend_SA\\ab\\Fast_sensitivity_{fa.name}_{j}.out'))
+        #
+        # # noninfluential_param_of_wtd = [
+        # #     [{fa.problem['names'][i]: st for i, st in enumerate(season[0]['ST']) if st < 0.1} for
+        # #     season in sensitivity_of_ab[0]]
+        #
+        # # noninfluential_param_of_wtd = [ [ {fa.problem['names']:(i['S1'][para], i['ST'][para]) for para in range(fa.n_paras)
+        # #                                    if i['S1'][para] < 0.01 and i['ST'][para] < 0.1} for i in season]
+        # #                                 for season in sensitivity_of_ab[0]]
+        #
+        # noninfluential_param_of_wtd = []
+        # for ab in sensitivity_of_ab[0]:
+        #     for i in ab: #i = 2 dict for a/b= 2(s1/st) * 23, i = a or b
+        #         ab_trend = []
+        #         for j in range(fa.n_paras): #j = 23
+        #             if i['S1'][j] < 0.01 and (i['ST'][j] - i['S1'][j])< 0.1:
+        #                 #print(fa.problem['names'][j], (i['S1'][j], i['ST'][j] ))
+        #                 ab_trend.append({fa.problem['names'][j]: (i['S1'][j], (i['ST'][j] - i['S1'][j])})
+        #         noninfluential_param_of_wtd.append(ab_trend)
+        # for i, param in enumerate(noninfluential_param_of_wtd):
+        #     print(f'ab{i+1}', f'non:{len(param)},influential:{23 - len(param)}', param)
+        #
+        # print()
 
 
 def  plot_residual(config, name, filename):
@@ -594,7 +618,7 @@ def  plot_residual(config, name, filename):
             # res_s = fa.plot_residuals(poly_eval_s)
             res_w = fa.plot_residuals(poly_eval_w)
             # res['poly_id'] = poly
-            all_residual s.append(res)
+            # all_residuals.append(res)
             # res_s['poly_id'] = poly
             # res_w['poly_id'] = poly
             # all_residuals_s.append(res_s)

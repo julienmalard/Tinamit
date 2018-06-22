@@ -281,25 +281,26 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         flujos = símismo.flujos
 
         # Primero, verificamos el tamañano de memoria necesario para guardar una lista de los nombres de los variables.
+        variables = []
+        for t in [1, 2, 4, 5, 12]:
+            mem = ctypes.create_string_buffer(0)  # Crear una memoria intermedia
 
-        mem = ctypes.create_string_buffer(0)  # Crear una memoria intermedia
+            # Verificar el tamaño necesario
+            tamaño_nec = cmd_vensim(func=símismo.dll.vensim_get_varnames,
+                                    args=['*', t, mem, 0],
+                                    mensaje_error=_('Error obteniendo eñ tamaño de los variables VENSIM.'),
+                                    val_error=-1, devolver=True
+                                    )
 
-        # Verificar el tamaño necesario
-        tamaño_nec = cmd_vensim(func=símismo.dll.vensim_get_varnames,
-                                args=['*', 0, mem, 0],
-                                mensaje_error=_('Error obteniendo eñ tamaño de los variables VENSIM.'),
-                                val_error=-1, devolver=True
-                                )
+            mem = ctypes.create_string_buffer(tamaño_nec)  # Una memoria intermedia con el tamaño apropiado
 
-        mem = ctypes.create_string_buffer(tamaño_nec)  # Una memoria intermedia con el tamaño apropiado
-
-        # Guardar y decodar los nombres de los variables.
-        cmd_vensim(func=símismo.dll.vensim_get_varnames,
-                   args=['*', 0, mem, tamaño_nec],
-                   mensaje_error=_('Error obteniendo los nombres de los variables de VENSIM.'),
-                   val_error=-1
-                   )
-        variables = [x for x in mem.raw.decode().split('\x00') if x]
+            # Guardar y decodar los nombres de los variables.
+            cmd_vensim(func=símismo.dll.vensim_get_varnames,
+                       args=['*', t, mem, tamaño_nec],
+                       mensaje_error=_('Error obteniendo los nombres de los variables de VENSIM.'),
+                       val_error=-1
+                       )
+            variables += [x for x in mem.raw.decode().split('\x00') if x]
 
         # Quitar los nombres de variables VENSIM genéricos de la lista.
         for i in ['FINAL TIME', 'TIME STEP', 'INITIAL TIME', 'SAVEPER', 'Time']:
