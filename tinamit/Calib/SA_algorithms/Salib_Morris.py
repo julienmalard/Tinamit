@@ -18,7 +18,7 @@ import operator
 
 
 class MorrisSA(SA):
-    root_path = 'D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\Morris'
+    root_path = 'D:\\Thesis\\pythonProject\\local use\\Morris'
     #root_path = 'D:\\Gaby\\Tinamit\\tinamit\\Calib\\SA_algorithms\\Morris'
 
     # 0. Site geography
@@ -591,6 +591,7 @@ if __name__ == '__main__':
         [215, 23, 50, 16, 20],#24*25*20=12,000(6000)
         [215, 24, 50, 16, 20] #dummy
     ]
+
     #conduct_SA_dummy_from_configs(config, 4)
     #conduct_analysis_from_files(config[4], 4, 'Morris_Sampling_4.out', 50, is_dummy=True)
     # compute_r2_analysis(config[3], 0, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0),
@@ -600,9 +601,15 @@ if __name__ == '__main__':
 
     # compute_last_n_ave_simulation(config[3], 3, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0),
     #                               n_similuated_result=48)
-    # mor = MorrisSA(config[3], name=3)
+
+
     # evals = mor.load_data_from_file(mor, 'Morris_trend_3.out')
-    # problem = mor.problems_setup2()
+    mor = MorrisSA(config[3], name=3)
+    problem = mor.problems_setup2()
+    sampling_set = mor.sampling2(problem)
+    lol = mor.simulation2(parameters_set=sampling_set)
+
+
     # # os.path.join(mor.root_path, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0))
     # parameters_set = np.asarray(mor.load_parameters_sampling(os.path.join(mor.root_path, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0))))
     # mor.analyze2(evals, parameters_set, problem)
@@ -620,12 +627,12 @@ if __name__ == '__main__':
     #     print(f'trend_b_poly_id:{i + 1}', f'influential:{len(param)}, non:{23 - len(param)}', '\n', param)
 
     #Dummy variable
-    mor = MorrisSA(config[4], name=4)
-    sensitivity_of_dummy = mor.load_sensitivity_data(os.path.join(mor.root_path, 'morris_sensitivity_4.out'))[0]
-    influential_param_of_wtd = [[{'Dummy parameter': poly['mu_star'][23]} for poly in season] for season in sensitivity_of_dummy]
-    #influential_param_of_wtd = [{poly['names']['Dummy parameter']: mu_star for poly['mu_star'][23] in sensitivity_of_dummy[0][0]] #[0][0] for a; [0][1] for b
-    for i, param in enumerate(influential_param_of_wtd):
-        print(f"dummy SI:{param}")
+    # mor = MorrisSA(config[4], name=4)
+    # sensitivity_of_dummy = mor.load_sensitivity_data(os.path.join(mor.root_path, 'morris_sensitivity_4.out'))[0]
+    # influential_param_of_wtd = [[{'Dummy parameter': poly['mu_star'][23]} for poly in season] for season in sensitivity_of_dummy]
+    # #influential_param_of_wtd = [{poly['names']['Dummy parameter']: mu_star for poly['mu_star'][23] in sensitivity_of_dummy[0][0]] #[0][0] for a; [0][1] for b
+    # for i, param in enumerate(influential_param_of_wtd):
+    #     print(f"dummy SI:{param}")
     # print()
 
 
@@ -661,8 +668,8 @@ if __name__ == '__main__':
 
 
     #print(influential_param_of_wtd)
-     # Soil Sanility Simulation/SA
-    # conduct_SA_from_sampling_files(config[3], 3, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0))
+
+    # conduct_SA_from_sampling_files(config[3], 3, 'Morris_Sampling_{}.out'.format(0))
     # mor = MorrisSA(config[3], 3)
     # sensitivity_data = mor.load_sensitivity_data(mor.root_path +
     #     '\\morris_sensitivity_3.out')
