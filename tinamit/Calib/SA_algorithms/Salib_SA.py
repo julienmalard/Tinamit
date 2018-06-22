@@ -4,6 +4,7 @@ from SALib.analyze import morris
 from SALib.sample.morris import sample
 from tinamit.Calib.SA_algorithms import soil_class as SC
 from tinamit.Calib import gaby_simulation as GS
+# from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD import "Coupling script2" as cs2
 from tinamit.Calib.SA_algorithms import parameters_sa as P
 import time
 import numpy as np
@@ -27,19 +28,20 @@ class SA(object):
     # 0. Site geography
     def __init__(self, sa_name=None):
         self.sa_name = sa_name
-        Rechna_Doab = Geografía(nombre='Rechna Doab')
+        # Rechna_Doab = Geografía(nombre='Rechna Doab')
+        #
+        # base_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Shape_files')
+        # Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir, 'Internal_Polygon.shp'), col_id="Polygon_ID")
+        #
+        # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'External_Polygon.shp'), color='#edf4da')
+        # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'RIVR.shp'), tipo='agua')
+        # # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'Forst_polygon.shp'), tipo='bosque')
+        # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'CNL_Arc.shp'), tipo='agua', color='#1ba4c6', llenar=False)
+        # # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'buildup_Polygon.shp'), tipo='ciudad')
+        # # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'road.shp'), tipo='calle')
+        #
+        # self.Rechna_Doab = Rechna_Doab
 
-        base_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Shape_files')
-        Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir, 'Internal_Polygon.shp'), col_orden='Polygon_ID')
-
-        Rechna_Doab.agregar_forma(os.path.join(base_dir, 'External_Polygon.shp'), color='#edf4da')
-        Rechna_Doab.agregar_forma(os.path.join(base_dir, 'RIVR.shp'), tipo='agua')
-        # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'Forst_polygon.shp'), tipo='bosque')
-        Rechna_Doab.agregar_forma(os.path.join(base_dir, 'CNL_Arc.shp'), tipo='agua', color='#1ba4c6', llenar=False)
-        # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'buildup_Polygon.shp'), tipo='ciudad')
-        # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'road.shp'), tipo='calle')
-
-        self.Rechna_Doab = Rechna_Doab
 
     def problems_setup2(self):
         '''
@@ -186,23 +188,34 @@ class SA(object):
 
                     if name.startswith('Kaq'):
                         if name.endswith('1'):
-                            sampling[name] = [sam[(SC.get_soil_type(j, 0) - 1) * 5 + P.parametersNew.index(
-                                'Kaq - Horizontal hydraulic conductivity')] for j in
+                            sampling[name] = [(sam[(SC.get_soil_type(j, 0) - 1) * 5 + P.parametersNew.index(
+                                'Kaq - Horizontal hydraulic conductivity')] +
+                                               sam[(SC.get_soil_type(j) - 1) * 5 + P.parametersNew.index(
+                                        'Kaq - Horizontal hydraulic conductivity')] / 2) for j in
                                               range(self.n_poly)]
+
                         if name.endswith('2'):
                             sampling[name] = [
-                                sam[(SC.get_soil_type(j, 1) - 1) * 5 + P.parametersNew.index(
-                                    'Kaq - Horizontal hydraulic conductivity')] for j in
+                                (sam[(SC.get_soil_type(j, 1) - 1) * 5 + P.parametersNew.index(
+                                    'Kaq - Horizontal hydraulic conductivity')] +
+                                sam[(SC.get_soil_type(j) - 1) * 5 + P.parametersNew.index(
+                                    'Kaq - Horizontal hydraulic conductivity')] /2) for j in
                                 range(self.n_poly)]
+
                         if name.endswith('3'):
                             sampling[name] = [
-                                sam[(SC.get_soil_type(j, 2) - 1) * 5 + P.parametersNew.index(
-                                    'Kaq - Horizontal hydraulic conductivity')] for j in
+                                (sam[(SC.get_soil_type(j, 2) - 1) * 5 + P.parametersNew.index(
+                                    'Kaq - Horizontal hydraulic conductivity')] +
+                                    sam[(SC.get_soil_type(j) - 1) * 5 + P.parametersNew.index(
+                                    'Kaq - Horizontal hydraulic conductivity')] /2) for j in
                                 range(self.n_poly)]
+
                         if name.endswith('4'):
                             sampling[name] = [
-                                sam[(SC.get_soil_type(j, 3) - 1) * 5 + P.parametersNew.index(
-                                    'Kaq - Horizontal hydraulic conductivity')] for j in
+                                (sam[(SC.get_soil_type(j, 3) - 1) * 5 + P.parametersNew.index(
+                                    'Kaq - Horizontal hydraulic conductivity')] +
+                                    sam[(SC.get_soil_type(j) - 1) * 5 + P.parametersNew.index(
+                                    'Kaq - Horizontal hydraulic conductivity')] /2) for j in
                                 range(self.n_poly)]
                     else:
                         if P.parametersNew.index(name) <= 4: #4 means the first 5 BF params
@@ -270,7 +283,9 @@ class SA(object):
 
             try:
                 list_result = GS.simulation(list, self.n_season, nombre=self.sa_name)
-            except:
+                # list_result =
+            except Exception as inst:
+                print(inst)
                 print('this is {} run'.format(i), list)
                 #return
 

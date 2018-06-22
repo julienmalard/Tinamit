@@ -1,4 +1,3 @@
-from tinamit.EnvolturaBF.en.SAHYSMOD import sahysmodIO as IO
 import json
 import numpy as np
 from xlrd import open_workbook
