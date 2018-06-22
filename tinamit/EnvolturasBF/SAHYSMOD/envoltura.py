@@ -80,7 +80,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
                 'ingreso': dic['ingr'],
                 'egreso': dic['egr'],
                 'dims': (1,),  # Se cambiará después para variables espaciales
-                'líms': None,
+                'líms': dic['líms'] if 'líms' in dic else (None, None),
                 'info': ''
             }
 
