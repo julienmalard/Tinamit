@@ -15,6 +15,9 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
+# from tinamit.Análisis.Sens.anlzr import alzr_sens
+from tinamit.Análisis.Sens.corridas import simul_sens
+from tinamit.Análisis.Sens.muestr import muestrear_paráms, guardar_mstr_paráms
 from tinamit.Análisis.Valids import validar_resultados
 from tinamit import _, valid_nombre_arch, detectar_codif
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
@@ -1457,6 +1460,18 @@ class Modelo(object):
             paráms=paráms, método=método, líms_paráms=líms_paráms, n_iter=n_iter, l_vars=l_vars
         )
         símismo.calibs.update(d_calibs)
+
+    # def analizar_sens(símismo, tiempo_final, líms_paráms, var_egr, mapa_paráms=None, método='morris'):
+    #     mstr_paráms = muestrear_paráms(líms_paráms=líms_paráms, mapa_paráms=mapa_paráms, método=método)
+    #     egr_simuls = simul_sens(mod=símismo, mstr_paráms=mstr_paráms, mapa_paráms=mapa_paráms, var_egr=var_egr)
+    #     sens = anlzr_sens(líms_paráms=líms_paráms, mstr_paráms=mstr_paráms, var_egr=var_egr, método=método)
+    #     return sens
+
+    def analizar_sens(símismo, config, tiempo_final=None, var_egr=None, mapa_paráms=None, método='Morris'):
+        mstr_paráms = muestrear_paráms(config, método)
+
+        print(mstr_paráms)
+        return mstr_paráms
 
     def validar(símismo, var=None, t_final=None):
 

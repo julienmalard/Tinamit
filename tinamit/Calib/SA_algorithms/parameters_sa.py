@@ -34,6 +34,24 @@ parametersNew = [
     # 'Lc - Canal percolation'
     'POH Kharif Tinamit',
     'POH rabi Tinamit',
+    'Capacity per tubewell'
+]
+
+parametersNew_dummy = [
+    'Ptq - Aquifer total pore space',  # the most important for the water table depth (saturated zone)
+    'Ptr - Root zone total pore space',  # unsaturated zone, important for the sanility
+    # 'Ptx - Transition zone total pore space', #unsaturated zone
+    'Kaq - Horizontal hydraulic conductivity',
+    # 'FsA - Water storage efficiency crop A', '#gaming variable''
+    # 'FsB - Water storage efficiency crop B','#gaming variable''
+    # 'FsU - Water storage efficiency non-irrigated', '#gaming variable''
+    'Peq - Aquifer effective porosity',
+    # # 'Per - Root zone effective porosity',
+    'Pex - Transition zone effective porosity',
+    # 'Gw - Groundwater extraction',
+    # 'Lc - Canal percolation'
+    'POH Kharif Tinamit',
+    'POH rabi Tinamit',
     'Capacity per tubewell',
     # if don't need , please comment it
     'Dummy parameter'
