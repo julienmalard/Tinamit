@@ -21,7 +21,7 @@ from math import exp, expm1
 
 
 class SA(object):
-    #root_path = 'D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\Morris'
+    # root_path = 'D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\Morris'
     # root_path = 'D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\Fast'
     root_path = ''
 
@@ -41,7 +41,6 @@ class SA(object):
         # # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'road.shp'), tipo='calle')
         #
         # self.Rechna_Doab = Rechna_Doab
-
 
     def problems_setup2(self):
         '''
@@ -76,22 +75,22 @@ class SA(object):
                 'Capacity per tubewell'],
             'bounds': [[0.45, 0.55],
                        [0.45, 0.47],
-                       [26, 103], #Kaq_s1
+                       [26, 103],  # Kaq_s1
                        [0.054, 0.302],
                        [0.065, 0.39],
                        [0.44, 0.50],
                        [0.44, 0.46],
-                       [26, 120], #Kaq_s2
+                       [26, 120],  # Kaq_s2
                        [0.054, 0.302],
                        [0.065, 0.39],
                        [0.45, 0.53],
                        [0.45, 0.53],
-                       [26, 158], #Kaq_s3
+                       [26, 158],  # Kaq_s3
                        [0.054, 0.302],
                        [0.065, 0.39],
                        [0.43, 0.55],
                        [0.42, 0.52],
-                       [26, 52], #Kaq_s4
+                       [26, 52],  # Kaq_s4
                        [0.054, 0.302],
                        [0.065, 0.39],
                        [355, 450],
@@ -135,22 +134,22 @@ class SA(object):
                 'Dummy parameter'],
             'bounds': [[0.45, 0.55],
                        [0.45, 0.47],
-                       [26, 103], #Kaq_s1
+                       [26, 103],  # Kaq_s1
                        [0.054, 0.302],
                        [0.065, 0.39],
                        [0.44, 0.50],
                        [0.44, 0.46],
-                       [26, 120], #Kaq_s2
+                       [26, 120],  # Kaq_s2
                        [0.054, 0.302],
                        [0.065, 0.39],
                        [0.45, 0.53],
                        [0.45, 0.53],
-                       [26, 158], #Kaq_s3
+                       [26, 158],  # Kaq_s3
                        [0.054, 0.302],
                        [0.065, 0.39],
                        [0.43, 0.55],
                        [0.42, 0.52],
-                       [26, 52], #Kaq_s4
+                       [26, 52],  # Kaq_s4
                        [0.054, 0.302],
                        [0.065, 0.39],
                        [355, 450],
@@ -164,12 +163,13 @@ class SA(object):
     def sampling2(self, problem):
         return None
 
-    def simulation2(self, parameters_set=None):
+    def simulation2(self, parameters_set=None, is_dummy=False):
         '''
         Conduct Tinamit simulation
         :param parameters_set: Ns * number of parameters [e.g. Ns*23 = param_values]
         :return: sampling_parameters_set [{'var':[215],}], Ns*11*215, Tinamit Format
         '''
+
         def data_prepare(parameters_set):
             '''
             this function is to transform sampled data into format of Tinamit
@@ -180,51 +180,55 @@ class SA(object):
             if parameters_set is None:
                 parameters_set = []
             # from 23 to 11 * 215
-            sampling_parameters_set = [] # Ns*11*215 Tinamit format as Tinamit only consider Kaq1234
+            sampling_parameters_set = []  # Ns*11*215 Tinamit format as Tinamit only consider Kaq1234
+            if is_dummy:
+                parameters = P.parametersNew_dummy
+            else:
+                parameters = P.parametersNew
             # for each sample from Ns
-            for sam in parameters_set: # sam: each 23 of the Ns
-                sampling = {} # each param iterate 215 times, 11*215; eg.,{'kaq1': [215 vals]}
-                for i, name in enumerate(P.parameters): # give index to 11 param names
+            for sam in parameters_set:  # sam: each 23 of the Ns
+                sampling = {}  # each param iterate 215 times, 11*215; eg.,{'kaq1': [215 vals]}
+                for i, name in enumerate(P.parameters):  # give index to 11 param names
 
                     if name.startswith('Kaq'):
                         if name.endswith('1'):
-                            sampling[name] = [(sam[(SC.get_soil_type(j, 0) - 1) * 5 + P.parametersNew.index(
+                            sampling[name] = [(sam[(SC.get_soil_type(j, 0) - 1) * 5 + parameters.index(
                                 'Kaq - Horizontal hydraulic conductivity')] +
-                                               sam[(SC.get_soil_type(j) - 1) * 5 + P.parametersNew.index(
-                                        'Kaq - Horizontal hydraulic conductivity')] / 2) for j in
+                                               sam[(SC.get_soil_type(j) - 1) * 5 + parameters.index(
+                                                   'Kaq - Horizontal hydraulic conductivity')] / 2) for j in
                                               range(self.n_poly)]
 
                         if name.endswith('2'):
                             sampling[name] = [
-                                (sam[(SC.get_soil_type(j, 1) - 1) * 5 + P.parametersNew.index(
+                                (sam[(SC.get_soil_type(j, 1) - 1) * 5 + parameters.index(
                                     'Kaq - Horizontal hydraulic conductivity')] +
-                                sam[(SC.get_soil_type(j) - 1) * 5 + P.parametersNew.index(
-                                    'Kaq - Horizontal hydraulic conductivity')] /2) for j in
+                                 sam[(SC.get_soil_type(j) - 1) * 5 + parameters.index(
+                                     'Kaq - Horizontal hydraulic conductivity')] / 2) for j in
                                 range(self.n_poly)]
 
                         if name.endswith('3'):
                             sampling[name] = [
-                                (sam[(SC.get_soil_type(j, 2) - 1) * 5 + P.parametersNew.index(
+                                (sam[(SC.get_soil_type(j, 2) - 1) * 5 + parameters.index(
                                     'Kaq - Horizontal hydraulic conductivity')] +
-                                    sam[(SC.get_soil_type(j) - 1) * 5 + P.parametersNew.index(
-                                    'Kaq - Horizontal hydraulic conductivity')] /2) for j in
+                                 sam[(SC.get_soil_type(j) - 1) * 5 + parameters.index(
+                                     'Kaq - Horizontal hydraulic conductivity')] / 2) for j in
                                 range(self.n_poly)]
 
                         if name.endswith('4'):
                             sampling[name] = [
-                                (sam[(SC.get_soil_type(j, 3) - 1) * 5 + P.parametersNew.index(
+                                (sam[(SC.get_soil_type(j, 3) - 1) * 5 + parameters.index(
                                     'Kaq - Horizontal hydraulic conductivity')] +
-                                    sam[(SC.get_soil_type(j) - 1) * 5 + P.parametersNew.index(
-                                    'Kaq - Horizontal hydraulic conductivity')] /2) for j in
+                                 sam[(SC.get_soil_type(j) - 1) * 5 + parameters.index(
+                                     'Kaq - Horizontal hydraulic conductivity')] / 2) for j in
                                 range(self.n_poly)]
                     else:
-                        if P.parametersNew.index(name) <= 4: #4 means the first 5 BF params
+                        if parameters.index(name) <= 4:  # 4 means the first 5 BF params
                             sampling[name] = [
-                                sam[(SC.get_soil_type(j) - 1) * 5 + P.parametersNew.index(name)] for j in
+                                sam[(SC.get_soil_type(j) - 1) * 5 + parameters.index(name)] for j in
                                 range(self.n_poly)]
-                        elif P.parametersNew.index(name) <= 7 and P.parametersNew.index(name) > 4:
+                        elif parameters.index(name) <= 7 and parameters.index(name) > 4:
                             sampling[name] = [
-                                sam[15 + P.parametersNew.index(name)] for j in
+                                sam[15 + parameters.index(name)] for j in
                                 range(self.n_poly)]
                         else:
                             pass
@@ -237,22 +241,23 @@ class SA(object):
 
             # split list_dic_set into n groups according to the base sample size;
             # e.g., n=50, number of tmp_list_dict_set=48
-            tmp_list_dict_set = [] #tmp = temporary
+            tmp_list_dict_set = []  # tmp = temporary
             intercep = 25
-            n_group = int(list_dic_set.__len__()/intercep) # group the Ns into Ns/25 groups
-            last_group = list_dic_set.__len__()%intercep #取余 add the residue to the last intergal group
+            n_group = int(list_dic_set.__len__() / intercep)  # group the Ns into Ns/25 groups
+            last_group = list_dic_set.__len__() % intercep  # 取余 add the residue to the last intergal group
 
             # define the same number of simulated data and saved in group form, in case of crush
             # ith group
             for i in range(n_group):
-                tmp_list_dict_set.append(list_dic_set[i*intercep: (i*intercep + intercep)])#0-99； 100-199; 200-299 etc.
+                tmp_list_dict_set.append(
+                    list_dic_set[i * intercep: (i * intercep + intercep)])  # 0-99； 100-199; 200-299 etc.
             if last_group != 0:
                 tmp_list_dict_set.append(list_dic_set[(n_group - 1) * intercep: ((n_group - 1) * intercep +
                                                                                  last_group)])
 
             for i, data in enumerate(tmp_list_dict_set):
                 with open(os.path.join(self.root_path, '{}_temp_list_data_{}_{}.out'.format(self.sa_name,
-                    self.name, i)), 'w') as f0:
+                                                                                            self.name, i)), 'w') as f0:
                     f0.write(('{}\n').format(json.dumps(data)))
                 f0.close()
             return tmp_list_dict_set
@@ -268,17 +273,29 @@ class SA(object):
             fr.close()
             return list_dic_set
 
+        # def read_data_from_file(group_id):
+        #     list_dic_set = []
+        #     with open(os.path.join(self.root_path, '{}_temp_list_data_{}_{}.out'.format(self.sa_name,
+        #                                                                                 self.name, group_id)),
+        #               'r') as fr:
+        #         for line in fr:
+        #             list_dic_set.append(json.loads(line))
+        #     fr.close()
+        #     return list_dic_set
+        #
         start_time = time.time()  # return current time for recoding current runtime
         list_dic_set = data_prepare(parameters_set)
+        print('Start to preparing data for simulation')
         print(len(list_dic_set))
+
         # for i, set in enumerate(list_dic_set):
         #     print('{} iterations'.format(i))
         #     for p, v in set['bf'].items():
         #         print(p, v)
-        #list_dic_set = [{'bf': {x: s[j] for j, x in enumerate(P.parameters)}} for s in sampling_parameters_set]
+        # list_dic_set = [{'bf': {x: s[j] for j, x in enumerate(P.parameters)}} for s in sampling_parameters_set]
 
-        result = {'Watertable depth Tinamit': []} # {'WTD': [215[20 seaons]]}
-        for i, list in enumerate(list_dic_set): # intercept*11*215, list = each 11*215
+        result = {'Watertable depth Tinamit': []}  # {'WTD': [215[20 seaons]]}
+        for i, list in enumerate(list_dic_set):  # intercept*11*215, list = each 11*215
             print("This is group {} of total {}".format(i, list_dic_set.__len__()))
 
             try:
@@ -287,9 +304,9 @@ class SA(object):
             except Exception as inst:
                 print(inst)
                 print('this is {} run'.format(i), list)
-                #return
+                # return
 
-            #result['Watertable depth Tinamit'] += list_result['Watertable depth Tinamit']
+            # result['Watertable depth Tinamit'] += list_result['Watertable depth Tinamit']
             result['Watertable depth Tinamit'] += list_result
 
             print("--- %s seconds ---" % (time.time() - start_time))
@@ -298,7 +315,8 @@ class SA(object):
             # results_json = {ll: [].append(p.tolist()) for ll, v in result.items() for p in v}
             results_json = {ll: [p.tolist() for p in v] for ll, v in list_result.items()}
             print(results_json)
-            with open(os.path.join(self.root_path, '{}_simulation_{}_{}.out'.format(self.sa_name, self.name, i)), 'w') as f:
+            with open(os.path.join(self.root_path, '{}_simulation_{}_{}.out'.format(self.sa_name, self.name, i)),
+                      'w') as f:
                 # print(len()) # len() would be the first layer of the component
                 f.write(json.dumps(results_json) + '\n')
 
@@ -323,11 +341,11 @@ class SA(object):
                     if i == 0:
                         continue
                 sum += season
-            tmp_sum += sum/(len(evals[poly]) if skip_firt_season else len(evals[poly]) - 1)
+            tmp_sum += sum / (len(evals[poly]) if skip_firt_season else len(evals[poly]) - 1)
             tmp_last += evals[poly][-1]
 
-        last_and_ave.append(tmp_sum/len(polys))
-        last_and_ave.append(tmp_last/len(polys))
+        last_and_ave.append(tmp_sum / len(polys))
+        last_and_ave.append(tmp_last / len(polys))
         return last_and_ave
 
     def compute_average_simuluation_value_4_polys(self, polys, evals):
@@ -346,7 +364,7 @@ class SA(object):
         average = 0
         for poly in polys:
             average += evals[poly]
-        return (average/(len(polys))).tolist()
+        return (average / (len(polys))).tolist()
 
     @staticmethod
     def load_data_from_file(SA, filename):
@@ -387,7 +405,7 @@ class SA(object):
                 sensitivity_data.append(json.loads(line))
                 # print(json.loads(line))
                 # dict_str = ast.literal_eval(line)
-        #print(len(sensitivity_data))  # 11 (optimize it later>>>>>> Should be 10 --> use updated codes
+        # print(len(sensitivity_data))  # 11 (optimize it later>>>>>> Should be 10 --> use updated codes
         return sensitivity_data
 
     def load_parameters_sampling(self, filename):
@@ -437,55 +455,55 @@ class SA(object):
     def plot_map(self, duration, config, season, name='Morris'):
         if not isinstance(config, int) or not isinstance(season, int):
             return 'parameter type error!'
-        #categs = self.problem['names']
+        # categs = self.problem['names']
         categs = [
-                'Ptq - s1',  # the most important for the water table depth (saturated zone)
-                'Ptr - s1',  # unsaturated zone, important for the sanility
-                'Kaq - s1',
-                'Peq - s1',
-                'Pex - s1',
-                'Ptq - s2',  # the most important for the water table depth (saturated zone)
-                'Ptr - s2',  # unsaturated zone, important for the sanility
-                'Kaq - s2',
-                'Peq - s2',
-                'Pex - s2',
-                'Ptq - s3',  # the most important for the water table depth (saturated zone)
-                'Ptr - s3',  # unsaturated zone, important for the sanility
-                'Kaq - s3',
-                'Peq - s3',
-                'Pex - s3',
-                'Ptq - s4',  # the most important for the water table depth (saturated zone)
-                'Ptr - s4',  # unsaturated zone, important for the sanility
-                'Kaq - s4',
-                'Peq - s4',
-                'Pex - s4',
-                'POH Kharif',
-                'POH rabi',
-                'Capacity per tubewell']
+            'Ptq - s1',  # the most important for the water table depth (saturated zone)
+            'Ptr - s1',  # unsaturated zone, important for the sanility
+            'Kaq - s1',
+            'Peq - s1',
+            'Pex - s1',
+            'Ptq - s2',  # the most important for the water table depth (saturated zone)
+            'Ptr - s2',  # unsaturated zone, important for the sanility
+            'Kaq - s2',
+            'Peq - s2',
+            'Pex - s2',
+            'Ptq - s3',  # the most important for the water table depth (saturated zone)
+            'Ptr - s3',  # unsaturated zone, important for the sanility
+            'Kaq - s3',
+            'Peq - s3',
+            'Pex - s3',
+            'Ptq - s4',  # the most important for the water table depth (saturated zone)
+            'Ptr - s4',  # unsaturated zone, important for the sanility
+            'Kaq - s4',
+            'Peq - s4',
+            'Pex - s4',
+            'POH Kharif',
+            'POH rabi',
+            'Capacity per tubewell']
 
-        parameter_mapping = {'Ptq - s1':'Ptq',  # the most important for the water table depth (saturated zone)
-                'Ptr - s1':'Ptr',  # unsaturated zone, important for the sanility
-                'Kaq - s1':'Kaq',
-                'Peq - s1':'Peq',
-                'Pex - s1':'Pex',
-                'Ptq - s2':'Ptq',  # the most important for the water table depth (saturated zone)
-                'Ptr - s2':'Ptr',  # unsaturated zone, important for the sanility
-                'Kaq - s2':'Kaq',
-                'Peq - s2':'Peq',
-                'Pex - s2':'Pex',
-                'Ptq - s3':'Ptq',  # the most important for the water table depth (saturated zone)
-                'Ptr - s3':'Ptr',  # unsaturated zone, important for the sanility
-                'Kaq - s3':'Kaq',
-                'Peq - s3':'Peq',
-                'Pex - s3':'Pex',
-                'Ptq - s4':'Ptq',  # the most important for the water table depth (saturated zone)
-                'Ptr - s4':'Ptr',  # unsaturated zone, important for the sanility
-                'Kaq - s4':'Kaq',
-                'Peq - s4':'Peq',
-                'Pex - s4':'Pex',
-                'POH Kharif':'POH Kharif',
-                'POH rabi':'POH rabi',
-                'Capacity per tubewell':'Capacity per \ntubewell'}
+        parameter_mapping = {'Ptq - s1': 'Ptq',  # the most important for the water table depth (saturated zone)
+                             'Ptr - s1': 'Ptr',  # unsaturated zone, important for the sanility
+                             'Kaq - s1': 'Kaq',
+                             'Peq - s1': 'Peq',
+                             'Pex - s1': 'Pex',
+                             'Ptq - s2': 'Ptq',  # the most important for the water table depth (saturated zone)
+                             'Ptr - s2': 'Ptr',  # unsaturated zone, important for the sanility
+                             'Kaq - s2': 'Kaq',
+                             'Peq - s2': 'Peq',
+                             'Pex - s2': 'Pex',
+                             'Ptq - s3': 'Ptq',  # the most important for the water table depth (saturated zone)
+                             'Ptr - s3': 'Ptr',  # unsaturated zone, important for the sanility
+                             'Kaq - s3': 'Kaq',
+                             'Peq - s3': 'Peq',
+                             'Pex - s3': 'Pex',
+                             'Ptq - s4': 'Ptq',  # the most important for the water table depth (saturated zone)
+                             'Ptr - s4': 'Ptr',  # unsaturated zone, important for the sanility
+                             'Kaq - s4': 'Kaq',
+                             'Peq - s4': 'Peq',
+                             'Pex - s4': 'Pex',
+                             'POH Kharif': 'POH Kharif',
+                             'POH rabi': 'POH rabi',
+                             'Capacity per tubewell': 'Capacity per \ntubewell'}
 
         values = []  # contain 215 values, each value represents the paramater index of the biggest mu_star
         # parameters_2_value_dict = [
@@ -493,8 +511,9 @@ class SA(object):
         # ]
         for poly in duration:
             # the index of list is set as the index of parameters
-            parameter_index = P.parametersName4Plot.index(parameter_mapping[categs[poly['mu_star'].index(max(poly['mu_star']))]])
-            #parameter_index = poly['mu_star'].index(max(poly['mu_star']))
+            parameter_index = P.parametersName4Plot.index(
+                parameter_mapping[categs[poly['mu_star'].index(max(poly['mu_star']))]])
+            # parameter_index = poly['mu_star'].index(max(poly['mu_star']))
             # print(parameter_index)
             # print('len', len(poly['mu_star']))
 
@@ -505,7 +524,8 @@ class SA(object):
         nombre_archivo = os.path.join(self.root_path,
                                       'Plot_Map\\{}-season-{}-config-{}'.format(name, season + 1, config + 1))
         parameter_name = ['Slope measure', 'Intercept measure']
-        var = '{} \nMost sensitive parameter to watertable depth behavior pattern \n({})'.format(name, parameter_name[season])
+        var = '{} \nMost sensitive parameter to watertable depth behavior pattern \n({})'.format(name,
+                                                                                                 parameter_name[season])
         unid = 'Parameter'
         # this is to calculate the range for the array--values==
         # escala = np.min(values), np.max(values) (0 - 7 are the index for the 8 parameters)
@@ -531,7 +551,7 @@ class SA(object):
             t_sample = []
 
             if poly_id is not None:
-                n_poly = 1 # for FAST
+                n_poly = 1  # for FAST
             else:
                 n_poly = SA.n_poly
             for poly_id in range(n_poly):
@@ -568,8 +588,8 @@ class SA(object):
         # x_data = np.linspace(-5, 5, num=50)
         # y_data = 2.9 * np.sin(1.5 * x_data) + np.random.normal(size=50)
         params, params_covariance = optimize.curve_fit(function, x_data, y_data, p0=[2.0, 2.0])
-        #print(params)
-        #SA.plot_trend(x_data, y_data, params, os.path.join(SA.root_path, 'plot_trend/selected poly/poly_{}_in_sample_{}.png'.format(ploy_id, sample_id)))
+        # print(params)
+        # SA.plot_trend(x_data, y_data, params, os.path.join(SA.root_path, 'plot_trend/selected poly/poly_{}_in_sample_{}.png'.format(ploy_id, sample_id)))
         return params
 
     @staticmethod
@@ -578,8 +598,10 @@ class SA(object):
         plt.scatter(x_data, y_data)
         plt.ylabel("Water Table Depth, m")
         plt.xlabel("Simulated Period")
-        labels = ['1991 summer', '1992 winter',	'1992 summer', '1993 winter', '1993 summer', '1994 winter', '1994 summer',
-                  '1995 winter', '1995 summer',	'1996 winter', '1996 summer', '1997 winter', '1997 summer', '1998 winter',
+        labels = ['1991 summer', '1992 winter', '1992 summer', '1993 winter', '1993 summer', '1994 winter',
+                  '1994 summer',
+                  '1995 winter', '1995 summer', '1996 winter', '1996 summer', '1997 winter', '1997 summer',
+                  '1998 winter',
                   '1998 summer', '1999 winter', '1999 summer']
 
         plt.plot(x_data, [(params[0] * i + params[1]) for i in x_data], label='Fitted Regression Line')
@@ -613,12 +635,13 @@ class SA(object):
         for i in range(n_top_p):
             tmp_i = []
             for j in range(len(p_overlap)):
-                t_i = sorted(range(len(p_sensitivity[p_overlap[j]]['mu_star'])), key=lambda i: p_sensitivity[p_overlap[j]]['mu_star'][i], reverse=True)[i]
-                #ordered_list = sorted(p_sensitivity[p_overlap[j]]['mu_star'], reverse=True)
-                #print(t_i)
-                #tmp_i.append(P.parameter_mapping[p_sensitivity[p_overlap[j]]['names'][t_i]])
+                t_i = sorted(range(len(p_sensitivity[p_overlap[j]]['mu_star'])),
+                             key=lambda i: p_sensitivity[p_overlap[j]]['mu_star'][i], reverse=True)[i]
+                # ordered_list = sorted(p_sensitivity[p_overlap[j]]['mu_star'], reverse=True)
+                # print(t_i)
+                # tmp_i.append(P.parameter_mapping[p_sensitivity[p_overlap[j]]['names'][t_i]])
                 tmp_i.append(p_sensitivity[p_overlap[j]]['names'][t_i])
-            #print(tmp_i)
+            # print(tmp_i)
             top_parameters.append(SA.find_frequent_string(tmp_i))
         print(top_parameters)
 
@@ -672,6 +695,6 @@ class SA(object):
         good_r2 = []
         for i in range(215):
             count = len([v for v in result[0][i]['R2'] if v > 0.6])  # all season is 'r2'
-            print(f'count{i}: ', round(count / 115000, 2)) # / 1200 in Morris
+            print(f'count{i}: ', round(count / 115000, 2))  # / 1200 in Morris
             good_r2.append({'goodr2': count})
         print(good_r2)

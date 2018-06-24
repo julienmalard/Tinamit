@@ -524,18 +524,18 @@ def noninfluential_param_of_wtd(fa, sensitivity_output):
         #                                    if i['S1'][para] < 0.01 and i['ST'][para] < 0.1} for i in season]
         #                                 for season in sensitivity_of_ab[0]]
 
-        noninfluential_param_of_wtd = []
-        for ab in sensitivity_output[0]:
-            for i in ab: #i = 2 dict for a/b= 2(s1/st) * 23, i = a or b
-                ab_trend = []
-                for j in range(fa.n_paras): #j = 23
-                    if i['S1'][j] < 0.01 and (i['ST'][j] - i['S1'][j])< 0.1:
-                        #print(fa.problem['names'][j], (i['S1'][j], i['ST'][j] ))
+        # noninfluential_param_of_wtd = []
+        # for ab in sensitivity_output[0]:
+        #     for i in ab: #i = 2 dict for a/b= 2(s1/st) * 23, i = a or b
+        #         ab_trend = []
+        #         for j in range(fa.n_paras): #j = 23
+        #             if i['S1'][j] < 0.01 and (i['ST'][j] - i['S1'][j])< 0.1:
+        #                 print(fa.problem['names'][j], (i['S1'][j], i['ST'][j] ))
         #                 ab_trend.append({fa.problem['names'][j]: (i['S1'][j], (i['ST'][j] - i['S1'][j])})
         #         noninfluential_param_of_wtd.append(ab_trend)
         # for i, param in enumerate(noninfluential_param_of_wtd):
         #     print(f'ab{i+1}', f'non:{len(param)},influential:{23 - len(param)}', param)
-        print()
+        # print()
 
         # sensitivity_of_ab = fa.load_sensitivity_data(
         #     os.path.join(fa.root_path, f'trend_SA\\ab\\Fast_sensitivity_{fa.name}_{j}.out'))
@@ -636,6 +636,7 @@ def  plot_residual(config, name, filename):
 if __name__ == '__main__':
     # n_poly, Ns(sampling size for each parameter), n_para, timestepss 24753
     config = [215, 5000, 23, 20]
+    # config = [215, 5000, 24, 20] #with dummy
     # convergence can be reached when the no. of evaluation is 10^5 in total for 20 param (10^5/24) = 4000
     #combine_trend_ab_data_into_file(*SC.H1)
     # combine_last_n_ave_data(*SC.H1)

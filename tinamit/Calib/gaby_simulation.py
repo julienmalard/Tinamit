@@ -80,8 +80,10 @@ def get_result():
 '''
 
 def simulation(sampling_parameters, tiempo_final, nombre):
-    run = {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,
-                            'Policy RH': 0, 'Policy Irrigation improvement': 0}
+    run = {'CWU': {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,
+                       'Policy RH': 0, 'Policy Irrigation improvement': 0}
+           }
+
     #'Fw': 0.5
 
     # 3. Now create the model
@@ -90,22 +92,11 @@ def simulation(sampling_parameters, tiempo_final, nombre):
 
     # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
     modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Rechna Doab.vpm'))
-    modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'SAHYSMOD.py'))
+    modelo.estab_bf(ModeloSAHYSMOD)
+    # modelo.estab_bf(os.path.join(os.path.split(__file__)[0], 'SAHYSMOD.py'))
     modelo.estab_conv_tiempo(mod_base='mds', conv=6)
 
     # Couple models(Change variable names as needed)
-    '''modelo.conectar(var_mds='Soil salinity Tinamit CropA', mds_fuente=False, var_bf="CrA - Root zone salinity crop A")
-    modelo.conectar(var_mds='Soil salinity Tinamit CropB', mds_fuente=False, var_bf="CrB - Root zone salinity crop B")
-    modelo.conectar(var_mds='Watertable depth Tinamit', mds_fuente=False, var_bf="Dw - Groundwater depth")
-    modelo.conectar(var_mds='ECdw Tinamit', mds_fuente=False, var_bf='Cqf - Aquifer salinity')
-    modelo.conectar(var_mds='Lc', mds_fuente=True, var_bf='Lc - Canal percolation')
-    modelo.conectar(var_mds='Ia CropA', mds_fuente=True, var_bf='IaA - Crop A field irrigation')
-    modelo.conectar(var_mds='Ia CropB', mds_fuente=True, var_bf='IaB - Crop B field irrigation')
-    modelo.conectar(var_mds='Gw', mds_fuente=True, var_bf='Gw - Groundwater extraction')
-    modelo.conectar(var_mds='Irrigation efficiency', mds_fuente=True, var_bf='FsA - Water storage efficiency crop A')
-    modelo.conectar(var_mds='Fw', mds_fuente=True, var_bf='Fw - Fraction well water to irrigation')
-    '''
-
     modelo.conectar(var_mds='Soil salinity Tinamit CropA', mds_fuente=False, var_bf="CrA - Root zone salinity crop A")
     modelo.conectar(var_mds='Soil salinity Tinamit CropB', mds_fuente=False, var_bf="CrB - Root zone salinity crop B")
     modelo.conectar(var_mds='Area fraction Tinamit CropA', mds_fuente=False,
@@ -124,44 +115,9 @@ def simulation(sampling_parameters, tiempo_final, nombre):
     modelo.conectar(var_mds='Irrigation efficiency', mds_fuente=True, var_bf='FsA - Water storage efficiency crop A')
     modelo.conectar(var_mds='Fw', mds_fuente=True, var_bf='Fw - Fraction well water to irrigation')
 
-    # Set appropriate switches for policy analysis
-    for switch, val in run.items():
-        modelo.mds.inic_val(var=switch, val=val)
-        # print(modelo.mds.variables)
 
-    return modelo.simular_paralelo(paso=1, tiempo_final=tiempo_final, nombre_corrida=nombre,
-                                   vals_inic=sampling_parameters, devolver='Watertable depth Tinamit', paralelo=True)
+    return modelo.simular_paralelo(paso=1, tiempo_final=tiempo_final,
+                                   vals_inic=sampling_parameters, vars_interés='Watertable depth Tinamit',
+                                   paralelo=True)
 #devolver='Watertable depth Tinamit'
 #print(vals_inic)
-
-'''
-print("\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>run climate >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n ")
-# Climate change runs
-location = Lugar(lat=32.178207, long=73.217391, elev=217)
-location.observar_mensuales('مشاہدہ بارش.csv', meses='مہینہ', años='سال',
-                            cols_datos={'Precipitación': 'بارش (میٹر)'})
-# icpp. 
-for rcp in [2.6, 4.5, 6.0, 8.5]:
-    print('Runing with rcp {}\n************'.format(rcp))
-
-    for name, run in runs.items():
-
-        print('\tRuning model {}.\n\t-----------------'.format(name))
-
-        nombre_corrida = '{}, {}'.format(rcp, name)
-        # Set appropriate switches for policy analysis
-        for switch, val in run.items():
-            print("switch: ", switch, "-> val: ", val)
-            modelo.mds.inic_val(var=switch, val=val)
-
-        #(step, final time, start tiime, location, ...)
-        modelo.simular(paso=1, tiempo_final=100 * 2, fecha_inic=1990, lugar=location, tcr=rcp, clima=True, recalc=False,
-                       nombre_corrida=nombre_corrida)
-
-        modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida, var='Watertable depth Tinamit',
-                       directorio='Maps')
-        modelo.dibujar(geog=Rechna_Doab, corrida=nombre_corrida, var='Soil salinity Tinamit CropA',
-                       directorio='Maps')
-'''
-
-

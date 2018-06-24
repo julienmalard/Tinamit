@@ -19,10 +19,10 @@ import operator
 
 class MorrisSA(SA):
     root_path = 'D:\\Thesis\\pythonProject\\local use\\Morris'
-    #root_path = 'D:\\Gaby\\Tinamit\\tinamit\\Calib\\SA_algorithms\\Morris'
+
+    # root_path = 'D:\\Gaby\\Tinamit\\tinamit\\Calib\\SA_algorithms\\Morris'
 
     # 0. Site geography
-
     def __init__(self, config, name):
         super().__init__('Morris')
         self.n_poly = config[0]
@@ -43,8 +43,7 @@ class MorrisSA(SA):
                               optimal_trajectories=None)
 
         with open(os.path.join(self.root_path, '{}_Sampling_{}.out'.format(self.sa_name,
-                self.name)), 'w') as f1:
-
+                                                                           self.name)), 'w') as f1:
             f1.write('{}\n'.format(json.dumps(param_values.tolist())))  # json: list --> structurazation
             f1.flush()
         # parameters_set.append(fast_sampler.sample(p_s, N)) format is 215*Ns*n_parameters (Ns = N * n_parameters)
@@ -67,8 +66,8 @@ class MorrisSA(SA):
 
         # var: 'WTD', res: 1200*215*20
         for var, res in evals.items():
-            evals_transpose = np.asarray(res).transpose() #from 1200*215*20 to 20*215*1200
-            print(evals_transpose.shape) #20*215*1200
+            evals_transpose = np.asarray(res).transpose()  # from 1200*215*20 to 20*215*1200
+            print(evals_transpose.shape)  # 20*215*1200
 
             # fw = open(os.path.join(self.root_path, 'morris_ranking_coefficiency_{}_{}.out'.format(
             #     self.name, var)), 'w' )
@@ -76,7 +75,7 @@ class MorrisSA(SA):
                 # for a, b in enumerate(list), give each of the inner layers[b] an index[a]
                 # duration : j= n_seasons, [duration 215 * 1200]; eg., j=1, duration=215*1200
 
-                #skip the first data in simulation since it is the initial data
+                # skip the first data in simulation since it is the initial data
                 if j == 0:
                     continue
 
@@ -86,24 +85,25 @@ class MorrisSA(SA):
                     # poly_data : poly_data=1200=(23+1)*50 times of simulation
                     # i = (1, 215), poly_data=1200 vals in each i; i=1, polydata=215*1200
                     print('Conduct Sensitivity analysis for polygon', i, 'in season', j)
-                    dict_Si = {} #dict_Si = {dict} {'Watertable depth Tinamit': {'names': ['Ptq - s1', 'Ptr - s1', 'Kaq - s1', 'Peq - s1', 'Pex - s1', 'Ptq - s2', 'Ptr - s2', 'Kaq - s2', 'Peq - s2', 'Pex - s2', 'Ptq - s3', 'Ptr - s3', 'Kaq - s3', 'Peq - s3', 'Pex - s3', 'Ptq - s4', 'Ptr - s4', 'Kaq - s4', … View
+                    dict_Si = {}  # dict_Si = {dict} {'Watertable depth Tinamit': {'names': ['Ptq - s1', 'Ptr - s1', 'Kaq - s1', 'Peq - s1', 'Pex - s1', 'Ptq - s2', 'Ptr - s2', 'Kaq - s2', 'Peq - s2', 'Pex - s2', 'Ptq - s3', 'Ptr - s3', 'Kaq - s3', 'Peq - s3', 'Pex - s3', 'Ptq - s4', 'Ptr - s4', 'Kaq - s4', … View
                     # parameters_set=model input=Ns*23, poly_data=model output=1200samples for each of 215s
                     Si = morris2.analyze(problem, parameters_set, poly_data, conf_level=0.95,
-                                        print_to_console=False,
-                                        num_levels=self.n_level, grid_jump=self.n_level / 2,
-                                        num_resamples=None)
+                                         print_to_console=False,
+                                         num_levels=self.n_level, grid_jump=self.n_level / 2,
+                                         num_resamples=None)
 
-                    dict_Si_var = {} #return a dict with only lists, not nparray
+                    dict_Si_var = {}  # return a dict with only lists, not nparray
                     for k, v in Si.items():
-                        if isinstance(v, np.ndarray): # if the values in Si is nparray, if it's a nparray, tolist(),if not, return itself
+                        if isinstance(v,
+                                      np.ndarray):  # if the values in Si is nparray, if it's a nparray, tolist(),if not, return itself
                             n_v = v.tolist()
-                            dict_Si_var[k] = n_v # match the list switched from the nparray to its key.
+                            dict_Si_var[k] = n_v  # match the list switched from the nparray to its key.
                         else:
                             dict_Si_var[k] = v
 
-                    duration_si.append(dict_Si_var) #put all 215 dicts to a list as an output
-                    #print('duration_si', duration_si)
-                duration_all_si.append(duration_si) #return all 20 seasons*215poly ranking SA results into a dict
+                    duration_si.append(dict_Si_var)  # put all 215 dicts to a list as an output
+                    # print('duration_si', duration_si)
+                duration_all_si.append(duration_si)  # return all 20 seasons*215poly ranking SA results into a dict
         with open(os.path.join(self.root_path, 'morris_sensitivity_{}.out'.format(
                 self.name)), 'w') as f0:
             f0.write(('{}\n').format(json.dumps(duration_all_si)))
@@ -136,9 +136,11 @@ class MorrisSA(SA):
         :param savepath: the path to save the plotting result (SA_algorithms\previous runs\morrisFigure)
         :return:
         '''
-        figname = '{}-{}={}'.format(poly_id + 1, self.n_level, self.n_sampling) # self.n_sampling = base samping (25 or 50)
+        figname = '{}-{}={}'.format(poly_id + 1, self.n_level,
+                                    self.n_sampling)  # self.n_sampling = base samping (25 or 50)
         plt.figure(figname)
-        plt.suptitle('p={}, r={}, poly_n={}'.format(self.n_level, self.n_sampling, poly_id + 1))#suptitle is the name inside each plot
+        plt.suptitle('p={}, r={}, poly_n={}'.format(self.n_level, self.n_sampling,
+                                                    poly_id + 1))  # suptitle is the name inside each plot
         name = ['Ptq',
                 'Ptr',
                 'Kaq1',
@@ -149,14 +151,14 @@ class MorrisSA(SA):
                 'Pex']
 
         for i, duration in enumerate(duration_all_si):
-            if i == len(duration_all_si) - 1: # i = (1, 20), duration = each of the 215s, before was 2 seasons
+            if i == len(duration_all_si) - 1:  # i = (1, 20), duration = each of the 215s, before was 2 seasons
                 continue
             plt.subplot('13{}'.format(i + 1))
             if i == 0:
                 plt.ylabel('Sigma')
             plt.xlabel('Mu_star')
             plt.title('season {}'.format(i + 1))
-            mu = duration[poly_id]['mu_star'] # take the mu_star value with selected poly_id
+            mu = duration[poly_id]['mu_star']  # take the mu_star value with selected poly_id
             sigma = duration[poly_id]['sigma']
             # ax = plt.gca() returns the current axes
 
@@ -182,15 +184,16 @@ class MorrisSA(SA):
                 or not isinstance(season_n, int) or not isinstance(config_n, int):
             return 'parameter type error!'
 
-        mu_star_in_polys = [] # 215 mu_star values in one season
-        for poly in duration: # duration = 215 * dict(23 dicts), poly=(1, 215)
-            mu_stars = [] # append mu_star in each poly into a list
-            for value in poly['mu_star']: # value is one mu_star value in each poly
-                mu_stars.append(value) # append one mu_star tolist
-            mu_star_in_polys.append(mu_stars) #append all 215 mu_star tolist
+        mu_star_in_polys = []  # 215 mu_star values in one season
+        for poly in duration:  # duration = 215 * dict(23 dicts), poly=(1, 215)
+            mu_stars = []  # append mu_star in each poly into a list
+            for value in poly['mu_star']:  # value is one mu_star value in each poly
+                mu_stars.append(value)  # append one mu_star tolist
+            mu_star_in_polys.append(mu_stars)  # append all 215 mu_star tolist
 
-        mu_star_in_polys = np.asarray(mu_star_in_polys).transpose() # from 215*23 to 23*215
-        values = mu_star_in_polys[parameter_n] # each of 23 params has 215 mu_star values, append thoes to the values list
+        mu_star_in_polys = np.asarray(mu_star_in_polys).transpose()  # from 215*23 to 23*215
+        values = mu_star_in_polys[
+            parameter_n]  # each of 23 params has 215 mu_star values, append thoes to the values list
         # print(values)
 
         nombre_archivo = os.path.join(self.root_path,
@@ -200,14 +203,13 @@ class MorrisSA(SA):
             name[parameter_n], season_n + 1, config_n + 1)
         unid = 'Sensitivity Index'
         # this is to calculate the range for the array--values
-        escala = np.min(values), np.max(values) #minim and maxi values of mu_star for each parameter among all polys
+        escala = np.min(values), np.max(values)  # minim and maxi values of mu_star for each parameter among all polys
         # escala = np.int32(0), np.int32(7)
 
         geog = self.Rechna_Doab
         colores = ['#f6e6bf', '#eeff66', '##FFCC66', '#00CC66', '#66ecff', '#6669ff', '#e766ff', '#6920dd']
         geog.dibujar(archivo=nombre_archivo, valores=values, título=var, unidades=unid,
                      colores=colores, escala_num=escala)
-
 
     # for BREE 509
     def get_data(self, filename, num_poly, id_sample, name):
@@ -219,7 +221,7 @@ class MorrisSA(SA):
         :param name:
         :return:
         '''
-        result = [] #{'WTD': [215[20 seaons]]}
+        result = []  # {'WTD': [215[20 seaons]]}
         with open(os.path.join(self.root_path, 'morris_simulation_{}_{}.out'.format(self.name, filename)), 'r') as fr:
             for line in fr:
                 result.append(json.loads(line))
@@ -231,6 +233,7 @@ class MorrisSA(SA):
         print(specified_poly)
         return
 
+
 def get_existing_simulated_result(morris, start_group):
     '''
     Load simulated data from existing files from group 0 to start_group
@@ -241,10 +244,11 @@ def get_existing_simulated_result(morris, start_group):
     for i in range(start_group):
         with open(os.path.join(morris.root_path, 'Morris_simulation_{}_{}.out'.format(4, i)), 'r') as f:
             for line in f:
-                print(len(json.loads(line)['Watertable depth Tinamit'])) # len=25
+                print(len(json.loads(line)['Watertable depth Tinamit']))  # len=25
                 result['Watertable depth Tinamit'] += json.loads(line)['Watertable depth Tinamit']
         print('result', i, len(result['Watertable depth Tinamit']))
     return result
+
 
 def load_unsimulated_list(morris, n_group):
     '''
@@ -259,6 +263,7 @@ def load_unsimulated_list(morris, n_group):
             for line in f:
                 list_dic_set.append(json.loads(line))
     return list_dic_set
+
 
 def restart_sa_from_file(morris, start_group, n_group):
     '''
@@ -292,12 +297,14 @@ def restart_sa_from_file(morris, start_group, n_group):
         # results_json = {ll: [].append(p.tolist()) for ll, v in result.items() for p in v}
         results_json = {ll: [p.tolist() for p in v] for ll, v in list_result.items()}
         print(results_json)
-        with open(os.path.join(morris.root_path, '{}_simulation_{}_{}.out'.format(morris.sa_name, morris.name, i)), 'w') as f:
+        with open(os.path.join(morris.root_path, '{}_simulation_{}_{}.out'.format(morris.sa_name, morris.name, i)),
+                  'w') as f:
             # print(len()) # len() would be the first layer of the component
             f.write(json.dumps(results_json) + '\n')
 
     print("--- %s total seconds ---" % (time.time() - start_time))  # will only show once at the end
     return result
+
 
 def conduct_SA_from_configs(config, specific_config=None):
     '''
@@ -317,6 +324,7 @@ def conduct_SA_from_configs(config, specific_config=None):
         parameters_set = mor.sampling2(problem)
         evals = mor.simulation2(parameters_set)
         mor.analyze2(evals, parameters_set, problem)
+
 
 def conduct_SA_dummy_from_configs(config, specific_config=None):
     '''
@@ -360,6 +368,7 @@ def conduct_SA_from_sampling_files(config, name, sampling_file_name):
     evals = mor.simulation2(parameters_set)
     mor.analyze2(evals, parameters_set, problem)
 
+
 def conduct_analysis_from_files(config, name, sampling_file_name, n_similuated_result, is_dummy=False):
     '''
     Use exiting simulated data
@@ -379,6 +388,7 @@ def conduct_analysis_from_files(config, name, sampling_file_name, n_similuated_r
     evals = get_existing_simulated_result(mor, n_similuated_result)
     mor.analyze2(evals, parameters_set, problem)
 
+
 def conduct_trend_analysis_from_files(config, name, sampling_file_name, n_similuated_result):
     '''
 
@@ -396,6 +406,7 @@ def conduct_trend_analysis_from_files(config, name, sampling_file_name, n_similu
     evals = mor.compute_linear_trend(mor, evals)
     mor.analyze2(evals, parameters_set, problem)
 
+
 def plot_trend_4_overlap(config, name, poly_list, trend_data_filename):
     '''
 
@@ -409,6 +420,7 @@ def plot_trend_4_overlap(config, name, poly_list, trend_data_filename):
     evals = mor.load_data_from_file(mor, trend_data_filename)
     mor.plot_trend_4_overlap(poly_list, evals)
 
+
 def poly_select_criteria(config, name, sensitivity_data_filename, n_top_params):
     '''
 
@@ -421,11 +433,13 @@ def poly_select_criteria(config, name, sensitivity_data_filename, n_top_params):
     mor = MorrisSA(config, name)
     duration_all_si = mor.load_sensitivity_data(sensitivity_data_filename)[0]
     for season in range(2):
-        #mor.plot_map(duration_all_si[season], 0, season)
+        # mor.plot_map(duration_all_si[season], 0, season)
         mor.get_top_parameters(SC.M1, duration_all_si[season], n_top_params)
         mor.get_top_parameters(SC.M2, duration_all_si[season], n_top_params)
         mor.get_top_parameters(SC.M3, duration_all_si[season], n_top_params)
         mor.get_top_parameters(SC.H4, duration_all_si[season], n_top_params)
+
+
 # poly_select_criteria(config[3], 3, os.path.join(mor.root_path, 'morris_sensitivity_3.out'), 4)
 
 def convergence_rate(config, name, converge_data_filename):
@@ -446,6 +460,8 @@ def convergence_rate(config, name, converge_data_filename):
                 converged += 1
         convergence_percentage_4_seasons.append(converged / mor.n_poly)
     print(convergence_percentage_4_seasons)
+
+
 # convergence_rate(config[3],3, '\\previous simulation\\BS\\BS-50\\0422 Config 4\\morris_sensitivity_3.out')
 
 def compute_avearage_simulate_values_4_classes(config, name, simulation_filename, sampling_file_name=None):
@@ -469,7 +485,7 @@ def compute_avearage_simulate_values_4_classes(config, name, simulation_filename
             sample_ave.append(mor.compute_average_simuluation_value_4_polys(category, sample))
         average_4_categories.append(sample_ave)
 
-    average_4_categories = {'Average Class Sim for ab':average_4_categories}
+    average_4_categories = {'Average Class Sim for ab': average_4_categories}
 
     if sampling_file_name is not None:
         problem = mor.problems_setup2()
@@ -482,6 +498,7 @@ def compute_avearage_simulate_values_4_classes(config, name, simulation_filename
     # for i, ave in enumerate(average_4_categories):
     #     print(i + 1, ave)
     # return average_4_categories
+
 
 def compute_last_n_ave_simulation(config, name, sampling_filename, n_similuated_result):
     '''
@@ -508,11 +525,12 @@ def compute_last_n_ave_simulation(config, name, sampling_filename, n_similuated_
             sample_ave.append(mor.get_last_and_ave_simulation_value(category, sample, skip_firt_season=True))
         last_n_ave_data.append(sample_ave)
 
-    last_n_ave_data = {'Last and Average simulation data':last_n_ave_data}
+    last_n_ave_data = {'Last and Average simulation data': last_n_ave_data}
     mor.analyze2(last_n_ave_data, parameter_sets, problem)
 
     with open(f'{mor.root_path}/{mor.sa_name}_last_and_average_sim_data_{mor.name}.out', 'w') as f:
         f.write(json.dumps(last_n_ave_data))
+
 
 def plot_residual(config, name, filename):
     mor = MorrisSA(config, name)
@@ -554,6 +572,7 @@ def plot_residual(config, name, filename):
         fw.write(json.dumps(all_residuals))
     fw.close()
 
+
 def compute_r2_analysis(config, name, sampling_file_name, r2_filename):
     def load_r2_data(r2_filename):
         r2_data = []
@@ -567,11 +586,10 @@ def compute_r2_analysis(config, name, sampling_file_name, r2_filename):
             tmp = []
             for j in range(215):
                 tmp.append([r2_data[0][j]['R2'][i]])
-                #eval[i][j][0] = r2_data[0][j]['R2'][i]
+                # eval[i][j][0] = r2_data[0][j]['R2'][i]
             eval['R2_sa'].append(tmp)
-        #print(eval)
+        # print(eval)
         return eval
-
 
     mor = MorrisSA(config, name)
     eval = load_r2_data(r2_filename)
@@ -582,18 +600,17 @@ def compute_r2_analysis(config, name, sampling_file_name, r2_filename):
 
 
 if __name__ == '__main__':
-
     config = [
         # n_poly, n_paras, n_sampling, n_level, n_season
         [215, 23, 25, 8, 20],
         [215, 23, 50, 8, 20],
         [215, 23, 25, 16, 20],
-        [215, 23, 50, 16, 20],#24*25*20=12,000(6000)
-        [215, 24, 50, 16, 20] #dummy
+        [215, 23, 50, 16, 20],  # 24*25*20=12,000(6000)
+        [215, 24, 50, 16, 20]  # dummy
     ]
 
-    #conduct_SA_dummy_from_configs(config, 4)
-    #conduct_analysis_from_files(config[4], 4, 'Morris_Sampling_4.out', 50, is_dummy=True)
+    # conduct_SA_dummy_from_configs(config, 4)
+    # conduct_analysis_from_files(config[4], 4, 'Morris_Sampling_4.out', 50, is_dummy=True)
     # compute_r2_analysis(config[3], 0, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0),
     #                     'residual_result_4_polys_all.out')
     # compute_avearage_simulate_values_4_classes(config[3], 3, 'Morris_trend_3.out',
@@ -602,13 +619,11 @@ if __name__ == '__main__':
     # compute_last_n_ave_simulation(config[3], 3, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0),
     #                               n_similuated_result=48)
 
-
     # evals = mor.load_data_from_file(mor, 'Morris_trend_3.out')
     mor = MorrisSA(config[3], name=3)
     problem = mor.problems_setup2()
     sampling_set = mor.sampling2(problem)
     lol = mor.simulation2(parameters_set=sampling_set)
-
 
     # # os.path.join(mor.root_path, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0))
     # parameters_set = np.asarray(mor.load_parameters_sampling(os.path.join(mor.root_path, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0))))
@@ -626,7 +641,7 @@ if __name__ == '__main__':
     # for i, param in enumerate(influential_param_of_wtd):
     #     print(f'trend_b_poly_id:{i + 1}', f'influential:{len(param)}, non:{23 - len(param)}', '\n', param)
 
-    #Dummy variable
+    # Dummy variable
     # mor = MorrisSA(config[4], name=4)
     # sensitivity_of_dummy = mor.load_sensitivity_data(os.path.join(mor.root_path, 'morris_sensitivity_4.out'))[0]
     # influential_param_of_wtd = [[{'Dummy parameter': poly['mu_star'][23]} for poly in season] for season in sensitivity_of_dummy]
@@ -634,7 +649,6 @@ if __name__ == '__main__':
     # for i, param in enumerate(influential_param_of_wtd):
     #     print(f"dummy SI:{param}")
     # print()
-
 
     '''
     Get the influential param of R2
@@ -667,115 +681,114 @@ if __name__ == '__main__':
 #     print()
 
 
-    #print(influential_param_of_wtd)
+# print(influential_param_of_wtd)
 
-    # conduct_SA_from_sampling_files(config[3], 3, 'Morris_Sampling_{}.out'.format(0))
-    # mor = MorrisSA(config[3], 3)
-    # sensitivity_data = mor.load_sensitivity_data(mor.root_path +
-    #     '\\morris_sensitivity_3.out')
+# conduct_SA_from_sampling_files(config[3], 3, 'Morris_Sampling_{}.out'.format(0))
+# mor = MorrisSA(config[3], 3)
+# sensitivity_data = mor.load_sensitivity_data(mor.root_path +
+#     '\\morris_sensitivity_3.out')
 
-    # conduct_trend_analysis_from_files(config[3], 3,
-    #                                'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(
-    #                                    0),48)
-    # mor = MorrisSA(config[3], 3)
-    # sensitivity_data = mor.load_sensitivity_data(mor.root_path +
-    #                                              '\\morris_sensitivity_ss_3.out')
+# conduct_trend_analysis_from_files(config[3], 3,
+#                                'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(
+#                                    0),48)
+# mor = MorrisSA(config[3], 3)
+# sensitivity_data = mor.load_sensitivity_data(mor.root_path +
+#                                              '\\morris_sensitivity_ss_3.out')
 
-    # conduct_analysis_from_files(config[3], 3, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0), 48)
+# conduct_analysis_from_files(config[3], 3, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0), 48)
 
-    # all_mustar = []
-    # for para in sensitivity_data[0]:
-    #     mu_stat_for_slope = []
-    #     print()
-    #     for i, poly in enumerate(para):
-    #         tmp_dict = {poly['names'][i]: poly['mu_star'][i] for i in range(mor.n_paras)}
-    #         orderwed_dict = sorted(tmp_dict.items(), key=operator.itemgetter(1), reverse=True)
-    #         str = []
-    #         for i in range(len(orderwed_dict)):
-    #             str.append(orderwed_dict[i][0])
-    #             str.append(orderwed_dict[i][1])
-    #         print(str)
+# all_mustar = []
+# for para in sensitivity_data[0]:
+#     mu_stat_for_slope = []
+#     print()
+#     for i, poly in enumerate(para):
+#         tmp_dict = {poly['names'][i]: poly['mu_star'][i] for i in range(mor.n_paras)}
+#         orderwed_dict = sorted(tmp_dict.items(), key=operator.itemgetter(1), reverse=True)
+#         str = []
+#         for i in range(len(orderwed_dict)):
+#             str.append(orderwed_dict[i][0])
+#             str.append(orderwed_dict[i][1])
+#         print(str)
 
-            #print('polygon ', i, poly['mu_star'])
-            # for value in poly['mu_star']:
-            #     mu_stat_for_slope.append(value)
-            #     print(mu_stat_for_slope)
+# print('polygon ', i, poly['mu_star'])
+# for value in poly['mu_star']:
+#     mu_stat_for_slope.append(value)
+#     print(mu_stat_for_slope)
 
-    # for season in range(mor.n_season):
-    #     for p in range(mor.n_paras):
-    #         mor.plot_map_4_parameter(duration_all_si[season], p, season, 0)
+# for season in range(mor.n_season):
+#     for p in range(mor.n_paras):
+#         mor.plot_map_4_parameter(duration_all_si[season], p, season, 0)
 
 
-    # PLOTTING
-    # for i, conf in enumerate(config):
-    #     if i != 0:
-    #         continue
-    #     mor = MorrisSA(conf, i)
-    #     problems = mor.problems_setup2()
-        # sensitivity_data = mor.load_sensitivity_data('D:\\Gaby\\Tinamit\\tinamit\\Calib\\SA_algorithms\\previous runs\\Morris Runs\\morris_sensitivity_0.out')
-        # parameters_set = np.asarray(mor.load_parameters_sampling(
-        #     os.path.join(mor.root_path, 'morris_simulation_{}_{}.out'.format(mor.name, i))))
-    #
-    #     sampling_parameters_set = []
-    #     for l in range(len(parameters_set[0])):
-    #         sampling2 = []
-    #         for j in range(mor.n_paras):
-    #             parameters = []
-    #             for k in range(mor.n_poly):
-    #                 parameters.append(parameters_set[k][l][j])
-    #             sampling2.append(parameters)
-    #             # print(min(parameters), max(parameters))
-    #         sampling_parameters_set.append(sampling2)
-        #
-        # print(len(sampling_parameters_set))
-        # print(sampling_parameters_set[0])
-        # print(sampling_parameters_set[1])
-        # evals is size of (n_paras + 1)*n_sampling*n_poly*n_season 3-D matrix
-        # evals = mor.load_data_from_file(mor, 'morris_simulation_{}.out'.format(i))
-        # print(len(evals))
-        # print(evals[0])
-        # print(evals[1])
-        # duration_all_si = mor.analyze(evals, parameters_set, problems)
+# PLOTTING
+# for i, conf in enumerate(config):
+#     if i != 0:
+#         continue
+#     mor = MorrisSA(conf, i)
+#     problems = mor.problems_setup2()
+# sensitivity_data = mor.load_sensitivity_data('D:\\Gaby\\Tinamit\\tinamit\\Calib\\SA_algorithms\\previous runs\\Morris Runs\\morris_sensitivity_0.out')
+# parameters_set = np.asarray(mor.load_parameters_sampling(
+#     os.path.join(mor.root_path, 'morris_simulation_{}_{}.out'.format(mor.name, i))))
+#
+#     sampling_parameters_set = []
+#     for l in range(len(parameters_set[0])):
+#         sampling2 = []
+#         for j in range(mor.n_paras):
+#             parameters = []
+#             for k in range(mor.n_poly):
+#                 parameters.append(parameters_set[k][l][j])
+#             sampling2.append(parameters)
+#             # print(min(parameters), max(parameters))
+#         sampling_parameters_set.append(sampling2)
+#
+# print(len(sampling_parameters_set))
+# print(sampling_parameters_set[0])
+# print(sampling_parameters_set[1])
+# evals is size of (n_paras + 1)*n_sampling*n_poly*n_season 3-D matrix
+# evals = mor.load_data_from_file(mor, 'morris_simulation_{}.out'.format(i))
+# print(len(evals))
+# print(evals[0])
+# print(evals[1])
+# duration_all_si = mor.analyze(evals, parameters_set, problems)
 
-    # print(len(duration_all_si))
-    # mor = MorrisSA(config(3), 3)
-    # mor.plot_map(duration_all_si[1], i, 1)
-    # for j in range(mor.n_poly): #j = 215
-    #     mor.plot_result(j, duration_all_si,
-    #       'D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\previous runs\\morrisFigure')
+# print(len(duration_all_si))
+# mor = MorrisSA(config(3), 3)
+# mor.plot_map(duration_all_si[1], i, 1)
+# for j in range(mor.n_poly): #j = 215
+#     mor.plot_result(j, duration_all_si,
+#       'D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\previous runs\\morrisFigure')
 
-    # mor = MorrisSA(config(3), 3)
-    # duration_all_si = mor.load_sensitivity_data(os.path.join(mor.root_path, 'morris_sensitivity_3.out')[0]
-    # for season in range(config[4]):
-    #    mor.plot_map(duration_all_si[season], config(3)), season)
+# mor = MorrisSA(config(3), 3)
+# duration_all_si = mor.load_sensitivity_data(os.path.join(mor.root_path, 'morris_sensitivity_3.out')[0]
+# for season in range(config[4]):
+#    mor.plot_map(duration_all_si[season], config(3)), season)
 
-    # for season in range(conf[4] - 1):
-    #     for p in range(conf[1]):
-    #         mor.plot_map_4_parameter(duration_all_si[season], p, season, i)
+# for season in range(conf[4] - 1):
+#     for p in range(conf[1]):
+#         mor.plot_map_4_parameter(duration_all_si[season], p, season, i)
 
-    # mor.plot_result(63, sensitivity_data)
-    # mor.plot_result(73, sensitivity_data)
-    # mor.plot_result(74, sensitivity_data)
+# mor.plot_result(63, sensitivity_data)
+# mor.plot_result(73, sensitivity_data)
+# mor.plot_result(74, sensitivity_data)
 
-    # CURVE FITTING
-    # mor = MorrisSA(config[0], 0)
-    # evals = MorrisSA.load_segmented_data_from_file(mor, mor.root_path, 14, 14)[0]['Watertable depth Tinamit']
-    # # [25,8]-->sim_14; [25,16]-->sim_15; [50,8]-->sim_30; [50,16]-->sim_46
-    # evals = MorrisSA.load_data_from_file(MorrisSA,'Simulation\\morris_simulation_{}.out'.format(0))
-    # evals = get_existing_simulated_result(mor, 48)['Watertable depth Tinamit'] # the same as line 558
+# CURVE FITTING
+# mor = MorrisSA(config[0], 0)
+# evals = MorrisSA.load_segmented_data_from_file(mor, mor.root_path, 14, 14)[0]['Watertable depth Tinamit']
+# # [25,8]-->sim_14; [25,16]-->sim_15; [50,8]-->sim_30; [50,16]-->sim_46
+# evals = MorrisSA.load_data_from_file(MorrisSA,'Simulation\\morris_simulation_{}.out'.format(0))
+# evals = get_existing_simulated_result(mor, 48)['Watertable depth Tinamit'] # the same as line 558
 
-    # trend HERE
-    # print(len(evals))
-    # print(len(evals[0]))
-    # print(len(evals[0][0]))
-    # for id, sample in enumerate(evals):
-    #     # if id > 2:
-    #     #     continue
-    #     for poly_id in range(mor.n_poly):
-    #         x_data = [i for i in range(21)]
-    #         y_data = sample[poly_id]
-    #         # print(len(y_data))
-    #         # print(y_data)
-    #         MorrisSA.curve_fit(mor, poly_id, id, x_data, y_data)
-    # plt.show()
-
+# trend HERE
+# print(len(evals))
+# print(len(evals[0]))
+# print(len(evals[0][0]))
+# for id, sample in enumerate(evals):
+#     # if id > 2:
+#     #     continue
+#     for poly_id in range(mor.n_poly):
+#         x_data = [i for i in range(21)]
+#         y_data = sample[poly_id]
+#         # print(len(y_data))
+#         # print(y_data)
+#         MorrisSA.curve_fit(mor, poly_id, id, x_data, y_data)
+# plt.show()
