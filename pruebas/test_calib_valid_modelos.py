@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from Geog import Geografía
+from tinamit.Geog import Geografía
 from tinamit.EnvolturasMDS import generar_mds
 
 dir_act = os.path.split(__file__)[0]
@@ -67,6 +67,9 @@ class Test_CalibModloEspacial(unittest.TestCase):
         cls.datos = cls.mod.simular(tiempo_final=200, escala='muni')
 
         cls.mod.conectar_datos(cls.datos)
+
+    def test_calib_valid_espacial(símismo):
+        pass
 
     @classmethod
     def tearDownClass(cls):
