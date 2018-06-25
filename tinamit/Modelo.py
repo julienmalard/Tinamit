@@ -1143,13 +1143,26 @@ class Modelo(object):
 
     def actualizar_trads(símismo, auto_llenar=True):
         raíz = arbole.Element('xliff', version='1.2')
-        arch = arbole.SubElement(raíz, 'file', datatype='Modelo Tinamït')
+        arch = arbole.SubElement(raíz, 'file', datatype='Modelo Tinamït', original=símismo.nombre)
         arch.set('source-language', símismo.leng_orig)
         cuerpo = arbole.SubElement(arch, 'body')
 
-        for v in símismo.variables:
-            obj_trans = arbole.SubElement(cuerpo, 'trans-unit')
-            fnt = arbole.SubElement(obj_trans, 'source', lang=símismo.leng_orig)
+        for v, d_v in símismo.variables.items():
+            grupo = arbole.SubElement(cuerpo, 'group', id=v)
+
+            trans_nombre = arbole.SubElement(grupo, 'trans-unit')
+            fnt = arbole.SubElement(trans_nombre, 'source', lang=símismo.leng_orig)
+            fnt.text = v
+
+            trans_info = arbole.SubElement(grupo, 'trans-unit')
+            fnt = arbole.SubElement(trans_info, 'source', lang=símismo.leng_orig)
+            fnt.text = d_v['info']
+
+            trans_unids = arbole.SubElement(grupo, 'trans-unit')
+            fnt = arbole.SubElement(trans_unids, 'source', lang=símismo.leng_orig)
+            fnt.text = d_v['unidades']
+
+
 
     def cambiar_lengua(símismo, lengua):
         pass
@@ -1435,7 +1448,7 @@ class Modelo(object):
     def borrar_calibs_calc(símismo):
         símismo.calibs.clear()
 
-    def calibrar(símismo, paráms, líms_paráms=None, var=None, n_iter=500, método='mc'):
+    def calibrar(símismo, paráms, líms_paráms=None, var=None, n_iter=500, método='mle'):
 
         if var is None:
             l_vars = None

@@ -1,10 +1,12 @@
 import os
 import unittest
 
+from Geog import Geografía
 from tinamit.EnvolturasMDS import generar_mds
 
 dir_act = os.path.split(__file__)[0]
 arch_mds = os.path.join(dir_act, 'recursos/mod_enferm.mdl')
+arch_csv_geog = os.path.join(dir_act, 'recursos/datos/prueba_geog.csv')
 
 
 class Test_CalibModelo(unittest.TestCase):
@@ -49,3 +51,23 @@ class Test_CalibModelo(unittest.TestCase):
                         os.remove(a)
                     except (PermissionError, FileNotFoundError):
                         pass
+
+
+class Test_CalibModloEspacial(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.paráms = {
+            'taza de contacto': {'708': 81.25, '1010': 50},
+            'taza de infección': {'708': 0.007, '1010': 0.005},
+            'número inicial infectado': {'708': 22.5, '1010': 40},
+            'taza de recuperación': {'708': 0.0375, '1010': 0.050}
+        }
+        cls.mod = generar_mds(arch_mds)
+        cls.mod.geog = Geografía('prueba', archivo=arch_csv_geog)
+        cls.datos = cls.mod.simular(tiempo_final=200, escala='muni')
+
+        cls.mod.conectar_datos(cls.datos)
+
+    @classmethod
+    def tearDownClass(cls):
+        pass
