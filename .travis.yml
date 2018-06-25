@@ -9,8 +9,13 @@ install:
   - pip install --upgrade pip setuptools wheel
   - pip install -r requirements.txt
   - pip install coveralls codecov
+  - python setup.py sdist bdist_wheel
+  - cd dist
+  - pip install tinamit --no-index --find-links=/dist
+  - cd ..
 
 script:
+  - rm -r tinamit
   - cd pruebas
   - nosetests --with-coverage --cover-package=tinamit
   - coveralls --rcfile=.coveragerc
