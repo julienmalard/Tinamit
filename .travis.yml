@@ -10,9 +10,7 @@ install:
   - pip install -r requirements.txt
   - pip install coveralls codecov
   - python setup.py sdist bdist_wheel
-  - cd dist
   - pip install tinamit --no-index --find-links=/dist
-  - cd ..
 
 script:
   - rm -r tinamit
