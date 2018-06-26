@@ -3,11 +3,11 @@ import unittest
 
 import numpy as np
 
-from pruebas.recursos.prueba_bf import ModeloPrueba
+from pruebas.recursos.BF.prueba_bf import ModeloPrueba
 from tinamit.BF import EnvolturaBF
 
 dir_act = os.path.split(__file__)[0]
-arch_bf = os.path.join(dir_act, 'recursos/prueba_bf.py')
+arch_bf = os.path.join(dir_act, 'recursos/BF/prueba_bf.py')
 
 
 # Comprobar que el modelo BF de prueba corre corectamente

@@ -18,7 +18,7 @@ except ImportError:
 
 dir_act = os.path.split(__file__)[0]
 arch_csv_geog = os.path.join(dir_act, 'recursos/datos/prueba_geog.csv')
-arch_mds = os.path.join(dir_act, 'recursos/prueba_para_calib.mdl')
+arch_mds = os.path.join(dir_act, 'recursos/MDS/prueba_para_calib.mdl')
 
 métodos = ['optimizar']
 if pm is not None:

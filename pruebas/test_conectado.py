@@ -10,9 +10,9 @@ from tinamit.EnvolturasMDS import ModeloPySD
 from tinamit.Unidades import trads
 
 dir_act = os.path.split(__file__)[0]
-arch_bf = os.path.join(dir_act, 'recursos/prueba_bf.py')
-arch_mds = os.path.join(dir_act, 'recursos/prueba_senc.mdl')
-arch_mod_vacío = os.path.join(dir_act, 'recursos/prueba_vacía.mdl')
+arch_bf = os.path.join(dir_act, 'recursos/BF/prueba_bf.py')
+arch_mds = os.path.join(dir_act, 'recursos/MDS/prueba_senc.mdl')
+arch_mod_vacío = os.path.join(dir_act, 'recursos/MDS/prueba_vacía.mdl')
 
 
 # Comprobar Conectado

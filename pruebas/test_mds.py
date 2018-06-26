@@ -8,10 +8,10 @@ from tinamit.MDS import EnvolturaMDS
 
 # Los tipos de modelos DS que queremos comprobar.
 tipos_modelos = {
-    'mdlVensim': {'envlt': ModeloVensimMdl, 'prueba': 'recursos/prueba_senc.mdl'},
-    'PySDVensim': {'envlt': ModeloPySD, 'prueba': 'recursos/prueba_senc.mdl'},
-    'PySD_XMILE': {'envlt': ModeloPySD, 'prueba': 'recursos/prueba_senc_.xmile'},
-    'dllVensim': {'envlt': ModeloVensim, 'prueba': 'recursos/prueba_senc.vpm'}
+    'mdlVensim': {'envlt': ModeloVensimMdl, 'prueba': 'recursos/MDS/prueba_senc.mdl'},
+    'PySDVensim': {'envlt': ModeloPySD, 'prueba': 'recursos/MDS/prueba_senc.mdl'},
+    'PySD_XMILE': {'envlt': ModeloPySD, 'prueba': 'recursos/MDS/prueba_senc_.xmile'},
+    'dllVensim': {'envlt': ModeloVensim, 'prueba': 'recursos/MDS/prueba_senc.vpm'}
 }
 
 # Quitar los modelos no instalados en la computadora actual
