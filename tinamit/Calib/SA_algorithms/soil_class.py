@@ -574,3 +574,74 @@ def get_soil_type(poly_id, location = -1):
             neighbor = poly_id
         #print(poly_id, neighbor, location)
         return p_soil_class[neighbor]
+
+def local_data_prepare(mstr_paráms, is_dummy=False, n_poly=215):
+    """
+    transform sampled data into Tinamit matrix
+    :param mstr_paráms: {Ns * 23}
+    :param is_dummy: if is_dummy add dummy variable
+    :param n_poly: num of the polygons in the study area
+    :return: list_dic_set [8*215 + 3*215]
+    """
+
+    def data_transform(sample):
+        sampling = {}  # from 23*215 to 11*215
+        for i, name in enumerate(P.parameters):  # give index to 11 param names
+            if name.startswith('Kaq'):
+                if name.endswith('1'):
+                    sampling[name] = [(sample[(SC.get_soil_type(j, 0) - 1) * 5 + parameters.index(
+                        'Kaq - Horizontal hydraulic conductivity')] +
+                                       sample[(SC.get_soil_type(j) - 1) * 5 + parameters.index(
+                                           'Kaq - Horizontal hydraulic conductivity')] / 2) for j in
+                                      range(n_poly)]
+                if name.endswith('2'):
+                    sampling[name] = [
+                        (sample[(SC.get_soil_type(j, 1) - 1) * 5 + parameters.index(
+                            'Kaq - Horizontal hydraulic conductivity')] +
+                         sample[(SC.get_soil_type(j) - 1) * 5 + parameters.index(
+                             'Kaq - Horizontal hydraulic conductivity')] / 2) for j in
+                        range(n_poly)]
+
+                if name.endswith('3'):
+                    sampling[name] = [
+                        (sample[(SC.get_soil_type(j, 2) - 1) * 5 + parameters.index(
+                            'Kaq - Horizontal hydraulic conductivity')] +
+                         sample[(SC.get_soil_type(j) - 1) * 5 + parameters.index(
+                             'Kaq - Horizontal hydraulic conductivity')] / 2) for j in
+                        range(n_poly)]
+
+                if name.endswith('4'):
+                    sampling[name] = [
+                        (sample[(SC.get_soil_type(j, 3) - 1) * 5 + parameters.index(
+                            'Kaq - Horizontal hydraulic conductivity')] +
+                         sample[(SC.get_soil_type(j) - 1) * 5 + parameters.index(
+                             'Kaq - Horizontal hydraulic conductivity')] / 2) for j in
+                        range(n_poly)]
+            else:
+                if parameters.index(name) <= 4:  # 4 means the first 5 BF params
+                    sampling[name] = [
+                        sample[(SC.get_soil_type(j) - 1) * 5 + parameters.index(name)] for j in
+                        range(n_poly)]
+                elif parameters.index(name) <= 7 and parameters.index(name) > 4:
+                    sampling[name] = [
+                        sample[15 + parameters.index(name)] for j in
+                        range(n_poly)]
+                else:
+                    pass
+        return sampling  # {11 * 215}
+
+    sampling_parameters_set = []  # Ns*11*215 Tinamit format as Tinamit only consider Kaq1234
+    if is_dummy:
+        parameters = P.parametersNew_dummy
+    else:
+        parameters = P.parametersNew
+    # for each sample from Ns,
+    for k, v in mstr_paráms.items():
+        for sam in v:  # sam: each 23 of the Ns
+            sampling_parameters_set.append(data_transform(sam))
+
+    lista_mds = ['POH Kharif Tinamit', 'POH rabi Tinamit', 'Capacity per tubewell']
+    list_dic_set = [{'bf': {ll: v for ll, v in s.items() if ll not in lista_mds},
+                     'mds': {ll: v for ll, v in s.items() if ll in lista_mds}} for s in sampling_parameters_set]
+    return list_dic_set
+    # list_dic_set [8*215 + 3*215]
