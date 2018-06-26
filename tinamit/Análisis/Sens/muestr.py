@@ -1,4 +1,6 @@
 import json
+import os
+
 import numpy as np
 from SALib.sample import morris
 from SALib.sample import fast_sampler
@@ -87,12 +89,18 @@ def muestrear_paráms(líms_paráms, método, mapa_paráms=None, ops_método=Non
 
 def guardar_mstr_paráms(muestrear_paráms, archivo):
     mstr_json = {c: [p.tolist() for p in d] for c, d in muestrear_paráms.items()}
-
+    arch, ext = os.path.splitext(archivo)
+    if ext != '.json':
+        archivo = arch + '.json'
     with open(archivo, 'w', encoding='UTF-8') as d:
         json.dump(mstr_json, d, ensure_ascii=False)
 
 
 def cargar_mstr_paráms(archivo):
+    arch, ext = os.path.splitext(archivo)
+    if ext != '.json':
+        archivo = arch + '.json'
+
     with open(archivo, encoding='UTF-8') as d:
         mstr_json = json.load(d)
 

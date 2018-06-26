@@ -408,7 +408,7 @@ class Modelo(object):
                         # Si tenemos valores múltiples, (si la persona especificó más que una corrida), guardar
                         # el nombre también.
                         if len(op) > 1:
-                            nombre.append(id_op)
+                            nombre.append(str(id_op))
 
                     else:
                         # Si es una lista...
@@ -460,7 +460,7 @@ class Modelo(object):
                         # Guardar nu nombre y valor
                         id_op = list(op)[n]
                         ops[nmbr_op] = op[id_op]
-                        nombre[í] = id_op
+                        nombre[í] = str(id_op)
 
                     else:
                         raise TypeError(_('Tipo de variable "{}" erróneo. Debería ser imposible llegar hasta este '
