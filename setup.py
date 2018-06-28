@@ -149,7 +149,7 @@ setup(
         'Babel',
         'pint',
         'pyshp',
-        'تقدیر',
+        'taqdir',
         'pysd',
         'lxml',
         'spotpy'
