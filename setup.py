@@ -149,7 +149,7 @@ setup(
         'Babel',
         'pint',
         'pyshp',
-        'taqdir',
+        'تقدیر',
         'pysd',
         'lxml',
         'spotpy'
@@ -157,7 +157,7 @@ setup(
 
     dependency_links=[
         "git+git://github.com/julienmalard/pysd.git",
-        "git+git://github.com/julienmalard/taqdir.git"
+        "git+git://github.com/julienmalard/تقدیر.git"
     ],
     setup_requires=['Babel', 'polib'],
     zip_safe=False,

@@ -98,6 +98,10 @@ class Test_CalibEnModelo(unittest.TestCase):
                 símismo.mod.borrar_micro_calib('Y')
 
     def test_calibración_bayes_sin_mod_jerárquíco(símismo):
+        """
+        Calibramos en una geografía sin modelo jerárquico (región por región sin información a priori).
+        """
+
         if 'inferencia bayesiana' in métodos:
             símismo.mod.especificar_micro_calib(
                 var='Y', método='inferencia bayesiana', ops_método={'mod_jerárquico': False}

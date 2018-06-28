@@ -11,12 +11,12 @@ import shapefile as sf
 from matplotlib import cm
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
-from taqdir.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
-from taqdir.مقام import مقام
+from تقدیر.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
+from تقدیر.مقام import مقام
 
 from tinamit import _, detectar_codif
 
-# Ofrecemos la oportunidad de utilizar تقدیر, taqdir, en español
+# Ofrecemos la oportunidad de utilizar taqdir, تقدیر, en español
 
 conv_vars = {
     'Precipitación': 'بارش',
@@ -30,7 +30,7 @@ conv_vars = {
 # Una subclase traducida, mientras que Lassi esté en desarrollo
 class Lugar(مقام):
     """
-    Esta clase conecta con la clase مقام, o Lugar, del paquete taqdir.
+    Esta clase conecta con la clase مقام, o Lugar, del paquete تقدیر.
     """
 
     def __init__(símismo, lat, long, elev):
@@ -158,7 +158,7 @@ class Lugar(مقام):
         obs = سال_مشا(مسل=archivo, س_اعداد=d_cols, تبادلوں=d_conv, س_سال=años)
         símismo.مشاہدہ_کرنا(obs)
 
-    def prep_datos(símismo, fecha_inic, fecha_final, tcr=0, prefs=None, lím_prefs=False, regenerar=False):
+    def prep_datos(símismo, fecha_inic, fecha_final, tcr=0, prefs=None, lím_prefs=False):
         """
         Esta función actualiza el diccionario interno de datos climáticos del Lugar, listo para una simulación.
         Intentará obtener datos de todas fuentes posibles, incluso observaciones y modelos de predicciones climáticas.
@@ -174,12 +174,11 @@ class Lugar(مقام):
         :type prefs: list
         :param lím_prefs: Si hay que limitar las fuentes de datos
         :type lím_prefs: bool
-        :param regenerar: Si hay que regenerar datos o no.
-        :type regenerar: bool
 
         """
-        super().اعداد_تیاری(fecha_inic, fecha_final, tcr, ش_ترکار=1, ترجیحات=prefs, ترجیحات_محدود=lím_prefs,
-                            دوبارہ_پیدا=regenerar)
+        super().اعداد_تیاری(
+            fecha_inic, fecha_final, tcr, ش_ترکار=1, ترجیحات=prefs, ترجیحات_محدود=lím_prefs, دوبارہ_پیدا=True
+        )
 
     def devolver_datos(símismo, vars_clima, f_inic, f_final):
         """

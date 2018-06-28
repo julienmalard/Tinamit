@@ -26,8 +26,7 @@ def run_model(name, switches):
     modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Tinamit_sub_v2.vpm'))
 
     # Set appropriate switches for policy analysis
-    for switch, val in switches.items():
-        modelo.mds.inic_val_var(var=switch, val=val)
+    modelo.mds.inic_vals_vars(switches)
 
     # Couple models(Change variable names as needed)
     modelo.conectar(var_mds='Soil salinity Tinamit CropA', mds_fuente=False,

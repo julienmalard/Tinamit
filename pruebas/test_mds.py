@@ -39,7 +39,7 @@ class Test_ModeloSenc(unittest.TestCase):
         # Información sobre los variables del modelo de prueba
         cls.info_vars = {
             'Lluvia': {'unidades': 'm3/mes', 'líms': (0, None)},
-            'Nivel lago inicial': {'unidades': 'm3', 'líms': (0, None), 'val_inic': 1500},
+            'Nivel lago inicial': {'unidades': 'm3', 'líms': (0, None), 'val_inic': 1450},
             'Flujo río': {'unidades': 'm3/mes', 'líms': (0, None)},
             'Lago': {'unidades': 'm3', 'líms': (0, None)},
             'Evaporación': {'unidades': 'm3/mes', 'líms': (0, None)},
@@ -57,7 +57,7 @@ class Test_ModeloSenc(unittest.TestCase):
                     mod.inic_val_var(v, d_v['val_inic'])
 
             # Correr el modelo para 200 pasos, guardando los egresos del variable "Lago"
-            mod.simular(tiempo_final=200, vars_interés=['Lago', 'Aleatorio'])
+            mod.simular(tiempo_final=200, vars_interés=['Lago', 'Aleatorio', 'Nivel lago inicial'])
 
     def test_leer_vars(símismo):
         """
@@ -120,6 +120,18 @@ class Test_ModeloSenc(unittest.TestCase):
 
             with símismo.subTest(mod=ll):
                 símismo.assertEqual(mod.obt_val_actual_var(v), d_v['val_inic'])
+
+    def test_cmb_vals_inic_constante_en_resultados(símismo):
+        """
+        Comprobar que los valores iniciales se establecieron correctamente en los resultados.
+        """
+
+        for ll, mod in símismo.modelos.items():
+            v = 'Nivel lago inicial'
+            d_v = símismo.info_vars[v]
+
+            with símismo.subTest(mod=ll):
+                npt.assert_equal(mod.leer_resultados(v), d_v['val_inic'])
 
     def test_cambiar_vals_inic_var_dinámico(símismo):
         """
@@ -224,7 +236,9 @@ class Test_GenerarMDS(unittest.TestCase):
     """
 
     def test_generación_auto_mds(símismo):
-        # Verificamos que funcione la generación automática de modelos DS a base de un archivo.
+        """
+        Verificamos que funcione la generación automática de modelos DS a base de un archivo.
+        """
 
         for m, d in tipos_modelos.items():
             with símismo.subTest(ext=os.path.splitext(d['prueba'])[1], envlt=d['envlt'].__name__):
@@ -236,13 +250,17 @@ class Test_GenerarMDS(unittest.TestCase):
                     pass
 
     def test_generación_auto_mds_con_error_extensión(símismo):
-        # Comprobar que extensiones no reconocidas devuelvan un error.
+        """
+        Comprobar que extensiones no reconocidas devuelvan un error.
+        """
 
         with símismo.assertRaises(ValueError):
             generar_mds('Modelo con extensión no reconocida.வணக்கம்')
 
     def test_generación_auto_mds_con_motor_especificado(símismo):
-        # Comprobar la generación de modelos DS con el motor de simulación especificado.
+        """
+        Comprobar la generación de modelos DS con el motor de simulación especificado.
+        """
 
         mod = generar_mds(tipos_modelos['PySDVensim']['prueba'], motor=ModeloPySD)
         símismo.assertIsInstance(mod, ModeloPySD)
@@ -251,25 +269,23 @@ class Test_GenerarMDS(unittest.TestCase):
         símismo.assertIsInstance(mod, ModeloVensimMdl)
 
     def test_generación_auto_mds_modelo_erróneo(símismo):
-        # Asegurarse que un archivo erróneo devuelva un error.
+        """
+        Asegurarse que un archivo erróneo devuelva un error.
+        """
 
         with símismo.assertRaises(ValueError):
             generar_mds('Yo no existo.mdl')
 
 
-def limpiar_mds():
-    # Limpiamos todos los documentos temporarios generados por los programas de modelos DS.
-    for c in os.walk('../recursos'):
+def limpiar_mds(direc='./recursos/MDS'):
+    """
+    Limpiamos todos los documentos temporarios generados por los programas de modelos DS.
+    """
+    for c in os.walk(direc):
         for a in c[2]:
-            nmbr, ext = os.path.splitext(a)
+            ext = os.path.splitext(a)[1]
             try:
-                if 'Corrida Tinamït' in nmbr:
-                    os.remove(a)
-                elif ext in ['.2mdl', '.vdf']:
-                    os.remove(a)
-                elif a == 'prueba_senc.py':
-                    os.remove(a)
-                elif a == 'prueba_senc_.py':
-                    os.remove(a)
-            except PermissionError:
+                if ext in ['.2mdl', '.vdf', '.py', '.csv']:
+                    os.remove(os.path.join(direc, a))
+            except (FileNotFoundError, PermissionError):
                 pass

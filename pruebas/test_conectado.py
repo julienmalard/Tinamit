@@ -54,9 +54,9 @@ class Test_Conectado(unittest.TestCase):
 
                 npt.assert_equal(egr['bf_Aleatorio'], egr['mds_Aleatorio'])
 
-    def test_simular_paralelo(símismo):
+    def test_simular_grupo(símismo):
         """
-        Comprobar que simulaciones en paralelo den el mismo resultado que las mismas simulaciones individuales.
+        Comprobar que simulaciones en grupo den el mismo resultado que las mismas simulaciones individuales.
         """
 
         for ll, mod in símismo.modelos.items():
@@ -71,7 +71,7 @@ class Test_Conectado(unittest.TestCase):
                 mod.simular(tiempo_final=t_final, vars_interés='Lago')
                 referencia['lago_2000'] = {'mds_Lago': mod.leer_resultados('Lago')}
 
-                resultados = mod.simular_paralelo(
+                resultados = mod.simular_grupo(
                     tiempo_final=t_final,
                     vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
                     vars_interés='Lago'
@@ -80,16 +80,16 @@ class Test_Conectado(unittest.TestCase):
                 for c in resultados:
                     npt.assert_allclose(referencia[c]['mds_Lago'], resultados[c]['mds_Lago'], rtol=0.001)
 
-    def test_simular_paralelo_sin_paralelo(símismo):
+    def test_simular_grupo_con_paralelo(símismo):
         """
-        Comprobamos que :func:`SuperConectado.simular_paralelo` funcione igual con o sin paralelización.
+        Comprobamos que :func:`SuperConectado.simular_grupo` funcione igual con o sin paralelización.
 
         """
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
                 t_final = 100
 
-                sin_paral = mod.simular_paralelo(
+                sin_paral = mod.simular_grupo(
                     tiempo_final=t_final,
                     vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
                     vars_interés='Lago',
@@ -97,15 +97,50 @@ class Test_Conectado(unittest.TestCase):
                     paralelo=False
                 )
 
-                con_paral = mod.simular_paralelo(
+                con_paral = mod.simular_grupo(
                     tiempo_final=t_final,
                     vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
                     vars_interés='Lago',
-                    nombre_corrida='Corrida Tinamït Prueba paralelo'
+                    nombre_corrida='Corrida Tinamït Prueba paralelo',
+                    paralelo=True
                 )
 
                 for c in sin_paral:
                     npt.assert_allclose(sin_paral[c]['mds_Lago'], con_paral[c]['mds_Lago'], rtol=0.001)
+
+    def test_simular_grupo_inicvals_por_submodelo(símismo):
+        """
+        Asegurarse que podamos especificar valores iniciales por submodelo en un diccionario.
+        """
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                t_final = 100
+                vals_inic = {'mds_Nivel lago inicial': 50}
+                ref = mod.simular_grupo(tiempo_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
+
+                mod.limp_vals_inic()
+                vals_inic = {'mds': {'Nivel lago inicial': 50}}
+                res = mod.simular_grupo(tiempo_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
+
+                for c in res:
+                    npt.assert_allclose(ref[c]['mds_Lago'], res[c]['mds_Lago'], rtol=0.001)
+
+    def test_simular_grupo_inicvals_por_corrida_y_submodelo(símismo):
+        """
+
+        """
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                t_final = 100
+                vals_inic = {'50': {'mds_Nivel lago inicial': 50}}
+                ref = mod.simular_grupo(tiempo_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
+
+                mod.limp_vals_inic()
+                vals_inic = {'50': {'mds': {'Nivel lago inicial': 50}}}
+                res = mod.simular_grupo(tiempo_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
+
+                for c in res:
+                    npt.assert_allclose(ref[c]['mds_Lago'], res[c]['mds_Lago'], rtol=0.001)
 
     @classmethod
     def tearDownClass(cls):

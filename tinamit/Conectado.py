@@ -313,7 +313,7 @@ class SuperConectado(Modelo):
             raise ValueError(_('Debes especificar la conversión de la unidad de tiempo a meses o a días.'))
 
         # Obtener los datos de lugares
-        lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=escenario, regenerar=recalc)
+        lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=escenario)
 
     def paralelizable(símismo):
         """
@@ -325,7 +325,7 @@ class SuperConectado(Modelo):
 
         return all(mod.paralelizable() for mod in símismo.modelos.values())
 
-    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None,
+    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', tiempo_inic=None, lugar=None,
                 clima=None, recalc_clima=True, vars_interés=None, guardar=False):
         """
         Simula el modelo :class:`~tinamit.Conectado.SuperConectado`.
@@ -339,8 +339,8 @@ class SuperConectado(Modelo):
         :param nombre_corrida: El nombre de la corrida.  El valor automático es ``Corrida Tinamit``.
         :type nombre_corrida: str
 
-        :param fecha_inic: La fecha inicial de la simulación. Necesaria para simulaciones con cambios climáticos.
-        :type fecha_inic: ft.datetime | ft.date | int | str
+        :param tiempo_inic: La fecha inicial de la simulación. Necesaria para simulaciones con cambios climáticos.
+        :type tiempo_inic: ft.datetime | ft.date | int | str
 
         :param lugar: El lugares de la simulación.
         :type lugar: Lugar
@@ -380,23 +380,38 @@ class SuperConectado(Modelo):
 
         # Todo el restode la simulación se hace como en la clase pariente
         return super().simular(tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida,
-                               fecha_inic=fecha_inic,
-                               lugar=lugar, recalc_clima=recalc_clima, clima=clima, vars_interés=vars_interés,
+                               tiempo_inic=tiempo_inic,
+                               lugar=lugar, clima=clima, vars_interés=vars_interés,
                                guardar=guardar)
 
-    def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
-                         fecha_inic=None, lugar=None, clima=None, recalc_clima=True, combinar=True, dibujar=None,
-                         paralelo=True, vars_interés=None, guardar=False):
+    def simular_grupo(símismo, tiempo_final, paso=1, nombre_corrida='', vals_inic=None,
+                      tiempo_inic=None, lugar=None, clima=None, recalc_clima=True, combinar=True, dibujar=None,
+                      paralelo=None, vars_interés=None, guardar=False):
 
-        # Si los valores iniciales si dieron en el formato {submodelo1: {dic vals}, ...}, ponerlo en una lista
-        # para que no pensemos que cada nombre de modelo es un nombre de corrida.
+        # Reformatear el diccionario de valores iniciales en el caso que se especificó con submodelos
         if isinstance(vals_inic, dict):
             if all(x in símismo.modelos for x in vals_inic):
-                vals_inic = [vals_inic]
+                # formato {submodelo1: {dic vals}, ...}
+                vals_inic = {
+                    '{}_{}'.format(sub_mod, var): val for sub_mod, d_vals in vals_inic.items()
+                    for var, val in d_vals.items()
+                }
+            elif all(isinstance(corr, dict) for corr in vals_inic.values()):
+                if all(x in símismo.modelos for corr in vals_inic.values() if isinstance(corr, dict) for x in corr):
+                    # formato {corrida1: {submodelo1: {dic vals}, ...}, corrida2: {...}}
+                    vals_inic = {
+                        corr: {
+                            '{}_{}'.format(sub_mod, var): val for sub_mod, d_vals in d_corr.items()
+                            for var, val in d_vals.items()
+                        } for corr, d_corr in vals_inic.items()
+                    }
 
         # Llamar la función correspondiente de la clase pariente.
-        return super().simular_paralelo(tiempo_final, paso, nombre_corrida, vals_inic, fecha_inic, lugar, clima,
-                                        recalc_clima, combinar, dibujar, paralelo, vars_interés, guardar=guardar)
+        return super().simular_grupo(
+            tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, vals_inic=vals_inic,
+            tiempo_inic=tiempo_inic, lugar=lugar, clima=clima, combinar=combinar, paralelo=paralelo,
+            vars_interés=vars_interés, guardar=guardar
+        )
 
     def inic_val_var(símismo, var, val):
 
@@ -423,8 +438,10 @@ class SuperConectado(Modelo):
 
     def limp_vals_inic(símismo, var=None):
         if var is not None:
-            mod, var = símismo.resolver_nombre_var(var)
-            símismo.modelos[mod].limp_vals_inic(var)
+            var = símismo.resolver_nombre_var(var)[1]
+            for mod in símismo.modelos.values():
+                if var in mod.vals_inic:
+                    mod.limp_vals_inic(var)
         else:
             for mod in símismo.modelos.values():
                 mod.limp_vals_inic()
