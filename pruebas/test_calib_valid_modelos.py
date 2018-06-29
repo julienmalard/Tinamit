@@ -56,6 +56,7 @@ class Test_CalibModelo(unittest.TestCase):
 class Test_CalibModloEspacial(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        return
         cls.paráms = {
             'taza de contacto': {'708': 81.25, '1010': 50},
             'taza de infección': {'708': 0.007, '1010': 0.005},

@@ -27,8 +27,10 @@ class Test_SimulConClima(unittest.TestCase):
         limpiar_mds()
 
 
+"""
 class Test_SimulConDatosBD(unittest.TestCase):
     def test_simular_con_BD(símismo):
+        
         mod = generar_mds(arch_mds)
         datos = pd.DataFrame()  # 100 días
         mod.conectar_datos(datos)
@@ -70,3 +72,4 @@ class Test_SimulConDatosYGeog(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         limpiar_mds()
+"""

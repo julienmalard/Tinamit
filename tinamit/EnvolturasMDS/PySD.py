@@ -15,11 +15,12 @@ class ModeloPySD(EnvolturaMDS):
         if ext == '.mdl':
             símismo.tipo = '.mdl'
             símismo.modelo = pysd.read_vensim(archivo)
-            símismo.internos = ['FINAL TIME', 'TIME STEP', 'SAVEPER', 'INITIAL TIME']
         elif ext in ['.xmile', '.xml']:
             símismo.tipo = '.xmile'
             símismo.modelo = pysd.read_xmile(archivo)
-            símismo.internos = []
+        elif ext == '.py':  # Modelos PySD ya traducidos
+            símismo.tipo = '.py'
+            símismo.modelo = pysd.load(archivo)
         else:
             raise ValueError(_('PySD no sabe leer modelos del formato "{}". Debes darle un modelo ".mdl" o ".xmile".')
                              .format(ext))
@@ -40,7 +41,7 @@ class ModeloPySD(EnvolturaMDS):
 
         for i, f in símismo.modelo.doc().iterrows():
             nombre = f['Real Name']
-            if nombre not in símismo.internos:
+            if nombre not in ['FINAL TIME', 'TIME STEP', 'SAVEPER', 'INITIAL TIME']:
                 nombre_py = f['Py Name']
                 unidades = f['Unit']
                 líms = literal_eval(f['Lims'])
@@ -71,7 +72,7 @@ class ModeloPySD(EnvolturaMDS):
             unid_tiempo = docs.loc[docs['Real Name'] == 'TIME STEP', 'Unit'].values[0]
 
         else:
-            # Solución muy fea para PySD
+            # Solución muy fea para XMILE
             with open(símismo.modelo.py_model_file, 'r', encoding='UTF-8') as d:
                 f = d.readline()
                 while f != 'def time_step():\n':
