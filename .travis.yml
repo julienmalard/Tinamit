@@ -16,5 +16,7 @@ script:
   - rm -r tinamit
   - cd pruebas
   - nosetests --with-coverage --cover-package=tinamit
+
+after_success:
   - coveralls --rcfile=.coveragerc
   - codecov
