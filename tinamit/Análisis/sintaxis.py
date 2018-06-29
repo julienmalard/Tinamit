@@ -226,8 +226,9 @@ class Ecuación(object):
             return egr
 
         def _gen_d_vars_pm_jer():
-            dists_base = _gen_d_vars_pm(tmñ=(len(nv_jerarquía[-1]),),
-                                        fmt_nmbrs='mu_{}_nv_' + str(len(nv_jerarquía) - 1))
+            dists_base = _gen_d_vars_pm(
+                tmñ=(len(set(nv_jerarquía[0])),), fmt_nmbrs='mu_{}_nv_' + str(len(nv_jerarquía) - 1)
+            )
 
             egr = {}
 
@@ -260,8 +261,6 @@ class Ecuación(object):
                 egr[p] = mu
 
             return egr
-
-        d_vars_compart = {}
 
         def _a_bayes(á, d_pm):
 
