@@ -107,17 +107,12 @@ class act_cat(babel.update_catalog):
 
 class inic_cat(babel.init_catalog):
     def __init__(self, dist):
-        print('__init__')
         super().__init__(dist)
-        print('2')
 
     def run(símismo):
-        print('inicializando...')
         if babel.localedata.exists(símismo.locale):
-            print('{} existe'.format(símismo.locale))
             super().run()
         else:
-            print('{} no existe'.format(símismo.locale))
             inic_cat_leng(símismo.locale)
 
 

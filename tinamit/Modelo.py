@@ -85,6 +85,7 @@ class Modelo(object):
         símismo.vals_inic = {}
         símismo.vars_clima = {}  # Formato: var_intern1: {'nombre_extrn': nombre_oficial, 'combin': 'prom' | 'total'}
         símismo.lugar = None  # type: Geog.Lugar
+        símismo.geog = None
 
         # Listas de los nombres de los variables que sirven de conexión con otro modelo.
         símismo.vars_saliendo = set()
@@ -1091,7 +1092,13 @@ class Modelo(object):
                 for v in calib:
                     símismo.calibs[v] = calib[v]
 
-    def conectar_datos(símismo, datos):
+    def conectar_geog(símismo, geog):
+        símismo.geog = geog
+
+    def desconectar_geog(símismo):
+        símismo.geog = None
+
+    def conectar_datos(símismo, datos, corresp_vars=None):
         if isinstance(datos, SuperBD):
             símismo.datos = datos
         elif isinstance(datos, Datos):
@@ -1102,6 +1109,10 @@ class Modelo(object):
             símismo.datos = SuperBD('Autogen', bds=DatosRegión('Autogen', pd.DataFrame(datos)))
         else:
             raise TypeError
+
+        if corresp_vars is not None:
+            for var, var_bd in corresp_vars.items():
+                símismo.conectar_var_a_datos(var=var, var_bd=var_bd)
 
     def conectar_var_a_datos(símismo, var, var_bd=None):
         if var_bd is None:
@@ -1151,8 +1162,8 @@ class Modelo(object):
 
         # Efectuar la calibración.
         calib = mod_calib.calibrar(
-            paráms=paráms, líms_paráms=líms_paráms, método=método, bd_datos=símismo.datos, en=en, escala=escala,
-            ops_método=ops
+            paráms=paráms, líms_paráms=líms_paráms, método=método, bd_datos=símismo.datos, geog=símismo.geog,
+            en=en, escala=escala, ops_método=ops
         )
 
         # Reformatear los resultados

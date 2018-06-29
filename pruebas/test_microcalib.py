@@ -70,15 +70,14 @@ class Test_CalibEnModelo(unittest.TestCase):
         bd_pds = DatosIndividuales('Datos geográficos', pd.DataFrame({'lugar': lugares, 'x': x, 'y': y}),
                                    lugar='lugar')
 
-        geog = Geografía('Geografía Iximulew', arch_csv_geog)
-        cls.bd = SuperBD('BD Central', bd_pds, geog=geog)
+        cls.geog = Geografía('Geografía Iximulew', arch_csv_geog)
+        cls.bd = SuperBD('BD Central', bd_pds)
         cls.bd.espec_var('x')
         cls.bd.espec_var('y')
 
         cls.mod = ModeloPySD(arch_mds)
-        cls.mod.conectar_datos(cls.bd)
-        cls.mod.conectar_var_a_datos('X', var_bd='x')
-        cls.mod.conectar_var_a_datos('Y', var_bd='y')
+        cls.mod.conectar_datos(cls.bd, corresp_vars={'X': 'x', 'Y': 'y'})
+        cls.mod.conectar_geog(cls.geog)
 
     def test_calibración_geog_con_escalas(símismo):
         """

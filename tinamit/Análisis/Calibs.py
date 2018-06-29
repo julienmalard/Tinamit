@@ -92,7 +92,7 @@ class CalibradorEc(object):
             raise ValueError(_('Debes especificar el nombre del variable dependiente, o con el parámetro'
                                '`var_y`, o directamente en la ecuación, por ejemplo: "y = a*x ..."'))
 
-    def calibrar(símismo, bd_datos, paráms=None, líms_paráms=None, método=None, binario=False, en=None,
+    def calibrar(símismo, bd_datos, paráms=None, líms_paráms=None, método=None, binario=False, geog=None, en=None,
                  escala=None, ops_método=None):
         """
         Calibra la ecuación, según datos, y, opcionalmente, una geografía espacial.
@@ -189,29 +189,31 @@ class CalibradorEc(object):
             mod_jerárquico = False
 
         # Intentar obtener información geográfica, si posible.
-        try:
-            lugares = bd_datos.geog_obt_lugares_en(en, escala=escala)
-            jerarquía = bd_datos.geog_obt_jerarquía(en, escala=escala)
-        except ValueError:
+        if geog is not None:
+            lugares = geog.obt_lugares_en(en, escala=escala)
+            jerarquía = geog.obt_jerarquía(en, escala=escala)
+        else:
+            if en is not None or escala is not None:
+                raise ValueError(_('Debes especificar una geografía en `geog` para emplear `en` o `escala`.'))
             lugares = jerarquía = None
 
         # Ahora, por fin hacer la calibración.
         if método == 'inferencia bayesiana':
             return símismo._calibrar_bayesiana(
                 ec=símismo.ec, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms_final, binario=binario,
-                ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, jerarquía=jerarquía,
+                ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, jerarquía=jerarquía, geog=geog,
                 mod_jerárquico=mod_jerárquico
             )
         elif método == 'optimizar':
             return símismo._calibrar_optim(
                 ec=símismo.ec, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms_final,
-                ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, jerarquía=jerarquía
+                ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, jerarquía=jerarquía, geog=geog
             )
         else:
             raise ValueError(_('Método de calibración "{}" no reconocido.').format(método))
 
     @staticmethod
-    def _calibrar_bayesiana(ec, var_y, vars_x, líms_paráms, binario, bd_datos, lugares, jerarquía,
+    def _calibrar_bayesiana(ec, var_y, vars_x, líms_paráms, binario, bd_datos, lugares, jerarquía, geog,
                             mod_jerárquico, ops_método):
         """
         Efectua la calibración bayesiana.
@@ -321,7 +323,7 @@ class CalibradorEc(object):
 
                     if í == (len(nv_jerarquía) - 1):
 
-                        nv[:] = [x for x in nv if len(obs[obs['lugar'].isin(bd_datos.geog.obt_lugares_en(x) + [x])])]
+                        nv[:] = [x for x in nv if len(obs[obs['lugar'].isin(geog.obt_lugares_en(x) + [x])])]
                     else:
 
                         nv[:] = [x for x in nv if x in [jerarquía[y] for y in nv_jerarquía[í + 1]]]
@@ -378,7 +380,7 @@ class CalibradorEc(object):
                 # Efectuar las calibraciones para todos los lugares.
                 resultados = {}
                 for lg in lugares:
-                    lgs_potenciales = bd_datos.geog.obt_todos_lugares_en(lg)
+                    lgs_potenciales = geog.obt_todos_lugares_en(lg)
                     obs_lg = obs[obs['lugar'].isin(lgs_potenciales + [lg])]
                     if len(obs_lg):
                         mod_bayes = ec.gen_mod_bayes(
@@ -398,7 +400,7 @@ class CalibradorEc(object):
             return resultados
 
     @staticmethod
-    def _calibrar_optim(ec, var_y, vars_x, líms_paráms, bd_datos, lugares, jerarquía, ops_método):
+    def _calibrar_optim(ec, var_y, vars_x, líms_paráms, bd_datos, lugares, jerarquía, geog, ops_método):
         """
         Calibra la ecuación con un método de optimización.
 
@@ -472,7 +474,7 @@ class CalibradorEc(object):
                     inic = pariente = None  # Y no tenemos ni estimos iniciales, ni región pariente
                 else:
                     # Sino, tomar los datos de esta región únicamente.
-                    lgs_potenciales = bd_datos.geog.obt_todos_lugares_en(lugar)
+                    lgs_potenciales = geog.obt_todos_lugares_en(lugar)
                     obs_lg = obs[obs['lugar'].isin(lgs_potenciales + [lugar])]
 
                     # Intentar sacar información del nivel superior en la jerarquía

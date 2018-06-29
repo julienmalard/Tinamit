@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from Geog import Geografía
+from tinamit.Geog import Geografía
 from tinamit.EnvolturasMDS import generar_mds
 from tinamit.Geog import Lugar
 from pruebas.test_geog import arch_clim_diario

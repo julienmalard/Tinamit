@@ -11,7 +11,6 @@ from matplotlib.figure import Figure as Figura
 
 from tinamit import _, detectar_codif
 from tinamit.Análisis.Números import tx_a_núm
-from tinamit.Geog.Geog import Geografía
 
 
 class Datos(object):
@@ -171,7 +170,7 @@ class SuperBD(object):
     Una :class:`SuperBD` reune varias bases de :class:`Datos` en un lugar cómodo para acceder a los datos.
     """
 
-    def __init__(símismo, nombre, bds=None, geog=None, auto_conectar=True):
+    def __init__(símismo, nombre, bds=None, auto_conectar=True):
         """
 
         Parameters
@@ -180,13 +179,11 @@ class SuperBD(object):
             El nombre de la base de datos.
         bds: list[Datos] | Datos
             Una lista opcional de bases de :class:`Datos` para conectar.
-        geog: Geografía
-            Una :class:`Geografía` opcional que corresponde con los datos.
+
         """
 
         # Guardar el nombre y la geografía
         símismo.nombre = nombre
-        símismo.geog = geog  # type: Geografía
 
         # Las bases de datos
         símismo.bds = {}  # type: dict[str, Datos]
@@ -705,7 +702,7 @@ class SuperBD(object):
         símismo.bd_lista = True
 
     def obt_datos(símismo, l_vars, lugares=None, bd_datos=None, fechas=None, excl_faltan=False,
-                  tipo='individual', interpolar=True, interpolar_estricto=False, lugares_estrictos=False):
+                  tipo='individual', interpolar=True, interpolar_estricto=False):
         """
 
         Parameters
@@ -730,15 +727,8 @@ class SuperBD(object):
 
         # Formatear el código de lugar
         if lugares is not None:
-            if isinstance(lugares, str) or isinstance(lugares, int):
+            if isinstance(lugares, (str, int)):
                 lugares = {lugares}
-            elif isinstance(lugares, list):
-                lugares = set(lugares)
-
-            if not lugares_estrictos and símismo.geog is not None:
-                for lg in lugares.copy():
-                    sub_lgs = símismo.geog.obt_todos_lugares_en(lg)
-                    lugares.update(sub_lgs)
 
         # Formatear los datos
         bd_datos = símismo._validar_bd(bd_datos)
@@ -956,29 +946,6 @@ class SuperBD(object):
             return bd_pds.loc[(bd_pds['fecha'].isin(fechas))]
         else:
             return bd_pds.loc[(bd_pds['fecha'] == fechas)]
-
-    def geog_obt_lugares_en(símismo, en=None, escala=None):
-        """
-
-        Parameters
-        ----------
-        en : str
-        escala : str
-
-        Returns
-        -------
-
-        """
-        if símismo.geog is not None:
-            return símismo.geog.obt_lugares_en(en=en, escala=escala)
-        else:
-            raise ValueError(_('Tienes que conectar una geografía a la base de datos primero.'))
-
-    def geog_obt_jerarquía(símismo, en=None, escala=None):
-        if símismo.geog is not None:
-            return símismo.geog.obt_jerarquía(en=en, escala=escala)
-        else:
-            raise ValueError(_('Tienes que conectar una geografía a la base de datos primero.'))
 
     def graficar_hist(símismo, var, fechas=None, lugar=None, bd_datos=None, tipo='individual', archivo=None):
 
