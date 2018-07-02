@@ -114,6 +114,9 @@ class Test_CalibEnModelo(unittest.TestCase):
 
             símismo.mod.borrar_micro_calib('Y')
 
+    def test_guardar_cargar_calibs(símismo):
+        pass
+
     @classmethod
     def tearDownClass(cls):
         limpiar_mds()
