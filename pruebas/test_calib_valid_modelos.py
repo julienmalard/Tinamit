@@ -53,25 +53,28 @@ class Test_CalibModelo(unittest.TestCase):
                         pass
 
 
-class Test_CalibModloEspacial(unittest.TestCase):
+class Test_CalibModeloEspacial(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        return
+
         cls.paráms = {
             'taza de contacto': {'708': 81.25, '1010': 50},
             'taza de infección': {'708': 0.007, '1010': 0.005},
             'número inicial infectado': {'708': 22.5, '1010': 40},
             'taza de recuperación': {'708': 0.0375, '1010': 0.050}
         }
-        cls.mod = generar_mds(arch_mds)
-        cls.mod.geog = Geografía('prueba', archivo=arch_csv_geog)
-        cls.datos = cls.mod.simular(tiempo_final=200, escala='muni')
-
-        cls.mod.conectar_datos(cls.datos)
+        cls.mod = mod = generar_mds(arch_mds)
+        mod.geog = Geografía('prueba', archivo=arch_csv_geog)
+        mod.cargar_calibs(cls.paráms)
+        datos = mod.simular(tiempo_final=200, en=['708', '701', '1010'])
+        mod.borrar_calibs()
+        mod.conectar_datos(datos)
 
     def test_calib_valid_espacial(símismo):
-        pass
+        símismo.mod.calibrar(var=list(símismo.paráms))
+        valid = símismo.mod.validar()
+        símismo.assertTrue(valid['éxito'])
 
     @classmethod
     def tearDownClass(cls):
-        pass
+        limpiar_mds()
