@@ -84,8 +84,7 @@ class Modelo(object):
         # Es muy útil para modelos cuyos variables no podemos cambiar antes de empezar una simulación (como VENSIM).
         símismo.vals_inic = {}
         símismo.vars_clima = {}  # Formato: var_intern1: {'nombre_extrn': nombre_oficial, 'combin': 'prom' | 'total'}
-        símismo.lugar = None  # type: Geog.Lugar
-        símismo.geog = None
+        símismo.geog = None  # type: Geog.Geografía
 
         # Listas de los nombres de los variables que sirven de conexión con otro modelo.
         símismo.vars_saliendo = set()
@@ -170,7 +169,7 @@ class Modelo(object):
         # Obtener los datos de lugares
         lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=escenario)
 
-    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', tiempo_inic=None, lugar=None,
+    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', tiempo_inic=None, lugar_clima=None,
                 clima=None, vars_interés=None, guardar=False):
         """
 
@@ -180,7 +179,7 @@ class Modelo(object):
         paso :
         nombre_corrida :
         tiempo_inic : ft.date
-        lugar : Geog.Lugar
+        lugar_clima : Geog.Lugar
         clima :
         vars_interés :
         guardar: bool
@@ -189,9 +188,6 @@ class Modelo(object):
         -------
 
         """
-
-        # Conectar el lugar
-        símismo.lugar = lugar
 
         # Calcular el número de pasos necesario
         if int(paso) != paso:
@@ -327,9 +323,8 @@ class Modelo(object):
         if guardar:
             símismo.guardar_resultados()
 
-    def simular_grupo(símismo, tiempo_final, paso=1, nombre_corrida='', vals_inic=None,
-                      tiempo_inic=None, lugar=None, clima=None, combinar=True,
-                      dibujar=None, paralelo=None, vars_interés=None, guardar=False):
+    def simular_grupo(símismo, tiempo_final, paso=1, nombre_corrida='', vals_inic=None, tiempo_inic=None,
+                      lugar_clima=None, clima=None, combinar=True, paralelo=None, vars_interés=None, guardar=False):
 
         # Formatear los nombres de variables a devolver.
         if vars_interés is not None:
@@ -341,7 +336,7 @@ class Modelo(object):
                 avisar(_('No podremos guardar datos porque tienes `guardar=False` y no especificaste `vars_interés`.'))
 
         # Poner las opciones de simulación en un diccionario.
-        opciones = {'paso': paso, 'tiempo_inic': tiempo_inic, 'lugar': lugar, 'vals_inic': vals_inic,
+        opciones = {'paso': paso, 'tiempo_inic': tiempo_inic, 'lugar_clima': lugar_clima, 'vals_inic': vals_inic,
                     'clima': clima, 'tiempo_final': tiempo_final}
 
         # Entender el tipo de opciones (lista, diccionario, o valor único)
@@ -476,6 +471,23 @@ class Modelo(object):
                 símismo.guardar_resultados(dic_res=res, nombre=corr)
 
         return resultados
+
+    def simular_en(símismo, tiempo_final, en=None, escala=None, paso=1, nombre_corrida='', vals_inic=None,
+                   tiempo_inic=None, lugar_clima=None, clima=None, vars_interés=None, guardar=False, paralelo=None):
+        if símismo.geog is None:
+            raise ValueError
+        lugares = símismo.geog.obt_lugares_en(en=en, escala=escala)
+        l_vals_inic = []
+        l_vals_extern = []
+        for l in lugares:
+            datos_inic = símismo.obt_datos_inic(tiempo_inic, lugar=l)
+            l_vals_inic.append(datos_inic.update(vals_inic))
+            l_vals_extern
+        return símismo.simular_grupo(
+            tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida,
+            vals_inic=l_vals_inic, tiempo_inic=tiempo_inic, lugar_clima=lugar_clima, clima=clima, combinar=False,
+            paralelo=paralelo, vars_interés=vars_interés, guardar=guardar
+        )
 
     def guardar_resultados(símismo, dic_res=None, nombre=None, frmt='json', var=None):
         """
@@ -1092,8 +1104,11 @@ class Modelo(object):
                 for v in calib:
                     símismo.calibs[v] = calib[v]
 
-    def conectar_geog(símismo, geog):
+    def conectar_geog(símismo, geog, interna=False, vars=None, eje=None):
         símismo.geog = geog
+
+        if interna:
+            raise NotImplementedError
 
     def desconectar_geog(símismo):
         símismo.geog = None
@@ -1139,7 +1154,7 @@ class Modelo(object):
         # Preparar la ecuación
         ec = símismo.variables[var]['ec']
         if not len(Ecuación(ec).variables()):
-            raise NotImplementedError  # Falta implementar el caso de un constante
+            raise NotImplementedError  # para hacer: Falta implementar el caso de un constante
 
         # El objeto de calibración.
         mod_calib = CalibradorEc(
