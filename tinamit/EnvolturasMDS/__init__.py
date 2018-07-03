@@ -1,6 +1,6 @@
 import os
 
-from MDS import EnvolturaMDS
+from tinamit.MDS import EnvolturaMDS
 from tinamit import _
 from tinamit.EnvolturasMDS.PySD import ModeloPySD
 from tinamit.EnvolturasMDS.Vensim import ModeloVensim, ModeloVensimMdl
