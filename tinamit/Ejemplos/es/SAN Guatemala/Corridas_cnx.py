@@ -38,7 +38,7 @@ Tz_Ya = Lugar(lat=14.673, long=-91.145, elev=2050)
 res = mod.simular_grupo(tiempo_final=40, nombre_corrida='Conec', tiempo_inic=2020, tcr=[8.5, 0],
                         vars_interés=['Seguridad alimentaria', 'Rendimiento milpa', 'Pobreza',
                                      'Tecnificación agrícola', 'Emigración permanente'],
-                        lugar=Tz_Ya, vals_inic={x: {'mds': v} for x, v in dics_pol.items()}, clima=True,
+                        lugar_clima=Tz_Ya, vals_inic={x: {'mds': v} for x, v in dics_pol.items()}, clima=True,
                         combinar=True)
 
 

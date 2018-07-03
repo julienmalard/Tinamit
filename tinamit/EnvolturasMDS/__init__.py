@@ -1,5 +1,6 @@
 import os
 
+from MDS import EnvolturaMDS
 from tinamit import _
 from tinamit.EnvolturasMDS.PySD import ModeloPySD
 from tinamit.EnvolturasMDS.Vensim import ModeloVensim, ModeloVensimMdl
@@ -29,7 +30,7 @@ def generar_mds(archivo, motor=None):
 
     Returns
     -------
-    EnvolturaMDS:
+    EnvolturaMDS
         Un modelo DS.
 
     """
@@ -53,7 +54,7 @@ def generar_mds(archivo, motor=None):
 
         for env in motores_potenciales:
             try:
-                return env(archivo)
+                return env(archivo)  # type: EnvolturaMDS
             except BaseException as e:
                 errores[env.__name__] = e
 

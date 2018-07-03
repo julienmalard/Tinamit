@@ -44,23 +44,28 @@ class Datos(object):
 
         if fecha is None:
             símismo.fechas = fecha
-        elif fecha in símismo.cols:
-            símismo.fechas = símismo.bd.obt_fechas(fecha)
-        elif isinstance(fecha, ft.date) or isinstance(fecha, ft.datetime):
+        elif isinstance(fecha, str):
+            if fecha in símismo.cols:
+                símismo.fechas = símismo.bd.obt_fechas(fecha)
+            else:
+                try:
+                    símismo.fechas = leer_fechas(fecha)
+                except ValueError:
+                    raise ValueError(_('El valor "{}" para fechas no corresponde a una fecha reconocida o al nombre de'
+                                       'una columna en la base de datos').format(fecha))
+        elif isinstance(fecha, (ft.date, ft.datetime)):
             símismo.fechas = fecha
         elif isinstance(fecha, int):
             símismo.fechas = ft.date(year=fecha, month=1, day=1)
         else:
-            raise ValueError(_('El valor "{}" para fechas no corresponde a una fecha reconocida o al nombre de'
-                               'una columna en la base de datos').format(fecha))
+            raise TypeError(_('La fecha debe ser en formato texto, una fecha, o un número de año.'))
 
         if lugar is None:
             símismo.lugares = lugar
         elif lugar in símismo.cols:
-            # Quitar 0's inútiles en frente del código.
-            símismo.lugares = [x.strip().lstrip('0') for x in símismo.bd.obt_datos_tx(cols=lugar)]
+            símismo.lugares = símismo.bd.obt_datos_tx(cols=lugar)
         else:
-            símismo.lugares = str(lugar).strip().lstrip('0')
+            símismo.lugares = str(lugar).strip()
 
         if cód_vacío is None:
             símismo.cód_vacío = {'', 'NA', 'na', 'Na', 'nan', 'NaN'}
@@ -80,7 +85,7 @@ class Datos(object):
         """
 
         :param l_vars:
-        :type l_vars: list
+        :type l_vars: list[str] | str
 
         :param cód_vacío:
         :type cód_vacío: str | int | float | list | set
@@ -153,7 +158,7 @@ class DatosRegión(Datos):
         if col_error is not None:
             errores = símismo.bd.obt_datos(col_error)
         else:
-            datos = símismo.bd.obt_datos(var, cód_vacío=símismo.cód_vacío)
+            datos = símismo.bd.obt_datos(var, cód_vacío=símismo.cód_vacío)[var].values
             if símismo.tmñ_muestra is not None:
                 if np.nanmin(datos) >= 0 and np.nanmax(datos) <= 1:
                     tmñ_muestra = símismo.bd.obt_datos(símismo.tmñ_muestra, cód_vacío=símismo.cód_vacío)
@@ -189,7 +194,7 @@ class SuperBD(object):
         símismo.bds = {}  # type: dict[str, Datos]
 
         # Información de variables (y de sus bases de datos correspondientes)
-        símismo.vars = {}
+        símismo.variables = {}
 
         # Bases de datos internas
         símismo.datos_reg = None  # type: pd.DataFrame
@@ -262,7 +267,7 @@ class SuperBD(object):
             bd_plantilla[í] = símismo._validar_bd(bd_plantilla[í])
 
         # Hacer las conexiones.
-        for var, d_var in símismo.vars.items():
+        for var, d_var in símismo.variables.items():
             # Para cada variable ya conectado...
             for b in list(d_var['fuente']):
                 # Para cada base de datos que sirve de fuente para este variable...
@@ -306,7 +311,7 @@ class SuperBD(object):
         símismo.bds.pop(bd)
 
         # Quitar la de todos los diccionarios de variables también.
-        for var, d_var in símismo.vars.items():
+        for var, d_var in símismo.variables.items():
             try:
                 d_var['fuente'].pop(bd)
             except KeyError:
@@ -384,7 +389,7 @@ class SuperBD(object):
 
         for í, v in enumerate(l_var):
             # Verificar el nombre del variable
-            if v not in símismo.vars:
+            if v not in símismo.variables:
                 raise ValueError(_('El variable "{}" no existe.').format(var))
 
         # Devolver el nombre validado.
@@ -437,18 +442,18 @@ class SuperBD(object):
                              .format(var_bd))
 
         # Ahora, el verdadero trabajo.
-        if var not in símismo.vars:
+        if var not in símismo.variables:
             # Si no existía el variable antes, crear su diccionario de una vez.
-            símismo.vars[var] = {'fuente': {bd: {'var': var_bd, 'cód_vacío': cód_vacío} for bd in bds}}
+            símismo.variables[var] = {'fuente': {bd: {'var': var_bd, 'cód_vacío': cód_vacío} for bd in bds}}
         else:
             # Si ya existía, actualizar su diccionario existente.
             for bd in bds:
-                símismo.vars[var]['fuente'][bd] = {'var': var_bd, 'cód_vacío': cód_vacío}
+                símismo.variables[var]['fuente'][bd] = {'var': var_bd, 'cód_vacío': cód_vacío}
 
         # Agregar información de error para bases de datos regionales
         for bd in bds:
             if isinstance(símismo.bds[bd], DatosRegión):
-                símismo.vars[var]['fuente'][bd]['col_error'] = var_err
+                símismo.variables[var]['fuente'][bd]['col_error'] = var_err
 
         símismo.bd_lista = False
 
@@ -473,13 +478,13 @@ class SuperBD(object):
         # Borrarlo
         if bds is None:
             # Si no se especificó la base de datos, borrar el variable entero.
-            símismo.vars.pop(var)
+            símismo.variables.pop(var)
         else:
             # Si se especificó la base de datos, borrar el variable únicamente para ésta
             if not isinstance(bds, list):
                 bds = [bds]
             for bd in bds:
-                símismo.vars[var]['fuente'].pop(bd)
+                símismo.variables[var]['fuente'].pop(bd)
 
         # Limpiamos nuestra base de datos interna.
         símismo._limp_vars()
@@ -501,11 +506,11 @@ class SuperBD(object):
         var = símismo._validar_var(var)
 
         # Verificar que el nuevo nombre no existe.
-        if nuevo_nombre in símismo.vars:
+        if nuevo_nombre in símismo.variables:
             raise ValueError(_('El variable "{}" ya existe. Hay que borrarlo primero.').format(nuevo_nombre))
 
         # Cambiar el nombre
-        símismo.vars[nuevo_nombre] = símismo.vars.pop(var)
+        símismo.variables[nuevo_nombre] = símismo.variables.pop(var)
 
         # Ya debemos actualizar nuestra base de datos interna.
         símismo.bd_lista = False
@@ -516,25 +521,25 @@ class SuperBD(object):
 
         """
 
-        # Asegurarse que no queden variables sin bases de datos en `SuperBD.vars`.
-        for v in list(símismo.vars):
-            d_v = símismo.vars[v]
+        # Asegurarse que no queden variables sin bases de datos en `SuperBD.variables`.
+        for v in list(símismo.variables):
+            d_v = símismo.variables[v]
             # Si no quedan bases de datos asociadas, quitar el variable ahora.
             if len(d_v['fuente']) == 0:
-                símismo.vars.pop(v)
+                símismo.variables.pop(v)
 
         # Para simplificar el código
         datos_ind = símismo.datos_ind
         datos_reg = símismo.datos_reg
 
-        # Asegurarse que no queden variables (columas) en las bases de datos que no estén en `SuperBD.vars`.
+        # Asegurarse que no queden variables (columas) en las bases de datos que no estén en `SuperBD.variables`.
         for bd_pd in [datos_ind, datos_reg]:
             # Para cada base de datos Pandas...
             if bd_pd is not None:
                 # Si existe...
                 for c in list(bd_pd):
                     # Para cada columna...
-                    if c not in list(símismo.vars) + ['bd', 'lugar', 'fecha']:
+                    if c not in list(símismo.variables) + ['bd', 'lugar', 'fecha']:
                         # Si ya no existe como variable, quitar la columna.
                         bd_pd.drop(c, axis=1, inplace=True)
 
@@ -649,7 +654,7 @@ class SuperBD(object):
             # Para cada base de datos vinculada...
 
             # Sacar los variables de interés para esta base de datos
-            d_vars_interés = {v: d_v for v, d_v in símismo.vars.items() if nmb in d_v['fuente']}
+            d_vars_interés = {v: d_v for v, d_v in símismo.variables.items() if nmb in d_v['fuente']}
 
             # Agregar los datos a las bases internas
             if len(d_vars_interés):
@@ -674,7 +679,7 @@ class SuperBD(object):
                     if símismo.datos_ind is None:
                         símismo.datos_ind = bd_pds_temp
                     else:
-                        símismo.datos_ind = pd.concat([bd_pds_temp, símismo.datos_ind], ignore_index=True)
+                        símismo.datos_ind = pd.concat([bd_pds_temp, símismo.datos_ind], ignore_index=True, sort=True)
 
                 # Datos regionales
                 elif isinstance(bd, DatosRegión):
@@ -682,13 +687,13 @@ class SuperBD(object):
                     if símismo.datos_reg is None:
                         símismo.datos_reg = bd_pds_temp
                     else:
-                        símismo.datos_reg = pd.concat([bd_pds_temp, símismo.datos_reg], ignore_index=True)
+                        símismo.datos_reg = pd.concat([bd_pds_temp, símismo.datos_reg], ignore_index=True, sort=True)
 
                     # Calcular errores
                     datos_err = np.array(
                         [bd.obt_error(d_v['fuente'][nmb]['var'], col_error=d_v['fuente'][nmb]['col_error'])
                          for v, d_v in d_vars_interés.items()]
-                    )
+                    ).T
                     bd_pds_err_temp = bd_pds_temp.copy()
                     bd_pds_err_temp[list(d_vars_interés)] = datos_err
 
@@ -696,7 +701,7 @@ class SuperBD(object):
                     if símismo.datos_reg_err is None:
                         símismo.datos_reg_err = bd_pds_err_temp
                     else:
-                        símismo.datos_reg_err.append(bd_pds_err_temp, ignore_index=True)
+                        símismo.datos_reg_err.append(bd_pds_err_temp, ignore_index=True, sort=True)
 
         # Ya la base de datos sí está actualizada y lista para trabajar
         símismo.bd_lista = True
@@ -878,7 +883,7 @@ class SuperBD(object):
                 nuevas_filas = nuevas_filas.astype(dtype={x: 'float' for x in l_vars})
 
                 # ...y agregarla a la base de datos de la categoría actual.
-                bd_categ = bd_categ.append(nuevas_filas)
+                bd_categ = bd_categ.append(nuevas_filas, sort=True)
 
             # Calcular el promedio de los valores de observaciones por categoría y por fecha
             proms_fecha = bd_categ.groupby(['fecha']).mean()  # type: pd.DataFrame
@@ -915,7 +920,7 @@ class SuperBD(object):
                     proms_fecha.interpolate(limit_direction='both', inplace=True)
 
             # Agregar a los resultados finales
-            finalizados = finalizados.append(proms_fecha, ignore_index=True)
+            finalizados = finalizados.append(proms_fecha, ignore_index=True, sort=True)
 
         return finalizados
 
@@ -1118,7 +1123,7 @@ class SuperBD(object):
             bd_pd.to_csv(archivo)
 
     def __contains__(símismo, item):
-        return item in símismo.vars
+        return item in símismo.variables
 
 
 def _gen_bd(archivo):
@@ -1165,13 +1170,33 @@ class BD(object):
         """
         raise NotImplementedError
 
-    def obt_datos(símismo, cols, prec_dec=None, cód_vacío=None):
+    def obt_datos(símismo, cols, cód_vacío=None):
+        """
+
+        Parameters
+        ----------
+        cols :
+        cód_vacío :
+
+        Returns
+        -------
+        pd.DataFrame
+        """
+        if not isinstance(cols, list):
+            cols = [cols]
+
+        if cód_vacío is None:
+            cód_vacío = {}
+
+        datos = símismo._obt_datos(cols, cód_vacío=cód_vacío)
+
+        return datos.astype(float)
+
+    def _obt_datos(símismo, cols, cód_vacío):
         """
 
         :param cols:
         :type cols: list[str] | str
-        :param prec_dec:
-        :type prec_dec: int
         :return:
         :rtype: pd.DataFrame
         """
@@ -1279,23 +1304,7 @@ class BDtexto(BD):
 
         return n_filas
 
-    def obt_datos(símismo, cols, prec_dec=None, cód_vacío=None):
-        """
-
-        :param cols:
-        :type cols: str | list[str]
-        :param prec_dec:
-        :type prec_dec: int
-        :return:
-        :rtype: pd.DataFrame
-        """
-        if not isinstance(cols, list):
-            cols = [cols]
-
-        if cód_vacío is None:
-            cód_vacío = ['']
-        elif not isinstance(cód_vacío, set):
-            cód_vacío = set(cód_vacío)
+    def _obt_datos(símismo, cols, cód_vacío):
 
         m_datos = np.empty((len(cols), símismo.n_obs))
 
@@ -1306,12 +1315,6 @@ class BDtexto(BD):
 
         if len(cols) == 1:
             m_datos = m_datos[0]
-
-        if prec_dec is not None:
-            if prec_dec == 0:
-                m_datos = m_datos.astype(int)
-            else:
-                m_datos.round(prec_dec, out=m_datos)
 
         return pd.DataFrame(m_datos.T, columns=cols)
 
@@ -1359,21 +1362,35 @@ class BDpandas(BD):
     def obt_nombres_cols(símismo):
         return list(símismo.archivo)
 
-    def obt_datos(símismo, cols, prec_dec=None, cód_vacío=None):
-        if not isinstance(cols, list):
-            cols = [cols]
-        return símismo.archivo[cols].copy()
+    def _obt_datos(símismo, cols, cód_vacío):
+        datos = símismo.archivo[cols].copy()  # type: pd.DataFrame
+        datos[datos[cols].isin(cód_vacío)] = np.nan
+        return datos
 
     def obt_datos_tx(símismo, cols):
-        return símismo.archivo[cols].astype(str)
+        return símismo.archivo[cols].astype(str).values.tolist()
 
     def calc_n_obs(símismo):
         return símismo.archivo.shape[0]
 
 
 def leer_fechas(fechas):
-    # Una lista de lso formatos de fecha posibles. Esta función intentará de leer los datos de fechas con cada
-    # formato en esta lista y, si encuentra un que funciona, parará allí.
+    """
+    Intentará leer los datos de fechas con cada formato posible, y parará en el primero que funciona.
+
+    Parameters
+    ----------
+    fechas : str | list[str]
+        La o las fechas para analizar.
+
+    Returns
+    -------
+    ft.date | list[ft.date]
+        La fecha o lista de fechas correspondientes.
+
+    """
+
+    # Una lista de los formatos de fecha posibles.
     separadores = ['-', '/', ' ', '.']
 
     f = ['%d{0}%m{0}%y', '%m{0}%d{0}%y', '%d{0}%m{0}%Y', '%m{0}%d{0}%Y',

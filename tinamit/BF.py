@@ -153,7 +153,6 @@ class EnvolturaBF(Modelo):
         """
 
         # Inicializar el modelo.
-        símismo.modelo.lugar = símismo.lugar
         símismo.modelo.corrida_activa = nombre_corrida
         símismo.modelo.iniciar_modelo(tiempo_final, nombre_corrida)
 

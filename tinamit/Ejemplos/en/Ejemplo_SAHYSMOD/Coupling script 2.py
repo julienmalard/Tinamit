@@ -135,6 +135,6 @@ else:
     dibs = [dict(geog=Rechna_Doab, var='Watertable depth Tinamit', directorio='Maps'),
             dict(geog=Rechna_Doab, var='Soil salinity Tinamit CropA', colores=-1, directorio='Maps')]
 
-    modelo.simular_grupo(paso=1, tiempo_final=100 * 2, tiempo_inic='01/11/1989', lugar=location,
+    modelo.simular_grupo(paso=1, tiempo_final=100 * 2, tiempo_inic='01/11/1989', lugar_clima=location,
                          recalc_clima=False, clima=[0, 2.6, 4.5, 6.0, 8.5], vals_inic=vals_inic, combinar=True,
                          nombre_corrida='', dibujar=dibs, paralelo=True)

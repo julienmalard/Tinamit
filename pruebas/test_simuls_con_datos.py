@@ -19,7 +19,7 @@ class Test_SimulConClima(unittest.TestCase):
         lugar.observar_diarios(arch_clim_diario, cols_datos={'Precipitación': 'Lluvia'},
                                conv={'Precipitación': 1}, c_fecha='Fecha')
         mod.conectar_var_clima(var='Lluvia', var_clima='Precipitación', conv=1)
-        res = mod.simular(tiempo_final=1, tiempo_inic='1-1-2018', lugar=lugar, vars_interés='Lluvia')
+        res = mod.simular(tiempo_final=1, tiempo_inic='1-1-2018', lugar_clima=lugar, vars_interés='Lluvia')
         símismo.assertEqual(res['Lluvia'][0], 15)
 
     @classmethod
@@ -27,6 +27,7 @@ class Test_SimulConClima(unittest.TestCase):
         limpiar_mds()
 
 
+@unittest.skip
 class Test_SimulConDatosBD(unittest.TestCase):
     def test_simular_con_BD(símismo):
         
@@ -52,13 +53,14 @@ class Test_SimulConDatosBD(unittest.TestCase):
         mod.conectar_datos(datos)
         lugar = Lugar(lat=0, long=0, elev=0)
         lugar.observar_de(datos)
-        mod.simular(tiempo_inic='01-01-2001', tiempo_final=365, lugar=lugar)
+        mod.simular(tiempo_inic='01-01-2001', tiempo_final=365, lugar_clima=lugar)
 
     @classmethod
     def tearDownClass(cls):
         limpiar_mds()
 
 
+@unittest.skip
 class Test_SimulConDatosYGeog(unittest.TestCase):
     def test_(símismo):
         geog = Geografía()

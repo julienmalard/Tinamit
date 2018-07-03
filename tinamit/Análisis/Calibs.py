@@ -99,25 +99,25 @@ class CalibradorEc(object):
 
         Parameters
         ----------
-        bd_datos: pd.DataFrame
+        bd_datos : SuperBD
             La base de datos. Los nombres de las columnas deben coincidir con los nombres de los variables en la
             ecuación.
-        paráms: list[str]
+        paráms : list[str]
             La lista de los parámetros para calibrar. Si es ``None``, se tomarán los variables que no
             están en `bd_datos`.
-        líms_paráms: dict[str, tuple]
+        líms_paráms : dict[str, tuple]
             Un diccionario con los límites teoréticos de los parámetros.
-        método: {'optimizar', 'inferencia bayesiana'}
+        método : {'optimizar', 'inferencia bayesiana'}
             El método para emplear para la calibración.
-        binario: bool
+        binario : bool
             Si la ecuación es binaria o no.
-        en: str | int
+        en : str | int
             El código del lugar donde quieres calibrar esta ecuación. Aplica únicamente si `bd_datos` está
             conectada a un objeto :class:`Geografía`.
-        escala: str
+        escala : str
             La escala geográfica a la cual quieres calibrar el modelo. Aplica únicamente si `bd_datos` está
             conectada a un objeto :class:`Geografía`.
-        ops_método: dict
+        ops_método : dict
             Un diccionario de opciones adicionales a pasar directamente al algoritmo de calibración. Por ejemplo,
             puedes pasar argumentos para pymc3.Model.sample() aquí. También puedes especificar opciones
             específicas a Tinamït:
@@ -138,13 +138,13 @@ class CalibradorEc(object):
         var_y = símismo.ec.nombre
 
         # Asegurarse que tenemos observaciones para el variable y.
-        if var_y not in bd_datos.vars:
+        if var_y not in bd_datos.variables:
             raise ValueError(_('El variable "{}" no parece existir en la base de datos.').format(var_y))
 
         # Adivinar los parámetros si ne se especificaron.
         if paráms is None:
             # Todos los variables para cuales no tenemos observaciones.
-            paráms = [x for x in vars_ec if x not in bd_datos.vars]
+            paráms = [x for x in vars_ec if x not in bd_datos.variables]
 
         # Los variables x, por definición, son los que no son parámetros.
         vars_x = [v for v in vars_ec if v not in paráms]
@@ -534,7 +534,7 @@ class CalibradorMod(object):
         mod = símismo.mod
 
         if l_vars is None:
-            l_vars = list(símismo.mod.datos.vars)
+            l_vars = list(símismo.mod.datos.variables)
         cnx = símismo.mod.conex_var_datos
         l_vars = [cnx[v] if v in cnx else v for v in l_vars]
         obs = símismo.mod.datos.obt_datos(l_vars, tipo='regional')[l_vars]

@@ -20,7 +20,7 @@ def gen_formato(formato):
     if IzqaDerech:
         return formato
     else:
-        if type(formato) is str:
+        if isinstance(formato, str):
             invers = [('e', 'w'), ('ne', 'nw'), ('se', 'sw'), ('right', 'left'), ('izquierda', 'derecha')]
             for inver in invers:
                 if formato == inver[0]:
@@ -29,7 +29,7 @@ def gen_formato(formato):
                 elif formato == inver[1]:
                     formato = inver[0]
 
-        if type(formato) is dict:
+        if isinstance(formato, dict):
             formato = formato.copy()
             invers = [('e', 'w'), ('ne', 'nw'), ('se', 'sw'), ('right', 'left')]
             if 'x' in formato.keys():

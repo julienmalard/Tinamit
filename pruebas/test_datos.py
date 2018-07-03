@@ -1,23 +1,97 @@
+import datetime as ft
 import os
-
-import pandas as pd
 import unittest
+
+import numpy as np
 import numpy.testing as npt
+import pandas as pd
 
-from tinamit.Análisis.Datos import DatosIndividuales, DatosRegión, SuperBD
-
+from tinamit.Análisis.Datos import DatosIndividuales, DatosRegión, SuperBD, leer_fechas
 
 dir_act = os.path.split(__file__)[0]
 arch_reg = os.path.join(dir_act, 'recursos/datos/datos_reg.csv')
 arch_indiv = os.path.join(dir_act, 'recursos/datos/datos_indiv.csv')
 
 
-class Test_Datos(unittest.TestCase):
-    def test_de_pandas(símismo):
-        bd_pds = pd.DataFrame({'y': [1,2,3], 'x': [4,5,6]})
-        bd_datos = DatosIndividuales('Datos Generados', bd_pds)
-        datos = bd_datos.obt_datos(['x', 'y'])
-        npt.assert_allclose(datos['x'], [4,5,6])
+class Test_GenerarDatos(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.bds = {
+            'pandas': DatosIndividuales(
+                'Pandas', pd.DataFrame(
+                    {
+                        'lugar': [708, 708, 7, 7, 7, 701],
+                        'fecha': ['2000', '2002', '2000', '2002', '2003', '1990'],
+                        'var_completo': [1, 2, 2, 3, 4, 0],
+                        'var_incompleto': ['', 10, 20, '', 30, 15],
+                        'temp': [1, 1, 1, 1, 1, 1]
+                    }
+                )
+            ),
+            'csv': DatosIndividuales('CSV', arch_indiv)
+        }
+
+    def test_obt_datos(símismo):
+        for nmb, bd in símismo.bds.items():
+            with símismo.subTest(bd=nmb):
+                datos = bd.obt_datos(['var_completo'])
+            npt.assert_array_equal(datos['var_completo'], [1, 2, 2, 3, 4, 0])
+
+    def test_obt_datos_faltan(símismo):
+        for nmb, bd in símismo.bds.items():
+            with símismo.subTest(bd=nmb):
+                datos = bd.obt_datos(['var_incompleto'])
+            npt.assert_array_equal(datos['var_incompleto'], [np.nan, 10, 20, np.nan, 30, 15])
+
+
+class TestDatos(unittest.TestCase):
+
+    def test_obt_datos_código_vacío(símismo):
+        bd = DatosIndividuales('prueba', pd.DataFrame({'a': [1, 2, 'jaja']}), cód_vacío='jaja')
+        npt.assert_array_equal(bd.obt_datos('a')['a'], [1, 2, np.nan])
+
+    def test_obt_datos_códigos_vacíos_múltiples(símismo):
+        bd = DatosIndividuales('prueba', pd.DataFrame({'a': [1, 2, 'jaja', 'jajaja']}), cód_vacío='jaja')
+        npt.assert_array_equal(bd.obt_datos('a', cód_vacío='jajaja')['a'], [1, 2, np.nan, np.nan])
+
+    def test_fechas_columna(símismo):
+        fechas = ['1947-8-14', '1947-8-15']
+        bd = DatosIndividuales('prueba', pd.DataFrame({'a': [1, 2], 'f': fechas}), fecha='f')
+        fechas_bd = bd.obt_datos('a')['fecha'].dt.date.tolist()
+        símismo.assertListEqual(fechas_bd, leer_fechas(fechas))
+
+    def test_fechas_ent(símismo):
+        bd = DatosIndividuales('prueba', pd.DataFrame({'a': [1, 2]}), fecha=1966)
+        fechas_bd = bd.obt_datos('a')['fecha'].dt.date.tolist()
+        símismo.assertListEqual(fechas_bd, [ft.date(1966, 1, 1)] * 2)
+
+    def test_fechas_ft(símismo):
+        fecha = ft.date(1966, 1, 1)
+        bd = DatosIndividuales('prueba', pd.DataFrame({'a': [1, 2]}), fecha=fecha)
+        fechas_bd = bd.obt_datos('a')['fecha'].dt.date.tolist()
+        símismo.assertListEqual(fechas_bd, [fecha] * 2)
+
+    def test_fecha_texto(símismo):
+        fecha = '1966-7-21'
+        bd = DatosIndividuales('prueba', pd.DataFrame({'a': [1, 2]}), fecha=fecha)
+        fechas_bd = bd.obt_datos('a')['fecha'].dt.date.tolist()
+        símismo.assertListEqual(fechas_bd, [leer_fechas(fecha)] * 2)
+
+    def test_fechas_error(símismo):
+        with símismo.assertRaises(ValueError):
+            DatosIndividuales('pueba', pd.DataFrame({'a': [1, 2]}), fecha='No soy una columna')
+
+    def test_lugares_columna(símismo):
+        lugar = ['1', '2']
+        bd = DatosIndividuales('prueba', pd.DataFrame({'a': [1, 2], 'l': lugar}), lugar='l')
+        lugares_bd = bd.obt_datos('a')['lugar'].tolist()
+        símismo.assertListEqual(lugares_bd, lugar)
+
+    def test_lugares_texto(símismo):
+        bd = DatosIndividuales('prueba', pd.DataFrame({'a': [1, 2]}), lugar='708')
+        lugares_bd = bd.obt_datos('a')['lugar'].tolist()
+        símismo.assertListEqual(lugares_bd, ['708'] * 2)
 
 
 class Test_SuperBD(unittest.TestCase):
@@ -33,14 +107,14 @@ class Test_SuperBD(unittest.TestCase):
 
     def test_espec_borrar_var(símismo):
         símismo.bd.espec_var(var='var para borrar', var_bd='temp')
-        símismo.assertIn('var para borrar', símismo.bd.vars)
+        símismo.assertIn('var para borrar', símismo.bd.variables)
         símismo.bd.borrar_var(var='var para borrar')
-        símismo.assertNotIn('var para borrar', símismo.bd.vars)
+        símismo.assertNotIn('var para borrar', símismo.bd.variables)
 
     def test_renombrar_var(símismo):
         símismo.bd.renombrar_var('completo', nuevo_nombre='var renombrado')
-        símismo.assertIn('var renombrado', símismo.bd.vars)
-        símismo.assertNotIn('completo', símismo.bd.vars)
+        símismo.assertIn('var renombrado', símismo.bd.variables)
+        símismo.assertNotIn('completo', símismo.bd.variables)
         símismo.bd.renombrar_var('var renombrado', nuevo_nombre='completo')
 
     def test_desconectar_datos(símismo):
@@ -53,7 +127,7 @@ class Test_SuperBD(unittest.TestCase):
         símismo.bd.guardar_datos()
         símismo.bd.cargar_datos()
 
-        símismo.assertIn('completo', list(símismo.bd.vars))
+        símismo.assertIn('completo', list(símismo.bd.variables))
 
         # Limpiar
         símismo.bd.borrar_archivo_datos()

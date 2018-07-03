@@ -1,6 +1,7 @@
 import os
 import unittest
 
+from pruebas.test_mds import limpiar_mds
 from tinamit.Geog import Geografía
 from tinamit.EnvolturasMDS import generar_mds
 
@@ -53,10 +54,10 @@ class Test_CalibModelo(unittest.TestCase):
                         pass
 
 
+@unittest.skip
 class Test_CalibModeloEspacial(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-
         cls.paráms = {
             'taza de contacto': {'708': 81.25, '1010': 50},
             'taza de infección': {'708': 0.007, '1010': 0.005},

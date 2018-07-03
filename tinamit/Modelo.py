@@ -169,54 +169,38 @@ class Modelo(object):
         # Obtener los datos de lugares
         lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=escenario)
 
-    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', tiempo_inic=None, lugar_clima=None,
-                clima=None, vars_interés=None, guardar=False):
-        """
+    def _inic_pasos_y_fechas(símismo, t_inic, t_final, paso):
 
-        Parameters
-        ----------
-        tiempo_final :
-        paso :
-        nombre_corrida :
-        tiempo_inic : ft.date
-        lugar_clima : Geog.Lugar
-        clima :
-        vars_interés :
-        guardar: bool
-
-        Returns
-        -------
-
-        """
-
-        # Calcular el número de pasos necesario
         if int(paso) != paso:
             raise ValueError(_('`paso` debe ser un número entero.'))
         if paso < 1:
             raise ValueError(_('El paso debe ser superior a 1.'))
-        n_pasos = int(math.ceil(tiempo_final / paso))
 
-        # Preparar las unidades de tiempo
-        dic_trad_tiempo = {'año': 'year', 'mes': 'months', 'día': 'days'}
-        fecha_act = tiempo_inic
+        if t_inic is None:
+            if isinstance(t_final, int):
+                t_inic = 0
+            else:
+                raise ValueError
+        elif isinstance(t_inic, str):
+            t_inic = leer_fechas(t_inic)
+        elif isinstance(t_inic, ft.datetime):
+            t_inic = t_inic.date()
 
-        # Si hay fecha inicial, tenemos que guardar cuenta de donde estamos en el calendario
-        if tiempo_inic is None:
-            if clima is not None:
-                raise ValueError(_('Hay que especificar la fecha inicial para simulaciones de clima.'))
-            unid_ref_tiempo = None
+        if isinstance(t_final, str):
+            t_final = leer_fechas(t_final)
+        elif isinstance(t_final, ft.datetime):
+            t_final = t_final.date()
 
-        else:
-            if isinstance(tiempo_inic, ft.datetime):
-                # Formatear la fecha inicial
-                tiempo_inic = tiempo_inic.date()
-            elif isinstance(tiempo_inic, int):
-                año = tiempo_inic
-                día = mes = 1
-                tiempo_inic = ft.date(year=año, month=mes, day=día)
-            elif isinstance(tiempo_inic, str):
-                tiempo_inic = leer_fechas(tiempo_inic)
-            fecha_act = tiempo_inic
+        # Calcular el número de pasos necesario
+        if isinstance(t_inic, int) and isinstance(t_final, int):
+            n_pasos = int(math.ceil((t_final - t_inic) / paso))
+            delta_fecha = None
+
+            if t_inic >= t_final:
+                raise ValueError(_('La fecha final debe ser ulterior a la fecha inicial.'))
+
+        elif isinstance(t_inic, ft.date):
+
             unid_ref_tiempo = símismo._conv_unid_tiempo['unid_ref']
             if unid_ref_tiempo is None:
                 unid_ref_tiempo = símismo.unidad_tiempo()
@@ -231,18 +215,78 @@ class Modelo(object):
             if unid_ref_tiempo not in ['año', 'mes', 'día']:
                 raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a años, meses o días.')
                                  .format(unid_ref_tiempo))
-            fecha_final = tiempo_inic + deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: n_pasos})  # type: ft.date
 
-            if lugar is not None and clima is None:
-                clima = 0
+            dic_trad_tiempo = {'año': 'year', 'mes': 'months', 'día': 'days'}
 
-            # Conectar el clima, si necesario
-            if clima is not None:
-                if lugar is None:
-                    raise ValueError(_('Hay que especificar un lugar para incorporar el clima.'))
+            if isinstance(t_final, int):
+                n_pasos = int(math.ceil(t_final / paso))
+                t_final = t_inic + deltarelativo(
+                    **{dic_trad_tiempo[unid_ref_tiempo]: n_pasos}
+                )  # type: ft.date
+            else:
+                if unid_ref_tiempo == 'año':
+                    dlt = deltarelativo(t_final, t_inic)
+                    plazo = dlt.years + (dlt.months == dlt.days == 0)
+                elif unid_ref_tiempo == 'mes':
+                    dlt = deltarelativo(t_final, t_inic)
+                    plazo = dlt.years * 12 + dlt.months + (dlt.days == 0)
+                elif unid_ref_tiempo == 'día':
+                    plazo = (t_final - t_inic).days
                 else:
-                    símismo._conectar_clima(lugar=lugar, fecha_inic=tiempo_inic, fecha_final=fecha_final,
-                                            escenario=clima)
+                    raise ValueError
+                n_pasos = math.ceil(plazo / paso)
+
+            delta_fecha = deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: paso})
+
+            if t_inic >= t_final:
+                raise ValueError(_('La fecha final debe ser ulterior a la fecha inicial.'))
+
+        else:
+            raise TypeError
+
+        return n_pasos, t_inic, t_final, delta_fecha
+
+    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', tiempo_inic=None, lugar_clima=None,
+                vals_extern=None, clima=None, vars_interés=None):
+        """
+
+        Parameters
+        ----------
+        tiempo_final : ft.date | str | int
+        paso :
+        nombre_corrida :
+        tiempo_inic : ft.date | str | int
+        lugar_clima : Geog.Lugar
+        vals_extern : dict[str, np.ndarray | list] | pd.DataFrame
+        clima :
+        vars_interés :
+        guardar: bool
+
+        Returns
+        -------
+
+        """
+
+        n_pasos, tiempo_inic, tiempo_final, delta_fecha = símismo._inic_pasos_y_fechas(tiempo_inic, tiempo_final, paso)
+        simul_fecha = isinstance(tiempo_inic, ft.date)
+
+        if clima is not None and lugar_clima is None:
+            raise ValueError(_('Hay que especificar un lugar para incorporar el clima.'))
+
+        if isinstance(vals_extern, pd.DataFrame):
+            vals_extern = {v: vals_extern[v].values for v in list(vals_extern)}
+        if vals_extern is not None:
+            vals_extern = {símismo.valid_var(var): val for var, val in vals_extern.items()}
+
+        # Si hay fecha inicial, tenemos que guardar cuenta de donde estamos en el calendario
+        if lugar_clima is not None:
+            if not simul_fecha:
+                raise ValueError(_('Hay que especificar la fecha inicial para simulaciones de clima.'))
+            if clima is None:
+                clima = 0
+            # Conectar el clima
+            símismo._conectar_clima(lugar=lugar_clima, fecha_inic=tiempo_inic, fecha_final=tiempo_final,
+                                    escenario=clima)
 
         # Iniciamos el modelo.
         símismo.corrida_activa = nombre_corrida
@@ -260,14 +304,19 @@ class Modelo(object):
                 vars_interés[i] = var
                 símismo.vars_saliendo.add(var)
 
-        if tiempo_inic is not None:
-            fecha_próx = fecha_act + deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: paso})
+        fecha_act = tiempo_inic
+
+        if simul_fecha:
+            fecha_próx = fecha_act + delta_fecha
 
             # Actualizar variables de clima, si necesario
             if clima is not None:
-                símismo.act_vals_clima(fecha_act, fecha_próx)
+                símismo.act_vals_clima(fecha_act, fecha_próx, lugar=lugar_clima)
 
             fecha_act = fecha_próx
+
+        if vals_extern is not None:
+            raise NotImplementedError
 
         símismo.mem_vars.clear()
         for v in vars_interés:
@@ -280,7 +329,7 @@ class Modelo(object):
 
             símismo.mem_vars[v][0] = símismo.obt_val_actual_var(v)
 
-        if clima is None and símismo.combin_incrs:
+        if clima is None and símismo.combin_incrs and vals_extern is None:
             símismo.incrementar(paso=n_pasos * paso, guardar_cada=paso)
             # Después de la simulación, cerramos el modelo.
             símismo.cerrar_modelo()
@@ -305,12 +354,15 @@ class Modelo(object):
                     símismo.mem_vars[v][i + 1] = símismo.obt_val_actual_var(v)
 
                 if i != (n_pasos - 1):
-                    if tiempo_inic is not None:
-                        fecha_próx = fecha_act + deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: paso})
+                    if vals_extern is not None:
+                        for var, vals in vals_extern.items():
+                            símismo.cambiar_vals({var: vals[i + 1]})
+                    if simul_fecha:
+                        fecha_próx = fecha_act + delta_fecha
 
                         # Actualizar variables de clima, si necesario
                         if clima is not None:
-                            símismo.act_vals_clima(fecha_act, fecha_próx)
+                            símismo.act_vals_clima(fecha_act, fecha_próx, lugar=lugar_clima)
 
                         fecha_act = fecha_próx
 
@@ -320,10 +372,8 @@ class Modelo(object):
         if vars_interés is not None:
             return copiar_profundo(símismo.mem_vars)
 
-        if guardar:
-            símismo.guardar_resultados()
-
-    def simular_grupo(símismo, tiempo_final, paso=1, nombre_corrida='', vals_inic=None, tiempo_inic=None,
+    def simular_grupo(símismo, tiempo_final, paso=1, nombre_corrida='', vals_inic=None, vals_extern=None,
+                      tiempo_inic=None,
                       lugar_clima=None, clima=None, combinar=True, paralelo=None, vars_interés=None, guardar=False):
 
         # Formatear los nombres de variables a devolver.
@@ -337,7 +387,7 @@ class Modelo(object):
 
         # Poner las opciones de simulación en un diccionario.
         opciones = {'paso': paso, 'tiempo_inic': tiempo_inic, 'lugar_clima': lugar_clima, 'vals_inic': vals_inic,
-                    'clima': clima, 'tiempo_final': tiempo_final}
+                    'vals_extern': vals_extern, 'clima': clima, 'tiempo_final': tiempo_final}
 
         # Entender el tipo de opciones (lista, diccionario, o valor único)
         tipos_ops = {
@@ -472,31 +522,54 @@ class Modelo(object):
 
         return resultados
 
-    def simular_en(símismo, tiempo_final, en=None, escala=None, paso=1, nombre_corrida='', vals_inic=None,
-                   tiempo_inic=None, lugar_clima=None, clima=None, vars_interés=None, guardar=False, paralelo=None):
-        if símismo.geog is None:
+    def simular_en(
+            símismo, tiempo_final, en=None, escala=None, paso=1, nombre_corrida='', vals_inic=None,
+            tiempo_inic=None, lugar_clima=None, clima=None, vars_interés=None, guardar=False, paralelo=None
+    ):
+        if símismo.geog is None or símismo.datos is None:
             raise ValueError
         lugares = símismo.geog.obt_lugares_en(en=en, escala=escala)
-        l_vals_inic = []
-        l_vals_extern = []
+        vals_inic_por_lug = {}
+        vals_extern_por_lug = {}
         for l in lugares:
-            datos_inic = símismo.obt_datos_inic(tiempo_inic, lugar=l)
-            l_vals_inic.append(datos_inic.update(vals_inic))
-            l_vals_extern
+            datos_inic = símismo._obt_datos_inic(tiempo_inic, lugar=l)
+            datos_inic.update(vals_inic)
+            vals_inic_por_lug[l] = datos_inic
+
+            datos_extern = símismo._obt_datos_extern(tiempo_inic, tiempo_final, paso, lugar=l)
+
+            vals_extern_por_lug[l] = datos_extern
+
         return símismo.simular_grupo(
             tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida,
-            vals_inic=l_vals_inic, tiempo_inic=tiempo_inic, lugar_clima=lugar_clima, clima=clima, combinar=False,
-            paralelo=paralelo, vars_interés=vars_interés, guardar=guardar
+            vals_inic=vals_inic_por_lug, vals_extern=vals_extern_por_lug, tiempo_inic=tiempo_inic,
+            lugar_clima=lugar_clima, clima=clima, combinar=False, paralelo=paralelo,
+            vars_interés=vars_interés, guardar=guardar
         )
 
-    def guardar_resultados(símismo, dic_res=None, nombre=None, frmt='json', var=None):
+    def _obt_datos_inic(símismo, tiempo, lugar):
+        if símismo.datos is None:
+            raise ValueError
+        l_vars = list(símismo.conex_var_datos.values())
+        return símismo.datos.obt_datos(l_vars=l_vars, lugares=lugar, fechas=tiempo, interpolar=True)
+
+    def _obt_datos_extern(símismo, tiempo_inic, tiempo_final, paso, lugar):
+        if símismo.datos is None:
+            raise ValueError
+        l_vars = list(símismo.conex_var_datos.values())
+        n_pasos = símismo._inic_pasos_y_fechas(tiempo_inic, tiempo_final, paso)
+
+        return símismo.datos.obt_datos(l_vars=l_vars, lugares=lugar, fechas=l_tiempos, interpolar=True)
+
+    def guardar_resultados(símismo, dic_res=None, nombre=None, frmt='json', l_vars=None):
         """
 
         Parameters
         ----------
         dic_res: dict[str, np.ndarray]
-        nombre
-        frmt
+        nombre: str
+        frmt: strr
+        l_vars: list[str] | str
 
         Returns
         -------
@@ -508,12 +581,12 @@ class Modelo(object):
             raise ValueError(_('No hay datos de simulación disponibles para guardar. :('))
         if nombre is None:
             nombre = símismo.corrida_activa
-        if var is None:
+        if l_vars is None:
             l_vars = list(dic_res)
-        elif isinstance(var, str):
-            l_vars = [var]
+        elif isinstance(l_vars, str):
+            l_vars = [l_vars]
         else:
-            l_vars = var
+            l_vars = l_vars
 
         faltan = [x for x in l_vars if x not in dic_res]
         if len(faltan):
@@ -540,14 +613,14 @@ class Modelo(object):
                 escr = csv.writer(a)
 
                 escr.writerow(['tiempo'] + dic_res['tiempo'].tolist())
-                for var, vals in dic_res.items():
-                    if var not in l_vars:
+                for l_vars, vals in dic_res.items():
+                    if l_vars not in l_vars:
                         continue
                     if len(vals.shape) == 1:
-                        escr.writerow([var] + vals.tolist())
+                        escr.writerow([l_vars] + vals.tolist())
                     else:
                         for í in range(vals.shape[1]):
-                            escr.writerow(['{}[{}]'.format(var, í)] + vals[:, í].tolist())
+                            escr.writerow(['{}[{}]'.format(l_vars, í)] + vals[:, í].tolist())
 
         else:
             raise ValueError(_('Formato de resultados "{}" no reconocido.').format(frmt))
@@ -703,7 +776,7 @@ class Modelo(object):
         """
         raise NotImplementedError
 
-    def act_vals_clima(símismo, f_0, f_1):
+    def act_vals_clima(símismo, f_0, f_1, lugar):
         """
         Actualiza los variables climáticos. Esta función es la automática para cada modelo. Si necesitas algo más
         complicado (como, por ejemplo, predicciones por estación), la puedes cambiar en tu subclase.
@@ -736,8 +809,7 @@ class Modelo(object):
         convs = [d['conv'] for d in símismo.vars_clima.values()]
 
         # Calcular los datos
-        datos = símismo.lugar.comb_datos(vars_clima=nombres_extrn, combin=combins,
-                                         f_inic=f_0, f_final=f_1)
+        datos = lugar.comb_datos(vars_clima=nombres_extrn, combin=combins, f_inic=f_0, f_final=f_1)
 
         # Aplicar los valores de variables calculados
         for i, var in enumerate(vars_clima):
@@ -1334,7 +1406,8 @@ class Modelo(object):
     def validar(símismo, var=None, t_final=None):
 
         if var is None:
-            l_vars = [v for v in símismo.datos.vars if v in símismo.variables or v in símismo.conex_var_datos.values()]
+            l_vars = [v for v in símismo.datos.variables if
+                      v in símismo.variables or v in símismo.conex_var_datos.values()]
         elif isinstance(var, str):
             l_vars = [var]
         else:

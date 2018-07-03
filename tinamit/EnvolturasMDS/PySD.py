@@ -72,14 +72,13 @@ class ModeloPySD(EnvolturaMDS):
             unid_tiempo = docs.loc[docs['Real Name'] == 'TIME STEP', 'Unit'].values[0]
 
         else:
-            # Solución muy fea para XMILE
             with open(símismo.modelo.py_model_file, 'r', encoding='UTF-8') as d:
                 f = d.readline()
                 while f != 'def time_step():\n':
                     f = d.readline()
-                for i in range(6):
+                while not f.strip().startswith('Units:'):
                     f = d.readline()
-                unid_tiempo = f.strip()
+                unid_tiempo = f.split(':')[1].strip()
 
         return unid_tiempo
 
