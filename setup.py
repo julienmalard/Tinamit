@@ -120,7 +120,7 @@ class inic_cat(babel.init_catalog):
 setup(
     name='tinamit',
     version=versión,
-    packages=find_packages('tinamit'),
+    packages=find_packages(),
     url='https://tinamit.readthedocs.io',
     download_url='https://github.com/julienmalard/Tinamit',
 
