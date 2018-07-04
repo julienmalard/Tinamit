@@ -1,7 +1,7 @@
 import pint
 import regex as re
 
-from Unidades.trads import buscar_singular
+from tinamit.Unidades.trads import buscar_singular
 from tinamit import _
 from tinamit.Unidades import regu, C_, trad_unid
 
