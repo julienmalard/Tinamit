@@ -16,7 +16,7 @@ _archivo_pluriales = pkg_resources.resource_filename('tinamit.Unidades', 'pluria
 
 l_dic_trads = None
 if os.path.isfile(_archivo_json_respaldo):
-    try:
+    try:  # pragma: sin cobertura
         with open(_archivo_json_respaldo, encoding='UTF-8') as d_j:
             l_dic_trads = json.load(d_j)  # type: list[dict]
         copiar_archivo(_archivo_json_respaldo, _archivo_json)
@@ -28,7 +28,7 @@ if l_dic_trads is None:
         try:
             with open(_archivo_json, encoding='UTF-8') as d_j:
                 l_dic_trads = json.load(d_j)  # type: list[dict]
-        except json.JSONDecodeError:
+        except json.JSONDecodeError:  # pragma: sin cobertura
             l_dic_trads = []
     else:
         l_dic_trads = []
@@ -36,7 +36,7 @@ if l_dic_trads is None:
 if os.path.isfile(_archivo_pluriales):
     with open(_archivo_pluriales, encoding='UTF-8') as d_p:
         _pluriales = json.load(d_p)
-else:
+else:  # pragma: sin cobertura
     _pluriales = ['s', 'es', 'ें', 'கள்', 'க்கள்']
     with open(_archivo_pluriales, 'w', encoding='UTF-8') as d_p:
         json.dump(_pluriales, d_p, ensure_ascii=False)
@@ -70,7 +70,7 @@ def act_arch_trads(l_d_t, arch):
     lengs = set(cadena.from_iterable([list(d) for d in l_d_t]))
 
     # Agregar las unidades de Pint que faltan
-    for u in unids_faltan:
+    for u in unids_faltan:  # pragma: sin cobertura
         d_u = {'en': {'pr': u, 'sn': []}}
         d_u.update({l: {'pr': '', 'sn': []} for l in lengs if l != 'en'})
         l_d_t.append(d_u)
@@ -97,13 +97,13 @@ def act_arch_trads(l_d_t, arch):
         with open(arch, 'w', encoding='UTF-8') as d:
             json.dump(l_d_t, d, ensure_ascii=False, indent=2)
     except PermissionError:
-        pass
+        pass  # pragma: sin cobertura
 
     # Si llegamos hasta aquí, queda seguro quitar el archivo de respaldo.
     try:
         os.remove(_archivo_json_respaldo)
     except (PermissionError, FileNotFoundError):
-        pass
+        pass  # pragma: sin cobertura
 
 
 # Actualizar las traducciones al importar este módulo

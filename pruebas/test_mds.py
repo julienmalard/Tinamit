@@ -57,7 +57,7 @@ class Test_ModeloSenc(unittest.TestCase):
                     mod.inic_val_var(v, d_v['val_inic'])
 
             # Correr el modelo para 200 pasos, guardando los egresos del variable "Lago"
-            mod.simular(tiempo_final=200, vars_interés=['Lago', 'Aleatorio', 'Nivel lago inicial'])
+            mod.simular(t_final=200, vars_interés=['Lago', 'Aleatorio', 'Nivel lago inicial'])
 
     def test_leer_vars(símismo):
         """
@@ -210,23 +210,23 @@ class Test_OpcionesSimul(unittest.TestCase):
     def test_simul_con_paso_2(símismo):
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                res_paso_2 = mod.simular(tiempo_final=100, paso=2, vars_interés=['Lago'])['Lago']
-                res_paso_1 = mod.simular(tiempo_final=100, paso=1, vars_interés=['Lago'])['Lago'][::2]
+                res_paso_2 = mod.simular(t_final=100, paso=2, vars_interés=['Lago'])['Lago']
+                res_paso_1 = mod.simular(t_final=100, paso=1, vars_interés=['Lago'])['Lago'][::2]
                 npt.assert_equal(res_paso_1, res_paso_2)
 
     def test_simul_con_paso_inválido(símismo):
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
                 with símismo.assertRaises(ValueError):
-                    mod.simular(tiempo_final=100, paso=0)
+                    mod.simular(t_final=100, paso=0)
 
     def test_simul_exprés(símismo):
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
                 mod.combin_incrs = False
-                res_por_paso = mod.simular(tiempo_final=100, paso=1, vars_interés=['Lago'])['Lago']
+                res_por_paso = mod.simular(t_final=100, paso=1, vars_interés=['Lago'])['Lago']
                 mod.combin_incrs = True
-                res_exprés = mod.simular(tiempo_final=100, paso=1, vars_interés=['Lago'])['Lago']
+                res_exprés = mod.simular(t_final=100, paso=1, vars_interés=['Lago'])['Lago']
                 npt.assert_allclose(res_por_paso, res_exprés, 1e-3)
 
 

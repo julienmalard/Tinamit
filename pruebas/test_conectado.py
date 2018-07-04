@@ -50,7 +50,7 @@ class Test_Conectado(unittest.TestCase):
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                egr = mod.simular(tiempo_final=100, vars_interés=['bf_Aleatorio', 'mds_Aleatorio'])
+                egr = mod.simular(t_final=100, vars_interés=['bf_Aleatorio', 'mds_Aleatorio'])
 
                 npt.assert_equal(egr['bf_Aleatorio'], egr['mds_Aleatorio'])
 
@@ -64,15 +64,15 @@ class Test_Conectado(unittest.TestCase):
                 t_final = 100
                 referencia = {}
                 mod.inic_val_var('Nivel lago inicial', 50)
-                mod.simular(tiempo_final=t_final, vars_interés='Lago')
+                mod.simular(t_final=t_final, vars_interés='Lago')
                 referencia['lago_50'] = {'mds_Lago': mod.leer_resultados('Lago')}
 
                 mod.inic_val_var('Nivel lago inicial', 2000)
-                mod.simular(tiempo_final=t_final, vars_interés='Lago')
+                mod.simular(t_final=t_final, vars_interés='Lago')
                 referencia['lago_2000'] = {'mds_Lago': mod.leer_resultados('Lago')}
 
                 resultados = mod.simular_grupo(
-                    tiempo_final=t_final,
+                    t_final=t_final,
                     vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
                     vars_interés='Lago'
                 )
@@ -90,14 +90,14 @@ class Test_Conectado(unittest.TestCase):
         t_final = 100
 
         sin_paral = mod.simular_grupo(
-            tiempo_final=t_final,
+            t_final=t_final,
             vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
             vars_interés='Lago',
             paralelo=False
         )
 
         con_paral = mod.simular_grupo(
-            tiempo_final=t_final,
+            t_final=t_final,
             vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
             vars_interés='Lago',
             paralelo=True
@@ -114,11 +114,11 @@ class Test_Conectado(unittest.TestCase):
 
         t_final = 100
         vals_inic = {'mds_Nivel lago inicial': 50}
-        ref = mod.simular_grupo(tiempo_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
+        ref = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
 
         mod.limp_vals_inic()
         vals_inic = {'mds': {'Nivel lago inicial': 50}}
-        res = mod.simular_grupo(tiempo_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
+        res = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
 
         for c in res:
             npt.assert_allclose(ref[c]['mds_Lago'], res[c]['mds_Lago'], rtol=0.001)
@@ -131,11 +131,11 @@ class Test_Conectado(unittest.TestCase):
 
         t_final = 100
         vals_inic = {'50': {'mds_Nivel lago inicial': 50}}
-        ref = mod.simular_grupo(tiempo_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
+        ref = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
 
         mod.limp_vals_inic()
         vals_inic = {'50': {'mds': {'Nivel lago inicial': 50}}}
-        res = mod.simular_grupo(tiempo_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
+        res = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
 
         for c in res:
             npt.assert_allclose(ref[c]['mds_Lago'], res[c]['mds_Lago'], rtol=0.001)

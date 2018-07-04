@@ -370,7 +370,7 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
             if nombre == '':
                 nombre = None
 
-            símismo.apli.Modelo.simular(paso=símismo.IngrPaso.val, tiempo_final=símismo.IngrTempFinal.val,
+            símismo.apli.Modelo.simular(paso=símismo.IngrPaso.val, t_final=símismo.IngrTempFinal.val,
                                         nombre_corrida=nombre)
             símismo.BtSimul.desbloquear()
             símismo.CjSimulando.pack_forget()

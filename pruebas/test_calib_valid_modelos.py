@@ -24,7 +24,7 @@ class Test_CalibModelo(unittest.TestCase):
             cls.mod.inic_val_var(var, val)
 
         cls.datos = cls.mod.simular(
-                tiempo_final=100,
+            t_final=100,
                 vars_interés=['Individuos Suceptibles', 'Individuos Infectados', 'Individuos Resistentes']
             )
 
@@ -67,7 +67,7 @@ class Test_CalibModeloEspacial(unittest.TestCase):
         cls.mod = mod = generar_mds(arch_mds)
         mod.geog = Geografía('prueba', archivo=arch_csv_geog)
         mod.cargar_calibs(cls.paráms)
-        datos = mod.simular(tiempo_final=200, en=['708', '701', '1010'])
+        datos = mod.simular(t_final=200, en=['708', '701', '1010'])
         mod.borrar_calibs()
         mod.conectar_datos(datos)
 

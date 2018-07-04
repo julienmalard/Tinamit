@@ -834,7 +834,7 @@ class ModSpotPy(object):
 
     def simulation(símismo, x):
         símismo.mod.inic_vals_vars({ll: x_i for ll, x_i in zip(símismo.nombres_paráms, x)})
-        res = símismo.mod.simular(tiempo_final=símismo.t_final, vars_interés=list(símismo.vars_interés))
+        res = símismo.mod.simular(t_final=símismo.t_final, vars_interés=list(símismo.vars_interés))
         res = np.array([res[v] for v in símismo.vars_interés]).T
 
         return ((res - símismo.mu_obs) / símismo.sg_obs).ravel()

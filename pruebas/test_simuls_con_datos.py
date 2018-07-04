@@ -19,7 +19,7 @@ class Test_SimulConClima(unittest.TestCase):
         lugar.observar_diarios(arch_clim_diario, cols_datos={'Precipitación': 'Lluvia'},
                                conv={'Precipitación': 1}, c_fecha='Fecha')
         mod.conectar_var_clima(var='Lluvia', var_clima='Precipitación', conv=1)
-        res = mod.simular(tiempo_final=1, tiempo_inic='1-1-2018', lugar_clima=lugar, vars_interés='Lluvia')
+        res = mod.simular(t_final=1, t_inic='1-1-2018', lugar_clima=lugar, vars_interés='Lluvia')
         símismo.assertEqual(res['Lluvia'][0], 15)
 
     @classmethod
@@ -34,18 +34,18 @@ class Test_SimulConDatosBD(unittest.TestCase):
         mod = generar_mds(arch_mds)
         datos = pd.DataFrame()  # 100 días
         mod.conectar_datos(datos)
-        mod.simular(tiempo_inic=10, tiempo_final=50)
+        mod.simular(t_inic=10, t_final=50)
         mod.simular()
-        mod.simular(tiempo_inic=10)
+        mod.simular(t_inic=10)
         mod.desconectar_datos(datos)
 
         datos = pd.DataFrame()  # Con fechas
         mod.conectar_datos(datos)
-        mod.simular(tiempo_inic='01-01-2001', tiempo_final=100)
-        mod.simular(tiempo_inic='01-01-2001', tiempo_final='01-01-2002')
-        mod.simular(tiempo_inic=1, tiempo_final='01-01-2002')  # error
-        mod.simular(tiempo_final='01-01-2002')
-        mod.simular(tiempo_inic=100)
+        mod.simular(t_inic='01-01-2001', t_final=100)
+        mod.simular(t_inic='01-01-2001', t_final='01-01-2002')
+        mod.simular(t_inic=1, t_final='01-01-2002')  # error
+        mod.simular(t_final='01-01-2002')
+        mod.simular(t_inic=100)
         mod.desconectar_datos()
 
     def test_simular_con_datos_clima(símismo):
@@ -53,7 +53,7 @@ class Test_SimulConDatosBD(unittest.TestCase):
         mod.conectar_datos(datos)
         lugar = Lugar(lat=0, long=0, elev=0)
         lugar.observar_de(datos)
-        mod.simular(tiempo_inic='01-01-2001', tiempo_final=365, lugar_clima=lugar)
+        mod.simular(t_inic='01-01-2001', t_final=365, lugar_clima=lugar)
 
     @classmethod
     def tearDownClass(cls):
@@ -67,8 +67,8 @@ class Test_SimulConDatosYGeog(unittest.TestCase):
         datos = ()
         mod.conectar_geog(geog)
         mod.conectar_datos(datos)
-        mod.simular(tiempo_final='01-01-2002', en='7')
-        mod.simular(tiempo_final=10, en='7')
+        mod.simular(t_final='01-01-2002', en='7')
+        mod.simular(t_final=10, en='7')
 
     @classmethod
     def tearDownClass(cls):

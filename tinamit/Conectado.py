@@ -325,13 +325,13 @@ class SuperConectado(Modelo):
 
         return all(mod.paralelizable() for mod in símismo.modelos.values())
 
-    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', tiempo_inic=None, lugar_clima=None,
+    def simular(símismo, t_final, paso=1, nombre_corrida='Corrida Tinamït', t_inic=None, lugar_clima=None,
                 clima=None, recalc_clima=True, vals_extern=None, vars_interés=None):
         """
         Simula el modelo :class:`~tinamit.Conectado.SuperConectado`.
 
-        :param tiempo_final: El tiempo final de la simulación.
-        :type tiempo_final: int
+        :param t_final: El tiempo final de la simulación.
+        :type t_final: int
 
         :param paso: El paso (intervalo de intercambio de valores entre los dos submodelos).
         :type paso: int
@@ -339,8 +339,8 @@ class SuperConectado(Modelo):
         :param nombre_corrida: El nombre de la corrida.  El valor automático es ``Corrida Tinamit``.
         :type nombre_corrida: str
 
-        :param tiempo_inic: La fecha inicial de la simulación. Necesaria para simulaciones con cambios climáticos.
-        :type tiempo_inic: ft.datetime | ft.date | int | str
+        :param t_inic: La fecha inicial de la simulación. Necesaria para simulaciones con cambios climáticos.
+        :type t_inic: ft.datetime | ft.date | int | str
 
         :param lugar_clima: El lugares de la simulación.
         :type lugar_clima: Lugar
@@ -380,12 +380,12 @@ class SuperConectado(Modelo):
 
         # Todo el restode la simulación se hace como en la clase pariente
         return super().simular(
-            tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, tiempo_inic=tiempo_inic,
+            t_final=t_final, paso=paso, nombre_corrida=nombre_corrida, t_inic=t_inic,
             lugar_clima=lugar_clima, clima=clima, vars_interés=vars_interés
         )
 
-    def simular_grupo(símismo, tiempo_final, paso=1, nombre_corrida='', vals_inic=None, vals_extern=None,
-                      tiempo_inic=None, lugar_clima=None, clima=None, recalc_clima=True, combinar=True, dibujar=None,
+    def simular_grupo(símismo, t_final, paso=1, nombre_corrida='', vals_inic=None, vals_extern=None,
+                      t_inic=None, lugar_clima=None, clima=None, recalc_clima=True, combinar=True, dibujar=None,
                       paralelo=None, vars_interés=None, guardar=False):
 
         # Reformatear el diccionario de valores iniciales en el caso que se especificó con submodelos
@@ -408,9 +408,9 @@ class SuperConectado(Modelo):
 
         # Llamar la función correspondiente de la clase pariente.
         return super().simular_grupo(
-            tiempo_final=tiempo_final, paso=paso, nombre_corrida=nombre_corrida, vals_inic=vals_inic,
+            t_final=t_final, paso=paso, nombre_corrida=nombre_corrida, vals_inic=vals_inic,
             vals_extern=vals_extern,
-            tiempo_inic=tiempo_inic, lugar_clima=lugar_clima, clima=clima, combinar=combinar, paralelo=paralelo,
+            t_inic=t_inic, lugar_clima=lugar_clima, clima=clima, combinar=combinar, paralelo=paralelo,
             vars_interés=vars_interés, guardar=guardar
         )
 
