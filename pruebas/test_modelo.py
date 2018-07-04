@@ -4,11 +4,6 @@ import unittest
 from pruebas.recursos.BF.prueba_bf import ModeloPrueba
 from pruebas.test_mds import limpiar_mds
 
-dir_act = os.path.split(__file__)[0]
-arch_bf = os.path.join(dir_act, 'recursos/BF/prueba_bf.py')
-arch_mds = os.path.join(dir_act, 'recursos/MDS/prueba_senc.mdl')
-arch_mod_vacío = os.path.join(dir_act, 'recursos/MDS/prueba_vacía.mdl')
-
 
 class Test_SimularGrupo(unittest.TestCase):
     @classmethod
@@ -131,3 +126,37 @@ class Test_SimularGrupo(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         limpiar_mds()
+
+
+class Test_SimularEnPlazo(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = ModeloPrueba(unid_tiempo='días')
+
+    def test_simular_none_a_fecha(símismo):
+        with símismo.assertRaises(ValueError):
+            símismo.mod.simular(t_final='01/01/2001')
+
+    def test_simular_none_a_entero(símismo):
+        res = símismo.mod.simular(t_final=10, vars_interés='Lluvia')
+        símismo.assertEqual(len(res['Lluvia']), 10 + 1)
+
+    def test_simular_fecha_a_entero(símismo):
+        res = símismo.mod.simular(t_final=10, t_inic='01/01/2001', vars_interés='Lluvia')
+        símismo.assertEqual(len(res['Lluvia']), 10 + 1)
+
+    def test_simular_fecha_a_fecha(símismo):
+        res = símismo.mod.simular(t_final='01/01/2002', t_inic='01/01/2001', vars_interés='Lluvia')
+        símismo.assertEqual(len(res['Lluvia']), 365 + 1)
+
+    def test_simular_entero_a_entero(símismo):
+        res = símismo.mod.simular(t_final=20, t_inic=5, vars_interés='Lluvia')
+        símismo.assertEqual(len(res['Lluvia']), 15 + 1)
+
+    def test_simular_entero_a_fecha(símismo):
+        with símismo.assertRaises(TypeError):
+            símismo.mod.simular(t_final='01/01/2002', t_inic=10)
+
+    def test_fecha_inic_ulterior(símismo):
+        with símismo.assertRaises(ValueError):
+            símismo.mod.simular(t_final='01/01/2001', t_inic='01/01/2002')

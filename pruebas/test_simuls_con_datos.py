@@ -29,9 +29,11 @@ class Test_SimulConClima(unittest.TestCase):
 
 @unittest.skip
 class Test_SimulConDatosBD(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = generar_mds(arch_mds)
+
     def test_simular_con_BD(símismo):
-        
-        mod = generar_mds(arch_mds)
         datos = pd.DataFrame()  # 100 días
         mod.conectar_datos(datos)
         mod.simular(t_inic=10, t_final=50)
@@ -47,13 +49,6 @@ class Test_SimulConDatosBD(unittest.TestCase):
         mod.simular(t_final='01-01-2002')
         mod.simular(t_inic=100)
         mod.desconectar_datos()
-
-    def test_simular_con_datos_clima(símismo):
-        datos = ''
-        mod.conectar_datos(datos)
-        lugar = Lugar(lat=0, long=0, elev=0)
-        lugar.observar_de(datos)
-        mod.simular(t_inic='01-01-2001', t_final=365, lugar_clima=lugar)
 
     @classmethod
     def tearDownClass(cls):

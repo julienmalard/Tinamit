@@ -180,7 +180,7 @@ class Modelo(object):
             if isinstance(t_final, int):
                 t_inic = 0
             else:
-                raise ValueError
+                raise ValueError(_('Si el tiempo final es una fecha, debes especificar un tiempo inicial también.'))
         elif isinstance(t_inic, str):
             t_inic = leer_fechas(t_inic)
         elif isinstance(t_inic, ft.datetime):
@@ -192,12 +192,15 @@ class Modelo(object):
             t_final = t_final.date()
 
         # Calcular el número de pasos necesario
-        if isinstance(t_inic, int) and isinstance(t_final, int):
-            n_pasos = int(math.ceil((t_final - t_inic) / paso))
-            delta_fecha = None
+        if isinstance(t_inic, int):
+            if isinstance(t_final, int):
+                n_pasos = int(math.ceil((t_final - t_inic) / paso))
+                delta_fecha = None
 
-            if t_inic >= t_final:
-                raise ValueError(_('La fecha final debe ser ulterior a la fecha inicial.'))
+                if t_inic >= t_final:
+                    raise ValueError(_('La fecha final debe ser ulterior a la fecha inicial.'))
+            else:
+                raise TypeError(_('Si el tiempo final es una fecha, el tiempo inicial también debe ser una fecha.'))
 
         elif isinstance(t_inic, ft.date):
 
@@ -226,10 +229,10 @@ class Modelo(object):
             else:
                 if unid_ref_tiempo == 'año':
                     dlt = deltarelativo(t_final, t_inic)
-                    plazo = dlt.years + (dlt.months == dlt.days == 0)
+                    plazo = dlt.years + (not dlt.months == dlt.days == 0)
                 elif unid_ref_tiempo == 'mes':
                     dlt = deltarelativo(t_final, t_inic)
-                    plazo = dlt.years * 12 + dlt.months + (dlt.days == 0)
+                    plazo = dlt.years * 12 + dlt.months + (not dlt.days == 0)
                 elif unid_ref_tiempo == 'día':
                     plazo = (t_final - t_inic).days
                 else:

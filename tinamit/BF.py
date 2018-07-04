@@ -192,7 +192,7 @@ class ModeloBF(Modelo):
 
     requísitos = {}
 
-    def __init__(símismo):
+    def __init__(símismo, nombre='modeloBF'):
         """
         Esta función correrá automáticamente con la inclusión de `super().__init__()` en la función `__init__()` de las
         subclases de esta clase.
@@ -209,7 +209,7 @@ class ModeloBF(Modelo):
             avisar(_('El modelo "{m}" no está completamente instalado. No podrás correr simulaciones.')
                    .format(m=símismo.__class__.__name__))
 
-        super().__init__(nombre='modeloBF')
+        super().__init__(nombre=nombre)
 
     def _obt_val_config(símismo, cód_conf):
         if cód_conf not in símismo.requísitos:
