@@ -133,7 +133,7 @@ def trad_unid(unid, leng_final, leng_orig=None):
     # Quitar mayúsculas
     unid = unid.lower()
 
-    l_u = _buscar_singular(unid)
+    l_u = buscar_singular(unid)
 
     # Buscar la unidad traducida
     unid_t = None
@@ -282,7 +282,7 @@ def _buscar_d_unid(unid, leng=None):
     # Quitar mayúculas
     unid = unid.lower()
 
-    l_u = _buscar_singular(unid)
+    l_u = buscar_singular(unid)
     d_unid = None
 
     for u in l_u:
@@ -327,7 +327,7 @@ def _buscar_d_unid(unid, leng=None):
     return d_unid
 
 
-def _buscar_singular(u):
+def buscar_singular(u):
     """
     Busca las formas singulares posibles de una unidad.
 
@@ -347,7 +347,7 @@ def _buscar_singular(u):
     l_u = [u]
     for p in _pluriales:
         try:
-            if u[-len(p)] == p:
+            if u.endswith(p):
                 l_u.append(u[:-len(p)])
         except IndexError:
             pass  # En el caso que la extensión plural sea más grande que la unidad sí misma.

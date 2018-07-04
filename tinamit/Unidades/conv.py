@@ -10,21 +10,21 @@ def convertir(de, a, val=1, lengua=None):
     """
     Esta función convierte un valor de una unidad a otra.
 
-    :param de: La unidad original.
-    :type de: str
+    Parameters
+    ----------
+    de : str
+        La unidad original.
+    a : str
+        La unidad final.
+    val : float | int
+        El valor para convertir.
+    lengua : str
+        La lengua en la cual las unidades están especificadas.
 
-    :param a: La unidad final.
-    :type a: str
-
-    :param val: El valor para convertir.
-    :type val: float | int
-
-    :param lengua: La lengua en la cual las unidades están especificadas.
-    :type lengua: str
-
-    :return: El valor convertido.
-    :rtype: float
-
+    Returns
+    -------
+    float
+        El valor convertido.
     """
 
     # Guardar una copia de los unidades iniciales
@@ -75,11 +75,11 @@ def convertir(de, a, val=1, lengua=None):
 
                 else:
                     # Si no encontramos traducción, registramos la nueva unidad con Pint.
-                    regu.define('{u} = [{u}]'.format(u=buscar_singular(u)[0]))
+                    definir_en_regu(unid=u, base=buscar_singular(u)[-1])
 
             except pint.UndefinedUnitError:
                 # Si Pint no reconoció aún la traducción, tenemos que registrar la unidad.
-                regu.define('{u} = [{u}]'.format(u=buscar_singular(u)[0]))
+                definir_en_regu(unid=u, base=buscar_singular(u)[-1])
 
     # Intentar convertir
     try:
@@ -92,3 +92,15 @@ def convertir(de, a, val=1, lengua=None):
 
     # Devolver la cantidad convertida
     return cant_convtd
+
+
+def definir_en_regu(unid, base):
+    try:
+        base = regu.get_base_units(base)
+        nueva_base = False
+    except pint.errors.UndefinedUnitError:
+        nueva_base = True
+
+    if nueva_base:
+        regu.define('{b} = [{b}]'.format(b=base))
+    regu.define('{u} = {b}'.format(u=unid, b=base))
