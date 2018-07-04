@@ -1,6 +1,7 @@
 import pint
 import regex as re
 
+from Unidades.trads import buscar_singular
 from tinamit import _
 from tinamit.Unidades import regu, C_, trad_unid
 
@@ -74,11 +75,11 @@ def convertir(de, a, val=1, lengua=None):
 
                 else:
                     # Si no encontramos traducción, registramos la nueva unidad con Pint.
-                    regu.define('{u} = [{u}]'.format(u=u))
+                    regu.define('{u} = [{u}]'.format(u=buscar_singular(u)[0]))
 
             except pint.UndefinedUnitError:
                 # Si Pint no reconoció aún la traducción, tenemos que registrar la unidad.
-                regu.define('{u} = [{u}]'.format(u=u))
+                regu.define('{u} = [{u}]'.format(u=buscar_singular(u)[0]))
 
     # Intentar convertir
     try:
