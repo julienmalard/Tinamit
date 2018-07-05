@@ -95,6 +95,19 @@ def convertir(de, a, val=1, lengua=None):
 
 
 def definir_en_regu(unid, base):
+    """
+    Esta funcion define una nueva unidad en el registro de unidades.
+
+    Parameters
+    ----------
+    unid : str
+        La unidad.
+    base : str
+        La dimensionalidad de la unidad para pasar a Pint.
+
+    """
+
+    # Detectar si la dimensionalidad ya se registró en Pint o no.
     try:
         base = regu.get_base_units(base)
         nueva_base = False
@@ -102,5 +115,8 @@ def definir_en_regu(unid, base):
         nueva_base = True
 
     if nueva_base:
+        # Registrar la dimensionalidad, si necesario.
         regu.define('{b} = [{b}]'.format(b=base))
-    regu.define('{u} = {b}'.format(u=unid, b=base))
+    if base != unid or not nueva_base:
+        # Agregar la unidad a Pint si ya no se agregó con la dimensionalidad.
+        regu.define('{u} = {b}'.format(u=unid, b=base))
