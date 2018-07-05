@@ -1,8 +1,9 @@
-import os
 import unittest
 
 from pruebas.recursos.BF.prueba_bf import ModeloPrueba
+from pruebas.test_geog import arch_clim_diario
 from pruebas.test_mds import limpiar_mds
+from tinamit.Geog import Lugar
 
 
 class Test_SimularGrupo(unittest.TestCase):
@@ -160,3 +161,55 @@ class Test_SimularEnPlazo(unittest.TestCase):
     def test_fecha_inic_ulterior(símismo):
         with símismo.assertRaises(ValueError):
             símismo.mod.simular(t_final='01/01/2001', t_inic='01/01/2002')
+
+
+class Test_SimulConClima(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = ModeloPrueba(unid_tiempo='mes')
+
+    def test_simular_con_datos_clima(símismo):
+        lugar = Lugar(lat=0, long=0, elev=0)
+        lugar.observar_diarios(
+            arch_clim_diario, cols_datos={'Precipitación': 'Lluvia'}, conv={'Precipitación': 1}, c_fecha='Fecha'
+        )
+        símismo.mod.conectar_var_clima(var='Lluvia', var_clima='Precipitación', conv=1)
+        res = símismo.mod.simular(t_final=1, t_inic='1-1-2018', lugar_clima=lugar, vars_interés='Lluvia')
+        símismo.assertEqual(res['Lluvia'][0], 15)
+
+    def test_simular_con_escenario_sin_lugar(símismo):
+        with símismo.assertRaises(ValueError):
+            símismo.mod.simular(t_final=100, clima='8.5')
+
+
+class Test_SimularEnPlazoConDatos(unittest.TestCase):
+    def test_simular_none_a_fecha_con_datos(símismo):
+        pass
+
+    def test_simular_none_a_entero_con_datos(símismo):
+        pass
+
+    def test_simular_none_a_none_con_datos(símismo):
+        pass
+
+    def test_simular_fecha_a_none_con_datos(símismo):
+        pass
+
+    def test_simular_entero_a_none_con_datos(símismo):
+        pass
+
+
+class Test_SimulConDatos(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = ModeloPrueba()
+        cls.datos_espaciales = {
+            '708': {''}
+        }
+
+    def test_simular_con_datos_(símismo):
+        pass
+
+    def test_simular_con_datos_espaciales(símismo):
+        pass

@@ -15,7 +15,8 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
-from tinamit import _, valid_nombre_arch, detectar_codif
+from tinamit import _
+from cositas import detectar_codif, valid_nombre_arch, guardar_json, cargar_json
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
 from tinamit.Análisis.Datos import leer_fechas, SuperBD, Datos, DatosRegión
 from tinamit.Análisis.Valids import validar_resultados
@@ -608,8 +609,8 @@ class Modelo(object):
         arch = valid_nombre_arch(nombre + frmt)
         if frmt == '.json':
             contenido = {ll: v.tolist() for ll, v in dic_res.items() if ll in l_vars}
-            with open(arch, 'w', encoding='UTF-8') as a:
-                json.dump(contenido, a)
+            guardar_json(contenido, arch=arch)
+
         elif frmt == '.csv':
 
             with open(arch, 'w', encoding='UTF-8', newline='') as a:
@@ -1019,8 +1020,7 @@ class Modelo(object):
                 continue
             codif = detectar_codif(arch)
             if ex == '.json':
-                with open(arch, 'r', encoding=codif) as d:
-                    res = json.load(d)
+                res = cargar_json(arch, codif=codif)
                 res = {ll: np.array(v) for ll, v in res.items() if ll in l_vars}
                 break
             elif ex == '.csv':
@@ -1028,7 +1028,7 @@ class Modelo(object):
                 with open(arch, encoding=codif) as d:
                     lector = csv.reader(d)
                     for f in lector:
-                        grp = re.match('(.*)(\[.*\])$', f[0])
+                        grp = re.match('(.*)(\[.*\])$', f[0])  # Detectar variables con subscriptos
                         if grp:
                             v = grp.group(1)
                             if v in res:

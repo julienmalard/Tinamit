@@ -9,7 +9,8 @@ import pandas as pd
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
 
-from tinamit import _, detectar_codif
+from tinamit import _
+from cositas import detectar_codif, guardar_json, cargar_json
 from tinamit.Análisis.Números import tx_a_núm
 
 
@@ -1063,8 +1064,7 @@ class SuperBD(object):
                'err': símismo.datos_reg_err.to_json()}
 
         # Guardar en UTF-8
-        with open(archivo, 'w', encoding='UTF-8') as d:
-            json.dump(dic, d, ensure_ascii=False)
+        guardar_json(dic, arch=archivo)
 
     def _validar_archivo(símismo, archivo='', ext=None, debe_existir=False):
 
@@ -1078,7 +1078,7 @@ class SuperBD(object):
                 archivo = os.path.join(archivo, símismo.nombre + ext)
 
         if debe_existir and not os.path.isfile(archivo):
-            raise ValueError
+            raise FileNotFoundError(_('El archivo "{}" no existe.').format(archivo))
         else:
             if ext:
                 directorio = os.path.split(archivo)[0]
@@ -1092,9 +1092,7 @@ class SuperBD(object):
     def cargar_datos(símismo, archivo=''):
 
         archivo = símismo._validar_archivo(archivo, ext='.json', debe_existir=True)
-
-        with open(archivo, encoding='UTF-8') as d:
-            dic = json.load(d)
+        dic = cargar_json(archivo)
 
         símismo.datos_ind = pd.read_json(dic['ind'], convert_dates=['fecha'])
         símismo.datos_reg = pd.read_json(dic['reg'], convert_dates=['fecha'])

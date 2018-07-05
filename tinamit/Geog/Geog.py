@@ -14,7 +14,8 @@ from matplotlib.figure import Figure as Figura
 from تقدیر.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
 from تقدیر.مقام import مقام
 
-from tinamit import _, detectar_codif
+from tinamit import _
+from cositas import detectar_codif
 
 # Ofrecemos la oportunidad de utilizar taqdir, تقدیر, en español
 

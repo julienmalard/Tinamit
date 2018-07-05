@@ -3,10 +3,11 @@ import json
 import os
 from warnings import warn as avisar
 
-from chardet import UniversalDetector
 from pkg_resources import resource_filename
 
 # Cosas básicas
+from cositas import guardar_json, cargar_json
+
 __author__ = 'Julien Malard'
 
 __notes__ = 'Contacto: julien.malard@mail.mcgill.ca'
@@ -18,31 +19,18 @@ __version__ = __versión__
 
 
 # Código para manejar configuraciones de Tinamït
-def _escribir_json(dic, doc):
-    if not os.path.isdir(os.path.split(doc)[0]):
-        os.makedirs(os.path.split(doc)[0])
-
-    with open(doc, 'w', encoding='utf8') as d:
-        json.dump(dic, d, ensure_ascii=False, sort_keys=False, indent=2)
-
-
-def _leer_json(doc):
-    with open(doc, encoding='utf8') as d:
-        return json.load(d)
-
-
 _dir_config = resource_filename('tinamit', 'config.json')
 _config_base = {
     'leng': 'es'
 }
 try:
-    _configs = _leer_json(_dir_config)
+    _configs = cargar_json(_dir_config)
     for c, v_c in _config_base.items():
         if c not in _configs:
             _configs[c] = v_c
 except (FileNotFoundError, json.decoder.JSONDecodeError):
     _configs = _config_base.copy()
-    _escribir_json(_configs, _dir_config)
+    guardar_json(_configs, _dir_config)
 
 
 def obt_val_config(llave, tipo=None, mnsj_err=None, suprm_err=False):
@@ -86,7 +74,7 @@ def obt_val_config(llave, tipo=None, mnsj_err=None, suprm_err=False):
 
 def poner_val_config(llave, val):
     _configs[llave] = val
-    _escribir_json(_configs, _dir_config)
+    guardar_json(_configs, _dir_config)
 
 
 def poner_val_config_arch(llave, val):
@@ -155,29 +143,3 @@ def _(tx):
     str
     """
     return _dic_trads['trads'].gettext(tx)
-
-
-def valid_nombre_arch(nombre):
-    """
-    Una función para validar un nombre de archivo.
-
-    :param nombre: El nombre propuesto para el archivo.
-    :type nombre: str
-    :return: Un nombre válido.
-    :rtype: str
-    """
-    for x in ['\\', '/', '\|', ':' '*', '?', '"', '>', '<']:
-        nombre = nombre.replace(x, '_')
-
-    return nombre.strip()
-
-
-def detectar_codif(archivo, máx_líneas=None):
-    detector = UniversalDetector()
-    for í, línea in enumerate(open(archivo, 'rb').readlines()):
-        detector.feed(línea)
-        if máx_líneas is not None and í == (máx_líneas - 1):
-            break
-        if detector.done: break
-    detector.close()
-    return detector.result['encoding']

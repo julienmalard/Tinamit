@@ -3,6 +3,7 @@ import os
 
 import numpy as np
 
+from tinamit import guardar_json
 from tinamit.Conectado import Conectado
 from tinamit.Geog.Geog import Lugar
 
@@ -67,5 +68,4 @@ def np_a_lista(d, d_f=None):
 
 
 print(res)
-with open(os.path.join(os.path.split(__file__)[0], 'calib.json'), 'w', encoding='UTF-8') as d:
-    json.dump(np_a_lista(res), d, ensure_ascii=False, sort_keys=True, indent=2)
+guardar_json(np_a_lista(res), arch=os.path.join(os.path.split(__file__)[0], 'calib.json'))

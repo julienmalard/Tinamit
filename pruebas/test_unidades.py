@@ -38,25 +38,26 @@ class Test_ConvertirUnidades(unittest.TestCase):
         símismo.assertEqual(convertir('km', 'm', val=2), 2000)
 
     def test_conversión_imposible(símismo):
-        # ¡Comparemos bananas con naranjas!
+        """
+        ¡Comparemos bananas con naranjas!
+        """
         símismo.assertRaises(ValueError, lambda: convertir('bananas', 'naranjas'))
 
         # Y un error de dimensionalidad.
         símismo.assertRaises(ValueError, lambda: convertir('m3', 'm2'))
+
+    def test_convertir_plurial_erróneo(símismo):
+        """
+        Intentemos convertir un nombre que parece ser forma plurial ("mes" podría reconocerse como el plurial
+        de "m"), pero no lo es.
+        """
+        símismo.assertEqual(convertir('años', 'mes'), 12)
 
 
 class Test_TradsUnidades(unittest.TestCase):
     """
     Pruebas de funciones de traducción de unidades.
     """
-
-    @classmethod
-    def setUpClass(cls):
-        """
-        Registrar una traducción ahora para poder comprobar traducciones después.
-        """
-
-        trads.agregar_trad(unid='year', trad='año', leng_trad='es', leng_orig='en')
 
     def test_traducir(símismo):
         """

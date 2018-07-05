@@ -3,6 +3,8 @@ import json
 
 import pkg_resources
 
+from tinamit import guardar_json, cargar_json
+
 
 class Diccionario(object):
     def __init__(símismo):
@@ -12,11 +14,9 @@ class Diccionario(object):
         símismo.estándar = 'Español'
         símismo.config = None
 
-        with open(símismo.direc, encoding='utf8') as d:
-            símismo.dic = json.load(d)
+        símismo.dic = cargar_json(símismo.direc)
         try:
-            with open(símismo.arch_config, encoding='utf8') as d:
-                símismo.config = json.load(d)
+            símismo.config = cargar_json(símismo.arch_config)
         except (FileNotFoundError, json.decoder.JSONDecodeError):
             pass
 
@@ -26,8 +26,7 @@ class Diccionario(object):
                 'leng_act' not in símismo.config or símismo.config['leng_act'] not in símismo.lenguas:
             config = {'leng_act': 'Kaqchikel'}
             símismo.config = config
-            with open(símismo.arch_config, encoding='utf8', mode='w') as d:
-                json.dump(config, d, ensure_ascii=False, sort_keys=True, indent=2)
+            guardar_json(config, arch=símismo.arch_config)
 
         símismo.verificar_estados()
 
@@ -37,10 +36,8 @@ class Diccionario(object):
         símismo.izq_a_derech = símismo.leng_act['IzqaDerech']
 
     def guardar(símismo):
-        with io.open(símismo.direc, 'w', encoding='utf8') as d:
-            json.dump(símismo.dic, d, ensure_ascii=False, sort_keys=True, indent=2)
-        with io.open(símismo.arch_config, 'w', encoding='utf8') as d:
-            json.dump(símismo.config, d, ensure_ascii=False, sort_keys=True, indent=2)
+        guardar_json(símismo.dic, arch=símismo.direc)
+        guardar_json(símismo.config, arch=símismo.arch_config)
 
     def verificar_estados(símismo):
         estándar = símismo.lenguas[símismo.estándar]

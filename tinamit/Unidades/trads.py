@@ -1,5 +1,6 @@
 import json
 import os
+import tempfile
 from itertools import chain as cadena
 from shutil import copyfile as copiar_archivo
 from warnings import warn as avisar
@@ -7,39 +8,29 @@ from warnings import warn as avisar
 import pint
 import pkg_resources
 
+from cositas import guardar_json, cargar_json
 from tinamit import _
 from . import regu
 
 _archivo_json = pkg_resources.resource_filename('tinamit.Unidades', 'trads_unids.json')
-_archivo_json_respaldo = pkg_resources.resource_filename('tinamit.Unidades', 'trads_unids_respl.json')
 _archivo_pluriales = pkg_resources.resource_filename('tinamit.Unidades', 'pluriales.json')
 
 l_dic_trads = None
-if os.path.isfile(_archivo_json_respaldo):
-    try:  # pragma: sin cobertura
-        with open(_archivo_json_respaldo, encoding='UTF-8') as d_j:
-            l_dic_trads = json.load(d_j)  # type: list[dict]
-        copiar_archivo(_archivo_json_respaldo, _archivo_json)
-    except json.JSONDecodeError:
-        pass
 
 if l_dic_trads is None:
     if os.path.isfile(_archivo_json):
         try:
-            with open(_archivo_json, encoding='UTF-8') as d_j:
-                l_dic_trads = json.load(d_j)  # type: list[dict]
+            l_dic_trads = cargar_json(_archivo_json)
         except json.JSONDecodeError:  # pragma: sin cobertura
             l_dic_trads = []
     else:
         l_dic_trads = []
 
 if os.path.isfile(_archivo_pluriales):
-    with open(_archivo_pluriales, encoding='UTF-8') as d_p:
-        _pluriales = json.load(d_p)
+    _pluriales = cargar_json(_archivo_pluriales)
 else:  # pragma: sin cobertura
     _pluriales = ['s', 'es', 'ें', 'கள்', 'க்கள்']
-    with open(_archivo_pluriales, 'w', encoding='UTF-8') as d_p:
-        json.dump(_pluriales, d_p, ensure_ascii=False)
+    guardar_json(_pluriales, _archivo_pluriales)
 
 
 def act_arch_trads(l_d_t, arch):
@@ -88,26 +79,8 @@ def act_arch_trads(l_d_t, arch):
             d[l]['sn'] = list(set(t['sn']))  # Quitar sinónimos duplicados
             d[l]['sn'].sort()  # Ordenar los sinónimos
 
-    # Hacer una copia de respaldo antes de editar el documento original
-    if os.path.isfile(_archivo_json):
-        copiar_archivo(_archivo_json, _archivo_json_respaldo)
-
     # Guardar el diccionario de traducciones
-    try:
-        with open(arch, 'w', encoding='UTF-8') as d:
-            json.dump(l_d_t, d, ensure_ascii=False, indent=2)
-    except PermissionError:
-        pass  # pragma: sin cobertura
-
-    # Si llegamos hasta aquí, queda seguro quitar el archivo de respaldo.
-    try:
-        os.remove(_archivo_json_respaldo)
-    except (PermissionError, FileNotFoundError):
-        pass  # pragma: sin cobertura
-
-
-# Actualizar las traducciones al importar este módulo
-act_arch_trads(l_d_t=l_dic_trads, arch=_archivo_json)
+    guardar_json(obj=l_d_t, arch=arch)
 
 
 def trad_unid(unid, leng_final, leng_orig=None):
@@ -353,3 +326,14 @@ def buscar_singular(u):
             pass  # En el caso que la extensión plural sea más grande que la unidad sí misma.
 
     return l_u
+
+
+# Actualizar las traducciones al importar este módulo
+act_arch_trads(l_d_t=l_dic_trads, arch=_archivo_json)
+básicas = {
+    'month': 'mes',
+    'year': 'año',
+    'day': 'día'
+}
+for u, t in básicas.items():
+    agregar_trad(u, t, leng_trad='es', leng_orig='en')

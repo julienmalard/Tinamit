@@ -4,6 +4,7 @@ import os
 import matplotlib.pyplot as dib
 import numpy as np
 
+from tinamit import cargar_json
 from tinamit.EnvolturasMDS import EnvolturaMDS
 from EnvolturasMDS.auto_mds import generar_mds
 from tinamit.Geog.Geog import Geografía
@@ -17,8 +18,7 @@ if not os.path.isdir(dir_gráf_calib):
 if not os.path.isdir(dir_gráf_simuls):
     os.makedirs(dir_gráf_simuls)
 
-with open(os.path.join(dir_base, 'calib.json'), encoding='UTF-8', mode='r') as d:
-    dic_calib = json.load(d)
+dic_calib = cargar_json(os.path.join(dir_base, 'calib.json'))
 
 modelo_mds = generar_mds(archivo='Para Tinamït.vpm')
 geog = Geografía('Iximulew')

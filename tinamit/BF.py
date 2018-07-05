@@ -1,6 +1,5 @@
 import datetime as ft
 import inspect
-import json
 import math as mat
 import os
 import sys
@@ -11,7 +10,7 @@ from warnings import warn as avisar
 import numpy as np
 from dateutil.relativedelta import relativedelta as deltarelativo
 
-from tinamit import _, obt_val_config
+from tinamit import _, obt_val_config, guardar_json, cargar_json
 from tinamit.Modelo import Modelo
 from .Unidades.conv import convertir
 
@@ -322,13 +321,9 @@ class ModeloBF(Modelo):
             for d_v in d_vals.values():
                 if isinstance(d_v['val'], np.ndarray):
                     d_v['val'] = d_v['val'].tolist()
-            with open(símismo.dic_prb_datos_inic, 'w', encoding='UTF-8') as d:
-                json.dump(d_vals, d, ensure_ascii=False, indent=2, sort_keys=True)
+            guardar_json(d_vals, arch=símismo.dic_prb_datos_inic)
 
-        with open(símismo.dic_prb_datos_inic, encoding='UTF-8') as d:
-            d_vals = json.load(d)
-
-        return d_vals
+        return cargar_json(símismo.dic_prb_datos_inic)
 
 
 class ModeloImpaciente(ModeloBF):
@@ -715,11 +710,9 @@ class ModeloImpaciente(ModeloBF):
                 if isinstance(val, np.ndarray):
                     d_egr[var] = val.tolist()
 
-            with open(símismo.dic_prb_egr, 'w', encoding='UTF-8') as d:
-                json.dump(d_egr, d, ensure_ascii=False, indent=2, sort_keys=True)
+            guardar_json(d_egr, arch=símismo.dic_prb_egr)
 
-        with open(símismo.dic_prb_egr, encoding='UTF-8') as d:
-            d_egr = json.load(d)
+        d_egr = cargar_json(símismo.dic_prb_egr)
 
         return d_egr
 

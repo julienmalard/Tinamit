@@ -224,10 +224,8 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         símismo.dur_estaciones = [int(float(x)) for x in dic_ingr['TS']]  # La duración de las estaciones (en meses)
         símismo.n_polí = int(dic_ingr['NN_IN'])
 
-        if dic_ingr['NY'] != 1:
-            warn(_('Hay más que 1 año de simulación en el archivo de datos iniciales SAHYSMOD. Cambiamos '
-                   'automáticamente a 1 año.'))
-            dic_ingr['NY'] = 1
+        # Asegurar únicamente un año de simulación.
+        dic_ingr['NY'] = 1
 
         # Asegurars que el número de estaciones es igual al número de duraciones de estaciones.
         if símismo.n_estaciones != len(símismo.dur_estaciones):

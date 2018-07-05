@@ -5,6 +5,8 @@ import shutil
 import numpy as np
 
 from tinamit.Análisis.ConexDatos import ConexDatos
+
+from tinamit import guardar_json, cargar_json
 from tinamit.Análisis.Datos import DatosIndividuales, DatosRegión, SuperBD
 from EnvolturasMDS.auto_mds import generar_mds
 from tinamit.Geog.Geog import Geografía
@@ -148,15 +150,12 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
         if os.path.isfile(os.path.join(os.path.split(__file__)[0], 'calib.json')):
             shutil.copyfile(os.path.join(os.path.split(__file__)[0], 'calib.json'),
                             os.path.join(os.path.split(__file__)[0], 'calib2.json'))
-            with open(os.path.join(os.path.split(__file__)[0], 'calib.json'), encoding='UTF-8') as d:
-                dic = json.load(d)
+            dic = cargar_json(os.path.join(os.path.split(__file__)[0], 'calib.json'))
             dic.update(cnx.dic_calibs)
         else:
             dic = cnx.dic_calibs
 
-        with open(os.path.join(os.path.split(__file__)[0], 'calib.json'), 'w', encoding='UTF-8') as d:
-            json.dump(np_a_lista(dic), d, ensure_ascii=False, sort_keys=True, indent=2)
-
+        guardar_json(np_a_lista(dic), arch=os.path.join(os.path.split(__file__)[0], 'calib.json'))
 
     # #1/(b*Educación formal+b2*Educación sexual+a)+c', paráms=['a', 'b', 'b2', 'c'],
     # #                   líms_paráms=[(0, None), (0, 50), (0, 50), (0, None)]

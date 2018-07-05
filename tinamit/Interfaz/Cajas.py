@@ -5,7 +5,7 @@ import tkinter as tk
 import webbrowser
 from tkinter import filedialog as diálogo
 
-from tinamit import cambiar_lengua
+from tinamit import cambiar_lengua, guardar_json, cargar_json
 from tinamit.Conectado import Conectado
 from tinamit.definiciones import dir_raíz
 from . import CajasGenéricas as CjG
@@ -274,8 +274,7 @@ class CajaCabeza(tk.Frame):
         if archivo:
 
             símismo.apli.ubic_archivo = archivo
-            with open(archivo, 'r', encoding='utf8') as d:
-                receta = json.load(d)
+            receta = cargar_json(archivo)
 
             if 'conv_tiempo' not in receta.keys() or 'conexiones' not in receta.keys():
                 Ctrl.CajaAviso(apli=símismo.apli, texto=apli.Trads['ArchivoCorrupto'])
@@ -328,8 +327,7 @@ class CajaCabeza(tk.Frame):
         símismo.guardar()
 
     def guardar(símismo):
-        with io.open(símismo.apli.ubic_archivo, 'w', encoding='utf8') as d:
-            json.dump(símismo.apli.receta, d, ensure_ascii=False, sort_keys=True, indent=2)
+        guardar_json(símismo.apli.receta, arch=símismo.apli.ubic_archivo)
 
     def acción_bt_leng(símismo):
         Anim.sobreponer(símismo.apli.CajaCentral, símismo.apli.CajaLenguas, 'izquierda')
