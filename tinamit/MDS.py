@@ -61,7 +61,7 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         """
         Este método se deja a las subclases de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS` para implementar. Notar que la
         implementación de este método debe incluir la aplicación de valores iniciales.
@@ -129,9 +129,6 @@ class EnvolturaMDS(Modelo):
     def _leer_vals_inic(símismo):
         raise NotImplementedError
 
-    def _aplicar_cambios_vals_inic(símismo):
-        raise NotImplementedError
-
     def __getinitargs__(símismo):
 
         return símismo.archivo,
@@ -174,7 +171,7 @@ class MDSEditable(EnvolturaMDS):
     def unidad_tiempo(símismo):
         raise NotImplementedError
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         from tinamit.EnvolturasMDS import generar_mds
         if símismo.mod is None or símismo.editado:
             símismo.publicar_modelo()
@@ -182,7 +179,7 @@ class MDSEditable(EnvolturaMDS):
             símismo.editado = False
 
         símismo.mod.corrida_activa = nombre_corrida
-        símismo.mod._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
+        símismo.mod._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
     def _cambiar_vals_modelo_interno(símismo, valores):
         return símismo.mod._cambiar_vals_modelo_interno(valores=valores)

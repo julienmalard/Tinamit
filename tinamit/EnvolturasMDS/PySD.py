@@ -90,7 +90,7 @@ class ModeloPySD(EnvolturaMDS):
 
             símismo._act_vals_dic_var({v: val})
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
 
         # Poner los variables y el tiempo a sus valores iniciales
         símismo.modelo.reload()
@@ -100,9 +100,7 @@ class ModeloPySD(EnvolturaMDS):
         símismo.tiempo_final = tiempo_final
         símismo.paso_act = símismo.modelo.time._t
         símismo.vars_para_cambiar.clear()
-
-    def _aplicar_cambios_vals_inic(símismo):
-        símismo.vars_para_cambiar.update(símismo.vals_inic)
+        símismo.vars_para_cambiar.update(vals_inic)
 
     def _cambiar_vals_modelo_interno(símismo, valores):
         símismo.vars_para_cambiar.clear()

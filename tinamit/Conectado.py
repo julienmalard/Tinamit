@@ -325,8 +325,8 @@ class SuperConectado(Modelo):
 
         return all(mod.paralelizable() for mod in símismo.modelos.values())
 
-    def simular(símismo, t_final, paso=1, nombre_corrida='Corrida Tinamït', t_inic=None, lugar_clima=None,
-                clima=None, recalc_clima=True, vals_extern=None, vars_interés=None):
+    def simular(símismo, t_final, t_inic=None, paso=1, nombre_corrida='Corrida Tinamït', lugar_clima=None,
+                clima=None, recalc_clima=True, vals_inic=None, vals_extern=None, vars_interés=None):
         """
         Simula el modelo :class:`~tinamit.Conectado.SuperConectado`.
 
@@ -357,6 +357,8 @@ class SuperConectado(Modelo):
 
         """
 
+        vals_inic = símismo._frmt_vals_inic(vals_inic)
+
         # ¡No se puede simular con menos de un modelo!
         if len(símismo.modelos) < 1:
             raise ValueError(_('Hay que conectar submodelos antes de empezar una simulación.'))
@@ -384,27 +386,13 @@ class SuperConectado(Modelo):
             lugar_clima=lugar_clima, clima=clima, vars_interés=vars_interés
         )
 
-    def simular_grupo(símismo, t_final, paso=1, nombre_corrida='', vals_inic=None, vals_extern=None,
-                      t_inic=None, lugar_clima=None, clima=None, recalc_clima=True, combinar=True, dibujar=None,
-                      paralelo=None, vars_interés=None, guardar=False):
+    def simular_grupo(
+            símismo, t_final, t_inic=None, paso=1, nombre_corrida='', vals_inic=None, vals_extern=None,
+            lugar_clima=None, clima=None, recalc_clima=True, combinar=True, dibujar=None,
+            paralelo=None, vars_interés=None, guardar=False
+    ):
 
-        # Reformatear el diccionario de valores iniciales en el caso que se especificó con submodelos
-        if isinstance(vals_inic, dict):
-            if all(x in símismo.modelos for x in vals_inic):
-                # formato {submodelo1: {dic vals}, ...}
-                vals_inic = {
-                    '{}_{}'.format(sub_mod, var): val for sub_mod, d_vals in vals_inic.items()
-                    for var, val in d_vals.items()
-                }
-            elif all(isinstance(corr, dict) for corr in vals_inic.values()):
-                if all(x in símismo.modelos for corr in vals_inic.values() if isinstance(corr, dict) for x in corr):
-                    # formato {corrida1: {submodelo1: {dic vals}, ...}, corrida2: {...}}
-                    vals_inic = {
-                        corr: {
-                            '{}_{}'.format(sub_mod, var): val for sub_mod, d_vals in d_corr.items()
-                            for var, val in d_vals.items()
-                        } for corr, d_corr in vals_inic.items()
-                    }
+        vals_inic = símismo._frmt_vals_inic(vals_inic)
 
         # Llamar la función correspondiente de la clase pariente.
         return super().simular_grupo(
@@ -446,6 +434,27 @@ class SuperConectado(Modelo):
         else:
             for mod in símismo.modelos.values():
                 mod.limp_vals_inic()
+
+    def _frmt_vals_inic(símismo, vals_inic):
+        # Reformatear el diccionario de valores iniciales en el caso que se especificó con submodelos
+        if isinstance(vals_inic, dict):
+            if all(x in símismo.modelos for x in vals_inic):
+                # formato {submodelo1: {dic vals}, ...}
+                vals_inic = {
+                    '{}_{}'.format(sub_mod, var): val for sub_mod, d_vals in vals_inic.items()
+                    for var, val in d_vals.items()
+                }
+            elif all(isinstance(corr, dict) for corr in vals_inic.values()):
+                if all(x in símismo.modelos for corr in vals_inic.values() if isinstance(corr, dict) for x in corr):
+                    # formato {corrida1: {submodelo1: {dic vals}, ...}, corrida2: {...}}
+                    vals_inic = {
+                        corr: {
+                            '{}_{}'.format(sub_mod, var): val for sub_mod, d_vals in d_corr.items()
+                            for var, val in d_vals.items()
+                        } for corr, d_corr in vals_inic.items()
+                    }
+
+        return vals_inic
 
     def _incrementar(símismo, paso, guardar_cada=None):
         """
@@ -516,7 +525,7 @@ class SuperConectado(Modelo):
             símismo.modelos[m_r].cambiar_vals(valores=dic_vals)
 
     def _leer_vals_inic(símismo):
-        pass
+        pass  # Se hace en iniciar_modelo para los submodelos.
 
     def _leer_vals(símismo):
         """
@@ -528,7 +537,7 @@ class SuperConectado(Modelo):
         for mod in símismo.modelos.values():
             mod.leer_vals()  # Leer los valores de los variables.
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         """
         Inicia el modelo en preparación para una simulación.
 
@@ -578,10 +587,12 @@ class SuperConectado(Modelo):
                 obj_mod.vars_saliendo.add(var_fuente)
 
         # Iniciar los submodelos también.
-        for mod in símismo.modelos.values():
-            conv_tiempo = símismo.conv_tiempo[str(mod)]
-            mod.iniciar_modelo(tiempo_final=tiempo_final * conv_tiempo,
-                               nombre_corrida=nombre_corrida)  # Iniciar el modelo
+        for nmbr, mod in símismo.modelos.items():
+            conv_tiempo = símismo.conv_tiempo[nmbr]
+            vals_inic_mod = {var.split(nmbr)[1]: val for var, val in vals_inic.items() if var.startswith(nmbr)}
+            mod.iniciar_modelo(
+                tiempo_final=tiempo_final * conv_tiempo, nombre_corrida=nombre_corrida, vals_inic=vals_inic_mod
+            )  # Iniciar el modelo
 
     def especificar_var_saliendo(símismo, var):
 
@@ -807,9 +818,6 @@ class SuperConectado(Modelo):
                         pass
 
         raise FileNotFoundError(_('Ningún de los submodelos pudieron leer los resultados de la corrida.'))
-
-    def _aplicar_cambios_vals_inic(símismo):
-        pass
 
     def __getinitargs__(símismo):
         return símismo.nombre,

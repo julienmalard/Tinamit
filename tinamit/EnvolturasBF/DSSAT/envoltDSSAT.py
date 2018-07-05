@@ -12,7 +12,7 @@ class ModeloDSSAT(ModeloFlexible):  # pragma: sin cobertura
         símismo.día_act = 0  # El día actual de la simulación
         símismo.día_princ_últ_sim = 0  # El primer día de la última llamada a DSSAT
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
 
         símismo.inic_vars_clima(tiempo_final=tiempo_final)
 

@@ -1,6 +1,5 @@
 import csv
 import datetime as ft
-import json
 import math
 import os
 import pickle
@@ -15,8 +14,8 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
-from tinamit import _
 from cositas import detectar_codif, valid_nombre_arch, guardar_json, cargar_json
+from tinamit import _
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
 from tinamit.Análisis.Datos import leer_fechas, SuperBD, Datos, DatosRegión
 from tinamit.Análisis.Valids import validar_resultados
@@ -116,16 +115,15 @@ class Modelo(object):
     def _leer_vals_inic(símismo):
         raise NotImplementedError
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
 
         símismo.corrida_activa = nombre_corrida
 
-        símismo._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
+        símismo._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
         símismo._leer_vals_inic()
 
-        símismo._act_vals_dic_var(símismo.vals_inic)
-        símismo._aplicar_cambios_vals_inic()
+        símismo._act_vals_dic_var(vals_inic)
 
     def _act_vals_dic_var(símismo, valores):
         for var, val in valores.items():
@@ -134,10 +132,10 @@ class Modelo(object):
             else:
                 símismo.variables[var]['val'] = val
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         """
         Esta función llama cualquier acción necesaria para preparar el modelo para la simulación. Esto incluye aplicar
-        valores iniciales. En general es muy fácil y se hace simplemente con "símismo.cambiar_vals(símismo.vals_inic)",
+        valores iniciales. En general es muy fácil y se hace simplemente con "símismo.cambiar_vals(vals_inic)",
         pero para unos modelos (como Vensim) es un poco más delicado así que los dejamos a ti para implementar.
 
         :param tiempo_final: El tiempo final de la simulación.
@@ -147,9 +145,6 @@ class Modelo(object):
         :type nombre_corrida: str
 
         """
-        raise NotImplementedError
-
-    def _aplicar_cambios_vals_inic(símismo):
         raise NotImplementedError
 
     def _conectar_clima(símismo, lugar, fecha_inic, fecha_final, escenario):
@@ -250,8 +245,10 @@ class Modelo(object):
 
         return n_pasos, t_inic, t_final, delta_fecha
 
-    def simular(símismo, t_final, paso=1, nombre_corrida='Corrida Tinamït', t_inic=None, lugar_clima=None,
-                vals_extern=None, clima=None, vars_interés=None):
+    def simular(
+            símismo, t_final, t_inic=None, paso=1, nombre_corrida='Corrida Tinamït', lugar_clima=None,
+            vals_inic=None, vals_extern=None, clima=None, vars_interés=None
+    ):
         """
 
         Parameters
@@ -261,6 +258,7 @@ class Modelo(object):
         nombre_corrida :
         t_inic : ft.date | str | int
         lugar_clima : Geog.Lugar
+        vals_inic : dict[str, np.ndarray | float | int]
         vals_extern : dict[str, np.ndarray | list] | pd.DataFrame
         clima :
         vars_interés :
@@ -276,6 +274,12 @@ class Modelo(object):
 
         if clima is not None and lugar_clima is None:
             raise ValueError(_('Hay que especificar un lugar para incorporar el clima.'))
+
+        if vals_inic is None:
+            vals_inic = {}
+        copia_vals_inic = símismo.vals_inic.copy()
+        copia_vals_inic.update(vals_inic)
+        vals_inic = copia_vals_inic
 
         if isinstance(vals_extern, pd.DataFrame):
             vals_extern = {v: vals_extern[v].values for v in list(vals_extern)}
@@ -294,7 +298,7 @@ class Modelo(object):
 
         # Iniciamos el modelo.
         símismo.corrida_activa = nombre_corrida
-        símismo.iniciar_modelo(tiempo_final=t_final, nombre_corrida=nombre_corrida)
+        símismo.iniciar_modelo(tiempo_final=t_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
         # Verificar los nombres de los variables de interés
         símismo.vars_saliendo.clear()
@@ -376,9 +380,10 @@ class Modelo(object):
         if vars_interés is not None:
             return copiar_profundo(símismo.mem_vars)
 
-    def simular_grupo(símismo, t_final, paso=1, nombre_corrida='', vals_inic=None, vals_extern=None,
-                      t_inic=None,
-                      lugar_clima=None, clima=None, combinar=True, paralelo=None, vars_interés=None, guardar=False):
+    def simular_grupo(
+            símismo, t_final, t_inic=None, paso=1, nombre_corrida='', vals_inic=None, vals_extern=None,
+            lugar_clima=None, clima=None, combinar=True, paralelo=None, vars_interés=None, guardar=False
+    ):
 
         # Formatear los nombres de variables a devolver.
         if vars_interés is not None:
@@ -416,9 +421,6 @@ class Modelo(object):
             nombre_corrida=nombre_corrida, combinar=combinar, tipos_ops=tipos_ops, opciones=opciones
         )
 
-        # Sacar los valores iniciales del diccionario de opciones de corridas
-        d_vals_inic = {ll: v.pop('vals_inic') for ll, v in corridas.items()}
-
         # Validar los nombres y evitar un problema con nombres de corridas con '.' en Vensim
         mapa_nombres = {corr: valid_nombre_arch(corr.replace('.', '_')) for corr in corridas}
         for ant, nv in mapa_nombres.items():
@@ -432,8 +434,6 @@ class Modelo(object):
             antes = ft.datetime.now()
             corr0 = list(corridas)[0]
             d_corr0 = corridas.pop(corr0)
-
-            símismo.inic_vals_vars(dic_vals=d_vals_inic[corr0])
 
             d_corr0['vars_interés'] = vars_interés
 
@@ -483,7 +483,7 @@ class Modelo(object):
                 d_args['nombre_corrida'] = corr
                 d_args['vars_interés'] = vars_interés
 
-                l_trabajos.append((copia_mod, copiar_profundo(d_vals_inic[corr]), d_args))
+                l_trabajos.append((copia_mod, d_args))
 
             # Hacer las corridas en paralelo
             with Reserva() as r:
@@ -510,8 +510,6 @@ class Modelo(object):
 
             # Para cada corrida...
             for corr, d_prms_corr in corridas.items():
-                símismo.inic_vals_vars(dic_vals=d_vals_inic[corr])
-
                 d_prms_corr['vars_interés'] = vars_interés
 
                 # Después, simular el modelo.
@@ -1466,21 +1464,22 @@ def _correr_modelo(x):
     """
     Función para inicializar y correr un modelo :class:`SuperConectado`.
 
-    :param x: Los parámetros. El primero es el modelo, el segundo el diccionario de valores iniciales (El primer
+    Parameters
+    ----------
+    x : tuple[Modelo, dict]
+        Los parámetros. El primero es el modelo, el segundo el diccionario de valores iniciales (El primer
       nivel de llaves es el nombre del submodelo y el segundo los nombres de los variables con sus valores
       iniciales), y el tercero es el diccionario de argumentos para pasar al modelo.
-    :type x: tuple[SuperConectado, dict[str, dict[str, float | int | np.ndarray]], dict]
 
+    Returns
+    -------
+    dict
+        Los resultados de la simulación.
     """
-    estado_mod, vls_inic, d_args = x
+
+    estado_mod, d_args = x
 
     mod = pickle.loads(estado_mod)
-
-    # Inicializar los variables y valores iniciales. Esto debe ser adentro de la función llamada por
-    # Proceso, para que los valores iniciales se apliquen en su propio proceso (y no en el modelo
-    # original).
-    if vls_inic is not None:
-        mod.inic_vals_vars(vls_inic)
 
     # Después, simular el modelo y devolver los resultados, si hay.
     return mod.simular(**d_args)

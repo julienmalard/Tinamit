@@ -385,7 +385,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         return unidades
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         """
         Acciones necesarias para iniciar el modelo VENSIM.
 
@@ -398,7 +398,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         """
 
         # En Vensim, tenemos que incializar los valores de variables constantes antes de empezar la simulación.
-        símismo.cambiar_vals({var: val for var, val in símismo.vals_inic.items()
+        símismo.cambiar_vals({var: val for var, val in vals_inic.items()
                               if var in símismo.constantes})
 
         # Establecer el nombre de la corrida.
@@ -424,17 +424,12 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                    mensaje_error=_('Error estableciendo el paso de VENSIM.'))
 
         # Aplicar los valores iniciales de variables editables
-        símismo.cambiar_vals({var: val for var, val in símismo.vals_inic.items()
+        símismo.cambiar_vals({var: val for var, val in vals_inic.items()
                               if var not in símismo.constantes})
 
     def _leer_vals_inic(símismo):
 
         símismo._leer_vals_de_vensim()
-
-    def _aplicar_cambios_vals_inic(símismo):
-        # Vensim tiene su manera personal de inicializar los variables iniciales, en _iniciar_modelo.
-        # Así que no haremos nada aquí.
-        pass
 
     def _cambiar_vals_modelo_interno(símismo, valores):
         """

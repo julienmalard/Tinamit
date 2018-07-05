@@ -99,7 +99,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         símismo.tipos_vars['IngrEstacionales'] = [códs_a_vars[x] for x in ingresos_estacionales]
         símismo.tipos_vars['EgrEstacionales'] = [códs_a_vars[x] for x in egresos_estacionales]
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
 
         # Crear un diccionario de trabajo específico a esta corrida.
         símismo.direc_trabajo = os.path.join(símismo.direc_base, '_temp', nombre_corrida)
