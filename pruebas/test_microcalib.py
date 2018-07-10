@@ -7,7 +7,7 @@ import pandas as pd
 
 from pruebas.test_mds import limpiar_mds
 from tinamit.Análisis.Calibs import CalibradorEc
-from tinamit.Análisis.Datos import DatosIndividuales, SuperBD
+from tinamit.Análisis.Datos import MicroDatos, SuperBD
 from tinamit.EnvolturasMDS.PySD import ModeloPySD
 from tinamit.Geog.Geog import Geografía
 
@@ -37,7 +37,7 @@ class Test_Calibrador(unittest.TestCase):
 
         datos_y = cls.paráms['a'] * datos_x + cls.paráms['b'] + np.random.rand(n_obs) * 0.01
         bd_pds = pd.DataFrame({'y': datos_y, 'x': datos_x})
-        bd_datos = DatosIndividuales('Datos Generados', bd_pds)
+        bd_datos = MicroDatos('Datos Generados', bd_pds)
 
         cls.bd_datos = SuperBD(nombre='BD Principal', bds=bd_datos)
         cls.bd_datos.espec_var('x')
@@ -67,8 +67,8 @@ class Test_CalibEnModelo(unittest.TestCase):
         lugares = [x for ll, v in datos_x.items() for x in [ll] * v.size]
         x = [i for v in datos_x.values() for i in v]
         y = [i for v in datos_y.values() for i in v]
-        bd_pds = DatosIndividuales('Datos geográficos', pd.DataFrame({'lugar': lugares, 'x': x, 'y': y}),
-                                   lugar='lugar')
+        bd_pds = MicroDatos('Datos geográficos', pd.DataFrame({'lugar': lugares, 'x': x, 'y': y}),
+                            lugar='lugar')
 
         cls.geog = Geografía('Geografía Iximulew', arch_csv_geog)
         cls.bd = SuperBD('BD Central', bd_pds)

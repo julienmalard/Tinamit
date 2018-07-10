@@ -10,6 +10,7 @@ from warnings import warn as avisar
 
 import numpy as np
 import pandas as pd
+import xarray as xr
 from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
@@ -17,7 +18,7 @@ import tinamit.Geog.Geog as Geog
 from cositas import detectar_codif, valid_nombre_arch, guardar_json, cargar_json
 from tinamit import _
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
-from tinamit.Análisis.Datos import leer_fechas, SuperBD, Datos, DatosRegión
+from tinamit.Análisis.Datos import obt_fecha_ft, SuperBD, Datos
 from tinamit.Análisis.Valids import validar_resultados
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.Unidades.conv import convertir
@@ -128,9 +129,11 @@ class Modelo(object):
     def _act_vals_dic_var(símismo, valores):
         for var, val in valores.items():
             if isinstance(símismo.variables[var]['val'], np.ndarray):
-                símismo.variables[var]['val'][:] = val
+                existen = np.invert(np.isnan(val))
+                símismo.variables[var]['val'][existen] = val[existen]
             else:
-                símismo.variables[var]['val'] = val
+                if not np.isnan(val):
+                    símismo.variables[var]['val'] = val
 
     def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         """
@@ -178,12 +181,12 @@ class Modelo(object):
             else:
                 raise ValueError(_('Si el tiempo final es una fecha, debes especificar un tiempo inicial también.'))
         elif isinstance(t_inic, str):
-            t_inic = leer_fechas(t_inic)
+            t_inic = obt_fecha_ft(t_inic)
         elif isinstance(t_inic, ft.datetime):
             t_inic = t_inic.date()
 
         if isinstance(t_final, str):
-            t_final = leer_fechas(t_final)
+            t_final = obt_fecha_ft(t_final)
         elif isinstance(t_final, ft.datetime):
             t_final = t_final.date()
 
@@ -241,7 +244,7 @@ class Modelo(object):
                 raise ValueError(_('La fecha final debe ser ulterior a la fecha inicial.'))
 
         else:
-            raise TypeError
+            raise TypeError(_('t_inic debe ser fecha o número entero, no "{}".').format(type(t_inic)))
 
         return n_pasos, t_inic, t_final, delta_fecha
 
@@ -323,9 +326,6 @@ class Modelo(object):
 
             fecha_act = fecha_próx
 
-        if vals_extern is not None:
-            raise NotImplementedError
-
         símismo.mem_vars.clear()
         for v in vars_interés:
             dims = símismo.obt_dims_var(v)
@@ -352,6 +352,15 @@ class Modelo(object):
             # Hasta llegar al tiempo final, incrementamos el modelo.
             for i in range(n_pasos):
 
+                if vals_extern is not None:
+
+                    if simul_fecha:
+                        f = fecha_act
+                    else:
+                        f = i
+                    for var, vals in vals_extern.items():
+                        símismo.cambiar_vals({var: vals[f]})
+
                 # Incrementar el modelo
                 símismo.incrementar(paso)
 
@@ -362,9 +371,7 @@ class Modelo(object):
                     símismo.mem_vars[v][i + 1] = símismo.obt_val_actual_var(v)
 
                 if i != (n_pasos - 1):
-                    if vals_extern is not None:
-                        for var, vals in vals_extern.items():
-                            símismo.cambiar_vals({var: vals[i + 1]})
+
                     if simul_fecha:
                         fecha_próx = fecha_act + delta_fecha
 
@@ -403,18 +410,20 @@ class Modelo(object):
             nmb: dict if isinstance(op, dict) else list if isinstance(op, list) else 'val'
             for nmb, op in opciones.items()
         }
-        # Una excepción para "vals_inic": si es un diccionario con nombres de variables como llaves, es valor único;
+        # Una excepción para "vals_inic" y "vals_extern":
+        # si es un diccionario con nombres de variables como llaves, es valor único;
         # si tiene nombres de corridas como llaves y diccionarios de variables como valores, es de tipo diccionario.
-        op_inic = opciones['vals_inic']
-        if isinstance(op_inic, list):
-            tipos_ops['vals_inic'] = list
-        elif isinstance(op_inic, dict):
-            if all(isinstance(v, dict) for v in op_inic.values()):
-                tipos_ops['vals_inic'] = dict
-            elif not any(isinstance(v, dict) for v in op_inic.values()):
-                tipos_ops['vals_inic'] = 'val'
-            else:
-                raise ValueError(_('Error en `vals_inic`.'))
+        for op in ['vals_inic', 'vals_extern']:
+            op_inic = opciones[op]
+            if isinstance(op_inic, list):
+                tipos_ops[op] = list if len(op_inic) else 'val'
+            elif isinstance(op_inic, dict):
+                if all(isinstance(v, dict) for v in op_inic.values()):
+                    tipos_ops[op] = dict if len(op_inic) else 'val'
+                elif not any(isinstance(v, dict) for v in op_inic.values()):
+                    tipos_ops[op] = 'val'
+                else:
+                    raise ValueError(_('Error en `{op}`.').format(op=op))
 
         # Generaremos el diccionario de corridas:
         corridas = _gen_dic_ops_corridas(
@@ -528,13 +537,22 @@ class Modelo(object):
             símismo, t_final, en=None, escala=None, paso=1, nombre_corrida='', vals_inic=None,
             t_inic=None, lugar_clima=None, clima=None, vars_interés=None, guardar=False, paralelo=None
     ):
-        if símismo.geog is None or símismo.datos is None:
-            raise ValueError
-        lugares = símismo.geog.obt_lugares_en(en=en, escala=escala)
+        if símismo.geog is None:
+            if escala is not None:
+                raise ValueError(_('Debes especificar una geografía para poder emplear `escala`.'))
+            if en is not None:
+                lugares = en
+                if not isinstance(lugares, (list, set, tuple)):
+                    lugares = [lugares]
+            else:
+                lugares = símismo.datos.lugares()
+        else:
+            lugares = símismo.geog.obt_lugares_en(en=en, escala=escala)
+
         vals_inic_por_lug = {}
         vals_extern_por_lug = {}
         for l in lugares:
-            datos_inic = símismo._obt_datos_inic(t_inic, lugar=l)
+            datos_inic = símismo._obt_datos_inic(t_inic, lugar=l).to_dict('list')
             datos_inic.update(vals_inic)
             vals_inic_por_lug[l] = datos_inic
 
@@ -551,16 +569,16 @@ class Modelo(object):
 
     def _obt_datos_inic(símismo, tiempo, lugar):
         if símismo.datos is None:
-            raise ValueError
+            return {}
         l_vars = list(símismo.conex_var_datos.values())
         return símismo.datos.obt_datos(l_vars=l_vars, lugares=lugar, fechas=tiempo, interpolar=True)
 
     def _obt_datos_extern(símismo, t_inic, t_final, paso, lugar):
         if símismo.datos is None:
-            raise ValueError
+            return {}
         l_vars = list(símismo.conex_var_datos.values())
         n_pasos = símismo._inic_pasos_y_fechas(t_inic, t_final, paso)
-
+        l_tiempos = []
         return símismo.datos.obt_datos(l_vars=l_vars, lugares=lugar, fechas=l_tiempos, interpolar=True)
 
     def guardar_resultados(símismo, dic_res=None, nombre=None, frmt='json', l_vars=None):
@@ -730,9 +748,11 @@ class Modelo(object):
         if combin not in ['prom', 'total', None]:
             raise ValueError(_('"Combin" debe ser "prom", "total", o None, no "{}".').format(combin))
 
-        símismo.vars_clima[var] = {'nombre_extrn': var_clima,
-                                   'combin': combin,
-                                   'conv': conv}
+        símismo.vars_clima[var] = {
+            'nombre_extrn': var_clima,
+            'combin': combin,
+            'conv': conv
+        }
 
     def desconectar_var_clima(símismo, var):
         """
@@ -758,9 +778,9 @@ class Modelo(object):
 
         símismo._act_vals_dic_var(valores=valores)
 
-        símismo._cambiar_vals_modelo_interno(valores=valores)
+        símismo.cambiar_vals_modelo_interno(valores=valores)
 
-    def _cambiar_vals_modelo_interno(símismo, valores):
+    def cambiar_vals_modelo_interno(símismo, valores):
         """
         Esta función debe cambia el valor de variables en el :class:`Modelo`, incluso tomar acciones para asegurarse
         de que el cambio se hizo en el modelo externo, si aplica.
@@ -839,17 +859,15 @@ class Modelo(object):
         símismo._conv_unid_tiempo['unid_ref'] = unid_ref
         símismo._conv_unid_tiempo['factor'] = factor
 
-    def dibujar_mapa(símismo, geog, var, directorio, corrida=None, i_paso=None, colores=None, escala=None):
+    def dibujar_mapa(símismo, var, directorio, corrida=None, i_paso=None, colores=None, escala=None):
         """
         Dibuja mapas espaciales de los valores de un variable.
 
-        :param geog: La geografía del lugares.
-        :type geog: Geografía
         :param var: El variable para dibujar.
         :type var: str
         :param corrida: El nombre de la corrida para dibujar.
         :type corrida: str
-        :param directorio: El directorio, relativo al archivo EnvolturasMDS, donde hay que poner los dibujos.
+        :param directorio: El directorio, relativo al fuente EnvolturasMDS, donde hay que poner los dibujos.
         :type directorio: str
         :param i_paso: Los pasos a los cuales quieres dibujar los egresos.
         :type i_paso: list | tuple | int
@@ -859,10 +877,14 @@ class Modelo(object):
         :type escala: list | np.ndarray
         """
 
+        geog = símismo.geog
+        if geog is None:
+            raise ValueError(_('Debes especificar una geografía para poder dibujar mapas de resultados.'))
+
         # Validar el nombre del variable.
         var = símismo.valid_var(var)
 
-        # Preparar el nombre del variable para uso en el nombre del archivo.
+        # Preparar el nombre del variable para uso en el nombre del fuente.
         nombre_var = valid_nombre_arch(var)
 
         bd = símismo.leer_resultados(var=var, corrida=corrida)
@@ -1045,7 +1067,7 @@ class Modelo(object):
                 raise ValueError(_('El formato de datos "{}" no se puede leer al momento.').format(ext))
 
         if res is None:
-            raise FileNotFoundError(_('No se encontró archivo de resultados para "{}".').format(archivo))
+            raise FileNotFoundError(_('No se encontró fuente de resultados para "{}".').format(archivo))
 
         if isinstance(var, str):
             return res[var]
@@ -1191,16 +1213,23 @@ class Modelo(object):
             símismo.datos = datos
         elif isinstance(datos, Datos):
             símismo.datos = SuperBD('Autogen', bds=datos)
-        elif isinstance(datos, pd.DataFrame):
-            símismo.datos = SuperBD('Autogen', bds=DatosRegión('Autogen', datos))
-        elif isinstance(datos, dict):
-            símismo.datos = SuperBD('Autogen', bds=DatosRegión('Autogen', pd.DataFrame(datos)))
+        elif isinstance(datos, (pd.DataFrame, dict, xr.Dataset)):
+            símismo.datos = SuperBD('Autogen', bds=Datos('Autogen', datos))
         else:
-            raise TypeError
+            raise TypeError(_('Tipo de datos "{}" no reconocido.').format(type(datos)))
 
-        if corresp_vars is not None:
+        if corresp_vars is None:
+            corresp_vars = [v for v in símismo.datos.variables if v in símismo.variables]
+        if isinstance(corresp_vars, dict):
             for var, var_bd in corresp_vars.items():
                 símismo.conectar_var_a_datos(var=var, var_bd=var_bd)
+        elif isinstance(corresp_vars, list):
+            for var in corresp_vars:
+                símismo.conectar_var_a_datos(var=var)
+        elif isinstance(corresp_vars, str):
+            símismo.conectar_var_a_datos(var=corresp_vars)
+        else:
+            raise TypeError(type(corresp_vars))
 
     def conectar_var_a_datos(símismo, var, var_bd=None):
         if var_bd is None:
@@ -1415,9 +1444,9 @@ class Modelo(object):
             l_vars = var
         l_vars = [símismo.valid_var(v) for v in l_vars]
 
-        obs = símismo.datos.obt_datos(l_vars, tipo='regional')[l_vars]
+        obs = símismo.datos.obt_datos(l_vars)[l_vars]
         if t_final is None:
-            t_final = len(obs) - 1
+            t_final = len(obs['n']) - 1
         d_vals_prms = {p: d_p['dist'] for p, d_p in símismo.calibs.items()}
         n_vals = len(list(d_vals_prms.values())[0])
         vals_inic = [{p: v[í] for p, v in d_vals_prms.items()} for í in range(n_vals)]
@@ -1626,7 +1655,9 @@ def _gen_dic_ops_corridas(nombre_corrida, combinar, tipos_ops, opciones):
 
         # Asegurarse de que todas las opciones tengan el mismo número de opciones.
         tmñs_únicos = np.unique(l_n_ops)
-        if tmñs_únicos.size == 1:
+        if tmñs_únicos.size == 0:
+            n_corridas = 1
+        elif tmñs_únicos.size == 1:
             n_corridas = tmñs_únicos[0]  # El número de corridas
         else:
             raise ValueError(_('Si `combinar` == ``False``, todas las opciones en forma de lista o diccionario '

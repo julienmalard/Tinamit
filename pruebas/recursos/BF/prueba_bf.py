@@ -9,12 +9,12 @@ class ModeloPrueba(ModeloBF):
         símismo.unid_tiempo = unid_tiempo
         super().__init__()
 
-    def _cambiar_vals_modelo_interno(símismo, valores):
+    def cambiar_vals_modelo_interno(símismo, valores):
         pass
 
     def _incrementar(símismo, paso, guardar_cada=None):
         símismo._act_vals_dic_var({'Lluvia': símismo.obt_val_actual_var('Lago') / 10 * paso})
-        símismo._act_vals_dic_var({'Escala': símismo.obt_val_actual_var('Escala') + 1})
+        símismo._act_vals_dic_var({'Escala': símismo.obt_val_actual_var('Escala') + paso})
         símismo._act_vals_dic_var({'Aleatorio': alea()})
 
     def _leer_vals(símismo):
@@ -54,7 +54,7 @@ class ModeloPrueba(ModeloBF):
                 'egreso': True,
                 'dims': (1,)
             },
-            'Máx lluvia': {
+            'Vacío': {
                 'val': 10,
                 'unidades': 'm3/mes',
                 'líms': (0, None),
@@ -77,7 +77,7 @@ class ModeloPrueba(ModeloBF):
         símismo.variables['Lluvia']['val'] = 1
         símismo.variables['Lago']['val'] = 1000
         símismo.variables['Escala']['val'] = 0
-        símismo.variables['Máx lluvia']['val'] = 10
+        símismo.variables['Vacío']['val'] = 10
         símismo.variables['Aleatorio']['val'] = 0
 
     def paralelizable(símismo):

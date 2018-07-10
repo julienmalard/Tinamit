@@ -4326,7 +4326,7 @@ div[class^='highlight'] pre {
 	padding:.809em;
 	margin-bottom:.809em;
 	z-index:200;
-	background-color:#2980B9;
+	background-color:#d9ffb3;
 	text-align:center;
 	padding:.809em;
 	display:block;
@@ -4459,7 +4459,7 @@ div[class^='highlight'] pre {
 }
 .wy-nav-top {
 	display:none;
-	background:#2980B9;
+	background:#d9ffb3;
 	color:#fff;
 	padding:.4045em .809em;
 	position:relative;

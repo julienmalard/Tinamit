@@ -1,28 +1,28 @@
 import csv
 import datetime as ft
-import json
 import os
 from warnings import warn as avisar
 
 import numpy as np
 import pandas as pd
+import xarray as xr
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
 
-from tinamit import _
 from cositas import detectar_codif, guardar_json, cargar_json
+from tinamit import _
 from tinamit.Análisis.Números import tx_a_núm
 
 
 class Datos(object):
-    def __init__(símismo, nombre, archivo, fecha=None, lugar=None, cód_vacío=None):
+    def __init__(símismo, nombre, fuente, fecha=None, lugar=None, cód_vacío=None):
         """
 
         :param nombre:
         :type nombre: str
 
-        :param archivo:
-        :type archivo: str | pd.DataFrame
+        :param fuente:
+        :type fuente: str | pd.DataFrame | xr.Dataset | dict
 
         :param fecha:
         :type fecha: str | ft.date | ft.datetime | int
@@ -38,35 +38,40 @@ class Datos(object):
 
         símismo.nombre = nombre
 
-        símismo.archivo_datos = archivo
-        símismo.bd = _gen_bd(archivo)
-
+        símismo.archivo_datos = fuente
+        símismo.bd = _gen_bd(fuente, cód_vacío=cód_vacío)
+        símismo.n_obs = símismo.bd.n_obs
         símismo.cols = símismo.bd.obt_nombres_cols()
 
-        if fecha is None:
-            símismo.fechas = fecha
+        if lugar is None:
+            símismo.lugares = [lugar] * símismo.bd.n_obs
+        elif lugar in símismo.cols:
+            símismo.lugares = símismo.bd.obt_datos_tx(col=lugar)
+        else:
+            símismo.lugares = [str(lugar).strip()] * símismo.bd.n_obs
+
+        if fecha is False:
+            fechas = [None] * símismo.n_obs
+        elif fecha is None:
+            fechas = np.arange(símismo.n_obs)
         elif isinstance(fecha, str):
             if fecha in símismo.cols:
-                símismo.fechas = símismo.bd.obt_fechas(fecha)
+                fechas = símismo.bd.obt_fechas(fecha)
+
             else:
                 try:
-                    símismo.fechas = leer_fechas(fecha)
+                    fechas = pd.to_datetime([obt_fecha_ft(fecha)] * símismo.n_obs)
                 except ValueError:
-                    raise ValueError(_('El valor "{}" para fechas no corresponde a una fecha reconocida o al nombre de'
+                    raise ValueError(_('El valor "{}" para fechas no corresponde a una fecha reconocida o al nombre de '
                                        'una columna en la base de datos').format(fecha))
         elif isinstance(fecha, (ft.date, ft.datetime)):
-            símismo.fechas = fecha
+            fechas = pd.to_datetime([fecha] * símismo.n_obs)
         elif isinstance(fecha, int):
-            símismo.fechas = ft.date(year=fecha, month=1, day=1)
+            fechas = [fecha] * símismo.n_obs
         else:
             raise TypeError(_('La fecha debe ser en formato texto, una fecha, o un número de año.'))
 
-        if lugar is None:
-            símismo.lugares = lugar
-        elif lugar in símismo.cols:
-            símismo.lugares = símismo.bd.obt_datos_tx(cols=lugar)
-        else:
-            símismo.lugares = str(lugar).strip()
+        símismo.fechas = fechas
 
         if cód_vacío is None:
             símismo.cód_vacío = {'', 'NA', 'na', 'Na', 'nan', 'NaN'}
@@ -80,95 +85,67 @@ class Datos(object):
 
             símismo.cód_vacío.add('')
 
-        símismo.n_obs = símismo.bd.n_obs
-
-    def obt_datos(símismo, l_vars, cód_vacío=None):
+    def obt_datos(símismo, l_vars):
         """
 
         :param l_vars:
         :type l_vars: list[str] | str
-
-        :param cód_vacío:
-        :type cód_vacío: str | int | float | list | set
 
         :return:
         :rtype: pd.DataFrame
 
         """
 
-        códs_vacío_final = símismo.cód_vacío.copy()
-        if cód_vacío is not None:
-            if isinstance(cód_vacío, list) or isinstance(cód_vacío, set):
-                códs_vacío_final.update(cód_vacío)
-            else:
-                códs_vacío_final.add(cód_vacío)
-
         # Obtener los datos en formato Pandas
-        bd_pd = símismo.bd.obt_datos(l_vars, cód_vacío=códs_vacío_final)
+        datos = símismo.bd.obt_datos(l_vars)
 
         # Agregar una columna con el nombre de la base de datos y el lugar o lugares de observación
-        bd_pd['bd'] = símismo.nombre
-        bd_pd['lugar'] = símismo.lugares
+        bd = xr.Dataset({
+            x: ('n', v) if len(v.shape) == 1 else (('n', *tuple('x' + str(i) for i in range(v.shape[1:]))), v)
+            for x, v in datos.items()
+        })
+        bd.coords['bd'] = ('n', [símismo.nombre] * símismo.bd.n_obs)
+        bd.coords['lugar'] = ('n', símismo.lugares)
 
         # Agregar la fecha de observación
-        fechas = símismo.fechas
-        if isinstance(fechas, tuple):
-            # Puede ser...
-            if fechas[0] is not None:
-                # Una fecha original y una secuencia de no. de días relativos a la fecha original
-                bd_pd['fecha'] = pd.to_datetime(fechas[0]) + pd.to_timedelta(fechas[1], unit='d')
-            else:
-                # Una lista de años
-                bd_pd['fecha'] = pd.to_datetime(['{}-1-1'.format(str(x)) for x in fechas[1]])
-        elif fechas is None:
-            # Puede ser que no haya fecha
-            bd_pd['fecha'] = None
-        else:
-            # ...o puede ser que estén en formato de texto
-            bd_pd['fecha'] = pd.to_datetime(símismo.fechas)
+        bd.coords['fecha'] = ('n', símismo.fechas)
 
-        return bd_pd
+        return bd
 
     def __str__(símismo):
         return símismo.nombre
 
+    def obt_error(símismo, var, col_error='+ES'):
 
-class DatosIndividuales(Datos):
+        if col_error is None:
+            col_error = '+ES'
+        col_error_final = None
+        if col_error.startswith('+'):
+            suf_err = col_error.lstrip('+')
+            for col in símismo.cols:
+                if col.endswith(suf_err) and col.rstrip(suf_err) == var.strip():
+                    col_error = col.rstrip(suf_err)
+                    break
+        else:
+            if col_error in símismo.cols:
+                col_error_final = col_error
+        if col_error_final is not None:
+            errores = símismo.bd.obt_datos(col_error)
+        else:
+            datos = símismo.bd.obt_datos(var)[var]
+            errores = np.empty_like(datos)
+            errores[:] = np.nan
+
+        return errores
+
+
+class MicroDatos(Datos):
     """
     No tiene funcionalidad específica, pero esta clase queda muy útil para identificar el tipo de datos.
     """
 
-    def __init__(símismo, nombre, archivo, fecha=None, lugar=None, cód_vacío=None):
-        super().__init__(nombre=nombre, archivo=archivo, fecha=fecha, lugar=lugar, cód_vacío=cód_vacío)
-
-
-class DatosRegión(Datos):
-
-    def __init__(símismo, nombre, archivo, fecha=None, lugar=None, cód_vacío=None, tmñ_muestra=None):
-
-        super().__init__(nombre=nombre, archivo=archivo, fecha=fecha, lugar=lugar, cód_vacío=cód_vacío)
-
-        símismo.tmñ_muestra = tmñ_muestra
-        if tmñ_muestra is not None:
-            if tmñ_muestra not in símismo.cols:
-                raise ValueError(_('Nombre de columna de tamaños de muestra "{}" erróneo.').format(tmñ_muestra))
-
-    def obt_error(símismo, var, col_error=None):
-
-        errores = None
-        if col_error is not None:
-            errores = símismo.bd.obt_datos(col_error)
-        else:
-            datos = símismo.bd.obt_datos(var, cód_vacío=símismo.cód_vacío)[var].values
-            if símismo.tmñ_muestra is not None:
-                if np.nanmin(datos) >= 0 and np.nanmax(datos) <= 1:
-                    tmñ_muestra = símismo.bd.obt_datos(símismo.tmñ_muestra, cód_vacío=símismo.cód_vacío)
-                    errores = np.sqrt(np.divide(np.multiply(datos, np.subtract(1, datos)), tmñ_muestra))
-            else:
-                errores = np.empty_like(datos)
-                errores[:] = np.nan
-
-        return errores
+    def __init__(símismo, nombre, fuente, fecha=None, lugar=None, cód_vacío=None):
+        super().__init__(nombre=nombre, fuente=fuente, fecha=fecha, lugar=lugar, cód_vacío=cód_vacío)
 
 
 class SuperBD(object):
@@ -198,9 +175,9 @@ class SuperBD(object):
         símismo.variables = {}
 
         # Bases de datos internas
-        símismo.datos_reg = None  # type: pd.DataFrame
-        símismo.datos_reg_err = None  # type: pd.DataFrame
-        símismo.datos_ind = None  # type: pd.DataFrame
+        símismo.datos = None  # type: pd.DataFrame
+        símismo.datos_err = None  # type: pd.DataFrame
+        símismo.microdatos = None  # type: pd.DataFrame
 
         # Si nuesta base de datos interna está actualizada o no.
         símismo.bd_lista = False
@@ -321,6 +298,20 @@ class SuperBD(object):
         # Nuestas bases de datos internas ya necesitan ser actualizadas.
         símismo.bd_lista = False
 
+    def lugares(símismo, tipo='datos'):
+        if not símismo.bd_lista:
+            símismo._gen_bd_intern()
+
+        if tipo == 'microdatos':
+            bd = símismo.microdatos
+        elif tipo == 'datos':
+            bd = símismo.datos
+        else:
+            raise ValueError
+        if bd is None:
+            return 0
+        return set(bd['lugar'].values)
+
     def _validar_bd(símismo, bd):
         """
         Valida un nombre de base de datos.
@@ -399,7 +390,7 @@ class SuperBD(object):
         else:
             return var
 
-    def espec_var(símismo, var, var_bd=None, bds=None, cód_vacío='', var_err=None):
+    def espec_var(símismo, var, var_bd=None, bds=None, var_err=None):
         """
         Crea un variable en la base de datos.
 
@@ -411,8 +402,6 @@ class SuperBD(object):
             El nombre de este variable en las bases de datos subyacentes, si difiere de `var`.
         bds: str | Datos | list[str | Datos]
             Las bases de datos en las cuales se encuentra este variable.
-        cód_vacío: str | list[str]
-            El código que corresponde a un valor que falta en la base de datos.
         var_err: str
             El nombre de otra columna en la base de datos con la magnitud del error en la medición
             de este variable.
@@ -445,16 +434,15 @@ class SuperBD(object):
         # Ahora, el verdadero trabajo.
         if var not in símismo.variables:
             # Si no existía el variable antes, crear su diccionario de una vez.
-            símismo.variables[var] = {'fuente': {bd: {'var': var_bd, 'cód_vacío': cód_vacío} for bd in bds}}
+            símismo.variables[var] = {'fuente': {bd: {'var': var_bd} for bd in bds}}
         else:
             # Si ya existía, actualizar su diccionario existente.
             for bd in bds:
-                símismo.variables[var]['fuente'][bd] = {'var': var_bd, 'cód_vacío': cód_vacío}
+                símismo.variables[var]['fuente'][bd] = {'var': var_bd}
 
-        # Agregar información de error para bases de datos regionales
+        # Agregar información de error
         for bd in bds:
-            if isinstance(símismo.bds[bd], DatosRegión):
-                símismo.variables[var]['fuente'][bd]['col_error'] = var_err
+            símismo.variables[var]['fuente'][bd]['col_error'] = var_err
 
         símismo.bd_lista = False
 
@@ -530,8 +518,8 @@ class SuperBD(object):
                 símismo.variables.pop(v)
 
         # Para simplificar el código
-        datos_ind = símismo.datos_ind
-        datos_reg = símismo.datos_reg
+        datos_ind = símismo.microdatos
+        datos_reg = símismo.datos
 
         # Asegurarse que no queden variables (columas) en las bases de datos que no estén en `SuperBD.variables`.
         for bd_pd in [datos_ind, datos_reg]:
@@ -545,10 +533,10 @@ class SuperBD(object):
                         bd_pd.drop(c, axis=1, inplace=True)
 
         # Quitar observaciones que provienen de las bases de datos que ya no están vinculadas
-        if símismo.datos_ind is not None:
-            símismo.datos_ind = datos_ind[datos_ind['bd'].isin(símismo.bds)]
-        if símismo.datos_reg is not None:
-            símismo.datos_reg = datos_reg[datos_reg['bd'].isin(símismo.bds)]
+        if símismo.microdatos is not None:
+            símismo.microdatos = datos_ind[datos_ind['bd'].isin(símismo.bds)]
+        if símismo.datos is not None:
+            símismo.datos = datos_reg[datos_reg['bd'].isin(símismo.bds)]
 
     @staticmethod
     def _validar_fechas(fechas):
@@ -603,7 +591,7 @@ class SuperBD(object):
             else:
                 raise TypeError(_('Tipo de fecha "{}" no reconocido.').format(type(fch)))
 
-            return pd.to_datetime(fch)
+            return np.array(fch, dtype='datetime64')
 
         if fechas is None:
             # Si tenemos nada, devolver nada
@@ -648,7 +636,7 @@ class SuperBD(object):
         símismo._limp_vars()
 
         # Borrar las bases de datos existentes
-        símismo.datos_ind = símismo.datos_reg = símismo.datos_reg_err = None
+        símismo.microdatos = símismo.datos = símismo.datos_err = None
 
         # Agregar datos
         for nmb, bd in símismo.bds.items():
@@ -663,52 +651,53 @@ class SuperBD(object):
                 # La lista de los nombres correspondientes en esta BD
                 l_vars_bd = [d_v['fuente'][nmb]['var'] for _, d_v in d_vars_interés.items()]
 
-                # La lista de los códigos de datos vacíos corresondientes
-                l_códs_vac = [d_v['fuente'][nmb]['cód_vacío'] for _, d_v in d_vars_interés.items()]
-
                 # Obtener los datos
-                bd_pds_datos = bd.obt_datos(l_vars=list(set(l_vars_bd)), cód_vacío=l_códs_vac)
+                bd_temp = bd.obt_datos(l_vars=list(set(l_vars_bd)))
 
                 # Convertir los nombres de los variables
-                bd_pds_temp = bd_pds_datos[['bd', 'lugar', 'fecha']].copy()
-                for nmb_vr, nv_nmb in zip(l_vars_bd, list(d_vars_interés)):
-                    bd_pds_temp[nv_nmb] = bd_pds_datos[nmb_vr]
+                bd_temp_nv = bd_temp.rename(dict(zip(l_vars_bd, list(d_vars_interés))))
+                for vr, nv in zip(l_vars_bd, list(d_vars_interés)):
+                    if nv not in bd_temp_nv:
+                        bd_temp_nv[nv] = bd_temp[vr]
+                bd_temp = bd_temp_nv
 
-                # Datos individuales
-                if isinstance(bd, DatosIndividuales):
+                # MicroDatos
+                if isinstance(bd, MicroDatos):
                     # Crear la BD o modificarla, según el caso.
-                    if símismo.datos_ind is None:
-                        símismo.datos_ind = bd_pds_temp
+                    if símismo.microdatos is None:
+                        símismo.microdatos = bd_temp
                     else:
-                        símismo.datos_ind = pd.concat([bd_pds_temp, símismo.datos_ind], ignore_index=True, sort=True)
+                        símismo.microdatos = pd.concat([bd_temp, símismo.microdatos], ignore_index=True,
+                                                       sort=True)
 
-                # Datos regionales
-                elif isinstance(bd, DatosRegión):
+                # Datos normales
+                else:
                     # Crear la BD o modificarla, según el caso.
-                    if símismo.datos_reg is None:
-                        símismo.datos_reg = bd_pds_temp
+                    if símismo.datos is None:
+                        símismo.datos = bd_temp
                     else:
-                        símismo.datos_reg = pd.concat([bd_pds_temp, símismo.datos_reg], ignore_index=True, sort=True)
+                        símismo.datos = pd.concat([bd_temp, símismo.datos], ignore_index=True, sort=True)
 
                     # Calcular errores
-                    datos_err = np.array(
-                        [bd.obt_error(d_v['fuente'][nmb]['var'], col_error=d_v['fuente'][nmb]['col_error'])
-                         for v, d_v in d_vars_interés.items()]
-                    ).T
-                    bd_pds_err_temp = bd_pds_temp.copy()
-                    bd_pds_err_temp[list(d_vars_interés)] = datos_err
+                    dic_errores = {}
+                    for v, d_v in d_vars_interés.items():
+                        dic_errores[v] = bd.obt_error(d_v['fuente'][nmb]['var'],
+                                                      col_error=d_v['fuente'][nmb]['col_error'])
+                    bd_err_temp = bd_temp.copy(deep=True)
+                    for vr, err in dic_errores.items():
+                        bd_err_temp[vr][:] = err
 
                     # Crear la BD o modificarla, según el caso.
-                    if símismo.datos_reg_err is None:
-                        símismo.datos_reg_err = bd_pds_err_temp
+                    if símismo.datos_err is None:
+                        símismo.datos_err = bd_err_temp
                     else:
-                        símismo.datos_reg_err.append(bd_pds_err_temp, ignore_index=True, sort=True)
+                        símismo.datos_err.append(bd_err_temp, ignore_index=True, sort=True)
 
         # Ya la base de datos sí está actualizada y lista para trabajar
         símismo.bd_lista = True
 
     def obt_datos(símismo, l_vars, lugares=None, bd_datos=None, fechas=None, excl_faltan=False,
-                  tipo='individual', interpolar=True, interpolar_estricto=False):
+                  tipo=None, interpolar=True, interpolar_estricto=False):
         """
 
         Parameters
@@ -748,16 +737,25 @@ class SuperBD(object):
         if not símismo.bd_lista:
             símismo._gen_bd_intern()
 
-        # Formatear tipo
-        tipo = tipo.lower()
-        if tipo == 'individual':
-            bd = símismo.datos_ind
-        elif tipo == 'regional':
-            bd = símismo.datos_reg
-        elif tipo == 'error regional':
-            bd = símismo.datos_reg_err
+        if tipo is None:
+            bd = None
+            for dt in [símismo.microdatos, símismo.datos]:
+                if dt is not None and all(v in dt.data_vars for v in l_vars):
+                    bd = dt
+                    break
+            if bd is None:
+                raise ValueError(_('Los variables "{}" no corresponden con microdatos o con datos normales.')
+                                 .format(', '.join(l_vars)))
         else:
-            raise ValueError(_('`tipo` debe ser uno de "{}"').format('"individual", "regional", o "error regional".'))
+            tipo = tipo.lower()  # Formatear tipo
+            if tipo == 'microdatos':
+                bd = símismo.microdatos
+            elif tipo == 'datos':
+                bd = símismo.datos
+            elif tipo == 'error':
+                bd = símismo.datos_err
+            else:
+                raise ValueError(_('`tipo` debe ser uno de "{}"').format('"microdatos", "datos", o "error".'))
 
         # Asegurarse que existe esta base de datos
         if bd is None:
@@ -768,17 +766,17 @@ class SuperBD(object):
 
         # Seleccionar las observaciones que vienen de la base de datos subyacente de interés
         if bd_datos is not None:
-            bd_sel = bd_sel[bd_sel['bd'].isin(bd_datos)]
+            bd_sel = bd_sel.where(bd_sel['bd'].isin(list(bd_datos)), drop=True)
 
         # Seleccionar las observaciones que corresponden al lugar de interés
         if lugares is not None:
-            bd_sel = bd_sel[bd_sel['lugar'].isin(lugares)]
+            bd_sel = bd_sel.where(bd_sel['lugar'].isin(list(lugares)), drop=True)
 
         # Interpolar si necesario
         if interpolar:
             bd_sel = símismo._interpolar(
                 bd_sel, fechas,
-                interpol_en='lugar' if tipo in ['regional', 'error regional'] else None,
+                interpol_en='lugar' if tipo != 'microdatos' else None,
                 estricto=interpolar_estricto
             )
 
@@ -790,23 +788,23 @@ class SuperBD(object):
         if excl_faltan:
             # Si excluyemos las observaciones que faltan, guardar únicamente las filas con observacienes
             # para todos los variables
-            bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha', 'bd', 'lugar']],
-                          inplace=True)
+            bd_sel = bd_sel.dropna('n', subset=[x for x in bd_sel.data_vars])
         else:
             # Sino, exlcuir únicamente las filas que faltans observaciones para todos los variables
-            bd_sel.dropna(subset=[x for x in bd_sel.columns if x not in ['fecha', 'bd', 'lugar']],
-                          how='all', inplace=True)
+            bd_sel = bd_sel.dropna(
+                'n', subset=[x for x in bd_sel.data_vars], how='all'
+            )
 
         return bd_sel
 
     @staticmethod
-    def _interpolar(bd_pds, fechas, interpol_en, estricto=False):
+    def _interpolar(bd, fechas, interpol_en, estricto=False):
         """
         Efectua interpolaciones temporales.
 
         Parameters
         ----------
-        bd_pds : pd.DataFrame
+        bd : pd.DataFrame
             La base de datos en la cual interpolar.
         fechas :
         interpol_en: str
@@ -817,24 +815,21 @@ class SuperBD(object):
 
         Returns
         -------
-        pd.DataFrame
+        xr.Dataset
             Una nueva base de datos, únicamente con las fechas interpoladas.
         """
 
         # Si no estamos interpolando, paramos aquí.
         if interpol_en is None:
-            return bd_pds
-        if bd_pds['fecha'].isnull().all():
-            return bd_pds
+            return bd
+        if bd['fecha'].isnull().all():
+            return bd
         # Asegurarse que la columna de categorías para la interpolacion existe.
-        if interpol_en not in bd_pds:
+        if interpol_en not in bd:
             raise ValueError(_('El variable "{}" no existe en esta base de datos.').format(interpol_en))
 
         # Categorías únicas en las cuales interpolar (por ejemplo, interpolar para cada lugar).
-        categs_únicas = bd_pds[interpol_en].unique()
-
-        # Los variables para interpolar
-        l_vars = [x for x in bd_pds if x not in [interpol_en, 'fecha', 'bd']]
+        categs_únicas = set(bd[interpol_en].values.tolist())
 
         # Preparar las fechas de interés.
         if fechas is None:
@@ -848,91 +843,98 @@ class SuperBD(object):
 
         # ¡Ahora, calcular las interpolaciones!
 
-        finalizados = pd.DataFrame(columns=bd_pds.columns)  # Para los resultados
+        finalizados = None
 
         # Para cada categoría...
         for c in categs_únicas:
 
             # Tomar únicamente las filas que corresponden con la categoría actual.
             if c is None:
-                bd_categ = bd_pds.loc[bd_pds[interpol_en].isnull()]
+                bd_categ = bd.where(bd[interpol_en].isnull(), drop=True)
             else:
-                bd_categ = bd_pds.loc[bd_pds[interpol_en] == c]
+                bd_categ = bd.where(bd[interpol_en] == c, drop=True)
 
             # Calcular las fechas de interés para esta categoría, si necesario
             if fechas_interés is not None:
                 f_interés_categ = fechas_interés
             else:
                 # Tomar las fechas de esta categoría que están en el rango
-                f_interés_categ = list(set([f for f in bd_categ['fecha'] if fechas[0] <= f <= fechas[1]]))
+                f_interés_categ = list(set([f.values for f in bd_categ['fecha'] if fechas[0] <= f <= fechas[1]]))
 
             # Las nuevas fechas de interés que hay que a la base de datos
-            nuevas_fechas = [x for x in f_interés_categ if not (bd_categ['fecha'] == pd.Timestamp(x)).any()]
+            nuevas_fechas = [x for x in f_interés_categ if not (bd_categ['fecha'] == x).any()]
 
             # Agregar las nuevas fechas si necesario.
             if len(nuevas_fechas):
-                # Nuevos datos (vacíos)
-                nuevos_datos = {'fecha': pd.to_datetime(nuevas_fechas), interpol_en: c, 'bd': 'interpolado'}
-
                 # Crear una base de datos
-                nuevas_filas = pd.DataFrame(
-                    data=nuevos_datos,
-                    columns=l_vars + ['fecha', 'bd', interpol_en],
+                nuevas_filas = xr.Dataset(
+                    data_vars={x: ('n', [np.nan] * len(nuevas_fechas))
+                               for x in bd_categ.data_vars if x not in ['bd', 'fecha', interpol_en]
+                               },
+                    coords=dict(fecha=('n', nuevas_fechas),
+                                bd=('n', ['interpolado'] * len(nuevas_fechas)),
+                                **{interpol_en: ('n', [c] * len(nuevas_fechas))}
+                                )
                 )
 
-                # Asegurar el tipo correcto para los variables
-                nuevas_filas = nuevas_filas.astype(dtype={x: 'float' for x in l_vars})
-
                 # ...y agregarla a la base de datos de la categoría actual.
-                bd_categ = bd_categ.append(nuevas_filas, sort=True)
+                bd_categ = xr.concat([nuevas_filas, bd_categ], 'n')
 
             # Calcular el promedio de los valores de observaciones por categoría y por fecha
-            proms_fecha = bd_categ.groupby(['fecha']).mean()  # type: pd.DataFrame
-            proms_fecha[interpol_en] = c
-            proms_fecha['bd'] = 'interpolado'
-            proms_fecha['fecha'] = proms_fecha.index
+            proms_fecha = bd_categ.groupby('fecha').mean()  # type: xr.Dataset
+            n_obs = len(proms_fecha['fecha'])
+            bd_temp = xr.Dataset({v: ('n', proms_fecha[v]) for v in list(proms_fecha.variables)})
+            bd_temp[interpol_en] = ('n', [c] * n_obs)
+            bd_temp['bd'] = ('n', ['interpolado'] * n_obs)
+            bd_temp.set_coords(['bd', 'fecha', interpol_en], inplace=True)
 
             # Interpolar únicamente si quedan valores que faltan para las fechas de interés
-            if proms_fecha.loc[proms_fecha['fecha'].isin(f_interés_categ)][l_vars].isnull().values.any():
+            faltan = any(
+                np.isnan(proms_fecha.where(proms_fecha['fecha'].isin(f_interés_categ), drop=True)[x].values).any() for x
+                in proms_fecha.data_vars)
+            if faltan:
 
                 # Aplicar valores para variables sin fechas asociadas (por ejemplo, tamaños de municipio)
-                sin_fecha = bd_pds[bd_pds.fecha.isnull()]
-                if sin_fecha.shape[0] > 0:
+                sin_fecha = bd.where(bd.fecha.isnull(), drop=True)
+                if len(sin_fecha['n']) > 0:
                     proms_sin_fecha = sin_fecha.loc[sin_fecha[categs_únicas] == c].mean().to_frame().T
-                    proms_fecha.fillna(
-                        value={ll: v[0] for ll, v in proms_sin_fecha.to_dict(orient='list').items()},
-                        inplace=True
+                    bd_temp = bd_temp.fillna(
+                        value={ll: v[0] for ll, v in proms_sin_fecha.to_dict(orient='list').items()}
                     )
 
-                # Ordenar
-                proms_fecha.sort_index(inplace=True)
-
                 # Por fin, interpolar
-                proms_fecha.interpolate(method='time', inplace=True)
+                bd_temp = bd_temp.interpolate_na('n', use_coordinate='fecha')
 
                 # Si quedaron combinaciones de variables y de fechas para las cuales no pudimos interpolar porque
                 # las fechas que faltaban se encontraban afuera de los límites de los datos disponibles,
                 # simplemente copiar el último valor disponible (y avisar).
-                todavía_faltan = proms_fecha.columns[proms_fecha.isnull().any()].tolist()
+                todavía_faltan = [x for x in bd_temp.data_vars if bd_temp.isnull().any()[x]]
                 if len(todavía_faltan) and not estricto:
-                    avisar(_('No pudimos interpolar de manera segura para todos los variables. Tomaremos los'
+                    avisar(_('No pudimos interpolar de manera segura para todos los variables. Tomaremos los '
                              'valores más cercanos posibles.\nVariables problemáticos: "{}"')
                            .format(', '.join(todavía_faltan)))
-                    proms_fecha.interpolate(limit_direction='both', inplace=True)
+                    for v in todavía_faltan:
+                        existen = np.where(bd_temp[v].notnull())[0]
+                        primero = existen[0]
+                        último = existen[-1]
+                        bd_temp[v][:primero] = bd_temp[v][primero]
+                        bd_temp[v][último + 1:] = bd_temp[v][último]
 
             # Agregar a los resultados finales
-            finalizados = finalizados.append(proms_fecha, ignore_index=True, sort=True)
-
+            if finalizados is None:
+                finalizados = bd_temp
+            else:
+                finalizados = xr.concat([finalizados, bd_temp], 'n')
         return finalizados
 
     @staticmethod
-    def _filtrar_fechas(bd_pds, fechas):
+    def _filtrar_fechas(bd, fechas):
         """
         Filtra una base de datos Pandas por fecha.
 
         Parameters
         ----------
-        bd_pds: pd.DataFrame
+        bd: xr.Dataset
             La base de datos. Debe contener las columnas `fecha` y `bd`.
         fechas: str | tuple | list | ft.date | ft.datetime
             La fecha o fechas de interés. Si es una tupla, se interpretará como **rango de interés**, si es lista,
@@ -947,13 +949,13 @@ class SuperBD(object):
 
         # Escoger las columnas que corresponden a las fechas deseadas.
         if isinstance(fechas, tuple):
-            return bd_pds.loc[(bd_pds['fecha'] >= fechas[0]) & (bd_pds['fecha'] <= fechas[1])]
+            return bd.where((bd['fecha'] >= fechas[0]) & (bd['fecha'] <= fechas[1]), drop=True)
         elif isinstance(fechas, list):
-            return bd_pds.loc[(bd_pds['fecha'].isin(fechas))]
+            return bd.where(bd['fecha'].isin(fechas), drop=True)
         else:
-            return bd_pds.loc[(bd_pds['fecha'] == fechas)]
+            return bd.where(bd['fecha'] == fechas, drop=True)
 
-    def graficar_hist(símismo, var, fechas=None, lugar=None, bd_datos=None, tipo='individual', archivo=None):
+    def graficar_hist(símismo, var, fechas=None, lugar=None, bd_datos=None, tipo='datos', archivo=None):
 
         tipo = tipo.lower()
 
@@ -983,24 +985,24 @@ class SuperBD(object):
             archivo = var + '.jpg'
         archivo = símismo._validar_archivo(archivo, ext='.jpg')
 
-        datos = símismo.obt_datos(l_vars=var, fechas=fechas, lugares=lugar, bd_datos=bd_datos, tipo='regional')
+        datos = símismo.obt_datos(l_vars=var, fechas=fechas, lugares=lugar, bd_datos=bd_datos, tipo='datos')
         datos_error = símismo.obt_datos(l_vars=var, fechas=fechas, lugares=lugar, bd_datos=bd_datos,
-                                        tipo='error regional')
+                                        tipo='error')
 
         fig = Figura()
         TelaFigura(fig)
         ejes = fig.add_subplot(111)
 
         fechas = datos['fecha']
-        n_fechas = len(fechas.unique())
-        lugares = datos['lugar'].unique()
+        n_fechas = len(np.unique(fechas.values))
+        lugares = np.unique(datos['lugar']).tolist()  # type: list
         n_lugares = len(lugares)
 
         if n_fechas > 1:
             for l in lugares:
-                y = datos[datos['lugar'] == l][var]
-                fechas_l = datos[datos['lugar'] == l]['fecha']
-                err = datos_error[datos_error['lugar'] == l][var]
+                y = datos.where(datos['lugar'] == l, drop=True)[var].values
+                fechas_l = datos.where(datos['lugar'] == l, drop=True)['fecha'].values
+                err = datos_error.where(datos_error['lugar'] == l, drop=True)[var].values
 
                 l = ejes.plot_date(fechas_l, y, label=l, fmt='-')
                 if err.shape == y.shape:
@@ -1048,11 +1050,11 @@ class SuperBD(object):
         Parameters
         ----------
         archivo: str
-            El archivo en el cual guardar los datos.
+            El fuente en el cual guardar los datos.
 
         """
 
-        # Preparar el nombre de archivo
+        # Preparar el nombre de fuente
         archivo = símismo._validar_archivo(archivo, ext='.json')
 
         # Actualizar las bases de datos, si necesario
@@ -1060,8 +1062,10 @@ class SuperBD(object):
             símismo._gen_bd_intern()
 
         # Convertir los datos a json
-        dic = {'ind': símismo.datos_ind.to_json(date_format='epoch'), 'reg': símismo.datos_reg.to_json(),
-               'err': símismo.datos_reg_err.to_json()}
+        dic = {'ind': símismo.microdatos.to_dict(),
+               'reg': símismo.datos.to_dict(),
+               'err': símismo.datos_err.to_dict()}
+        jsonificar(dic)
 
         # Guardar en UTF-8
         guardar_json(dic, arch=archivo)
@@ -1078,7 +1082,7 @@ class SuperBD(object):
                 archivo = os.path.join(archivo, símismo.nombre + ext)
 
         if debe_existir and not os.path.isfile(archivo):
-            raise FileNotFoundError(_('El archivo "{}" no existe.').format(archivo))
+            raise FileNotFoundError(_('El fuente "{}" no existe.').format(archivo))
         else:
             if ext:
                 directorio = os.path.split(archivo)[0]
@@ -1094,11 +1098,12 @@ class SuperBD(object):
         archivo = símismo._validar_archivo(archivo, ext='.json', debe_existir=True)
         dic = cargar_json(archivo)
 
-        símismo.datos_ind = pd.read_json(dic['ind'], convert_dates=['fecha'])
-        símismo.datos_reg = pd.read_json(dic['reg'], convert_dates=['fecha'])
-        símismo.datos_reg_err = pd.read_json(dic['err'], convert_dates=['fecha'])
-        for bd in [símismo.datos_ind, símismo.datos_reg, símismo.datos_reg_err]:
-            bd['lugar'] = bd['lugar'].astype(str)
+        símismo.microdatos = xr.Dataset.from_dict(dic['ind'])
+        símismo.datos = xr.Dataset.from_dict(dic['reg'])
+        símismo.datos_err = xr.Dataset.from_dict(dic['err'])
+        for bd in [símismo.microdatos, símismo.datos, símismo.datos_err]:
+            bd['fecha'] = ('n', np.array(bd.fecha, dtype='datetime64'))
+            bd['lugar'] = ('n', bd['lugar'].astype(str))
 
     def borrar_archivo_datos(símismo, archivo=''):
 
@@ -1114,37 +1119,59 @@ class SuperBD(object):
         if not símismo.bd_lista:
             símismo._gen_bd_intern()
 
-        for nmb, bd_pd in {
-            'ind': símismo.datos_ind, 'reg': símismo.datos_reg, 'error_reg': símismo.datos_reg_err
+        for nmb, bd in {
+            'ind': símismo.microdatos, 'reg': símismo.datos, 'error_reg': símismo.datos_err
         }.items():
             archivo = os.path.join(directorio, símismo.nombre + '_' + nmb + '.csv')
-            bd_pd.to_csv(archivo)
+            bd.to_dataframe().to_csv(archivo)
 
     def __contains__(símismo, item):
         return item in símismo.variables
 
 
-def _gen_bd(archivo):
+def _gen_bd(archivo, cód_vacío):
     """
 
-    :param archivo:
-    :type archivo: str
-    :return:
-    :rtype: BD
+    Parameters
+    ----------
+    archivo : str | dict | pd.DataFrame | xr.Dataset
+
+    Returns
+    -------
+
     """
 
     if isinstance(archivo, pd.DataFrame):
-        return BDpandas(archivo)
+        return BDpandas(archivo, cód_vacío)
 
-    else:
+    elif isinstance(archivo, dict):
+        return BDdic(archivo, cód_vacío)
+
+    elif isinstance(archivo, xr.Dataset):
+        return BDxr(archivo, cód_vacío)
+
+    elif isinstance(archivo, str):
         ext = os.path.splitext(archivo)[1]
 
         if ext == '.txt' or ext == '.csv':
-            return BDtexto(archivo)
-        elif ext == '.sql':
-            raise NotImplementedError
+            return BDtexto(archivo, cód_vacío)
         else:
             raise ValueError(_('Formato de base de datos "{}" no reconocido.').format(ext))
+
+
+def jsonificar(o):
+    if isinstance(o, dict):
+        for ll, v in o.items():
+            if isinstance(v, (dict, list)):
+                jsonificar(v)
+            elif isinstance(v, (ft.date, ft.datetime)):
+                o[v] = str(v)
+    elif isinstance(o, list):
+        for i, v in enumerate(o):
+            if isinstance(v, (dict, list)):
+                jsonificar(v)
+            elif isinstance(v, (ft.date, ft.datetime)):
+                o[i] = str(v)
 
 
 class BD(object):
@@ -1152,11 +1179,15 @@ class BD(object):
     Una superclase para lectores de bases de datos.
     """
 
-    def __init__(símismo, archivo):
-        símismo.archivo = archivo
+    def __init__(símismo, fuente, cód_vacío=None):
+        símismo.fuente = fuente
+        if cód_vacío is None:
+            símismo.cód_vacío = ['na', 'NA', 'NaN', 'nan', '']
+        else:
+            símismo.cód_vacío = cód_vacío
 
-        if isinstance(archivo, str) and not os.path.isfile(archivo):
-            raise FileNotFoundError(_('El archivo "{}" no existe.').format(archivo))
+        if isinstance(fuente, str) and not os.path.isfile(fuente):
+            raise FileNotFoundError(_('El fuente "{}" no existe.').format(fuente))
 
         símismo.n_obs = símismo.calc_n_obs()
 
@@ -1168,43 +1199,37 @@ class BD(object):
         """
         raise NotImplementedError
 
-    def obt_datos(símismo, cols, cód_vacío=None):
+    def obt_datos(símismo, cols):
         """
 
         Parameters
         ----------
         cols :
-        cód_vacío :
 
         Returns
         -------
-        pd.DataFrame
+        dict[str, np.ndarray]
         """
+
         if not isinstance(cols, list):
             cols = [cols]
 
-        if cód_vacío is None:
-            cód_vacío = {}
+        datos = símismo._obt_datos(cols)
+        for var, val in datos.items():
+            val[np.isin(val, símismo.cód_vacío)] = np.nan
+            datos[var] = val.astype(float)
 
-        datos = símismo._obt_datos(cols, cód_vacío=cód_vacío)
+        return datos
 
-        return datos.astype(float)
+    def _obt_datos(símismo, cols):
 
-    def _obt_datos(símismo, cols, cód_vacío):
-        """
-
-        :param cols:
-        :type cols: list[str] | str
-        :return:
-        :rtype: pd.DataFrame
-        """
         raise NotImplementedError
 
-    def obt_datos_tx(símismo, cols):
+    def obt_datos_tx(símismo, col):
         """
 
-        :param cols:
-        :type cols: list[str] | str
+        :param col:
+        :type col: list[str] | str
         :return:
         :rtype: list[str]
         """
@@ -1220,13 +1245,10 @@ class BD(object):
         """
 
         # Sacar la lista de fechas en formato texto
-        fechas_tx = símismo.obt_datos_tx(cols=cols)
+        fechas_tx = símismo.obt_datos_tx(col=cols)
 
         # Procesar la lista de fechas
-        fch_inic_datos, v_núm = símismo._leer_fechas(lista_fechas=fechas_tx)
-
-        # Devolver información importante
-        return fch_inic_datos, v_núm
+        return símismo._leer_fechas(lista_fechas=fechas_tx)
 
     def calc_n_obs(símismo):
         """
@@ -1261,7 +1283,7 @@ class BD(object):
 
         else:
             # Sino, intentar de leer el formato de fecha
-            fechas = leer_fechas(lista_fechas)
+            fechas = obt_fecha_ft(lista_fechas)
 
             # Ya tenemos que encontrar la primera fecha y calcular la posición relativa de las
             # otras con referencia en esta.
@@ -1279,7 +1301,12 @@ class BD(object):
             # Convertir a vector Numpy
             vec_fch_núm = np.array(lista_fechas, dtype=int)
 
-        return fecha_inic_datos, vec_fch_núm
+        if fecha_inic_datos is not None:
+            # Una fecha original y una secuencia de no. de días relativos a la fecha original
+            return pd.to_datetime(fecha_inic_datos) + pd.to_timedelta(vec_fch_núm, unit='d')
+        else:
+            # Una lista de años
+            return pd.to_datetime(['{}-1-1'.format(str(x)) for x in vec_fch_núm])
 
 
 class BDtexto(BD):
@@ -1287,55 +1314,53 @@ class BDtexto(BD):
     Una clase para leer bases de datos en formato texto delimitado por comas (.csv).
     """
 
-    def __init__(símismo, archivo):
+    def __init__(símismo, fuente, cód_vacío=None):
 
-        símismo.codif = detectar_codif(archivo, máx_líneas=1)
-        super().__init__(archivo=archivo)
+        símismo.codif = detectar_codif(fuente, máx_líneas=1)
+        super().__init__(fuente=fuente, cód_vacío=cód_vacío)
 
     def calc_n_obs(símismo):
         """
 
         :rtype: int
         """
-        with open(símismo.archivo, encoding=símismo.codif) as d:
+        with open(símismo.fuente, encoding=símismo.codif) as d:
             n_filas = sum(1 for f in d if len(f)) - 1  # Sustrayemos la primera fila
 
         return n_filas
 
-    def _obt_datos(símismo, cols, cód_vacío):
+    def _obt_datos(símismo, cols):
 
         m_datos = np.empty((len(cols), símismo.n_obs))
 
-        with open(símismo.archivo, encoding=símismo.codif) as d:
+        with open(símismo.fuente, encoding=símismo.codif) as d:
             lector = csv.DictReader(d)
             for n_f, f in enumerate(lector):
-                m_datos[:, n_f] = [tx_a_núm(f[c].strip()) if f[c].strip() not in cód_vacío else np.nan for c in cols]
+                m_datos[:, n_f] = [tx_a_núm(f[c].strip()) if f[c].strip() not in símismo.cód_vacío else np.nan for c in
+                                   cols]
 
-        if len(cols) == 1:
-            m_datos = m_datos[0]
+        return {c: m_datos[i] for i, c in enumerate(cols)}
 
-        return pd.DataFrame(m_datos.T, columns=cols)
-
-    def obt_datos_tx(símismo, cols):
+    def obt_datos_tx(símismo, col):
         """
 
-        :param cols:
-        :type cols: list[str] | str
+        :param col:
+        :type col: list[str] | str
         :return:
         :rtype: list
         """
-        if not isinstance(cols, list):
-            cols = [cols]
+        if not isinstance(col, list):
+            col = [col]
 
-        l_datos = [[''] * símismo.n_obs] * len(cols)
+        l_datos = [[''] * símismo.n_obs] * len(col)
 
-        with open(símismo.archivo, encoding=símismo.codif) as d:
+        with open(símismo.fuente, encoding=símismo.codif) as d:
             lector = csv.DictReader(d)
             for n_f, f in enumerate(lector):
-                for i_c, c in enumerate(cols):
+                for i_c, c in enumerate(col):
                     l_datos[i_c][n_f] = f[c]
 
-        if len(cols) == 1:
+        if len(col) == 1:
             l_datos = l_datos[0]
 
         return l_datos
@@ -1347,7 +1372,7 @@ class BDtexto(BD):
         :rtype: list[str]
         """
 
-        with open(símismo.archivo, encoding=símismo.codif) as d:
+        with open(símismo.fuente, encoding=símismo.codif) as d:
             lector = csv.reader(d)
 
             nombres_cols = next(lector)
@@ -1355,30 +1380,89 @@ class BDtexto(BD):
         return nombres_cols
 
 
+class BDxr(BD):
+    def obt_nombres_cols(símismo):
+        return list(símismo.fuente.data_vars)
+
+    def _obt_datos(símismo, cols):
+        datos = {c: símismo.fuente[c].values for c in cols}
+        for c, v in datos.items():
+            if np.issubdtype(v.dtype, np.str_):
+                datos[c] = v.astype(object)
+            else:
+                datos[c] = v.astype(float)
+        return datos
+
+    def obt_datos_tx(símismo, col):
+        return símismo.fuente[col].astype(object).values
+
+    def calc_n_obs(símismo):
+        var = símismo.obt_nombres_cols()[0]
+        return símismo.fuente[var].shape[0]
+
+
 class BDpandas(BD):
 
     def obt_nombres_cols(símismo):
-        return list(símismo.archivo)
+        return list(símismo.fuente)
 
-    def _obt_datos(símismo, cols, cód_vacío):
-        datos = símismo.archivo[cols].copy()  # type: pd.DataFrame
-        datos[datos[cols].isin(cód_vacío)] = np.nan
-        return datos
+    def _obt_datos(símismo, cols):
+        return {c: símismo.fuente[c].values.astype(object) for c in cols}
 
-    def obt_datos_tx(símismo, cols):
-        return símismo.archivo[cols].astype(str).values.tolist()
+    def obt_datos_tx(símismo, col):
+        return símismo.fuente[col].values.astype(str).tolist()
 
     def calc_n_obs(símismo):
-        return símismo.archivo.shape[0]
+        return len(símismo.fuente)
 
 
-def leer_fechas(fechas):
+class BDdic(BD):
+
+    def __init__(símismo, fuente, cód_vacío=None):
+
+        if all(isinstance(v, dict) for v in fuente.values()):
+            for lg, d_l in fuente.items():
+                if len(set(len(v) for v in d_l.items())) != 1:
+                    raise ValueError(_('Todos los variables en el lugar "{}" deben tener el mismo tamaño.').format(lg))
+            n_obs = [len(list(d_l.values())[0]) for d_l in fuente.values()]
+            c_vars = set(v for d_v in fuente.values() for v in d_v)
+            lugs = list(fuente)
+            datos_fin = {var: np.concatenate([fuente[lg][var] for lg in fuente]) for var in c_vars}
+            datos_fin['lugar'] = np.concatenate([[lg] * n for n, lg in zip(n_obs, lugs)])
+        elif not any(isinstance(v, dict) for v in fuente.values()):
+            datos_fin = fuente
+
+        else:
+            raise ValueError(_('Error en el formato del diccionario de datos. :('))
+
+        super().__init__(fuente=datos_fin, cód_vacío=cód_vacío)
+
+    def obt_nombres_cols(símismo):
+        return list(símismo.fuente)
+
+    def _obt_datos(símismo, cols):
+        datos = {c: np.array(símismo.fuente[c]) for c in cols}
+        for c, v in datos.items():
+            if np.issubdtype(v.dtype, np.str_):
+                datos[c] = v.astype(object)
+            else:
+                datos[c] = v.astype(float)
+        return datos
+
+    def obt_datos_tx(símismo, col):
+        return np.array(símismo.fuente[col]).astype(str).tolist()
+
+    def calc_n_obs(símismo):
+        return len(list(símismo.fuente.values())[0])
+
+
+def obt_fecha_ft(fechas):
     """
     Intentará leer los datos de fechas con cada formato posible, y parará en el primero que funciona.
 
     Parameters
     ----------
-    fechas : str | list[str]
+    fechas : str | list[str] | int
         La o las fechas para analizar.
 
     Returns
@@ -1400,33 +1484,41 @@ def leer_fechas(fechas):
 
     formatos_posibles = [x.format(s) for s in separadores for x in f]
 
-    if isinstance(fechas, list):
+    if isinstance(fechas, (list, tuple, np.ndarray)):
         lista_fechas = fechas
     else:
         lista_fechas = [fechas]
 
-    # Intentar con cada formato en la lista de formatos posibles
-    fechas_ft = None
-    for formato in formatos_posibles:
-
+    if all(isinstance(f, (ft.datetime, ft.date)) for f in lista_fechas):
+        fechas_ft = lista_fechas
+    else:
         try:
-            # Intentar de convertir todas las fechas a objetos ft.datetime
-            fechas_ft = [ft.datetime.strptime(x, formato).date() for x in lista_fechas]
+            # Interntar convertir números de años de una vez
+            fechas_ft = [ft.date(year=int(f), month=1, day=1) for f in lista_fechas]
+        except (ValueError, TypeError):
 
-            # Si funcionó, parar aquí
-            break
+            # Intentar con cada formato en la lista de formatos posibles
+            fechas_ft = None
+            for formato in formatos_posibles:
 
-        except ValueError:
-            # Si no funcionó, intentar el próximo formato
-            continue
+                try:
+                    # Intentar de convertir todas las fechas a objetos ft.datetime
+                    fechas_ft = [ft.datetime.strptime(x, formato).date() for x in lista_fechas]
 
-    # Si todavía no lo hemos logrado, tenemos un problema.
-    if fechas_ft is None:
-        raise ValueError(
-            'No puedo leer los datos de fechas. ¿Mejor le eches un vistazos?'
-            '\n"{}"'.format(', '.join(lista_fechas)))
+                    # Si funcionó, parar aquí
+                    break
 
-    if isinstance(fechas, list):
+                except ValueError:
+                    # Si no funcionó, intentar el próximo formato
+                    continue
+
+        # Si todavía no lo hemos logrado, tenemos un problema.
+        if fechas_ft is None:
+            raise ValueError(
+                'No puedo leer los datos de fechas. ¿Mejor le eches un vistazos?'
+                '\n"{}"'.format(', '.join(lista_fechas[:10])))
+
+    if isinstance(fechas, (list, tuple, np.ndarray)):
         return fechas_ft
     else:
         return fechas_ft[0]

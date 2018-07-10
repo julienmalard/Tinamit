@@ -19,7 +19,6 @@ class Test_SimulConDatosBD(unittest.TestCase):
         datos = pd.DataFrame()  # 100 días
         mod.conectar_datos(datos)
         mod.simular(t_inic=10, t_final=50)
-        mod.simular(,
         mod.simular(t_inic=10)
         mod.desconectar_datos(datos)
 

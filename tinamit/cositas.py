@@ -1,22 +1,23 @@
 import json
 import os
 import tempfile
+from random import random
 
 from chardet import UniversalDetector
 
 
 def detectar_codif(archivo, máx_líneas=None):
     """
-    Detecta la codificación de un archivo. (Necesario porque todavía existen programas dinosaurios que no entienden
+    Detecta la codificación de un fuente. (Necesario porque todavía existen programas dinosaurios que no entienden
     los milagros de unicódigo.)
 
     Parameters
     ----------
     archivo : str
-        La dirección del archivo.
+        La dirección del fuente.
     máx_líneas : int
         El número máximo de líneas para pasar al detector. Por ejemplo, si únicamente la primera línea de tu documento
-        tiene palabras (por ejemplo, un archivo .csv), no hay razón de seguir analizando las otras líneas.
+        tiene palabras (por ejemplo, un fuente .csv), no hay razón de seguir analizando las otras líneas.
 
     Returns
     -------
@@ -43,16 +44,16 @@ def detectar_codif(archivo, máx_líneas=None):
 
 def valid_nombre_arch(nombre):
     """
-    Valida el nombre de un archivo.
+    Valida el nombre de un fuente.
 
     Parameters
     ----------
     nombre : str
-        El nombre propuesto para el archivo.
+        El nombre propuesto para el fuente.
     Returns
     -------
     str
-        Un nombre de archivo válido.
+        Un nombre de fuente válido.
     """
 
     for x in ['\\', '/', '\|', ':' '*', '?', '"', '>', '<']:
@@ -63,19 +64,18 @@ def valid_nombre_arch(nombre):
 
 def guardar_json(obj, arch):
     """
-    Guarda un archivo json, sin riesgo de corrumpir el archivo si se interrumpe el programa mientras escribía al disco.
+    Guarda un fuente json, sin riesgo de corrumpir el fuente si se interrumpe el programa mientras escribía al disco.
 
     Parameters
     ----------
     obj : list | dict
         Objeto compatible json.
     arch : str
-        El archivo en el cual hay que guardar el objeto json.
+        El fuente en el cual hay que guardar el objeto json.
 
     """
-
     with tempfile.NamedTemporaryFile('w', encoding='UTF-8', delete=False) as temp:
-        # Escribimos primero a un archivo temporario para evitar de corrumpir nuestro archivo principal si el programa
+        # Escribimos primero a un fuente temporario para evitar de corrumpir nuestro fuente principal si el programa
         # se interrumpe durante la operación.
         json.dump(obj, temp, ensure_ascii=False, sort_keys=True, indent=2)
 
@@ -84,20 +84,26 @@ def guardar_json(obj, arch):
         if len(direc) and not os.path.isdir(direc):
             os.makedirs(os.path.split(arch)[0])
 
-    # Después de haber escrito el archivo, ya podemos cambiar el nombre sin riesgo.
-    os.replace(temp.name, arch)
+    # Después de haber escrito el fuente, ya podemos cambiar el nombre sin riesgo.
+    try:
+        os.replace(temp.name, arch)
+    except PermissionError:
+        # Necesario en el caso de corridas en paralelo en Windows. Sin este, la reimportación de Tinamït ocasionada
+        # por varias corridas paralelas al mismo tiempo puede causar que el mismo documento se escriba por dos procesos
+        # al mismo tiempo, el cual trava el sistema.
+        pass
 
 
 def cargar_json(arch, codif='UTF-8'):
     """
-    Cargar un archivo json.
+    Cargar un fuente json.
 
     Parameters
     ----------
     arch : str
-        El archivo en el cual se encuentra el objeto json.
+        El fuente en el cual se encuentra el objeto json.
     codif : str
-        La codificación del archivo.
+        La codificación del fuente.
 
     Returns
     -------

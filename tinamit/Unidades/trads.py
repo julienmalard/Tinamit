@@ -12,15 +12,15 @@ from cositas import guardar_json, cargar_json
 from tinamit import _
 from . import regu
 
-_archivo_json = pkg_resources.resource_filename('tinamit.Unidades', 'trads_unids.json')
+_archivo_trads = pkg_resources.resource_filename('tinamit.Unidades', 'trads_unids.json')
 _archivo_pluriales = pkg_resources.resource_filename('tinamit.Unidades', 'pluriales.json')
 
 l_dic_trads = None
 
 if l_dic_trads is None:
-    if os.path.isfile(_archivo_json):
+    if os.path.isfile(_archivo_trads):
         try:
-            l_dic_trads = cargar_json(_archivo_json)
+            l_dic_trads = cargar_json(_archivo_trads)
         except json.JSONDecodeError:  # pragma: sin cobertura
             l_dic_trads = []
     else:
@@ -33,16 +33,16 @@ else:  # pragma: sin cobertura
     guardar_json(_pluriales, _archivo_pluriales)
 
 
-def act_arch_trads(l_d_t, arch):
+def act_arch_trads(l_d_t):
     """
-    Actualiza el archivo de traducciones.
+    Actualiza el fuente de traducciones.
 
     Parameters
     ----------
     l_d_t : list[dict]
-    arch : str
 
     """
+    antes = hash(str(l_d_t))
 
     # UN conjunto vacío para las unidades presentes
     c_unids = set()
@@ -79,8 +79,9 @@ def act_arch_trads(l_d_t, arch):
             d[l]['sn'] = list(set(t['sn']))  # Quitar sinónimos duplicados
             d[l]['sn'].sort()  # Ordenar los sinónimos
 
-    # Guardar el diccionario de traducciones
-    guardar_json(obj=l_d_t, arch=arch)
+    # Guardar el diccionario de traducciones si hubieron modificaciones
+    if hash(str(l_d_t)) != antes:
+        guardar_json(obj=l_d_t, arch=_archivo_trads)
 
 
 def trad_unid(unid, leng_final, leng_orig=None):
@@ -200,7 +201,7 @@ def agregar_trad(unid, trad, leng_trad, leng_orig=None, guardar=True):
 
     # Guardar si necesario.
     if guardar:
-        act_arch_trads(l_dic_trads, _archivo_json)
+        act_arch_trads(l_dic_trads)
 
 
 def agregar_sinónimos(unid, sinónimos, leng, guardar=True):
@@ -231,7 +232,7 @@ def agregar_sinónimos(unid, sinónimos, leng, guardar=True):
 
     # Guardar si necesario
     if guardar:
-        act_arch_trads(l_dic_trads, _archivo_json)
+        act_arch_trads(l_dic_trads)
 
 
 def _buscar_d_unid(unid, leng=None):
@@ -329,7 +330,7 @@ def buscar_singular(u):
 
 
 # Actualizar las traducciones al importar este módulo
-act_arch_trads(l_d_t=l_dic_trads, arch=_archivo_json)
+act_arch_trads(l_d_t=l_dic_trads)
 básicas = {
     'month': 'mes',
     'year': 'año',

@@ -19,7 +19,7 @@ for nmb in list(tipos_modelos):
     if not tipos_modelos[nmb]['envlt'].instalado:
         tipos_modelos.pop(nmb)
 
-# Agregar la ubicación del archivo actual
+# Agregar la ubicación del fuente actual
 dir_act = os.path.split(__file__)[0]
 for d_m in tipos_modelos.values():
     d_m['prueba'] = os.path.join(dir_act, d_m['prueba'])
@@ -237,7 +237,7 @@ class Test_GenerarMDS(unittest.TestCase):
 
     def test_generación_auto_mds(símismo):
         """
-        Verificamos que funcione la generación automática de modelos DS a base de un archivo.
+        Verificamos que funcione la generación automática de modelos DS a base de un fuente.
         """
 
         for m, d in tipos_modelos.items():
@@ -270,7 +270,7 @@ class Test_GenerarMDS(unittest.TestCase):
 
     def test_generación_auto_mds_modelo_erróneo(símismo):
         """
-        Asegurarse que un archivo erróneo devuelva un error.
+        Asegurarse que un fuente erróneo devuelva un error.
         """
 
         with símismo.assertRaises(ValueError):

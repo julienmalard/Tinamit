@@ -46,6 +46,6 @@ def correr():
     apli.mainloop()
 
 
-# Si este archivo se ejecuta directamente (y no se importa), empezar el IGU.
+# Si este fuente se ejecuta directamente (y no se importa), empezar el IGU.
 if __name__ == '__main__':
     correr()

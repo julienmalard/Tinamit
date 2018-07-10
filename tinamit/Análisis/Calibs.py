@@ -6,11 +6,12 @@ from warnings import warn as avisar
 import numpy as np
 import scipy.stats as estad
 import spotpy
+import xarray as xr
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
 
-from tinamit.Análisis.Datos import BDtexto
 from tinamit import _
+from tinamit.Análisis.Datos import BDtexto
 from tinamit.Análisis.sintaxis import Ecuación
 
 try:
@@ -324,7 +325,9 @@ class CalibradorEc(object):
 
                     if í == (len(nv_jerarquía) - 1):
 
-                        nv[:] = [x for x in nv if len(obs[obs['lugar'].isin(geog.obt_lugares_en(x) + [x])])]
+                        nv[:] = [x for x in nv
+                                 if len(obs.where(obs['lugar'].isin(geog.obt_lugares_en(x) + [x]), drop=True)['n'])
+                                 ]
                     else:
 
                         nv[:] = [x for x in nv if x in [jerarquía[y] for y in nv_jerarquía[í + 1]]]
@@ -382,8 +385,8 @@ class CalibradorEc(object):
                 resultados = {}
                 for lg in lugares:
                     lgs_potenciales = geog.obt_todos_lugares_en(lg)
-                    obs_lg = obs[obs['lugar'].isin(lgs_potenciales + [lg])]
-                    if len(obs_lg):
+                    obs_lg = obs.where(obs['lugar'].isin(lgs_potenciales + [lg]), drop=True)
+                    if len(obs_lg['n']):
                         mod_bayes = ec.gen_mod_bayes(
                             líms_paráms=líms_paráms, obs_x=obs_lg[vars_x], obs_y=obs_lg[var_y],
                             binario=binario, aprioris=None, nv_jerarquía=None
@@ -476,7 +479,7 @@ class CalibradorEc(object):
                 else:
                     # Sino, tomar los datos de esta región únicamente.
                     lgs_potenciales = geog.obt_todos_lugares_en(lugar)
-                    obs_lg = obs[obs['lugar'].isin(lgs_potenciales + [lugar])]
+                    obs_lg = obs.where(obs['lugar'].isin(lgs_potenciales + [lugar]), drop=True)
 
                     # Intentar sacar información del nivel superior en la jerarquía
                     try:
@@ -497,7 +500,7 @@ class CalibradorEc(object):
                         return  # Si hubo error en la jerarquía, no hay nada más que hacer para este lugar.
 
                 # Ahora, calibrar.
-                if len(obs_lg):
+                if len(obs_lg['n']):
                     # Si tenemos observaciones, calibrar con esto.
                     resultados[lugar] = _optimizar(
                         f_python, líms_paráms=líms_paráms,
@@ -538,7 +541,7 @@ class CalibradorMod(object):
             l_vars = list(símismo.mod.datos.variables)
         cnx = símismo.mod.conex_var_datos
         l_vars = [cnx[v] if v in cnx else v for v in l_vars]
-        obs = símismo.mod.datos.obt_datos(l_vars, tipo='regional')[l_vars]
+        obs = símismo.mod.datos.obt_datos(l_vars, tipo='datos')[l_vars]
 
         if método in _algs_spotpy:
             arch_spotpy = 'CalibTinamït_{}'.format(np.random.randint(1000000))
@@ -552,13 +555,13 @@ class CalibradorMod(object):
 
             cols_prm = [c for c in egr_spotpy.obt_nombres_cols() if c.startswith('par')]
             trzs = egr_spotpy.obt_datos(cols_prm)
-            probs = egr_spotpy.obt_datos('like1')
+            probs = egr_spotpy.obt_datos('like1')['like1']
             if método == 'dream':
                 trzs = trzs[-n_iter:]
                 probs = probs[-n_iter:]
             elif método != 'mcmc':
-                buenas = (probs >= 0.80).values[:, 0]
-                trzs = trzs[buenas]
+                buenas = (probs >= 0.80)
+                trzs = {p: trzs[p][buenas] for p in cols_prm}
                 probs = probs[buenas]
 
             rango_prob = (probs.min(), probs.max())
@@ -567,7 +570,7 @@ class CalibradorMod(object):
             res = {}
             for p in paráms:
                 col_p = ('par' + p).replace(' ', '_')
-                res[p] = {'dist': trzs[col_p].values, 'val': _calc_máx_trz(trzs[col_p]), 'peso': pesos.values}
+                res[p] = {'dist': trzs[col_p], 'val': _calc_máx_trz(trzs[col_p]), 'peso': pesos}
 
             if os.path.isfile(arch_spotpy + '.csv'):
                 os.remove(arch_spotpy + '.csv')
@@ -575,7 +578,6 @@ class CalibradorMod(object):
 
         else:
             raise ValueError(_('Método de calibración "{}" no reconocido.').format(método))
-
 
 
 # Unas funciones auxiliares
@@ -815,7 +817,7 @@ class ModSpotPy(object):
         ----------
         mod : Modelo.Modelo
         líms_paráms : dict
-        obs: pd.DataFrame
+        obs: xr.Dataset
         """
 
         símismo.paráms = [
@@ -824,21 +826,22 @@ class ModSpotPy(object):
         ]
         símismo.nombres_paráms = list(líms_paráms)
         símismo.mod = mod
-        símismo.mu_obs = obs.mean().values
-        símismo.sg_obs = obs.std().values
-        símismo.obs_norm = ((obs.values - símismo.mu_obs) / símismo.sg_obs).ravel()
-        símismo.vars_interés = list(obs)
-        símismo.t_final = len(obs) - 1
+        símismo.vars_interés = sorted(list(obs.data_vars))
+        símismo.t_final = len(obs['n']) - 1
+
+        símismo.mu_obs = símismo._aplastar(obs.mean())
+        símismo.sg_obs = símismo._aplastar(obs.std())
+        símismo.obs_norm = símismo._aplastar((obs - obs.mean()) / obs.std())
 
     def parameters(símismo):
         return spotpy.parameter.generate(símismo.paráms)
 
     def simulation(símismo, x):
         símismo.mod.inic_vals_vars({ll: x_i for ll, x_i in zip(símismo.nombres_paráms, x)})
-        res = símismo.mod.simular(t_final=símismo.t_final, vars_interés=list(símismo.vars_interés))
-        res = np.array([res[v] for v in símismo.vars_interés]).T
+        res = símismo.mod.simular(t_final=símismo.t_final, vars_interés=símismo.vars_interés)
+        m_res = np.array([res[v] for v in símismo.vars_interés]).T
 
-        return ((res - símismo.mu_obs) / símismo.sg_obs).ravel()
+        return ((m_res - símismo.mu_obs) / símismo.sg_obs).T.ravel()
 
     def evaluation(símismo):
         return símismo.obs_norm
@@ -848,3 +851,9 @@ class ModSpotPy(object):
         like = spotpy.objectivefunctions.nashsutcliffe(evaluation, simulation)
 
         return like
+
+    def _aplastar(símismo, datos):
+        if isinstance(datos, xr.Dataset):
+            return np.array([datos[v].values.ravel() for v in símismo.vars_interés]).ravel()
+        elif isinstance(datos, dict):
+            return np.array([datos[v].ravel() for v in sorted(datos)]).ravel()

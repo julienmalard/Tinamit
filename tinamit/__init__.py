@@ -61,7 +61,7 @@ def obt_val_config(llave, tipo=None, mnsj_err=None, suprm_err=False):
                 avisar(mnsj_err)
                 return
             else:
-                raise FileNotFoundError(_('El archivo "" no existe.').format(val))
+                raise FileNotFoundError(_('El fuente "" no existe.').format(val))
     except KeyError:
         if suprm_err:
             avisar(mnsj_err)
@@ -79,7 +79,7 @@ def poner_val_config(llave, val):
 
 def poner_val_config_arch(llave, val):
     if not os.path.isfile(val):
-        raise FileNotFoundError(_('El archivo "{}" no existe. :(').format(val))
+        raise FileNotFoundError(_('El fuente "{}" no existe. :(').format(val))
     poner_val_config(llave=llave, val=val)
 
 

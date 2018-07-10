@@ -18,10 +18,12 @@ def validar_resultados(obs, matrs_simul):
     """
     tol = 0.80
 
-    l_vars = list(obs)
-    mu_obs = obs.mean().values
-    sg_obs = obs.std().values
-    sims_norm = {vr: (matrs_simul[vr] - mu_obs[í]) / sg_obs[í] for í, vr in enumerate(l_vars)}
+    l_vars = list(obs.data_vars)
+    mu_obs = obs.mean()
+    sg_obs = obs.std()
+    mu_obs_matr = mu_obs.to_array().values
+    sg_obs_matr = sg_obs.to_array().values
+    sims_norm = {vr: (matrs_simul[vr] - mu_obs_matr[í]) / sg_obs_matr[í] for í, vr in enumerate(l_vars)}
     obs_norm = {vr: ((obs - mu_obs) / sg_obs)[vr].values for vr in l_vars}
 
     todas_sims = np.concatenate([x for x in sims_norm.values()], axis=1)

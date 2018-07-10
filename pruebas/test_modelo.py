@@ -1,5 +1,10 @@
 import unittest
 
+import numpy as np
+import numpy.testing as npt
+import pandas as pd
+
+from tinamit.Análisis.Datos import SuperBD, Datos
 from pruebas.recursos.BF.prueba_bf import ModeloPrueba
 from pruebas.test_geog import arch_clim_diario
 from pruebas.test_mds import limpiar_mds
@@ -199,17 +204,44 @@ class Test_SimularEnPlazoConDatos(unittest.TestCase):
         pass
 
 
+@unittest.skip
 class Test_SimulConDatos(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.mod = ModeloPrueba()
-        cls.datos_espaciales = {
-            '708': {''}
+        cls.datos = {
+            '708': {'Vacío': [1, 2, 3, 4, 5]},
+            '701': {'Vacío': [10, 9, 8, 7, 6]}
         }
+        cls.datos_pandas = pd.DataFrame({'Vacío': [1, 2, 3, np.nan, 5]}, index=pd.date_range('1/1/2001', periods=5))
+        cls.datos_superbd = SuperBD('prueba', bds=Datos('prb', cls.datos_pandas))
 
-    def test_simular_con_datos_(símismo):
-        pass
+    def test_simular_con_datos_externos_dic(símismo):
+        mod = ModeloPrueba(unid_tiempo='día')
+        res = mod.simular(t_final=5, vars_interés='Vacío', vals_extern=símismo.datos['708'])
+        npt.assert_array_equal(res['Vacío'][1:], símismo.datos['708']['Vacío'])
 
-    def test_simular_con_datos_espaciales(símismo):
-        pass
+    def test_simular_con_datos_externos_pandas(símismo):
+        mod = ModeloPrueba(unid_tiempo='día')
+        res = mod.simular(t_inic='01/01/2001', t_final=5, vars_interés='Vacío', vals_extern=símismo.datos_pandas)
+        faltaban = np.isnan(símismo.datos_pandas['Vacío'])
+        npt.assert_array_equal(res['Vacío'][not faltaban], símismo.datos_pandas['Vacío'][not faltaban])
+
+    def test_simular_con_datos_espaciales_dic(símismo):
+        mod = ModeloPrueba(unid_tiempo='día')
+        mod.conectar_datos(símismo.datos, corresp_vars='Vacío')
+        res = mod.simular_en(t_final=5)
+        for lg, d_res in res.items():
+            npt.assert_array_equal(d_res['Vacío'], símismo.datos[lg]['Vacío'])
+
+    def test_simular_con_datos_espaciales_superbd(símismo):
+        mod = ModeloPrueba(unid_tiempo='día')
+        mod.conectar_datos(símismo.datos_superbd, corresp_vars='Vacío')
+        res = mod.simular(t_inic='01/01/2001', t_final=5, vars_interés='Vacío', vals_extern=símismo.datos_pandas)
+        for lg, d_res in res.items():
+            npt.assert_array_equal(d_res['Vacío'], símismo.datos[lg]['Vacío'])
+
+    def test_simular_en_con_escala_sin_geog(símismo):
+
+        with símismo.assertRaises(ValueError):
+            ModeloPrueba(unid_tiempo='día').simular_en(100, escala='municipio')

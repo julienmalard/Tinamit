@@ -53,7 +53,7 @@ class Lugar(مقام):
         """
         Esta función permite conectar observaciones diarias de datos climáticos.
 
-        :param archivo: El archivo con la base de datos.
+        :param archivo: El fuente con la base de datos.
         :type archivo: str
 
         :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y
@@ -89,7 +89,7 @@ class Lugar(مقام):
         """
         Esta función permite conectar observaciones mensuales de datos climáticos.
 
-        :param archivo: El archivo con la base de datos.
+        :param archivo: El fuente con la base de datos.
         :type archivo: str
 
         :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y el valor es
@@ -128,7 +128,7 @@ class Lugar(مقام):
         """
         Esta función permite conectar observaciones anuales de datos climáticos.
 
-        :param archivo: El archivo con la base de datos.
+        :param archivo: El fuente con la base de datos.
         :type archivo: str
 
         :param cols_datos: Un diccionario, donde cada llave es el nombre oficial del variable climático y el valor es
@@ -344,7 +344,7 @@ class Geografía(object):
 
             if col_cód not in cols:
                 raise ValueError(_('La columna de código de región especificada ({}) no concuerda con los nombres de '
-                                   'columnas del archivo ({}).').format(col_cód, ', '.join(cols)))
+                                   'columnas del fuente ({}).').format(col_cód, ', '.join(cols)))
 
             doc = [OrderedDict((ll.lower().strip(), v.strip()) for ll, v in f.items()) for f in l]
 
@@ -367,7 +367,7 @@ class Geografía(object):
         while len(coescalas):
             siguientes = {x.pop() for x in coescalas if len(x) == 1}
             if not len(siguientes):
-                raise ValueError(_('Parece que hay un error con el archivo de información regional.'))
+                raise ValueError(_('Parece que hay un error con el fuente de información regional.'))
             órden.append(sorted(list(siguientes)) if len(siguientes) > 1 else siguientes.pop())
             for cn in coescalas.copy():
                 cn.difference_update(siguientes)
@@ -596,7 +596,7 @@ class Geografía(object):
 
             ids_faltan_frm = [x for x in dic_valores if x not in ids_frm]
             if len(ids_faltan_frm):
-                avisar(_('Las regiones siguientes no se encuentran en el archivo de forma y por lo tanto'
+                avisar(_('Las regiones siguientes no se encuentran en el fuente de forma y por lo tanto'
                          '\nno se podrán dibujar: "{}"').format(', '.join(ids_faltan_frm)))
                 dic_valores = {ll: v for ll, v in dic_valores.items() if ll not in ids_faltan_frm}
 

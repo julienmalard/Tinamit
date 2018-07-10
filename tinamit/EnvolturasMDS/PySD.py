@@ -1,6 +1,8 @@
 import os
 from ast import literal_eval
 
+import numpy as np
+
 import pysd
 from tinamit import _
 from tinamit.Análisis.sintaxis import Ecuación
@@ -102,9 +104,11 @@ class ModeloPySD(EnvolturaMDS):
         símismo.vars_para_cambiar.clear()
         símismo.vars_para_cambiar.update(vals_inic)
 
-    def _cambiar_vals_modelo_interno(símismo, valores):
+    def cambiar_vals_modelo_interno(símismo, valores):
         símismo.vars_para_cambiar.clear()
-        símismo.vars_para_cambiar.update(valores)
+        símismo.vars_para_cambiar.update(
+            {var: val for var, val in valores.items() if not np.isnan(val)}
+        )
 
     def _incrementar(símismo, paso, guardar_cada=None):
         guardar_cada = guardar_cada or paso

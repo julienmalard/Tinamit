@@ -30,7 +30,7 @@ class Test_ModeloSenc(unittest.TestCase):
             'Lluvia': {'unidades': 'm3/año', 'líms': (0, None), 'val_inic': 2.3},
             'Lago': {'unidades': 'm3', 'líms': (0, None)},
             'Escala': {'unidades': '', 'líms': (0, None)},
-            'Máx lluvia': {'unidades': 'm3/año', 'líms': (0, None), 'val_inic': 15}
+            'Vacío': {'unidades': 'm3/año', 'líms': (0, None), 'val_inic': 15}
         }  # type: dict[str, dict]
 
         # Iniciar variables
@@ -59,8 +59,8 @@ class Test_ModeloSenc(unittest.TestCase):
         """
 
         símismo.assertEqual(
-            símismo.envltmodelo.obt_val_actual_var('Máx lluvia'),
-            símismo.info_vars['Máx lluvia']['val_inic']
+            símismo.envltmodelo.obt_val_actual_var('Vacío'),
+            símismo.info_vars['Vacío']['val_inic']
         )
 
     def test_cambiar_vals_inic_var_dinámico(símismo):
@@ -96,7 +96,7 @@ class Test_ModeloSenc(unittest.TestCase):
 # Comprobar que la EnvolturasBF pueda leer el modelo BF de prueba en todas las formas posibles para cargar un modelo BF.
 class Test_CrearEnvolturaBF(unittest.TestCase):
     def test_crear_desde_archivo(símismo):
-        # Comprobar creación de la envoltura desde un archivo que contiene un modelo BF.
+        # Comprobar creación de la envoltura desde un fuente que contiene un modelo BF.
         envlt = EnvolturaBF(arch_bf)
         símismo.assertIsInstance(envlt, EnvolturaBF)
 

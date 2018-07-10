@@ -35,10 +35,10 @@ class EnvolturaBF(Modelo):
         if isinstance(modelo, str):
 
             if not os.path.isfile(modelo):
-                raise ValueError(_('El archivo "{}" no existe... :(').format(modelo))
+                raise ValueError(_('El fuente "{}" no existe... :(').format(modelo))
 
             if os.path.splitext(modelo)[1] != '.py':
-                raise ValueError(_('El archivo "{}" no parece ser un archivo Python.').format(modelo))
+                raise ValueError(_('El fuente "{}" no parece ser un fuente Python.').format(modelo))
 
             símismo.archivo = modelo
 
@@ -58,7 +58,7 @@ class EnvolturaBF(Modelo):
                     cands_final[nmb] = obj
 
             if len(cands_final) == 0:
-                raise AttributeError(_('El archivo especificado ("{}") no contiene subclase de "ModeloBF".')
+                raise AttributeError(_('El fuente especificado ("{}") no contiene subclase de "ModeloBF".')
                                      .format(modelo))
             elif len(cands_final) == 1:
                 símismo.modelo = cands_final[list(cands_final)[0]]
@@ -68,7 +68,7 @@ class EnvolturaBF(Modelo):
                 except KeyError:
                     elegido = list(cands_final)[0]
                     símismo.modelo = elegido
-                    avisar(_('Había más que una instancia de "ModeloBF" en el archivo "{}", '
+                    avisar(_('Había más que una instancia de "ModeloBF" en el fuente "{}", '
                              'y ninguna se llamaba "Envoltura". Tomaremos "{}" como la envoltura '
                              'y esperaremos que funcione. Si no te parece, asegúrate que la definición de clase u el'
                              'objeto correcto se llame "Envoltura".').format(modelo, elegido))
@@ -81,7 +81,7 @@ class EnvolturaBF(Modelo):
                 símismo.modelo = copiar(modelo)
             else:
                 raise TypeError(_('El parámetro "modelo" debe ser o una instancia o subclase de "ModeloBF", o un '
-                                  'archivo Python que contiene uno.'))
+                                  'fuente Python que contiene uno.'))
 
         super().__init__(nombre=nombre)
 
@@ -108,7 +108,7 @@ class EnvolturaBF(Modelo):
         # Crear el vínculo
         símismo.variables = símismo.modelo.variables
 
-    def _cambiar_vals_modelo_interno(símismo, valores):
+    def cambiar_vals_modelo_interno(símismo, valores):
         """
         Esta función cambia el valor de variables en el modelo.
 
@@ -116,8 +116,7 @@ class EnvolturaBF(Modelo):
         :type valores: dict
 
         """
-
-        símismo.modelo._cambiar_vals_modelo_interno(valores=valores)
+        símismo.modelo.cambiar_vals_modelo_interno(valores=valores)
 
     def _incrementar(símismo, paso, guardar_cada=None):
         """
@@ -143,8 +142,6 @@ class EnvolturaBF(Modelo):
     def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         """
         Inicializa el modelo biofísico interno, incluyendo la inicialización de variables.
-
-        :param kwargs: Argumentos para pasar al modelo interno.
 
         """
 
@@ -216,7 +213,7 @@ class ModeloBF(Modelo):
         except KeyError:
             avisar(_('Todavía no existe valor de configuración para "{v}".').format(v=cód_conf))
 
-    def _cambiar_vals_modelo_interno(símismo, valores):
+    def cambiar_vals_modelo_interno(símismo, valores):
         """
         Esta función debe cambiar el valor de variables en el modelo biofísico.
 
@@ -309,7 +306,7 @@ class ModeloBF(Modelo):
                      '\nmodelo sí esté leyendo bien los datos iniciales. Lo generaremos con base en el los valores'
                      '\nactualmente leídos por el modelo. Asegúrate que los valores generados en'
                      '\n\t"{}"'
-                     '\nestén correctos, y si no lo son, bórralo. En el futuro, se empleará este archivo para '
+                     '\nestén correctos, y si no lo son, bórralo. En el futuro, se empleará este fuente para '
                      '\ncomprobar la función de lectura de datos iniciales.').format(símismo.dic_prb_datos_inic))
             d_vals = copiar_profundo(símismo.variables)
             for d_v in d_vals.values():
@@ -378,7 +375,7 @@ class ModeloImpaciente(ModeloBF):
         # Leer los valores iniciales
         símismo._leer_vals_inic()
 
-    def _cambiar_vals_modelo_interno(símismo, valores):
+    def cambiar_vals_modelo_interno(símismo, valores):
         """
         Solamente nos tenemos que asegurar que los datos internos (para variables estacionales) queda consistente
         con los nuevos valores cambiadas por la conexión con el modelo externo. La función `.avanzar_modelo()` debe
@@ -480,7 +477,7 @@ class ModeloImpaciente(ModeloBF):
                 # El número de años para simular
                 a = mat.ceil(paso / 12)  # type: int
 
-                # Escribir el archivo de ingresos
+                # Escribir el fuente de ingresos
                 símismo.escribir_ingr(n_años_simul=a)
 
                 # Avanzar la simulación
@@ -600,7 +597,7 @@ class ModeloImpaciente(ModeloBF):
 
     def leer_archivo_vals_inic(símismo, archivo=None):
         """
-        Esta función devuelve un diccionario con los valores leídos del archivo de valores iniciales.
+        Esta función devuelve un diccionario con los valores leídos del fuente de valores iniciales.
         :return: Un diccionario de los variables iniciales y sus valores, con el número de polígonos (para modelos
         espaciales). Si el modelo no es espacial, devolver ``(1,)`` para las dimensiones.
         :rtype: (dict, tuple)
@@ -620,7 +617,7 @@ class ModeloImpaciente(ModeloBF):
         if archivo is None:
             archivo = símismo.arch_egreso
 
-        # Leer el archivo de egreso
+        # Leer el fuente de egreso
         dic_egr = símismo.leer_archivo_egr(n_años_egr=n_años_egr, archivo=archivo)
 
         # Para simplificar el código
@@ -641,7 +638,7 @@ class ModeloImpaciente(ModeloBF):
 
     def escribir_ingr(símismo, n_años_simul, archivo=None):
         """
-        Escribe un archivo de ingresos del modelo en el formato que lee el modelo externo.
+        Escribe un fuente de ingresos del modelo en el formato que lee el modelo externo.
         :param n_años_simul: El número de años para la simulación siguiente.
         :type n_años_simul: int
         """
@@ -668,7 +665,7 @@ class ModeloImpaciente(ModeloBF):
 
     def leer_archivo_egr(símismo, n_años_egr, archivo):
         """
-        Lee un archivo de egresos del modelo.
+        Lee un fuente de egresos del modelo.
 
         :param n_años_egr: El número de años en los egresos. Solamente leerá el último año.
         :type n_años_egr: int
@@ -680,7 +677,7 @@ class ModeloImpaciente(ModeloBF):
 
     def _escribir_archivo_ingr(símismo, n_años_simul, dic_ingr, archivo):
         """
-        Escribe un archivo de ingresos para el modelo, en un formato que lee el modelo externo.
+        Escribe un fuente de ingresos para el modelo, en un formato que lee el modelo externo.
 
         :param n_años_simul: El número de años para simular.
         :type n_años_simul: int
@@ -697,7 +694,7 @@ class ModeloImpaciente(ModeloBF):
                      '\nmodelo sí esté leyendo bien los egresos de modelos. Lo generaremos con base en el los valores'
                      '\nactualmente leídos por el modelo. Asegúrate que los valores generados en'
                      '\n\t"{}"'
-                     '\nestén correctos, y si no lo son, bórralo. En el futuro, se empleará este archivo para '
+                     '\nestén correctos, y si no lo son, bórralo. En el futuro, se empleará este fuente para '
                      '\ncomprobar la función de lectura de egresos.').format(símismo.dic_prb_egr))
             d_egr = símismo.leer_archivo_egr(n_años_egr=1, archivo=símismo.prb_arch_egr)
             for var, val in d_egr.items():
@@ -727,7 +724,7 @@ class ModeloFlexible(ModeloBF):
         """
         super().__init__()
 
-    def _cambiar_vals_modelo_interno(símismo, valores):
+    def cambiar_vals_modelo_interno(símismo, valores):
         """
         Esta función debe cambiar el valor de variables en el modelo biofísico.
 
@@ -761,8 +758,6 @@ class ModeloFlexible(ModeloBF):
         """
         Esta función debe preparar el modelo para una simulación.
 
-        :param kwargs:
-        :type kwargs:
         """
 
         raise NotImplementedError
@@ -813,7 +808,7 @@ class ModeloFlexible(ModeloBF):
 
     def leer_archivo_vals_inic(símismo):
         """
-        Esta función devuelve un diccionario con los valores leídos del archivo de valores iniciales.
+        Esta función devuelve un diccionario con los valores leídos del fuente de valores iniciales.
         :return:
         :rtype: (dict, tuple)
         """

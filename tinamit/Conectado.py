@@ -234,7 +234,7 @@ class SuperConectado(Modelo):
         # Si había duda acerca de la conversión de tiempo, ya no hay.
         símismo.conv_tiempo_dudoso = False
 
-    def _cambiar_vals_modelo_interno(símismo, valores):
+    def cambiar_vals_modelo_interno(símismo, valores):
         """
         Esta función cambia los valores del modelo. A través de la función :func:`~tinamit.Conectado.cambiar_vals`, se
         vuelve recursiva.
@@ -257,63 +257,6 @@ class SuperConectado(Modelo):
             for c in símismo.conexiones:
                 if c['modelo_fuente'] == mod and c['var_fuente'] == var:
                     símismo.modelos[c['modelo_recip']].cambiar_vals(valores={c['var_recip']: val * c['conv']})
-
-    def _conectar_clima(símismo, n_pasos, lugar, fecha_inic, escenario, recalc):
-        """
-        Esta función conecta el clima de un lugar con el modelo Conectado.
-
-        :param  n_pasos: El número de pasos para la simulación.
-        :type n_pasos: int
-        :param lugar: El lugar.
-        :type lugar: Lugar
-        :param fecha_inic: La fecha inicial de la simulación.
-        :type fecha_inic: ft.date | ft.datetime | str | int
-        :param escenario: El escenario climático según el sistema de la IPCC (2.6, 4.5, 6.0, o 8.5)
-        :type escenario: str | float
-
-        """
-
-        # Conectar el lugar
-        símismo.lugar = lugar
-        for m in símismo.modelos.values():
-            m.lugar = lugar
-
-        # Calcular la fecha final
-        fecha_final = None
-        n_días = None
-        try:
-            n_días = convertir(de=símismo.unidad_tiempo(), a='días', val=n_pasos)
-        except ValueError:
-            for m in símismo.modelos.values():
-                try:
-                    n_días = convertir(de=m.unidad_tiempo(), a='días', val=símismo.conv_tiempo[m.nombre] * n_pasos)
-                    continue
-                except ValueError:
-                    pass
-
-        if n_días is not None:
-            fecha_final = fecha_inic + ft.timedelta(int(n_días))
-
-        else:
-            n_meses = None
-            try:
-                n_meses = convertir(de=símismo.unidad_tiempo(), a='meses', val=n_pasos)
-            except ValueError:
-                for m in símismo.modelos.values():
-                    try:
-                        n_meses = convertir(de=m.unidad_tiempo(), a='meses',
-                                            val=símismo.conv_tiempo[m.nombre] * n_pasos)
-                        continue
-                    except ValueError:
-                        pass
-            if n_meses is not None:
-                fecha_final = fecha_inic + deltarelativo(months=int(n_meses) + 1)
-
-        if fecha_final is None:
-            raise ValueError(_('Debes especificar la conversión de la unidad de tiempo a meses o a días.'))
-
-        # Obtener los datos de lugares
-        lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=escenario)
 
     def paralelizable(símismo):
         """
@@ -882,7 +825,7 @@ class Conectado(SuperConectado):
         """
         Establecemos el modelo de dinámicas de los sistemas (:class:`~tinamit.EnvolturasMDS.EnvolturasMDS`).
 
-        :param archivo_mds: El archivo del modelo DS, o el modelo sí mismo.
+        :param archivo_mds: El fuente del modelo DS, o el modelo sí mismo.
         :type archivo_mds: str | EnvolturaMDS
 
         """
@@ -893,7 +836,7 @@ class Conectado(SuperConectado):
         elif isinstance(archivo_mds, EnvolturaMDS):
             modelo_mds = archivo_mds
         else:
-            raise TypeError(_('Debes dar o un modelo DS, o la dirección hacia el archivo de uno.'))
+            raise TypeError(_('Debes dar o un modelo DS, o la dirección hacia el fuente de uno.'))
 
         # Conectamos el modelo DS.
         símismo.agregar_modelo(modelo=modelo_mds)
@@ -905,7 +848,7 @@ class Conectado(SuperConectado):
         """
         Establece el modelo biofísico (:class:`~tinamit.BF.EnvolturasBF`).
 
-        :param bf: El archivo con la clase del modelo biofísico. **Debe** ser un archivo de Python.
+        :param bf: El fuente con la clase del modelo biofísico. **Debe** ser un fuente de Python.
         :type bf: str | EnvolturaBF
 
         """
@@ -916,7 +859,7 @@ class Conectado(SuperConectado):
         elif isinstance(bf, EnvolturaBF):
             modelo_bf = bf
         else:
-            raise TypeError(_('Debes dar o un modelo BF, o la dirección hacia el archivo de uno.'))
+            raise TypeError(_('Debes dar o un modelo BF, o la dirección hacia el fuente de uno.'))
 
         # Conectamos el modelo biofísico.
         símismo.agregar_modelo(modelo=modelo_bf)

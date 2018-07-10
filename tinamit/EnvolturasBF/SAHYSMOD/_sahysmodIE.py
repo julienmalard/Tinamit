@@ -93,12 +93,12 @@ def transponer_paráms(dic_paráms):
 
 def leer_info_dic_paráms(archivo_fnt):
     """
-    Convierte un archivo de ingresos SAHYSMOD en un diccionario de valores de variables.
+    Convierte un fuente de ingresos SAHYSMOD en un diccionario de valores de variables.
 
     Parameters
     ----------
     archivo_fnt: str
-        El archivo con los datos de ingreso, en formato .inp o .csv. 
+        El fuente con los datos de ingreso, en formato .inp o .csv. 
         
     Returns
     -------
@@ -110,7 +110,7 @@ def leer_info_dic_paráms(archivo_fnt):
     # Escoger la plantilla apropiada.
     plantilla_fnt = PLANTILLACSV if archivo_fnt[-3:] == 'csv' else PLANTILLAINP
 
-    # Leer el archivo de ingresos.
+    # Leer el fuente de ingresos.
     dic_paráms = _anlzd_sntct.leer_archivo(archivo_fnt, plantilla_fnt, paráms_ent=paráms_enteros)
     transponer_paráms(dic_paráms)  # Transpose parameters that require it.
 
@@ -146,11 +146,11 @@ def central(archivo_fnt, archivo_obj):  # pragma: sin cobertura
 
 
 if __name__ == '__main__':
-    # El código abajo se ejecutará si se llama este archivo desde la línea de comanda (o, por tanto, desde cualquier
+    # El código abajo se ejecutará si se llama este fuente desde la línea de comanda (o, por tanto, desde cualquier
     # otro lugar)
 
     # Leer los argumentos de la línea de comanda. (El primero, sys.argv[0], es simplemente la dirección de este
-    # archivo y se ignorará. El segundo es el archivo desde cual hay que leer y el tercero él hacia cual hay que
+    # fuente y se ignorará. El segundo es el fuente desde cual hay que leer y el tercero él hacia cual hay que
     # escribir.)
     try:
         archivoFnt = os.path.join(os.getcwd(), sys.argv[1])

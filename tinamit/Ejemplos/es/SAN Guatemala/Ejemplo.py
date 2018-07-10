@@ -4,11 +4,11 @@ import shutil
 
 import numpy as np
 
-from tinamit.Análisis.ConexDatos import ConexDatos
+
 
 from tinamit import guardar_json, cargar_json
-from tinamit.Análisis.Datos import DatosIndividuales, DatosRegión, SuperBD
-from EnvolturasMDS.auto_mds import generar_mds
+from tinamit.Análisis.Datos import MicroDatos, Datos, SuperBD
+from tinamit.EnvolturasMDS import generar_mds
 from tinamit.Geog.Geog import Geografía
 
 if __name__ == '__main__':  # Necesario para paralelización en Windows
@@ -26,19 +26,19 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
     geog = Geografía('Iximulew')
     geog.espec_estruct_geog(archivo='Geografía Iximulew.csv')
 
-    ENCOVI_ind_2011 = DatosIndividuales('ENCOVI ind 2011', archivo=c('ENCOVIs\\2011\\BD Personas_final.csv'),
-                                        fecha=2011,
-                                        lugar='munidept')
-    ENCOVI_hog_2011 = DatosIndividuales('ENCOVI hog 2011', archivo=c('ENCOVIs\\2011\\BD Hogares_final.csv'), fecha=2011,
-                                        lugar='munidept')
-    ENCOVI_reg_2011 = DatosRegión('ENCOVI reg 2011', archivo=c('ENCOVIs\\2011\\BD regional_final.csv'), fecha=2011,
-                                  lugar='id')
+    ENCOVI_ind_2011 = MicroDatos('ENCOVI ind 2011', fuente=c('ENCOVIs\\2011\\BD Personas_final.csv'),
+                                 fecha=2011,
+                                 lugar='munidept')
+    ENCOVI_hog_2011 = MicroDatos('ENCOVI hog 2011', fuente=c('ENCOVIs\\2011\\BD Hogares_final.csv'), fecha=2011,
+                                 lugar='munidept')
+    ENCOVI_reg_2011 = Datos('ENCOVI reg 2011', fuente=c('ENCOVIs\\2011\\BD regional_final.csv'), fecha=2011,
+                            lugar='id')
 
-    datos_muni = DatosRegión('Datos municipales', archivo=c('Datos muni\\Datos Muni Iximulew.csv'), fecha='Año',
-                             lugar='Código_lugar')
-    datos_pob = DatosRegión('Población', archivo=c('Población\\Población INE.csv'), fecha='Año', lugar='Código')
-    datos_tierra = DatosRegión('Uso tierra', archivo=c('Uso de tierra\\Uso de tierra.csv'), fecha='Año', lugar='Código')
-    datos_superficie = DatosRegión('Superficie', archivo=c('Uso de tierra\\Superficie.csv'), fecha=None, lugar='Código')
+    datos_muni = Datos('Datos municipales', fuente=c('Datos muni\\Datos Muni Iximulew.csv'), fecha='Año',
+                       lugar='Código_lugar')
+    datos_pob = Datos('Población', fuente=c('Población\\Población INE.csv'), fecha='Año', lugar='Código')
+    datos_tierra = Datos('Uso tierra', fuente=c('Uso de tierra\\Uso de tierra.csv'), fecha='Año', lugar='Código')
+    datos_superficie = Datos('Superficie', fuente=c('Uso de tierra\\Superficie.csv'), fecha=None, lugar='Código')
 
     #
     bd = SuperBD('BD Iximulew', bds=[ENCOVI_hog_2011, ENCOVI_ind_2011, ENCOVI_reg_2011, datos_muni,
@@ -396,4 +396,4 @@ if __name__ == '__main__':  # Necesario para paralelización en Windows
     control.agregar_modelo(otro_modelo)
     control.recalibrar_ecs(cód_lugar='0113')  # Calibrar todas las equationes y constantes anteriormente calibradas
 
-    control.guardar(proyecto='otro archivo')
+    control.guardar(proyecto='otro fuente')

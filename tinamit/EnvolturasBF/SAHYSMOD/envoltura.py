@@ -152,7 +152,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
             vec = símismo.dic_ingr[k]
             vec[vec == -1] = 0
 
-        # Y finalmente, escribir el archivo de valores de ingreso
+        # Y finalmente, escribir el fuente de valores de ingreso
         escribir_desde_dic_paráms(dic_paráms=símismo.dic_ingr, archivo_obj=archivo)
 
     def leer_archivo_egr(símismo, n_años_egr, archivo):
@@ -214,10 +214,10 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         if archivo is None:
             archivo = símismo.datos_inic
 
-        # Leer el archivo de ingreso
+        # Leer el fuente de ingreso
         dic_ingr = leer_info_dic_paráms(archivo_fnt=archivo)
         símismo.dic_ingr.clear()
-        símismo.dic_ingr.update(dic_ingr)  # Guardar valores para escribir el archivo de valores iniciales en el futuro
+        símismo.dic_ingr.update(dic_ingr)  # Guardar valores para escribir el fuente de valores iniciales en el futuro
 
         # Guardar el número de estaciones y de polígonos
         símismo.n_estaciones = int(dic_ingr['NS'])
@@ -229,7 +229,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
         # Asegurars que el número de estaciones es igual al número de duraciones de estaciones.
         if símismo.n_estaciones != len(símismo.dur_estaciones):
-            raise ValueError(_('Error en el archivo de datos iniciales SAHYSMOD: el número de duraciones de estaciones'
+            raise ValueError(_('Error en el fuente de datos iniciales SAHYSMOD: el número de duraciones de estaciones'
                                'especificadas no corresponde al número de estaciones especificadas (líneas 3 y 4).'))
 
         # Formatear el diccionario final

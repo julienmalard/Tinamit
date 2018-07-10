@@ -147,6 +147,7 @@ setup(
         'taqdir',
         'pysd',
         'lxml',
+        'xarray',
         'spotpy'
     ],
 

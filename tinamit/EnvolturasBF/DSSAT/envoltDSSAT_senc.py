@@ -23,7 +23,7 @@ class EnvoltDSSAT(ModeloBF):  # pragma: sin cobertura
         símismo.día_act = 0  # El día actual de la simulación
         símismo.día_princ_últ_sim = 0  # El primer día de la última llamada a DSSAT
 
-    def _cambiar_vals_modelo_interno(símismo, valores):
+    def cambiar_vals_modelo_interno(símismo, valores):
         pass
 
     def _incrementar(símismo, paso, guardar_cada=None):

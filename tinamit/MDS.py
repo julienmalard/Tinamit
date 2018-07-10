@@ -19,12 +19,12 @@ class EnvolturaMDS(Modelo):
         """
         Iniciamos el modelo DS.
 
-        :param archivo: El archivo con el modelo DS.
+        :param archivo: El fuente con el modelo DS.
         :type archivo: str
         """
 
         if not os.path.isfile(archivo):
-            raise FileNotFoundError(_('El archivo "{}" no existe.').format(archivo))
+            raise FileNotFoundError(_('El fuente "{}" no existe.').format(archivo))
 
         # Listas vacías para distintos tipos de variables.
         símismo.constantes = []
@@ -77,7 +77,7 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def _cambiar_vals_modelo_interno(símismo, valores):
+    def cambiar_vals_modelo_interno(símismo, valores):
         """
         Este método se deja a las subclases de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS` para implementar.
 
@@ -181,8 +181,8 @@ class MDSEditable(EnvolturaMDS):
         símismo.mod.corrida_activa = nombre_corrida
         símismo.mod._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
-    def _cambiar_vals_modelo_interno(símismo, valores):
-        return símismo.mod._cambiar_vals_modelo_interno(valores=valores)
+    def cambiar_vals_modelo_interno(símismo, valores):
+        return símismo.mod.cambiar_vals_modelo_interno(valores=valores)
 
     def _incrementar(símismo, paso, guardar_cada=None):
         return símismo.mod._incrementar(paso=paso, guardar_cada=guardar_cada)

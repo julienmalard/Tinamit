@@ -11,7 +11,7 @@ class Envoltura(ModeloBF):
     def _leer_vals(símismo):
         pass
 
-    def _cambiar_vals_modelo_interno(símismo, valores):
+    def cambiar_vals_modelo_interno(símismo, valores):
         pass
 
     def _inic_dic_vars(símismo):

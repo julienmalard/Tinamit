@@ -40,7 +40,7 @@ class ModeloVensimMdl(MDSEditable):
 
         símismo.dic_doc = {'cabeza': [], 'cuerpo': [], 'cola': []}
 
-        # Leer las tres secciones generales del archivo
+        # Leer las tres secciones generales del fuente
         with open(archivo, encoding='UTF-8') as d:
             # La primera línea del documento, con {UTF-8}
             símismo.dic_doc['cabeza'] = [d.readline()]
@@ -51,7 +51,7 @@ class ModeloVensimMdl(MDSEditable):
                 símismo.dic_doc['cuerpo'].append(l)
                 l = d.readline()
 
-            # Guardar todo el resto del archivo (que no contiene información de ecuaciones de variables).
+            # Guardar todo el resto del fuente (que no contiene información de ecuaciones de variables).
             cola = d.readlines()
             símismo.dic_doc['cola'] += [l] + cola
 
@@ -211,7 +211,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         La función de inicialización del modelo. Creamos el vínculo con el DLL de VENSIM y cargamos el modelo
         especificado.
 
-        :param archivo: El archivo del modelo que quieres cargar en formato .vpm.
+        :param archivo: El fuente del modelo que quieres cargar en formato .vpm.
         :type archivo: str
         """
 
@@ -431,7 +431,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         símismo._leer_vals_de_vensim()
 
-    def _cambiar_vals_modelo_interno(símismo, valores):
+    def cambiar_vals_modelo_interno(símismo, valores):
         """
         Esta función cambiar los valores de variables en VENSIM. Notar que únicamente los variables identificados como
         de tipo "Gaming" en el modelo podrán actualizarse.
@@ -448,9 +448,10 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                 # Si el variable no tiene dimensiones (subscriptos)...
 
                 # Actualizar el valor en el modelo VENSIM.
-                cmd_vensim(func=símismo.dll.vensim_command,
-                           args='SIMULATE>SETVAL|%s = %f' % (var, val),
-                           mensaje_error=_('Error cambiando el variable %s.') % var)
+                if not np.isnan(val):
+                    cmd_vensim(func=símismo.dll.vensim_command,
+                               args='SIMULATE>SETVAL|%s = %f' % (var, val),
+                               mensaje_error=_('Error cambiando el variable %s.') % var)
             else:
                 # Para hacer: opciones de dimensiones múltiples
                 # La lista de subscriptos
@@ -464,10 +465,10 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                 for n, s in enumerate(subs):
                     var_s = var + s
                     val_s = matr[n]
-
-                    cmd_vensim(func=símismo.dll.vensim_command,
-                               args='SIMULATE>SETVAL|%s = %f' % (var_s, val_s),
-                               mensaje_error=_('Error cambiando el variable %s.') % var_s)
+                    if not np.isnan(val_s):
+                        cmd_vensim(func=símismo.dll.vensim_command,
+                                   args='SIMULATE>SETVAL|%s = %f' % (var_s, val_s),
+                                   mensaje_error=_('Error cambiando el variable %s.') % var_s)
 
     def _incrementar(símismo, paso, guardar_cada=None):
         """
