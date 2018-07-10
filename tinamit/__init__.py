@@ -6,7 +6,7 @@ from warnings import warn as avisar
 from pkg_resources import resource_filename
 
 # Cosas básicas
-from cositas import guardar_json, cargar_json
+from .cositas import guardar_json, cargar_json
 
 __author__ = 'Julien Malard'
 
