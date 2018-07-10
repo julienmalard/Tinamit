@@ -13,8 +13,11 @@ def gen_vals_inic(mstr, mapa_paráms):
     if mapa_paráms is None:
         mapa_paráms = {}
     ej_mstr = list(mstr.values())[0]
+
     if isinstance(ej_mstr, np.ndarray):
         iters = range(ej_mstr.size)
+    elif isinstance(ej_mstr, list):
+        iters = range(len(ej_mstr))
     else:
         iters = ej_mstr.keys()
 
@@ -63,12 +66,11 @@ def gen_índices_grupos(n_iter, tmñ_grupos):
 def simul_faltan(mod, arch_mstr, dir, mapa_paráms, var_egr, índ_mstrs=None):
     faltan = buscar_simuls_faltan(arch_mstr, dir)
 
-
     # simul_sens_de_dic(mod=mod, mstr_paráms=faltan, mapa_paráms=mapa_paráms, var_egr=var_egr)
 
 
 def simul_sens_por_grupo(mod, mstr_paráms, mapa_paráms, var_egr, direc, tiempo_final, tmñ_grupos,
-                         í_grupos, guardar=True, paralelo=True):
+                         í_grupos, guardar=True, paralelo=False):
     if isinstance(í_grupos, int):
         í_grupos = [í_grupos]
     n_iter = len(list(mstr_paráms.values())[0])
@@ -88,8 +90,10 @@ def simul_sens(mod, mstr_paráms, mapa_paráms, var_egr, direc, tiempo_final, gu
         índices_mstrs = range(*índices_mstrs)
 
     mstrs_escogidas = {p: {í: mstr_paráms[p][í] for í in índices_mstrs} for p in mstr_paráms}
+    #chosen samples
 
     vals_inic = gen_vals_inic(mstrs_escogidas, mapa_paráms)
+
     res_corridas = mod.simular_paralelo(tiempo_final=tiempo_final, vals_inic=vals_inic, vars_interés=var_egr,
                                         paralelo=paralelo)
 
