@@ -8,7 +8,7 @@ from warnings import warn as avisar
 import pint
 import pkg_resources
 
-from cositas import guardar_json, cargar_json
+from tinamit.cositas import guardar_json, cargar_json
 from tinamit import _
 from . import regu
 

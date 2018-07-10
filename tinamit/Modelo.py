@@ -15,7 +15,7 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
-from cositas import detectar_codif, valid_nombre_arch, guardar_json, cargar_json
+from tinamit.cositas import detectar_codif, valid_nombre_arch, guardar_json, cargar_json
 from tinamit import _
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
 from tinamit.Análisis.Datos import obt_fecha_ft, SuperBD, Datos

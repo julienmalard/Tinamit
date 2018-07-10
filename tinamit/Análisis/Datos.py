@@ -9,7 +9,7 @@ import xarray as xr
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
 
-from cositas import detectar_codif, guardar_json, cargar_json
+from tinamit.cositas import detectar_codif, guardar_json, cargar_json
 from tinamit import _
 from tinamit.Análisis.Números import tx_a_núm
 

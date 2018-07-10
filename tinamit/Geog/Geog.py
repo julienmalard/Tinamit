@@ -15,7 +15,7 @@ from تقدیر.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, �
 from تقدیر.مقام import مقام
 
 from tinamit import _
-from cositas import detectar_codif
+from tinamit.cositas import detectar_codif
 
 # Ofrecemos la oportunidad de utilizar taqdir, تقدیر, en español
 
