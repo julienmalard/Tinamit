@@ -615,7 +615,7 @@ def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops
     # Crear el diccionarion de argumentos
     ops_auto = {
         'tune': 1000,
-        'cores': 1 if sys.platform == 'win32' else None
+        'cores': 1
     }
     ops_auto.update(ops)
 
