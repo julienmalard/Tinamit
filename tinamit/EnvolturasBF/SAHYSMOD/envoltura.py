@@ -2,13 +2,12 @@ import os
 import re
 import shutil
 from subprocess import run
-from warnings import warn
 
 import numpy as np
 import pkg_resources
 
-from tinamit.config import _
 from tinamit.BF import ModeloImpaciente
+from tinamit.config import _
 from ._sahysmodIE import leer_info_dic_paráms, escribir_desde_dic_paráms
 
 
@@ -23,17 +22,6 @@ class ModeloSAHYSMOD(ModeloImpaciente):
     dic_prb_datos_inic = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_datos_inic.json')
     prb_arch_egr = pkg_resources.resource_filename(__name__, 'recursos/prb_egresos.out')
     dic_prb_egr = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_egr.json')
-
-    requísitos = {
-        'exe_sahysmod': {
-            'cód_conf': 'exe_sahysmod',
-            'mnsj':
-                _('Debes especificar la ubicación del ejecutable SAHYSMOD para poder hacer\n'
-                  'simulaciones con modelos SAHYSMOD.\n'
-                  'Llamar la función siguiente:\n'
-                  '\ttinamit.poner_val_config_arch("exe_sahysmod", "C:\\Camino\\hacia\\mi\\SAHYSMODConsole.exe")')
-        }
-    }
 
     def __init__(símismo, datos_iniciales=None, exe_sahysmod=None):
 
@@ -63,7 +51,15 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         super().__init__()
 
         # Buscar la ubicación del modelo SAHYSMOD.
-        símismo.SAHYSMOD_exe = símismo._obt_val_config('exe_sahysmod')
+        símismo.exe_SAHYSMOD = símismo._obt_val_config(
+            'exe_sahysmod',
+            cond=os.path.isfile,
+            mnsj_error=_(
+                'Debes especificar la ubicación del ejecutable SAHYSMOD, p. ej.'
+                '\n\t"C:\\Camino\\hacia\\mi\\SAHYSMODConsole.exe"'
+                '\npara poder hacer simulaciones con modelos SAHYSMOD.')
+        )
+        símismo.instalado = símismo.exe_SAHYSMOD is not None
 
         # Establecer los variables climáticos.
         símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total',
@@ -110,7 +106,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         símismo.arch_ingreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.inp')
 
         # Generar la comanda de corrida (para después)
-        args = dict(SAHYSMOD=símismo.SAHYSMOD_exe, ingreso=símismo.arch_ingreso, egreso=símismo.arch_egreso)
+        args = dict(SAHYSMOD=símismo.exe_SAHYSMOD, ingreso=símismo.arch_ingreso, egreso=símismo.arch_egreso)
         símismo.comanda = '"{SAHYSMOD}" "{ingreso}" "{egreso}"'.format(**args)
 
         super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)

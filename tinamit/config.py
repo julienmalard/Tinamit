@@ -69,6 +69,12 @@ def borrar_var_config(llave):
     _guardar_conf()
 
 
+def limpiar_config():  # pragma: no cobertura
+    _configs.clear()
+    _configs.update(_config_base)
+    _guardar_conf()
+
+
 def _resolver_conf_anidado(llave, crear=False):
     if not isinstance(llave, list):
         llave = [llave]

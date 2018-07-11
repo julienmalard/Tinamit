@@ -87,7 +87,7 @@ def guardar_json(obj, arch):
     # Después de haber escrito el fuente, ya podemos cambiar el nombre sin riesgo.
     try:
         os.replace(temp.name, arch)
-    except PermissionError:
+    except (PermissionError, FileNotFoundError):
         # Necesario en el caso de corridas en paralelo en Windows. Sin este, la reimportación de Tinamït ocasionada
         # por varias corridas paralelas al mismo tiempo puede causar que el mismo documento se escriba por dos procesos
         # al mismo tiempo, el cual trava el sistema.

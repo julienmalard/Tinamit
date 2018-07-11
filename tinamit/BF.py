@@ -10,9 +10,9 @@ from warnings import warn as avisar
 import numpy as np
 from dateutil.relativedelta import relativedelta as deltarelativo
 
+from tinamit.Modelo import Modelo
 from tinamit.config import _
 from tinamit.config import obt_val_config, guardar_json, cargar_json
-from tinamit.Modelo import Modelo
 from .Unidades.conv import convertir
 
 
@@ -184,35 +184,15 @@ class ModeloBF(Modelo):
     prb_datos_inic = dic_prb_datos_inic = None
     prb_arch_egr = dic_prb_egr = None
 
-    requísitos = {}
-
     def __init__(símismo, nombre='modeloBF'):
         """
         Esta función correrá automáticamente con la inclusión de `super().__init__()` en la función `__init__()` de las
         subclases de esta clase.
         """
 
-        for d_req in símismo.requísitos.values():
-            if 'val' not in d_req:
-                res = obt_val_config(llave=d_req['cód_conf'], mnsj_err=d_req['mnsj'], suprm_err=True)
-                if res is not None:
-                    d_req['val'] = res
-
-        símismo.instalado = all('val' in d for d in símismo.requísitos.values())
-        if not símismo.instalado:
-            avisar(_('El modelo "{m}" no está completamente instalado. No podrás correr simulaciones.')
-                   .format(m=símismo.__class__.__name__))
+        símismo.instalado = True
 
         super().__init__(nombre=nombre)
-
-    def _obt_val_config(símismo, cód_conf):
-        if cód_conf not in símismo.requísitos:
-            raise ValueError(_('El variable de configuradión "{v}" no existe en el diccionario de requísitos '
-                               'para este modelo.').format(v=cód_conf))
-        try:
-            return símismo.requísitos[cód_conf]['val']
-        except KeyError:
-            avisar(_('Todavía no existe valor de configuración para "{v}".').format(v=cód_conf))
 
     def cambiar_vals_modelo_interno(símismo, valores):
         """
@@ -316,6 +296,17 @@ class ModeloBF(Modelo):
             guardar_json(d_vals, arch=símismo.dic_prb_datos_inic)
 
         return cargar_json(símismo.dic_prb_datos_inic)
+
+    @classmethod
+    def _obt_val_config(cls, llave, cond=None, mnsj_error=''):
+
+        if not isinstance(llave, list):
+            llave = [llave]
+        llave = ['envolturas', cls.__name__, llave]
+        mnsj_error += '\nPuedes especificar el valor de configuración con' \
+                      '\n\ttinamit.config.poner_val_config({ll})'.format(ll=llave)
+
+        return obt_val_config(llave=llave + llave, cond=cond, mnsj_err=mnsj_error)
 
 
 class ModeloImpaciente(ModeloBF):
