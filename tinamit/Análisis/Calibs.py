@@ -10,7 +10,7 @@ import xarray as xr
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
 
-from tinamit import _
+from tinamit.config import _
 from tinamit.Análisis.Datos import BDtexto
 from tinamit.Análisis.sintaxis import Ecuación
 

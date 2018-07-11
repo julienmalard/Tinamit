@@ -5,7 +5,7 @@ import regex
 from lark import Lark, Transformer
 from pkg_resources import resource_filename
 
-from tinamit import _
+from tinamit.config import _
 
 try:
     import pymc3 as pm

@@ -10,7 +10,8 @@ from warnings import warn as avisar
 import numpy as np
 from dateutil.relativedelta import relativedelta as deltarelativo
 
-from tinamit import _, obt_val_config, guardar_json, cargar_json
+from tinamit.config import _
+from tinamit.config import obt_val_config, guardar_json, cargar_json
 from tinamit.Modelo import Modelo
 from .Unidades.conv import convertir
 

@@ -7,7 +7,7 @@ from warnings import warn as avisar
 import numpy as np
 from dateutil.relativedelta import relativedelta as deltarelativo
 
-from tinamit import _
+from tinamit.config import _
 from tinamit.BF import EnvolturaBF, ModeloBF
 from tinamit.EnvolturasMDS import generar_mds
 from tinamit.Geog.Geog import Lugar

@@ -148,6 +148,7 @@ setup(
         'pysd',
         'lxml',
         'xarray',
+        'chardet',
         'spotpy'
     ],
 

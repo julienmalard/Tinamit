@@ -1,12 +1,7 @@
-import csv
-import ctypes
 import os
-import re
 
-import numpy as np
-
-from tinamit import _
 from tinamit.Modelo import Modelo
+from tinamit.config import _
 
 
 class EnvolturaMDS(Modelo):
@@ -130,7 +125,6 @@ class EnvolturaMDS(Modelo):
         raise NotImplementedError
 
     def __getinitargs__(símismo):
-
         return símismo.archivo,
 
 
@@ -202,9 +196,6 @@ class MDSEditable(EnvolturaMDS):
 
     def _leer_vals_inic(símismo):
         return símismo.mod._leer_vals_inic()
-
-    def _aplicar_cambios_vals_inic(símismo):
-        return símismo.mod._aplicar_cambios_vals_inic()
 
     def publicar_modelo(símismo):
         raise NotImplementedError

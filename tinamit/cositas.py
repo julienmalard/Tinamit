@@ -1,7 +1,6 @@
 import json
 import os
 import tempfile
-from random import random
 
 from chardet import UniversalDetector
 
@@ -35,7 +34,8 @@ def detectar_codif(archivo, máx_líneas=None):
         if máx_líneas is not None and í >= (máx_líneas - 1):
             break
 
-        if detector.done: break  # Para si el detector ya está seguro
+        if detector.done:
+            break  # Para si el detector ya está seguro
 
     detector.close()  # Cerrar el detector
 

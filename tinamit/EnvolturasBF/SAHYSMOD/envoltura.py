@@ -7,7 +7,7 @@ from warnings import warn
 import numpy as np
 import pkg_resources
 
-from tinamit import _
+from tinamit.config import _
 from tinamit.BF import ModeloImpaciente
 from ._sahysmodIE import leer_info_dic_paráms, escribir_desde_dic_paráms
 

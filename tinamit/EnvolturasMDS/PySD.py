@@ -4,7 +4,7 @@ from ast import literal_eval
 import numpy as np
 
 import pysd
-from tinamit import _
+from tinamit.config import _
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.MDS import EnvolturaMDS
 

@@ -9,7 +9,7 @@ import pint
 import pkg_resources
 
 from tinamit.cositas import guardar_json, cargar_json
-from tinamit import _
+from tinamit.config import _
 from . import regu
 
 _archivo_trads = pkg_resources.resource_filename('tinamit.Unidades', 'trads_unids.json')

@@ -2,7 +2,7 @@ import pint
 import regex as re
 
 from tinamit.Unidades.trads import buscar_singular
-from tinamit import _
+from tinamit.config import _
 from tinamit.Unidades import regu, C_, trad_unid
 
 

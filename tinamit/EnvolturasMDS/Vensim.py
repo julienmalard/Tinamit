@@ -8,7 +8,7 @@ from warnings import warn as avisar
 import numpy as np
 import regex
 
-from tinamit import _
+from tinamit.config import _
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.MDS import EnvolturaMDS, MDSEditable
 

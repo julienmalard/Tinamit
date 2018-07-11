@@ -16,7 +16,7 @@ from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
 from tinamit.cositas import detectar_codif, valid_nombre_arch, guardar_json, cargar_json
-from tinamit import _
+from tinamit.config import _
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
 from tinamit.Análisis.Datos import obt_fecha_ft, SuperBD, Datos
 from tinamit.Análisis.Valids import validar_resultados
