@@ -12,7 +12,7 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 
 from tinamit.Modelo import Modelo
 from tinamit.config import _
-from tinamit.config import obt_val_config, guardar_json, cargar_json
+from tinamit.config import guardar_json, cargar_json
 from .Unidades.conv import convertir
 
 
@@ -36,10 +36,10 @@ class EnvolturaBF(Modelo):
         if isinstance(modelo, str):
 
             if not os.path.isfile(modelo):
-                raise ValueError(_('El fuente "{}" no existe... :(').format(modelo))
+                raise ValueError(_('El archivo "{}" no existe... :(').format(modelo))
 
             if os.path.splitext(modelo)[1] != '.py':
-                raise ValueError(_('El fuente "{}" no parece ser un fuente Python.').format(modelo))
+                raise ValueError(_('El archivo "{}" no parece ser un archivo Python.').format(modelo))
 
             símismo.archivo = modelo
 
@@ -79,7 +79,7 @@ class EnvolturaBF(Modelo):
                 modelo = modelo()
 
             if isinstance(modelo, ModeloBF):
-                símismo.modelo = copiar(modelo)
+                símismo.modelo = modelo
             else:
                 raise TypeError(_('El parámetro "modelo" debe ser o una instancia o subclase de "ModeloBF", o un '
                                   'fuente Python que contiene uno.'))
@@ -190,8 +190,6 @@ class ModeloBF(Modelo):
         subclases de esta clase.
         """
 
-        símismo.instalado = True
-
         super().__init__(nombre=nombre)
 
     def cambiar_vals_modelo_interno(símismo, valores):
@@ -232,7 +230,7 @@ class ModeloBF(Modelo):
 
         """
 
-        if not símismo.instalado:
+        if not símismo.instalado():
             raise OSError(_('El modelo "{}" se debe instalar corectamente antes de hacer simulaciones.')
                           .format(símismo.__class__.__name__))
 
@@ -296,17 +294,6 @@ class ModeloBF(Modelo):
             guardar_json(d_vals, arch=símismo.dic_prb_datos_inic)
 
         return cargar_json(símismo.dic_prb_datos_inic)
-
-    @classmethod
-    def _obt_val_config(cls, llave, cond=None, mnsj_error=''):
-
-        if not isinstance(llave, list):
-            llave = [llave]
-        llave = ['envolturas', cls.__name__, llave]
-        mnsj_error += '\nPuedes especificar el valor de configuración con' \
-                      '\n\ttinamit.config.poner_val_config({ll})'.format(ll=llave)
-
-        return obt_val_config(llave=llave + llave, cond=cond, mnsj_err=mnsj_error)
 
 
 class ModeloImpaciente(ModeloBF):

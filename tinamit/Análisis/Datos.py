@@ -165,7 +165,7 @@ class SuperBD(object):
 
         """
 
-        # Guardar el nombre y la geografía
+        # Guardar el nombre
         símismo.nombre = nombre
 
         # Las bases de datos
@@ -1129,6 +1129,17 @@ class SuperBD(object):
         return item in símismo.variables
 
 
+def gen_SuperBD(datos):
+    if isinstance(datos, SuperBD):
+        return datos
+    elif isinstance(datos, Datos):
+        return SuperBD('Autogen', bds=datos)
+    elif isinstance(datos, (pd.DataFrame, dict, xr.Dataset)):
+        return SuperBD('Autogen', bds=Datos('Autogen', datos))
+    else:
+        raise TypeError(_('Tipo de datos "{}" no reconocido.').format(type(datos)))
+
+
 def _gen_bd(archivo, cód_vacío):
     """
 
@@ -1166,12 +1177,27 @@ def jsonificar(o):
                 jsonificar(v)
             elif isinstance(v, (ft.date, ft.datetime)):
                 o[v] = str(v)
+            elif isinstance(v, np.ndarray):
+                o[v] = v.tolist()
     elif isinstance(o, list):
         for i, v in enumerate(o):
             if isinstance(v, (dict, list)):
                 jsonificar(v)
             elif isinstance(v, (ft.date, ft.datetime)):
                 o[i] = str(v)
+            elif isinstance(v, np.ndarray):
+                o[i] = v.tolist()
+
+
+def numpyficar(d):
+    for ll, v in d.items():
+        if isinstance(v, dict):
+            numpyficar(v)
+        elif isinstance(v, list):
+            try:
+                d[ll] = np.array(v, dtype=float)
+            except ValueError:
+                pass
 
 
 class BD(object):

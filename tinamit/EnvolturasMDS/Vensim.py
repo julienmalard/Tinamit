@@ -8,27 +8,25 @@ from warnings import warn as avisar
 import numpy as np
 import regex
 
-from tinamit.config import _
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.MDS import EnvolturaMDS, MDSEditable
+from tinamit.config import _
 
 try:
     import pymc3 as pm
 except ImportError:
     pm = None
 
-if sys.platform[:3] == 'win':  # pragma: sin cobertura
+
+def crear_dll_Vensim(archivo):  # pragma: sin cobertura
+
+    if sys.platform[:3] != 'win':
+        raise OSError(_('Desafortunadamente, el dll de Vensim únicamente funciona en Windows.'))
+
     try:
-        dll_Vensim = ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
+        return ctypes.WinDLL(archivo)
     except OSError:
-        try:
-            dll_Vensim = ctypes.WinDLL('C:\\Windows\\SysWOW64\\vendll32.dll')
-        except OSError:
-            dll_Vensim = None
-            avisar('Esta computadora no tiene el DLL de Vensim DSS. Las funcionalidades con modelos Vensim se verán'
-                   'limitados.')
-else:
-    dll_Vensim = None
+        raise OSError(_('Archivo "{}" erróneo para el DLL de Vensim DSS.').format(archivo))
 
 
 class ModeloVensimMdl(MDSEditable):
@@ -204,9 +202,10 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
     Necesitarás la __versión__ DSS de VENSIM para que funcione en Tinamit.
     """
 
-    instalado = dll_Vensim is not None
+    def instalado(símismo):
+        return símismo.dll is not None
 
-    def __init__(símismo, archivo, nombre='mds'):
+    def __init__(símismo, archivo, nombre='mds', dll_Vensim=None):
         """
         La función de inicialización del modelo. Creamos el vínculo con el DLL de VENSIM y cargamos el modelo
         especificado.
@@ -217,22 +216,31 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         # Llamar el DLL de Vensim.
         if dll_Vensim is None:
-            raise OSError(_('Esta computadora no tiene el DLL de Vensim DSS.'))
+            lugares_probables = [
+                'C:\\Windows\\System32\\vendll32.dll',
+                'C:\\Windows\\SysWOW64\\vendll32.dll'
+            ]
+            arch_dll_Vensim = símismo._obt_val_config(llave='dll_Vensim', cond=os.path.isfile,
+                                                      autos=lugares_probables)
+            if arch_dll_Vensim is None:
+                símismo.dll = None
+            else:
+                símismo.dll = crear_dll_Vensim(arch_dll_Vensim)
         else:
-            símismo.dll = dll_Vensim
+            símismo.dll = crear_dll_Vensim(dll_Vensim)
 
         # Inicializar Vensim
-        cmd_vensim(func=dll_Vensim.vensim_command,
+        cmd_vensim(func=símismo.dll.vensim_command,
                    args=[''],
                    mensaje_error=_('Error iniciando VENSIM.'))
 
         # Cargar el modelo
-        cmd_vensim(func=dll_Vensim.vensim_command,
+        cmd_vensim(func=símismo.dll.vensim_command,
                    args='SPECIAL>LOADMODEL|%s' % archivo,
                    mensaje_error=_('Error cargando el modelo de VENSIM.'))
 
         # Parámetros estéticos de ejecución.
-        cmd_vensim(func=dll_Vensim.vensim_be_quiet, args=[2],
+        cmd_vensim(func=símismo.dll.vensim_be_quiet, args=[2],
                    mensaje_error=_('Error en la comanda "vensim_be_quiet".'),
                    val_error=-1)
 
@@ -293,7 +301,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         cmd_vensim(func=símismo.dll.vensim_get_varnames,
                    args=['*', 12, mem, tamaño_nec],
                    mensaje_error=_('Error obteniendo los nombres de los variables editables ("Gaming") de '
-                                       'VENSIM.'),
+                                   'VENSIM.'),
                    val_error=-1
                    )
 
@@ -590,7 +598,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         estatus = cmd_vensim(func=símismo.dll.vensim_check_status,
                              args=[],
                              mensaje_error=_('Error verificando el estatus de VENSIM. De verdad, la cosa '
-                                                 'te va muy mal.'),
+                                             'te va muy mal.'),
                              val_error=-1, devolver=True)
         return int(estatus)
 
@@ -661,7 +669,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         if ext == '.vdf':
             archivo = corr + '.csv'
-            dll_Vensim.vensim_command(
+            símismo.dll.vensim_command(
                 'MENU>VDF2CSV|{archVDF}|{archCSV}'.format(archVDF=corr + ext, archCSV=archivo).encode()
             )
 

@@ -54,7 +54,9 @@ def generar_mds(archivo, motor=None):
 
         for env in motores_potenciales:
             try:
-                return env(archivo)  # type: EnvolturaMDS
+                mod = env(archivo)  # type: EnvolturaMDS
+                if mod.instalado():
+                    return mod
             except BaseException as e:
                 errores[env.__name__] = e
 

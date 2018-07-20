@@ -81,13 +81,17 @@ def guardar_json(obj, arch):
 
         # Crear el directorio, si necesario
         direc = os.path.split(arch)[0]
-        if len(direc) and not os.path.isdir(direc):
+        if len(direc) and not os.path.isdir(direc):  # pragma: sin cobertura
             os.makedirs(os.path.split(arch)[0])
 
     # Después de haber escrito el fuente, ya podemos cambiar el nombre sin riesgo.
+    nmbr, ext = os.path.splitext(arch)
+    if not len(ext):
+        arch = nmbr + '.json'
+
     try:
         os.replace(temp.name, arch)
-    except (PermissionError, FileNotFoundError):
+    except (PermissionError, FileNotFoundError):  # pragma: sin cobertura
         # Necesario en el caso de corridas en paralelo en Windows. Sin este, la reimportación de Tinamït ocasionada
         # por varias corridas paralelas al mismo tiempo puede causar que el mismo documento se escriba por dos procesos
         # al mismo tiempo, el cual trava el sistema.
@@ -111,6 +115,10 @@ def cargar_json(arch, codif='UTF-8'):
         El objeto json.
 
     """
+
+    nmbr, ext = os.path.splitext(arch)
+    if not len(ext):
+        arch = nmbr + '.json'
 
     with open(arch, 'r', encoding=codif) as d:
         return json.load(d)

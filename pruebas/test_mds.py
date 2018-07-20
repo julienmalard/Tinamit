@@ -14,15 +14,20 @@ tipos_modelos = {
     'dllVensim': {'envlt': ModeloVensim, 'prueba': 'recursos/MDS/prueba_senc.vpm'}
 }
 
-# Quitar los modelos no instalados en la computadora actual
-for nmb in list(tipos_modelos):
-    if not tipos_modelos[nmb]['envlt'].instalado:
-        tipos_modelos.pop(nmb)
-
 # Agregar la ubicación del fuente actual
 dir_act = os.path.split(__file__)[0]
 for d_m in tipos_modelos.values():
     d_m['prueba'] = os.path.join(dir_act, d_m['prueba'])
+
+
+def generar_modelos_prueba():
+    mods = {}  # type: dict[str, EnvolturaMDS]
+    for nmb, dic in tipos_modelos.items():
+        mod = dic['envlt'](dic['prueba'])
+        if mod.instalado():
+            mods[nmb] = mod
+
+    return mods
 
 
 class Test_ModeloSenc(unittest.TestCase):
@@ -34,7 +39,7 @@ class Test_ModeloSenc(unittest.TestCase):
     def setUpClass(cls):
 
         # Generar las instancias de los modelos
-        cls.modelos = {ll: d['envlt'](d['prueba']) for ll, d in tipos_modelos.items()}  # type: dict[str, EnvolturaMDS]
+        cls.modelos = generar_modelos_prueba()
 
         # Información sobre los variables del modelo de prueba
         cls.info_vars = {
@@ -181,8 +186,8 @@ class Test_ModeloSenc(unittest.TestCase):
                     os.remove(arch + frmt)
 
     def test_leer_resultados_vdf_vensim(símismo):
-        if ModeloVensim.instalado:
-            mod = símismo.modelos['dllVensim']
+        mod = símismo.modelos['dllVensim']
+        if mod.instalado():
             leídos = mod.leer_arch_resultados(archivo=mod.corrida_activa + '.vdf', var='Lago')
             refs = mod.leer_resultados(var='Lago')
             npt.assert_allclose(leídos, refs, rtol=1e-3)
@@ -205,7 +210,7 @@ class Test_OpcionesSimul(unittest.TestCase):
     def setUpClass(cls):
 
         # Generar las instancias de los modelos
-        cls.modelos = {ll: d['envlt'](d['prueba']) for ll, d in tipos_modelos.items()}  # type: dict[str, EnvolturaMDS]
+        cls.modelos = generar_modelos_prueba()
 
     def test_simul_con_paso_2(símismo):
         for ll, mod in símismo.modelos.items():

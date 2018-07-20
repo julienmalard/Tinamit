@@ -72,12 +72,8 @@ class Test_CalibEnModelo(unittest.TestCase):
 
         cls.geog = Geografía('Geografía Iximulew', arch_csv_geog)
         cls.bd = SuperBD('BD Central', bd_pds)
-        cls.bd.espec_var('x')
-        cls.bd.espec_var('y')
 
         cls.mod = ModeloPySD(arch_mds)
-        cls.mod.conectar_datos(cls.bd, corresp_vars={'X': 'x', 'Y': 'y'})
-        cls.mod.conectar_geog(cls.geog)
 
     def test_calibración_geog_con_escalas(símismo):
         """
@@ -87,7 +83,7 @@ class Test_CalibEnModelo(unittest.TestCase):
         for m in métodos:
             with símismo.subTest(método=m):
                 símismo.mod.especificar_micro_calib(var='Y', método=m)
-                símismo.mod.efectuar_micro_calibs()
+                símismo.mod.efectuar_micro_calibs(bd=símismo.bd, geog=símismo.geog, corresp_vars={'X': 'x', 'Y': 'y'})
 
                 val = [símismo.paráms[lg][p] for lg in símismo.paráms for p in símismo.paráms[lg]]
                 est = [símismo.mod.calibs[p][lg]['val'] for lg in símismo.paráms for p in símismo.paráms[lg]]
@@ -105,7 +101,7 @@ class Test_CalibEnModelo(unittest.TestCase):
             símismo.mod.especificar_micro_calib(
                 var='Y', método='inferencia bayesiana', ops_método={'mod_jerárquico': False}
             )
-            símismo.mod.efectuar_micro_calibs()
+            símismo.mod.efectuar_micro_calibs(bd=símismo.bd, geog=símismo.geog, corresp_vars={'X': 'x', 'Y': 'y'})
 
             val = [símismo.paráms[lg][p] for lg in símismo.paráms for p in símismo.paráms[lg]]
             est = [símismo.mod.calibs[p][lg]['val'] for lg in símismo.paráms for p in símismo.paráms[lg]]
@@ -115,8 +111,16 @@ class Test_CalibEnModelo(unittest.TestCase):
             símismo.mod.borrar_micro_calib('Y')
 
     def test_guardar_cargar_calibs(símismo):
-        pass
+        símismo.mod.especificar_micro_calib(var='Y', método='optimizar')
+        símismo.mod.efectuar_micro_calibs(bd=símismo.bd, geog=símismo.geog, corresp_vars={'X': 'x', 'Y': 'y'})
+        calibs = símismo.mod.calibs.copy()
+        símismo.mod.guardar_calibs()
+        símismo.mod.borrar_calibs()
+        símismo.mod.cargar_calibs()
+        os.remove('mds_calibs.json')
+        símismo.assertDictEqual(calibs, símismo.mod.calibs)
 
     @classmethod
     def tearDownClass(cls):
+
         limpiar_mds()

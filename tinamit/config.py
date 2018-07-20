@@ -5,7 +5,7 @@ from warnings import warn as avisar
 
 from pkg_resources import resource_filename
 
-from .cositas import cargar_json, guardar_json
+from tinamit.cositas import cargar_json, guardar_json
 
 # Código para manejar configuraciones de Tinamït
 _dir_config = resource_filename('tinamit', 'config.json')
@@ -22,7 +22,7 @@ def _guardar_conf():
 
 try:
     _configs = cargar_json(_dir_config)
-    for c, v_c in _config_base.items():
+    for c, v_c in _config_base.items():  # pragma: sin cobertura
         if c not in _configs:
             _configs[c] = v_c
         elif not isinstance(_configs[c], type(v_c)):
@@ -33,7 +33,10 @@ except (FileNotFoundError, json.decoder.JSONDecodeError):
     _guardar_conf()
 
 
-def obt_val_config(llave, cond=None, mnsj_err=None):
+def obt_val_config(llave, cond=None, mnsj_err=None, autos=None):
+    if not isinstance(autos, list):
+        autos = [autos]
+
     try:
         conf, ll = _resolver_conf_anidado(llave)
         val = conf[ll]
@@ -44,14 +47,24 @@ def obt_val_config(llave, cond=None, mnsj_err=None):
             if cond(val):
                 return val
             else:
+                for a in autos:
+                    if a is not None and cond(a):
+                        return a
                 if mnsj_err is not None:
                     avisar(mnsj_err)
                 return
 
     except KeyError:
-        if mnsj_err is not None:
+        val = None
+        if cond is None:
+            val = autos[0]
+        else:
+            for a in autos:
+                if a is not None and cond(a):
+                    val = a
+        if val is None and mnsj_err is not None:
             avisar(mnsj_err)
-        return
+        return val
 
 
 def poner_val_config(llave, val):
@@ -69,7 +82,7 @@ def borrar_var_config(llave):
     _guardar_conf()
 
 
-def limpiar_config():  # pragma: no cobertura
+def limpiar_config():  # pragma: sin cobertura
     _configs.clear()
     _configs.update(_config_base)
     _guardar_conf()

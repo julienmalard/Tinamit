@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import tempfile
 from warnings import warn as avisar
 
 import numpy as np
@@ -11,7 +12,7 @@ from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
 
 from tinamit.config import _
-from tinamit.Análisis.Datos import BDtexto
+from tinamit.Análisis.Datos import BDtexto, gen_SuperBD
 from tinamit.Análisis.sintaxis import Ecuación
 
 try:
@@ -69,7 +70,7 @@ class CalibradorEc(object):
     Un objeto para manejar la calibración de ecuaciones.
     """
 
-    def __init__(símismo, ec, var_y=None, otras_ecs=None, nombres_equiv=None):
+    def __init__(símismo, ec, var_y=None, otras_ecs=None, corresp_vars=None):
         """
         Inicializa el `Calibrador`.
 
@@ -82,12 +83,12 @@ class CalibradorEc(object):
             "y = a*x + b" en vez de simplemente "a*x + b").
         otras_ecs: dict[str, str]
             Un diccionario de otras ecuaciones para substituir variables en la ecuación principal.
-        nombres_equiv: dict[str, str]
-            Un diccionario de equivalencias de nombres.
+        corresp_vars: dict[str, str]
+            Un diccionario de equivalencias de nombres entre ecuación y eventual base de datos.
         """
 
         # Crear la ecuación.
-        símismo.ec = Ecuación(ec, nombre=var_y, otras_ecs=otras_ecs, nombres_equiv=nombres_equiv)
+        símismo.ec = Ecuación(ec, nombre=var_y, otras_ecs=otras_ecs, nombres_equiv=corresp_vars)
 
         # Asegurarse que se especificó el variable y.
         if símismo.ec.nombre is None:
@@ -523,39 +524,50 @@ class CalibradorEc(object):
 
 
 class CalibradorMod(object):
-    def __init__(símismo, mod):
+    def __init__(símismo, mod, bd):
         """
 
         Parameters
         ----------
         mod : Modelo.Modelo
+        bd: SuperBD
         """
         símismo.mod = mod
+        símismo.bd = bd
 
-    def calibrar(símismo, paráms, líms_paráms, método, l_vars, n_iter):
+    def calibrar(símismo, paráms, líms_paráms, bd, método, vars_obs, n_iter, corresp_vars=None):
 
         método = método.lower()
         mod = símismo.mod
+        bd = gen_SuperBD(bd)
 
-        if l_vars is None:
-            l_vars = list(símismo.mod.datos.variables)
-        cnx = símismo.mod.conex_var_datos
-        l_vars = [cnx[v] if v in cnx else v for v in l_vars]
-        obs = símismo.mod.datos.obt_datos(l_vars, tipo='datos')[l_vars]
+        if corresp_vars is None:
+            corresp_vars = {}
+
+        if vars_obs is None:
+            vars_obs = list(bd.variables)
+        vars_obs = [corresp_vars[v] if v in corresp_vars else v for v in vars_obs]
+        obs = bd.obt_datos(vars_obs, tipo='datos')[vars_obs]
 
         if método in _algs_spotpy:
-            arch_spotpy = 'CalibTinamït_{}'.format(np.random.randint(1000000))
+
+            temp = tempfile.NamedTemporaryFile('w', encoding='UTF-8', prefix='CalibTinamït_')
+
             mod_spotpy = ModSpotPy(mod=mod, líms_paráms=líms_paráms, obs=obs)
-            muestreador = _algs_spotpy[método](mod_spotpy, dbname=arch_spotpy, dbformat='csv')
+            muestreador = _algs_spotpy[método](mod_spotpy, dbname=temp.name, dbformat='csv')
             if método == 'dream':
                 muestreador.sample(repetitions=2000 + n_iter, runs_after_convergence=n_iter)
             else:
                 muestreador.sample(n_iter)
-            egr_spotpy = BDtexto(arch_spotpy + '.csv')
+            egr_spotpy = BDtexto(temp.name + '.csv')
 
             cols_prm = [c for c in egr_spotpy.obt_nombres_cols() if c.startswith('par')]
             trzs = egr_spotpy.obt_datos(cols_prm)
             probs = egr_spotpy.obt_datos('like1')['like1']
+
+            if os.path.isfile(temp.name + '.csv'):
+                os.remove(temp.name + '.csv')
+
             if método == 'dream':
                 trzs = trzs[-n_iter:]
                 probs = probs[-n_iter:]
@@ -572,8 +584,6 @@ class CalibradorMod(object):
                 col_p = ('par' + p).replace(' ', '_')
                 res[p] = {'dist': trzs[col_p], 'val': _calc_máx_trz(trzs[col_p]), 'peso': pesos}
 
-            if os.path.isfile(arch_spotpy + '.csv'):
-                os.remove(arch_spotpy + '.csv')
             return res
 
         else:

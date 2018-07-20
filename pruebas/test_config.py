@@ -10,10 +10,24 @@ class Test_Config(unittest.TestCase):
 
     def test_obt_val_config_con_condición(símismo):
         def cond(x):
-            raise FileNotFoundError
+            return True
 
-        with símismo.assertRaises(FileNotFoundError):
-            obt_val_config('leng', cond=cond)
+        símismo.assertIsInstance(obt_val_config('leng', cond=cond), str)
+
+    def test_obt_val_config_con_condición_falsa(símismo):
+        def cond(x):
+            return False
+
+        símismo.assertIs(obt_val_config('leng', cond=cond, mnsj_err=''), None)
+
+    def test_obt_val_config_con_auto(símismo):
+        símismo.assertEqual(obt_val_config('jaja', autos='abc'), 'abc')
+
+    def test_obt_val_config_con_auto_y_cond(símismo):
+        def cond(x):
+            return x[0] == 'a'
+
+        símismo.assertEqual(obt_val_config('leng', cond=cond, autos=['cba', 'abc']), 'abc')
 
     def test_poner_val_config(símismo):
         poner_val_config('prueba', 'JAJA')
@@ -23,9 +37,16 @@ class Test_Config(unittest.TestCase):
         poner_val_config(['prueba', 'prueba2'], '¡aquí estoy!')
         símismo.assertEqual('¡aquí estoy!', obt_val_config(['prueba', 'prueba2']))
 
+    def test_borrrar_config_no_existe(símismo):
+        with símismo.assertRaises(KeyError):
+            borrar_var_config('Yo no existo')
+
     @classmethod
     def tearDownClass(cls):
-        borrar_var_config('prueba')
+        try:
+            borrar_var_config('prueba')
+        except KeyError:
+            pass
 
 
 class Test_CambiarLengua(unittest.TestCase):

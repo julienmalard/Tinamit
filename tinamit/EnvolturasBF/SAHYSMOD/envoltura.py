@@ -52,14 +52,13 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
         # Buscar la ubicación del modelo SAHYSMOD.
         símismo.exe_SAHYSMOD = símismo._obt_val_config(
-            'exe_sahysmod',
+            'exe_SAHYSMOD',
             cond=os.path.isfile,
             mnsj_error=_(
                 'Debes especificar la ubicación del ejecutable SAHYSMOD, p. ej.'
                 '\n\t"C:\\Camino\\hacia\\mi\\SAHYSMODConsole.exe"'
                 '\npara poder hacer simulaciones con modelos SAHYSMOD.')
         )
-        símismo.instalado = símismo.exe_SAHYSMOD is not None
 
         # Establecer los variables climáticos.
         símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total',
@@ -248,6 +247,9 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         """
 
         return True
+
+    def instalado(símismo):
+        return símismo.exe_SAHYSMOD is not None
 
     def __getinitargs__(símismo):
         return símismo.argsinic

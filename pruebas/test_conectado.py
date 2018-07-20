@@ -1,12 +1,14 @@
 import os
 import unittest
 
+import numpy as np
 import numpy.testing as npt
 
-from pruebas.test_mds import tipos_modelos, limpiar_mds
+from pruebas.test_mds import generar_modelos_prueba, limpiar_mds
+from pruebas.recursos.BF.prueba_bf import ModeloPrueba
 from tinamit.BF import EnvolturaBF
 from tinamit.Conectado import Conectado, SuperConectado
-from tinamit.EnvolturasMDS import ModeloPySD
+from tinamit.EnvolturasMDS import ModeloPySD, generar_mds
 from tinamit.Unidades import trads
 
 dir_act = os.path.split(__file__)[0]
@@ -25,7 +27,7 @@ class Test_Conectado(unittest.TestCase):
         """
 
         # Generar las instancias de los modelos individuales y conectados
-        cls.mods_mds = {ll: d['envlt'](d['prueba']) for ll, d in tipos_modelos.items()}
+        cls.mods_mds = generar_modelos_prueba()
         cls.mod_bf = EnvolturaBF(arch_bf)
 
         cls.modelos = {ll: Conectado() for ll in cls.mods_mds}  # type: dict[str, Conectado]
@@ -66,10 +68,12 @@ class Test_Conectado(unittest.TestCase):
                 mod.inic_val_var('Nivel lago inicial', 50)
                 mod.simular(t_final=t_final, vars_interés='Lago')
                 referencia['lago_50'] = {'mds_Lago': mod.leer_resultados('Lago')}
+                mod.limp_vals_inic()
 
                 mod.inic_val_var('Nivel lago inicial', 2000)
                 mod.simular(t_final=t_final, vars_interés='Lago')
                 referencia['lago_2000'] = {'mds_Lago': mod.leer_resultados('Lago')}
+                mod.limp_vals_inic()
 
                 resultados = mod.simular_grupo(
                     t_final=t_final,
@@ -140,6 +144,27 @@ class Test_Conectado(unittest.TestCase):
         for c in res:
             npt.assert_allclose(ref[c]['mds_Lago'], res[c]['mds_Lago'], rtol=0.001)
 
+    def test_inic_vals_por_nombre_completo(símismo):
+        mod = símismo.modelos['PySDVensim']
+        vals_inic = {'mds_Nivel lago inicial': 50}
+        mod.inic_vals_vars(vals_inic)
+        res = mod.simular(100, vars_interés='Nivel lago inicial')
+        símismo.assertEqual(res['mds_Nivel lago inicial'][0], 50)
+
+    def test_inic_vals_por_nombre_en_submodelo(símismo):
+        mod = símismo.modelos['PySDVensim']
+        vals_inic = {'Nivel lago inicial': 40}
+        mod.inic_vals_vars(vals_inic)
+        res = mod.simular(100, vars_interés='Nivel lago inicial')
+        símismo.assertEqual(res['mds_Nivel lago inicial'][0], 40)
+
+    def test_inic_vals_por_submodelo_y_nombre(símismo):
+        mod = símismo.modelos['PySDVensim']
+        vals_inic = {'mds': {'Nivel lago inicial': 30}}
+        mod.inic_vals_vars(vals_inic)
+        res = mod.simular(100, vars_interés='Nivel lago inicial')
+        símismo.assertEqual(res['mds_Nivel lago inicial'][0], 30)
+
     @classmethod
     def tearDownClass(cls):
         """
@@ -153,6 +178,7 @@ class Test_3ModelosConectados(unittest.TestCase):
     """
     Comprobar 3+ modelos conectados.
     """
+
     def test_conexión_horizontal(símismo):
         """
         Comprobar que la conexión de variables se haga correctamente con 3 submodelos conectados directamente
@@ -223,4 +249,52 @@ class Test_3ModelosConectados(unittest.TestCase):
         Limpiar todos los archivos temporarios.
         """
 
+        limpiar_mds()
+
+
+class Test_GenerarConectado(unittest.TestCase):
+    def test_generar_con_submodelos(símismo):
+        mds = generar_mds(archivo=arch_mds)
+        bf = ModeloPrueba(unid_tiempo='mes')
+        cnctd = Conectado(bf, mds)
+        símismo.assertSetEqual(set(cnctd.modelos), {'mds', 'bf'})
+
+
+class Test_ConversionesUnidadesTiempo(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mds = generar_mds(archivo=arch_mds)
+
+    def test_unidades_tiempo_iguales(símismo):
+        bf = ModeloPrueba(unid_tiempo='mes')
+        cnctd = Conectado(bf, símismo.mds)
+        cnctd.conectar(var_mds='Aleatorio', var_bf='Escala', mds_fuente=False)
+        res = cnctd.simular(10, vars_interés=['bf_Escala', 'mds_Aleatorio'])
+        npt.assert_array_equal(res['mds_Aleatorio'], np.arange(11))
+
+    def test_unidades_tiempo_mes_y_día(símismo):
+        bf = ModeloPrueba(unid_tiempo='días')
+        cnctd = Conectado(bf, símismo.mds)
+        cnctd.conectar(var_mds='Aleatorio', var_bf='Escala', mds_fuente=False)
+        res = cnctd.simular(10, vars_interés=['bf_Escala', 'mds_Aleatorio'])
+        npt.assert_array_equal(res['mds_Aleatorio'], np.arange(11 * 30, step=30))
+
+    def test_unidades_con_tiempo_no_definida(símismo):
+        bf = ModeloPrueba(unid_tiempo='महिने')
+        cnctd = Conectado(bf, símismo.mds)
+        cnctd.conectar(var_mds='Aleatorio', var_bf='Escala', mds_fuente=False)
+        res = cnctd.simular(10, vars_interés=['bf_Escala', 'mds_Aleatorio'])
+        npt.assert_array_equal(res['mds_Aleatorio'], np.arange(11))
+
+    def test_unidades_tiempo_definidas(símismo):
+        bf = ModeloPrueba(unid_tiempo='દિવસ')
+        cnctd = Conectado(bf, símismo.mds)
+        cnctd.conectar(var_mds='Aleatorio', var_bf='Escala', mds_fuente=False)
+        cnctd.estab_conv_tiempo(mod_base='mds', conv=30)
+        res = cnctd.simular(10, vars_interés=['bf_Escala', 'mds_Aleatorio'])
+        npt.assert_array_equal(res['mds_Aleatorio'], np.arange(11 * 30, step=30))
+
+    @classmethod
+    def tearDownClass(cls):
         limpiar_mds()

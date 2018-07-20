@@ -84,7 +84,7 @@ def act_arch_trads(l_d_t):
         guardar_json(obj=l_d_t, arch=_archivo_trads)
 
 
-def trad_unid(unid, leng_final, leng_orig=None):
+def trad_unid(unid, leng_final, leng_orig=None, falla_silencio=True):
     """
     Traduce una unidad sencilla (no compuesta).
 
@@ -154,9 +154,11 @@ def trad_unid(unid, leng_final, leng_orig=None):
                 pass
 
     if unid_t is None or not len(unid_t):
-        # Devolver la unidad no traducida si no encontramos nada
-        avisar(_('No pudimos traducir "{u}" a la lengua "{leng}"').format(u=unid, leng=leng_final))
-        unid_t = unid
+        if falla_silencio:
+            # Devolver la unidad no traducida si no encontramos nada
+            unid_t = unid
+        else:
+            raise ValueError(_('No pudimos traducir "{u}" a la lengua "{leng}"').format(u=unid, leng=leng_final))
     else:
         # Devolver la traducción principal (no sinónimos) si encontramos algo
         unid_t = unid_t['pr']

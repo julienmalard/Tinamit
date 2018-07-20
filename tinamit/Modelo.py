@@ -15,10 +15,11 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
+from config import obt_val_config
 from tinamit.cositas import detectar_codif, valid_nombre_arch, guardar_json, cargar_json
 from tinamit.config import _
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
-from tinamit.Análisis.Datos import obt_fecha_ft, SuperBD, Datos
+from tinamit.Análisis.Datos import obt_fecha_ft, SuperBD, Datos, gen_SuperBD, jsonificar, numpyficar
 from tinamit.Análisis.Valids import validar_resultados
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.Unidades.conv import convertir
@@ -31,10 +32,6 @@ class Modelo(object):
     Cada tipo de modelo se representa por subclases específicas. Por eso, la gran mayoría de los métodos definidos
     aquí se implementan de manera independiente en cada subclase de `Modelo`.
     """
-
-    # Una opción para precisar si un modelo está instalado en la computadora o no. Se usa en el caso de modelos que
-    # dependen de un programa externo que podría no estar disponible en todas las computadoras que tienen Tinamït.
-    instalado = True
 
     leng_orig = 'es'
 
@@ -66,10 +63,8 @@ class Modelo(object):
         símismo._inic_dic_vars()  # Iniciar los variables.
 
         #
-        símismo.datos = None  # type: SuperBD
         símismo.calibs = {}
         símismo.info_calibs = {'calibs': {}, 'micro calibs': {}}
-        símismo.conex_var_datos = {}
         símismo.combin_incrs = False
 
         # Memorio de valores de variables (para leer los resultados más rápidamente después de una simulación).
@@ -85,7 +80,6 @@ class Modelo(object):
         # Es muy útil para modelos cuyos variables no podemos cambiar antes de empezar una simulación (como VENSIM).
         símismo.vals_inic = {}
         símismo.vars_clima = {}  # Formato: var_intern1: {'nombre_extrn': nombre_oficial, 'combin': 'prom' | 'total'}
-        símismo.geog = None  # type: Geog.Geografía
 
         # Listas de los nombres de los variables que sirven de conexión con otro modelo.
         símismo.vars_saliendo = set()
@@ -193,11 +187,12 @@ class Modelo(object):
         # Calcular el número de pasos necesario
         if isinstance(t_inic, int):
             if isinstance(t_final, int):
+                if t_inic >= t_final:
+                    t_inic, t_final = t_final, t_inic
+
                 n_pasos = int(math.ceil((t_final - t_inic) / paso))
                 delta_fecha = None
 
-                if t_inic >= t_final:
-                    raise ValueError(_('La fecha final debe ser ulterior a la fecha inicial.'))
             else:
                 raise TypeError(_('Si el tiempo final es una fecha, el tiempo inicial también debe ser una fecha.'))
 
@@ -226,6 +221,9 @@ class Modelo(object):
                     **{dic_trad_tiempo[unid_ref_tiempo]: n_pasos}
                 )  # type: ft.date
             else:
+                if t_inic >= t_final:
+                    t_inic, t_final = t_final, t_inic
+
                 if unid_ref_tiempo == 'año':
                     dlt = deltarelativo(t_final, t_inic)
                     plazo = dlt.years + (not dlt.months == dlt.days == 0)
@@ -240,32 +238,30 @@ class Modelo(object):
 
             delta_fecha = deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: paso})
 
-            if t_inic >= t_final:
-                raise ValueError(_('La fecha final debe ser ulterior a la fecha inicial.'))
-
         else:
             raise TypeError(_('t_inic debe ser fecha o número entero, no "{}".').format(type(t_inic)))
 
         return n_pasos, t_inic, t_final, delta_fecha
 
     def simular(
-            símismo, t_final, t_inic=None, paso=1, nombre_corrida='Corrida Tinamït', lugar_clima=None,
-            vals_inic=None, vals_extern=None, clima=None, vars_interés=None
+            símismo, t_final=None, t_inic=None, paso=1, nombre_corrida='Corrida Tinamït', bd=None,
+            vars_inic=None, vars_extern=None, en=None, escala=None, geog=None,
+            lugar_clima=None, clima=None, vars_interés=None
     ):
         """
 
         Parameters
         ----------
         t_final : ft.date | str | int
-        paso :
-        nombre_corrida :
         t_inic : ft.date | str | int
+        paso : int
+        nombre_corrida : str
+        bd :
         lugar_clima : Geog.Lugar
-        vals_inic : dict[str, np.ndarray | float | int]
-        vals_extern : dict[str, np.ndarray | list] | pd.DataFrame
+        vars_inic : dict[str, np.ndarray | float | int]
+        vars_extern : dict[str, np.ndarray | list] | pd.DataFrame
         clima :
         vars_interés :
-        guardar: bool
 
         Returns
         -------
@@ -300,7 +296,6 @@ class Modelo(object):
                                     escenario=clima)
 
         # Iniciamos el modelo.
-        símismo.corrida_activa = nombre_corrida
         símismo.iniciar_modelo(tiempo_final=t_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
         # Verificar los nombres de los variables de interés
@@ -327,6 +322,13 @@ class Modelo(object):
             fecha_act = fecha_próx
 
         símismo.mem_vars.clear()
+        if simul_fecha:
+            # noinspection PyTypeChecker
+            símismo.mem_vars['tiempo'] = np.empty(n_pasos, dtype='datetime64[D]')
+            símismo.mem_vars['tiempo'][0] = fecha_act
+        else:
+            símismo.mem_vars['tiempo'] = np.arange(t_inic, t_final, paso)
+
         for v in vars_interés:
             dims = símismo.obt_dims_var(v)
             if dims == (1,):
@@ -374,6 +376,7 @@ class Modelo(object):
 
                     if simul_fecha:
                         fecha_próx = fecha_act + delta_fecha
+                        símismo.mem_vars['tiempo'][i] = fecha_act
 
                         # Actualizar variables de clima, si necesario
                         if clima is not None:
@@ -533,11 +536,11 @@ class Modelo(object):
 
         return resultados
 
-    def simular_en(
-            símismo, t_final, en=None, escala=None, paso=1, nombre_corrida='', vals_inic=None,
-            t_inic=None, lugar_clima=None, clima=None, vars_interés=None, guardar=False, paralelo=None
+    def simular_con_datos(
+            símismo, t_final, bd, en=None, escala=None, paso=1, nombre_corrida='', vals_inic=None,
+            t_inic=None, geog=None, lugar_clima=None, clima=None, vars_interés=None, guardar=False, paralelo=None
     ):
-        if símismo.geog is None:
+        if geog is None:
             if escala is not None:
                 raise ValueError(_('Debes especificar una geografía para poder emplear `escala`.'))
             if en is not None:
@@ -545,9 +548,9 @@ class Modelo(object):
                 if not isinstance(lugares, (list, set, tuple)):
                     lugares = [lugares]
             else:
-                lugares = símismo.datos.lugares()
+                lugares = bd.lugares()
         else:
-            lugares = símismo.geog.obt_lugares_en(en=en, escala=escala)
+            lugares = geog.obt_lugares_en(en=en, escala=escala)
 
         vals_inic_por_lug = {}
         vals_extern_por_lug = {}
@@ -567,19 +570,19 @@ class Modelo(object):
             vars_interés=vars_interés, guardar=guardar
         )
 
-    def _obt_datos_inic(símismo, tiempo, lugar):
-        if símismo.datos is None:
+    def _obt_datos_inic(símismo, tiempo, lugar, bd):
+        if bd is None:
             return {}
-        l_vars = list(símismo.conex_var_datos.values())
-        return símismo.datos.obt_datos(l_vars=l_vars, lugares=lugar, fechas=tiempo, interpolar=True)
+        l_vars = NotImplemented
+        return bd.obt_datos(l_vars=l_vars, lugares=lugar, fechas=tiempo, interpolar=True)
 
-    def _obt_datos_extern(símismo, t_inic, t_final, paso, lugar):
-        if símismo.datos is None:
+    def _obt_datos_extern(símismo, t_inic, t_final, paso, lugar, bd):
+        if bd is None:
             return {}
-        l_vars = list(símismo.conex_var_datos.values())
+        l_vars = NotImplemented
         n_pasos = símismo._inic_pasos_y_fechas(t_inic, t_final, paso)
         l_tiempos = []
-        return símismo.datos.obt_datos(l_vars=l_vars, lugares=lugar, fechas=l_tiempos, interpolar=True)
+        return bd.obt_datos(l_vars=l_vars, lugares=lugar, fechas=l_tiempos, interpolar=True)
 
     def guardar_resultados(símismo, dic_res=None, nombre=None, frmt='json', l_vars=None):
         """
@@ -848,8 +851,8 @@ class Modelo(object):
 
     def estab_conv_unid_tiempo(símismo, unid_ref, factor):
         """
-        Establece, manualmente, el factor de conversión para convertir la unidad de tiempo del modelo a meses.
-        Únicamente necesario si Tinamït no logra inferir este factor por sí mismo.
+        Establece, manualmente, el factor de conversión para convertir la unidad de tiempo del modelo a meses, días
+        o años. Únicamente necesario si Tinamït no logra inferir este factor por sí mismo.
 
         :param conv: El factor de conversión entre la unidad de tiempo del modelo y un mes.
         :type: float | int
@@ -859,7 +862,7 @@ class Modelo(object):
         símismo._conv_unid_tiempo['unid_ref'] = unid_ref
         símismo._conv_unid_tiempo['factor'] = factor
 
-    def dibujar_mapa(símismo, var, directorio, corrida=None, i_paso=None, colores=None, escala=None):
+    def dibujar_mapa(símismo, var, geog, directorio, corrida=None, i_paso=None, colores=None, escala=None):
         """
         Dibuja mapas espaciales de los valores de un variable.
 
@@ -877,7 +880,6 @@ class Modelo(object):
         :type escala: list | np.ndarray
         """
 
-        geog = símismo.geog
         if geog is None:
             raise ValueError(_('Debes especificar una geografía para poder dibujar mapas de resultados.'))
 
@@ -1086,6 +1088,9 @@ class Modelo(object):
         """
         return False
 
+    def instalado(símismo):
+        return True
+
     def actualizar_trads(símismo, auto_llenar=True):
         raíz = arbole.Element('xliff', version='1.2')
         arch = arbole.SubElement(raíz, 'file', datatype='Modelo Tinamït', original=símismo.nombre)
@@ -1131,7 +1136,7 @@ class Modelo(object):
             'líms_paráms': líms_paráms
         }
 
-    def verificar_micro_calib(símismo, var, en=None, escala=None):
+    def verificar_micro_calib(símismo, var, bd, en=None, escala=None, geog=None, corresp_vars=None):
         """
         Comprueba una microcalibración a pequeña (o grande) escala. Útil para comprobar calibraciones sin perder
         mucho tiempo calculándolas para toda la región de interés.
@@ -1159,9 +1164,9 @@ class Modelo(object):
         """
 
         # Efectuar la calibración del variable.
-        return símismo._calibrar_var(var=var, en=en, escala=escala)
+        return símismo._calibrar_var(var=var, bd=bd, en=en, escala=escala, geog=geog, corresp_vars=corresp_vars)
 
-    def efectuar_micro_calibs(símismo, en=None, escala=None):
+    def efectuar_micro_calibs(símismo, bd, en=None, escala=None, geog=None, corresp_vars=None):
         """
 
         Parameters
@@ -1192,62 +1197,15 @@ class Modelo(object):
             if var not in símismo.calibs:
 
                 # Efectuar la calibración
-                calib = símismo._calibrar_var(var=var, en=en, escala=escala, hermanos=True)
+                calib = símismo._calibrar_var(var=var, bd=bd, en=en, escala=escala, geog=geog, hermanos=True,
+                                              corresp_vars=corresp_vars)
 
                 # Guardar las calibraciones para este variable y todos los otros variables que potencialmente
                 # fueron calibrados al mismo tiempo.
                 for v in calib:
                     símismo.calibs[v] = calib[v]
 
-    def conectar_geog(símismo, geog, interna=False, vars=None, eje=None):
-        símismo.geog = geog
-
-        if interna:
-            raise NotImplementedError
-
-    def desconectar_geog(símismo):
-        símismo.geog = None
-
-    def conectar_datos(símismo, datos, corresp_vars=None):
-        if isinstance(datos, SuperBD):
-            símismo.datos = datos
-        elif isinstance(datos, Datos):
-            símismo.datos = SuperBD('Autogen', bds=datos)
-        elif isinstance(datos, (pd.DataFrame, dict, xr.Dataset)):
-            símismo.datos = SuperBD('Autogen', bds=Datos('Autogen', datos))
-        else:
-            raise TypeError(_('Tipo de datos "{}" no reconocido.').format(type(datos)))
-
-        if corresp_vars is None:
-            corresp_vars = [v for v in símismo.datos.variables if v in símismo.variables]
-        if isinstance(corresp_vars, dict):
-            for var, var_bd in corresp_vars.items():
-                símismo.conectar_var_a_datos(var=var, var_bd=var_bd)
-        elif isinstance(corresp_vars, list):
-            for var in corresp_vars:
-                símismo.conectar_var_a_datos(var=var)
-        elif isinstance(corresp_vars, str):
-            símismo.conectar_var_a_datos(var=corresp_vars)
-        else:
-            raise TypeError(type(corresp_vars))
-
-    def conectar_var_a_datos(símismo, var, var_bd=None):
-        if var_bd is None:
-            var_bd = var
-        var = símismo.valid_var(var)
-        símismo.conex_var_datos[var] = var_bd
-
-    def desconectar_var_datos(símismo, var):
-        var = símismo.valid_var(var)
-        símismo.conex_var_datos.pop(var)
-
-    def desconectar_datos(símismo):
-        símismo.datos = None
-
-    def _calibrar_var(símismo, var, en=None, escala=None, hermanos=False):
-
-        if símismo.datos is None:
-            raise ValueError()
+    def _calibrar_var(símismo, var, bd, en=None, escala=None, geog=None, hermanos=False, corresp_vars=None):
 
         # La lista de variables que hay que calibrar con este.
         # l_vars = símismo._obt_vars_asociados(var, enforzar_datos=True, incluir_hermanos=hermanos)
@@ -1261,7 +1219,7 @@ class Modelo(object):
         # El objeto de calibración.
         mod_calib = CalibradorEc(
             ec=ec, var_y=var, otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars},
-            nombres_equiv=símismo.conex_var_datos
+            corresp_vars=corresp_vars
         )
 
         # El método de calibración
@@ -1279,7 +1237,7 @@ class Modelo(object):
 
         # Efectuar la calibración.
         calib = mod_calib.calibrar(
-            paráms=paráms, líms_paráms=líms_paráms, método=método, bd_datos=símismo.datos, geog=símismo.geog,
+            paráms=paráms, líms_paráms=líms_paráms, método=método, bd_datos=bd, geog=geog,
             en=en, escala=escala, ops_método=ops
         )
 
@@ -1295,7 +1253,7 @@ class Modelo(object):
 
         return resultado
 
-    def _obt_vars_asociados(símismo, var, enforzar_datos=False, incluir_hermanos=False):
+    def _obt_vars_asociados(símismo, var, bd=None, enforzar_datos=False, incluir_hermanos=False):
         """
         Obtiene los variables asociados con un variable de interés.
 
@@ -1324,7 +1282,7 @@ class Modelo(object):
         """
 
         # La base de datos
-        bd_datos = símismo.datos if enforzar_datos else None
+        bd_datos = bd if enforzar_datos else None
 
         # El diccionario de variables
         d_vars = símismo.variables
@@ -1366,7 +1324,7 @@ class Modelo(object):
             for p in parientes:
                 # Para cada pariente...
 
-                p_bd = símismo.conex_var_datos[p] if p in símismo.conex_var_datos else p
+                p_bd = conex_var_datos[p] if p in conex_var_datos else p
                 if bd_datos is not None and p_bd not in bd_datos:
                     # Si tenemos datos y este variable pariente no existe, tendremos que buscar sus parientes también.
 
@@ -1408,17 +1366,35 @@ class Modelo(object):
         símismo.info_calibs['micro calibs'].clear()
         símismo.info_calibs['calibs'].clear()
 
-    def borrar_calibs_calc(símismo):
+    def borrar_calibs(símismo):
         símismo.calibs.clear()
 
-    def calibrar(símismo, paráms, líms_paráms=None, var=None, n_iter=500, método='mle'):
+    def guardar_calibs(símismo, archivo=None):
+        if archivo is None:
+            archivo = '{}_calibs'.format(símismo.nombre)
 
-        if var is None:
+        dic = símismo.calibs.copy()
+        jsonificar(dic)
+        guardar_json(dic, archivo)
+
+    def cargar_calibs(símismo, archivo=None):
+        if archivo is None:
+            archivo = '{}_calibs'.format(símismo.nombre)
+
+        dic = cargar_json(archivo)
+        numpyficar(dic)
+
+        símismo.calibs.clear()
+        símismo.calibs.update(dic)
+
+    def calibrar(símismo, paráms, bd, líms_paráms=None, vars_obs=None, n_iter=500, método='mle'):
+
+        if vars_obs is None:
             l_vars = None
-        elif isinstance(var, str):
-            l_vars = [símismo.valid_var(var)]
+        elif isinstance(vars_obs, str):
+            l_vars = [símismo.valid_var(vars_obs)]
         else:
-            l_vars = [símismo.valid_var(v) for v in var]
+            l_vars = [símismo.valid_var(v) for v in vars_obs]
 
         if líms_paráms is None:
             líms_paráms = {}
@@ -1427,24 +1403,29 @@ class Modelo(object):
                 líms_paráms[p] = símismo.obt_lims_var(p)
         líms_paráms = {ll: v for ll, v in líms_paráms.items() if ll in paráms}
 
-        calibrador = CalibradorMod(símismo)
+        calibrador = CalibradorMod(símismo, bd)
         d_calibs = calibrador.calibrar(
-            paráms=paráms, método=método, líms_paráms=líms_paráms, n_iter=n_iter, l_vars=l_vars
+            paráms=paráms, bd=bd, líms_paráms=líms_paráms, método=método, n_iter=n_iter, vars_obs=l_vars
         )
         símismo.calibs.update(d_calibs)
 
-    def validar(símismo, var=None, t_final=None):
+    def validar(símismo, bd, var=None, t_final=None, corresp_vars=None):
+
+        bd = gen_SuperBD(bd)
+
+        if corresp_vars is None:
+            corresp_vars = {}
 
         if var is None:
-            l_vars = [v for v in símismo.datos.variables if
-                      v in símismo.variables or v in símismo.conex_var_datos.values()]
+            l_vars = [v for v in bd.variables if
+                      v in símismo.variables or v in corresp_vars.values()]
         elif isinstance(var, str):
             l_vars = [var]
         else:
             l_vars = var
         l_vars = [símismo.valid_var(v) for v in l_vars]
 
-        obs = símismo.datos.obt_datos(l_vars)[l_vars]
+        obs = bd.obt_datos(l_vars)[l_vars]
         if t_final is None:
             t_final = len(obs['n']) - 1
         d_vals_prms = {p: d_p['dist'] for p, d_p in símismo.calibs.items()}
@@ -1487,6 +1468,17 @@ class Modelo(object):
         símismo.vals_inic = estado['vals_inic']
         símismo.vars_clima = estado['vars_clima']
         símismo._conv_unid_tiempo = estado['_conv_unid_tiempo']
+
+    @classmethod
+    def _obt_val_config(cls, llave, cond=None, mnsj_error='', autos=None):
+
+        if not isinstance(llave, list):
+            llave = [llave]
+        llave = ['envolturas', cls.__name__] + llave
+        mnsj_error += '\nPuedes especificar el valor de configuración con' \
+                      '\n\ttinamit.config.poner_val_config({ll})'.format(ll=llave)
+
+        return obt_val_config(llave=llave, cond=cond, mnsj_err=mnsj_error, autos=autos)
 
 
 def _correr_modelo(x):

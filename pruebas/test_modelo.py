@@ -244,4 +244,4 @@ class Test_SimulConDatos(unittest.TestCase):
     def test_simular_en_con_escala_sin_geog(símismo):
 
         with símismo.assertRaises(ValueError):
-            ModeloPrueba(unid_tiempo='día').simular_en(100, escala='municipio')
+            ModeloPrueba(unid_tiempo='día').simular_con_datos(100, escala='municipio')
