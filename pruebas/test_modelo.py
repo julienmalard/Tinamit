@@ -283,6 +283,7 @@ class Test_SimulConDatos(unittest.TestCase):
         limpiar_mds()
 
 
+@unittest.skip
 class Test_SimulConDatosGeog(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

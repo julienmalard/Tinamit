@@ -43,6 +43,7 @@ class Test_CalibModelo(unittest.TestCase):
         símismo.assertTrue(símismo.mod.validar(bd=símismo.datos)['éxito'])
 
 
+@unittest.skip
 class Test_CalibModeloEspacial(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
