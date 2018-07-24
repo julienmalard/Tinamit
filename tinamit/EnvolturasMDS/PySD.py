@@ -156,9 +156,7 @@ class ModeloPySD(EnvolturaMDS):
             l_vars = [var]
         else:
             l_vars = var
-        res = xr.Dataset({v: ('n', símismo._res_recién[v].values) for v in l_vars})
-        res.coords['tiempo'] = ('n', símismo._res_recién.index)
-        return res
+        return xr.Dataset({v: ('n', símismo._res_recién[v].values) for v in l_vars})
 
     def cerrar_modelo(símismo):
         pass

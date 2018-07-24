@@ -482,7 +482,8 @@ class Modelo(object):
 
             # Leer los resultados
             res = símismo.leer_arch_resultados(archivo=nombre_corrida, var=vars_interés)
-            res.coords['tiempo'] = ('n', l_tiempos)
+            if 'tiempo' not in res.coords:
+                res.coords['tiempo'] = ('n', l_tiempos)
 
             # Guardar los variables de interés
             for var in vars_interés:
