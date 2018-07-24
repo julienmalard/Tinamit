@@ -1,8 +1,8 @@
-import numpy.testing as npt
 import os
 import unittest
 
 import numpy as np
+import numpy.testing as npt
 import pandas as pd
 
 from pruebas.test_mds import limpiar_mds

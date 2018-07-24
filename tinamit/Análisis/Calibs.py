@@ -1,6 +1,5 @@
 import os
 import re
-import sys
 import tempfile
 from warnings import warn as avisar
 
@@ -11,9 +10,9 @@ import xarray as xr
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
 
-from tinamit.config import _
 from tinamit.Análisis.Datos import BDtexto, gen_SuperBD
 from tinamit.Análisis.sintaxis import Ecuación
+from tinamit.config import _
 
 try:
     import pymc3 as pm
@@ -847,9 +846,10 @@ class ModSpotPy(object):
         return spotpy.parameter.generate(símismo.paráms)
 
     def simulation(símismo, x):
-        símismo.mod.inic_vals_vars({ll: x_i for ll, x_i in zip(símismo.nombres_paráms, x)})
-        res = símismo.mod.simular(t_final=símismo.t_final, vars_interés=símismo.vars_interés)
-        m_res = np.array([res[v] for v in símismo.vars_interés]).T
+        res = símismo.mod.simular(
+            t_final=símismo.t_final, vars_interés=símismo.vars_interés, vals_inic=dict(zip(símismo.nombres_paráms, x))
+        )
+        m_res = np.array([res[v].values for v in símismo.vars_interés]).T
 
         return ((m_res - símismo.mu_obs) / símismo.sg_obs).T.ravel()
 

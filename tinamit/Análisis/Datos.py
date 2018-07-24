@@ -9,13 +9,13 @@ import xarray as xr
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
 
-from tinamit.cositas import detectar_codif, guardar_json, cargar_json
-from tinamit.config import _
 from tinamit.Análisis.Números import tx_a_núm
+from tinamit.config import _
+from tinamit.cositas import detectar_codif, guardar_json, cargar_json
 
 
 class Datos(object):
-    def __init__(símismo, nombre, fuente, fecha=None, lugar=None, cód_vacío=None):
+    def __init__(símismo, nombre, fuente, tiempo=None, lugar=None, cód_vacío=None):
         """
 
         :param nombre:
@@ -24,8 +24,8 @@ class Datos(object):
         :param fuente:
         :type fuente: str | pd.DataFrame | xr.Dataset | dict
 
-        :param fecha:
-        :type fecha: str | ft.date | ft.datetime | int
+        :param tiempo:
+        :type tiempo: str | ft.date | ft.datetime | int
 
 
         :param lugar:
@@ -42,36 +42,50 @@ class Datos(object):
         símismo.bd = _gen_bd(fuente, cód_vacío=cód_vacío)
         símismo.n_obs = símismo.bd.n_obs
         símismo.cols = símismo.bd.obt_nombres_cols()
+        símismo.c_lugar = símismo.c_tiempo = None
 
+        if lugar is None and 'lugar' in símismo.cols:
+            lugar = 'lugar'
         if lugar is None:
             símismo.lugares = [lugar] * símismo.bd.n_obs
         elif lugar in símismo.cols:
+            símismo.c_lugar = lugar
             símismo.lugares = símismo.bd.obt_datos_tx(col=lugar)
         else:
             símismo.lugares = [str(lugar).strip()] * símismo.bd.n_obs
 
-        if fecha is False:
-            fechas = [None] * símismo.n_obs
-        elif fecha is None:
-            fechas = np.arange(símismo.n_obs)
-        elif isinstance(fecha, str):
-            if fecha in símismo.cols:
-                fechas = símismo.bd.obt_fechas(fecha)
+        if tiempo is None:
+            for c in ['tiempo', 'fecha']:
+                if c in símismo.cols:
+                    tiempo = c
+                    break
+
+        if tiempo is False:
+            tiempos = [None] * símismo.n_obs
+        elif tiempo is None:
+            tiempos = np.arange(símismo.n_obs)
+        elif isinstance(tiempo, str):
+            if tiempo in símismo.cols:
+                símismo.c_tiempo = tiempo
+                try:
+                    tiempos = símismo.bd.obt_fechas(tiempo)
+                except ValueError:
+                    tiempos = símismo.bd.obt_datos(tiempo)[tiempo]
 
             else:
                 try:
-                    fechas = pd.to_datetime([obt_fecha_ft(fecha)] * símismo.n_obs)
+                    tiempos = pd.to_datetime([obt_fecha_ft(tiempo)] * símismo.n_obs)
                 except ValueError:
                     raise ValueError(_('El valor "{}" para fechas no corresponde a una fecha reconocida o al nombre de '
-                                       'una columna en la base de datos').format(fecha))
-        elif isinstance(fecha, (ft.date, ft.datetime)):
-            fechas = pd.to_datetime([fecha] * símismo.n_obs)
-        elif isinstance(fecha, int):
-            fechas = [fecha] * símismo.n_obs
+                                       'una columna en la base de datos').format(tiempo))
+        elif isinstance(tiempo, (ft.date, ft.datetime)):
+            tiempos = pd.to_datetime([tiempo] * símismo.n_obs)
+        elif isinstance(tiempo, int):
+            tiempos = [tiempo] * símismo.n_obs
         else:
             raise TypeError(_('La fecha debe ser en formato texto, una fecha, o un número de año.'))
 
-        símismo.fechas = fechas
+        símismo.tiempos = tiempos
 
         if cód_vacío is None:
             símismo.cód_vacío = {'', 'NA', 'na', 'Na', 'nan', 'NaN'}
@@ -108,12 +122,15 @@ class Datos(object):
         bd.coords['lugar'] = ('n', símismo.lugares)
 
         # Agregar la fecha de observación
-        bd.coords['fecha'] = ('n', símismo.fechas)
+        bd.coords['tiempo'] = ('n', símismo.tiempos)
 
         return bd
 
     def __str__(símismo):
         return símismo.nombre
+
+    def __getitem__(símismo, itema):
+        return símismo.bd.obt_datos(itema)
 
     def obt_error(símismo, var, col_error='+ES'):
 
@@ -144,8 +161,8 @@ class MicroDatos(Datos):
     No tiene funcionalidad específica, pero esta clase queda muy útil para identificar el tipo de datos.
     """
 
-    def __init__(símismo, nombre, fuente, fecha=None, lugar=None, cód_vacío=None):
-        super().__init__(nombre=nombre, fuente=fuente, fecha=fecha, lugar=lugar, cód_vacío=cód_vacío)
+    def __init__(símismo, nombre, fuente, tiempo=None, lugar=None, cód_vacío=None):
+        super().__init__(nombre=nombre, fuente=fuente, tiempo=tiempo, lugar=lugar, cód_vacío=cód_vacío)
 
 
 class SuperBD(object):
@@ -212,7 +229,7 @@ class SuperBD(object):
         # Conectar los variables automáticamente, si queremos
         if auto_conectar:
             for var in bd.cols:
-                if var not in ['lugar', 'fecha']:
+                if var not in [bd.c_lugar, bd.c_tiempo]:
                     símismo.espec_var(var=var, bds=bd)
 
         # Nuestras bases de datos internas ya no están actualizadas
@@ -309,8 +326,24 @@ class SuperBD(object):
         else:
             raise ValueError
         if bd is None:
-            return 0
+            return set()
         return set(bd['lugar'].values)
+
+    def tiempos(símismo, tipo='datos'):
+        if not símismo.bd_lista:
+            símismo._gen_bd_intern()
+        if tipo == 'microdatos':
+            bd = símismo.microdatos
+        elif tipo == 'datos':
+            bd = símismo.datos
+        else:
+            raise ValueError
+        if bd is None:
+            return []
+        return bd['tiempo'].values
+
+    def tiempo_fecha(símismo):
+        return np.issubdtype(símismo.tiempos().dtype, np.datetime64)
 
     def _validar_bd(símismo, bd):
         """
@@ -528,7 +561,7 @@ class SuperBD(object):
                 # Si existe...
                 for c in list(bd_pd):
                     # Para cada columna...
-                    if c not in list(símismo.variables) + ['bd', 'lugar', 'fecha']:
+                    if c not in list(símismo.variables) + ['bd', 'lugar', 'tiempo']:
                         # Si ya no existe como variable, quitar la columna.
                         bd_pd.drop(c, axis=1, inplace=True)
 
@@ -551,7 +584,7 @@ class SuperBD(object):
 
         Returns
         -------
-        ft.date | ft.datetime | str | list | tuple:
+        ft.date | ft.datetime | str | list | tuple | int:
             Las fechas validadas.
 
         """
@@ -581,9 +614,13 @@ class SuperBD(object):
                 pass
 
             elif isinstance(fch, int):
-                fch = ft.date(year=fch, month=1, day=1)
+                return fch
 
             elif isinstance(fch, str):
+                if len(fch) == 7:
+                    fch += '-01'
+                elif len(fch) == 4:
+                    fch += '-01-01'
                 try:
                     fch = ft.datetime.strptime(fch, '%Y-%m-%d').date()
                 except ValueError:
@@ -591,7 +628,7 @@ class SuperBD(object):
             else:
                 raise TypeError(_('Tipo de fecha "{}" no reconocido.').format(type(fch)))
 
-            return np.array(fch, dtype='datetime64')
+            return np.datetime64(fch)
 
         if fechas is None:
             # Si tenemos nada, devolver nada
@@ -696,7 +733,7 @@ class SuperBD(object):
         # Ya la base de datos sí está actualizada y lista para trabajar
         símismo.bd_lista = True
 
-    def obt_datos(símismo, l_vars, lugares=None, bd_datos=None, fechas=None, excl_faltan=False,
+    def obt_datos(símismo, l_vars=None, lugares=None, bd_datos=None, tiempos=None, excl_faltan=False,
                   tipo=None, interpolar=True, interpolar_estricto=False):
         """
 
@@ -705,7 +742,7 @@ class SuperBD(object):
         l_vars: str | list[str]
         lugares: str | set[str] | list[str]
         bd_datos: str | Datos | list[str | Datos]
-        fechas: ft.date | ft.datetime | int | str | list | tuple
+        tiempos: ft.date | ft.datetime | int | str | list | tuple
         excl_faltan: bool
         tipo: str
         interpolar: bool
@@ -715,7 +752,10 @@ class SuperBD(object):
         -------
 
         """
+
         # Formatear la lista de variables deseados
+        if l_vars is None:
+            l_vars = list(símismo.variables)
         l_vars = símismo._validar_var(l_vars)
         if not isinstance(l_vars, list):
             l_vars = [l_vars]
@@ -731,7 +771,13 @@ class SuperBD(object):
             bd_datos = [bd_datos]
 
         # Preparar las fechas
-        fechas = símismo._validar_fechas(fechas)
+        if tiempos is not None:
+            tiempos = símismo._validar_fechas(tiempos)
+            l_tiempos = tiempos if isinstance(tiempos, (list, tuple, set)) else [tiempos]
+            if símismo.tiempo_fecha() is not all(isinstance(t, np.datetime64) for t in l_tiempos):
+                raise ValueError(
+                    _('Debes emplear fechas caléndricas con, y únicamente con, bases de datos caléndricos.')
+                )
 
         # Actualizar las bases de datos, si necesario
         if not símismo.bd_lista:
@@ -762,7 +808,7 @@ class SuperBD(object):
             raise ValueError(_('No tenemos datos para la base de datos "{}".').format(tipo))
 
         # Seleccionar los variables de interés
-        bd_sel = bd[l_vars + ['bd', 'fecha', 'lugar']]
+        bd_sel = bd[l_vars + ['bd', 'tiempo', 'lugar']]
 
         # Seleccionar las observaciones que vienen de la base de datos subyacente de interés
         if bd_datos is not None:
@@ -775,14 +821,14 @@ class SuperBD(object):
         # Interpolar si necesario
         if interpolar:
             bd_sel = símismo._interpolar(
-                bd_sel, fechas,
+                bd_sel, tiempos,
                 interpol_en='lugar' if tipo != 'microdatos' else None,
                 estricto=interpolar_estricto
             )
 
         # Seleccionar las observaciones en las fechas de interés
-        if fechas is not None:
-            bd_sel = símismo._filtrar_fechas(bd_sel, fechas)
+        if tiempos is not None:
+            bd_sel = símismo._filtrar_tiempo(bd_sel, tiempos)
 
         # Excluir las observaciones que faltan
         if excl_faltan:
@@ -822,7 +868,7 @@ class SuperBD(object):
         # Si no estamos interpolando, paramos aquí.
         if interpol_en is None:
             return bd
-        if bd['fecha'].isnull().all():
+        if bd['tiempo'].isnull().all():
             return bd
         # Asegurarse que la columna de categorías para la interpolacion existe.
         if interpol_en not in bd:
@@ -859,19 +905,19 @@ class SuperBD(object):
                 f_interés_categ = fechas_interés
             else:
                 # Tomar las fechas de esta categoría que están en el rango
-                f_interés_categ = list(set([f.values for f in bd_categ['fecha'] if fechas[0] <= f <= fechas[1]]))
+                f_interés_categ = list(set([f.values for f in bd_categ['tiempo'] if fechas[0] <= f <= fechas[1]]))
 
             # Las nuevas fechas de interés que hay que a la base de datos
-            nuevas_fechas = [x for x in f_interés_categ if not (bd_categ['fecha'] == x).any()]
+            nuevas_fechas = [x for x in f_interés_categ if not (bd_categ['tiempo'] == x).any()]
 
             # Agregar las nuevas fechas si necesario.
             if len(nuevas_fechas):
                 # Crear una base de datos
                 nuevas_filas = xr.Dataset(
                     data_vars={x: ('n', [np.nan] * len(nuevas_fechas))
-                               for x in bd_categ.data_vars if x not in ['bd', 'fecha', interpol_en]
+                               for x in bd_categ.data_vars if x not in ['bd', 'tiempo', interpol_en]
                                },
-                    coords=dict(fecha=('n', nuevas_fechas),
+                    coords=dict(tiempo=('n', nuevas_fechas),
                                 bd=('n', ['interpolado'] * len(nuevas_fechas)),
                                 **{interpol_en: ('n', [c] * len(nuevas_fechas))}
                                 )
@@ -881,21 +927,22 @@ class SuperBD(object):
                 bd_categ = xr.concat([nuevas_filas, bd_categ], 'n')
 
             # Calcular el promedio de los valores de observaciones por categoría y por fecha
-            proms_fecha = bd_categ.groupby('fecha').mean()  # type: xr.Dataset
-            n_obs = len(proms_fecha['fecha'])
+            proms_fecha = bd_categ.groupby('tiempo').mean()  # type: xr.Dataset
+            n_obs = len(proms_fecha['tiempo'])
             bd_temp = xr.Dataset({v: ('n', proms_fecha[v]) for v in list(proms_fecha.variables)})
             bd_temp[interpol_en] = ('n', [c] * n_obs)
             bd_temp['bd'] = ('n', ['interpolado'] * n_obs)
-            bd_temp.set_coords(['bd', 'fecha', interpol_en], inplace=True)
+            bd_temp.set_coords(['bd', 'tiempo', interpol_en], inplace=True)
 
             # Interpolar únicamente si quedan valores que faltan para las fechas de interés
             faltan = any(
-                np.isnan(proms_fecha.where(proms_fecha['fecha'].isin(f_interés_categ), drop=True)[x].values).any() for x
+                np.isnan(proms_fecha.where(proms_fecha['tiempo'].isin(f_interés_categ), drop=True)[x].values).any() for
+                x
                 in proms_fecha.data_vars)
             if faltan:
 
                 # Aplicar valores para variables sin fechas asociadas (por ejemplo, tamaños de municipio)
-                sin_fecha = bd.where(bd.fecha.isnull(), drop=True)
+                sin_fecha = bd.where(bd['tiempo'].isnull(), drop=True)
                 if len(sin_fecha['n']) > 0:
                     proms_sin_fecha = sin_fecha.loc[sin_fecha[categs_únicas] == c].mean().to_frame().T
                     bd_temp = bd_temp.fillna(
@@ -903,7 +950,7 @@ class SuperBD(object):
                     )
 
                 # Por fin, interpolar
-                bd_temp = bd_temp.interpolate_na('n', use_coordinate='fecha')
+                bd_temp = bd_temp.interpolate_na('n', use_coordinate='tiempo')
 
                 # Si quedaron combinaciones de variables y de fechas para las cuales no pudimos interpolar porque
                 # las fechas que faltaban se encontraban afuera de los límites de los datos disponibles,
@@ -928,7 +975,7 @@ class SuperBD(object):
         return finalizados
 
     @staticmethod
-    def _filtrar_fechas(bd, fechas):
+    def _filtrar_tiempo(bd, tiempos):
         """
         Filtra una base de datos Pandas por fecha.
 
@@ -936,7 +983,7 @@ class SuperBD(object):
         ----------
         bd: xr.Dataset
             La base de datos. Debe contener las columnas `fecha` y `bd`.
-        fechas: str | tuple | list | ft.date | ft.datetime
+        tiempos: str | tuple | list | ft.date | ft.datetime
             La fecha o fechas de interés. Si es una tupla, se interpretará como **rango de interés**, si es lista,
             se interpretará como lista de fechas de interés **individuales**.
 
@@ -947,13 +994,13 @@ class SuperBD(object):
 
         """
 
-        # Escoger las columnas que corresponden a las fechas deseadas.
-        if isinstance(fechas, tuple):
-            return bd.where((bd['fecha'] >= fechas[0]) & (bd['fecha'] <= fechas[1]), drop=True)
-        elif isinstance(fechas, list):
-            return bd.where(bd['fecha'].isin(fechas), drop=True)
+        # Escoger las columnas que corresponden a las tiempos deseadas.
+        if isinstance(tiempos, tuple):
+            return bd.where((bd['tiempo'] >= tiempos[0]) & (bd['tiempo'] <= tiempos[1]), drop=True)
+        elif isinstance(tiempos, list):
+            return bd.where(bd['tiempo'].isin(tiempos), drop=True)
         else:
-            return bd.where(bd['fecha'] == fechas, drop=True)
+            return bd.where(bd['tiempo'] == tiempos, drop=True)
 
     def graficar_hist(símismo, var, fechas=None, lugar=None, bd_datos=None, tipo='datos', archivo=None):
 
@@ -963,7 +1010,7 @@ class SuperBD(object):
             archivo = var + '.jpg'
         archivo = símismo._validar_archivo(archivo, ext='.jpg')
 
-        datos = símismo.obt_datos(l_vars=var, lugares=lugar, bd_datos=bd_datos, fechas=fechas, tipo=tipo)
+        datos = símismo.obt_datos(l_vars=var, lugares=lugar, bd_datos=bd_datos, tiempos=fechas, tipo=tipo)
 
         fig = Figura()
         TelaFigura(fig)
@@ -985,15 +1032,15 @@ class SuperBD(object):
             archivo = var + '.jpg'
         archivo = símismo._validar_archivo(archivo, ext='.jpg')
 
-        datos = símismo.obt_datos(l_vars=var, fechas=fechas, lugares=lugar, bd_datos=bd_datos, tipo='datos')
-        datos_error = símismo.obt_datos(l_vars=var, fechas=fechas, lugares=lugar, bd_datos=bd_datos,
+        datos = símismo.obt_datos(l_vars=var, tiempos=fechas, lugares=lugar, bd_datos=bd_datos, tipo='datos')
+        datos_error = símismo.obt_datos(l_vars=var, tiempos=fechas, lugares=lugar, bd_datos=bd_datos,
                                         tipo='error')
 
         fig = Figura()
         TelaFigura(fig)
         ejes = fig.add_subplot(111)
 
-        fechas = datos['fecha']
+        fechas = datos['tiempo']
         n_fechas = len(np.unique(fechas.values))
         lugares = np.unique(datos['lugar']).tolist()  # type: list
         n_lugares = len(lugares)
@@ -1001,7 +1048,7 @@ class SuperBD(object):
         if n_fechas > 1:
             for l in lugares:
                 y = datos.where(datos['lugar'] == l, drop=True)[var].values
-                fechas_l = datos.where(datos['lugar'] == l, drop=True)['fecha'].values
+                fechas_l = datos.where(datos['lugar'] == l, drop=True)['tiempo'].values
                 err = datos_error.where(datos_error['lugar'] == l, drop=True)[var].values
 
                 l = ejes.plot_date(fechas_l, y, label=l, fmt='-')
@@ -1009,7 +1056,7 @@ class SuperBD(object):
                     color = l[0].get_color()
                     ejes.fill_between(fechas_l, y - err / 2, y + err / 2, facecolor=color, alpha=0.5)
 
-            ejes.set_xlabel(_('Fecha'))
+            ejes.set_xlabel(_('tiempo'))
             ejes.set_ylabel(var)
 
         else:
@@ -1029,7 +1076,7 @@ class SuperBD(object):
             archivo = var_x + '_' + var_y + '.jpg'
         archivo = símismo._validar_archivo(archivo, ext='.jpg')
 
-        datos = símismo.obt_datos(l_vars=[var_x, var_y], lugares=lugar, bd_datos=bd_datos, fechas=fechas)
+        datos = símismo.obt_datos(l_vars=[var_x, var_y], lugares=lugar, bd_datos=bd_datos, tiempos=fechas)
 
         fig = Figura()
         TelaFigura(fig)
@@ -1102,7 +1149,7 @@ class SuperBD(object):
         símismo.datos = xr.Dataset.from_dict(dic['reg'])
         símismo.datos_err = xr.Dataset.from_dict(dic['err'])
         for bd in [símismo.microdatos, símismo.datos, símismo.datos_err]:
-            bd['fecha'] = ('n', np.array(bd.fecha, dtype='datetime64'))
+            bd['tiempo'] = ('n', np.array(bd['tiempo'], dtype='datetime64'))
             bd['lugar'] = ('n', bd['lugar'].astype(str))
 
     def borrar_archivo_datos(símismo, archivo=''):

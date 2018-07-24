@@ -341,7 +341,7 @@ class Ecuación(object):
 
         return modelo
 
-    def sacar_args_func(símismo, func, i):
+    def sacar_args_func(símismo, func, i=None):
         """
         Devuelve uno o más argumentos de una función presente en el árbol de la Ecuacion, en formato texto.
 

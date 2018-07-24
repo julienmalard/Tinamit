@@ -5,7 +5,7 @@ import tempfile
 from chardet import UniversalDetector
 
 
-def detectar_codif(archivo, máx_líneas=None):
+def detectar_codif(archivo, máx_líneas=None, cortar=None):
     """
     Detecta la codificación de un fuente. (Necesario porque todavía existen programas dinosaurios que no entienden
     los milagros de unicódigo.)
@@ -17,6 +17,9 @@ def detectar_codif(archivo, máx_líneas=None):
     máx_líneas : int
         El número máximo de líneas para pasar al detector. Por ejemplo, si únicamente la primera línea de tu documento
         tiene palabras (por ejemplo, un fuente .csv), no hay razón de seguir analizando las otras líneas.
+    cortar : str
+        Hasta dónde hay que leer cada línea. Es útil si tienes un csv donde únicamente la primera columna
+        contiene texto.
 
     Returns
     -------
@@ -28,7 +31,10 @@ def detectar_codif(archivo, máx_líneas=None):
     detector = UniversalDetector()
     for í, línea in enumerate(open(archivo, 'rb').readlines()):
 
-        detector.feed(línea)  # Pasar la próxima línea al detector
+        if cortar is None or cortar.encode() not in línea:
+            detector.feed(línea)  # Pasar la próxima línea al detector
+        else:
+            detector.feed(línea.split(cortar.encode())[0])
 
         # Parar si alcanzamos el máximo de líneas
         if máx_líneas is not None and í >= (máx_líneas - 1):

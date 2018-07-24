@@ -80,14 +80,7 @@ class Test_TradsUnidades(unittest.TestCase):
         Comprobar que devolvamos aviso para unidades que no existen en la lengua especificada.
         """
 
-        if 'linux' not in sys.platform:
-
-            with símismo.assertWarns(UserWarning):
-
-                # "Paj" no existe en español, es palabra kaqchikel.
-                res = trads.trad_unid('paj', leng_final='fr', leng_orig='es')
-        else:
-            res = trads.trad_unid('paj', leng_final='fr', leng_orig='es')
+        res = trads.trad_unid('paj', leng_final='fr', leng_orig='es')
 
         # Asegurarque que devolvimos el valor inicial para la unidad.
         símismo.assertEqual(res, 'paj')
@@ -97,9 +90,8 @@ class Test_TradsUnidades(unittest.TestCase):
         Comprobar que devolvamos aviso error para unidades que no existen.
         """
 
-        if 'linux' not in sys.platform:
-            with símismo.assertWarns(UserWarning):
-                trads.trad_unid('¡Yo no existo!', leng_final='fr')
+        with símismo.assertRaises(ValueError):
+            trads.trad_unid('¡Yo no existo!', leng_final='fr', falla_silencio=False)
 
     def test_agregar_sinónimo(símismo):
         """

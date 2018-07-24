@@ -3,7 +3,6 @@ import ctypes
 import os
 import struct
 import sys
-from warnings import warn as avisar
 
 import numpy as np
 import regex
@@ -27,6 +26,9 @@ def crear_dll_Vensim(archivo):  # pragma: sin cobertura
         return ctypes.WinDLL(archivo)
     except OSError:
         raise OSError(_('Archivo "{}" erróneo para el DLL de Vensim DSS.').format(archivo))
+
+
+_mnsj_falta_dll = _('Esta computadora no cuenta con el DLL de VENSIM DSS.')
 
 
 class ModeloVensimMdl(MDSEditable):
@@ -102,7 +104,8 @@ class ModeloVensimMdl(MDSEditable):
                 'hijos': [],
                 'parientes': obj_ec.variables(),
                 'egreso': None,
-                'info': tx_info.strip()
+                'info': tx_info.strip(),
+                'val_inic': False
             }
 
         for v, d_v in símismo.variables.items():
@@ -125,6 +128,9 @@ class ModeloVensimMdl(MDSEditable):
             # El primer argumento de la función INTEG de VENSIM
             ec = Ecuación(símismo.variables[niv]['ec'], dialecto='vensim')
             arg_integ = ec.sacar_args_func('INTEG', i=1)[0]
+            args_inic = ec.sacar_args_func('INTEG')[1]
+            if args_inic in símismo.variables:
+                símismo.variables[args_inic]['val_inic'] = True
 
             # Extraer los variables flujos
             flujos = [v for v in Ecuación(arg_integ, dialecto='vensim').variables() if v not in símismo.internos]
@@ -183,7 +189,7 @@ class ModeloVensimMdl(MDSEditable):
         try:
             dll = ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
         except OSError:
-            raise OSError('Esta computadora no cuenta con el DLL de VENSIM DSS.')
+            raise OSError(_mnsj_falta_dll)
 
         cmd_vensim(dll.vensim_command, 'SPECIAL>LOADMODEL|%s' % símismo.archivo_mds)
         símismo.guardar_mds()
@@ -201,6 +207,8 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
     se pueda emplear en Tinamit.
     Necesitarás la __versión__ DSS de VENSIM para que funcione en Tinamit.
     """
+
+    combin_pasos = True
 
     def instalado(símismo):
         return símismo.dll is not None
@@ -221,7 +229,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                 'C:\\Windows\\SysWOW64\\vendll32.dll'
             ]
             arch_dll_Vensim = símismo._obt_val_config(llave='dll_Vensim', cond=os.path.isfile,
-                                                      autos=lugares_probables)
+                                                      respaldo=lugares_probables)
             if arch_dll_Vensim is None:
                 símismo.dll = None
             else:
@@ -252,8 +260,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         # Inicializar ModeloVENSIM como una EnvolturasMDS.
         super().__init__(archivo=archivo, nombre=nombre)
-
-        símismo.combin_incrs = True
 
     def _inic_dic_vars(símismo):
         """
@@ -406,8 +412,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         """
 
         # En Vensim, tenemos que incializar los valores de variables constantes antes de empezar la simulación.
-        símismo.cambiar_vals({var: val for var, val in vals_inic.items()
-                              if var in símismo.constantes})
+        símismo.cambiar_vals({var: val for var, val in vals_inic.items() if var in símismo.constantes})
 
         # Establecer el nombre de la corrida.
         cmd_vensim(func=símismo.dll.vensim_command,
@@ -432,14 +437,13 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                    mensaje_error=_('Error estableciendo el paso de VENSIM.'))
 
         # Aplicar los valores iniciales de variables editables
-        símismo.cambiar_vals({var: val for var, val in vals_inic.items()
-                              if var not in símismo.constantes})
+        símismo.cambiar_vals({var: val for var, val in vals_inic.items() if var not in símismo.constantes})
 
     def _leer_vals_inic(símismo):
 
         símismo._leer_vals_de_vensim()
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_externo(símismo, valores):
         """
         Esta función cambiar los valores de variables en VENSIM. Notar que únicamente los variables identificados como
         de tipo "Gaming" en el modelo podrán actualizarse.
@@ -559,12 +563,13 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         """
 
         # Necesario para guardar los últimos valores de los variables conectados. (Muy incómodo, yo sé.)
+        if símismo.paso != 1:
+            cmd_vensim(func=símismo.dll.vensim_command,
+                       args="GAME>GAMEINTERVAL|%i" % 1,
+                       mensaje_error=_('Error estableciendo el paso de VENSIM.'))
         cmd_vensim(func=símismo.dll.vensim_command,
                    args="GAME>GAMEON",
                    mensaje_error=_('Error para terminar la simulación VENSIM.'))
-
-        # Leer el tiempo final
-        tiempo_final = símismo._pedir_val_var('FINAL TIME')
 
         # ¡Por fin! Llamar la comanda para terminar la simulación.
         cmd_vensim(func=símismo.dll.vensim_command,
@@ -572,9 +577,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                    mensaje_error=_('Error para terminar la simulación VENSIM.'))
 
         #
-        cmd_vensim(func=símismo.dll.vensim_command,
-                   args="MENU>VDF2CSV|!|!|||||{}|".format(tiempo_final - 1))
-        cmd_vensim(func=símismo.dll.vensim_command, args="MENU>CSV2VDF|!|!")
+        símismo._vdf_a_csv()
 
     def verificar_vensim(símismo):
         """
@@ -661,26 +664,87 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         """
         return True
 
-    def leer_arch_resultados(símismo, archivo, var=None):
+    def leer_arch_resultados(símismo, archivo, var=None, col_tiempo='Time'):
+        """
+        Esta función no lee los archivos directamente, pero los convierte en el formato .csv para que se puedan leer
+        por Tinamït.
+
+        Parameters
+        ----------
+        archivo : str
+            El nombre del archivo.
+        var : str | list[str]
+            El variable o lista de variables de interés.
+        col_tiempo: str
+            El nombre de la columna de tiempo.
+
+        Returns
+        -------
+        xr.Dataset
+            Los resultados de la corrida.
+        """
 
         corr, ext = os.path.splitext(archivo)
+
+        # Si no se especificó extensión, tenemos que decidir entre el formato .vdf o .csv. Tomaremos el archivo más
+        # recién, el cuál nos dará la simulación más recién efectuada por el usuario.
         if not len(ext):
-            ext = '.vdf'
+            if os.path.isfile(corr + '.vdf'):
+                if not os.path.isfile(corr + '.csv'):
+                    ext = '.vdf'
+                else:
+                    ext = '.vdf' if os.path.getmtime(corr + '.vdf') > os.path.getmtime(corr + '.csv') else '.csv'
+            elif os.path.isfile(corr + '.csv'):
+                ext = '.csv'
+            else:
+                raise FileNotFoundError(_('No encontramos archivo para "{}".').format(archivo))
 
+        # Si tenemos formato '.vdf', debemos convertirlo a '.csv' primero.
         if ext == '.vdf':
+
             archivo = corr + '.csv'
-            símismo.dll.vensim_command(
-                'MENU>VDF2CSV|{archVDF}|{archCSV}'.format(archVDF=corr + ext, archCSV=archivo).encode()
-            )
+            símismo._vdf_a_csv(corr)
 
-            with open(archivo, 'r', encoding='UTF-8') as d:
-                lect = csv.reader(d)
-                filas = [f[:-1] if len(f) > 2 else f for f in lect]
-            with open(archivo, 'w', encoding='UTF-8', newline='') as d:
-                escr = csv.writer(d)
-                escr.writerows(filas)
+        # Delegar la lectura de archivos .csv a la clase pariente
+        return super().leer_arch_resultados(archivo=archivo, var=var, col_tiempo=col_tiempo)
 
-        return super().leer_arch_resultados(archivo=archivo, var=var)
+    def _vdf_a_csv(símismo, archivo_vdf=None, archivo_csv=None):
+
+        if archivo_csv is None:
+            archivo_csv = archivo_vdf
+
+        # En Vensim, "!" quiere decir la corrida activa
+        archivo_vdf = archivo_vdf or '!'
+        archivo_csv = archivo_csv or '!'
+
+        # Necesitas el dll de Vensim para que funcione
+        if símismo.dll is None:
+            raise OSError(_mnsj_falta_dll)
+
+        # Vensim hace la conversión para nosotr@s
+        símismo.dll.vensim_command(
+            'MENU>VDF2CSV|{archVDF}|{archCSV}'.format(
+                archVDF=archivo_vdf + '.vdf', archCSV=archivo_csv + '.csv'
+            ).encode()
+        )
+
+        # Re-aplicar la corrida activa
+        if archivo_csv == '!':
+            archivo_csv = símismo.corrida_activa
+
+        # Leer el csv
+        with open(archivo_csv + '.csv', 'r', encoding='UTF-8') as d:
+            lect = csv.reader(d)
+
+            # Cortar el último paso de simulación. Tinamït siempre corre simulaciones de Vensim para 1 paso adicional
+            # para permitir que valores de variables conectados se puedan actualizar.
+            # Para que queda claro: esto es por culpa de un error en Vensim, no es culpa mía.
+            filas = [f[:-1] if len(f) > 2 else f for f in lect]
+
+        # Hay que abrir el archivo de nuevo para re-escribir sobre el contenido existente-
+        with open(archivo_csv + '.csv', 'w', encoding='UTF-8', newline='') as d:
+            escr = csv.writer(d)
+            escr.writerows(filas)
 
 
 def cmd_vensim(func, args, mensaje_error=None, val_error=None, devolver=False):  # pragma: sin cobertura

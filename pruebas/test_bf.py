@@ -34,12 +34,10 @@ class Test_ModeloSenc(unittest.TestCase):
         }  # type: dict[str, dict]
 
         # Iniciar variables
-        for v, d_v in cls.info_vars.items():
-            if 'val_inic' in d_v:
-                cls.envltmodelo.inic_val_var(v, d_v['val_inic'])
+        vals_inic = {vr: d['val_inic'] for vr, d in cls.info_vars.items() if 'val_inic' in d}
 
         # Correr el modelo para 200 pasos, guardando los egresos del variable "Lago"
-        cls.envltmodelo.simular(t_final=200, vars_interés=['Escala', 'Lluvia'])
+        cls.envltmodelo.simular(t_final=200, vals_inic=vals_inic, vars_interés=['Escala', 'Lluvia'])
 
     def test_leer_vars(símismo):
         """
@@ -70,7 +68,7 @@ class Test_ModeloSenc(unittest.TestCase):
         """
 
         símismo.assertEqual(
-            símismo.envltmodelo.leer_resultados('Lluvia')[0],
+            símismo.envltmodelo.leer_resultados('Lluvia')['Lluvia'][0],
             símismo.info_vars['Lluvia']['val_inic']
         )
 
@@ -79,9 +77,9 @@ class Test_ModeloSenc(unittest.TestCase):
         Asegurarse que la simulación dió los resultados esperados.
         """
 
-        val_simulado = símismo.envltmodelo.leer_resultados('Escala')
+        val_simulado = símismo.envltmodelo.leer_resultados('Escala')['Escala']
 
-        símismo.assertTrue(np.array_equal(val_simulado, np.arange(0, 201)))
+        npt.assert_array_equal(val_simulado, np.arange(0, 201))
 
     def test_nombre_inválido(símismo):
         """

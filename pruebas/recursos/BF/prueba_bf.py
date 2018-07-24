@@ -9,7 +9,7 @@ class ModeloPrueba(ModeloBF):
         símismo.unid_tiempo = unid_tiempo
         super().__init__()
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_externo(símismo, valores):
         pass
 
     def _incrementar(símismo, paso, guardar_cada=None):

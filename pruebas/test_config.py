@@ -21,13 +21,13 @@ class Test_Config(unittest.TestCase):
         símismo.assertIs(obt_val_config('leng', cond=cond, mnsj_err=''), None)
 
     def test_obt_val_config_con_auto(símismo):
-        símismo.assertEqual(obt_val_config('jaja', autos='abc'), 'abc')
+        símismo.assertEqual(obt_val_config('jaja', respaldo='abc'), 'abc')
 
     def test_obt_val_config_con_auto_y_cond(símismo):
         def cond(x):
             return x[0] == 'a'
 
-        símismo.assertEqual(obt_val_config('leng', cond=cond, autos=['cba', 'abc']), 'abc')
+        símismo.assertEqual(obt_val_config('leng', cond=cond, respaldo=['cba', 'abc']), 'abc')
 
     def test_poner_val_config(símismo):
         poner_val_config('prueba', 'JAJA')

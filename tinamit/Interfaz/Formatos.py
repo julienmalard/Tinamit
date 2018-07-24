@@ -1,4 +1,3 @@
-import json
 import tkinter as tk
 
 import pkg_resources

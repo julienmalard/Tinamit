@@ -11,7 +11,7 @@ from tinamit.Análisis.Datos import MicroDatos, Datos, SuperBD, obt_fecha_ft
 
 dir_act = os.path.split(__file__)[0]
 arch_reg = os.path.join(dir_act, 'recursos/datos/datos.csv')
-arch_indiv = os.path.join(dir_act, 'recursos/datos/microdatos.csv')
+arch_microdatos = os.path.join(dir_act, 'recursos/datos/microdatos.csv')
 
 
 class Test_GenerarDatos(unittest.TestCase):
@@ -30,7 +30,7 @@ class Test_GenerarDatos(unittest.TestCase):
             'pandas': MicroDatos(
                 'Pandas', pd.DataFrame(dic_datos)
             ),
-            'csv': MicroDatos('CSV', arch_indiv),
+            'csv': MicroDatos('CSV', arch_microdatos),
             'dic': MicroDatos('Dic', dic_datos),
             'dic_anidado': MicroDatos('Dic Anidado', {
                 '708': {'fecha': ['2000', '2002'], 'var_completo': [1, 2], 'var_incompleto': ['', 10], 'temp': [1, 1]},
@@ -45,7 +45,7 @@ class Test_GenerarDatos(unittest.TestCase):
                     'fecha': ('n', dic_datos['fecha']),
                     'lugar': ('n', dic_datos['lugar'])
                 }
-            ), fecha='fecha', lugar='lugar')
+            ), tiempo='fecha', lugar='lugar')
         }
 
     def test_obt_datos(símismo):
@@ -69,26 +69,26 @@ class TestDatos(unittest.TestCase):
 
     def test_fechas_columna(símismo):
         fechas = ['1947-8-14', '1947-8-15']
-        bd = MicroDatos('prueba', pd.DataFrame({'a': [1, 2], 'f': fechas}), fecha='f')
-        lista_fechas_igual(bd.obt_datos('a').fecha.values, fechas)
+        bd = MicroDatos('prueba', pd.DataFrame({'a': [1, 2], 'f': fechas}), tiempo='f')
+        lista_fechas_igual(bd.obt_datos('a')['tiempo'].values, fechas)
 
     def test_fechas_texto_año(símismo):
-        bd = MicroDatos('prueba', pd.DataFrame({'a': [1, 2]}), fecha='1966')
-        lista_fechas_igual(bd.obt_datos('a').fecha.values, [ft.date(1966, 1, 1)] * 2)
+        bd = MicroDatos('prueba', pd.DataFrame({'a': [1, 2]}), tiempo='1966')
+        lista_fechas_igual(bd.obt_datos('a')['tiempo'].values, [ft.date(1966, 1, 1)] * 2)
 
     def test_fechas_ft(símismo):
         fecha = ft.date(1966, 1, 1)
-        bd = MicroDatos('prueba', pd.DataFrame({'a': [1, 2]}), fecha=fecha)
-        lista_fechas_igual(bd.obt_datos('a').fecha.values, [fecha] * 2)
+        bd = MicroDatos('prueba', pd.DataFrame({'a': [1, 2]}), tiempo=fecha)
+        lista_fechas_igual(bd.obt_datos('a')['tiempo'].values, [fecha] * 2)
 
     def test_fecha_texto(símismo):
         fecha = '1966-7-21'
-        bd = MicroDatos('prueba', pd.DataFrame({'a': [1, 2]}), fecha=fecha)
-        lista_fechas_igual(bd.obt_datos('a').fecha.values, [fecha] * 2)
+        bd = MicroDatos('prueba', pd.DataFrame({'a': [1, 2]}), tiempo=fecha)
+        lista_fechas_igual(bd.obt_datos('a')['tiempo'].values, [fecha] * 2)
 
     def test_fechas_error(símismo):
         with símismo.assertRaises(ValueError):
-            MicroDatos('pueba', pd.DataFrame({'a': [1, 2]}), fecha='No soy una columna')
+            MicroDatos('pueba', pd.DataFrame({'a': [1, 2]}), tiempo='No soy una columna')
 
     def test_lugares_columna(símismo):
         lugar = ['1', '2']
@@ -106,8 +106,8 @@ class Test_SuperBD(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        bd_región = Datos(nombre='prueba regional', fuente=arch_reg, fecha='fecha', lugar='lugar')
-        bd_indiv = MicroDatos(nombre='prueba individual', fuente=arch_indiv, fecha='fecha', lugar='lugar')
+        bd_región = Datos(nombre='prueba regional', fuente=arch_reg, tiempo='fecha', lugar='lugar')
+        bd_indiv = MicroDatos(nombre='prueba individual', fuente=arch_microdatos, tiempo='fecha', lugar='lugar')
         cls.bd = SuperBD(nombre='BD Central', bds=[bd_región, bd_indiv], auto_conectar=True)
 
         cls.bd.espec_var(var='completo', var_bd='var_completo')
@@ -126,7 +126,7 @@ class Test_SuperBD(unittest.TestCase):
         símismo.bd.renombrar_var('var renombrado', nuevo_nombre='completo')
 
     def test_desconectar_datos(símismo):
-        bd_temp = MicroDatos(nombre='temp', fuente=arch_indiv, fecha='fecha', lugar='lugar')
+        bd_temp = MicroDatos(nombre='temp', fuente=arch_microdatos, tiempo='fecha', lugar='lugar')
         símismo.bd.conectar_datos(bd=bd_temp)
         símismo.bd.desconectar_datos(bd=bd_temp)
         símismo.assertNotIn(bd_temp.nombre, símismo.bd.bds)
@@ -136,7 +136,8 @@ class Test_SuperBD(unittest.TestCase):
         datos = símismo.bd.datos.copy()
         microdatos = símismo.bd.microdatos.copy()
         datos_err = símismo.bd.datos_err.copy()
-        símismo.bd.cargar_datos()
+        bd = SuperBD(símismo.bd.nombre)
+        bd.cargar_datos()
 
         símismo.assertTrue(datos.identical(símismo.bd.datos))
         símismo.assertTrue(microdatos.identical(símismo.bd.microdatos))
@@ -174,36 +175,36 @@ class Test_SuperBD(unittest.TestCase):
             símismo.assertFalse(res.isnull()[var].values.any())
 
     def test_obt_datos_fecha_única(símismo):
-        res = símismo.bd.obt_datos('completo', fechas=2000)
-        símismo.assertTrue(fechas_en_rango(res['fecha'], ['2000-1-1'] * 2))
+        res = símismo.bd.obt_datos('completo', tiempos='2000')
+        símismo.assertTrue(fechas_en_rango(res['tiempo'], ['2000-1-1'] * 2))
 
     def test_obt_datos_fecha_lista(símismo):
-        res = símismo.bd.obt_datos('completo', fechas=[2000, 2002])
-        símismo.assertTrue(fechas_en_lista(res['fecha'], ['2000-01-01', '2002-01-01']))
+        res = símismo.bd.obt_datos('completo', tiempos=['2000', '2002'])
+        símismo.assertTrue(fechas_en_lista(res['tiempo'], ['2000-01-01', '2002-01-01']))
 
     def test_obt_datos_fecha_rango(símismo):
-        res = símismo.bd.obt_datos('completo', fechas=(2000, '2002-6-1'))
-        símismo.assertTrue(fechas_en_rango(res['fecha'], ('2000-1-1', '2002-6-1')))
+        res = símismo.bd.obt_datos('completo', tiempos=('2000', '2002-6-1'))
+        símismo.assertTrue(fechas_en_rango(res['tiempo'], ('2000-1-1', '2002-6-1')))
 
     def test_obt_datos_reg_con_interpol_no_necesario(símismo):
-        res = símismo.bd.obt_datos('completo', fechas=(2000, '2002-6-1'))
+        res = símismo.bd.obt_datos('completo', tiempos=('2000', '2002-6-1'))
         símismo.assertTrue(res['completo'].values.shape[0] > 0)
-        símismo.assertTrue(fechas_en_rango(res['fecha'], ('2000-1-1', '2002-6-1')))
+        símismo.assertTrue(fechas_en_rango(res['tiempo'], ('2000-1-1', '2002-6-1')))
 
     def test_obt_datos_reg_fecha_única_con_interpol(símismo):
-        res = símismo.bd.obt_datos(['incompleto', 'completo'], fechas=2001)
+        res = símismo.bd.obt_datos(['incompleto', 'completo'], tiempos='2001')
 
         # Verificar interpolaciones
-        vals = res.where(np.logical_and(res.lugar == '7', res.fecha == np.datetime64('2001-01-01')), drop=True)
+        vals = res.where(np.logical_and(res['lugar'] == '7', res['tiempo'] == np.datetime64('2001-01-01')), drop=True)
         npt.assert_allclose(vals['completo'].values, 2.500684)
         npt.assert_allclose(vals['incompleto'].values, 23.3394, rtol=0.001)
 
     def test_obt_datos_reg_fecha_rango_con_interpol(símismo):
         l_vars = ['incompleto', 'completo']
-        res = símismo.bd.obt_datos(l_vars, fechas=(2000, '2002-6-1'))
+        res = símismo.bd.obt_datos(l_vars, tiempos=('2000', '2002-6-1'))
         for v in l_vars:
             símismo.assertTrue(res[v].values.shape[0] > 0)
-            símismo.assertTrue(fechas_en_rango(res['fecha'], ('2000-1-1', '2002-6-1')))
+            símismo.assertTrue(fechas_en_rango(res['tiempo'], ('2000-1-1', '2002-6-1')))
 
     def test_graficar(símismo):
         símismo.bd.graficar_hist('completo')

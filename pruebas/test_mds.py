@@ -2,6 +2,7 @@ import os
 import unittest
 
 import numpy.testing as npt
+import xarray.testing as xrt
 
 from tinamit.EnvolturasMDS import ModeloVensim, ModeloPySD, ModeloVensimMdl, generar_mds
 from tinamit.MDS import EnvolturaMDS
@@ -53,16 +54,11 @@ class Test_ModeloSenc(unittest.TestCase):
 
         # Para cada modelo...
         for mod in cls.modelos.values():
-
-            # Inicializar los variables iniciales
-            for v, d_v in cls.info_vars.items():
-
-                # Iniciar los valores iniciales, si hay
-                if 'val_inic' in d_v:
-                    mod.inic_val_var(v, d_v['val_inic'])
+            # Los variables iniciales
+            vals_inic = {vr: d['val_inic'] for vr, d in cls.info_vars.items() if 'val_inic' in d}
 
             # Correr el modelo para 200 pasos, guardando los egresos del variable "Lago"
-            mod.simular(t_final=200, vars_interés=['Lago', 'Aleatorio', 'Nivel lago inicial'])
+            mod.simular(t_final=200, vals_inic=vals_inic, vars_interés=['Lago', 'Aleatorio', 'Nivel lago inicial'])
 
     def test_leer_vars(símismo):
         """
@@ -136,7 +132,7 @@ class Test_ModeloSenc(unittest.TestCase):
             d_v = símismo.info_vars[v]
 
             with símismo.subTest(mod=ll):
-                npt.assert_equal(mod.leer_resultados(v), d_v['val_inic'])
+                npt.assert_array_equal(mod.leer_resultados(v)[v], d_v['val_inic'])
 
     def test_cambiar_vals_inic_var_dinámico(símismo):
         """
@@ -148,7 +144,7 @@ class Test_ModeloSenc(unittest.TestCase):
             d_v = símismo.info_vars[v]
 
             with símismo.subTest(mod=ll):
-                símismo.assertEqual(mod.leer_resultados(v)[0], d_v['val_inic'])
+                símismo.assertEqual(mod.leer_resultados(v)[v][0], d_v['val_inic'])
 
     def test_cambiar_vals_inic_nivel(símismo):
         """
@@ -157,7 +153,7 @@ class Test_ModeloSenc(unittest.TestCase):
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
                 símismo.assertEqual(
-                    mod.leer_resultados('Lago')[0],
+                    mod.leer_resultados('Lago')['Lago'].values[0],
                     símismo.info_vars['Nivel lago inicial']['val_inic']
                 )
 
@@ -169,7 +165,7 @@ class Test_ModeloSenc(unittest.TestCase):
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
                 # Leer el resultado del último día de simulación pára el variable "Lago"
-                val_simulado = mod.leer_resultados('Lago')[-1]
+                val_simulado = mod.leer_resultados('Lago')['Lago'].values[-1]
 
                 # Debería ser aproximativamente igual a 100
                 símismo.assertEqual(round(val_simulado, 3), 100)
@@ -182,7 +178,7 @@ class Test_ModeloSenc(unittest.TestCase):
                     mod.guardar_resultados(nombre=arch, frmt=frmt)
                     leídos = EnvolturaMDS.leer_arch_resultados(archivo=arch, var='Lago')
                     refs = mod.leer_resultados('Lago')
-                    npt.assert_equal(leídos, refs)
+                    xrt.assert_identical(leídos, refs)
                     os.remove(arch + frmt)
 
     def test_leer_resultados_vdf_vensim(símismo):
@@ -190,7 +186,7 @@ class Test_ModeloSenc(unittest.TestCase):
         if mod.instalado():
             leídos = mod.leer_arch_resultados(archivo=mod.corrida_activa + '.vdf', var='Lago')
             refs = mod.leer_resultados(var='Lago')
-            npt.assert_allclose(leídos, refs, rtol=1e-3)
+            xrt.assert_allclose(leídos, refs, rtol=1e-3)
 
     @classmethod
     def tearDownClass(cls):
@@ -217,7 +213,7 @@ class Test_OpcionesSimul(unittest.TestCase):
             with símismo.subTest(mod=ll):
                 res_paso_2 = mod.simular(t_final=100, paso=2, vars_interés=['Lago'])['Lago']
                 res_paso_1 = mod.simular(t_final=100, paso=1, vars_interés=['Lago'])['Lago'][::2]
-                npt.assert_equal(res_paso_1, res_paso_2)
+                npt.assert_array_equal(res_paso_1, res_paso_2)
 
     def test_simul_con_paso_inválido(símismo):
         for ll, mod in símismo.modelos.items():
@@ -228,9 +224,9 @@ class Test_OpcionesSimul(unittest.TestCase):
     def test_simul_exprés(símismo):
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                mod.combin_incrs = False
+                mod.combin_pasos = False
                 res_por_paso = mod.simular(t_final=100, paso=1, vars_interés=['Lago'])['Lago']
-                mod.combin_incrs = True
+                mod.combin_pasos = True
                 res_exprés = mod.simular(t_final=100, paso=1, vars_interés=['Lago'])['Lago']
                 npt.assert_allclose(res_por_paso, res_exprés, 1e-3)
 

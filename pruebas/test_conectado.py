@@ -4,8 +4,8 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 
-from pruebas.test_mds import generar_modelos_prueba, limpiar_mds
 from pruebas.recursos.BF.prueba_bf import ModeloPrueba
+from pruebas.test_mds import generar_modelos_prueba, limpiar_mds
 from tinamit.BF import EnvolturaBF
 from tinamit.Conectado import Conectado, SuperConectado
 from tinamit.EnvolturasMDS import ModeloPySD, generar_mds
@@ -54,7 +54,7 @@ class Test_Conectado(unittest.TestCase):
             with símismo.subTest(mod=ll):
                 egr = mod.simular(t_final=100, vars_interés=['bf_Aleatorio', 'mds_Aleatorio'])
 
-                npt.assert_equal(egr['bf_Aleatorio'], egr['mds_Aleatorio'])
+                npt.assert_array_equal(egr['bf_Aleatorio'], egr['mds_Aleatorio'])
 
     def test_simular_grupo(símismo):
         """
@@ -65,15 +65,11 @@ class Test_Conectado(unittest.TestCase):
             with símismo.subTest(mod=ll):
                 t_final = 100
                 referencia = {}
-                mod.inic_val_var('Nivel lago inicial', 50)
-                mod.simular(t_final=t_final, vars_interés='Lago')
-                referencia['lago_50'] = {'mds_Lago': mod.leer_resultados('Lago')}
-                mod.limp_vals_inic()
+                mod.simular(t_final=t_final, vals_inic={'Nivel lago inicial': 50}, vars_interés='Lago')
+                referencia['lago_50'] = mod.leer_resultados('Lago')
 
-                mod.inic_val_var('Nivel lago inicial', 2000)
-                mod.simular(t_final=t_final, vars_interés='Lago')
-                referencia['lago_2000'] = {'mds_Lago': mod.leer_resultados('Lago')}
-                mod.limp_vals_inic()
+                mod.simular(t_final=t_final, vals_inic={'Nivel lago inicial': 2000}, vars_interés='Lago')
+                referencia['lago_2000'] = mod.leer_resultados('Lago')
 
                 resultados = mod.simular_grupo(
                     t_final=t_final,
@@ -120,7 +116,6 @@ class Test_Conectado(unittest.TestCase):
         vals_inic = {'mds_Nivel lago inicial': 50}
         ref = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
 
-        mod.limp_vals_inic()
         vals_inic = {'mds': {'Nivel lago inicial': 50}}
         res = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
 
@@ -137,7 +132,6 @@ class Test_Conectado(unittest.TestCase):
         vals_inic = {'50': {'mds_Nivel lago inicial': 50}}
         ref = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
 
-        mod.limp_vals_inic()
         vals_inic = {'50': {'mds': {'Nivel lago inicial': 50}}}
         res = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
 
@@ -147,22 +141,19 @@ class Test_Conectado(unittest.TestCase):
     def test_inic_vals_por_nombre_completo(símismo):
         mod = símismo.modelos['PySDVensim']
         vals_inic = {'mds_Nivel lago inicial': 50}
-        mod.inic_vals_vars(vals_inic)
-        res = mod.simular(100, vars_interés='Nivel lago inicial')
+        res = mod.simular(100, vals_inic=vals_inic, vars_interés='Nivel lago inicial')
         símismo.assertEqual(res['mds_Nivel lago inicial'][0], 50)
 
     def test_inic_vals_por_nombre_en_submodelo(símismo):
         mod = símismo.modelos['PySDVensim']
         vals_inic = {'Nivel lago inicial': 40}
-        mod.inic_vals_vars(vals_inic)
-        res = mod.simular(100, vars_interés='Nivel lago inicial')
+        res = mod.simular(100, vals_inic=vals_inic, vars_interés='Nivel lago inicial')
         símismo.assertEqual(res['mds_Nivel lago inicial'][0], 40)
 
     def test_inic_vals_por_submodelo_y_nombre(símismo):
         mod = símismo.modelos['PySDVensim']
         vals_inic = {'mds': {'Nivel lago inicial': 30}}
-        mod.inic_vals_vars(vals_inic)
-        res = mod.simular(100, vars_interés='Nivel lago inicial')
+        res = mod.simular(100, vals_inic=vals_inic, vars_interés='Nivel lago inicial')
         símismo.assertEqual(res['mds_Nivel lago inicial'][0], 30)
 
     @classmethod

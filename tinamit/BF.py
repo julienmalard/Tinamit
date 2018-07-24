@@ -3,7 +3,7 @@ import inspect
 import math as mat
 import os
 import sys
-from copy import copy as copiar, deepcopy as copiar_profundo
+from copy import deepcopy as copiar_profundo
 from importlib import import_module as importar_mod
 from warnings import warn as avisar
 
@@ -109,7 +109,7 @@ class EnvolturaBF(Modelo):
         # Crear el vínculo
         símismo.variables = símismo.modelo.variables
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_externo(símismo, valores):
         """
         Esta función cambia el valor de variables en el modelo.
 
@@ -117,7 +117,7 @@ class EnvolturaBF(Modelo):
         :type valores: dict
 
         """
-        símismo.modelo.cambiar_vals_modelo_interno(valores=valores)
+        símismo.modelo._cambiar_vals_modelo_externo(valores=valores)
 
     def _incrementar(símismo, paso, guardar_cada=None):
         """
@@ -192,7 +192,7 @@ class ModeloBF(Modelo):
 
         super().__init__(nombre=nombre)
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_externo(símismo, valores):
         """
         Esta función debe cambiar el valor de variables en el modelo biofísico.
 
@@ -354,7 +354,7 @@ class ModeloImpaciente(ModeloBF):
         # Leer los valores iniciales
         símismo._leer_vals_inic()
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_externo(símismo, valores):
         """
         Solamente nos tenemos que asegurar que los datos internos (para variables estacionales) queda consistente
         con los nuevos valores cambiadas por la conexión con el modelo externo. La función `.avanzar_modelo()` debe
@@ -366,7 +366,7 @@ class ModeloImpaciente(ModeloBF):
         """
         pass
 
-    def act_vals_clima(símismo, n_paso, f):
+    def _act_vals_clima(símismo, n_paso, f):
         """
         Actualiza los variables climáticos, según la estación.
 
@@ -703,7 +703,7 @@ class ModeloFlexible(ModeloBF):
         """
         super().__init__()
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_externo(símismo, valores):
         """
         Esta función debe cambiar el valor de variables en el modelo biofísico.
 

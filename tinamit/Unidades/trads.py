@@ -1,15 +1,12 @@
 import json
 import os
-import tempfile
 from itertools import chain as cadena
-from shutil import copyfile as copiar_archivo
-from warnings import warn as avisar
 
 import pint
 import pkg_resources
 
-from tinamit.cositas import guardar_json, cargar_json
 from tinamit.config import _
+from tinamit.cositas import guardar_json, cargar_json
 from . import regu
 
 _archivo_trads = pkg_resources.resource_filename('tinamit.Unidades', 'trads_unids.json')

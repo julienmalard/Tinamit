@@ -2,14 +2,16 @@ import os
 from ast import literal_eval
 
 import numpy as np
+import xarray as xr
 
 import pysd
-from tinamit.config import _
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.MDS import EnvolturaMDS
+from tinamit.config import _
 
 
 class ModeloPySD(EnvolturaMDS):
+    combin_pasos = True
 
     def __init__(símismo, archivo, nombre='mds'):
 
@@ -35,7 +37,6 @@ class ModeloPySD(EnvolturaMDS):
         símismo._res_recién = None  # pd.DataFrame
 
         super().__init__(archivo, nombre=nombre)
-        símismo.combin_incrs = True
 
     def _inic_dic_vars(símismo):
         símismo.variables.clear()
@@ -66,6 +67,15 @@ class ModeloPySD(EnvolturaMDS):
             for p in d_v['parientes']:
                 d_p = símismo.variables[p]
                 d_p['hijos'].append(v)
+
+        for v, d_v in símismo.variables.items():
+            ec = Ecuación(d_v['ec'], dialecto='vensim')
+            try:
+                args_inic = ec.sacar_args_func('INTEG')[1]
+                if args_inic in símismo.variables:
+                    símismo.variables[args_inic]['val_inic'] = True
+            except TypeError:
+                pass
 
     def unidad_tiempo(símismo):
         docs = símismo.modelo.doc()
@@ -104,7 +114,7 @@ class ModeloPySD(EnvolturaMDS):
         símismo.vars_para_cambiar.clear()
         símismo.vars_para_cambiar.update(vals_inic)
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_externo(símismo, valores):
         símismo.vars_para_cambiar.clear()
         símismo.vars_para_cambiar.update(
             {var: val for var, val in valores.items() if not np.isnan(val)}
@@ -136,7 +146,7 @@ class ModeloPySD(EnvolturaMDS):
 
         símismo._act_vals_dic_var(valores)
 
-    def leer_arch_resultados(símismo, archivo, var=None):
+    def leer_arch_resultados(símismo, archivo, var=None, col_tiempo='tiempo'):
 
         if archivo != símismo.corrida_activa:
             raise ValueError(_('PySD solamente puede leer los resultados de la última corrida.'))
@@ -146,8 +156,9 @@ class ModeloPySD(EnvolturaMDS):
             l_vars = [var]
         else:
             l_vars = var
-
-        return {v: símismo._res_recién[v].values for v in l_vars}
+        res = xr.Dataset({v: ('n', símismo._res_recién[v].values) for v in l_vars})
+        res.coords['tiempo'] = ('n', símismo._res_recién.index)
+        return res
 
     def cerrar_modelo(símismo):
         pass

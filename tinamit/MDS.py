@@ -72,7 +72,7 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_externo(símismo, valores):
         """
         Este método se deja a las subclases de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS` para implementar.
 
@@ -135,7 +135,7 @@ class MDSEditable(EnvolturaMDS):
         from tinamit.EnvolturasMDS import generar_mds
         símismo.mod = None  # type: EnvolturaMDS
         símismo._estab_mod(generar_mds(archivo=archivo))
-        símismo.combin_incrs = símismo.mod.combin_incrs
+        símismo.combin_incrs = símismo.mod.combin_pasos
 
         símismo.editado = False
 
@@ -175,15 +175,11 @@ class MDSEditable(EnvolturaMDS):
         símismo.mod.corrida_activa = nombre_corrida
         símismo.mod._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
-    def cambiar_vals_modelo_interno(símismo, valores):
-        return símismo.mod.cambiar_vals_modelo_interno(valores=valores)
+    def _cambiar_vals_modelo_externo(símismo, valores):
+        return símismo.mod._cambiar_vals_modelo_externo(valores=valores)
 
     def _incrementar(símismo, paso, guardar_cada=None):
         return símismo.mod._incrementar(paso=paso, guardar_cada=guardar_cada)
-
-    def inic_val_var(símismo, var, val):
-        símismo.mod.inic_val_var(var=var, val=val)
-        super().inic_val_var(var, val)
 
     def _leer_vals(símismo):
         return símismo.mod._leer_vals()
@@ -191,7 +187,7 @@ class MDSEditable(EnvolturaMDS):
     def cerrar_modelo(símismo):
         return símismo.mod.cerrar_modelo()
 
-    def leer_arch_resultados(símismo, archivo, var=None):
+    def leer_arch_resultados(símismo, archivo, var=None, col_tiempo='tiempo'):
         return símismo.mod.leer_arch_resultados(archivo=archivo, var=var)
 
     def _leer_vals_inic(símismo):

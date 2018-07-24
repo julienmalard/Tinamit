@@ -42,7 +42,7 @@ class ModeloDSSAT(ModeloFlexible):  # pragma: sin cobertura
     def _incrementar(símismo, paso, guardar_cada=None):
         raise NotImplementedError
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_externo(símismo, valores):
         raise NotImplementedError
 
     def mandar_simul(símismo):

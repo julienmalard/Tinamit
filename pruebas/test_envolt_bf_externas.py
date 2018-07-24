@@ -4,7 +4,7 @@ import unittest
 import numpy.testing as npt
 
 import tinamit.EnvolturasBF
-from tinamit.BF import ModeloBF, ModeloImpaciente
+from tinamit.BF import ModeloBF
 
 
 class Test_EnvolturasBF(unittest.TestCase):

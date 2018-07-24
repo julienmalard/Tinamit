@@ -33,9 +33,9 @@ except (FileNotFoundError, json.decoder.JSONDecodeError):
     _guardar_conf()
 
 
-def obt_val_config(llave, cond=None, mnsj_err=None, autos=None):
-    if not isinstance(autos, list):
-        autos = [autos]
+def obt_val_config(llave, cond=None, mnsj_err=None, respaldo=None):
+    if not isinstance(respaldo, list):
+        respaldo = [respaldo]
 
     try:
         conf, ll = _resolver_conf_anidado(llave)
@@ -47,7 +47,7 @@ def obt_val_config(llave, cond=None, mnsj_err=None, autos=None):
             if cond(val):
                 return val
             else:
-                for a in autos:
+                for a in respaldo:
                     if a is not None and cond(a):
                         return a
                 if mnsj_err is not None:
@@ -57,9 +57,9 @@ def obt_val_config(llave, cond=None, mnsj_err=None, autos=None):
     except KeyError:
         val = None
         if cond is None:
-            val = autos[0]
+            val = respaldo[0]
         else:
-            for a in autos:
+            for a in respaldo:
                 if a is not None and cond(a):
                     val = a
         if val is None and mnsj_err is not None:

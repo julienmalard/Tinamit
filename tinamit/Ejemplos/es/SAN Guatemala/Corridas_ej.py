@@ -1,12 +1,11 @@
-import json
 import os
 
 import matplotlib.pyplot as dib
 import numpy as np
+from EnvolturasMDS.auto_mds import generar_mds
 
 from tinamit import cargar_json
 from tinamit.EnvolturasMDS import EnvolturaMDS
-from EnvolturasMDS.auto_mds import generar_mds
 from tinamit.Geog.Geog import Geografía
 
 # Este escripto corre corridas del modelo basado en las calibraciones en Ejemplo.py

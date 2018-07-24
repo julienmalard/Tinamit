@@ -2,12 +2,12 @@ import unittest
 
 import numpy as np
 import numpy.testing as npt
-import pandas as pd
 
-from tinamit.Análisis.Datos import SuperBD, Datos
 from pruebas.recursos.BF.prueba_bf import ModeloPrueba
 from pruebas.test_geog import arch_clim_diario
+from pruebas.test_geog import arch_csv_geog
 from pruebas.test_mds import limpiar_mds
+from tinamit.Geog import Geografía
 from tinamit.Geog import Lugar
 
 
@@ -146,26 +146,30 @@ class Test_SimularEnPlazo(unittest.TestCase):
     def test_simular_none_a_entero(símismo):
         res = símismo.mod.simular(t_final=10, vars_interés='Lluvia')
         símismo.assertEqual(len(res['Lluvia']), 10 + 1)
+        npt.assert_array_equal(res['tiempo'], np.arange(10 + 1))
 
     def test_simular_fecha_a_entero(símismo):
         res = símismo.mod.simular(t_final=10, t_inic='01/01/2001', vars_interés='Lluvia')
+
         símismo.assertEqual(len(res['Lluvia']), 10 + 1)
+        # noinspection PyTypeChecker
+        npt.assert_array_equal(res['tiempo'], np.arange('2001-01-01', '2001-01-12', dtype='datetime64'))
 
     def test_simular_fecha_a_fecha(símismo):
         res = símismo.mod.simular(t_final='01/01/2002', t_inic='01/01/2001', vars_interés='Lluvia')
+
         símismo.assertEqual(len(res['Lluvia']), 365 + 1)
+        # noinspection PyTypeChecker
+        npt.assert_array_equal(res['tiempo'], np.arange('2001-01-01', '2002-01-02', dtype='datetime64'))
 
     def test_simular_entero_a_entero(símismo):
         res = símismo.mod.simular(t_final=20, t_inic=5, vars_interés='Lluvia')
         símismo.assertEqual(len(res['Lluvia']), 15 + 1)
+        npt.assert_array_equal(res['tiempo'], np.arange(5, 20 + 1))
 
     def test_simular_entero_a_fecha(símismo):
-        with símismo.assertRaises(TypeError):
-            símismo.mod.simular(t_final='01/01/2002', t_inic=10)
-
-    def test_fecha_inic_ulterior(símismo):
         with símismo.assertRaises(ValueError):
-            símismo.mod.simular(t_final='01/01/2001', t_inic='01/01/2002')
+            símismo.mod.simular(t_final='01/01/2002', t_inic=10)
 
 
 class Test_SimulConClima(unittest.TestCase):
@@ -187,61 +191,139 @@ class Test_SimulConClima(unittest.TestCase):
             símismo.mod.simular(t_final=100, clima='8.5')
 
 
-class Test_SimularEnPlazoConDatos(unittest.TestCase):
-    def test_simular_none_a_fecha_con_datos(símismo):
-        pass
-
-    def test_simular_none_a_entero_con_datos(símismo):
-        pass
-
-    def test_simular_none_a_none_con_datos(símismo):
-        pass
-
-    def test_simular_fecha_a_none_con_datos(símismo):
-        pass
-
-    def test_simular_entero_a_none_con_datos(símismo):
-        pass
-
-
-@unittest.skip
 class Test_SimulConDatos(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        cls.mod = ModeloPrueba(unid_tiempo='días')
         cls.datos = {
-            '708': {'Vacío': [1, 2, 3, 4, 5]},
-            '701': {'Vacío': [10, 9, 8, 7, 6]}
-        }
-        cls.datos_pandas = pd.DataFrame({'Vacío': [1, 2, 3, np.nan, 5]}, index=pd.date_range('1/1/2001', periods=5))
-        cls.datos_superbd = SuperBD('prueba', bds=Datos('prb', cls.datos_pandas))
+            'tiempo': np.arange(21), 'Vacío': np.random.random(21)
+        }  # 21 días
 
-    def test_simular_con_datos_externos_dic(símismo):
-        mod = ModeloPrueba(unid_tiempo='día')
-        res = mod.simular(t_final=5, vars_interés='Vacío', vals_extern=símismo.datos['708'])
-        npt.assert_array_equal(res['Vacío'][1:], símismo.datos['708']['Vacío'])
+        # noinspection PyTypeChecker
+        cls.datos_fecha = {
+            'tiempo': np.arange('1999-12-31', '2000-01-20', dtype='datetime64'), 'Vacío': np.random.random(20)
+        }  # 21 días
 
-    def test_simular_con_datos_externos_pandas(símismo):
-        mod = ModeloPrueba(unid_tiempo='día')
-        res = mod.simular(t_inic='01/01/2001', t_final=5, vars_interés='Vacío', vals_extern=símismo.datos_pandas)
-        faltaban = np.isnan(símismo.datos_pandas['Vacío'])
-        npt.assert_array_equal(res['Vacío'][not faltaban], símismo.datos_pandas['Vacío'][not faltaban])
+    def test_simular_datos_fecha(símismo):
+        res = símismo.mod.simular(
+            t_inic='2000-01-01', t_final='2000-01-10', bd=símismo.datos_fecha, vars_interés='Vacío'
+        )
+        _verificar_resultados('Vacío', res=res, datos=símismo.datos_fecha, rango_t=['2000-01-01', '2000-01-11'])
 
-    def test_simular_con_datos_espaciales_dic(símismo):
-        mod = ModeloPrueba(unid_tiempo='día')
-        mod.conectar_datos(símismo.datos, corresp_vars='Vacío')
-        res = mod.simular_en(t_final=5)
-        for lg, d_res in res.items():
-            npt.assert_array_equal(d_res['Vacío'], símismo.datos[lg]['Vacío'])
+    def test_simular_datos_sin_fecha(símismo):
+        res = símismo.mod.simular(t_inic=5, t_final=10, bd=símismo.datos, vars_interés='Vacío')
+        _verificar_resultados('Vacío', res, datos=símismo.datos, rango_t=[5, 11])
 
-    def test_simular_con_datos_espaciales_superbd(símismo):
-        mod = ModeloPrueba(unid_tiempo='día')
-        mod.conectar_datos(símismo.datos_superbd, corresp_vars='Vacío')
-        res = mod.simular(t_inic='01/01/2001', t_final=5, vars_interés='Vacío', vals_extern=símismo.datos_pandas)
-        for lg, d_res in res.items():
-            npt.assert_array_equal(d_res['Vacío'], símismo.datos[lg]['Vacío'])
+    def test_simular_datos_fecha_sin_rango_tiempo(símismo):
+        res = símismo.mod.simular(bd=símismo.datos_fecha, vars_interés='Vacío')
+        _verificar_resultados('Vacío', res, datos=símismo.datos_fecha, rango_t=[None, None])
 
-    def test_simular_en_con_escala_sin_geog(símismo):
+    def test_simular_datos_sin_fecha_sin_rango_tiempo(símismo):
+        res = símismo.mod.simular(bd=símismo.datos, vars_interés='Vacío')
+        _verificar_resultados('Vacío', res, símismo.datos, [None, None])
 
+    def test_simular_datos_fecha_con_tiempo_inic(símismo):
+        res = símismo.mod.simular(t_inic='01-01-2000', bd=símismo.datos_fecha, vars_interés='Vacío')
+        _verificar_resultados('Vacío', res, datos=símismo.datos_fecha, rango_t=['2000-01-01', None])
+
+    def test_simular_datos_fecha_con_tiempo_final(símismo):
+        res = símismo.mod.simular(t_final='2000-01-10', bd=símismo.datos_fecha, vars_interés='Vacío')
+        _verificar_resultados('Vacío', res, datos=símismo.datos_fecha, rango_t=[None, '2000-01-11'])
+
+    def test_simular_datos_sin_fecha_con_tiempo_inic(símismo):
+        res = símismo.mod.simular(t_inic=5, bd=símismo.datos, vars_interés='Vacío')
+        _verificar_resultados('Vacío', res, símismo.datos, [5, None])
+
+    def test_simular_datos_sin_fecha_con_tiempo_final(símismo):
+        res = símismo.mod.simular(t_final=10, bd=símismo.datos, vars_interés='Vacío')
+        _verificar_resultados('Vacío', res, símismo.datos, [0, 11])
+
+    def test_simular_datos_sin_fecha_tiempo_inic_fecha(símismo):
         with símismo.assertRaises(ValueError):
-            ModeloPrueba(unid_tiempo='día').simular_con_datos(100, escala='municipio')
+            símismo.mod.simular(t_inic='01-01-2002', bd=símismo.datos)
+
+    def test_simular_datos_sin_fecha_tiempo_final_fecha(símismo):
+        with símismo.assertRaises(ValueError):
+            símismo.mod.simular(t_final='01-01-2002', bd=símismo.datos)
+
+    def test_simular_datos_fecha_tiempo_inic_numérico(símismo):
+        with símismo.assertRaises(ValueError):
+            símismo.mod.simular(t_inic=10, bd=símismo.datos_fecha)
+
+    def test_simular_datos_fecha_tiempo_final_numérico(símismo):
+        res = símismo.mod.simular(t_final=10, bd=símismo.datos_fecha, vars_interés='Vacío')
+        _verificar_resultados('Vacío', res, datos=símismo.datos_fecha, rango_t=[None, 11])
+
+    def test_simular_datos_vars_inic(símismo):
+        res = símismo.mod.simular(t_final=10, bd=símismo.datos, vals_inic='Vacío', vars_interés='Vacío')
+        símismo.assertEqual(res['Vacío'][0], símismo.datos['Vacío'][0])
+
+    def test_simular_datos_vars_extern(símismo):
+        res = símismo.mod.simular(t_final=10, bd=símismo.datos, vals_extern='Vacío', vars_interés='Vacío')
+        _verificar_resultados('Vacío', res, símismo.datos, [0, 11])
+
+    def test_simular_datos_corresp_vars_inic(símismo):
+        res = símismo.mod.simular(
+            t_final=10, bd=símismo.datos, vals_inic={'Lluvia': 'Vacío'},
+            vars_interés='Lluvia'
+        )
+        npt.assert_array_equal(res['Lluvia'].values[0], símismo.datos['Vacío'][0])
+
+    def test_simular_datos_corresp_vars_extern(símismo):
+        res = símismo.mod.simular(
+            t_final=10, bd=símismo.datos, vals_extern={'Lluvia': 'Vacío'},
+            vars_interés='Lluvia'
+        )
+        npt.assert_array_equal(res['Lluvia'].values, símismo.datos['Vacío'][:11])
+
+    @classmethod
+    def tearDownClass(cls):
+        limpiar_mds()
+
+
+@unittest.skip
+class Test_SimulConDatosGeog(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = ModeloPrueba(unid_tiempo='días')
+        cls.geog = Geografía('Prueba Guatemala', archivo=arch_csv_geog)
+        cls.datos = {
+            'tiempo': np.arange(21), 'Vacío': np.random.random(21)
+        }  # 21 días
+
+    def test_simular_en_lugar_único(símismo):
+        símismo.mod.simular_en(t_final=10, en='7', geog=símismo.geog, bd=símismo.datos, vars_interés='LLuvia')
+
+    def test_simular_en_lugar_con_escala(símismo):
+        símismo.mod.simular_en(
+            t_final=10, en='7', escala='municipio', geog=símismo.geog, bd=símismo.datos, vars_interés='LLuvia'
+        )
+
+    def test_simular_en_lugar_sin_geog(símismo):
+        símismo.mod.simular_en(t_final=10, en='7', bd=símismo.datos, vars_interés='LLuvia')
+
+    def test_simular_en_lugar_con_escala_sin_geog(símismo):
+        with símismo.assertRaises(ValueError):
+            símismo.mod.simular_en(t_final=10, en='7', escala='municipio', bd=símismo.datos, vars_interés='LLuvia')
+
+    def test_simular_en_lugar_sin_datos(símismo):
+        símismo.mod.simular_en(t_final=10, en='7', escala='municipio', bd=símismo.datos, vars_interés='LLuvia')
+
+    @classmethod
+    def tearDownClass(cls):
+        limpiar_mds()
+
+
+def _verificar_resultados(var, res, datos, rango_t):
+    rango_t[0] = rango_t[0] or datos['tiempo'][0]
+    rango_t[1] = rango_t[1] or datos['tiempo'][-1] + 1
+
+    # noinspection PyTypeChecker
+    if isinstance(rango_t[0], str):
+        npt.assert_array_equal(res['tiempo'], np.arange(*rango_t, dtype='datetime64'))
+    else:
+        npt.assert_array_equal(res['tiempo'], np.arange(*rango_t))
+    npt.assert_array_equal(
+        res[var], datos[var][np.isin(datos['tiempo'], res['tiempo'].values)]
+    )

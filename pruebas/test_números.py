@@ -1,6 +1,6 @@
-from tinamit.Análisis.Números import tx_a_núm
-
 import unittest
+
+from tinamit.Análisis.Números import tx_a_núm
 
 
 class Test_TradsUnids(unittest.TestCase):

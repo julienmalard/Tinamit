@@ -23,13 +23,13 @@ class EnvoltDSSAT(ModeloBF):  # pragma: sin cobertura
         símismo.día_act = 0  # El día actual de la simulación
         símismo.día_princ_últ_sim = 0  # El primer día de la última llamada a DSSAT
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_externo(símismo, valores):
         pass
 
     def _incrementar(símismo, paso, guardar_cada=None):
         correr(símismo.comanda, cwd='C:\\DSSAT46\\maize')
 
-    def act_vals_clima(símismo, n_paso, f):
+    def _act_vals_clima(símismo, n_paso, f):
         vars_clima = ['Precipitación', 'Radiación solar',
                       'Temperatura máxima', 'Temperatura mínima']
         datos = símismo.lugar.devolver_datos(vars_clima=vars_clima,

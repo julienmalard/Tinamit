@@ -79,9 +79,6 @@ class SuperConectado(Modelo):
             nombre_var = '{mod}_{var}'.format(var=var, mod=modelo.nombre)
             símismo.variables[nombre_var] = modelo.variables[var]
 
-        # Conectar los diccionarios de valores iniciales también
-        símismo.vals_inic[modelo.nombre] = modelo.vals_inic
-
         # Actualizar la unidad de tiempo del modelo
         símismo.unidad_tiempo()
 
@@ -101,7 +98,6 @@ class SuperConectado(Modelo):
             if conex['modelo_fuente'] == modelo or conex['modelo_recip'] == modelo:
                 símismo.conexiones.remove(conex)
 
-        símismo.vals_inic.pop(modelo)
         símismo.unidad_tiempo()
 
     def _inic_dic_vars(símismo):
@@ -255,7 +251,7 @@ class SuperConectado(Modelo):
         # Si había duda acerca de la conversión de tiempo, ya no hay.
         símismo.conv_tiempo_dudoso = False
 
-    def cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_externo(símismo, valores):
         """
         Esta función cambia los valores del modelo. A través de la función :func:`~tinamit.Conectado.cambiar_vals`, se
         vuelve recursiva.
@@ -289,8 +285,8 @@ class SuperConectado(Modelo):
 
         return all(mod.paralelizable() for mod in símismo.modelos.values())
 
-    def simular(símismo, t_final, t_inic=None, paso=1, nombre_corrida='Corrida Tinamït', lugar_clima=None,
-                clima=None, recalc_clima=True, vals_inic=None, vals_extern=None, vars_interés=None):
+    def simular(símismo, t_final=None, t_inic=None, paso=1, nombre_corrida='Corrida Tinamït',
+                vals_inic=None, vals_extern=None, bd=None, lugar_clima=None, clima=None, vars_interés=None):
         """
         Simula el modelo :class:`~tinamit.Conectado.SuperConectado`.
 
@@ -338,7 +334,7 @@ class SuperConectado(Modelo):
         # Todo el restode la simulación se hace como en la clase pariente
         return super().simular(
             t_final=t_final, t_inic=t_inic, paso=paso, nombre_corrida=nombre_corrida,
-            vals_inic=vals_inic, vals_extern=vals_extern,
+            vals_inic=vals_inic, vals_extern=vals_extern, bd=bd,
             lugar_clima=lugar_clima, clima=clima, vars_interés=vars_interés
         )
 
@@ -357,44 +353,6 @@ class SuperConectado(Modelo):
             t_inic=t_inic, lugar_clima=lugar_clima, clima=clima, combinar=combinar, paralelo=paralelo,
             vars_interés=vars_interés, guardar=guardar
         )
-
-    def inic_val_var(símismo, var, val):
-
-        resueltos = símismo.resolver_nombre_var(var, todos=True)
-        for mod, var in resueltos:
-            símismo.modelos[mod].inic_val_var(var, val=val)
-
-    def inic_vals_vars(símismo, dic_vals):
-        """
-        Una función más cómoda para inicializar muchos variables al mismo tiempo.
-
-        Parameters
-        ----------
-        dic_vals : dict[str, float | int | np.ndarray | dict]
-
-        """
-
-        # Implementar los valores iniciales
-        if all(ll in símismo.modelos for ll in dic_vals):
-            for m, d_vals in dic_vals.items():  # type: str, dict[str, float]
-                # Para cada submodelo...
-
-                # Implementar sus valores iniciales.
-                símismo.modelos[m].inic_vals_vars(dic_vals=d_vals)
-        else:
-            for var, val in dic_vals.items():
-                resueltos = símismo.resolver_nombre_var(var, todos=True)
-                for mod, v in resueltos:
-                    símismo.modelos[mod].inic_val_var(v, val)
-
-    def limp_vals_inic(símismo, var=None):
-        if var is not None:
-            resueltos = símismo.resolver_nombre_var(var, todos=True)
-            for mod, v in resueltos:
-                símismo.modelos[mod].limp_vals_inic(v)
-        else:
-            for mod in símismo.modelos.values():
-                mod.limp_vals_inic()
 
     def _act_vals_dic_var(símismo, valores):
         valores = símismo._frmt_dic_vars(valores)
@@ -568,9 +526,13 @@ class SuperConectado(Modelo):
 
         # Iniciar los submodelos también.
         for nmbr, mod in símismo.modelos.items():
+            try:
+                vals_inic_mod = vals_inic[nmbr]
+            except KeyError:
+                vals_inic_mod = {}
             conv_tiempo = símismo.conv_tiempo[nmbr]
             mod.iniciar_modelo(
-                tiempo_final=tiempo_final * conv_tiempo, nombre_corrida=nombre_corrida, vals_inic=vals_inic[nmbr]
+                tiempo_final=tiempo_final * conv_tiempo, nombre_corrida=nombre_corrida, vals_inic=vals_inic_mod
             )  # Iniciar el modelo
 
     def especificar_var_saliendo(símismo, var):
@@ -646,11 +608,11 @@ class SuperConectado(Modelo):
                              .format(var_fuente, dims_fuente, var_recip, dims_recip))
 
         # Verificar que los límites sean compatibles
-        if líms_recip[0] is not None and líms_fuente[0] is None or líms_recip[0] > líms_fuente[0]:
+        if (líms_recip[0] is not None) and (líms_fuente[0] is None or líms_recip[0] > líms_fuente[0]):
             avisar(_('Pensamos bien avisarte que el límite inferior ({l_r}) del variable recipiente "{v_r}" '
                      'queda superior al límite inferior ({l_f}) del variable fuente "{v_f}" de la conexión.'
                      ).format(v_r=var_recip, v_f=var_fuente, l_r=líms_recip[0], l_f=líms_fuente[0]))
-        if líms_recip[1] is not None and líms_fuente[1] is None or líms_recip[1] < líms_fuente[1]:
+        if (líms_recip[1] is not None) and (líms_fuente[1] is None or líms_recip[1] < líms_fuente[1]):
             avisar(_('Pensamos bien avisarte que el límite superior ({l_r}) del variable recipiente "{v_r}" '
                      'queda inferior al límite superior ({l_f}) del variable fuente "{v_f}" de la conexión.'
                      ).format(v_r=var_recip, v_f=var_fuente, l_r=líms_recip[1], l_f=líms_fuente[1]))

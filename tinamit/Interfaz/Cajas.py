@@ -1,13 +1,9 @@
-import io
-import json
-import os
 import tkinter as tk
 import webbrowser
 from tkinter import filedialog as diálogo
 
 from tinamit import cambiar_lengua, guardar_json, cargar_json
 from tinamit.Conectado import Conectado
-from tinamit.definiciones import dir_raíz
 from . import CajasGenéricas as CjG
 from . import CajasSubEtapas as CjSE
 from . import Controles as Ctrl
