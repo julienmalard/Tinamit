@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 import numpy.testing as npt
+import xarray.testing as xrt
 
 from pruebas.recursos.BF.prueba_bf import ModeloPrueba
 from pruebas.test_geog import arch_clim_diario
@@ -282,33 +283,46 @@ class Test_SimulConDatos(unittest.TestCase):
         limpiar_mds()
 
 
-@unittest.skip
 class Test_SimulConDatosGeog(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.mod = ModeloPrueba(unid_tiempo='días')
         cls.geog = Geografía('Prueba Guatemala', archivo=arch_csv_geog)
         cls.datos = {
-            'tiempo': np.arange(21), 'Vacío': np.random.random(21)
-        }  # 21 días
+            '708': {'tiempo': np.arange(21), 'Vacío': np.random.random(21)},
+            '701': {'tiempo': np.arange(21), 'Vacío': np.random.random(21)},
+            '7': {'tiempo': np.arange(21), 'Vacío': np.random.random(21)}
+        }  # 3 lugares, 21 días
+
+    def _verificar_simul(símismo, res, var='Vacío'):
+        for lg, res_lg in res.items():
+            verdad = símismo.datos[lg][var][np.isin(símismo.datos[lg]['tiempo'], res['tiempo'])]
+            npt.assert_array_equal(verdad, res[var].values)
 
     def test_simular_en_lugar_único(símismo):
-        símismo.mod.simular_en(t_final=10, en='7', geog=símismo.geog, bd=símismo.datos, vars_interés='LLuvia')
+        res = símismo.mod.simular_en(t_final=10, en='7', geog=símismo.geog, bd=símismo.datos, vars_interés='Vacío')
+        símismo.assertSetEqual(set(res), {'7'})
+        símismo._verificar_simul(res)
 
     def test_simular_en_lugar_con_escala(símismo):
-        símismo.mod.simular_en(
-            t_final=10, en='7', escala='municipio', geog=símismo.geog, bd=símismo.datos, vars_interés='LLuvia'
+        res = símismo.mod.simular_en(
+            t_final=10, en='7', escala='municipio', geog=símismo.geog, bd=símismo.datos, vars_interés='Vacío'
         )
+        símismo.assertSetEqual(set(res), set([str(i) for i in range(701, 720)]))
+        símismo._verificar_simul(res)
+
+    def test_simular_en_lugar_sin_datos(símismo):
+        res = símismo.mod.simular_en(t_final=10, en='7', escala='municipio', geog=símismo.geog, vars_interés='Vacío')
+        símismo.assertSetEqual(set(res), set([str(i) for i in range(701, 720)]))
 
     def test_simular_en_lugar_sin_geog(símismo):
-        símismo.mod.simular_en(t_final=10, en='7', bd=símismo.datos, vars_interés='LLuvia')
+        res = símismo.mod.simular_en(t_final=10, en='7', bd=símismo.datos, vars_interés='Vacío')
+        símismo.assertSetEqual(set(res), {'7'})
+        símismo._verificar_simul(res)
 
     def test_simular_en_lugar_con_escala_sin_geog(símismo):
         with símismo.assertRaises(ValueError):
-            símismo.mod.simular_en(t_final=10, en='7', escala='municipio', bd=símismo.datos, vars_interés='LLuvia')
-
-    def test_simular_en_lugar_sin_datos(símismo):
-        símismo.mod.simular_en(t_final=10, en='7', escala='municipio', bd=símismo.datos, vars_interés='LLuvia')
+            símismo.mod.simular_en(t_final=10, en='7', escala='municipio', bd=símismo.datos, vars_interés='Vacío')
 
     @classmethod
     def tearDownClass(cls):

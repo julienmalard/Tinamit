@@ -1823,7 +1823,7 @@ class Modelo(object):
 
         # Preparar el mensaje de error.
         mnsj_error += '\nPuedes especificar el valor de configuración con' \
-                      '\n\ttinamit.config.poner_val_config({ll})'.format(ll=llave)
+                      '\n\ttinamit.config.poner_val_config({ll}, {val})'.format(ll=llave, val='"mi_valor_aquí"')
 
         # Obtener el valor de configuración.
         return obt_val_config(llave=llave, cond=cond, mnsj_err=mnsj_error, respaldo=respaldo)
