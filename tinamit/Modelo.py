@@ -10,17 +10,17 @@ from warnings import warn as avisar
 
 import numpy as np
 import pandas as pd
-import tinamit.Geog.Geog as Geog
 import xarray as xr
-from config import obt_val_config
 from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
+
+import tinamit.Geog.Geog as Geog
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
 from tinamit.Análisis.Datos import obt_fecha_ft, gen_SuperBD, jsonificar, numpyficar, SuperBD
 from tinamit.Análisis.Valids import validar_resultados
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.Unidades.conv import convertir
-from tinamit.config import _
+from tinamit.config import _, obt_val_config
 from tinamit.cositas import detectar_codif, valid_nombre_arch, guardar_json, cargar_json
 
 
