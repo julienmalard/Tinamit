@@ -237,7 +237,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         else:
             símismo.dll = crear_dll_Vensim(dll_Vensim)
 
-        if dll_Vensim is None:
+        if símismo.dll is None:
             return
 
         # Inicializar Vensim
