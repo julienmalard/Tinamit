@@ -39,17 +39,26 @@ class Test_Geografía(unittest.TestCase):
         with símismo.assertRaises(ValueError):
             símismo.geog.nombre_a_cód(nombre='¡Yo no existo!')
 
-    def test_obt_lugares_en_región(símismo):
-        lgs = símismo.geog.obt_lugares_en('7')
+    def test_obt_lugares_en_región_con_escala(símismo):
+        lgs = símismo.geog.obt_lugares_en('7', escala='municipio')
         símismo.assertEqual(len(lgs), 19)
         símismo.assertTrue(all(símismo.geog.en_región(lg, '7') for lg in lgs))
 
+    def test_obt_lugares_en_región_sin_escala(símismo):
+        """Debe devolver la misma región."""
+        lgs = símismo.geog.obt_lugares_en('7')
+        símismo.assertListEqual(lgs, ['7'])
+
     def test_obt_lugares_en_región_cód_numérico(símismo):
-        ref = símismo.geog.obt_lugares_en('1')
-        lgs = símismo.geog.obt_lugares_en(1)
+        ref = símismo.geog.obt_lugares_en('1', escala='municipio')
+        lgs = símismo.geog.obt_lugares_en(1, escala='municipio')
         símismo.assertListEqual(ref, lgs)
 
-    def test_obt_lugares_en_con_escala(símismo):
+    def test_obt_lugares_en_nada_con_escala(símismo):
+        """
+        Con `en==None` y escala especificada, nos devuelve todos los lugares de la escala especificada en la
+        geografía.
+        """
         lgs = símismo.geog.obt_lugares_en(escala='departamento')
         símismo.assertListEqual(lgs, [str(x) for x in range(1, 23)])
 

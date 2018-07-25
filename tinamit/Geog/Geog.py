@@ -417,8 +417,10 @@ class Geografía(object):
 
         """
 
-        escala = símismo._validar_escala(escala)
         en = símismo._validar_código_lugar(en)
+        if escala is None and en is not None:
+            return [en]
+        escala = símismo._validar_escala(escala, en)
 
         if en is not None:
             escl_en = símismo.cód_a_lugar[en]['escala']
@@ -456,7 +458,7 @@ class Geografía(object):
         return orden
 
     def obt_jerarquía(símismo, en=None, escala=None, orden_jerárquico=None):
-        escala = símismo._validar_escala(escala)
+        escala = símismo._validar_escala(escala, en)
         en = símismo._validar_código_lugar(en)
 
         orden_jerárquico = símismo._validar_orden_jerárquico(escala, orden_jerárquico)
@@ -492,20 +494,28 @@ class Geografía(object):
 
     def nombre_a_cód(símismo, nombre, escala=None):
 
-        escala = símismo._validar_escala(escala)
         nombre = nombre.lower()
 
+        if escala is not None:
+            escala = símismo._validar_escala(escala)
+
         for cód, dic in símismo.cód_a_lugar.items():
-            if dic['nombre'].lower() == nombre and dic['escala'].lower() == escala.lower():
-                return cód
+            if dic['nombre'].lower() == nombre:
+                if escala is None:
+                    return cód
+                elif dic['escala'].lower() == escala.lower():
+                    return cód
 
         raise ValueError(_('No encontramos región correspondiendo a "{}"').format(nombre))
 
-    def _validar_escala(símismo, escala):
+    def _validar_escala(símismo, escala, en=None):
         if escala is None:
-            escala = símismo.orden_jerárquico[-1]
-            if isinstance(escala, list):
-                escala = escala[0]
+            if en is None:
+                escala = símismo.orden_jerárquico[-1]
+                if isinstance(escala, list):
+                    escala = escala[0]
+            else:
+                escala = símismo.obt_escala_región(en)
         else:
             if escala.lower() not in [x.lower() for x in símismo.escalas]:
                 raise ValueError(_('La escala "{esc}" no existe en la geografía de "{geog}"')

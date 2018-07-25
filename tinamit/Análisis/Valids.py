@@ -4,7 +4,7 @@ import scipy.optimize as optim
 import scipy.stats as estad
 
 
-def validar_resultados(obs, matrs_simul):
+def validar_resultados(obs, matrs_simul, tol=0.75):
     """
 
     Parameters
@@ -16,7 +16,6 @@ def validar_resultados(obs, matrs_simul):
     -------
 
     """
-    tol = 0.80
 
     l_vars = list(obs.data_vars)
     mu_obs = obs.mean()

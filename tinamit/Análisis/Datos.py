@@ -90,9 +90,7 @@ class Datos(object):
         if cód_vacío is None:
             símismo.cód_vacío = {'', 'NA', 'na', 'Na', 'nan', 'NaN'}
         else:
-            if isinstance(cód_vacío, set):
-                símismo.cód_vacío = cód_vacío
-            elif isinstance(cód_vacío, list):
+            if isinstance(cód_vacío, (set, list)):
                 símismo.cód_vacío = set(cód_vacío)
             else:
                 símismo.cód_vacío = {cód_vacío}
@@ -329,9 +327,10 @@ class SuperBD(object):
             return set()
         return set(bd['lugar'].values)
 
-    def tiempos(símismo, tipo='datos'):
+    def tiempos(símismo, tipo='datos', lugar=None):
         if not símismo.bd_lista:
             símismo._gen_bd_intern()
+
         if tipo == 'microdatos':
             bd = símismo.microdatos
         elif tipo == 'datos':
@@ -340,7 +339,10 @@ class SuperBD(object):
             raise ValueError
         if bd is None:
             return []
-        return bd['tiempo'].values
+        if lugar is None:
+            return bd['tiempo'].values
+        else:
+            return bd['tiempo'].where(bd['lugar'] == lugar, drop=True).values
 
     def tiempo_fecha(símismo):
         return np.issubdtype(símismo.tiempos().dtype, np.datetime64)
@@ -610,11 +612,12 @@ class SuperBD(object):
 
             """
 
-            if isinstance(fch, ft.date) or isinstance(fch, ft.datetime):
+            if isinstance(fch, (ft.date, ft.datetime)):
                 pass
-
-            elif isinstance(fch, int):
+            elif fch is None:
                 return fch
+            elif isinstance(fch, (int, float, np.float, np.int)):
+                return int(fch)
 
             elif isinstance(fch, str):
                 if len(fch) == 7:
@@ -962,10 +965,11 @@ class SuperBD(object):
                            .format(', '.join(todavía_faltan)))
                     for v in todavía_faltan:
                         existen = np.where(bd_temp[v].notnull())[0]
-                        primero = existen[0]
-                        último = existen[-1]
-                        bd_temp[v][:primero] = bd_temp[v][primero]
-                        bd_temp[v][último + 1:] = bd_temp[v][último]
+                        if len(existen):
+                            primero = existen[0]
+                            último = existen[-1]
+                            bd_temp[v][:primero] = bd_temp[v][primero]
+                            bd_temp[v][último + 1:] = bd_temp[v][último]
 
             # Agregar a los resultados finales
             if finalizados is None:
@@ -996,7 +1000,11 @@ class SuperBD(object):
 
         # Escoger las columnas que corresponden a las tiempos deseadas.
         if isinstance(tiempos, tuple):
-            return bd.where((bd['tiempo'] >= tiempos[0]) & (bd['tiempo'] <= tiempos[1]), drop=True)
+            if tiempos[0] is not None:
+                bd = bd.where(bd['tiempo'] >= tiempos[0], drop=True)
+            if tiempos[1] is not None:
+                bd = bd.where(bd['tiempo'] <= tiempos[1], drop=True)
+            return bd
         elif isinstance(tiempos, list):
             return bd.where(bd['tiempo'].isin(tiempos), drop=True)
         else:
@@ -1033,8 +1041,7 @@ class SuperBD(object):
         archivo = símismo._validar_archivo(archivo, ext='.jpg')
 
         datos = símismo.obt_datos(l_vars=var, tiempos=fechas, lugares=lugar, bd_datos=bd_datos, tipo='datos')
-        datos_error = símismo.obt_datos(l_vars=var, tiempos=fechas, lugares=lugar, bd_datos=bd_datos,
-                                        tipo='error')
+        datos_error = símismo.obt_datos(l_vars=var, tiempos=fechas, lugares=lugar, bd_datos=bd_datos, tipo='error')
 
         fig = Figura()
         TelaFigura(fig)

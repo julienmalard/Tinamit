@@ -13,7 +13,7 @@ from tinamit.config import _
 
 try:
     import pymc3 as pm
-except ImportError:
+except ImportError:  # pragma: sin cobertura
     pm = None
 
 

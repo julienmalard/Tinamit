@@ -214,6 +214,10 @@ class Test_SuperBD(unittest.TestCase):
         símismo.bd.graficar_línea(var='completo', archivo='línea completo.jpg')
         símismo.assertTrue(os.path.isfile('./línea completo.jpg'))
 
+    def test_graficar_línea_fecha_única(símismo):
+        símismo.bd.graficar_línea(var='completo', fechas='2000', archivo='línea fecha_única completo.jpg')
+        símismo.assertTrue(os.path.isfile('./línea fecha_única completo.jpg'))
+
     def test_graficar_comparar(símismo):
         símismo.bd.graf_comparar(var_x='completo', var_y='incompleto')
         símismo.assertTrue(os.path.isfile('./completo_incompleto.jpg'))

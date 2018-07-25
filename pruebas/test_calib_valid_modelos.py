@@ -43,7 +43,6 @@ class Test_CalibModelo(unittest.TestCase):
         símismo.assertTrue(símismo.mod.validar(bd=símismo.datos)['éxito'])
 
 
-@unittest.skip
 class Test_CalibModeloEspacial(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -57,7 +56,7 @@ class Test_CalibModeloEspacial(unittest.TestCase):
         mod.geog = Geografía('prueba', archivo=arch_csv_geog)
         mod.cargar_calibs(cls.paráms)
         cls.datos = mod.simular_en(
-            t_final=200, en=['708', '701', '1010'],
+            t_final=100, en=['708', '1010'],
             vars_interés=['Individuos Suceptibles', 'Individuos Infectados', 'Individuos Resistentes']
         )
         mod.borrar_calibs()

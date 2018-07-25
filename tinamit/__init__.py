@@ -1,5 +1,5 @@
 from pkg_resources import resource_filename
-
+from . import config
 
 # Cosas básicas
 __author__ = 'Julien Malard'

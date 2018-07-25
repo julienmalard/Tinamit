@@ -283,7 +283,6 @@ class Test_SimulConDatos(unittest.TestCase):
         limpiar_mds()
 
 
-@unittest.skip
 class Test_SimulConDatosGeog(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -297,8 +296,9 @@ class Test_SimulConDatosGeog(unittest.TestCase):
 
     def _verificar_simul(símismo, res, var='Vacío'):
         for lg, res_lg in res.items():
-            verdad = símismo.datos[lg][var][np.isin(símismo.datos[lg]['tiempo'], res['tiempo'])]
-            npt.assert_array_equal(verdad, res[var].values)
+            if lg in símismo.datos:
+                verdad = símismo.datos[lg][var][np.isin(símismo.datos[lg]['tiempo'], res[lg]['tiempo'])]
+                npt.assert_array_equal(verdad, res[lg][var].values)
 
     def test_simular_en_lugar_único(símismo):
         res = símismo.mod.simular_en(t_final=10, en='7', geog=símismo.geog, bd=símismo.datos, vars_interés='Vacío')
@@ -324,10 +324,6 @@ class Test_SimulConDatosGeog(unittest.TestCase):
     def test_simular_en_lugar_con_escala_sin_geog(símismo):
         with símismo.assertRaises(ValueError):
             símismo.mod.simular_en(t_final=10, en='7', escala='municipio', bd=símismo.datos, vars_interés='Vacío')
-
-    @classmethod
-    def tearDownClass(cls):
-        limpiar_mds()
 
 
 def _verificar_resultados(var, res, datos, rango_t):

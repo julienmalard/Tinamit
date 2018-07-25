@@ -16,11 +16,11 @@ from tinamit.config import _
 
 try:
     import pymc3 as pm
-except ImportError:
+except ImportError:  # pragma: sin cobertura
     pm = None
 
 if pm is None:
-    dists = None
+    dists = None  # pragma: sin cobertura
 else:
     dists = {'Beta': {'sp': estad.beta, 'pm': pm.Beta,
                       'sp_a_pm': lambda p: {'alpha': p[0], 'beta': p[1]},
@@ -523,16 +523,14 @@ class CalibradorEc(object):
 
 
 class CalibradorMod(object):
-    def __init__(símismo, mod, bd):
+    def __init__(símismo, mod):
         """
 
         Parameters
         ----------
         mod : Modelo.Modelo
-        bd: SuperBD
         """
         símismo.mod = mod
-        símismo.bd = bd
 
     def calibrar(símismo, paráms, líms_paráms, bd, método, vars_obs, n_iter, corresp_vars=None):
 

@@ -612,9 +612,9 @@ class Modelo(object):
             if isinstance(op_inic, list):
                 tipos_ops[op] = list if len(op_inic) else 'val'
             elif isinstance(op_inic, dict):
-                if all(isinstance(v, dict) for v in op_inic.values()):
+                if all(isinstance(v, (dict, xr.Dataset, pd.DataFrame)) or v is None for v in op_inic.values()):
                     tipos_ops[op] = dict if len(op_inic) else 'val'
-                elif not any(isinstance(v, dict) for v in op_inic.values()):
+                elif not any(isinstance(v, (dict, xr.Dataset, pd.DataFrame) or v is None) for v in op_inic.values()):
                     tipos_ops[op] = 'val'
                 else:
                     raise ValueError(_('Error en `{op}`.').format(op=op))
@@ -729,11 +729,14 @@ class Modelo(object):
         return resultados
 
     def simular_en(
-            símismo, t_final=None, t_inic=None, paso=1, nombre_corrida='Corrida Tinamït',
+            símismo, t_final=None, t_inic=None, paso=1, nombre_corrida='',
             en=None, escala=None, geog=None, bd=None, vals_inic=None, vals_extern=None,
             lugar_clima=None, clima=None, vars_interés=None,
             guardar=False, paralelo=None
     ):
+
+        if bd is not None:
+            bd = gen_SuperBD(bd)
 
         # Identificar los códigos de lugares en los cuales tenemos que simular
         if geog is not None:
@@ -755,14 +758,22 @@ class Modelo(object):
                 # Sino, tomar los lugares de la base de datos
                 lugares = bd.lugares()
 
-        # Generar datos iniciales y externos para cada uno
-        vals_inic_por_lg = {lg: {} for lg in lugares}
-        vals_extern_por_lg = {lg: {} for lg in lugares}
+        # Generar datos iniciales y externos para cada lugar
+        vals_inic_por_lg = {lg: None for lg in lugares}
+        vals_extern_por_lg = {lg: None for lg in lugares}
         for lg in lugares:
-            datos_inic = símismo._obt_datos_inic(t_inic, lugar=lg, vars_inic=vals_inic)
+            if t_inic is None and bd is not None and lg in bd.lugares():
+                t_inic_lg = bd.tiempos(lugar=lg)[0]
+            else:
+                t_inic_lg = t_inic
+            if t_final is None and bd is not None and lg in bd.lugares():
+                t_final_lg = bd.tiempos(lugar=lg)[-1]
+            else:
+                t_final_lg = t_final
+            datos_inic, datos_extern = símismo._procesar_vars_extern(
+                vars_inic=vals_inic, vars_extern=vals_extern, bd=bd, t_inic=t_inic_lg, t_final=t_final_lg, lg=lg,
+            )
             vals_inic_por_lg[lg] = datos_inic
-
-            datos_extern = símismo._obt_datos_extern(t_inic, t_final, paso, lugar=lg, vars_extern=vals_extern)
             vals_extern_por_lg[lg] = datos_extern
 
         # Extraer datos de calibración para cada lugar
@@ -773,25 +784,11 @@ class Modelo(object):
 
         # Correr las simulaciones en grupo
         return símismo.simular_grupo(
-            t_final=t_final, paso=paso, nombre_corrida=nombre_corrida,
-            vals_inic=vals_inic_por_lg, vals_extern=vals_extern_por_lg, t_inic=t_inic,
+            t_final=t_final, t_inic=t_inic, paso=paso, nombre_corrida=nombre_corrida,
+            vals_inic=vals_inic_por_lg, vals_extern=vals_extern_por_lg,
             lugar_clima=lugar_clima, clima=clima, combinar=False, paralelo=paralelo,
             vars_interés=vars_interés, guardar=guardar
         )
-
-    def _obt_datos_inic(símismo, tiempo, lugar, bd):
-        if bd is None:
-            return {}
-        l_vars = NotImplemented
-        return bd.obt_datos(l_vars=l_vars, lugares=lugar, tiempos=tiempo, interpolar=True)
-
-    def _obt_datos_extern(símismo, t_inic, t_final, paso, lugar, bd):
-        if bd is None:
-            return {}
-        l_vars = NotImplemented
-        n_pasos = símismo._procesar_rango_tiempos(t_inic, t_final, paso)
-        l_tiempos = []
-        return bd.obt_datos(l_vars=l_vars, lugares=lugar, tiempos=l_tiempos, interpolar=True)
 
     def guardar_resultados(símismo, res=None, nombre=None, frmt='json', l_vars=None):
         """
@@ -1754,16 +1751,38 @@ class Modelo(object):
                 líms_paráms[p] = símismo.obt_lims_var(p)
         líms_paráms = {ll: v for ll, v in líms_paráms.items() if ll in paráms}
 
-        calibrador = CalibradorMod(símismo, bd)
-        d_calibs = calibrador.calibrar(
-            paráms=paráms, bd=bd, líms_paráms=líms_paráms, método=método, n_iter=n_iter, vars_obs=l_vars
-        )
-        símismo.calibs.update(d_calibs)
+        if isinstance(bd, dict) and all(isinstance(v, xr.Dataset) for v in bd.values()):
+            for lg in bd:
+                calibrador = CalibradorMod(símismo)
+                d_calibs = calibrador.calibrar(
+                    paráms=paráms, bd=bd[lg], líms_paráms=líms_paráms, método=método, n_iter=n_iter, vars_obs=l_vars
+                )
+                for var in d_calibs:
+                    if var not in símismo.calibs:
+                        símismo.calibs[var] = {}
+                    símismo.calibs[var][lg] = d_calibs[var]
+
+        else:
+            calibrador = CalibradorMod(símismo)
+            d_calibs = calibrador.calibrar(
+                paráms=paráms, bd=bd, líms_paráms=líms_paráms, método=método, n_iter=n_iter, vars_obs=l_vars
+            )
+            símismo.calibs.update(d_calibs)
 
     def validar(símismo, bd, var=None, t_final=None, corresp_vars=None):
+        if isinstance(bd, dict) and all(isinstance(v, xr.Dataset) for v in bd.values()):
+            res = {}
+            for lg in bd:
+                bd_lg = gen_SuperBD(bd[lg])
+                vld = símismo._validar(bd=bd_lg, var=var, t_final=t_final, corresp_vars=corresp_vars, lg=lg)
+                res[lg] = vld
+            res['éxito'] = all(d['éxito'] for d in res.values())
+            return res
+        else:
+            bd = gen_SuperBD(bd)
+            return símismo._validar(bd=bd, var=var, t_final=t_final, corresp_vars=corresp_vars)
 
-        bd = gen_SuperBD(bd)
-
+    def _validar(símismo, bd, var, t_final, corresp_vars, lg=None):
         if corresp_vars is None:
             corresp_vars = {}
 
@@ -1775,18 +1794,20 @@ class Modelo(object):
         else:
             l_vars = var
         l_vars = [símismo.valid_var(v) for v in l_vars]
-
         obs = bd.obt_datos(l_vars)[l_vars]
         if t_final is None:
             t_final = len(obs['n']) - 1
-        d_vals_prms = {p: d_p['dist'] for p, d_p in símismo.calibs.items()}
+        if lg is None:
+            d_vals_prms = {p: d_p['dist'] for p, d_p in símismo.calibs.items()}
+        else:
+            d_vals_prms = {p: d_p[lg]['dist'] for p, d_p in símismo.calibs.items()}
         n_vals = len(list(d_vals_prms.values())[0])
         vals_inic = [{p: v[í] for p, v in d_vals_prms.items()} for í in range(n_vals)]
         res_simul = símismo.simular_grupo(
             t_final, vals_inic=vals_inic, vars_interés=l_vars, combinar=False, paralelo=False
         )
 
-        matrs_simul = {vr: np.array([d[vr] for d in res_simul.values()]) for vr in l_vars}
+        matrs_simul = {vr: np.array([d[vr].values for d in res_simul.values()]) for vr in l_vars}
 
         resultados = validar_resultados(obs=obs, matrs_simul=matrs_simul)
         return resultados
@@ -2059,7 +2080,7 @@ def _gen_dic_ops_corridas(nombre_corrida, combinar, tipos_ops, opciones):
 
                 # Generar el diccionario de nombres de corridas con sus valores de simulación correspondientes.
                 corridas = {
-                    '{}_{}'.format(nombre_corrida, nmb_corr):
+                    (nombre_corrida + ('_' if len(nombre_corrida) else '')) + nmb_corr:
                         {
                             ll: op[nmb_corr] if tipos_ops[ll] is dict else op for ll, op in opciones.items()
                         }
@@ -2068,7 +2089,7 @@ def _gen_dic_ops_corridas(nombre_corrida, combinar, tipos_ops, opciones):
             else:
                 # Sino, las daremos nombres según números consecutivos
                 corridas = {
-                    '{}_{}'.format(nombre_corrida, i):
+                    (nombre_corrida + ('_' if len(nombre_corrida) else '')) + str(i):
                         {
                             nmb: op[i] if tipos_ops[nmb] is list else op for nmb, op in opciones.items()
                         }

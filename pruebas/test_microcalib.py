@@ -50,6 +50,18 @@ class Test_Calibrador(unittest.TestCase):
                 for p, v in símismo.paráms.items():
                     símismo.assertAlmostEquals(calibs[p]['val'], v, places=1)
 
+    def test_calibrador_sin_var_y(símismo):
+        with símismo.assertRaises(ValueError):
+            CalibradorEc(ec='a*x+b')
+
+    def test_error_líms(símismo):
+        with símismo.assertRaises(ValueError):
+            símismo.clbrd.calibrar(bd_datos=símismo.bd_datos, líms_paráms={'a': (1, 2, 3)})
+
+    def test_calibrar_en_sin_geog(símismo):
+        with símismo.assertRaises(ValueError):
+            símismo.clbrd.calibrar(bd_datos=símismo.bd_datos, en='1')
+
 
 class Test_CalibEnModelo(unittest.TestCase):
     paráms = {
