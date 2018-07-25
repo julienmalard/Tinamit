@@ -182,8 +182,9 @@ class Test_ModeloSenc(unittest.TestCase):
                     os.remove(arch + frmt)
 
     def test_leer_resultados_vdf_vensim(símismo):
-        mod = símismo.modelos['dllVensim']
-        if mod.instalado():
+
+        if 'dllVensim' in símismo.modelos:
+            mod = símismo.modelos['dllVensim']
             leídos = mod.leer_arch_resultados(archivo=mod.corrida_activa + '.vdf', var='Lago')
             refs = mod.leer_resultados(var='Lago')
             xrt.assert_allclose(leídos, refs, rtol=1e-3)
