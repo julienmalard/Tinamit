@@ -2,8 +2,8 @@ from pkg_resources import resource_filename
 from . import config
 from .Modelo import Modelo
 from .Conectado import Conectado
-import EnvolturasMDS
-import EnvolturasBF
+from . import EnvolturasMDS
+from . import EnvolturasBF
 
 # Cosas básicas
 __author__ = 'Julien Malard'
