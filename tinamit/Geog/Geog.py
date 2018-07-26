@@ -1,6 +1,7 @@
 import csv
 import datetime as ft
 import os
+import shutil
 from collections import OrderedDict
 from warnings import warn as avisar
 
@@ -13,7 +14,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
 
 from tinamit.config import _
-from tinamit.cositas import detectar_codif
+from tinamit.cositas import detectar_codif, valid_nombre_arch
 from تقدیر.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
 from تقدیر.مقام import مقام
 
@@ -662,9 +663,83 @@ class Geografía(object):
         return símismo.nombre
 
     def en_región(símismo, cód_lugar, cód_región):
+        """
+        Verifica si un lugar está en una región especificada.
+
+        Parameters
+        ----------
+        cód_lugar : str
+            El lugar de interés.
+        cód_región : str
+            La región en la cual queremos saber si se encuentra el lugar.
+
+        Returns
+        -------
+        bool
+            Si el lugar está en la región especificada.
+        """
+        if cód_lugar == cód_región:
+            return True
         escala_reg = símismo.obt_escala_región(cód_región)
         dic_en = símismo.cód_a_lugar[cód_lugar]['en']
         return escala_reg in dic_en and dic_en[escala_reg] == cód_región
+
+    def dibujar_corrida(símismo, resultados, l_vars=None, directorio='./', i_paso=None, colores=None, escala=None):
+
+        if all(v in resultados for v in l_vars):
+            lugares = None
+        else:
+            lugares = list(resultados)
+            faltan_de_geog = [lg for lg in lugares if lg not in símismo.cód_a_lugar]
+            if len(faltan_de_geog):
+                avisar(_('\nLos lugares siguientes no están en la geografía y por tanto no se podrán dibujar:'
+                         '\n\t{}').format(', '.join(faltan_de_geog)))
+
+        if isinstance(l_vars, str):
+            l_vars = [l_vars]
+
+        for var in l_vars:
+
+            if lugares is None:
+                res_var = resultados[var]
+                n_obs = res_var.shape[-1]
+                if escala is None:
+                    escala = np.min(res_var), np.max(res_var)
+            else:
+                res_var = {lg: resultados[lg][var] for lg in lugares}
+                n_obs = len(list(resultados.values())[0]['n']) + 1
+                if escala is None:
+                    escala = res_var[var].min(), res_var[var].max()
+
+            if isinstance(i_paso, tuple):
+                i_paso = list(i_paso)
+
+            if i_paso is None:
+                i_paso = [0, n_obs]
+            if isinstance(i_paso, int):
+                i_paso = [i_paso, i_paso + 1]
+            if i_paso[0] is None:
+                i_paso[0] = 0
+            if i_paso[1] is None:
+                i_paso[1] = n_obs
+
+            # Incluir el nombre del variable en el directorio, si no es que ya esté allí.
+            nombre_var = valid_nombre_arch(var)
+            if os.path.split(directorio)[1] != nombre_var:
+                directorio = os.path.join(directorio, nombre_var)
+
+            # Crear el directorio, si no existe ya. Sino borrarlo.
+            if os.path.exists(directorio):
+                shutil.rmtree(directorio)
+            os.makedirs(directorio)
+
+            for i in range(*i_paso):
+                if lugares is None:
+                    valores = res_var[..., i]
+                else:
+                    valores = {lg: res_var[i] for lg in res_var}
+                archivo_í = os.path.join(directorio, '{}, {}'.format(nombre_var, i))
+                símismo.dibujar(archivo=archivo_í, valores=valores, título=var, colores=colores, escala_num=escala)
 
 
 def _dibujar_shp(ejes, frm, colores, orden=None, alpha=1.0, llenar=True):

@@ -1,5 +1,9 @@
 from pkg_resources import resource_filename
 from . import config
+from .Modelo import Modelo
+from .Conectado import Conectado
+import EnvolturasMDS
+import EnvolturasBF
 
 # Cosas básicas
 __author__ = 'Julien Malard'
@@ -11,5 +15,4 @@ with open(resource_filename('tinamit', 'versión.txt')) as _archivo_versión:
 
 __version__ = __versión__
 
-
-
+__all__ = ['config', 'Modelo', 'Conectado', 'EnvolturasBF', 'EnvolturasMDS']

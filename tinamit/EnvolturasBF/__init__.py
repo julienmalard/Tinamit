@@ -1,1 +1,1 @@
-from tinamit.EnvolturasBF.SAHYSMOD import ModeloSAHYSMOD
+from .SAHYSMOD import ModeloSAHYSMOD
