@@ -1,3 +1,4 @@
+import csv
 import datetime as ft
 import math
 import os
@@ -8,14 +9,19 @@ from multiprocessing import Pool as Reserva
 from warnings import warn as avisar
 
 import numpy as np
+import pandas as pd
+import xarray as xr
 from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
-from tinamit import _, valid_nombre_arch
-from tinamit.Análisis.Calibs import Calibrador
+from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
+from tinamit.Análisis.Datos import obt_fecha_ft, gen_SuperBD, jsonificar, numpyficar, SuperBD
+from tinamit.Análisis.Valids import validar_resultados
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.Unidades.conv import convertir
+from tinamit.config import _, obt_val_config
+from tinamit.cositas import detectar_codif, valid_nombre_arch, guardar_json, cargar_json
 
 
 class Modelo(object):
@@ -26,18 +32,19 @@ class Modelo(object):
     aquí se implementan de manera independiente en cada subclase de `Modelo`.
     """
 
-    # Una opción para precisar si un modelo está instalado en la computadora o no. Se usa en el caso de modelos que
-    # dependen de un programa externo que podría no estar disponible en todas las computadoras que tienen Tinamït.
-    instalado = True
-
     leng_orig = 'es'
+
+    # Si el modelo puede combinar pasos mientras simula.
+    combin_pasos = False
 
     def __init__(símismo, nombre):
         """
         La función de inicialización de todos modelos, conectados o no.
 
-        :param nombre: El nombre del modelo. Sirve para identificar distintos modelos en un modelo conectado.
-        :type nombre: str
+        Parameters
+        ----------
+        nombre : str
+            El nombre del modelo.
 
         """
 
@@ -59,14 +66,12 @@ class Modelo(object):
         símismo.variables = {}
         símismo._inic_dic_vars()  # Iniciar los variables.
 
-        #
-        símismo.datos = None
+        # Para calibraciones
         símismo.calibs = {}
         símismo.info_calibs = {'calibs': {}, 'micro calibs': {}}
-        símismo.conex_var_datos = {}
 
         # Memorio de valores de variables (para leer los resultados más rápidamente después de una simulación).
-        símismo.mem_vars = {}
+        símismo.mem_vars = None  # type: xr.Dataset
 
         # Referencia hacia el nombre de la corrida activa.
         símismo.corrida_activa = None
@@ -74,61 +79,98 @@ class Modelo(object):
         # Una referncia para acordarse si los valores de los variables en el diccionario de variables están actualizados
         símismo.vals_actualizadas = False
 
-        # Un diccionarior para guardar valores de variables iniciales hasta el momento que empezamos la simulación.
-        # Es muy útil para modelos cuyos variables no podemos cambiar antes de empezar una simulación (como VENSIM).
-        símismo.vals_inic = {}
-        símismo.vars_clima = {}  # Formato: var_intern1: {'nombre_extrn': nombre_oficial, 'combin': 'prom' | 'total'}
-        símismo.lugar = None  # type: Geog.Lugar
-
         # Listas de los nombres de los variables que sirven de conexión con otro modelo.
         símismo.vars_saliendo = set()
+
+        # Para guardar variables climáticos
+        símismo.vars_clima = {}  # Formato: {var1: {'nombre_extrn': nombre_oficial, 'combin': 'prom' | 'total'}, ...}
 
         # Para manejar unidades de tiempo y su correspondencia con fechas iniciales.
         símismo._conv_unid_tiempo = {'unid_ref': None, 'factor': 1}
 
     def _inic_dic_vars(símismo):
         """
-        Esta función debe poblar el diccionario de variables del modelo, según la forma siguiente:
-        {'var1': {'val': 13, 'unidades': 'cm', 'ingreso': True, dims: (1,), 'egreso': True, 'info': 'descripción'},
-        'var2': ...}
-        }
+        Esta función debe poblar el diccionario de variables del modelo.
 
         """
+
         raise NotImplementedError
 
     def unidad_tiempo(símismo):
         """
         Esta función debe devolver la unidad de tiempo empleada por el modelo.
 
-        :return: La unidad de tiempo (p. ejemplo, 'meses', 'مہینہ', etc.
-        :rtype: str
-
+        Returns
+        -------
+        str
+            La unidad de tiempo (p. ej., 'meses', 'مہینہ', etc.)
         """
+
         raise NotImplementedError
 
     def _leer_vals_inic(símismo):
+        """
+        Esta función debe leer los valores iniciales del modelo (por ejemplo, de un archivo externo), si aplica,
+        y guardarlos en el diccionario interno.
+
+        """
+
         raise NotImplementedError
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
 
-        símismo._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
+        # Establecer la corrida actual
+        símismo.corrida_activa = nombre_corrida
 
+        # Acciones de inicialización propias a cada modelo
+        símismo._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
+
+        # Leer los valores iniciales
         símismo._leer_vals_inic()
 
-        símismo._act_vals_dic_var(símismo.vals_inic)
-        símismo._aplicar_cambios_vals_inic()
+        # Actualizar el diccionario de variables con los valores iniciales
+        símismo._act_vals_dic_var(vals_inic)
+
+        # Actualizar los valores de variables que tienen valor inicial bajo nombre de otro variable
+        símismo._aplicar_vals_inic()
+
+    def _aplicar_vals_inic(símismo):
+        for v, d_v in símismo.variables.items():
+            if 'val_inic' in d_v and d_v['val_inic']:
+                hijos = d_v['hijos']
+                val = símismo.obt_val_actual_var(v)
+                símismo._act_vals_dic_var({hj: val for hj in hijos})
 
     def _act_vals_dic_var(símismo, valores):
-        for var, val in valores.items():
-            if isinstance(símismo.variables[var]['val'], np.ndarray):
-                símismo.variables[var]['val'][:] = val
-            else:
-                símismo.variables[var]['val'] = val
+        """
+        Actualiza los valores en el diccionar de variables. Es importante emplear esta función y no poner el valor
+        manualmente para evitar errores súbtiles en las simulaciones.
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida):
+        Parameters
+        ----------
+        valores : dict[str, np.ndarray | float | int]
+            Un diccionario de variables y de sus nuevos valores.
+
+        """
+
+        # Para cara variable y valor...
+        for var, val in valores.items():
+
+            if isinstance(símismo.variables[var]['val'], np.ndarray):
+                # Si es matriz, tenemos que cambiar sus valores sin crear nueva matriz.
+
+                existen = np.invert(np.isnan(val))  # No cambiamos nuevos valores que faltan
+                símismo.variables[var]['val'][existen] = val[existen]
+
+            else:
+                # Si no es matriz, podemos cambiar el valor directamente.
+                if not np.isnan(val):  # Evitar cambiar si no existe el nuevo valor.
+                    símismo.variables[var]['val'] = val
+
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         """
         Esta función llama cualquier acción necesaria para preparar el modelo para la simulación. Esto incluye aplicar
-        valores iniciales. En general es muy fácil y se hace simplemente con "símismo.cambiar_vals(símismo.vals_inic)",
+        valores iniciales. En general es muy fácil y se hace simplemente con "símismo.cambiar_vals(vals_inic)",
         pero para unos modelos (como Vensim) es un poco más delicado así que los dejamos a ti para implementar.
 
         :param tiempo_final: El tiempo final de la simulación.
@@ -140,73 +182,50 @@ class Modelo(object):
         """
         raise NotImplementedError
 
-    def _aplicar_cambios_vals_inic(símismo):
-        raise NotImplementedError
+    def _procesar_rango_tiempos(símismo, t_inic, t_final, paso):
 
-    def _conectar_clima(símismo, lugar, fecha_inic, fecha_final, escenario, recalc):
-        """
-        Esta función conecta el clima de un lugar con el modelo.
+        if int(paso) != paso:
+            raise ValueError(_('`paso` debe ser un número entero.'))
+        if paso < 1:
+            raise ValueError(_('El paso debe ser superior a 1.'))
 
-        :param  n_pasos: El número de pasos para la simulación.
-        :type n_pasos: int
-        :param lugar: El lugar.
-        :type lugar: Lugar
-        :param fecha_inic: La fecha inicial de la simulación.
-        :type fecha_inic: ft.date
-        :param escenario: El escenario climático según el sistema de la IPCC (2.6, 4.5, 6.0, o 8.5)
-        :type escenario: str | float
+        if t_inic is None:
+            if isinstance(t_final, int):
+                t_inic = 0
+            else:
+                raise ValueError(_('Si el tiempo final es una fecha, debes especificar un tiempo inicial también.'))
+        elif isinstance(t_inic, str):
+            t_inic = obt_fecha_ft(t_inic)
+        elif isinstance(t_inic, ft.datetime):
+            t_inic = t_inic.date()
+        elif isinstance(t_inic, np.datetime64):
+            t_inic = ft.datetime.utcfromtimestamp(t_inic.tolist() / 1e9).date()
+        elif isinstance(t_inic, (np.float, np.int)):
+            t_inic = int(t_inic)
 
-        """
-
-        # Obtener los datos de lugares
-        lugar.prep_datos(fecha_inic=fecha_inic, fecha_final=fecha_final, tcr=escenario, regenerar=recalc)
-
-    def simular(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', fecha_inic=None, lugar=None,
-                recalc_clima=True, clima=None, vars_interés=None):
-        """
-
-        Parameters
-        ----------
-        tiempo_final :
-        paso :
-        nombre_corrida :
-        fecha_inic : ft.date
-        lugar :
-        recalc_clima :
-        clima :
-        vars_interés :
-
-        Returns
-        -------
-
-        """
+        if isinstance(t_final, str):
+            t_final = obt_fecha_ft(t_final)
+        elif isinstance(t_final, ft.datetime):
+            t_final = t_final.date()
+        elif isinstance(t_final, np.datetime64):
+            t_final = ft.datetime.utcfromtimestamp(t_final.tolist() / 1e9).date()
+        elif isinstance(t_final, (np.float, np.int)):
+            t_final = int(t_final)
 
         # Calcular el número de pasos necesario
-        n_pasos = int(math.ceil(tiempo_final / paso))
+        if isinstance(t_inic, int):
+            if isinstance(t_final, int):
+                if t_inic >= t_final:
+                    t_inic, t_final = t_final, t_inic
 
-        # Si hay fecha inicial, tenemos que guardar cuenta de donde estamos en el calendario
-        if fecha_inic is None:
-            if clima is not None:
-                raise ValueError(_('Hay que especificar la fecha inicial para simulaciones de clima.'))
-        else:
-            if isinstance(fecha_inic, ft.datetime):
-                # Formatear la fecha inicial
-                fecha_inic = fecha_inic.date()
-            elif isinstance(fecha_inic, int):
-                año = fecha_inic
-                día = mes = 1
-                fecha_inic = ft.date(year=año, month=mes, day=día)
-            elif isinstance(fecha_inic, str):
-                try:
-                    fecha_inic = ft.datetime.strptime(fecha_inic, '%d/%m/%Y').date()
-                except ValueError:
-                    raise ValueError(_('La fecha inicial debe ser en el formato "día/mes/año", por ejemplo '
-                                       '"24/12/2017".'))
-        fecha_act = fecha_inic
+                n_pasos = int(math.ceil((t_final - t_inic) / paso))
+                delta_fecha = None
 
-        # Preparar las unidades de tiempo
-        dic_trad_tiempo = {'año': 'year', 'mes': 'months', 'día': 'days'}
-        if fecha_inic is not None:
+            else:
+                raise ValueError(_('Si el tiempo final es una fecha, el tiempo inicial también debe ser una fecha.'))
+
+        elif isinstance(t_inic, ft.date):
+
             unid_ref_tiempo = símismo._conv_unid_tiempo['unid_ref']
             if unid_ref_tiempo is None:
                 unid_ref_tiempo = símismo.unidad_tiempo()
@@ -218,298 +237,421 @@ class Modelo(object):
                         break
                 except ValueError:
                     pass
-            if unid_ref_tiempo not in ['año', 'mes', 'día'] and fecha_inic is not None:
+            if unid_ref_tiempo not in ['año', 'mes', 'día']:
                 raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a años, meses o días.')
                                  .format(unid_ref_tiempo))
-            fecha_final = fecha_inic + deltarelativo(*{dic_trad_tiempo[unid_ref_tiempo]: n_pasos})
-        else:
-            unid_ref_tiempo = None
-            fecha_final = None
 
-        # Conectar el lugar
-        símismo.lugar = lugar
+            dic_trad_tiempo = {'año': 'year', 'mes': 'months', 'día': 'days'}
 
-        # Conectar el clima, si necesario
-        if clima is not None:
-            if lugar is None:
-                raise ValueError(_('Hay que especificar un lugar para incorporar el clima.'))
+            if isinstance(t_final, int):
+                n_pasos = int(math.ceil(t_final / paso))
+                t_final = t_inic + deltarelativo(
+                    **{dic_trad_tiempo[unid_ref_tiempo]: n_pasos}
+                )  # type: ft.date
             else:
-                símismo._conectar_clima(lugar=lugar, fecha_inic=fecha_inic, fecha_final=fecha_final,
-                                        escenario=clima, recalc=recalc_clima)
+                if t_inic >= t_final:
+                    t_inic, t_final = t_final, t_inic
 
-        # Iniciamos el modelo.
-        símismo.corrida_activa = nombre_corrida
-        símismo.iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
+                if unid_ref_tiempo == 'año':
+                    dlt = deltarelativo(t_final, t_inic)
+                    plazo = dlt.years + (not dlt.months == dlt.days == 0)
+                elif unid_ref_tiempo == 'mes':
+                    dlt = deltarelativo(t_final, t_inic)
+                    plazo = dlt.years * 12 + dlt.months + (not dlt.days == 0)
+                elif unid_ref_tiempo == 'día':
+                    plazo = (t_final - t_inic).days
+                else:
+                    raise ValueError
+                n_pasos = math.ceil(plazo / paso)
 
-        # Verificar los nombres de los variables de interés
+            delta_fecha = deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: paso})
+
+        else:
+            raise TypeError(_('t_inic debe ser fecha o número entero, no "{}".').format(type(t_inic)))
+
+        return n_pasos, t_inic, t_final, delta_fecha
+
+    def _procesar_vars_extern(símismo, vars_inic, vars_extern, bd, t_inic, t_final, lg=None):
+        """
+
+        Parameters
+        ----------
+        vars_inic : dict | list
+        vars_extern :
+        bd : SuperBD | None
+        lg :
+
+        Returns
+        -------
+
+        """
+        if lg is None and bd is not None and len(bd.lugares()) != 1:
+            raise ValueError(
+                _('Debes emplear ".simular_en()" para simulaciones con bases de datos con lugares múltiples.')
+            )
+
+        # Variables externos
+        if isinstance(vars_extern, str):
+            vars_extern = [vars_extern]
+        if vars_extern is vars_inic is None and bd is not None:
+            vars_extern = [x for x in list(bd.variables) if x in símismo.variables]
+        if vars_extern is None:
+            vals_extern = None
+        elif isinstance(vars_extern, list):
+            if bd is None:
+                raise ValueError
+            vals_extern = bd.obt_datos(l_vars=vars_extern, lugares=lg, tiempos=(t_inic, t_final), interpolar=False)
+        elif isinstance(vars_extern, (dict, pd.DataFrame, xr.Dataset)):
+            if isinstance(vars_extern, dict) and all(isinstance(v, str) for v in vars_extern.values()):
+                vals_extern = bd.obt_datos(
+                    l_vars=list(vars_extern.values()), lugares=lg, tiempos=(t_inic, t_final), interpolar=False
+                )
+                corresp_extern = {v: ll for ll, v in vars_extern.items()}
+                vals_extern.rename(corresp_extern, inplace=True)
+
+            else:
+                vals_extern = gen_SuperBD(vars_extern).obt_datos(tiempos=(t_inic, t_final), interpolar=False)
+        else:
+            raise TypeError(type(vars_extern))
+
+        # Variables iniciales
+        if isinstance(vars_inic, str):
+            vars_inic = [vars_inic]
+        corresps_inic = None
+        if vars_inic is None:
+            if bd is not None:
+                datos_inic = bd.obt_datos(lugares=lg, tiempos=t_inic, interpolar=False)
+                if len(datos_inic['tiempo']):
+                    vals_inic = {v: datos_inic[v].values[0] for v in bd.variables
+                                 if v in símismo.variables and not np.isnan(datos_inic[v])}
+                else:
+                    vals_inic = {}
+            else:
+                vals_inic = {}
+        elif isinstance(vars_inic, list):
+            vals_inic = {v: None for v in vars_inic}
+        elif isinstance(vars_inic, dict):
+            vals_inic = {ll: v if not isinstance(v, str) else None for ll, v in vars_inic.items()}
+            corresps_inic = {ll: v for ll, v in vars_inic.items() if isinstance(v, str)}
+            for vr, vr_bd in corresps_inic.items():
+                vals_inic[vr_bd] = vals_inic.pop(vr)
+        else:
+            raise TypeError(type(vars_inic))
+
+        for vr, vl in vals_inic.items():
+            if vl is None:
+                if vr not in bd.variables:
+                    raise ValueError
+                else:
+                    datos = bd.obt_datos(vr, lugares=lg, tiempos=t_inic)
+                    try:
+                        vals_inic[vr] = datos[vr].values[0]
+                    except IndexError:
+                        raise
+
+        if corresps_inic is not None:
+            for vr, vr_bd in corresps_inic.items():
+                vals_inic[vr] = vals_inic.pop(vr_bd)
+
+        if vals_extern is not None:
+            for vr in vals_extern.data_vars:
+                if vr not in vals_inic:
+                    datos = vals_extern.where(vals_extern['tiempo'] == t_inic, drop=True)[vr].values
+                    if len(datos) and not np.isnan(datos):
+                        vals_inic[vr] = datos[0]
+
+        return vals_inic, vals_extern
+
+    def simular(
+            símismo, t_final=None, t_inic=None, paso=1, nombre_corrida='Corrida Tinamït',
+            vals_inic=None, vals_extern=None, bd=None, lugar_clima=None, clima=None, vars_interés=None
+    ):
+        """
+        Correr una simulación del Modelo.
+
+        Parameters
+        ----------
+        t_final : ft.date | ft.datetime | str | int
+            El tiempo final de la simulación. Puede ser en formato de fecha o numérico. Si no se especifica,
+            se inferirá de `vars_extern`.
+        t_inic : ft.date | ft.datetime | str | int
+            El tiempo inicial de la simulación. Puede ser en formato de fecha o numérico. Si no se especifica,
+            se inferirá de `vars_extern`.
+        paso : int
+            El paso para la simulación.
+        nombre_corrida : str
+            El nombre de la corrida.
+        vals_inic : dict | str | list | pd.DataFrame | xr.Dataset
+            Valores iniciales para variables. Si es de tipo ``str`` o ``list``, se tomarán los valores de `bd`.
+        vals_extern : dict | str | list | pd.DataFrame | xr.Dataset
+            Valores externos que hay que actualizar a través de la simulación (no necesariamente iniciales).
+            Si es de tipo ``str`` o ``list``, se tomarán los valores de `bd`.
+        bd : SuperBD | dict | str | pd.DataFrame | xr.Dataset
+            Una base de datos opcional. Si se especifica, se empleará para obtener los valores de variables iniciales
+            y externos.
+        lugar_clima : Geog.Lugar
+            El lugar para simulaciones con clima.
+        clima : str | float | int
+            El escenario climático.
+        vars_interés : str | list[str]
+            Los variables de interés en los resultados.
+
+        Returns
+        -------
+        xr.Dataset
+            Los resultados de la simulación.
+
+        """
+
+        # Formatear argumentos
         if vars_interés is None:
             vars_interés = []
+        elif isinstance(vars_interés, str):
+            vars_interés = [vars_interés]
+
+        # Procesar datos, si existen
+        if bd is not None:
+            bd = gen_SuperBD(bd)
+
+            # Emplear el tiempo inicial o final de la base de datos, si necesario
+            t_inic = t_inic or bd.tiempos()[0]
+            t_final = t_final or bd.tiempos()[-1]
+
+        # Procesar los tiempos iniciales y finales
+        n_pasos, t_inic, t_final, delta_fecha = símismo._procesar_rango_tiempos(t_inic, t_final, paso)
+        simul_fecha = isinstance(t_inic, ft.date)  # Si tenemos una simulación basada en fechas
+        if bd is not None and simul_fecha is not bd.tiempo_fecha():
+            raise ValueError(_('Los datos y los tiempos de simulación deben ser ambos o fechas, o números.'))
+
+        # Procesar los valores iniciales y externos
+        vals_inic, vals_extern = símismo._procesar_vars_extern(
+            vals_inic, vals_extern, bd, t_inic=t_inic, t_final=t_final
+        )
+
+        # Preparar conexiones con datos de clima
+        if lugar_clima is None:
+            if clima is not None:
+                raise ValueError(_('Hay que especificar un lugar para incorporar el clima.'))
         else:
-            if not isinstance(vars_interés, list):
-                vars_interés = [vars_interés]
-            for i, v in enumerate(vars_interés.copy()):
-                var = símismo.valid_var(v)
-                vars_interés[i] = var
-                símismo.vars_saliendo.add(var)
+            if not simul_fecha:
+                raise ValueError(_('Hay que especificar la fecha inicial para simulaciones de clima.'))
 
-        símismo.mem_vars.clear()
-        for v in vars_interés:
-            dims = símismo.obt_dims_var(v)
-            if dims == (1,):
-                símismo.mem_vars[v] = np.empty(n_pasos + 1)
-            else:
-                símismo.mem_vars[v] = np.empty((n_pasos + 1, *símismo.obt_dims_var(v)))
+            clima = clima or '0'
 
-            símismo.mem_vars[v][0] = símismo.obt_val_actual_var(v)
+            # Conectar el clima
+            lugar_clima.prep_datos(fecha_inic=t_inic, fecha_final=t_final, tcr=clima)
 
-        # Hasta llegar al tiempo final, incrementamos el modelo.
-        for i in range(n_pasos):
+        # Iniciamos el modelo.
+        símismo.iniciar_modelo(tiempo_final=t_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
-            if fecha_inic is not None:
-                fecha_próx = fecha_act + deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: paso})
+        # Verificar los nombres de los variables de interés
+        símismo.vars_saliendo.clear()
 
+        for i, v in enumerate(vars_interés.copy()):
+            var = símismo.valid_var(v)
+            vars_interés[i] = var
+            símismo.vars_saliendo.add(var)
+
+        # Preparar el objeto Xarray para guardar los resultados
+        símismo.mem_vars = mem_vars = xr.Dataset({
+            v:
+                ('n', np.empty(n_pasos + 1)) if len(símismo.obt_dims_var(v)) == 1 else
+                (
+                    ('n', *tuple('x' + str(i) for i in range(len(símismo.obt_dims_var(v))))),
+                    np.empty((n_pasos + 1, *símismo.obt_dims_var(v)))
+                )
+            for v in vars_interés
+        })
+
+        # Agregar el eje temporal
+        if simul_fecha:
+            l_tiempos = np.array([t_inic + delta_fecha * i for i in range(n_pasos + 1)], dtype='datetime64')
+        else:
+            l_tiempos = np.arange(t_inic, t_final + paso, paso)
+        mem_vars.coords['tiempo'] = ('n', l_tiempos)
+
+        # Aquí tenemos dos opciones. Para accelerar simulaciones, podemos correr toda la simulación de una vez
+        # (y no paso por paso) si algunas condiciones se respetan:
+        if clima is None and símismo.combin_pasos and vals_extern is None:
+
+            # Correr todos los pasos de una vez
+            símismo.incrementar(paso=n_pasos * paso, guardar_cada=paso)
+
+            # Después de la simulación, cerramos el modelo.
+            símismo.cerrar_modelo()
+
+            # Leer los resultados
+            res = símismo.leer_arch_resultados(archivo=nombre_corrida, var=vars_interés)
+            if 'tiempo' not in res.coords:
+                res.coords['tiempo'] = ('n', l_tiempos)
+
+            # Guardar los variables de interés
+            for var in vars_interés:
+                mem_vars[var][:] = res[var].where(res['tiempo'].isin(mem_vars['tiempo']), drop=True)
+
+        else:
+            # Si la manera más rápida no fue posible, tenemos que ir paso por paso.
+
+            def _act_vals_externos(t):
                 # Actualizar variables de clima, si necesario
-                if clima:
-                    símismo.act_vals_clima(fecha_act, fecha_próx)
+                if clima is not None:
+                    símismo._act_vals_clima(t, mem_vars['tiempo'][i + 1], lugar=lugar_clima)
 
-                fecha_act = fecha_próx
+                # Aplicar valores externos
+                if vals_extern is not None:
+                    # Únicamente aplicar nuevos valores si tenemos valores para este punto de la simulación
+                    if np.isin(t, vals_extern['tiempo'].values):
+                        vals_ahora = vals_extern.where(vals_extern['tiempo'] == t, drop=True)
+                        nuevas = {
+                            vr: vals_ahora[vr].values[0]
+                            if vals_ahora[vr].values.shape == (1,) else vals_ahora[vr].values
+                            for vr in vals_extern.data_vars
+                        }
+                        símismo.cambiar_vals(nuevas)
 
-            # Incrementar el modelo
-            símismo.incrementar(paso)
+            # Hasta llegar al tiempo final, incrementamos el modelo.
+            for i in range(n_pasos):
 
-            # Guardar valores de variables de interés
-            if len(vars_interés):
-                símismo.leer_vals()
+                t_actual = mem_vars['tiempo'].values[i]  # El tiempo actual
+                _act_vals_externos(t_actual)
+
+                # Guardar resultados para variables de interés
+                for var in vars_interés:
+                    mem_vars[var][i] = símismo.obt_val_actual_var(var)
+
+                # Incrementar el modelo
+                símismo.incrementar(paso)
+
+                # Guardar valores de variables de interés
+                if len(vars_interés):
+                    símismo.leer_vals()
+
+            # Actualizar y leer los valores finales
+            _act_vals_externos(mem_vars['tiempo'].values[-1])
             for v in vars_interés:
-                símismo.mem_vars[v][i + 1] = símismo.obt_val_actual_var(v)
+                mem_vars[v][-1] = símismo.obt_val_actual_var(v)
 
-        # Después de la simulación, cerramos el modelo.
-        símismo.cerrar_modelo()
+            # Después de la simulación, cerramos el modelo.
+            símismo.cerrar_modelo()
 
         if vars_interés is not None:
             return copiar_profundo(símismo.mem_vars)
 
-    def simular_paralelo(símismo, tiempo_final, paso=1, nombre_corrida='Corrida Tinamït', vals_inic=None,
-                         fecha_inic=None, lugar=None, clima=None, recalc_clima=True, combinar=True,
-                         dibujar=None, paralelo=True, devolver=None):
+    def simular_grupo(
+            símismo, t_final, t_inic=None, paso=1, nombre_corrida='', vals_inic=None, vals_extern=None, bd=None,
+            lugar_clima=None, clima=None, combinar=True, paralelo=None, vars_interés=None, guardar=False
+    ):
+        """
+        Correr grupos de simulación. Puede ser mucho más fácil que de efectuar las corridas manualmente.
+
+        Parameters
+        ----------
+        t_final : list | dict | ft.date | ft.datetime | str | int
+            El tiempo final de la simulación. Puede ser en formato de fecha o numérico. Si no se especifica,
+            se inferirá de `vars_extern`.
+        t_inic : list | dict | ft.date | ft.datetime | str | int
+            El tiempo inicial de la simulación. Puede ser en formato de fecha o numérico. Si no se especifica,
+            se inferirá de `vars_extern`.
+        paso : list | dict | int
+            El paso para la simulación.
+        nombre_corrida : list | str
+            El nombre de la corrida.
+        vals_inic : list | dict | str | list | pd.DataFrame | xr.Dataset
+            Valores iniciales para variables. Si es de tipo ``str`` o ``list``, se tomarán los valores de `bd`.
+        vals_extern : list | dict | str | list | pd.DataFrame | xr.Dataset
+            Valores externos que hay que actualizar a través de la simulación (no necesariamente iniciales).
+            Si es de tipo ``str`` o ``list``, se tomarán los valores de `bd`.
+        bd : SuperBD | dict | str | pd.DataFrame | xr.Dataset
+            Una base de datos opcional. Si se especifica, se empleará para obtener los valores de variables iniciales
+            y externos.
+        lugar_clima : list | dict | Geog.Lugar
+            El lugar para simulaciones con clima.
+        clima : list | dict | str | float | int
+            El escenario climático.
+        combinar : bool
+            Si hay que hacer todas las combinaciones posibles de las opciones.
+        paralelo : bool
+            Si paralelizamos las corridas para ganar tiempo (con modelos rápidos, pierdes en vez de ganar).
+            Si es ``None``, Tinamït adivinará si es mejor paralelizar o no.
+        vars_interés : str | list[str]
+            Los variables de interés en los resultados.
+        guardar : bool
+            Si hay que guardar los resultados automáticamente en un archivo externo.
+
+        Returns
+        -------
+        dict[str, xr.Dataset]
+            Los resultados de las simulaciones.
+
+        """
 
         # Formatear los nombres de variables a devolver.
-        if devolver is not None:
-            if isinstance(devolver, str):
-                devolver = [devolver]
-            devolver = [símismo.valid_var(v) for v in devolver]
+        if vars_interés is not None:
+            if isinstance(vars_interés, str):
+                vars_interés = [vars_interés]
+            vars_interés = [símismo.valid_var(v) for v in vars_interés]
+        else:
+            if not guardar:
+                avisar(_('No podremos guardar datos porque tienes `guardar=False` y no especificaste `vars_interés`.'))
 
         # Poner las opciones de simulación en un diccionario.
-        opciones = {'paso': paso, 'fecha_inic': fecha_inic, 'lugar': lugar, 'vals_inic': vals_inic,
-                    'recalc_clima': recalc_clima, 'clima': clima, 'tiempo_final': tiempo_final}
+        opciones = {'paso': paso, 't_inic': t_inic, 'lugar_clima': lugar_clima, 'vals_inic': vals_inic,
+                    'vals_extern': vals_extern, 'clima': clima, 't_final': t_final}
 
-        # Verificar que las llaves sean consistentes
-        lls_dics = next((d.keys() for d in opciones.values() if isinstance(d, dict)), None)  # Las llaves
-        for op in opciones.values():
-            # Asegurarse que las llaves de esta opción sean iguales al estándar.
-            if isinstance(op, dict) and op.keys() != lls_dics:
-                raise ValueError(_('Las llaves de diccionario de cada opción deben ser iguales.'))
+        # Entender el tipo de opciones (lista, diccionario, o valor único)
+        tipos_ops = {
+            nmb: dict if isinstance(op, dict) else list if isinstance(op, list) else 'val'
+            for nmb, op in opciones.items()
+        }
+
+        # Una excepción para "vals_inic" y "vals_extern":
+        # si es un diccionario con nombres de variables como llaves, es valor único;
+        # si tiene nombres de corridas como llaves y diccionarios de variables como valores, es de tipo diccionario.
+        for op in ['vals_inic', 'vals_extern']:
+            op_inic = opciones[op]
+            if isinstance(op_inic, list):
+                tipos_ops[op] = list if len(op_inic) else 'val'
+            elif isinstance(op_inic, dict):
+                if all(isinstance(v, (dict, xr.Dataset, pd.DataFrame)) or v is None for v in op_inic.values()):
+                    tipos_ops[op] = dict if len(op_inic) else 'val'
+                elif not any(isinstance(v, (dict, xr.Dataset, pd.DataFrame) or v is None) for v in op_inic.values()):
+                    tipos_ops[op] = 'val'
+                else:
+                    raise ValueError(_('Error en `{op}`.').format(op=op))
 
         # Generaremos el diccionario de corridas:
-
-        # Una matriz con el número de valores distintos para cada opción, guardando únicamente las opciones con valores
-        # múltiples.
-        l_n_ops = np.array(
-            [
-                len(x) for x in opciones.values()  # El número de opciones
-                if ((isinstance(x, list) or isinstance(x, dict)) and (len(x) > 1))  # Si tiene valores múltiples
-            ]
+        corridas = _gen_dic_ops_corridas(
+            nombre_corrida=nombre_corrida, combinar=combinar, tipos_ops=tipos_ops, opciones=opciones
         )
-        # Una lista con el nombre de cada opción (p. ej., "paso", etc.) con valores múltiples.
-        l_nmbs_ops_var = [
-            ll for ll, v in opciones.items()  # El nombre de la opción
-            if ((isinstance(v, list) or isinstance(v, dict)) and (len(v) > 1))  # Si tiene valores múltiples
-        ]
 
-        # Crear el diccionario de corridas
-        if combinar:
-            # Si estamos combinando las opciones...
-
-            # El nombre de corrida no puede ser una lista si estamos combinando las opciones
-            if isinstance(nombre_corrida, list):
-                raise TypeError(_('No puedes especificar una lista de nombres de corridas si estás'
-                                  'simulando todas las combinaciones posibles de las opciones.'))
-
-            # El número de corridas es el producto del número de valores por opción.
-            n_corridas = int(np.prod(l_n_ops))
-
-            dic_ops = {}  # Un diccionario de nombres de simulación y sus opciones de corrida
-
-            # Poblar el diccionario de opciones iniciales
-            ops = {}  # Las opciones iniciales
-            nombre = []  # Una lista que se convertirá en el nombre de la opción
-            for ll, op in opciones.items():
-                # Para cada opción...
-
-                if not isinstance(op, dict) and not isinstance(op, list):
-                    # Si no hay valores múltiples, su único valor será su valor permanente.
-                    ops[ll] = op
-
-                else:
-                    # Pero si tenemos valores múltiples, damos el primero de la lista o diccionario para empezar.
-                    if isinstance(op, dict):
-                        # Si es un diccionario...
-
-                        # Tomar el nombre de la primera corrida especificada en el diccionario
-                        id_op = list(op)[0]
-
-                        # ...y el valor para esta corrida
-                        ops[ll] = op[id_op]
-
-                        # Si tenemos valores múltiples, (si la persona especificó más que una corrida), guardar
-                        # el nombre también.
-                        if len(op) > 1:
-                            nombre.append(id_op)
-
-                    else:
-                        # Si es una lista...
-
-                        ops[ll] = op[0]  # Empezar con el primer valor de la lista
-
-                        # Si tenemos valores múltiples, convertir el valor a un nombre para las corridas
-                        if len(op) > 1:
-                            nombre.append(
-                                str(op[0]) if not (isinstance(op[0], list) or isinstance(op[0], dict))
-                                else str(0)
-                            )
-
-            # Una matriz con el número cumulativo de combinaciones de opciones
-            l_n_ops_cum = np.roll(l_n_ops.cumprod(), 1)  # Pasamos el número final al principio
-            if len(l_n_ops_cum):
-                l_n_ops_cum[0] = 1  # ... y reemplazamos el número ahora inicial con ``1``.
-            else:
-                l_n_ops_cum = [1]  # ... si no tenemos combinaciones que hacer, darle ``1``
-
-            # Crear la lista de diccionarios de opciones para cada corrida.
-            for i in range(n_corridas):
-                # Para cada corrida...
-
-                # Calcular el índice del valor actual para cada opción que tiene valores múltiples
-                í_ops = [int(np.floor(i / l_n_ops_cum[n]) % l_n_ops[n]) for n in range(l_n_ops.shape[0])]
-
-                # Para cada opción...
-                for í, n in enumerate(í_ops):
-
-                    # Sacamos el nombre de la opción actual
-                    nmb_op = l_nmbs_ops_var[í]
-                    op = opciones[nmb_op]  # El valor de la opción
-
-                    # Aplicar los cambios al diccionario transitorio de opciones
-                    if isinstance(op, list):
-                        # Si la opción está en formato de lista...
-
-                        # Guardar su valor
-                        ops[nmb_op] = op[n]
-
-                        # Y cambiar su nombre
-                        nombre[í] = str(str(op[n]) if not (isinstance(op[n], list) or isinstance(op[n], dict))
-                                        else str(n))
-
-                    elif isinstance(op, dict):
-                        # Sino, es un diccionario
-
-                        # Guardar nu nombre y valor
-                        id_op = list(op)[n]
-                        ops[nmb_op] = op[id_op]
-                        nombre[í] = id_op
-
-                    else:
-                        raise TypeError(_('Tipo de variable "{}" erróneo. Debería ser imposible llegar hasta este '
-                                          'error.'.format(type(op))))
-
-                # Concatenar el nombre y guardar una copia del diccionario transitorio de opciones.
-                dic_ops[' '.join(x.replace(',', '_') for x in nombre)] = ops.copy()
-
-            # Formatear las corridas con sus nombres de corridas.
-            corridas = {'{}{}'.format(nombre_corrida + '_' if nombre_corrida else '', ll): ops
-                        for ll, ops in dic_ops.items()}  # type: dict[str, dict]
-            nmb_corridas_res = list(dic_ops)
-
-            # Y, por fin, si solamente tenemos una corrida que hacer, asegurarse que tenga un nombre.
-            if len(corridas) == 1 and list(corridas)[0] == '':
-                corridas['Corrida Tinamït'] = corridas.pop('')
-
-        else:
-            # Si no estamos haciendo todas las combinaciones posibles de opciones, es un poco más fácil.
-
-            n_corridas = np.max(l_n_ops)  # El número de corridas
-
-            # Asegurarse de que todas las opciones tengan el mismo número de opciones.
-            if np.any(np.not_equal(l_n_ops, n_corridas)):
-                raise ValueError(_('Si `combinar` == ``False``, todas las opciones en forma de lista o diccionario '
-                                   'deben tener el mismo número de opciones.'))
-
-            # Convertir diccionarios a listas
-            for ll, op in opciones.items():
-                if isinstance(op, dict):
-                    opciones[ll] = [op[x] for x in sorted(op)]
-
-            # Preparar la lista de nombres de corridas
-            if isinstance(nombre_corrida, str):
-                # Si el nombre especificado para la corrida queda en formato texto...
-
-                # ...tenemos que agregarle algo para distinguir entre las varias corridas.
-
-                l_nombres = next((list(op) for op in opciones.values() if isinstance(op, dict)), None)
-                if l_nombres is not None:
-                    # Si hay diccionarios de opciones con nombres de corridas, utilizar éstas.
-
-                    # Asegurarse que concordemos con el órden de los valores de las opciones en `opciones`. Sino
-                    # tendremos muchos problemas...
-                    l_nombres = sorted(l_nombres)
-
-                else:
-                    # Sino, las daremos nombres según números consecutivos
-                    l_nombres = range(n_corridas)
-
-                # Generar el diccionario de nombres de corridas con sus valores de simulación correspondientes.
-                corridas = {
-                    '{}_{}'.format(nombre_corrida, l_nombres[i]):
-                        {
-                            ll: op[i] if isinstance(op, list) else op for ll, op in opciones.items()
-                        }
-                    for i in range(n_corridas)
-                }
-                nmb_corridas_res = l_nombres
-
-            elif isinstance(nombre_corrida, list):
-                # Si tenemos una lista de nombres de corridas...
-
-                # Asegurarse que tenga el tamaño necesario
-                if len(nombre_corrida) != n_corridas:
-                    raise ValueError(
-                        _('Una lista de nombres de corrida debe tener el mismo número de nombres ("{}") que hay '
-                          'valores de opciones en la simulación ("{}").').format(len(nombre_corrida), n_corridas)
-                    )
-
-                # Generar el diccionario de corridas
-                corridas = {
-                    nmb: {ll: op[i] if isinstance(op, list) else op for ll, op in opciones.items()}
-                    for i, nmb in enumerate(nombre_corrida)
-                }
-                nmb_corridas_res = nombre_corrida
-
-            else:
-                raise TypeError(_('El nombre de corrida debe ser o una cadena de texto, o una lista de cadenas '
-                                  'de texto.'))
-
-        # Evitar un problema con nombres de corridas en Vensim
-        for nmb in list(corridas.keys()):
-            corridas[nmb.replace('.', '_')] = corridas.pop(nmb)
-
-        # Sacar los valores iniciales del diccionario de opciones de corridas
-        d_vals_inic = {ll: v.pop('vals_inic') for ll, v in corridas.items()}
+        # Validar los nombres y evitar un problema con nombres de corridas con '.' en Vensim
+        mapa_nombres = {corr: valid_nombre_arch(corr.replace('.', '_')) for corr in corridas}
+        for ant, nv in mapa_nombres.items():
+            corridas[nv] = corridas.pop(ant)
 
         # Ahora, hacemos las simulaciones
+        resultados = {}  # El diccionario de resultados
 
-        # Detectar si el modelo y todos sus submodelos son paralelizables
-        if símismo.paralelizable() and paralelo:
-            # ...si lo son...
+        # Verificar si vale la pena hacer corridas paralelas o no
+        if paralelo is None:
+            antes = ft.datetime.now()
+            corr0 = list(corridas)[0]
+            d_corr0 = corridas.pop(corr0)
+
+            d_corr0['vars_interés'] = vars_interés
+
+            # Después, simular el modelo.
+            res = símismo.simular(**d_corr0, nombre_corrida=corr0)
+
+            if res is not None:
+                resultados[mapa_nombres[corr0]] = res
+
+            tiempo_simul = (ft.datetime.now() - antes).total_seconds()
+            paralelo = tiempo_simul > 15
+
+        # Efectuar las corridas
+        if paralelo and símismo.paralelizable():
+            # ...si el modelo y todos sus submodelos son paralelizables...
 
             # Este código un poco ridículo queda necesario para la paralelización en Windows. Si no estuviera aquí,
             # el programa se travaría para siempre a este punto.
@@ -525,6 +667,9 @@ class Modelo(object):
             # Si no es la primera vez, no querremos correr la simulación. (Sino, creerá ramas infinitas del proceso
             # Python).
             if not ejecutando_simulación_paralela_por_primera_vez:
+                avisar(_('Parece que estés corriendo simulaciones en paralelo en Windows o alguna cosa parecida '
+                         '\nsin poner tu código principal en "if __name__ == "__main__"". Probablemente funcionará'
+                         '\nel código de todo modo, pero de verdad no es buena idea.'))
                 return
 
             # Si era la primera vez, ahora ya no lo es.
@@ -539,74 +684,184 @@ class Modelo(object):
             for corr, d_prms_corr in corridas.items():
                 d_args = {ll: copiar_profundo(v) for ll, v in d_prms_corr.items()}
                 d_args['nombre_corrida'] = corr
-                d_args['vars_interés'] = devolver
+                d_args['vars_interés'] = vars_interés
+                d_args['bd'] = bd
 
-                l_trabajos.append((copia_mod, copiar_profundo(d_vals_inic[corr]), d_args))
+                l_trabajos.append((copia_mod, d_args))
 
             # Hacer las corridas en paralelo
             with Reserva() as r:
-                resultados = r.map(_correr_modelo, l_trabajos)
+                res_paralelo = r.map(_correr_modelo, l_trabajos)
 
             # Ya terminamos la parte difícil. Desde ahora, sí permitiremos otras ejecuciones de esta función.
             ejecutando_simulación_paralela_por_primera_vez = True
 
             # Formatear los resultados, si hay.
-            if resultados is not None:
-                resultados = {corr: res for corr, res in zip(nmb_corridas_res, resultados)}
+            if res_paralelo is not None:
+                resultados.update(
+                    {mapa_nombres[corr]: res for corr, res in zip(corridas, res_paralelo)}
+                )
 
         else:
             # Sino simplemente correrlas una tras otra con `Modelo.simular()`
             if paralelo:
-                avisar(_('No todos los submodelos del modelo conectado "{}" son paralelizable. Para evitar el riesgo'
-                         'de errores de paralelización, correremos las corridas como simulaciones secuenciales '
-                         'normales. '
-                         'Si tus modelos sí son paralelizables, crear un método nombrado `.paralelizable()` '
-                         'que devuelve ``True`` en tu clase de modelo para activar la paralelización.'
+                avisar(_('\nNo todos los submodelos del modelo conectado "{}" son paralelizable. Para evitar el riesgo'
+                         '\nde errores de paralelización, correremos las corridas como simulaciones secuenciales '
+                         '\nnormales. '
+                         '\nSi tus modelos sí son paralelizables, crear un método nombrado `.paralelizable()` '
+                         '\nque devuelve ``True`` en tu clase de modelo para activar la paralelización.'
                          ).format(símismo.nombre))
 
-            # El diccionario de resultados
-            resultados = {}
-
             # Para cada corrida...
-            for corr_res, (corr, d_prms_corr) in zip(nmb_corridas_res, corridas.items()):
-                símismo.inic_vals_vars(dic_vals=d_vals_inic[corr])
-
-                d_prms_corr['vars_interés'] = devolver
+            for corr, d_prms_corr in corridas.items():
+                d_prms_corr['vars_interés'] = vars_interés
 
                 # Después, simular el modelo.
-                res = símismo.simular(**d_prms_corr, nombre_corrida=corr)
+                res = símismo.simular(**d_prms_corr, bd=bd, nombre_corrida=corr)
 
                 if res is not None:
-                    resultados[corr_res] = res
+                    resultados[mapa_nombres[corr]] = res
 
-            if not len(resultados):
-                resultados = None
-
-        if dibujar is not None:
-            if not isinstance(dibujar, list):
-                dibujar = [dibujar]
-
-            for dib in dibujar:
-                for corr in corridas:
-                    símismo.dibujar_mapa(corrida=corr, **dib)  # para hacer: arreglar
-            else:
-                raise NotImplementedError
+        if guardar:
+            for corr, res in resultados:
+                símismo.guardar_resultados(res=res, nombre=corr)
 
         return resultados
 
-    def _incrementar(símismo, paso):
+    def simular_en(
+            símismo, t_final=None, t_inic=None, paso=1, nombre_corrida='',
+            en=None, escala=None, geog=None, bd=None, vals_inic=None, vals_extern=None,
+            lugar_clima=None, clima=None, vars_interés=None,
+            guardar=False, paralelo=None
+    ):
+
+        if bd is not None:
+            bd = gen_SuperBD(bd)
+
+        # Identificar los códigos de lugares en los cuales tenemos que simular
+        if geog is not None:
+            # Obtener los lugares de la geografía, si posible
+            lugares = geog.obt_lugares_en(en=en, escala=escala)
+        else:
+            # Si no tenemos geografía...
+
+            if escala is not None:
+                # ...no es posible emplear escalas también
+                raise ValueError(_('Debes especificar una geografía para poder emplear `escala`.'))
+
+            if en is not None:
+                # Si se especificó el lugar, tomarlo ahora
+                lugares = en
+                if not isinstance(lugares, (list, set, tuple)):
+                    lugares = [lugares]
+            else:
+                # Sino, tomar los lugares de la base de datos
+                lugares = bd.lugares()
+
+        # Generar datos iniciales y externos para cada lugar
+        vals_inic_por_lg = {lg: None for lg in lugares}
+        vals_extern_por_lg = {lg: None for lg in lugares}
+        for lg in lugares:
+            if t_inic is None and bd is not None and lg in bd.lugares():
+                t_inic_lg = bd.tiempos(lugar=lg)[0]
+            else:
+                t_inic_lg = t_inic
+            if t_final is None and bd is not None and lg in bd.lugares():
+                t_final_lg = bd.tiempos(lugar=lg)[-1]
+            else:
+                t_final_lg = t_final
+            datos_inic, datos_extern = símismo._procesar_vars_extern(
+                vars_inic=vals_inic, vars_extern=vals_extern, bd=bd, t_inic=t_inic_lg, t_final=t_final_lg, lg=lg,
+            )
+            vals_inic_por_lg[lg] = datos_inic
+            vals_extern_por_lg[lg] = datos_extern
+
+        # Extraer datos de calibración para cada lugar
+        for lg in lugares:
+            for vr, d in símismo.calibs.items():
+                if lg in d:
+                    vals_inic_por_lg[lg][vr] = d[lg]
+
+        # Correr las simulaciones en grupo
+        return símismo.simular_grupo(
+            t_final=t_final, t_inic=t_inic, paso=paso, nombre_corrida=nombre_corrida,
+            vals_inic=vals_inic_por_lg, vals_extern=vals_extern_por_lg,
+            lugar_clima=lugar_clima, clima=clima, combinar=False, paralelo=paralelo,
+            vars_interés=vars_interés, guardar=guardar
+        )
+
+    def guardar_resultados(símismo, res=None, nombre=None, frmt='json', l_vars=None):
+        """
+
+        Parameters
+        ----------
+        res: xr.Dataset
+        nombre: str
+        frmt: strr
+        l_vars: list[str] | str
+
+        Returns
+        -------
+
+        """
+        if res is None:
+            res = símismo.mem_vars
+        if nombre is None:
+            nombre = símismo.corrida_activa
+        if l_vars is None:
+            l_vars = list(res.data_vars)
+        elif isinstance(l_vars, str):
+            l_vars = [l_vars]
+        else:
+            l_vars = l_vars
+
+        faltan = [x for x in l_vars if x not in res]
+        if len(faltan):
+            raise ValueError(_('Los variables siguientes no existen en los datos:'
+                               '\n{}').format(', '.join(faltan)))
+
+        if frmt[0] != '.':
+            frmt = '.' + frmt
+        arch = valid_nombre_arch(nombre + frmt)
+        if frmt == '.json':
+            contenido = res[l_vars].to_dict()
+            guardar_json(contenido, arch=arch)
+
+        elif frmt == '.csv':
+
+            with open(arch, 'w', encoding='UTF-8', newline='') as a:
+                escr = csv.writer(a)
+
+                escr.writerow(['tiempo'] + res['tiempo'].values.tolist())
+                for var in l_vars:
+                    vals = res[var].values
+                    if len(vals.shape) == 1:
+                        escr.writerow([var] + vals.tolist())
+                    else:
+                        for í in range(vals.shape[1]):
+                            escr.writerow(['{}[{}]'.format(var, í)] + vals[:, í].tolist())
+
+        else:
+            raise ValueError(_('Formato de resultados "{}" no reconocido.').format(frmt))
+
+    def _incrementar(símismo, paso, guardar_cada=None):
         """
         Esta función debe avanzar el modelo por un periodo de tiempo especificado.
 
-        :param paso: El paso.
-        :type paso: int
+        Parameters
+        ----------
+        paso : int
+            El paso.
+        guardar_cada : int
+            El paso para guardar resultados.
 
         """
+
         raise NotImplementedError
 
-    def incrementar(símismo, paso):
+    def incrementar(símismo, paso, guardar_cada=None):
         símismo.vals_actualizadas = False
-        símismo._incrementar(paso=paso)
+        símismo._incrementar(paso=paso, guardar_cada=guardar_cada)
 
     def leer_vals(símismo):
 
@@ -624,70 +879,22 @@ class Modelo(object):
 
         raise NotImplementedError
 
-    def inic_val_var(símismo, var, val):
-        """
-        Est método cambia el valor inicial de un variable (antes de empezar la simulación). Se emplea principalmente
-        para activar y desactivar políticas y para establecer parámetros y valores iniciales para simulaciones.
-
-        :param var: El nombre del variable para cambiar.
-        :type var: str
-
-        :param val: El nuevo valor del variable.
-        :type val: float | np.ndarray
-
-        """
-
-        # Primero, asegurarse que el variable existe.
-        var = símismo.valid_var(var)
-
-        # Guardamos el valor en el diccionario `vals_inic`. Se aplicarán los valores iniciales únicamente al momento
-        # de empezar la simulación.
-        símismo.vals_inic[var] = val
-
-        # Aplicar los valores iniciales al diccionario de valores actuales también.
-        símismo._act_vals_dic_var({var: val})
-
-    def inic_vals_vars(símismo, dic_vals):
-        """
-        Una función más cómoda para inicializar muchos variables al mismo tiempo.
-
-        :param dic_vals:
-        :type dic_vals: dict[str, float | int | np.ndarray]
-
-        """
-
-        for var, val in dic_vals.items():
-            símismo.inic_val_var(var=var, val=val)
-
-    def limp_vals_inic(símismo, var=None):
-        """
-        Esta función limpa los valores iniciales especificados anteriormente.
-        """
-
-        # Limpiar el diccionario.
-        if var is None:
-            símismo.vals_inic.clear()
-        else:
-            var = símismo.valid_var(var)
-            try:
-                símismo.vals_inic.pop(var)
-            except KeyError:
-                pass
-
     def conectar_var_clima(símismo, var, var_clima, conv, combin=None):
         """
         Conecta un variable climático.
 
-        :param var: El nombre interno del variable en el modelo.
-        :type var: str
-        :param var_clima: El nombre oficial del variable climático.
-        :type var_clima: str
-        :param conv: La conversión entre el variable clima en Tinamït y el variable correspondiente en el modelo.
-        :type conv: int | float
-        :param combin: Si este variable se debe adicionar o tomar el promedio entre varios pasos.
-        :type combin: str
-
+        Parameters
+        ----------
+        var : str
+            El nombre interno del variable en el modelo.
+        var_clima : str
+            El nombre oficial del variable climático.
+        conv : number
+            La conversión entre el variable clima en Tinamït y el variable correspondiente en el modelo.
+        combin : str
+            Si este variable se debe adicionar o tomar el promedio entre varios pasos.
         """
+
         var = símismo.valid_var(var)
 
         if var_clima not in Geog.conv_vars:
@@ -697,16 +904,20 @@ class Modelo(object):
         if combin not in ['prom', 'total', None]:
             raise ValueError(_('"Combin" debe ser "prom", "total", o None, no "{}".').format(combin))
 
-        símismo.vars_clima[var] = {'nombre_extrn': var_clima,
-                                   'combin': combin,
-                                   'conv': conv}
+        símismo.vars_clima[var] = {
+            'nombre_extrn': var_clima,
+            'combin': combin,
+            'conv': conv
+        }
 
     def desconectar_var_clima(símismo, var):
         """
         Esta función desconecta un variable climático.
 
-        :param var: El nombre interno del variable en el modelo.
-        :type var: str
+        Parameters
+        ----------
+        var : str
+            El nombre interno del variable en el modelo.
 
         """
 
@@ -714,28 +925,32 @@ class Modelo(object):
 
     def cambiar_vals(símismo, valores):
         """
-        Esta función cambia el valor de uno o más variables del modelo. Cambia primero el valor en el diccionario
-        interno del :class:`Modelo`, y después llama la función :func:`~Modelo.Modelo.cambiar_vals_modelo` para cambiar,
-        si necesario, los valores de los variables en el modelo externo.
+        Esta función cambia el valor de uno o más variables del modelo.
 
-        :param valores: Un diccionario de variables y sus valores para cambiar.
-        :type valores: dict
+        Parameters
+        ----------
+        valores : dict
+            Un diccionario de variables y sus valores para cambiar.
+
 
         """
 
+        # Cambia primero el valor en el diccionario interno del Modelo
         símismo._act_vals_dic_var(valores=valores)
 
-        símismo._cambiar_vals_modelo_interno(valores=valores)
+        # Cambiar, si necesario, los valores de los variables en el modelo externo
+        símismo._cambiar_vals_modelo_externo(valores=valores)
 
-    def _cambiar_vals_modelo_interno(símismo, valores):
+    def _cambiar_vals_modelo_externo(símismo, valores):
         """
-        Esta función debe cambia el valor de variables en el :class:`Modelo`, incluso tomar acciones para asegurarse
-        de que el cambio se hizo en el modelo externo, si aplica.
-
-        :param valores: Un diccionario de variables y sus valores para cambiar.
-        :type valores: dict
+        Esta función debe cambiar el valor de variables en el modelo externo, si aplica.
+        Parameters
+        ----------
+        valores : dict
+            Un diccionario de variables y sus valores para cambiar.
 
         """
+
         raise NotImplementedError
 
     def cerrar_modelo(símismo):
@@ -745,28 +960,33 @@ class Modelo(object):
         """
         raise NotImplementedError
 
-    def act_vals_clima(símismo, f_0, f_1):
+    def _act_vals_clima(símismo, f_0, f_1, lugar):
         """
         Actualiza los variables climáticos. Esta función es la automática para cada modelo. Si necesitas algo más
         complicado (como, por ejemplo, predicciones por estación), la puedes cambiar en tu subclase.
 
-        :param n_paso: El número de pasos para avanzar
-        :type n_paso: int
-        :param f: La fecha actual.
-        :type f: ft.datetime | ft.date
+        Parameters
+        ----------
+        f_0 : ft.date | ft.datetime
+            La fecha actual.
+        f_1 : ft.date | ft.datetime
+            La próxima fecha.
+        lugar : Lugar
+            El objeto `Lugar` del cual obtendremos el clima.
+
         """
 
+        # Si no tenemos variables de clima, no hay nada que hacer.
         if not len(símismo.vars_clima):
             return
 
         # Avisar si arriesgamos perder presición por combinar datos climáticos.
-        n_días = (f_1 - f_0).days
+        n_días = int((f_1 - f_0) / np.timedelta64(1, 'D'))
         if n_días > 1:
             avisar('El paso es de {} días. Puede ser que las predicciones climáticas pierdan '
                    'en precisión.'.format(n_días))
 
-        # La lista de variables climáticos
-        vars_clima = list(símismo.vars_clima)
+        # Correspondencia entre variables climáticos y sus nombres en el modelo.
         nombres_extrn = [d['nombre_extrn'] for d in símismo.vars_clima.values()]
 
         # La lista de maneras de combinar los valores diarios
@@ -776,11 +996,10 @@ class Modelo(object):
         convs = [d['conv'] for d in símismo.vars_clima.values()]
 
         # Calcular los datos
-        datos = símismo.lugar.comb_datos(vars_clima=nombres_extrn, combin=combins,
-                                         f_inic=f_0, f_final=f_1)
+        datos = lugar.comb_datos(vars_clima=nombres_extrn, combin=combins, f_inic=f_0, f_final=f_1)
 
         # Aplicar los valores de variables calculados
-        for i, var in enumerate(vars_clima):
+        for i, var in enumerate(símismo.vars_clima):
             # Para cada variable en la lista de clima...
 
             # El nombre oficial del variable de clima
@@ -794,8 +1013,8 @@ class Modelo(object):
 
     def estab_conv_unid_tiempo(símismo, unid_ref, factor):
         """
-        Establece, manualmente, el factor de conversión para convertir la unidad de tiempo del modelo a meses.
-        Únicamente necesario si Tinamït no logra inferir este factor por sí mismo.
+        Establece, manualmente, el factor de conversión para convertir la unidad de tiempo del modelo a meses, días
+        o años. Únicamente necesario si Tinamït no logra inferir este factor por sí mismo.
 
         :param conv: El factor de conversión entre la unidad de tiempo del modelo y un mes.
         :type: float | int
@@ -805,17 +1024,15 @@ class Modelo(object):
         símismo._conv_unid_tiempo['unid_ref'] = unid_ref
         símismo._conv_unid_tiempo['factor'] = factor
 
-    def dibujar_mapa(símismo, geog, var, directorio, corrida=None, i_paso=None, colores=None, escala=None):
+    def dibujar_mapa(símismo, var, geog, directorio, corrida=None, i_paso=None, colores=None, escala=None):
         """
         Dibuja mapas espaciales de los valores de un variable.
 
-        :param geog: La geografía del lugares.
-        :type geog: Geografía
         :param var: El variable para dibujar.
         :type var: str
         :param corrida: El nombre de la corrida para dibujar.
         :type corrida: str
-        :param directorio: El directorio, relativo al archivo EnvolturasMDS, donde hay que poner los dibujos.
+        :param directorio: El directorio, relativo al fuente EnvolturasMDS, donde hay que poner los dibujos.
         :type directorio: str
         :param i_paso: Los pasos a los cuales quieres dibujar los egresos.
         :type i_paso: list | tuple | int
@@ -825,13 +1042,16 @@ class Modelo(object):
         :type escala: list | np.ndarray
         """
 
+        if geog is None:
+            raise ValueError(_('Debes especificar una geografía para poder dibujar mapas de resultados.'))
+
         # Validar el nombre del variable.
         var = símismo.valid_var(var)
 
-        # Preparar el nombre del variable para uso en el nombre del archivo.
+        # Preparar el nombre del variable para uso en el nombre del fuente.
         nombre_var = valid_nombre_arch(var)
 
-        bd = símismo.leer_resultados(corrida, var)
+        bd = símismo.leer_resultados(var=var, corrida=corrida)
 
         if isinstance(i_paso, tuple):
             i_paso = list(i_paso)
@@ -878,26 +1098,115 @@ class Modelo(object):
                              .format(var, símismo))
 
     def obt_info_var(símismo, var):
+        """
+        Devuelve la documentación de un variable.
+
+        Parameters
+        ----------
+        var : str
+            El nombre del variable.
+
+        Returns
+        -------
+        str
+            La documentación del variable.
+
+        """
+
         var = símismo.valid_var(var)
         return símismo.variables[var]['info']
 
     def obt_unidades_var(símismo, var):
+        """
+        Devuelve las unidades de un variable.
+
+        Parameters
+        ----------
+        var : str
+            El nombre del variable.
+
+        Returns
+        -------
+        str
+            Las unidades del variable.
+
+        """
         var = símismo.valid_var(var)
         return símismo.variables[var]['unidades']
 
     def obt_val_actual_var(símismo, var):
+        """
+        Devuelve el valor actual de un variable.
+
+        Parameters
+        ----------
+        var : str
+            El nombre del variable.
+
+        Returns
+        -------
+        float | int | np.ndarray
+            El valor del variable.
+
+        """
+
         var = símismo.valid_var(var)
         return símismo.variables[var]['val']
 
     def obt_lims_var(símismo, var):
+        """
+        Devuelve los límites de un variable.
+
+        Parameters
+        ----------
+        var : str
+            El nombre del variable.
+
+        Returns
+        -------
+        tuple | None
+            Los límites del variable.
+
+        """
+
         var = símismo.valid_var(var)
         return símismo.variables[var]['líms']
 
     def obt_dims_var(símismo, var):
+        """
+        Devuelve las dimensiones de un variable.
+
+        Parameters
+        ----------
+        var : str
+            El nombre del variable.
+
+        Returns
+        -------
+        tuple
+            Las dimensiones del variable.
+
+        """
+
         var = símismo.valid_var(var)
         return símismo.variables[var]['dims']
 
     def obt_ec_var(símismo, var):
+        """
+        Devuelve la ecuación de un variable.
+
+        Parameters
+        ----------
+        var : str
+            El nombre del variable.
+
+        Returns
+        -------
+        str | None
+            La ecuación del variable. Si no tiene ecuación, devuelve ``None``.
+
+        """
+
         var = símismo.valid_var(var)
         try:
             return símismo.variables[var]['ec']
@@ -905,26 +1214,83 @@ class Modelo(object):
             return
 
     def egresos(símismo):
+        """
+        Devuelve los variables egresos del modelo.
+
+        Returns
+        -------
+        list[str]
+            Una lista de los variables egresos.
+
+        """
+
         return [v for v, d_v in símismo.variables.items() if d_v['egreso']]
 
     def ingresos(símismo):
+        """
+        Devuelve los variables ingresos del modelo.
+
+        Returns
+        -------
+        list[str]
+            Una lista de los variables ingresos.
+
+        """
+
         return [v for v, d_v in símismo.variables.items() if d_v['ingreso']]
 
     def paráms(símismo):
-        seguros = [v for v, d_v in símismo.variables.items() if d_v['parám']]
+        """
+        Devuelve los nombres de los parámetros del modelo.
+
+        Returns
+        -------
+        dict[str, list[str]]
+            Un diccionario, dónde `seguros` es una lista de los variables que son seguramente parámetros,
+            y `potenciales` una lista de variables que podrían ser parámetros.
+
+        """
+
+        seguros = [v for v, d_v in símismo.variables.items() if ['parám'] in d_v and d_v['parám']]
 
         potenciales = [v for v, d_v in símismo.variables.items()
-                       if v not in seguros and d_v['ingreso'] is True and not d_v['estado_inicial']]
+                       if v not in seguros and d_v['ingreso'] is True and
+                       (not d_v['estado_inicial'] or 'estado_inicial' not in d_v)]
 
         return {'seguros': seguros, 'potenciales': potenciales}
 
     def vars_estado_inicial(símismo):
-        return [v for v, d_v in símismo.variables.items() if d_v['estado_inicial']]
+        """
+        Devuelve los variables que determinan el estado inicial del modelo.
 
-    def leer_resultados(símismo, var, corrida=None):
+        Returns
+        -------
+        list[str]:
+            Una lista de variables de estado inicial.
+        """
+
+        return [v for v, d_v in símismo.variables.items() if 'estado_inicial' in d_v and d_v['estado_inicial']]
+
+    def leer_resultados(símismo, var=None, corrida=None):
+        """
+
+        Parameters
+        ----------
+        var: str | list[str]
+        corrida: str
+
+        Returns
+        -------
+
+        """
+
+        if isinstance(var, str):
+            l_vars = [var]
+        else:
+            l_vars = var
 
         # Verificar que existe el variable en este modelo.
-        var = símismo.valid_var(var)
+        l_vars = [símismo.valid_var(v) for v in l_vars]
 
         # Si no se especificó corrida especial, tomaremos la corrida más recién.
         if corrida is None:
@@ -933,42 +1299,138 @@ class Modelo(object):
             else:
                 corrida = símismo.corrida_activa
 
-                # Leer de la memoria temporaria, si estamos interesadas en la corrida más recién
+        res = None
+        # Leer de la memoria temporaria, si estamos interesadas en la corrida más recién
         if corrida == símismo.corrida_activa:
-            if var in símismo.mem_vars:
-                return símismo.mem_vars[var]
+            try:
+                res = símismo.mem_vars[l_vars]
+            except KeyError:
+                pass
+        if res is None:
+            res = símismo.leer_arch_resultados(archivo=corrida, var=l_vars)
 
-        return símismo._leer_resultados(var, corrida)
+        return res
 
-    def _leer_resultados(símismo, var, corrida):
-        raise NotImplementedError(_(
-            'Modelos de tipo "{}" no pueden leer los resultados de una corrida después de terminar una simulación. '
-            'Debes especificar "vars_interés" cuando corres la simulación para poder acceder a los resultados después. '
-            'Si estás desarrollando esta envoltura y quieres agregar esta funcionalidad, debes implementar la '
-            'función "._leer_resultados()" en tu envoltura.'
-        ).format(símismo.__class__))
+    @classmethod
+    def leer_arch_resultados(cls, archivo, var=None, col_tiempo='tiempo'):
+
+        if isinstance(var, str):
+            l_vars = [var]
+        else:
+            l_vars = var
+
+        corr, ext = os.path.splitext(archivo)
+        if len(ext):
+            ext_potenciales = [ext]
+        else:
+            ext_potenciales = ['.json', '.csv']
+        res = None
+        for ex in ext_potenciales:
+            arch = corr + ex
+            if not os.path.isfile(arch):
+                continue
+            codif = detectar_codif(arch, cortar=',' if ex == '.csv' else None)
+            if ex == '.json':
+                dic = cargar_json(arch, codif=codif)
+                res = xr.Dataset.from_dict(dic)[l_vars]
+                break
+            elif ex == '.csv':
+                res = {}
+                with open(arch, encoding=codif) as d:
+                    lector = csv.reader(d)
+                    n_datos = None
+                    for i, f in enumerate(lector):
+                        if i == 0:
+                            n_datos = len(f) - 1
+                        grp = re.match('(.*)(\[.*\])$', f[0])  # Detectar variables con subscriptos
+                        if grp:
+                            v = grp.group(1)
+                            if v in res:
+                                res[v].append(f[1:])
+                            else:
+                                res[v] = [f[1:]]
+                        else:
+                            if f[0] in l_vars:
+                                if len(f[1:]) == 1:
+                                    res[f[0]] = np.full(n_datos, f[1])
+                                else:
+                                    res[f[0]] = np.array(f[1:], dtype=float)
+                            elif f[0] == col_tiempo:
+                                try:
+                                    res['tiempo'] = np.array(f[1:], dtype=float)
+                                except ValueError:
+                                    res['tiempo'] = np.array(f[1:], dtype='datetime64')
+                for vr, val in res.items():
+                    if isinstance(val, list):
+                        res[vr] = np.array(val, dtype=float).swapaxes(0, -1)  # eje 0: tiempo, ejes 1+: dims
+                res = {ll: np.array(v, dtype=float) for ll, v in res.items()}
+                break
+            else:
+                raise ValueError(_('El formato de datos "{}" no se puede leer al momento.').format(ext))
+
+        if res is None:
+            raise FileNotFoundError(_('No se encontró fuente de resultados para "{}".').format(archivo))
+
+        # Convertir a Xarray
+        res_xr = xr.Dataset({
+            vr:
+                ('n', res[vr]) if len(res[vr].shape) == 1 else
+                (('n', *tuple('x' + str(i) for i in range(len(res[vr].shape)))), res[vr])
+            for vr in l_vars
+        })
+        res_xr.coords['tiempo'] = ('n', res['tiempo'])
+        return res_xr
 
     def paralelizable(símismo):
         """
         Indica si el modelo actual se puede paralelizar de manera segura o no. Si implementas una subclase
         paralelizable, reimplementar esta función para devolver ``True``.
+        ¿No sabes si es paralelizable tu modelo?
+        Si el modelo se puede paralelizar (con corridas de nombres distintos) sin encontrar dificultades
+        técnicas (sin riesgo que las corridas paralelas terminen escribiendo en los mismos archivos de egreso),
+        entonces sí es paralelizable tu modelo.
 
-        :return: Si el modelo se puede paralelizar (con corridas de nombres distintos) sin encontrar dificultades
-          técnicas (por ejemplo, si hay riesgo que las corridas paralelas terminen escribiendo en los mismos
-          documents de egresos).
-        :rtype: bool
+        Returns
+        -------
+        bool:
+            Si el modelo es paralelizable o no.
         """
+
         return False
+
+    def instalado(símismo):
+        """
+        Si tu modelo depiende en una instalación de otro programa externo a Tinamït, puedes reimplementar esta función
+        para devolver ``True`` si el modelo está instalado y ``False`` sino.
+
+        Returns
+        -------
+        bool
+            Si el modelo está instalado completamente o no.
+        """
+
+        return True
 
     def actualizar_trads(símismo, auto_llenar=True):
         raíz = arbole.Element('xliff', version='1.2')
-        arch = arbole.SubElement(raíz, 'file', datatype='Modelo Tinamït')
+        arch = arbole.SubElement(raíz, 'file', datatype='Modelo Tinamït', original=símismo.nombre)
         arch.set('source-language', símismo.leng_orig)
         cuerpo = arbole.SubElement(arch, 'body')
 
-        for v in símismo.variables:
-            obj_trans = arbole.SubElement(cuerpo, 'trans-unit')
-            fnt = arbole.SubElement(obj_trans, 'source', lang=símismo.leng_orig)
+        for v, d_v in símismo.variables.items():
+            grupo = arbole.SubElement(cuerpo, 'group', id=v)
+
+            trans_nombre = arbole.SubElement(grupo, 'trans-unit')
+            fnt = arbole.SubElement(trans_nombre, 'source', lang=símismo.leng_orig)
+            fnt.text = v
+
+            trans_info = arbole.SubElement(grupo, 'trans-unit')
+            fnt = arbole.SubElement(trans_info, 'source', lang=símismo.leng_orig)
+            fnt.text = d_v['info']
+
+            trans_unids = arbole.SubElement(grupo, 'trans-unit')
+            fnt = arbole.SubElement(trans_unids, 'source', lang=símismo.leng_orig)
+            fnt.text = d_v['unidades']
 
     def cambiar_lengua(símismo, lengua):
         pass
@@ -976,8 +1438,7 @@ class Modelo(object):
     def agregar_lengua(símismo, lengua):
         pass
 
-    def especificar_micro_calib(símismo, var, método=None, paráms=None, líms_paráms=None, escala=None,
-                                ops_método=None):
+    def especificar_micro_calib(símismo, var, método=None, paráms=None, líms_paráms=None, escala=None, ops_método=None):
 
         # Verificar el variable
         var = símismo.valid_var(var)
@@ -994,7 +1455,7 @@ class Modelo(object):
             'líms_paráms': líms_paráms
         }
 
-    def verificar_micro_calib(símismo, var, en=None, escala=None):
+    def verificar_micro_calib(símismo, var, bd, en=None, escala=None, geog=None, corresp_vars=None):
         """
         Comprueba una microcalibración a pequeña (o grande) escala. Útil para comprobar calibraciones sin perder
         mucho tiempo calculándolas para toda la región de interés.
@@ -1022,9 +1483,9 @@ class Modelo(object):
         """
 
         # Efectuar la calibración del variable.
-        return símismo._calibrar_var(var=var, en=en, escala=escala)
+        return símismo._calibrar_var(var=var, bd=bd, en=en, escala=escala, geog=geog, corresp_vars=corresp_vars)
 
-    def efectuar_micro_calibs(símismo, en=None, escala=None):
+    def efectuar_micro_calibs(símismo, bd, en=None, escala=None, geog=None, corresp_vars=None):
         """
 
         Parameters
@@ -1055,31 +1516,15 @@ class Modelo(object):
             if var not in símismo.calibs:
 
                 # Efectuar la calibración
-                calib = símismo._calibrar_var(var=var, en=en, escala=escala, hermanos=True)
+                calib = símismo._calibrar_var(var=var, bd=bd, en=en, escala=escala, geog=geog, hermanos=True,
+                                              corresp_vars=corresp_vars)
 
                 # Guardar las calibraciones para este variable y todos los otros variables que potencialmente
                 # fueron calibrados al mismo tiempo.
                 for v in calib:
                     símismo.calibs[v] = calib[v]
 
-    def conectar_datos(símismo, datos):
-        símismo.datos = datos
-
-    def conectar_var_a_datos(símismo, var, var_bd):
-        var = símismo.valid_var(var)
-        símismo.conex_var_datos[var] = var_bd
-
-    def desconectar_var_datos(símismo, var):
-        var = símismo.valid_var(var)
-        símismo.conex_var_datos.pop(var)
-
-    def desconectar_datos(símismo):
-        símismo.datos = None
-
-    def _calibrar_var(símismo, var, en=None, escala=None, hermanos=False):
-
-        if símismo.datos is None:
-            raise ValueError()
+    def _calibrar_var(símismo, var, bd, en=None, escala=None, geog=None, hermanos=False, corresp_vars=None):
 
         # La lista de variables que hay que calibrar con este.
         # l_vars = símismo._obt_vars_asociados(var, enforzar_datos=True, incluir_hermanos=hermanos)
@@ -1088,12 +1533,12 @@ class Modelo(object):
         # Preparar la ecuación
         ec = símismo.variables[var]['ec']
         if not len(Ecuación(ec).variables()):
-            raise NotImplementedError  # Falta implementar el caso de un constante
+            raise NotImplementedError  # para hacer: Falta implementar el caso de un constante
 
         # El objeto de calibración.
-        mod_calib = Calibrador(
+        mod_calib = CalibradorEc(
             ec=ec, var_y=var, otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars},
-            nombres_equiv=símismo.conex_var_datos
+            corresp_vars=corresp_vars
         )
 
         # El método de calibración
@@ -1111,8 +1556,8 @@ class Modelo(object):
 
         # Efectuar la calibración.
         calib = mod_calib.calibrar(
-            paráms=paráms, líms_paráms=líms_paráms, método=método, bd_datos=símismo.datos, en=en, escala=escala,
-            ops_método=ops
+            paráms=paráms, líms_paráms=líms_paráms, método=método, bd_datos=bd, geog=geog,
+            en=en, escala=escala, ops_método=ops
         )
 
         # Reformatear los resultados
@@ -1127,7 +1572,7 @@ class Modelo(object):
 
         return resultado
 
-    def _obt_vars_asociados(símismo, var, enforzar_datos=False, incluir_hermanos=False):
+    def _obt_vars_asociados(símismo, var, bd=None, enforzar_datos=False, incluir_hermanos=False):
         """
         Obtiene los variables asociados con un variable de interés.
 
@@ -1156,7 +1601,7 @@ class Modelo(object):
         """
 
         # La base de datos
-        bd_datos = bd_datos = símismo.datos if enforzar_datos else None
+        bd_datos = bd if enforzar_datos else None
 
         # El diccionario de variables
         d_vars = símismo.variables
@@ -1198,7 +1643,7 @@ class Modelo(object):
             for p in parientes:
                 # Para cada pariente...
 
-                p_bd = símismo.conex_var_datos[p] if p in símismo.conex_var_datos else p
+                p_bd = conex_var_datos[p] if p in conex_var_datos else p
                 if bd_datos is not None and p_bd not in bd_datos:
                     # Si tenemos datos y este variable pariente no existe, tendremos que buscar sus parientes también.
 
@@ -1237,14 +1682,172 @@ class Modelo(object):
             raise ValueError(_('El variable "{}" no está asociado con una microcalibración.').format(var))
 
     def borrar_info_calibs(símismo):
+        """
+        Borra las especificaciones de calibraciones.
+
+        """
+
         símismo.info_calibs['micro calibs'].clear()
         símismo.info_calibs['calibs'].clear()
 
-    def borrar_calibs_calc(símismo):
+    def borrar_calibs(símismo):
+        """
+        Borra calibraciones.
+
+        """
+
         símismo.calibs.clear()
 
-    def comprobar_val_extrm(símismo, var_extrm, val_extrm, var_prb, val_prb):
-        pass
+    def guardar_calibs(símismo, archivo=None):
+        """
+        Guarda las calibraciones en un archivo exterior.
+
+        Parameters
+        ----------
+        archivo : str
+            Dónde hay que guardar las calibraciones. Si es ``None``, se tomará el nombre del modelo.
+
+        """
+
+        if archivo is None:
+            archivo = '{}_calibs'.format(símismo.nombre)
+
+        # Copiar el diccionario y formatearlo para json.
+        dic = símismo.calibs.copy()
+        jsonificar(dic)
+
+        # Guardarlo
+        guardar_json(dic, archivo)
+
+    def cargar_calibs(símismo, archivo=None):
+        if archivo is None:
+            archivo = '{}_calibs'.format(símismo.nombre)
+
+        if isinstance(archivo, str):
+            dic = cargar_json(archivo)
+            numpyficar(dic)
+        elif isinstance(archivo, dict):
+            dic = archivo
+        else:
+            raise TypeError
+
+        símismo.calibs.clear()
+
+        símismo.calibs.update(dic)
+
+    def calibrar(símismo, paráms, bd, líms_paráms=None, vars_obs=None, n_iter=500, método='mle'):
+
+        if vars_obs is None:
+            l_vars = None
+        elif isinstance(vars_obs, str):
+            l_vars = [símismo.valid_var(vars_obs)]
+        else:
+            l_vars = [símismo.valid_var(v) for v in vars_obs]
+
+        if líms_paráms is None:
+            líms_paráms = {}
+        for p in paráms:
+            if p not in líms_paráms:
+                líms_paráms[p] = símismo.obt_lims_var(p)
+        líms_paráms = {ll: v for ll, v in líms_paráms.items() if ll in paráms}
+
+        if isinstance(bd, dict) and all(isinstance(v, xr.Dataset) for v in bd.values()):
+            for lg in bd:
+                calibrador = CalibradorMod(símismo)
+                d_calibs = calibrador.calibrar(
+                    paráms=paráms, bd=bd[lg], líms_paráms=líms_paráms, método=método, n_iter=n_iter, vars_obs=l_vars
+                )
+                for var in d_calibs:
+                    if var not in símismo.calibs:
+                        símismo.calibs[var] = {}
+                    símismo.calibs[var][lg] = d_calibs[var]
+
+        else:
+            calibrador = CalibradorMod(símismo)
+            d_calibs = calibrador.calibrar(
+                paráms=paráms, bd=bd, líms_paráms=líms_paráms, método=método, n_iter=n_iter, vars_obs=l_vars
+            )
+            símismo.calibs.update(d_calibs)
+
+    def validar(símismo, bd, var=None, t_final=None, corresp_vars=None):
+        if isinstance(bd, dict) and all(isinstance(v, xr.Dataset) for v in bd.values()):
+            res = {}
+            for lg in bd:
+                bd_lg = gen_SuperBD(bd[lg])
+                vld = símismo._validar(bd=bd_lg, var=var, t_final=t_final, corresp_vars=corresp_vars, lg=lg)
+                res[lg] = vld
+            res['éxito'] = all(d['éxito'] for d in res.values())
+            return res
+        else:
+            bd = gen_SuperBD(bd)
+            return símismo._validar(bd=bd, var=var, t_final=t_final, corresp_vars=corresp_vars)
+
+    def _validar(símismo, bd, var, t_final, corresp_vars, lg=None):
+        if corresp_vars is None:
+            corresp_vars = {}
+
+        if var is None:
+            l_vars = [v for v in bd.variables if
+                      v in símismo.variables or v in corresp_vars.values()]
+        elif isinstance(var, str):
+            l_vars = [var]
+        else:
+            l_vars = var
+        l_vars = [símismo.valid_var(v) for v in l_vars]
+        obs = bd.obt_datos(l_vars)[l_vars]
+        if t_final is None:
+            t_final = len(obs['n']) - 1
+        if lg is None:
+            d_vals_prms = {p: d_p['dist'] for p, d_p in símismo.calibs.items()}
+        else:
+            d_vals_prms = {p: d_p[lg]['dist'] for p, d_p in símismo.calibs.items()}
+        n_vals = len(list(d_vals_prms.values())[0])
+        vals_inic = [{p: v[í] for p, v in d_vals_prms.items()} for í in range(n_vals)]
+        res_simul = símismo.simular_grupo(
+            t_final, vals_inic=vals_inic, vars_interés=l_vars, combinar=False, paralelo=False
+        )
+
+        matrs_simul = {vr: np.array([d[vr].values for d in res_simul.values()]) for vr in l_vars}
+
+        resultados = validar_resultados(obs=obs, matrs_simul=matrs_simul)
+        return resultados
+
+    @classmethod
+    def _obt_val_config(cls, llave, cond=None, mnsj_error='', respaldo=None):
+        """
+        Devuelve un valor de configuración Tinamït para el modelo actual.
+
+        Parameters
+        ----------
+        llave : str
+            La llave de configuración.
+        cond : callable
+            Una prueba opcional para validar el valor de configuración.
+        mnsj_error : str
+            Un mensaje en caso de error.
+        respaldo : str, list[str]
+            Un valor de respaldo si no se obtiene un valor de configuración aceptable.
+
+        Returns
+        -------
+        str | None
+            El valor de configuración. Devuelve ``None`` si no se encontró o si no pasó la prueba de `cond`.
+
+        """
+
+        # Convertir la llave a una lista
+        if isinstance(llave, str):
+            llave = [llave]
+
+        # Agregar el nombre de la clase actual
+        llave = ['envolturas', cls.__name__] + llave
+
+        # Preparar el mensaje de error.
+        mnsj_error += '\nPuedes especificar el valor de configuración con' \
+                      '\n\ttinamit.config.poner_val_config({ll}, {val})'.format(ll=llave, val='"mi_valor_aquí"')
+
+        # Obtener el valor de configuración.
+        return obt_val_config(llave=llave, cond=cond, mnsj_err=mnsj_error, respaldo=respaldo)
 
     def __str__(símismo):
         return símismo.nombre
@@ -1254,7 +1857,6 @@ class Modelo(object):
 
     def __copy__(símismo):
         copia = símismo.__class__(*símismo.__getinitargs__())
-        copia.vals_inic = símismo.vals_inic
         copia.vars_clima = símismo.vars_clima
         copia._conv_unid_tiempo = símismo._conv_unid_tiempo
 
@@ -1263,7 +1865,6 @@ class Modelo(object):
     def __getstate__(símismo):
         d = {
             'args_inic': símismo.__getinitargs__(),
-            'vals_inic': símismo.vals_inic,
             'vars_clima': símismo.vars_clima,
             '_conv_unid_tiempo': símismo._conv_unid_tiempo
         }
@@ -1271,29 +1872,254 @@ class Modelo(object):
 
     def __setstate__(símismo, estado):
         símismo.__init__(*estado['args_inic'])
-        símismo.vals_inic = estado['vals_inic']
         símismo.vars_clima = estado['vars_clima']
         símismo._conv_unid_tiempo = estado['_conv_unid_tiempo']
 
 
 def _correr_modelo(x):
     """
-    Función para inicializar y correr un modelo :class:`SuperConectado`.
+    Función para inicializar y correr un modelo en paralelo.
 
-    :param x: Los parámetros. El primero es el modelo, el segundo el diccionario de valores iniciales (El primer
-      nivel de llaves es el nombre del submodelo y el segundo los nombres de los variables con sus valores
-      iniciales), y el tercero es el diccionario de argumentos para pasar al modelo.
-    :type x: tuple[SuperConectado, dict[str, dict[str, float | int | np.ndarray]], dict]
+    Parameters
+    ----------
+    x : tuple[Modelo, dict]
+        Los parámetros. El primero es el modelo, el segundo el diccionario de parámetros para la simulación.
 
+    Returns
+    -------
+    dict
+        Los resultados de la simulación.
     """
-    estado_mod, vls_inic, d_args = x
+
+    estado_mod, d_args = x
 
     mod = pickle.loads(estado_mod)
 
-    # Inicializar los variables y valores iniciales. Esto debe ser adentro de la función llamada por
-    # Proceso, para que los valores iniciales se apliquen en su propio proceso (y no en el modelo
-    # original).
-    mod.inic_vals_vars(vls_inic)
-
     # Después, simular el modelo y devolver los resultados, si hay.
     return mod.simular(**d_args)
+
+
+def _gen_dic_ops_corridas(nombre_corrida, combinar, tipos_ops, opciones):
+    """
+    Genera un diccionario de corridas con sus opciones.
+
+    Parameters
+    ----------
+    nombre_corrida : str
+        El nombre de base de la corrida.
+    combinar : bool
+        Si hay que hacer todas las permutaciones posibles de las opciones.
+    tipos_ops : dict
+        Un diccionario especificando si cada opción está en formato de lista, diccionario, o valor.
+    opciones : dict
+        El diccionario de las opciones para las corridas.
+
+    Returns
+    -------
+    dict[str, dict]
+        El diccionario formateado correctamente.
+
+    """
+
+    # Una matriz con el número de valores distintos para cada opción, guardando únicamente las opciones con valores
+    # múltiples.
+    l_n_ops = np.array(
+        [
+            len(v) for ll, v in opciones.items()  # El número de opciones
+            if tipos_ops[ll] in [list, dict]  # Si no es de valor único
+        ]
+    )
+    # Una lista con el nombre de cada opción (p. ej., "paso", etc.) con valores múltiples.
+    l_nmbs_ops_var = [
+        ll for ll, v in opciones.items()  # El nombre de la opción
+        if tipos_ops[ll] in [list, dict]  # Si no es de valor único
+    ]
+
+    # Crear el diccionario de corridas
+    if combinar:
+        # Si estamos combinando las opciones...
+
+        # El nombre de corrida no puede ser una lista si estamos combinando las opciones
+        if isinstance(nombre_corrida, list):
+            raise TypeError(_('No puedes especificar una lista de nombres de corridas si estás'
+                              ' simulando todas las combinaciones posibles de las opciones.'))
+
+        # El número de corridas es el producto del número de valores por opción.
+        n_corridas = int(np.prod(l_n_ops))
+
+        dic_ops = {}  # Un diccionario de nombres de simulación y sus opciones de corrida
+
+        # Poblar el diccionario de opciones iniciales
+        ops = {}  # Las opciones iniciales
+        nombre = []  # Una lista que se convertirá en el nombre de la opción
+        for ll, op in opciones.items():
+            # Para cada opción...
+
+            if tipos_ops[ll] == 'val':
+                # Si no hay valores múltiples, su único valor será su valor permanente.
+                ops[ll] = op
+
+            else:
+                # Pero si tenemos valores múltiples, damos el primero de la lista o diccionario para empezar.
+                if tipos_ops[ll] == dict:
+                    # Si es un diccionario...
+
+                    # Tomar el nombre de la primera corrida especificada en el diccionario
+                    id_op = list(op)[0]
+
+                    # ...y el valor para esta corrida
+                    ops[ll] = op[id_op]
+
+                    # Guardar el nombre también.
+                    nombre.append(id_op)
+
+                else:
+                    # Si es una lista...
+
+                    ops[ll] = op[0]  # Empezar con el primer valor de la lista
+
+                    # Convertir el índice del valor a un nombre para las corridas
+                    nombre.append(f'{ll}0')
+
+        # Una matriz con el número cumulativo de combinaciones de opciones
+        l_n_ops_cum = np.roll(l_n_ops.cumprod(), 1)  # Pasamos el número final al principio
+        if len(l_n_ops_cum):
+            l_n_ops_cum[0] = 1  # ... y reemplazamos el número ahora inicial con ``1``.
+        else:
+            l_n_ops_cum = [1]  # ... si no tenemos combinaciones que hacer, darle ``1``
+
+        # Crear la lista de diccionarios de opciones para cada corrida.
+        for í_c in range(n_corridas):
+            # Para cada corrida...
+
+            # Calcular el índice del valor actual para cada opción que tiene valores múltiples
+            í_ops = [int(np.floor(í_c / l_n_ops_cum[n]) % l_n_ops[n]) for n in range(l_n_ops.shape[0])]
+
+            # Para cada opción...
+            for í_op, n in enumerate(í_ops):
+
+                # Sacamos el nombre de la opción actual
+                nmbr_op = l_nmbs_ops_var[í_op]
+                op = opciones[nmbr_op]  # El valor de la opción
+
+                # Aplicar los cambios al diccionario transitorio de opciones
+                if tipos_ops[nmbr_op] == list:
+                    # Si la opción está en formato de lista...
+
+                    # Guardar su valor
+                    ops[nmbr_op] = op[n]
+
+                    # Y cambiar su nombre
+                    nombre[í_op] = f'{nmbr_op}{n}'
+
+                elif tipos_ops[nmbr_op] == dict:
+                    # Sino, es un diccionario
+
+                    # Guardar nu nombre y valor
+                    id_op = list(op)[n]
+                    ops[nmbr_op] = op[id_op]
+                    nombre[í_op] = id_op
+
+                else:
+                    raise TypeError(_('Tipo de variable "{}" erróneo. Debería ser imposible llegar hasta este '
+                                      'error.'.format(type(op))))
+
+            # Concatenar el nombre y guardar una copia del diccionario transitorio de opciones.
+            dic_ops[' '.join(nombre)] = ops.copy()
+
+        # Formatear las corridas con sus nombres de corridas.
+        corridas = {
+            '{}{}'.format(nombre_corrida + ('_' if nombre_corrida and ll else ''), ll): ops
+            for ll, ops in dic_ops.items()
+        }  # type: dict[str, dict]
+
+        # Y, por fin, si solamente tenemos una corrida que hacer, asegurarse que tenga un nombre.
+        if len(corridas) == 1 and list(corridas)[0] == '':
+            corridas['Corrida Tinamït'] = corridas.pop('')
+
+    else:
+        # Si no estamos haciendo todas las combinaciones posibles de opciones, es un poco más fácil.
+
+        # Asegurarse de que todas las opciones múltiples sean o diccionarios, o listas
+        if any(t is dict for t in tipos_ops.values()):
+            if any(t is list for t in tipos_ops.values()):
+                raise TypeError(
+                    _('Si no estás haciendo combinaciones, no puedes combinar diccionarios con listas.'))
+            frmt = dict
+        elif any(t is list for t in tipos_ops.values()):
+            frmt = list
+        else:
+            frmt = 'val'
+
+        if frmt is dict:
+            # Verificar que las llaves sean consistentes
+            lls_dics = next((op.keys() for nmb, op in opciones.items() if tipos_ops[nmb] == dict), None)  # Las llaves
+            for nmb, op in opciones.items():
+                # Asegurarse que las llaves de esta opción sean iguales al estándar.
+                if tipos_ops[nmb] == dict and op.keys() != lls_dics:
+                    raise ValueError(_('Las llaves de diccionario de cada opción deben ser iguales.'))
+
+        # Asegurarse de que todas las opciones tengan el mismo número de opciones.
+        tmñs_únicos = np.unique(l_n_ops)
+        if tmñs_únicos.size == 0:
+            n_corridas = 1
+        elif tmñs_únicos.size == 1:
+            n_corridas = tmñs_únicos[0]  # El número de corridas
+        else:
+            raise ValueError(_('Si `combinar` == ``False``, todas las opciones en forma de lista o diccionario '
+                               'deben tener el mismo número de opciones.'))
+
+        # Preparar la lista de nombres de corridas
+        if isinstance(nombre_corrida, str):
+            # Si el nombre especificado para la corrida queda en formato texto...
+
+            # ...tenemos que agregarle algo para distinguir entre las varias corridas.
+            if frmt is dict:
+                # Si hay diccionarios de opciones con nombres de corridas, utilizar éstas.
+                l_nombres = next(list(opciones[nmb]) for nmb, t in tipos_ops.items() if t is dict)
+
+                # Generar el diccionario de nombres de corridas con sus valores de simulación correspondientes.
+                corridas = {
+                    (nombre_corrida + ('_' if len(nombre_corrida) else '')) + nmb_corr:
+                        {
+                            ll: op[nmb_corr] if tipos_ops[ll] is dict else op for ll, op in opciones.items()
+                        }
+                    for nmb_corr in l_nombres
+                }
+            else:
+                # Sino, las daremos nombres según números consecutivos
+                corridas = {
+                    (nombre_corrida + ('_' if len(nombre_corrida) else '')) + str(i):
+                        {
+                            nmb: op[i] if tipos_ops[nmb] is list else op for nmb, op in opciones.items()
+                        }
+                    for i in range(n_corridas)
+                }
+
+        elif isinstance(nombre_corrida, list):
+            # Si tenemos una lista de nombres de corridas...
+
+            # Asegurarse que tenga el tamaño necesario
+            if len(nombre_corrida) != n_corridas:
+                raise ValueError(
+                    _('Una lista de nombres de corrida debe tener el mismo número de nombres ("{}") que hay '
+                      'valores de opciones en la simulación ("{}").').format(len(nombre_corrida), n_corridas)
+                )
+
+            if frmt is dict:
+                raise ValueError(
+                    _('No puedes especificar una lista de nombres de corridas si tienes opciones en '
+                      'formato de diccionario.')
+                )
+
+            # Generar el diccionario de corridas
+            corridas = {
+                nmb: {ll: op[i] if tipos_ops[ll] is list else op for ll, op in opciones.items()}
+                for i, nmb in enumerate(nombre_corrida)
+            }
+
+        else:
+            raise TypeError(_('El nombre de corrida debe ser o una cadena de texto, o una lista de cadenas '
+                              'de texto.'))
+
+    return corridas
