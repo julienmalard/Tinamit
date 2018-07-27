@@ -1572,25 +1572,25 @@ def obt_fecha_ft(fechas):
     if all(isinstance(f, (ft.datetime, ft.date)) for f in lista_fechas):
         fechas_ft = lista_fechas
     else:
-        try:
-            # Interntar convertir números de años de una vez
-            fechas_ft = [ft.date(year=int(f), month=1, day=1) for f in lista_fechas]
-        except (ValueError, TypeError):
+        if all(len(f) == 7 for f in lista_fechas):
+            lista_fechas = [f + '-01' for f in lista_fechas]
+        elif all(len(f) == 4 for f in lista_fechas):
+            lista_fechas = [f + '-01-01' for f in lista_fechas]
 
-            # Intentar con cada formato en la lista de formatos posibles
-            fechas_ft = None
-            for formato in formatos_posibles:
+        # Intentar con cada formato en la lista de formatos posibles
+        fechas_ft = None
+        for formato in formatos_posibles:
 
-                try:
-                    # Intentar de convertir todas las fechas a objetos ft.datetime
-                    fechas_ft = [ft.datetime.strptime(x, formato).date() for x in lista_fechas]
+            try:
+                # Intentar de convertir todas las fechas a objetos ft.datetime
+                fechas_ft = [ft.datetime.strptime(x, formato).date() for x in lista_fechas]
 
-                    # Si funcionó, parar aquí
-                    break
+                # Si funcionó, parar aquí
+                break
 
-                except ValueError:
-                    # Si no funcionó, intentar el próximo formato
-                    continue
+            except ValueError:
+                # Si no funcionó, intentar el próximo formato
+                continue
 
         # Si todavía no lo hemos logrado, tenemos un problema.
         if fechas_ft is None:
