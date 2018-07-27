@@ -1067,7 +1067,7 @@ class SuperBD(object):
             ejes.set_ylabel(var)
 
         else:
-            ejes.bar(n_lugares, datos[var])
+            ejes.bar(range(n_lugares), datos[var])
             ejes.set_ylabel(var)
             ejes.set_xlabel(_('Lugar'))
             ejes.set_xticks(range(n_lugares))
