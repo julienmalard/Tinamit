@@ -1485,7 +1485,9 @@ class Modelo(object):
         # Efectuar la calibración del variable.
         return símismo._calibrar_var(var=var, bd=bd, en=en, escala=escala, geog=geog, corresp_vars=corresp_vars)
 
-    def efectuar_micro_calibs(símismo, bd, en=None, escala=None, geog=None, corresp_vars=None):
+    def efectuar_micro_calibs(
+            símismo, bd, en=None, escala=None, geog=None, corresp_vars=None, autoguardar=False, recalc=True
+    ):
         """
 
         Parameters
@@ -1500,6 +1502,20 @@ class Modelo(object):
             Si no se especifica, se tomará la escala correspondiendo a `en`. Solamente aplica si la base de datos
             vinculada tiene geografía asociada.
 
+        geog: Geografía
+            Una geografía para calibraciones espaciales.
+
+        corresp_vars : dict
+            Un diccionario de correspondencia entre nombres de variables en el modelo y los nombres de los variables
+            correspondiente en la base de datos.
+
+        autoguardar : bool
+            Si hay que guardar los resultados automáticamente entre cada variable calibrado. Útil para calibraciones
+            que toman mucho tiempo.
+
+        recalc : bool
+            Si hay que recalcular calibraciones que ya se habían calculado.
+
         Returns
         -------
         dict
@@ -1507,22 +1523,33 @@ class Modelo(object):
         """
 
         # Borramos calibraciones existentes
-        símismo.calibs.clear()
+        if recalc:
+            símismo.calibs.clear()
 
         # Para cada microcalibración...
         for var, d_c in símismo.info_calibs['micro calibs'].items():
 
-            # Si todavía no se ha calibrado este variable...
-            if var not in símismo.calibs:
+            if geog is not None:
+                lugares = geog.obt_lugares_en(en, escala=escala)
+            else:
+                lugares = en if not isinstance(en, list) else [en]
+
+            # Si todavía no se ha calibrado este variable o si estamos recalculando todo...
+            if recalc or var not in símismo.calibs or not all(lg in símismo.calibs[var] for lg in lugares):
 
                 # Efectuar la calibración
-                calib = símismo._calibrar_var(var=var, bd=bd, en=en, escala=escala, geog=geog, hermanos=True,
-                                              corresp_vars=corresp_vars)
+                calib = símismo._calibrar_var(
+                    var=var, bd=bd, en=en, escala=escala, geog=geog, hermanos=True, corresp_vars=corresp_vars
+                )
 
                 # Guardar las calibraciones para este variable y todos los otros variables que potencialmente
                 # fueron calibrados al mismo tiempo.
                 for v in calib:
                     símismo.calibs[v] = calib[v]
+
+            # Autoguardar, si querremos.
+            if autoguardar:
+                símismo.guardar_calibs()
 
     def _calibrar_var(símismo, var, bd, en=None, escala=None, geog=None, hermanos=False, corresp_vars=None):
 
@@ -1532,8 +1559,6 @@ class Modelo(object):
 
         # Preparar la ecuación
         ec = símismo.variables[var]['ec']
-        if not len(Ecuación(ec).variables()):
-            raise NotImplementedError  # para hacer: Falta implementar el caso de un constante
 
         # El objeto de calibración.
         mod_calib = CalibradorEc(

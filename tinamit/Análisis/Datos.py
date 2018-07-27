@@ -61,7 +61,8 @@ class Datos(object):
                     break
 
         if tiempo is False:
-            tiempos = [None] * símismo.n_obs
+            # noinspection PyTypeChecker
+            tiempos = np.full(símismo.n_obs, np.datetime64('NaT'), dtype='datetime64')
         elif tiempo is None:
             tiempos = np.arange(símismo.n_obs)
         elif isinstance(tiempo, str):
@@ -707,8 +708,8 @@ class SuperBD(object):
                     if símismo.microdatos is None:
                         símismo.microdatos = bd_temp
                     else:
-                        símismo.microdatos = pd.concat([bd_temp, símismo.microdatos], ignore_index=True,
-                                                       sort=True)
+
+                        símismo.microdatos = símismo._concat_bds_xr(bd_temp, símismo.microdatos)
 
                 # Datos normales
                 else:
@@ -716,7 +717,7 @@ class SuperBD(object):
                     if símismo.datos is None:
                         símismo.datos = bd_temp
                     else:
-                        símismo.datos = pd.concat([bd_temp, símismo.datos], ignore_index=True, sort=True)
+                        símismo.datos = símismo._concat_bds_xr(bd_temp, símismo.datos)
 
                     # Calcular errores
                     dic_errores = {}
@@ -731,10 +732,21 @@ class SuperBD(object):
                     if símismo.datos_err is None:
                         símismo.datos_err = bd_err_temp
                     else:
-                        símismo.datos_err.append(bd_err_temp, ignore_index=True, sort=True)
+                        símismo.datos_err = símismo._concat_bds_xr(bd_err_temp, símismo.datos_err)
 
         # Ya la base de datos sí está actualizada y lista para trabajar
         símismo.bd_lista = True
+
+    @staticmethod
+    def _concat_bds_xr(bd1, bd2):
+        faltan_en_1 = [x for x in bd2.data_vars if x not in bd1.data_vars]
+        faltan_en_2 = [x for x in bd1.data_vars if x not in bd2.data_vars]
+        n_1 = len(bd1['n'])
+        n_2 = len(bd2['n'])
+        bd1 = bd1.assign(**{v: ('n', [np.nan] * n_1) for v in faltan_en_1})
+        bd2 = bd2.assign(**{v: ('n', [np.nan] * n_2) for v in faltan_en_2})
+
+        return xr.concat([bd1, bd2], 'n')
 
     def obt_datos(símismo, l_vars=None, lugares=None, bd_datos=None, tiempos=None, excl_faltan=False,
                   tipo=None, interpolar=True, interpolar_estricto=False):

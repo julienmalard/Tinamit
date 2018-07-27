@@ -334,7 +334,8 @@ class CalibradorEc(object):
 
                 í_nv_jerarquía = [np.array([nv_jerarquía[í - 1].index(jerarquía[x]) for x in y])
                                   for í, y in list(enumerate(nv_jerarquía))[:0:-1]]
-                í_nv_jerarquía.insert(0, np.array([nv_jerarquía[-1].index(x) for x in obs['lugar']]))
+                í_nv_jerarquía.insert(0, np.array([nv_jerarquía[-1].index(x) for x in obs['lugar'].values.tolist()
+                                                   if x in nv_jerarquía[-1]]))
 
                 # Generar el modelo bayes
                 mod_bayes_jrq = ec.gen_mod_bayes(
