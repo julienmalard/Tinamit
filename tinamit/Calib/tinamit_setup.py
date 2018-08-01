@@ -21,6 +21,7 @@ class spot_setup(object):
         self.params = [spotpy.parameter.Uniform('Ptq', low=0.351, high=0.555, optguess=0.47),
                        spotpy.parameter.Uniform('Ptr', low=0.368, high=0.506, optguess=0.39),
                        spotpy.parameter.Uniform('Ptx', low=0.374, high=0.5, optguess=0.41),
+
                        spotpy.parameter.logNormal('Kaq1', mean=4, sigma=0.5, optguess=51.71),
                        spotpy.parameter.logNormal('Kaq2', mean=4, sigma=0.5, optguess=51.71),
                        spotpy.parameter.logNormal('Kaq3', mean=4, sigma=0.5, optguess=51.71),
@@ -31,7 +32,7 @@ class spot_setup(object):
                        spotpy.parameter.Uniform('Peq', low=0.01, high=0.33, )]
         # Maximum Likelihood Estimation (MLE)
         # setup observated data
-        # self.evals = read_xl.read_xl_file()
+
         self.evals = [10]
         print(len(self.params))
 
@@ -43,6 +44,7 @@ class spot_setup(object):
         print(vector)
         x = np.array(vector)
         # print('x', x)
+
         y = [0]
         return y
 
@@ -55,3 +57,4 @@ class spot_setup(object):
 
 # gaby = spot_setup()
 # print(gaby.parameters())
+

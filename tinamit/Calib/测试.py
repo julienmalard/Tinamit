@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 # people = ["Hanna","Louisa","Claudia", "Angela","Geoffrey", "aparna"]
 # # DON'T TOUCH THIS PLEASE!
 #
@@ -275,6 +276,7 @@
 #     all_sorted_class_4_ab.append(sorted_class)
 # print(sorted_class)
 
+
 # print(all_sorted_class_4_ab)
 # for i, cont in enumerate(all_sorted_class_4_ab):
 #     print(f'parameter {i}')
@@ -291,6 +293,7 @@
 #     cat2.extend(**d)
 #         # (sorted(d.items(), key=lambda x: x[1][1], reverse=True))
 # print(f'{i+1}', f'{j+1} \n influential:{len(cat)}', d)
+
 
 # THIS IS FOR MORRIS RESULT ANALYSIS
 # result = []

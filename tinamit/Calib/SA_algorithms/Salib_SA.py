@@ -1,5 +1,6 @@
 import os
 from tinamit.Calib.ej import soil_class as SC
+
 from tinamit.Calib import gaby_simulation as GS
 # from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD import "Coupling script2" as cs2
 from tinamit.Calib.SA_algorithms import parameters_sa as P
@@ -8,7 +9,6 @@ import numpy as np
 import json
 import matplotlib.pyplot as plt
 from scipy import optimize
-import tinamit.Calib.SA_algorithms.SAPlot as sp
 
 
 class SA(object):

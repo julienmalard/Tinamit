@@ -3,6 +3,7 @@ import tinamit.Calib.ej.soil_class as SC
 
 
 # print(IO.read_into_param_dic('D:\\Thesis\\pythonProject\\Tinamit\\tinamit\Calib\\459anew1.inp'))
+
 # p_dict = IO.read_into_param_dic('D:\\Thesis\\pythonProject\\Tinamit\\tinamit\Calib\\459anew1.inp')
 #
 # with open('D:\\Thesis\\pythonProject\\Tinamit\\tinamit\Calib\\SA_algorithms\\poly_n4.inp', 'w') as f:
@@ -41,6 +42,7 @@ def read_xls(filename):
 
 
 # read_xls('D:\\Thesis\\data\\Book2.xlsx')
+
 def find_overlap():
     H1 = []
     H2 = []
@@ -100,3 +102,4 @@ b = np.array([2, 3, 4, 5])
 print(type(a))
 print(a + b)
 print((a + b) / 4)
+

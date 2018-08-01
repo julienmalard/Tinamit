@@ -1,3 +1,4 @@
+
 def anlzr_sens(líms_paráms, mstr_paráms, var_egr, método):
     prob = None
     sens = {}
@@ -6,8 +7,8 @@ def anlzr_sens(líms_paráms, mstr_paráms, var_egr, método):
 
     return sens
 
-
 def _calc_sens(prob, mstr, egr, método):
+
     if método == 'morris':
         sens = None
     elif método == 'fast':
@@ -15,3 +16,4 @@ def _calc_sens(prob, mstr, egr, método):
     else:
         raise ValueError
     return sens
+
