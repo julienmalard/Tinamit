@@ -1,5 +1,7 @@
 import os
 
+from tinamit.cositas import verificar_dirección_arch
+
 from tinamit.EnvolturasMDS.PySD import ModeloPySD
 from tinamit.EnvolturasMDS.Vensim import ModeloVensim, ModeloVensimMdl
 from tinamit.MDS import EnvolturaMDS
@@ -34,6 +36,8 @@ def generar_mds(archivo, motor=None):
         Un modelo DS.
 
     """
+
+    archivo = verificar_dirección_arch(archivo)
 
     # Identificar la extensión.
     ext = os.path.splitext(archivo)[1]

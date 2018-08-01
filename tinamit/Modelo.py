@@ -17,8 +17,8 @@ from lxml import etree as arbole
 import tinamit.Geog.Geog as Geog
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
 from tinamit.Análisis.Datos import obt_fecha_ft, gen_SuperBD, jsonificar, numpyficar, SuperBD
+from tinamit.Análisis.Sens.muestr import muestrear_paráms
 from tinamit.Análisis.Valids import validar_resultados
-from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.Unidades.conv import convertir
 from tinamit.config import _, obt_val_config
 from tinamit.cositas import detectar_codif, valid_nombre_arch, guardar_json, cargar_json
@@ -36,6 +36,7 @@ class Modelo(object):
 
     # Si el modelo puede combinar pasos mientras simula.
     combin_pasos = False
+    dialecto_ec = 'vensim'
 
     def __init__(símismo, nombre):
         """
@@ -455,7 +456,7 @@ class Modelo(object):
         # Preparar el objeto Xarray para guardar los resultados
         símismo.mem_vars = mem_vars = xr.Dataset({
             v:
-                ('n', np.empty(n_pasos + 1)) if len(símismo.obt_dims_var(v)) == 1 else
+                ('n', np.empty(n_pasos + 1)) if símismo.obt_dims_var(v) == 1 else
                 (
                     ('n', *tuple('x' + str(i) for i in range(len(símismo.obt_dims_var(v))))),
                     np.empty((n_pasos + 1, *símismo.obt_dims_var(v)))
@@ -1486,7 +1487,7 @@ class Modelo(object):
         return símismo._calibrar_var(var=var, bd=bd, en=en, escala=escala, geog=geog, corresp_vars=corresp_vars)
 
     def efectuar_micro_calibs(
-            símismo, bd, en=None, escala=None, geog=None, corresp_vars=None, autoguardar=False, recalc=True
+            símismo, bd, en=None, escala=None, jrq=None, geog=None, corresp_vars=None, autoguardar=False, recalc=True
     ):
         """
 
@@ -1529,30 +1530,28 @@ class Modelo(object):
         # Para cada microcalibración...
         for var, d_c in símismo.info_calibs['micro calibs'].items():
 
-            if geog is not None:
-                lugares = geog.obt_lugares_en(en, escala=escala)
-            else:
-                lugares = en if not isinstance(en, list) else [en]
+            no_recalc = {v: [lg for lg in d_v] for v, d_v in símismo.calibs.items()} if not recalc else None
 
-            # Si todavía no se ha calibrado este variable o si estamos recalculando todo...
-            if recalc or var not in símismo.calibs or not all(lg in símismo.calibs[var] for lg in lugares):
+            # Efectuar la calibración
+            calib = símismo._calibrar_var(
+                var=var, bd=bd, en=en, escala=escala, jrq=jrq, geog=geog, hermanos=True, corresp_vars=corresp_vars,
+                no_recalc=no_recalc
+            )
+            if calib is None:
+                continue
 
-                # Efectuar la calibración
-                calib = símismo._calibrar_var(
-                    var=var, bd=bd, en=en, escala=escala, geog=geog, hermanos=True, corresp_vars=corresp_vars
-                )
-
-                # Guardar las calibraciones para este variable y todos los otros variables que potencialmente
-                # fueron calibrados al mismo tiempo.
-                for v in calib:
-                    símismo.calibs[v] = calib[v]
+            # Guardar las calibraciones para este variable y todos los otros variables que potencialmente
+            # fueron calibrados al mismo tiempo.
+            for v in calib:
+                símismo.calibs[v] = calib[v]
 
             # Autoguardar, si querremos.
             if autoguardar:
                 símismo.guardar_calibs()
 
-    def _calibrar_var(símismo, var, bd, en=None, escala=None, geog=None, hermanos=False, corresp_vars=None):
-
+    def _calibrar_var(símismo, var, bd, en=None, escala=None, jrq=None, geog=None, hermanos=False, corresp_vars=None,
+                      no_recalc=None):
+        print(var)
         # La lista de variables que hay que calibrar con este.
         # l_vars = símismo._obt_vars_asociados(var, enforzar_datos=True, incluir_hermanos=hermanos)
         l_vars = {}  # para hacer: arreglar problemas de determinar paráms vs. otras ecuaciones
@@ -1562,7 +1561,7 @@ class Modelo(object):
 
         # El objeto de calibración.
         mod_calib = CalibradorEc(
-            ec=ec, var_y=var, otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars},
+            ec=ec, dialecto=símismo.dialecto_ec, var_y=var, otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars},
             corresp_vars=corresp_vars
         )
 
@@ -1582,8 +1581,10 @@ class Modelo(object):
         # Efectuar la calibración.
         calib = mod_calib.calibrar(
             paráms=paráms, líms_paráms=líms_paráms, método=método, bd_datos=bd, geog=geog,
-            en=en, escala=escala, ops_método=ops
+            en=en, escala=escala, jrq=jrq, ops_método=ops, no_recalc=no_recalc
         )
+        if calib is None:
+            return
 
         # Reformatear los resultados
         resultado = {}
@@ -1699,6 +1700,12 @@ class Modelo(object):
             return c_v
 
         return _sacar_vars_recurs(var)
+
+    def analizar_sens(símismo, config, tiempo_final=None, var_egr=None, mapa_paráms=None, método='Morris'):
+        mstr_paráms = muestrear_paráms(config, método)
+
+        print(mstr_paráms)
+        return mstr_paráms
 
     def borrar_micro_calib(símismo, var):
         try:
@@ -2043,7 +2050,7 @@ def _gen_dic_ops_corridas(nombre_corrida, combinar, tipos_ops, opciones):
                     # Guardar nu nombre y valor
                     id_op = list(op)[n]
                     ops[nmbr_op] = op[id_op]
-                    nombre[í_op] = id_op
+                    nombre[í_op] = str(id_op)
 
                 else:
                     raise TypeError(_('Tipo de variable "{}" erróneo. Debería ser imposible llegar hasta este '

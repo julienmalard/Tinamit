@@ -23,7 +23,7 @@ class Diccionario(object):
 
         if símismo.config is None or \
                 'leng_act' not in símismo.config or símismo.config['leng_act'] not in símismo.lenguas:
-            config = {'leng_act': 'Kaqchikel'}
+            config = {'leng_act': símismo.estándar}
             símismo.config = config
             guardar_json(config, arch=símismo.arch_config)
 
