@@ -860,6 +860,7 @@ def get_soil_type(poly_id, location = -1):
         #     neighbor = poly_id
         #print(poly_id, neighbor, location)
         return p_soil_class[neighbor]
+
 # mapa1 = []
 # mapa2 = []
 # mapa3 = []

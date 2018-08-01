@@ -217,7 +217,7 @@ def buscar_simuls_faltan(mstr, direc):
 #         # print(archivo)
 #         with open(archivo, 'w', encoding='UTF-8') as d:
 #             json.dump(res, d)
-#     print("--- %s seconds ---" % (time.time() - start_time))
+#     print("--- %s seconds ---" % (time.time() - start_time())
 #     return res
 
 # simul_sens_de_dic(mod=mod, mapa_paráms=mapa_paráms, var_egr=var_egr, tiempo_final=tiempo_final, método=método)
