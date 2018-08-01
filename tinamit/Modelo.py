@@ -199,7 +199,7 @@ class Modelo(object):
         elif isinstance(t_inic, ft.datetime):
             t_inic = t_inic.date()
         elif isinstance(t_inic, np.datetime64):
-            t_inic = ft.datetime.utcfromtimestamp(t_inic.tolist() / 1e9).date()
+            t_inic = t_inic.astype('datetime64[D]').tolist()
         elif isinstance(t_inic, (np.float, np.int)):
             t_inic = int(t_inic)
 

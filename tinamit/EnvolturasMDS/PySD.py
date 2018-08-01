@@ -15,10 +15,14 @@ class ModeloPySD(EnvolturaMDS):
 
     def __init__(símismo, archivo, nombre='mds'):
 
-        ext = os.path.splitext(archivo)[1]
+        nmbr, ext = os.path.splitext(archivo)
         if ext == '.mdl':
             símismo.tipo = '.mdl'
-            símismo.modelo = pysd.read_vensim(archivo)
+            # Únicamente recrear el archivo .py si necesario
+            if os.path.isfile(nmbr + '.py') and (os.path.getmtime(nmbr + '.py') > os.path.getmtime(archivo)):
+                símismo.modelo = pysd.load(nmbr + '.py')
+            else:
+                símismo.modelo = pysd.read_vensim(archivo)
         elif ext in ['.xmile', '.xml']:
             símismo.tipo = '.xmile'
             símismo.modelo = pysd.read_xmile(archivo)
@@ -50,13 +54,16 @@ class ModeloPySD(EnvolturaMDS):
                 líms = literal_eval(f['Lims'])
                 ec = f['Eqn']
 
+                if f['Type'] == 'lookup':
+                    continue
+
                 símismo.variables[nombre] = {
                     'val': getattr(símismo.modelo.components, nombre_py)(),
                     'dims': (1,),  # Para hacer
                     'unidades': unidades,
                     'ec': ec,
                     'hijos': [],
-                    'parientes': Ecuación(ec).variables(),
+                    'parientes': [],  # Ecuación(ec).variables(),
                     'líms': líms,
                     'info': f['Comment']
                 }
@@ -68,14 +75,14 @@ class ModeloPySD(EnvolturaMDS):
                 d_p = símismo.variables[p]
                 d_p['hijos'].append(v)
 
-        for v, d_v in símismo.variables.items():
-            ec = Ecuación(d_v['ec'], dialecto='vensim')
-            try:
-                args_inic = ec.sacar_args_func('INTEG')[1]
-                if args_inic in símismo.variables:
-                    símismo.variables[args_inic]['val_inic'] = True
-            except TypeError:
-                pass
+        # for v, d_v in símismo.variables.items():
+        #     ec = Ecuación(d_v['ec'], dialecto='vensim')
+        #     try:
+        #         args_inic = ec.sacar_args_func('INTEG')[1]
+        #         if args_inic in símismo.variables:
+        #             símismo.variables[args_inic]['val_inic'] = True
+        #     except TypeError:
+        #         pass
 
     def unidad_tiempo(símismo):
         docs = símismo.modelo.doc()
