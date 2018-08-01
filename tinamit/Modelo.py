@@ -36,6 +36,7 @@ class Modelo(object):
 
     # Si el modelo puede combinar pasos mientras simula.
     combin_pasos = False
+    dialecto_ec = 'vensim'
 
     def __init__(símismo, nombre):
         """
@@ -1486,7 +1487,7 @@ class Modelo(object):
         return símismo._calibrar_var(var=var, bd=bd, en=en, escala=escala, geog=geog, corresp_vars=corresp_vars)
 
     def efectuar_micro_calibs(
-            símismo, bd, en=None, escala=None, geog=None, corresp_vars=None, autoguardar=False, recalc=True
+            símismo, bd, en=None, escala=None, jrq=None, geog=None, corresp_vars=None, autoguardar=False, recalc=True
     ):
         """
 
@@ -1534,25 +1535,28 @@ class Modelo(object):
             else:
                 lugares = en if not isinstance(en, list) else [en]
 
-            # Si todavía no se ha calibrado este variable o si estamos recalculando todo...
-            if recalc or var not in símismo.calibs or not all(lg in símismo.calibs[var] for lg in lugares):
+            no_recalc = {v: [lg for lg in d_v] for v, d_v in símismo.calibs.items()} if not recalc else None
 
-                # Efectuar la calibración
-                calib = símismo._calibrar_var(
-                    var=var, bd=bd, en=en, escala=escala, geog=geog, hermanos=True, corresp_vars=corresp_vars
-                )
+            # Efectuar la calibración
+            calib = símismo._calibrar_var(
+                var=var, bd=bd, en=en, escala=escala, jrq=jrq, geog=geog, hermanos=True, corresp_vars=corresp_vars,
+                no_recalc=no_recalc
+            )
+            if calib is None:
+                continue
 
-                # Guardar las calibraciones para este variable y todos los otros variables que potencialmente
-                # fueron calibrados al mismo tiempo.
-                for v in calib:
-                    símismo.calibs[v] = calib[v]
+            # Guardar las calibraciones para este variable y todos los otros variables que potencialmente
+            # fueron calibrados al mismo tiempo.
+            for v in calib:
+                símismo.calibs[v] = calib[v]
 
             # Autoguardar, si querremos.
             if autoguardar:
                 símismo.guardar_calibs()
 
-    def _calibrar_var(símismo, var, bd, en=None, escala=None, geog=None, hermanos=False, corresp_vars=None):
-
+    def _calibrar_var(símismo, var, bd, en=None, escala=None, jrq=None, geog=None, hermanos=False, corresp_vars=None,
+                      no_recalc=None):
+        print(var)
         # La lista de variables que hay que calibrar con este.
         # l_vars = símismo._obt_vars_asociados(var, enforzar_datos=True, incluir_hermanos=hermanos)
         l_vars = {}  # para hacer: arreglar problemas de determinar paráms vs. otras ecuaciones
@@ -1562,7 +1566,7 @@ class Modelo(object):
 
         # El objeto de calibración.
         mod_calib = CalibradorEc(
-            ec=ec, var_y=var, otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars},
+            ec=ec, dialecto=símismo.dialecto_ec, var_y=var, otras_ecs={v: símismo.variables[v]['ec'] for v in l_vars},
             corresp_vars=corresp_vars
         )
 
@@ -1582,8 +1586,10 @@ class Modelo(object):
         # Efectuar la calibración.
         calib = mod_calib.calibrar(
             paráms=paráms, líms_paráms=líms_paráms, método=método, bd_datos=bd, geog=geog,
-            en=en, escala=escala, ops_método=ops
+            en=en, escala=escala, jrq=jrq, ops_método=ops, no_recalc=no_recalc
         )
+        if calib is None:
+            return
 
         # Reformatear los resultados
         resultado = {}

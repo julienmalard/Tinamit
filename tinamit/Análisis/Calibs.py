@@ -9,8 +9,7 @@ import spotpy
 import xarray as xr
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
-
-from tinamit.Análisis.Datos import BDtexto, gen_SuperBD
+from tinamit.Análisis.Datos import BDtexto, gen_SuperBD, SuperBD
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.config import _
 
@@ -69,7 +68,7 @@ class CalibradorEc(object):
     Un objeto para manejar la calibración de ecuaciones.
     """
 
-    def __init__(símismo, ec, var_y=None, otras_ecs=None, corresp_vars=None):
+    def __init__(símismo, ec, var_y=None, otras_ecs=None, corresp_vars=None, dialecto=None):
         """
         Inicializa el `Calibrador`.
 
@@ -87,7 +86,7 @@ class CalibradorEc(object):
         """
 
         # Crear la ecuación.
-        símismo.ec = Ecuación(ec, nombre=var_y, otras_ecs=otras_ecs, nombres_equiv=corresp_vars)
+        símismo.ec = Ecuación(ec, nombre=var_y, otras_ecs=otras_ecs, nombres_equiv=corresp_vars, dialecto=dialecto)
 
         # Asegurarse que se especificó el variable y.
         if símismo.ec.nombre is None:
@@ -95,7 +94,7 @@ class CalibradorEc(object):
                                '`var_y`, o directamente en la ecuación, por ejemplo: "y = a*x ..."'))
 
     def calibrar(símismo, bd_datos, paráms=None, líms_paráms=None, método=None, binario=False, geog=None, en=None,
-                 escala=None, ops_método=None):
+                 escala=None, jrq=None, ops_método=None, no_recalc=None):
         """
         Calibra la ecuación, según datos, y, opcionalmente, una geografía espacial.
 
@@ -131,9 +130,11 @@ class CalibradorEc(object):
             La calibración completada.
         """
 
-        # Asiñar diccionario vacío si `ops_método` no existe.
+        # Poner diccionario vacío si `ops_método` no existe.
         if ops_método is None:
             ops_método = {}
+        if no_recalc is None:
+            no_recalc = {}
 
         # Leer los variables de la ecuación.
         vars_ec = símismo.ec.variables()
@@ -193,11 +194,14 @@ class CalibradorEc(object):
         # Intentar obtener información geográfica, si posible.
         if geog is not None:
             lugares = geog.obt_lugares_en(en, escala=escala)
-            jerarquía = geog.obt_jerarquía(en, escala=escala)
+            jerarquía = geog.obt_jerarquía(en, escala=escala, orden_jerárquico=jrq)
         else:
             if en is not None or escala is not None:
                 raise ValueError(_('Debes especificar una geografía en `geog` para emplear `en` o `escala`.'))
             lugares = jerarquía = None
+
+        if all(p in no_recalc and all(lg in no_recalc[p] for lg in lugares) for p in paráms):
+            return
 
         # Ahora, por fin hacer la calibración.
         if método == 'inferencia bayesiana':
@@ -232,7 +236,7 @@ class CalibradorEc(object):
             El diccionario con límites de parámetros.
         binario: bool
             Si el modelo es binario o no.
-        bd_datos: pd.DataFrame
+        bd_datos: SuperBD
             La base de datos observados.
         lugares: list
             La lista de lugares en los cuales calibrar.
@@ -257,7 +261,7 @@ class CalibradorEc(object):
         # Generar los datos
         paráms = list(líms_paráms)
         l_vars = vars_x + [var_y]
-        obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True)
+        obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True, interpolar=False)
 
         # Calibrar según la situación
         if lugares is None:
@@ -327,20 +331,20 @@ class CalibradorEc(object):
 
                         nv[:] = [x for x in nv
                                  if len(obs.where(obs['lugar'].isin(geog.obt_lugares_en(x) + [x]), drop=True)['n'])
-                                 ]
+                                 ]  # para hacer: accelerar con .values()
                     else:
 
                         nv[:] = [x for x in nv if x in [jerarquía[y] for y in nv_jerarquía[í + 1]]]
 
                 í_nv_jerarquía = [np.array([nv_jerarquía[í - 1].index(jerarquía[x]) for x in y])
                                   for í, y in list(enumerate(nv_jerarquía))[:0:-1]]
-                í_nv_jerarquía.insert(0, np.array([nv_jerarquía[-1].index(x) for x in obs['lugar'].values.tolist()
-                                                   if x in nv_jerarquía[-1]]))
+                obs = obs.where(obs['lugar'].isin(nv_jerarquía[-1]), drop=True)
+                í_nv_jerarquía.insert(0, np.array([nv_jerarquía[-1].index(x) for x in obs['lugar'].values.tolist()]))
 
                 # Generar el modelo bayes
                 mod_bayes_jrq = ec.gen_mod_bayes(
                     líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
-                    aprioris=None, binario=binario, nv_jerarquía=í_nv_jerarquía[::-1]
+                    aprioris=None, binario=binario, nv_jerarquía=í_nv_jerarquía[::-1],
                 )
                 var_res_lugares = {}
                 for lg in lugares:
