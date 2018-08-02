@@ -10,7 +10,6 @@ def gen_mod():
     modelo = Conectado()
 
     # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
-    # print(os.path.join(os.path.split(__file__)[0], 'Rechna Doab.vpm'))
     modelo.estab_mds('../../../tinamit/Ejemplos/en/Ejemplo_SAHYSMOD/Vensim/Tinamit_Rechna.vpm')
     # modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Vensim', 'Tinamit_sub_v4.vpm'))
     modelo.estab_bf(Envoltura)
