@@ -68,6 +68,33 @@ def valid_nombre_arch(nombre):
     return nombre.strip()
 
 
+def verificar_dirección_arch(archivo):
+    """
+    Verificar que existe un archivo, y devuelve la dirrección absoluta. Muy útil para importaciones relativas.
+
+    Parameters
+    ----------
+    archivo : str
+        El archivo para verificar.
+
+    Returns
+    -------
+    str
+        La dirrección absoluta del archivo.
+
+    Raises
+    ------
+    FileNotFoundError
+        Si el archivo no existe.
+
+    """
+    dir_completa = os.path.abspath(archivo)
+    if not os.path.isfile(dir_completa):
+        from tinamit.config import _
+        raise FileNotFoundError(_('No se encuentra el archivo "{}"').format(os.path.abspath(archivo)))
+    return dir_completa
+
+
 def guardar_json(obj, arch):
     """
     Guarda un fuente json, sin riesgo de corrumpir el fuente si se interrumpe el programa mientras escribía al disco.
