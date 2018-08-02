@@ -144,7 +144,6 @@ class SobolSa:
         with open('D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\sobol_sensitivity_{}.out'.format(
                 self.name),
                 'w') as f0, \
-
                 open(
                     'D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\sobol_max_sensitivity_{}.out'.format(
                         self.name),
