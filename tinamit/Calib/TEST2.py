@@ -32,6 +32,7 @@ import pymc3 as pm
 basic_model = pm.Model()
 
 with basic_model:
+
     # Priors for unknown model parameters, mu=average, sd=standard deviation
     alpha = pm.Normal('alpha', mu=0, sd=10)
     beta = pm.Normal('beta', mu=0, sd=10, shape=2)
@@ -39,6 +40,7 @@ with basic_model:
 
     # Expected value of outcome X1,X2 random #from 100
     mu = alpha + beta[0] * X1 + beta[1] * X2
+
 
     # Likelihood (sampling distribution) of observations
     Y_obs = pm.Normal('Y_obs', mu=mu, sd=sigma, observed=Y)
@@ -48,6 +50,7 @@ map_estimate = pm.find_MAP(model=basic_model)
 # python 3 -> add () for print
 
 
+ 
 # step 7, find the maximum of the log-posterior by using a specified optimization algorithm
 from scipy import optimize
 
@@ -65,6 +68,7 @@ trace['alpha'][-5:]
 # step 10  WITH function (go back)
 
 with basic_model:
+
     # obtain starting values via MAP
     start = pm.find_MAP(fmin=optimize.fmin_powell)
 
@@ -76,6 +80,7 @@ with basic_model:
 
 # Step 11: MAP(finding the maximum a posteriori//maximum a posteriori)
 with basic_model:
+
     # obtain starting values via MAP
     start = pm.find_MAP(fmin=optimize.fmin_powell)
 

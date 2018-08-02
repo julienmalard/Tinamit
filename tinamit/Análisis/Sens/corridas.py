@@ -8,6 +8,7 @@ from tinamit.config import _
 from tinamit.cositas import guardar_json
 
 
+
 def gen_vals_inic(mstr, mapa_paráms):
     if mapa_paráms is None:
         mapa_paráms = {}
@@ -61,7 +62,6 @@ def gen_índices_grupos(n_iter, tmñ_grupos):
     índs_grupos = [list(range(cums[í - 1], cums[í])) if í > 0 else list(range(cums[í])) for í in range(cums.size)]
     return índs_grupos
 
-
 def simul_faltan(mod, arch_mstr, direc, mapa_paráms, var_egr, t_final, índ_mstrs=None, paralelo=None):
     faltan = buscar_simuls_faltan(arch_mstr, direc)
     if índ_mstrs is not None:
@@ -73,6 +73,7 @@ def simul_faltan(mod, arch_mstr, direc, mapa_paráms, var_egr, t_final, índ_mst
 
 def simul_sens_por_grupo(mod, mstr_paráms, mapa_paráms, var_egr, direc, t_final, tmñ_grupos,
                          í_grupos, guardar=True, paralelo=None):
+
     if isinstance(í_grupos, int):
         í_grupos = [í_grupos]
     n_iter = len(list(mstr_paráms.values())[0])
@@ -86,6 +87,7 @@ def simul_sens_por_grupo(mod, mstr_paráms, mapa_paráms, var_egr, direc, t_fina
 
 def simul_sens(mod, mstr_paráms, mapa_paráms, var_egr, direc, t_final, guardar=True, índices_mstrs=None,
                paralelo=None):
+
     if índices_mstrs is None:
         índices_mstrs = range(len(list(mstr_paráms.values())[0]))
     if isinstance(índices_mstrs, tuple):
@@ -104,7 +106,7 @@ def simul_sens(mod, mstr_paráms, mapa_paráms, var_egr, direc, t_final, guardar
 
     return res_corridas
 
-
+  
 def buscar_simuls_faltan(mstr, direc):
     if isinstance(mstr, str):
         mstr = cargar_mstr_paráms(mstr)

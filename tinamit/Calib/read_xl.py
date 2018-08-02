@@ -10,6 +10,7 @@ def read_xl_file(file_name='D:\\Thesis\\data\\observed water table depth and ele
     number_of_rows = water_table_depth.nrows
     # number_of_columns = water_table_depth.ncols
 
+
     for row in range(2, number_of_rows - 5):
         n_poly = water_table_depth.cell(row, 6).value
         dw_90_pre = water_table_depth.cell(row, 29).value
@@ -18,3 +19,4 @@ def read_xl_file(file_name='D:\\Thesis\\data\\observed water table depth and ele
         # print(dw_90)
     return dw_90
 # read_xl_file()
+

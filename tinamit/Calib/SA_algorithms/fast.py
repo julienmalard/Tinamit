@@ -63,6 +63,7 @@ def analyze(problem, Y, M=4, print_to_console=False, num_resamples=None):
 
     if m >= (D - 1):
         omega[1:] = np.floor(np.linspace(1, m, D - 1))  # (1, 78, 22), from 1 to 78 evenly spaced to 22 intervals
+
     else:
         omega[1:] = np.arange(D - 1) % m + 1
 
@@ -71,6 +72,7 @@ def analyze(problem, Y, M=4, print_to_console=False, num_resamples=None):
         print("Parameter First Total")
     Si = dict((k, [None] * D) for k in ['S1', 'ST'])
     for i in range(D):  # 23
+
         l = np.arange(i * N, (i + 1) * N)
         Si['S1'][i] = compute_first_order(Y[l], N, M, omega[0])
         Si['ST'][i] = compute_total_order(Y[l], N, omega[0])
@@ -82,6 +84,7 @@ def analyze(problem, Y, M=4, print_to_console=False, num_resamples=None):
     if num_resamples is not None:
         rank_j_k = []
         for i in range(D):  # 23
+
             l = np.arange(i * N, (i + 1) * N)  #
             rank_j_k.append(get_resampled_Si(
                 Y[l], N, num_resamples, N, M, omega[0], conf_level=0.95))
@@ -117,6 +120,7 @@ def analyze(problem, Y, M=4, print_to_console=False, num_resamples=None):
         coefficient.sort()
         # print(coefficient)
 
+
         if coefficient[int(0.95 * coefficient.__len__())] < 1:
             Si['S_convergence'] = 1
         else:
@@ -142,6 +146,7 @@ def get_resampled_Si(Si, num_samples, num_resamples, N, M, omega,
     i = 0
     for sample in data_resampled:
         # Si_resampled[i] = compute_first_order(sample, N, M, omega)
+
         Si_resampled[i] = compute_total_order(sample, N, omega)
         i += 1
     return Si_resampled
@@ -153,7 +158,6 @@ def compute_first_order(outputs, N, M, omega):
     V = 2 * np.sum(Sp)
     D1 = 2 * np.sum(Sp[np.arange(1, M + 1) * int(omega) - 1])
     return D1 / V
-
 
 def compute_total_order(outputs, N, omega):
     f = np.fft.fft(outputs)

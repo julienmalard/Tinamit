@@ -30,8 +30,10 @@ R2 (0.7, 1); (0.6, 0.7); (0.5, 0.6), (0, 0.5)
 
     # stats.probplot(residuals, plot=plt)
     # plt.show()
+
     r22 = [round(i, 2) if isinstance(i, float) else i for i in r2]
     # residuals2 = [round(i, 2) if isinstance(i, float) else i for i in residuals]
     # print(r22)
     # print(residuals2)
     return {'R2': r22}
+

@@ -2,6 +2,7 @@ import sys
 
 sys.path.append('../..')
 from tinamit.Calib.ej import soil_class as SC
+
 from tinamit.Calib import gaby_simulation as GS
 from tinamit.Calib.SA_algorithms import parameters_sa as P
 import time
@@ -60,7 +61,6 @@ class SobolSa:
             for problem in problems_t:
                 # print(fast_sampler.sample(p_s, N)) (num_level--> P level grid)
                 param_values = saltelli.sample(problem, self.n_sampling, calc_second_order=True)
-                # print(param_values.shape)
                 parameters_set.append(param_values)  # N*9*8
                 f1.write(json.dumps(param_values.tolist()))
                 f1.flush()
@@ -133,7 +133,6 @@ class SobolSa:
 
         f.close()
 
-        # plotting()
         print("--- %s total seconds ---" % (time.time() - start_time))
         return evals
 
@@ -145,6 +144,7 @@ class SobolSa:
         with open('D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\sobol_sensitivity_{}.out'.format(
                 self.name),
                 'w') as f0, \
+
                 open(
                     'D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\sobol_max_sensitivity_{}.out'.format(
                         self.name),
@@ -161,6 +161,7 @@ class SobolSa:
                     # evals_set = np.asarray([duration[i][x] for x in range(522)])
                     Si = sobol.analyze(problem, duration[i], calc_second_order=True, conf_level=0.95,
                                        print_to_console=True)
+
                     # print(Si)
 
                     # fig, (ax1, ax2) = plt.subplots(1, 2)

@@ -13,6 +13,7 @@ problem = {
     'num_vars': 3,
     'names': ['x1', 'x2', 'x3'],
     'bounds': [[-np.pi, np.pi]] * 3
+
 }
 
 # Generate samples
@@ -34,3 +35,4 @@ print(Y.__len__())
 Si = sobol.analyze(problem, Y, print_to_console=True)
 # Returns a dictionary with keys 'S1', 'S1_conf', 'ST', and 'ST_conf'
 # (first and total-order indices with bootstrap confidence intervals)
+
