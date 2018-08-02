@@ -1,11 +1,10 @@
 import os
 
-from tinamit.cositas import verificar_dirección_arch
-
 from tinamit.EnvolturasMDS.PySD import ModeloPySD
 from tinamit.EnvolturasMDS.Vensim import ModeloVensim, ModeloVensimMdl
 from tinamit.MDS import EnvolturaMDS
 from tinamit.config import _
+from tinamit.cositas import verificar_dirección_arch
 
 dic_motores = {
     '.vpm': [ModeloVensim],

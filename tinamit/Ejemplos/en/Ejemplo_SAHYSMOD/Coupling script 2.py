@@ -5,34 +5,34 @@ from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
 from tinamit.Geog.Geog import Lugar, Geografía
 
 use_simple = True
-climate_change = False
+climate_change = True
 
 base_dir = os.path.dirname(os.path.realpath(__file__))
 
-# # 0. Site geography
-# Rechna_Doab = Geografía(nombre='Rechna Doab')
-#
-# base_dir_shp = os.path.join(base_dir, 'Shape_files')
-# Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir_shp, 'Internal_Polygon.shp'), col_id='Polygon_ID')
-#
-# Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'External_Polygon.shp'), color='#edf4da')
-# Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'RIVR.shp'), tipo='agua')
-# Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'CNL_Arc.shp'), tipo='agua', llenar=False)
-# Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'Forst_polygon.shp'), tipo='bosque')
-# Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'buildup_Polygon.shp'), tipo='ciudad')
-# Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'road.shp'), tipo='calle')
+# 0. Site geography
+Rechna_Doab = Geografía(nombre='Rechna Doab')
+
+base_dir_shp = os.path.join(base_dir, 'Shape_files')
+Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir_shp, 'Internal_Polygon.shp'), col_orden='Polygon_ID')
+
+Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'External_Polygon.shp'), color='#edf4da')
+Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'RIVR.shp'), tipo='agua')
+Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'CNL_Arc.shp'), tipo='agua', llenar=False)
+Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'Forst_polygon.shp'), tipo='bosque')
+Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'buildup_Polygon.shp'), tipo='ciudad')
+Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'road.shp'), tipo='calle')
 
 # 1. Simple runs
 runs_simple = {'CWU': {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,
-                       'Policy RH': 0, 'Policy Irrigation improvement': 0},
-               'VD': {'Capacity per tubewell': 153.0, 'Fw': 0.8, 'Policy Canal lining': 0,
-                      'Policy RH': 0, 'Policy Irrigation improvement': 0},
-               'CL': {'Capacity per tubewell': 0, 'Fw': 0, 'Policy Canal lining': 1,
-                      'Policy RH': 0, 'Policy Irrigation improvement': 0},
-               'RWH': {'Capacity per tubewell': 0, 'Fw': 0, 'Policy Canal lining': 0,
-                       'Policy RH': 1, 'Policy Irrigation improvement': 0},
-               'PIM': {'Capacity per tubewell': 0, 'Fw': 0, 'Policy Canal lining': 0,
-                       'Policy RH': 0, 'Policy Irrigation improvement': 1}
+                       'Policy RH': 0, 'Policy Irrigation improvement': 0}
+               # 'VD': {'Capacity per tubewell': 153.0, 'Fw': 0.8, 'Policy Canal lining': 0,
+               #        'Policy RH': 0, 'Policy Irrigation improvement': 0},
+               # 'CL': {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 1,
+               #        'Policy RH': 0, 'Policy Irrigation improvement': 0},
+               # 'RWH': {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,
+               #         'Policy RH': 1, 'Policy Irrigation improvement': 0},
+               # 'PIM': {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,
+               #         'Policy RH': 0, 'Policy Irrigation improvement': 1}
                }
 
 # 2. Complex runs
@@ -69,7 +69,7 @@ for cp in ops['Capacity per tubewell']:
 modelo = Conectado()
 
 # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
-modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Vensim', 'Tinamit_sub_v4.vpm'))
+modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Vensim', 'Tinamit_Rechna.vpm'))
 modelo.estab_bf(Envoltura)
 modelo.estab_conv_tiempo(mod_base='mds', conv=6)
 
@@ -82,7 +82,7 @@ modelo.conectar(var_mds='Area fraction Tinamit CropB', mds_fuente=False,
                 var_bf="Area B - Seasonal fraction area crop B")
 modelo.conectar(var_mds='Watertable depth Tinamit', mds_fuente=False, var_bf="Dw - Groundwater depth")
 modelo.conectar(var_mds='ECdw Tinamit', mds_fuente=False, var_bf='Cqf - Aquifer salinity')
-modelo.conectar(var_mds='Rainfall Tinamit', mds_fuente=False, var_bf='Pp - Rainfall')
+modelo.conectar(var_mds='Final Rainfall', mds_fuente=True, var_bf='Pp - Rainfall')
 modelo.conectar(var_mds='Lc', mds_fuente=True, var_bf='Lc - Canal percolation')
 modelo.conectar(var_mds='Ia CropA', mds_fuente=True, var_bf='IaA - Crop A field irrigation')
 modelo.conectar(var_mds='Ia CropB', mds_fuente=True, var_bf='IaB - Crop B field irrigation')
@@ -109,11 +109,11 @@ if not climate_change:
             modelo.mds.inic_val_var(var=switch, val=val)
 
         # Simulate the coupled model
-        modelo.simular(paso=1, tiempo_final=20, nombre_corrida=name)  # time step and final time are in months
+        modelo.simular(paso=1, t_final=40, nombre_corrida=name)  # time step and final time are in months
 
         # Draw maps
-        # modelo.dibujar_mapa(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
-        # modelo.dibujar_mapa(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
+        modelo.dibujar_mapa(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
+        modelo.dibujar_mapa(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
 else:
     # Climate change runs
     location = Lugar(lat=32.178207, long=73.217391, elev=217)
@@ -128,12 +128,13 @@ else:
 
     modelo.mds.conectar_var_clima(var='Tmin', var_clima='Temperatura mínima', conv=1)
     modelo.mds.conectar_var_clima(var='Tmax', var_clima='Temperatura máxima', conv=1)
+    modelo.mds.conectar_var_clima(var='RainfallTinamit', var_clima='Precipitación', conv=0.001)
     modelo.estab_conv_unid_tiempo('mes', 6)
 
     vals_inic = {x: {'mds': v} for x, v in runs.items()}
-    # dibs = [dict(geog=Rechna_Doab, var='Watertable depth Tinamit', directorio='Maps'),
-    #         dict(geog=Rechna_Doab, var='Soil salinity Tinamit CropA', colores=-1, directorio='Maps')]
+    dibs = [dict(geog=Rechna_Doab, var='Watertable depth Tinamit', directorio='Maps'),
+            dict(geog=Rechna_Doab, var='Soil salinity Tinamit CropA', colores=-1, directorio='Maps')]
 
-    modelo.simular_paralelo(paso=1, tiempo_final=100 * 2, fecha_inic='01/11/1989', lugar=location,
-                            recalc_clima=False, clima=[0, 2.6, 4.5, 6.0, 8.5], vals_inic=vals_inic, combinar=True,
-                            nombre_corrida='', paralelo=True)
+    modelo.simular_grupo(paso=1, t_final=100 * 2, t_inic='01/11/1989', lugar_clima=location,
+                         recalc_clima=False, clima=[0, 2.6, 4.5, 6.0, 8.5], vals_inic=vals_inic, combinar=True,
+                         nombre_corrida='', dibujar=dibs, paralelo=True)

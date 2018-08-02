@@ -68,7 +68,7 @@ class CalibradorEc(object):
     Un objeto para manejar la calibración de ecuaciones.
     """
 
-    def __init__(símismo, ec, var_y=None, otras_ecs=None, corresp_vars=None):
+    def __init__(símismo, ec, var_y=None, otras_ecs=None, corresp_vars=None, dialecto=None):
         """
         Inicializa el `Calibrador`.
 
@@ -86,7 +86,7 @@ class CalibradorEc(object):
         """
 
         # Crear la ecuación.
-        símismo.ec = Ecuación(ec, nombre=var_y, otras_ecs=otras_ecs, nombres_equiv=corresp_vars)
+        símismo.ec = Ecuación(ec, nombre=var_y, otras_ecs=otras_ecs, nombres_equiv=corresp_vars, dialecto=dialecto)
 
         # Asegurarse que se especificó el variable y.
         if símismo.ec.nombre is None:
