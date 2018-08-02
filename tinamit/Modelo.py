@@ -456,7 +456,7 @@ class Modelo(object):
         # Preparar el objeto Xarray para guardar los resultados
         símismo.mem_vars = mem_vars = xr.Dataset({
             v:
-                ('n', np.empty(n_pasos + 1)) if len(símismo.obt_dims_var(v)) == 1 else
+                ('n', np.empty(n_pasos + 1)) if símismo.obt_dims_var(v) == 1 else
                 (
                     ('n', *tuple('x' + str(i) for i in range(len(símismo.obt_dims_var(v))))),
                     np.empty((n_pasos + 1, *símismo.obt_dims_var(v)))
@@ -1530,11 +1530,6 @@ class Modelo(object):
         # Para cada microcalibración...
         for var, d_c in símismo.info_calibs['micro calibs'].items():
 
-            if geog is not None:
-                lugares = geog.obt_lugares_en(en, escala=escala)
-            else:
-                lugares = en if not isinstance(en, list) else [en]
-
             no_recalc = {v: [lg for lg in d_v] for v, d_v in símismo.calibs.items()} if not recalc else None
 
             # Efectuar la calibración
@@ -2049,7 +2044,7 @@ def _gen_dic_ops_corridas(nombre_corrida, combinar, tipos_ops, opciones):
                     # Guardar nu nombre y valor
                     id_op = list(op)[n]
                     ops[nmbr_op] = op[id_op]
-                    nombre[í_op] = id_op
+                    nombre[í_op] = str(id_op)
 
                 else:
                     raise TypeError(_('Tipo de variable "{}" erróneo. Debería ser imposible llegar hasta este '

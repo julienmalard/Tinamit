@@ -75,7 +75,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
                 'ingreso': dic['ingr'],
                 'egreso': dic['egr'],
                 'dims': (1,),  # Se cambiará después para variables espaciales
-                'líms': None,
+                'líms': dic['líms'] if 'líms' in dic else (None, None),
                 'info': ''
             }
 
@@ -107,8 +107,6 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # Generar la comanda de corrida (para después)
         args = dict(SAHYSMOD=símismo.exe_SAHYSMOD, ingreso=símismo.arch_ingreso, egreso=símismo.arch_egreso)
         símismo.comanda = '"{SAHYSMOD}" "{ingreso}" "{egreso}"'.format(**args)
-
-        super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida)
 
     def avanzar_modelo(símismo):
 
