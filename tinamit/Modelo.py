@@ -456,7 +456,7 @@ class Modelo(object):
         # Preparar el objeto Xarray para guardar los resultados
         símismo.mem_vars = mem_vars = xr.Dataset({
             v:
-                ('n', np.empty(n_pasos + 1)) if símismo.obt_dims_var(v) == 1 else
+                ('n', np.empty(n_pasos + 1)) if (símismo.obt_dims_var(v) in [1, (1,)]) else
                 (
                     ('n', *tuple('x' + str(i) for i in range(len(símismo.obt_dims_var(v))))),
                     np.empty((n_pasos + 1, *símismo.obt_dims_var(v)))

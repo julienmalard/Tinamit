@@ -275,7 +275,7 @@ class Test_GenerarMDS(unittest.TestCase):
         Asegurarse que un fuente erróneo devuelva un error.
         """
 
-        with símismo.assertRaises(ValueError):
+        with símismo.assertRaises(FileNotFoundError):
             generar_mds('Yo no existo.mdl')
 
 
