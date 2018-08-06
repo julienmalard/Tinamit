@@ -446,7 +446,7 @@ class Geografía(object):
     def _validar_orden_jerárquico(símismo, escala, orden):
 
         if orden is None:
-            orden = [x if isinstance(x, str) else x[0] for x in símismo.orden_jerárquico]
+            orden = [x if isinstance(x, str) else escala if escala in x else x[0] for x in símismo.orden_jerárquico]
             hasta = orden.index(escala)
             orden = orden[:hasta + 1]
 

@@ -139,8 +139,9 @@ class Test_Corridas(unittest.TestCase):
 
     def test_buscar_faltan(símismo):
         direc = 'corridas_algunas_faltan'
-        índs = [3,4,5,6,11]
-        simul_sens(símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, tiempo_final=10,
+
+        índs = [3, 4, 5, 6, 11]
+        simul_sens(símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, t_final=10,
                    direc=direc, var_egr=['A'], índices_mstrs=índs, paralelo=False)
         faltan = buscar_simuls_faltan(símismo.mstr, direc=direc)
 
@@ -150,7 +151,8 @@ class Test_Corridas(unittest.TestCase):
 
     def test_correr_simuls_por_índices(símismo):
         direc = 'corridas_sens_por_índice'
-        simul_sens(símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, tiempo_final=10,
+        simul_sens(símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, t_final=10,
+
                    direc=direc, var_egr=['A'], índices_mstrs=(0, 20), paralelo=False)
 
         archivos = set([f for f in os.listdir(direc) if os.path.isfile(os.path.join(direc, f))])
@@ -165,10 +167,10 @@ class Test_Corridas(unittest.TestCase):
 
     def test_correr_por_grupo(símismo):
         # wich í_grupos i need Azhar and Julien to run for me.
-        #run by group
+        # run by group
         direc = 'corridas_sens_por_grupo'
         simul_sens_por_grupo(
-            símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, tiempo_final=10,
+            símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, t_final=10,
             direc=direc, var_egr=['A'], tmñ_grupos=5, í_grupos=1, paralelo=False
         )
         archivos = set([f for f in os.listdir(direc) if os.path.isfile(os.path.join(direc, f))])
@@ -180,17 +182,20 @@ class Test_Corridas(unittest.TestCase):
     def test_correr_simuls_faltan(símismo):
         direc = 'corridas_algunas_faltan'
         índs = [3, 4, 5, 6, 11]
-        simul_sens(símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, tiempo_final=10,
+        simul_sens(símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, t_final=10,
                    direc=direc, var_egr=['A'], índices_mstrs=índs, paralelo=False)
-        simul_faltan(símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, tiempo_final=10,
-                   direc=direc, var_egr=['A'], paralelo=False)
+        guardar_mstr_paráms(símismo.mstr, os.path.join(direc, 'mstr.json'))
+        simul_faltan(símismo.mod, os.path.join(direc, 'mstr.json'), mapa_paráms=símismo.mapa_paráms, t_final=10,
+                     direc=direc, var_egr=['A'])
+
         todavía_faltan = buscar_simuls_faltan(mstr=símismo.mstr, direc=direc)
         símismo.assertEqual(len(todavía_faltan), 0)
 
     def test_correr_todas_simuls(símismo):
         # run all the simulation
         direc = 'corridas_sens_todas'
-        simul_sens(símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, tiempo_final=10,
+        simul_sens(símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, t_final=10,
+
                    direc=direc, var_egr=['A'], paralelo=False)
         n_iter = len(list(símismo.mstr.values())[0])
         archivos = set([f for f in os.listdir(direc) if os.path.isfile(os.path.join(direc, f))])

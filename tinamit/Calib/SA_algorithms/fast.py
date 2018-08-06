@@ -58,11 +58,12 @@ def analyze(problem, Y, M=4, print_to_console=False, num_resamples=None):
 
     # Recreate the vector omega used in the sampling
     omega = np.zeros([D])
-    omega[0] = math.floor((N - 1) / (2 * M)) # 624
+    omega[0] = math.floor((N - 1) / (2 * M))  # 624
     m = math.floor(omega[0] / (2 * M))  # 78
 
     if m >= (D - 1):
-        omega[1:] = np.floor(np.linspace(1, m, D - 1)) #(1, 78, 22), from 1 to 78 evenly spaced to 22 intervals
+        omega[1:] = np.floor(np.linspace(1, m, D - 1))  # (1, 78, 22), from 1 to 78 evenly spaced to 22 intervals
+
     else:
         omega[1:] = np.arange(D - 1) % m + 1
 
@@ -70,7 +71,8 @@ def analyze(problem, Y, M=4, print_to_console=False, num_resamples=None):
     if print_to_console:
         print("Parameter First Total")
     Si = dict((k, [None] * D) for k in ['S1', 'ST'])
-    for i in range(D): #23
+    for i in range(D):  # 23
+
         l = np.arange(i * N, (i + 1) * N)
         Si['S1'][i] = compute_first_order(Y[l], N, M, omega[0])
         Si['ST'][i] = compute_total_order(Y[l], N, omega[0])
@@ -81,7 +83,8 @@ def analyze(problem, Y, M=4, print_to_console=False, num_resamples=None):
     # compute bootstrapping ADDED
     if num_resamples is not None:
         rank_j_k = []
-        for i in range(D): #23
+        for i in range(D):  # 23
+
             l = np.arange(i * N, (i + 1) * N)  #
             rank_j_k.append(get_resampled_Si(
                 Y[l], N, num_resamples, N, M, omega[0], conf_level=0.95))
@@ -112,10 +115,11 @@ def analyze(problem, Y, M=4, print_to_console=False, num_resamples=None):
                     co_sum += np.abs(ri_j - ri_k) * np.power(max(rank_j_k[j][i], rank_j_k[k][i]), 2) / sum
                 coefficient.append(co_sum)
                 # print('sum:', sum, 'co_sum:', co_sum)
-        #print(coefficient)
+        # print(coefficient)
 
         coefficient.sort()
-        #print(coefficient)
+        # print(coefficient)
+
 
         if coefficient[int(0.95 * coefficient.__len__())] < 1:
             Si['S_convergence'] = 1
@@ -123,6 +127,7 @@ def analyze(problem, Y, M=4, print_to_console=False, num_resamples=None):
             Si['S_convergence'] = 0
         print(Si['S_convergence'])
     return Si
+
 
 # ADDED Bootstrap resampling
 def get_resampled_Si(Si, num_samples, num_resamples, N, M, omega,
@@ -137,13 +142,15 @@ def get_resampled_Si(Si, num_samples, num_resamples, N, M, omega,
         len(Si), size=(num_resamples, num_samples))
     data_resampled = Si[resample_index]
     # Compute average of the absolute values over each of the resamples
-    #Si_resampled =
+    # Si_resampled =
     i = 0
     for sample in data_resampled:
-        #Si_resampled[i] = compute_first_order(sample, N, M, omega)
+        # Si_resampled[i] = compute_first_order(sample, N, M, omega)
+
         Si_resampled[i] = compute_total_order(sample, N, omega)
         i += 1
     return Si_resampled
+
 
 def compute_first_order(outputs, N, M, omega):
     f = np.fft.fft(outputs)

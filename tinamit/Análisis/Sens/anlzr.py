@@ -1,5 +1,4 @@
 
-
 def anlzr_sens(líms_paráms, mstr_paráms, var_egr, método):
     prob = None
     sens = {}
@@ -17,3 +16,4 @@ def _calc_sens(prob, mstr, egr, método):
     else:
         raise ValueError
     return sens
+

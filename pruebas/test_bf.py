@@ -12,6 +12,7 @@ from tinamit.BF import ModeloImpaciente
 
 dir_act = os.path.split(__file__)[0]
 arch_bf = os.path.join(dir_act, 'recursos/BF/prueba_bf.py')
+arch_bf_flexible = os.path.join(dir_act, 'recursos/BF/modelo_flexible.py')
 
 
 # Comprobar que el modelo BF de prueba corre corectamente
@@ -149,3 +150,14 @@ class Test_Envolturas_ModeloImpaciente(unittest.TestCase):
     def tearDownClass(cls):
         if os.path.isfile(cls.arch_prb_escrb_ingr):
             os.remove(cls.arch_prb_escrb_ingr)
+
+
+class Test_ModeloFlexible(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = EnvolturaBF(arch_bf_flexible)
+
+    def test_simular(símismo):
+        res = símismo.mod.simular(100, vars_interés='Escala')
+        npt.assert_array_equal(res['Escala'], np.arange(100 + 1))

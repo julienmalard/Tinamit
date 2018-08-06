@@ -1,27 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import matplotlib.pyplot as plt
-import numpy as np
-import os
-import csv
-import xlrd
-from xlrd import open_workbook
-import pandas as pd
-import sys
-from SALib.sample import fast_sampler
-from tinamit.Calib.SA_algorithms import soil_class
-from tinamit.Calib import gaby_simulation as GS
-from tinamit.Calib.SA_algorithms import parameters_sa as P
-import time
-import numpy as np
-import json
-from tinamit.Calib.SA_algorithms import soil_class as SC
-from matplotlib import pyplot as plt
-from tinamit.Geog.Geog import Geografía
-from enum import Enum
-from scipy import optimize
-from tinamit.Calib.SA_algorithms.Salib_SA import SA
-from tinamit.Calib.SA_algorithms import fast
+
 # people = ["Hanna","Louisa","Claudia", "Angela","Geoffrey", "aparna"]
 # # DON'T TOUCH THIS PLEASE!
 #
@@ -295,7 +274,8 @@ from tinamit.Calib.SA_algorithms import fast
 #         cat22 = sorted(cat2.items(), key=lambda x: x[1][1], reverse=True) #sorted cat2
 #         sorted_class.append(cat22)
 #     all_sorted_class_4_ab.append(sorted_class)
-    #print(sorted_class)
+# print(sorted_class)
+
 
 # print(all_sorted_class_4_ab)
 # for i, cont in enumerate(all_sorted_class_4_ab):
@@ -303,16 +283,17 @@ from tinamit.Calib.SA_algorithms import fast
 #     for j, classes in enumerate(cont):
 #         print(f'class {j}{classes}')
 #         # for items in classes:
-        #     print(f'{items}')
+#     print(f'{items}')
 
-   # print(f'{i+1}', f'{j+1} \n influential:{len(cat)}', cat22)
+# print(f'{i+1}', f'{j+1} \n influential:{len(cat)}', cat22)
 
-        #     sorted(cat2, key=lambda k: k['name'])
-        # cat2 = {}
-        # for d in cat:
-        #     cat2.extend(**d)
-        #         # (sorted(d.items(), key=lambda x: x[1][1], reverse=True))
-        # print(f'{i+1}', f'{j+1} \n influential:{len(cat)}', d)
+#     sorted(cat2, key=lambda k: k['name'])
+# cat2 = {}
+# for d in cat:
+#     cat2.extend(**d)
+#         # (sorted(d.items(), key=lambda x: x[1][1], reverse=True))
+# print(f'{i+1}', f'{j+1} \n influential:{len(cat)}', d)
+
 
 # THIS IS FOR MORRIS RESULT ANALYSIS
 # result = []
@@ -473,4 +454,3 @@ HTTP REQUEST EXCERSISE
 # 		'''
 # 	def __repr__(self):
 # 		return f"Deck of {self.} cards"
-

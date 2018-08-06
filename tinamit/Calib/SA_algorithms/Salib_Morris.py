@@ -1,20 +1,15 @@
-import sys
 import os
-from SALib.analyze import morris
 from SALib.sample.morris import sample
-from tinamit.Calib.SA_algorithms import soil_class as SC
+from tinamit.Calib.ej import soil_class as SC
 from tinamit.Calib import gaby_simulation as GS
-from tinamit.Calib.SA_algorithms import parameters_sa as P
+
 import time
 import numpy as np
 import json
 import matplotlib.pyplot as plt
-from tinamit.Geog.Geog import Geografía
-from scipy import optimize
-from warnings import warn
 from tinamit.Calib.SA_algorithms.Salib_SA import SA
 from tinamit.Calib.SA_algorithms import morris as morris2
-import operator
+
 
 
 class MorrisSA(SA):
