@@ -1,27 +1,27 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-import matplotlib.pyplot as plt
-import numpy as np
-import os
-import csv
-import xlrd
-from xlrd import open_workbook
-import pandas as pd
-import sys
-from SALib.sample import fast_sampler
-from tinamit.Calib.SA_algorithms import soil_class
-from tinamit.Calib import gaby_simulation as GS
-from tinamit.Calib.SA_algorithms import parameters_sa as P
-import time
-import numpy as np
-import json
-from tinamit.Calib.SA_algorithms import soil_class as SC
-from matplotlib import pyplot as plt
-from tinamit.Geog.Geog import Geografía
-from enum import Enum
-from scipy import optimize
-from tinamit.Calib.SA_algorithms.Salib_SA import SA
-from tinamit.Calib.SA_algorithms import fast
+# # -*- coding: utf-8 -*-
+# import matplotlib.pyplot as plt
+# import numpy as np
+# import os
+# import csv
+# import xlrd
+# from xlrd import open_workbook
+# import pandas as pd
+# import sys
+# from SALib.sample import fast_sampler
+# from tinamit.Calib.SA_algorithms import soil_class
+# from tinamit.Calib import gaby_simulation as GS
+# from tinamit.Calib.SA_algorithms import parameters_sa as P
+# import time
+# import numpy as np
+# import json
+# from tinamit.Calib.SA_algorithms import soil_class as SC
+# from matplotlib import pyplot as plt
+# from tinamit.Geog.Geog import Geografía
+# from enum import Enum
+# from scipy import optimize
+# from tinamit.Calib.SA_algorithms.Salib_SA import SA
+# from tinamit.Calib.SA_algorithms import fast
 # people = ["Hanna","Louisa","Claudia", "Angela","Geoffrey", "aparna"]
 # # DON'T TOUCH THIS PLEASE!
 #
@@ -474,3 +474,271 @@ HTTP REQUEST EXCERSISE
 # 	def __repr__(self):
 # 		return f"Deck of {self.} cards"
 
+
+# def list_check(l):
+#     if all(isinstance(i, list) for i in l):
+#         return True
+#     return False
+#
+# print(list_check([[],[1],[2,3], (1,2)]))
+
+# def remove_every_other(input):
+#     new = input.pop(1)
+#     return input
+# print(remove_every_other([1,2,3,4,5]))
+
+from collections import Counter
+# def vc(input):
+#     v = 'aeiouAEIOU'
+#     count = {j: 0 for j in input}
+#     for j in input:
+#         if j in v:
+#             j = j.lower()
+#             count[j]+=1
+#     count = {k: v for k, v in count.items() if v > 0}
+#     return count
+# print(vc('wOshixiaobb'))
+
+import string
+# def titleize(input):
+#     # new = ' '.join(i.capitalize() for i in input.split())
+#     # return new
+#     # new = string.capwords(input)
+#     new = [i[0].upper() + i[1:] for i in input.split()]
+#     return ' '.join(new)
+# print(titleize('i lOve you'))
+
+#
+# def find_factors(num):
+#     new = []
+#     for i in range(1, num+1):
+#         if num % i == 0:
+#             new.append(i)
+#     return new
+#
+# print(find_factors(111))
+# def includes(l, *num):
+#     if isinstance(l, list) or isinstance(l, str):
+#         if len(num) > 1:
+#             for i in num:
+#                 if i in l[num[1]:]:
+#                     return True
+#                 return False
+#         else:
+#             for i in num:
+#                 if i in l:
+#                     return True
+#                 return False
+#     if isinstance(l, dict):
+#         for i in num:
+#             if i in l.values():
+#                 return True
+#             return False
+#
+# print(includes([1, 2, 3], 1)) # True
+# print(includes([1, 2, 3], 1, 2)) # False
+# print(includes({ 'a': 1, 'b': 2 }, 1)) # True
+# print(includes({ 'a': 1, 'b': 2 }, 'a'))# False
+# print(includes('abcd', 'b')) # True
+# print(includes('abcd', 'e')) # False
+
+# def repeat(s, num):
+#     new = s * num
+#     return new
+# print(repeat('abd', 0))
+
+# def truncate(s, num):
+#     if num<3:
+#         return "Truncation must be at least 3 characters."
+#     elif len(s) < num:
+#         return s
+#     elif num == 3:
+#         return '...'
+#     else:
+#         new = num - 3
+#         s = s[0:new]
+#         return s + '...'
+# print(truncate("Problem solving is the best!", 10))
+# print(truncate("Woah", 3))
+# print(truncate("Woah", 4))
+
+# def two_list_dictionary(l1, l2):
+#     if len(l1) <= len(l2):
+#         # # for i in l1:
+#         # #     j= l1.index(i)
+#         # for i in l1:
+#         #     print({el: l2[l1.index(i)] for el in l1})
+#         d = dict(zip(l1, l2))
+#         return d
+#     else:
+#         l11 = l1[:len(l2)]
+#         newl1 = l1[len(l2):]
+#         newl2 = ['null'] *(len(l1)-len(l2))
+#         d2 = dict(zip(newl1, newl2))
+#         d = dict(zip(l11, l2))
+#         d.update(d2)
+#         return d
+#         # d = dict(zip(l1, l2)).update(l1[i:]: 'null' for i in range(len(l2), len(l1)-1)))
+#         # ind = [i: l2[l1.index(i) for i in l1]]
+#         # print(ind)
+#         # return {i for i in l1: j[] for j in l2}
+# # print(two_list_dictionary([1,2,4, 5, 6, 6, 7, 7], [1,2,3,4,5]))
+# print(two_list_dictionary(['a', 'b', 'c', 'd'], [1, 2, 3]))
+# print(two_list_dictionary(['a', 'b', 'c']  , [1, 2, 3, 4]))
+# print(two_list_dictionary(['x', 'y', 'z']  , [1,2]))
+
+# def range_in_list(l, *ind):
+#     if len(ind) == 2:
+#         for i in ind:
+#             if i != 0:
+#                 j = i
+#         newlist = l[0:j+1]
+#     elif len(ind) == 1 and ind[0] < len(l):
+#         for i in ind:
+#             newlist = l[i: ]
+#     else:
+#         for i in ind:
+#           newlist = l[0: i+1]
+#     sum = 0
+#     for el in newlist:
+#         sum += el
+#     return sum
+# print(range_in_list([1,2,3,4],0,2))
+# print(range_in_list([],0,1))
+# print(range_in_list([1,2,3,4],1))
+
+# why newlist has to be changed to l ???
+
+# import collections
+# def find_the_duplicate(l):
+#     for item, count in collections.Counter(l).items():
+#         if count > 1:
+#             return item
+#         elif count == 0:
+#             return None
+#
+# print(find_the_duplicate([1,2,1,4,3,12]))
+# print(find_the_duplicate([2,1,3,4]))
+
+
+# def sum_up_diagonals(l):
+#     first = sum(l[i][i] for i in range(len(l)))
+#     second = sum(l[i][len(l)-i-1] for i in range(len(l)))
+#     total = first + second
+#     return total
+#
+# list4 = [
+#     [1, 2, 3, 4],
+#     [5, 6, 7, 8],
+#     [9, 10, 11, 12],
+#     [13, 14, 15, 16]
+# ]
+# print(sum_up_diagonals(list4))
+
+# def min_max_key_in_dictionary(dic):
+#     maxi = max(dic, key=int)
+#     mini = min(dic, key=int)
+#     return [mini, maxi]
+#     # for k, v in dic.items():
+#     #     maxi=max(k)
+#     #     mini=min(k)
+#     # return [mini, maxi]
+#
+# print(min_max_key_in_dictionary({2:'a', 7:'b', 1:'c',10:'d',4:'e'}))
+# import heapq
+# def two_oldest_ages(l):
+#     return heapq.nlargest(2, l)[::-1]
+# print(two_oldest_ages( [1, 2, 10, 8] ))
+
+    # count = 0
+    # m1 = m2 = float('-inf')
+    # for x in l:
+    #     count += 1
+    #     if x > m2:
+    #         if x >= m1:
+    #             m1, m2 = x, m1
+    #         else:
+    #             m2 = x
+    # return m2 if count >= 2 else None
+
+# import string
+# def is_odd_string(s):
+#     sum = 0
+#     for char in s:
+#         i = string.ascii_lowercase.index(char) + 1
+#         sum += i
+#     if sum % 2 != 0:
+#         return True
+#     return False
+# print(is_odd_string('a')) # True
+# print(is_odd_string('veryfun')) # True
+# print(is_odd_string('veryfunny')) # False
+# print(len([None]))
+
+'''
+valid_parentheses("()") # True 
+valid_parentheses(")(()))") # False 
+valid_parentheses("(") # False 
+valid_parentheses("(())((()())())") # True 
+valid_parentheses('))((') # False
+valid_parentheses('())(') # False
+valid_parentheses('()()()()())()(') # False
+'''
+
+# def valid_parentheses(s):
+#     pars = [None]
+#     parmap = {')': '('}
+#     for c in s:
+#         print('this is c:', c)
+#         if c in parmap:
+#             # print('this is parmap[c]:', parmap[c])
+#             # print('this is pars.pop():', pars.pop())
+#             if parmap[c] != pars.pop():
+#                 return False
+#         else:
+#             pars.append(c)
+#     return len(pars) == 1
+# # print(valid_parentheses("()")) # True
+# print(valid_parentheses("(())")) # False
+
+# def reverse_vowels(string):
+#     VOWELS = set('aeiou')
+#     string = list(string)
+#     vowels = []
+#     indexes = []
+#
+#     for index, letter in enumerate(string):
+#         if letter in VOWELS:
+#             vowels.append(letter)
+#             indexes.append(index)
+#
+#     for i, char in zip(indexes, reversed(vowels)):
+#         string[i] = char
+#
+#     return ''.join(string)
+#
+# print(reverse_vowels("Hello!"))
+# print(reverse_vowels("Tomatoes"))
+# print(reverse_vowels("why try, shy fly?")) # "why try, shy fly?"
+import numpy as np
+
+def sum_interval(values, start, stop):
+    N = len(values)
+    terms = np.zeros(N)
+
+    for i in np.arange(start, stop + 1, 1):
+        terms[i] = values[i]
+        ans = np.sum(terms)
+    return ans
+
+def sum_triplets(values):
+    N = len(values)
+    terms = np.zeros(N)
+
+    for i in range(0, N, 1):
+        terms[i] = sum_interval(values, i, min(N - 1, i + 2))
+
+    return terms
+
+arr = np.array([10, 20, 30, 40, 50])
+print(sum_triplets(arr))

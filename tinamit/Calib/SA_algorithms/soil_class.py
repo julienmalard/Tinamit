@@ -595,7 +595,7 @@ all_soil_class = (
     0,
     0,
 )
-
+# print(all_soil_class[215],all_soil_class[216])
 p_neighbors = [
     # up, right, down, left
     [216, 279, 2, 217],
@@ -891,12 +891,34 @@ def get_soil_type(poly_id, location = -1):
     # if p_neighbors[i][0] - 1 > 214:
     #     mapa.append((i, i))
     # else:
-
-    #
     # print(mapa)
 
     # for a, b in mapa:
     #     print((a,b))
-
     # print(mapa)
 
+
+def gen_mapa_kaq(location, all_soil_class, neighbors):
+#0 up, 1 right, 2 down, 4 left
+#
+    if location < 0 or location > 3:
+        raise ValueError("Location out of scope")
+    return [(all_soil_class[i], all_soil_class[neighbor[location] - 1]) for i, neighbor in enumerate(neighbors)]
+print(gen_mapa_kaq(0, all_soil_class, p_neighbors))
+
+
+mapa_paráms={
+        'Ptq - Aquifer total pore space': np.array(p_soil_class),
+        'Ptr - Root zone total pore space': np.array(p_soil_class),
+        'Kaq': {
+            'transf': 'prom',
+            'mapa': {
+                'Kaq1 - Horizontal hydraulic conductivity 1': gen_mapa_kaq(0, all_soil_class, p_neighbors),
+                'Kaq2 - Horizontal hydraulic conductivity 2': gen_mapa_kaq(1, all_soil_class, p_neighbors),
+                'Kaq3 - Horizontal hydraulic conductivity 3': gen_mapa_kaq(2, all_soil_class, p_neighbors),
+                'Kaq4 - Horizontal hydraulic conductivity 4': gen_mapa_kaq(3, all_soil_class, p_neighbors)
+            }
+        },
+        'Peq - Aquifer effective porosity': np.array(p_soil_class),
+        'Pex - Transition zone effective porosity':np.array(p_soil_class)
+}
