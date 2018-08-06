@@ -190,7 +190,6 @@ class Test_Corridas(unittest.TestCase):
         símismo.assertEqual(len(todavía_faltan), 0)
 
     def test_correr_todas_simuls(símismo):
-        # run all the simulation
         direc = 'corridas_sens_todas'
         simul_sens(símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, t_final=10,
 
