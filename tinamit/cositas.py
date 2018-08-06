@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import tempfile
 
 from chardet import UniversalDetector
@@ -123,7 +124,10 @@ def guardar_json(obj, arch):
         arch = nmbr + '.json'
 
     try:
-        os.replace(temp.name, arch)
+        if os.path.splitdrive(temp.name)[0] == os.path.splitdrive(arch)[0]:
+            os.replace(temp.name, arch)
+        else:
+            shutil.move(temp.name, arch)
     except (PermissionError, FileNotFoundError):  # pragma: sin cobertura
         # Necesario en el caso de corridas en paralelo en Windows. Sin este, la reimportación de Tinamït ocasionada
         # por varias corridas paralelas al mismo tiempo puede causar que el mismo documento se escriba por dos procesos

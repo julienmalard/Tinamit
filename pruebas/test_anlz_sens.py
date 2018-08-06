@@ -166,8 +166,6 @@ class Test_Corridas(unittest.TestCase):
         símismo.assertLessEqual(índs_grupos, [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9], [10, 11]])
 
     def test_correr_por_grupo(símismo):
-        # wich í_grupos i need Azhar and Julien to run for me.
-        # run by group
         direc = 'corridas_sens_por_grupo'
         simul_sens_por_grupo(
             símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, t_final=10,

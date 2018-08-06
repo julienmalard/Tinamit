@@ -38,7 +38,7 @@ def gen_mod():
 
 
 # result = mod.analizar_sens(config)
-devolver = 'Watertable depth Tinamit'
+devolver = ['Watertable depth Tinamit']
 
 # %% Buchiana 1
 # %% Farida 2
