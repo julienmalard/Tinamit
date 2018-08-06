@@ -5,7 +5,7 @@ import numpy as np
 from SALib.sample import morris
 from SALib.sample import fast_sampler
 
-from tinamit import _
+from tinamit.config import _
 
 
 def muestrear_paráms(líms_paráms, método, mapa_paráms=None, ops_método=None):
@@ -72,7 +72,8 @@ def muestrear_paráms(líms_paráms, método, mapa_paráms=None, ops_método=Non
     }
 
     if método == 'morris':
-        ops = {'N': 25, 'num_levels': 8, 'grid_jump': 4} # (25)50, 16(8), 8(4)
+        ops = {'N': 25, 'num_levels': 8, 'grid_jump': 4}  # (25)50, 16(8), 8(4)
+
         ops.update(ops_método)
         mstr = morris.sample(problema, **ops)
 

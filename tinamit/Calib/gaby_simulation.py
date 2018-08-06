@@ -79,12 +79,14 @@ def get_result():
 # get the Dw# from the output simulation results
 '''
 
+
 def simulation(sampling_parameters, tiempo_final, nombre):
     run = {'CWU': {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,
-                       'Policy RH': 0, 'Policy Irrigation improvement': 0}
+                   'Policy RH': 0, 'Policy Irrigation improvement': 0}
            }
 
-    #'Fw': 0.5
+    # 'Fw': 0.5
+
 
     # 3. Now create the model
     # Create a coupled model instance
@@ -115,9 +117,9 @@ def simulation(sampling_parameters, tiempo_final, nombre):
     modelo.conectar(var_mds='Irrigation efficiency', mds_fuente=True, var_bf='FsA - Water storage efficiency crop A')
     modelo.conectar(var_mds='Fw', mds_fuente=True, var_bf='Fw - Fraction well water to irrigation')
 
-
     return modelo.simular_paralelo(paso=1, tiempo_final=tiempo_final,
                                    vals_inic=sampling_parameters, vars_interés='Watertable depth Tinamit',
                                    paralelo=True)
-#devolver='Watertable depth Tinamit'
-#print(vals_inic)
+# devolver='Watertable depth Tinamit'
+# print(vals_inic)
+

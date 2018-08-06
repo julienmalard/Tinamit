@@ -14,7 +14,8 @@ def analyze(problem, X, Y,
             print_to_console=False,
             grid_jump=2,
             num_levels=4,
-            fw = None):
+            fw=None):
+
     """Perform Morris Analysis on model outputs.
 
     Returns a dictionary with keys 'mu', 'mu_star', 'sigma', and

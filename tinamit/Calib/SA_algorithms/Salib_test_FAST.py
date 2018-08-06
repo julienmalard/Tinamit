@@ -1,23 +1,20 @@
-import sys
 import os
 from SALib.sample import fast_sampler
-from tinamit.Calib.SA_algorithms import soil_class
+from tinamit.Calib.ej import soil_class as SC
 from tinamit.Calib import gaby_simulation as GS
-from tinamit.Calib.SA_algorithms import parameters_sa as P
 import time
 import numpy as np
 import json
-from tinamit.Calib.SA_algorithms import soil_class as SC
 from matplotlib import pyplot as plt
-from tinamit.Geog.Geog import Geografía
 from enum import Enum
-from scipy import optimize
 from tinamit.Calib.SA_algorithms.Salib_SA import SA
 from tinamit.Calib.SA_algorithms import fast
 
+
 class FastSa(SA):
     root_path = 'D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\FAST'
-    #root_path = 'D:\\Gaby\\Tinamit\\tinamit\\Calib\\SA_algorithms\\FAST'
+
+    # root_path = 'D:\\Gaby\\Tinamit\\tinamit\\Calib\\SA_algorithms\\FAST'
 
     def __init__(self, config, name):
         super().__init__('Fast')
@@ -35,7 +32,7 @@ class FastSa(SA):
         '''
         param_values = fast_sampler.sample(problem, self.n_sampling)
         print(len(param_values))
-        #print(param_values) = 600 * 23 --> [[]] only two.
+        # print(param_values) = 600 * 23 --> [[]] only two.
 
         with open(os.path.join(self.root_path, 'Fast_Sampling_{}.out'.format(
                 self.name)), 'w') as f1:
@@ -77,8 +74,6 @@ class FastSa(SA):
                 print('this is {} run'.format(i), list)
                 #     # return
 
-                #result['Watertable depth Tinamit'] += list_result['Watertable depth Tinamit']
-
             # print('Finished sampling ', ' ', result)
             print("--- %s seconds ---" % (time.time() - start_time))
             print('result', result)
@@ -93,7 +88,6 @@ class FastSa(SA):
 
         print("--- %s total seconds ---" % (time.time() - start_time))  # will only show once at the end
         return result
-
 
     def analyze2(self, evals, problem, poly_id=None, is_trend_analysis=False):
         # evals : [90*215*3], parameters_set: [215*90*8], problems_t: [215]
@@ -153,7 +147,9 @@ class FastSa(SA):
                     dict_Si = {}
                     Si = fast.analyze(problem, duration[i], print_to_console=False)
 
-                    dict_Si_var = dict_Si[var] = {} #dict_Si = {dict} {'Watertable depth Tinamit': {'names': ['Ptq - s1', 'Ptr - s1', 'Kaq - s1', 'Peq - s1', 'Pex - s1', 'Ptq - s2', 'Ptr - s2', 'Kaq - s2', 'Peq - s2', 'Pex - s2', 'Ptq - s3', 'Ptr - s3', 'Kaq - s3', 'Peq - s3', 'Pex - s3', 'Ptq - s4', 'Ptr - s4', 'Kaq - s4', … View
+                    dict_Si_var = dict_Si[
+                        var] = {}  # dict_Si = {dict} {'Watertable depth Tinamit': {'names': ['Ptq - s1', 'Ptr - s1', 'Kaq - s1', 'Peq - s1', 'Pex - s1', 'Ptq - s2', 'Ptr - s2', 'Kaq - s2', 'Peq - s2', 'Pex - s2', 'Ptq - s3', 'Ptr - s3', 'Kaq - s3', 'Peq - s3', 'Pex - s3', 'Ptq - s4', 'Ptr - s4', 'Kaq - s4', … View
+
                     for k, v in Si.items():
                         if isinstance(v, np.ndarray):
                             n_v = v.tolist()
@@ -162,19 +158,21 @@ class FastSa(SA):
                             dict_Si_var[k] = v
 
                     duration_si.append(dict_Si_var)
-                    #print('duration_si', duration_si)
+                    # print('duration_si', duration_si)
                 duration_all_si.append(duration_si)
         if poly_id is not None:
             filename = '{}_sensitivity_{}_{}.out'.format(self.sa_name,
-                self.name, poly_id)
+                                                         self.name, poly_id)
         else:
             filename = filename = '{}_sensitivity_{}.out'.format(self.sa_name,
-                self.name)
+                                                                 self.name)
+
 
         with open(os.path.join(self.root_path, filename), 'w') as f0, \
                 open(os.path.join(self.root_path,
                                   '{}_max_sensitivity_{}.out'.format(self.sa_name,
-                                      self.name)),
+                                                                     self.name)),
+
                      'w') as f1:
             f0.write(('{}\n').format(json.dumps(duration_all_si)))
             f1.write('\nThis is the duration {}: \n\n'.format(j))
@@ -193,13 +191,14 @@ class FastSa(SA):
         S1 = []
         ST = []
         name = ['Ptq',
-              'Ptr',
-              'Kaq1', #need to consider all four
-              'Kaq2',
-              'Kaq3',
-              'Kaq4',
-               'Peq',
-               'Pex']
+                'Ptr',
+                'Kaq1',  # need to consider all four
+                'Kaq2',
+                'Kaq3',
+                'Kaq4',
+                'Peq',
+                'Pex']
+
 
         for i, duration in enumerate(duration_all_si):
             if i == len(duration_all_si) - 1:
@@ -221,7 +220,8 @@ class FastSa(SA):
             if j == len(duration_all_si) - 1:
                 continue
             for i, txt in enumerate(name):
-                ax.annotate(txt, (X[j*self.n_paras + i], S1[j*self.n_paras + i]))
+                ax.annotate(txt, (X[j * self.n_paras + i], S1[j * self.n_paras + i]))
+
 
         plt.subplot(212)
         ax2 = plt.gca()
@@ -255,19 +255,22 @@ class FastSa(SA):
         for poly in duration:
             # the index of list is set as the index of parameters
             parameter_index = poly[sensitivity_order].index(max(poly[sensitivity_order]))
-            #print(parameter_index)
-            #print('len', len(poly['mu_star']))
+            # print(parameter_index)
+            # print('len', len(poly['mu_star']))
 
             values.append(parameter_index)
-            #print(parameter_index)
-        #print(np.asarray(values))
+            # print(parameter_index)
+        # print(np.asarray(values))
 
-        nombre_archivo = os.path.join(self.root_path, 'Plot_Map\\fast-{}-season-{}'.format(sensitivity_order, season + 1))
+        nombre_archivo = os.path.join(self.root_path,
+                                      'Plot_Map\\fast-{}-season-{}'.format(sensitivity_order, season + 1))
+
         var = 'FAST \n Most sensitive parameters in each polygon in season {}: {}'.format(season + 1, sensitivity_order)
         unid = 'Parameter'
         colores = None
         # this is to calculate the range for the array--values==
-        #escala = np.min(values), np.max(values)
+        # escala = np.min(values), np.max(values)
+
         escala = np.int32(0), np.int32(7)
 
         geog = self.Rechna_Doab
@@ -312,15 +315,21 @@ class FastSa(SA):
 
         mu_star_in_polys = np.asarray(mu_star_in_polys).transpose()
         values = mu_star_in_polys[parameter_n]
-       # print(values)
+        # print(values)
 
-        nombre_archivo = os.path.join(self.root_path, 'plot_map_4_parameter\\Fast-{}-parameter-{}-season-{}'.format(sensitivity_order, parameter_n + 1, season_n + 1))
-        var = "FAST \n Sensitivity index <{}> in each polygon in season {}: {}".format(name[parameter_n], season_n + 1, sensitivity_order)
+        nombre_archivo = os.path.join(self.root_path,
+                                      'plot_map_4_parameter\\Fast-{}-parameter-{}-season-{}'.format(sensitivity_order,
+                                                                                                    parameter_n + 1,
+                                                                                                    season_n + 1))
+        var = "FAST \n Sensitivity index <{}> in each polygon in season {}: {}".format(name[parameter_n], season_n + 1,
+                                                                                       sensitivity_order)
+
         unid = 'Sensitivity Index'
         colores = None
         # this is to calculate the range for the array--values==
         escala = np.min(values), np.max(values)
-        #escala = np.int32(0), np.int32(7)
+        # escala = np.int32(0), np.int32(7)
+
 
         geog = self.Rechna_Doab
         colores = ['#fffce0', '#fcf4ab', '#f4250e']
@@ -331,6 +340,7 @@ class SensitivityOrder(Enum):
     S1 = 'S1'
     ST = 'ST'
 
+
 def get_existing_simulated_result(fa, start_group, poly=None):
     '''
     load simulated data from existing files from group 0 to start_group
@@ -339,14 +349,19 @@ def get_existing_simulated_result(fa, start_group, poly=None):
     '''
     result = {'Watertable depth Tinamit': []}
     for i in range(start_group):
-        with open(os.path.join(fa.root_path, 'Simulation\\5000_Fast simulation\\Fast_simulation_{}_{}.out'.format(0, i)), 'r') as f:
+        with open(
+                os.path.join(fa.root_path, 'Simulation\\5000_Fast simulation\\Fast_simulation_{}_{}.out'.format(0, i)),
+                'r') as f:
+
             # line=1 in each of 575 files f: {'WTD':[[[]]]};  200*215*20seasons,
             for line in f:
                 print(len(json.loads(line)['Watertable depth Tinamit']))
                 if poly is not None:
-                    data = json.loads(line)['Watertable depth Tinamit'] #len(data)=200
-                    result['Watertable depth Tinamit'] += [[samp[poly]] for samp in data] # samp is each of 200s, each samp=one 215
-                    #result['Watertable depth Tinamit'] += [[[poly[poly]] for poly in samp] for samp in data ]
+                    data = json.loads(line)['Watertable depth Tinamit']  # len(data)=200
+                    result['Watertable depth Tinamit'] += [[samp[poly]] for samp in
+                                                           data]  # samp is each of 200s, each samp=one 215
+                    # result['Watertable depth Tinamit'] += [[[poly[poly]] for poly in samp] for samp in data ]
+
                 else:
                     result['Watertable depth Tinamit'] += json.loads(line)['Watertable depth Tinamit']
         print('result', i, len(result['Watertable depth Tinamit']))
@@ -364,6 +379,7 @@ def load_simulation_poly_data(fast, filename):
     f1.close()
     return result[0] if len(result) == 1 else result
 
+
 def conduct_trend_analysis_from_files(config, name, sampling_file_name, n_similuated_result, poly_id=None):
     '''
     Conduct trend analysis from the simulated data
@@ -375,12 +391,14 @@ def conduct_trend_analysis_from_files(config, name, sampling_file_name, n_similu
     fa = FastSa(config, name)
     problem = fa.problems_setup2()
     # os.path.join(mor.root_path, 'p revious simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0))
-    #parameters_set = np.asarray(fa.load_parameters_sampling(os.path.join(fa.root_path, sampling_file_name)))
-    #evals = get_existing_simulated_result(fa, os.path.join(fa.root_path, n_similuated_result))
+    # parameters_set = np.asarray(fa.load_parameters_sampling(os.path.join(fa.root_path, sampling_file_name)))
+    # evals = get_existing_simulated_result(fa, os.path.join(fa.root_path, n_similuated_result))
     evals = load_simulation_poly_data(fa, os.path.join(fa.root_path, n_similuated_result))
     evals = fa.compute_linear_trend(fa, evals, poly_id)
 
-    #fa.analyze2(evals, problem, poly_id, is_trend_analysis=True)
+    # fa.analyze2(evals, problem, poly_id, is_trend_analysis=True)
+
+
 
 def compute_last_n_ave_simulate_values_4_classes(config, name, simulation_filename):
     '''
@@ -404,10 +422,10 @@ def compute_last_n_ave_simulate_values_4_classes(config, name, simulation_filena
             for i in range(len(result)):
                 average_4_categories[i].extend(result[i])
 
-
-    average_4_categories = {'Average Class Sim for ave_n_last':average_4_categories}
+    average_4_categories = {'Average Class Sim for ave_n_last': average_4_categories}
     problem = fa.problems_setup2()
-        # os.path.join(mor.root_path, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0))
+    # os.path.join(mor.root_path, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0))
+
     fa.analyze2(average_4_categories, problem, is_trend_analysis=True)
 
     with open(f'{fa.root_path}/{fa.sa_name}_average_class_sim_data_4_ave_n_last_{fa.name}.out', 'w') as f:
@@ -435,10 +453,10 @@ def compute_avearage_simulate_values_4_classes(config, name, simulation_filename
             for i in range(len(result)):
                 average_4_categories[i].extend(result[i])
 
-
-    average_4_categories = {'Average Class Sim for ab':average_4_categories}
+    average_4_categories = {'Average Class Sim for ab': average_4_categories}
     problem = fa.problems_setup2()
-        # os.path.join(mor.root_path, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0))
+    # os.path.join(mor.root_path, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0))
+
     fa.analyze2(average_4_categories, problem, is_trend_analysis=True)
 
     with open(f'{fa.root_path}/{fa.sa_name}_average_class_sim_data_{fa.name}.out', 'w') as f:
@@ -449,8 +467,10 @@ def combine_last_n_ave_data(*polys):
     last_n_ave = []
     for poly in polys:
         result = []
-        with open(f'D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\Fast\\Simulation\\poly_data_Sim\\Fast_simulation_0_poly_{poly}.out') \
-            as f:
+        with open(
+                f'D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\Fast\\Simulation\\poly_data_Sim\\Fast_simulation_0_poly_{poly}.out') \
+                as f:
+
             for line in f:
                 result.append(json.loads(line))
 
@@ -461,13 +481,14 @@ def combine_last_n_ave_data(*polys):
             last = result[sample][0][-1]
             for season in range(1, 21):
                 if len(result[sample][0]) < 21 and season >= len(result[sample][0]):
-                    sum += result[sample-1][0][season]
+                    sum += result[sample - 1][0][season]
                 else:
                     sum += result[sample][0][season]
-            tmp_result.append([[sum/20, last]])
+            tmp_result.append([[sum / 20, last]])
 
         last_n_ave.append(tmp_result)
-        #evals = np.asarray(load_data_from_file(fa, simulation_filename)['Trend parameters'])
+        # evals = np.asarray(load_data_from_file(fa, simulation_filename)['Trend parameters'])
+
 
     ave_n_last_class = []
     for sample in range(len(last_n_ave[0])):
@@ -482,17 +503,20 @@ def combine_last_n_ave_data(*polys):
 
     return ave_n_last_class
 
+
 def combine_trend_ab_data_into_file(*polys):
     trend_ab = []
     for poly in polys:
         result = []
-        with open(f'D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\Fast\\trend_SA\\ab\\trend_sim_ab\\Fast_trend_0_{poly}.out') \
-            as f:
+        with open(
+                f'D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\Fast\\trend_SA\\ab\\trend_sim_ab\\Fast_trend_0_{poly}.out') \
+                as f:
+
             for line in f:
                 result.append(json.loads(line))
 
         trend_ab.append(result[0]['Trend parameters'])
-        #evals = np.asarray(load_data_from_file(fa, simulation_filename)['Trend parameters'])
+
 
     ave_class_ab = []
     for sample in range(len(trend_ab[0])):
@@ -563,7 +587,8 @@ def noninfluential_param_of_wtd(fa, sensitivity_output):
         # print()
 
 
-def  plot_residual(config, name, filename):
+def plot_residual(config, name, filename):
+
     def load_poly_data(fa, poly_id):
         filename = os.path.join(fa.root_path, f'Simulation\\poly_data_Sim\\Fast_simulation_0_poly_{poly_id}.out')
         data = []
@@ -624,7 +649,6 @@ def  plot_residual(config, name, filename):
             # all_residuals_s.append(res_s)
             # all_residuals_w.append(res_w)
 
-
         with open(os.path.join(fa.root_path, 'fa_residual_result_4_polys_winter.out'), 'w') as fw:
             fw.write(json.dumps(all_residuals_w))
         fw.close()
@@ -633,49 +657,20 @@ def  plot_residual(config, name, filename):
     plot_all(fa)
     # plot_summar_n_winter(fa)
 
+
 if __name__ == '__main__':
     # n_poly, Ns(sampling size for each parameter), n_para, timestepss 24753
     config = [215, 5000, 23, 20]
     # config = [215, 5000, 24, 20] #with dummy
     # convergence can be reached when the no. of evaluation is 10^5 in total for 20 param (10^5/24) = 4000
-    #combine_trend_ab_data_into_file(*SC.H1)
+    # combine_trend_ab_data_into_file(*SC.H1)
     # combine_last_n_ave_data(*SC.H1)
 
-    #plot residual
+
     plot_residual(config, 0, '')
 
     # good R2
     # FastSa.idealregression()
 
     # compute_last_n_ave_simulate_values_4_classes(config, 0, 'trend_SA\\ab\\Fast_trend_0.out')
-#not 4000, 12500 instead. 12500*8 + 1 ~= 100,000
-# 23*5000=115000
-    # SIMULATION
-    #fa = FastSa(config=config, name='0')
-    # #fa.start_simulation_from_file()
-    # problem = fa.problems_setup2()
-    # for i in range(fa.n_poly):
-        # if i < 122:
-        #     continue
-        # evals = get_existing_simulated_result(fa, 575, i)
-    # for poly_data in range(fa.n_poly): # poly_data is 20 rankings of S1 and 20 rankings of
-    #     evals = load_simulation_poly_data(fa, 'Fast_simulation_0_poly_{}.out'.format(poly_data))
-    #     result = fa.analyze2(evals, problem, poly_id=poly_data)
-    #print()
-    # parameters_set = fa.sampling2(problem)
-    # evals = fa.simulation2(parameters_set, 200)
-    #result = fa.analyze2(evals, problem, n_poly=0)
-
-    # for poly_data in range(config[0]):
-    # # os.path.join(fa.root_path, 'previous simulation//10 years//0407 run N=50 P=16//Morris_Sampling_{}.out'.format(0))
-    # #     parameters_set = np.asarray(fa.load_parameters_sampling(fa.root_path, 'Fast_simulation_0_poly_{}.out'.format(poly_data))
-    # #     evals = load_simulation_poly_data(fa, 'Simulation\\5000_Fast simulation\\Fast_simulation_0_poly_{}.out'.format(poly_data))
-    # #     evals = fa.compute_linear_trend(fa, evals)
-    # #     result = fa.analyze2(evals, parameters_set, problem)
-    #      conduct_trend_analysis_from_files(config, 0, 'Simulation\\0406 run 5000\\Fast_Sampling_0.out', 'Simulation\\poly_data_Sim\\Fast_simulation_0_poly_{}.out'.format(poly_data), poly_id=poly_data)
-
-
-    # for poly_data in range(fa.n_poly): # poly_data is 20 rankings of S1 and 20 rankings of
-    #     evals = load_simulation_poly_data(fa, 'Fast_simulation_0_poly_{}.out'.format(poly_data))
-    #     result = fa.analyze2(evals, problem, poly_id=poly_data)
 

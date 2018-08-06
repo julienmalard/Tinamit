@@ -508,7 +508,7 @@ class ModeloImpaciente(ModeloBF):
         símismo.estación = 0
         símismo.mes = 0
 
-        super().iniciar_modelo(tiempo_final, nombre_corrida)
+        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic=vals_inic)
 
     def cerrar_modelo(símismo):
         """

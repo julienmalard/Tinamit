@@ -26,4 +26,3 @@ if __name__ == '__main__':
     sampler.sample(100)  # Sample 100.000 parameter combinations
     results = sampler.getdata()
     print(results)
-

@@ -460,7 +460,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         for var, val in valores.items():
             # Para cada variable para cambiar...
 
-            if símismo.variables[var]['dims'] == (1,):
+            if símismo.obt_dims_var(var) == (1,):
                 # Si el variable no tiene dimensiones (subscriptos)...
 
                 # Actualizar el valor en el modelo VENSIM.
@@ -472,7 +472,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                 # Para hacer: opciones de dimensiones múltiples
                 # La lista de subscriptos
                 subs = símismo.variables[var]['subscriptos']
-                if isinstance(val, np.ndarray):
+                if isinstance(val, np.ndarray) and len(val.shape) > 0:
                     matr = val
                 else:
                     matr = np.empty(len(subs))

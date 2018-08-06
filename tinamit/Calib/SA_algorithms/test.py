@@ -1,9 +1,9 @@
-import json
-import numpy as np
 from xlrd import open_workbook
-import tinamit.Calib.SA_algorithms.soil_class as SC
+import tinamit.Calib.ej.soil_class as SC
 
-#print(IO.read_into_param_dic('D:\\Thesis\\pythonProject\\Tinamit\\tinamit\Calib\\459anew1.inp'))
+
+# print(IO.read_into_param_dic('D:\\Thesis\\pythonProject\\Tinamit\\tinamit\Calib\\459anew1.inp'))
+
 # p_dict = IO.read_into_param_dic('D:\\Thesis\\pythonProject\\Tinamit\\tinamit\Calib\\459anew1.inp')
 #
 # with open('D:\\Thesis\\pythonProject\\Tinamit\\tinamit\Calib\\SA_algorithms\\poly_n4.inp', 'w') as f:
@@ -40,7 +40,9 @@ def read_xls(filename):
         r_class.append(item[1][1])
     print(r_class)
 
-#read_xls('D:\\Thesis\\data\\Book2.xlsx')
+
+# read_xls('D:\\Thesis\\data\\Book2.xlsx')
+
 def find_overlap():
     H1 = []
     H2 = []
@@ -91,10 +93,13 @@ def find_overlap():
     print('T2 =', T2)
     print('T3 =', T3)
     print('T4 =', T4)
+
+
 import numpy as np
+
 a = np.array([1, 2, 3, 4])
 b = np.array([2, 3, 4, 5])
 print(type(a))
-print(a+b)
-print((a+b)/4)
+print(a + b)
+print((a + b) / 4)
 

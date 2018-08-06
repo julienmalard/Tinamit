@@ -16,17 +16,19 @@ X1 = np.random.randn(size)
 X2 = np.random.randn(size) * 0.2
 
 # Simulate outcome variable
-Y = alpha + beta[0]*X1 + beta[1]*X2 + np.random.randn(size)*sigma
+Y = alpha + beta[0] * X1 + beta[1] * X2 + np.random.randn(size) * sigma
 
 # IN[2]
-fig, axes = plt.subplots(1, 2, sharex=True, figsize=(10,4))
+fig, axes = plt.subplots(1, 2, sharex=True, figsize=(10, 4))
 axes[0].scatter(X1, Y)
 axes[1].scatter(X2, Y)
-axes[0].set_ylabel('Y'); axes[0].set_xlabel('X1'); axes[1].set_xlabel('X2');
+axes[0].set_ylabel('Y');
+axes[0].set_xlabel('X1');
+axes[1].set_xlabel('X2');
 plt.show()
 
-
 import pymc3 as pm
+
 basic_model = pm.Model()
 
 with basic_model:
@@ -37,18 +39,18 @@ with basic_model:
     sigma = pm.HalfNormal('sigma', sd=1)
 
     # Expected value of outcome X1,X2 random #from 100
-    mu = alpha + beta[0]*X1 + beta[1]*X2
+    mu = alpha + beta[0] * X1 + beta[1] * X2
+
 
     # Likelihood (sampling distribution) of observations
     Y_obs = pm.Normal('Y_obs', mu=mu, sd=sigma, observed=Y)
 
-
-
 map_estimate = pm.find_MAP(model=basic_model)
 
-#python 3 -> add () for print
+# python 3 -> add () for print
 
 
+ 
 # step 7, find the maximum of the log-posterior by using a specified optimization algorithm
 from scipy import optimize
 
@@ -63,7 +65,7 @@ with basic_model:
 # step 9 an array containing the samples collected
 trace['alpha'][-5:]
 
-#step 10  WITH function (go back)
+# step 10  WITH function (go back)
 
 with basic_model:
 
@@ -76,7 +78,7 @@ with basic_model:
     # draw 5000 posterior samples
     trace = pm.sample(5000, step=step, start=start)
 
-#Step 11: MAP(finding the maximum a posteriori//maximum a posteriori)
+# Step 11: MAP(finding the maximum a posteriori//maximum a posteriori)
 with basic_model:
 
     # obtain starting values via MAP
