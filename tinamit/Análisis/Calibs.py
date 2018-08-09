@@ -93,7 +93,8 @@ class CalibradorEc(object):
             raise ValueError(_('Debes especificar el nombre del variable dependiente, o con el parámetro'
                                '`var_y`, o directamente en la ecuación, por ejemplo: "y = a*x ..."'))
 
-    def calibrar(símismo, bd_datos, paráms=None, líms_paráms=None, método=None, binario=False, geog=None, en=None,
+    def calibrar(símismo, bd_datos, paráms=None, líms_paráms=None, método=None, tipo=None, binario=False, geog=None,
+                 en=None,
                  escala=None, jrq=None, ops_método=None, no_recalc=None):
         """
         Calibra la ecuación, según datos, y, opcionalmente, una geografía espacial.
@@ -207,19 +208,19 @@ class CalibradorEc(object):
         if método == 'inferencia bayesiana':
             return símismo._calibrar_bayesiana(
                 ec=símismo.ec, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms_final, binario=binario,
-                ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, jerarquía=jerarquía, geog=geog,
+                ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, tipo=tipo, jerarquía=jerarquía, geog=geog,
                 mod_jerárquico=mod_jerárquico
             )
         elif método == 'optimizar':
             return símismo._calibrar_optim(
                 ec=símismo.ec, var_y=var_y, vars_x=vars_x, líms_paráms=líms_paráms_final,
-                ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, jerarquía=jerarquía, geog=geog
+                ops_método=ops_método, bd_datos=bd_datos, lugares=lugares, tipo=tipo, jerarquía=jerarquía, geog=geog
             )
         else:
             raise ValueError(_('Método de calibración "{}" no reconocido.').format(método))
 
     @staticmethod
-    def _calibrar_bayesiana(ec, var_y, vars_x, líms_paráms, binario, bd_datos, lugares, jerarquía, geog,
+    def _calibrar_bayesiana(ec, var_y, vars_x, líms_paráms, binario, bd_datos, lugares, tipo, jerarquía, geog,
                             mod_jerárquico, ops_método):
         """
         Efectua la calibración bayesiana.
@@ -261,19 +262,27 @@ class CalibradorEc(object):
         # Generar los datos
         paráms = list(líms_paráms)
         l_vars = vars_x + [var_y]
-        obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True, interpolar=False)
+        obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True, tipo=tipo, interpolar=False)
 
         # Calibrar según la situación
         if lugares is None:
             # Si no hay lugares, generar y calibrar el modelo de una vez.
-            mod_bayes = ec.gen_mod_bayes(
+            mod_bayes, escls_prms = ec.gen_mod_bayes(
                 líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
                 binario=binario, aprioris=None, nv_jerarquía=None
             )
 
-            resultados = _calibrar_mod_bayes(mod_bayes, paráms=paráms, ops=ops_método)
+            resultados = _calibrar_mod_bayes(mod_bayes, paráms=paráms, ops=ops_método, escls_prms=escls_prms)
 
         else:
+
+            sub_lugares = {lg: geog.obt_todos_lugares_en(lg) for lg in lugares}
+            lugs_obs = obs['lugar'].values
+            for lg, subs in sub_lugares.items():
+                lugs_obs[np.isin(lugs_obs, subs)] = lg
+            obs['lugar'][:] = lugs_obs
+            obs = obs.where(obs['lugar'].isin(lugares), drop=True)
+
             # Si hay distribución geográfica, es un poco más complicado.
             if mod_jerárquico:
                 # Si estamos implementando un modelo jerárquico...
@@ -329,20 +338,17 @@ class CalibradorEc(object):
 
                     if í == (len(nv_jerarquía) - 1):
 
-                        nv[:] = [x for x in nv
-                                 if len(obs.where(obs['lugar'].isin(geog.obt_lugares_en(x) + [x]), drop=True)['n'])
-                                 ]  # para hacer: accelerar con .values()
+                        nv[:] = [x for x in nv if obs['lugar'].isin(x).sum()]
                     else:
 
                         nv[:] = [x for x in nv if x in [jerarquía[y] for y in nv_jerarquía[í + 1]]]
 
                 í_nv_jerarquía = [np.array([nv_jerarquía[í - 1].index(jerarquía[x]) for x in y])
                                   for í, y in list(enumerate(nv_jerarquía))[:0:-1]]
-                obs = obs.where(obs['lugar'].isin(nv_jerarquía[-1]), drop=True)
                 í_nv_jerarquía.insert(0, np.array([nv_jerarquía[-1].index(x) for x in obs['lugar'].values.tolist()]))
 
                 # Generar el modelo bayes
-                mod_bayes_jrq = ec.gen_mod_bayes(
+                mod_bayes_jrq, escls_prms = ec.gen_mod_bayes(
                     líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
                     aprioris=None, binario=binario, nv_jerarquía=í_nv_jerarquía[::-1],
                 )
@@ -392,12 +398,12 @@ class CalibradorEc(object):
                     lgs_potenciales = geog.obt_todos_lugares_en(lg)
                     obs_lg = obs.where(obs['lugar'].isin(lgs_potenciales + [lg]), drop=True)
                     if len(obs_lg['n']):
-                        mod_bayes = ec.gen_mod_bayes(
+                        mod_bayes, escls_prms = ec.gen_mod_bayes(
                             líms_paráms=líms_paráms, obs_x=obs_lg[vars_x], obs_y=obs_lg[var_y],
                             binario=binario, aprioris=None, nv_jerarquía=None
                         )
                         resultados[lg] = _calibrar_mod_bayes(
-                            mod_bayes=mod_bayes, paráms=paráms, ops=ops_método, obs=obs_lg
+                            mod_bayes=mod_bayes, paráms=paráms, ops=ops_método, obs=obs_lg, escls_prms=escls_prms
                         )
                     else:
                         resultados[lg] = None
@@ -440,7 +446,7 @@ class CalibradorEc(object):
 
         # Generar la función dinámica Python
         paráms = list(líms_paráms)
-        f_python = ec.gen_func_python(paráms=paráms)
+        f_python = ec.a_python(paráms=paráms)
 
         # Todos los variables
         l_vars = vars_x + [var_y]
@@ -593,7 +599,7 @@ class CalibradorMod(object):
 
 
 # Unas funciones auxiliares
-def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops=None):
+def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops=None, escls_prms=None):
     """
     Esta función calibra un modelo bayes.
 
@@ -636,10 +642,10 @@ def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops
         t = pm.sample(**ops_auto)
 
     # Devolver los datos procesados
-    return _procesar_calib_bayes(t, paráms=paráms)
+    return _procesar_calib_bayes(t, paráms=paráms, escls_prms=escls_prms)
 
 
-def _procesar_calib_bayes(traza, paráms):
+def _procesar_calib_bayes(traza, paráms, escls_prms):
     """
     Procesa los resultados de una calibración bayes. Con base en la traza PyMC3, calcula el punto de probabilidad más
     alta para cada parámetro de interés.

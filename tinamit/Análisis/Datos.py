@@ -1242,9 +1242,9 @@ def jsonificar(o):
             if isinstance(v, (dict, list)):
                 jsonificar(v)
             elif isinstance(v, (ft.date, ft.datetime)):
-                o[v] = str(v)
+                o[ll] = str(v)
             elif isinstance(v, np.ndarray):
-                o[v] = v.tolist()
+                o[ll] = v.tolist()
     elif isinstance(o, list):
         for i, v in enumerate(o):
             if isinstance(v, (dict, list)):

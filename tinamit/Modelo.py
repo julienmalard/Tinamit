@@ -1439,7 +1439,8 @@ class Modelo(object):
     def agregar_lengua(símismo, lengua):
         pass
 
-    def especificar_micro_calib(símismo, var, método=None, paráms=None, líms_paráms=None, escala=None, ops_método=None):
+    def especificar_micro_calib(símismo, var, método=None, paráms=None, líms_paráms=None, tipo=None,
+                                escala=None, ops_método=None):
 
         # Verificar el variable
         var = símismo.valid_var(var)
@@ -1453,7 +1454,8 @@ class Modelo(object):
             'método': método,
             'ops_método': ops_método,
             'paráms': paráms,
-            'líms_paráms': líms_paráms
+            'líms_paráms': líms_paráms,
+            'tipo': tipo
         }
 
     def verificar_micro_calib(símismo, var, bd, en=None, escala=None, geog=None, corresp_vars=None):
@@ -1487,7 +1489,8 @@ class Modelo(object):
         return símismo._calibrar_var(var=var, bd=bd, en=en, escala=escala, geog=geog, corresp_vars=corresp_vars)
 
     def efectuar_micro_calibs(
-            símismo, bd, en=None, escala=None, jrq=None, geog=None, corresp_vars=None, autoguardar=False, recalc=True
+            símismo, bd, en=None, escala=None, jrq=None, geog=None, corresp_vars=None, autoguardar=False, recalc=True,
+            guardar_en=None
     ):
         """
 
@@ -1547,7 +1550,7 @@ class Modelo(object):
 
             # Autoguardar, si querremos.
             if autoguardar:
-                símismo.guardar_calibs()
+                símismo.guardar_calibs(guardar_en)
 
     def _calibrar_var(símismo, var, bd, en=None, escala=None, jrq=None, geog=None, hermanos=False, corresp_vars=None,
                       no_recalc=None):
@@ -1570,6 +1573,7 @@ class Modelo(object):
         líms_paráms = símismo.info_calibs['micro calibs'][var]['líms_paráms']
         paráms = símismo.info_calibs['micro calibs'][var]['paráms']
         ops = símismo.info_calibs['micro calibs'][var]['ops_método']
+        tipo = símismo.info_calibs['micro calibs'][var]['tipo']
 
         # Aplicar límites automáticos
         if líms_paráms is None:
@@ -1580,7 +1584,7 @@ class Modelo(object):
 
         # Efectuar la calibración.
         calib = mod_calib.calibrar(
-            paráms=paráms, líms_paráms=líms_paráms, método=método, bd_datos=bd, geog=geog,
+            paráms=paráms, líms_paráms=líms_paráms, método=método, bd_datos=bd, geog=geog, tipo=tipo,
             en=en, escala=escala, jrq=jrq, ops_método=ops, no_recalc=no_recalc
         )
         if calib is None:
