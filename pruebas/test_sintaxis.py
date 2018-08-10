@@ -1,5 +1,7 @@
 import math
+import numpy as np
 import unittest
+import xarray as xr
 
 from tinamit.Análisis.sintaxis import Ecuación
 
@@ -81,3 +83,54 @@ class Test_AnalizarEc(unittest.TestCase):
     def test_ec_nombres_equiv(símismo):
         ec = Ecuación('y=a*x + b', nombres_equiv={'x': 'X'})
         símismo.assertEquals(ec.a_python(paráms=['a', 'b'])([4, 5], {'X': 2}), 13)
+
+    def test_sacar_args(símismo):
+        ec = Ecuación('y=1/f(a, x, 2*b)')
+        for i in [None, 1, 2]:
+            with símismo.subTest(i=i):
+                símismo.assertListEqual(ec.sacar_args_func('f'), ['a', 'x', '2*b'])
+                símismo.assertListEqual(ec.sacar_args_func('f', i=1), ['a'])
+                símismo.assertListEqual(ec.sacar_args_func('f', i=2), ['a', 'x'])
+
+    def test_obt_coef_var(símismo):
+        ec = Ecuación('y=1/f(a, b*x, 2*b)')
+        símismo.assertEquals(ec.coef_de('x'), ('b', False))
+
+    def test_obt_coef_var_div_coef(símismo):
+        ec = Ecuación('y=a+x/b')
+        símismo.assertEquals(ec.coef_de('x'), ('b', True))
+
+    def test_obt_coef_var_dos_veces(símismo):
+        ec = Ecuación('y=a*x + máx(2, a*x)')
+        símismo.assertEquals(ec.coef_de('x'), ('a', False))
+
+    def test_obt_coef_var_dos_veces_incompat(símismo):
+        ec = Ecuación('y=a*x + b*x')
+        símismo.assertIsNone(ec.coef_de('x'))
+
+    def test_obt_coef_var_dos_veces_incompat_div_mul(símismo):
+        ec = Ecuación('y=a*x + a/x')
+        símismo.assertIsNone(ec.coef_de('x'))
+
+    def test_obt_coef_var_div(símismo):
+        ec = Ecuación('y=a+b/x')
+        símismo.assertEquals(ec.coef_de('x'), ('b', True))
+
+    def test_obt_coef_ec(símismo):
+        ec = Ecuación('y=a*(x+b)')
+        símismo.assertEquals(ec.coef_de('y'), ('a', False))
+
+    def test_obt_coef_ec_div_coef(símismo):
+        ec = Ecuación('y=(x+b)/a')
+        símismo.assertEquals(ec.coef_de('y'), ('a', True))
+
+    def test_obt_coef_ec_div(símismo):
+        ec = Ecuación('y=a/(x+b)')
+        símismo.assertEquals(ec.coef_de('y'), ('a', True))
+
+    def test_normalizar(símismo):
+        ec = Ecuación('y=a*x+b')
+        obs_x = xr.Dataset({'x': ('n', np.random.normal(0, 2, 100))})
+        obs_y = xr.DataArray(np.random.normal(0, 10, 100))
+        escls_prms, líms_norm, x_norm, y_norm = ec.normalizar(líms_paráms={'a': (0, 1)}, obs_x=obs_x, obs_y=obs_y)
+        pass

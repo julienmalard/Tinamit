@@ -200,6 +200,102 @@ class _VstrATx(object):
             raise TypeError(árbol.data)
 
 
+class _VstrExtrArgs(Visitor):
+    def __init__(símismo, f, i, dial):
+        símismo.f = f
+        símismo.i = i
+        símismo.dial = dial
+        símismo.args_f = None
+
+    def func(símismo, x):
+        if x.children[0] == símismo.f:
+            símismo.args_f = [
+                _VstrATx(dialecto=símismo.dial).transformar(e) for e in x.children[1].children[:símismo.i]
+            ]
+
+    def __call__(símismo, árbol):
+        símismo.args_f = None
+        símismo.visit(árbol)
+        return símismo.args_f
+
+
+class _VstrCoefDe(Visitor):
+    def __init__(símismo):
+        símismo.coef = None
+        símismo.inv = None
+        símismo.vr = None
+        símismo.l_vars = []
+
+    def _valid_consist(símismo, coef, inv):
+        if símismo.coef is None:
+            símismo.coef = coef
+            símismo.inv = inv
+        else:
+            if símismo.coef != coef or símismo.inv != inv:
+                símismo.coef = símismo.inv = None
+
+    def prod(símismo, x):
+        coef = None
+        if x.children[1].children[0] == '*':
+            inv = False
+
+            if x.children[0].children[0] == símismo.vr and x.children[0].children[0] not in símismo.l_vars:
+                if x.children[2].data == 'var':
+                    coef = str(x.children[2].children[0])
+            elif x.children[2].children[0] == símismo.vr and x.children[0].children[0] not in símismo.l_vars:
+                if x.children[0].data == 'var':
+                    coef = str(x.children[0].children[0])
+        else:
+            inv = True
+            if x.children[0].children[0] == símismo.vr and x.children[0].children[0] not in símismo.l_vars:
+                if x.children[2].data == 'var':
+                    coef = str(x.children[2].children[0])
+            elif x.children[2].children[0] == símismo.vr and x.children[0].children[0] not in símismo.l_vars:
+                if x.children[0].data == 'var':
+                    coef = str(x.children[0].children[0])
+
+        if coef is not None:
+            símismo._valid_consist(coef, inv)
+
+    def __call__(símismo, árbol, var, l_vars=None):
+        símismo.vr = var
+        símismo.coef = símismo.inv = None
+        símismo.l_vars = [] if l_vars is None else l_vars
+        símismo.visit(árbol)
+        if símismo.coef is None:
+            return None
+        else:
+            return símismo.coef, símismo.inv
+
+
+def _coef_de_ec(árbol, l_vars=None):
+    if l_vars is None:
+        l_vars = []
+    if árbol.data == 'prod':
+        arg1 = árbol.children[0]
+        arg2 = árbol.children[2]
+        op = árbol.children[1].children[0]
+
+        v = None
+        if op == '*':
+            if arg1.data == 'var':
+                v = arg1.children[0]
+            elif arg2.data == 'var':
+                v = arg2.children[0]
+            inv = False
+
+        else:
+            if arg1.data == 'var':
+                v = arg1.children[0]
+            elif arg2.data == 'var':
+                v = arg2.children[0]
+            inv = True
+
+        if v is not None and v not in l_vars:
+            return v, inv
+    return None
+
+
 class Ecuación(object):
     """
     Un objeto para manejar ecuaciones dinámicas.
@@ -304,36 +400,45 @@ class Ecuación(object):
 
         return _VstrAPy(l_prms=paráms, dialecto=símismo.dialecto).transformar(símismo.árbol)
 
-    def _coef_de(símismo, var=None):
-        if var is None:
-            if 'func' in símismo.árbol:
-                dic = símismo.árbol['func']
-                if dic[0] == '*':
-                    return next(((d['var'], False) for d in dic[1] if 'var' in dic[1]), None)
-
-                elif dic[0] == '/':
-                    if 'var' in dic[1][0]:
-                        return dic[1][0]['var'], False
-                    elif 'var' in dic[1][1]:
-                        return dic[1][1]['var'], True
-            return None
+    def coef_de(símismo, var, l_vars=None):
+        if var == símismo.nombre:
+            return _coef_de_ec(símismo.árbol, l_vars=l_vars)
         else:
-            raise NotImplementedError
+            return _VstrCoefDe()(símismo.árbol, var, l_vars)
 
-    def _normalizar(símismo, líms_paráms, obs_x, obs_y):
-        obs_x = obs_x.copy(deep=True)
-        obs_y = obs_y.copy(deep=True)
+    def normalizar(símismo, líms_paráms, obs_x, obs_y):
+        x_norm = obs_x.copy(deep=True)
+        y_norm = obs_y.copy(deep=True)
+        líms_norm = líms_paráms.copy()
         escls_prms = {}
-        for p, líms in líms_paráms.items():
-            res = símismo._es_coef_de(p, obs_x.data_vars)
+        prms_vrs = {}
+
+        for var in x_norm.data_vars:
+            res = símismo.coef_de(var, l_vars=x_norm.data_vars)
             if res is not None:
-                var, inv = res
-                escls_prms[p] = obs_x[var].values.ptp()
+                prm, inv = res
+                escl = x_norm[var].values.std()
+                if prm not in escls_prms:
+                    escls_prms[prm] = {'escl': escl, 'inv': inv}
+                    prms_vrs[var] = prm
+
+        res_y = símismo.coef_de(símismo.nombre, l_vars=x_norm.data_vars)
+        if res_y is not None:
+            prm, inv = res_y
+            escl = y_norm.values.std()
+            if prm not in escls_prms:
+                escls_prms[prm] = {'escl': escl, 'inv': inv}
+                prms_vrs[símismo.nombre] = prm
+
+        for v, p in prms_vrs.items():
+            if v in x_norm.data_vars:
+                if escls_prms[p]['inv']:
+                    np.multiply(x_norm[v].values, escls_prms[p]['escl'], out=x_norm[v].values)
+                else:
+                    np.divide(x_norm[v].values, escls_prms[p]['escl'], out=x_norm[v].values)
             else:
-                res = símismo._es_coef_de(p)
-                if res is not None:
-                    var, inv = res
-                    escls_prms[p] = obs_y.values.ptp()
+                np.divide(y_norm.values, escls_prms[p], out=y_norm.values)
+
         return escls_prms, líms_norm, x_norm, y_norm
 
     def gen_mod_bayes(símismo, líms_paráms, obs_x, obs_y, aprioris=None, binario=False, nv_jerarquía=None):
@@ -514,46 +619,8 @@ class Ecuación(object):
 
         """
 
-        # Para simplificar el código.
-        dialecto = símismo.dialecto
-
-        def _buscar_func(á, f):
-            """
-            Una función recursiva.
-
-            Parameters
-            ----------
-            á: dict
-                El árbol sintáctico en el cual buscar.
-            f: str
-                La función de interés.
-
-            Returns
-            -------
-            list[str]
-                Los argumentos de la función.
-
-            """
-
-            if isinstance(á, dict):
-                # Visitar cada rama del diccionario de manera recursiva
-                for ll, v in á.items():
-                    if ll == 'func':
-                        # Si es función, verificar si es la función de interés.
-                        if v[0] == f:
-                            return [_árb_a_txt(x, dialecto=dialecto) for x in v[1][:i]]
-                    else:
-                        for p in v[1]:
-                            _buscar_func(p, f=func)
-
-            elif isinstance(á, list):
-                [_buscar_func(x, f=func) for x in á]
-            else:
-                # Sino, no tenemos nada que hacer.
-                pass
-
         # Aplicar la función recursiva.
-        return _buscar_func(símismo.árbol, f=func)
+        return _VstrExtrArgs(f=func, i=i, dial=símismo.dialecto)(símismo.árbol)
 
     def __str__(símismo):
         return _VstrATx(símismo.dialecto).transformar(símismo.árbol)
@@ -561,7 +628,6 @@ class Ecuación(object):
 
 # Funciones auxiliares para ecuaciones.
 _error_comp_ec = _('Componente de ecuación "{}" no reconocido.')
-
 
 # Un diccionario con conversiones de funciones reconocidas. Si quieres activar más funciones, agregarlas aqui.
 _dic_funs = {
