@@ -286,7 +286,7 @@ class SuperConectado(Modelo):
         return all(mod.paralelizable() for mod in símismo.modelos.values())
 
     def simular(símismo, t_final=None, t_inic=None, paso=1, nombre_corrida='Corrida Tinamït',
-                vals_inic=None, vals_extern=None, bd=None, lugar_clima=None, clima=None, vars_interés=None):
+                vals_inic=None, vals_extern=None, bd=None, lugar_clima=None, clima=None, vars_interés=None, guardar=True):
         """
         Simula el modelo :class:`~tinamit.Conectado.SuperConectado`.
 
@@ -335,7 +335,7 @@ class SuperConectado(Modelo):
         return super().simular(
             t_final=t_final, t_inic=t_inic, paso=paso, nombre_corrida=nombre_corrida,
             vals_inic=vals_inic, vals_extern=vals_extern, bd=bd,
-            lugar_clima=lugar_clima, clima=clima, vars_interés=vars_interés
+            lugar_clima=lugar_clima, clima=clima, vars_interés=vars_interés, guardar=guardar
         )
 
     def simular_grupo(

@@ -366,7 +366,8 @@ class Modelo(object):
 
     def simular(
             símismo, t_final=None, t_inic=None, paso=1, nombre_corrida='Corrida Tinamït',
-            vals_inic=None, vals_extern=None, bd=None, lugar_clima=None, clima=None, vars_interés=None
+            vals_inic=None, vals_extern=None, bd=None, lugar_clima=None, clima=None, vars_interés=None,
+            guardar=False
     ):
         """
         Correr una simulación del Modelo.
@@ -536,6 +537,9 @@ class Modelo(object):
             # Después de la simulación, cerramos el modelo.
             símismo.cerrar_modelo()
 
+        if guardar:
+            símismo.guardar_resultados(direc=guardar if isinstance(guardar, str) else None)
+
         if vars_interés is not None:
             return copiar_profundo(símismo.mem_vars)
 
@@ -577,7 +581,7 @@ class Modelo(object):
             Si es ``None``, Tinamït adivinará si es mejor paralelizar o no.
         vars_interés : str | list[str]
             Los variables de interés en los resultados.
-        guardar : bool
+        guardar : bool | str
             Si hay que guardar los resultados automáticamente en un archivo externo.
 
         Returns
@@ -593,7 +597,7 @@ class Modelo(object):
                 vars_interés = [vars_interés]
             vars_interés = [símismo.valid_var(v) for v in vars_interés]
         else:
-            if not guardar:
+            if guardar is False:
                 avisar(_('No podremos guardar datos porque tienes `guardar=False` y no especificaste `vars_interés`.'))
 
         # Poner las opciones de simulación en un diccionario.
@@ -688,6 +692,7 @@ class Modelo(object):
                 d_args['nombre_corrida'] = corr
                 d_args['vars_interés'] = vars_interés
                 d_args['bd'] = bd
+                d_args['guardar'] = guardar
 
                 l_trabajos.append((copia_mod, d_args))
 
@@ -719,14 +724,10 @@ class Modelo(object):
                 d_prms_corr['vars_interés'] = vars_interés
 
                 # Después, simular el modelo.
-                res = símismo.simular(**d_prms_corr, bd=bd, nombre_corrida=corr)
+                res = símismo.simular(**d_prms_corr, bd=bd, nombre_corrida=corr, guardar=guardar)
 
                 if res is not None:
                     resultados[mapa_nombres[corr]] = res
-
-        if guardar:
-            for corr, res in resultados:
-                símismo.guardar_resultados(res=res, nombre=corr)
 
         return resultados
 
@@ -792,7 +793,7 @@ class Modelo(object):
             vars_interés=vars_interés, guardar=guardar
         )
 
-    def guardar_resultados(símismo, res=None, nombre=None, frmt='json', l_vars=None):
+    def guardar_resultados(símismo, res=None, nombre=None, frmt='json', l_vars=None, direc=None):
         """
 
         Parameters
@@ -825,6 +826,8 @@ class Modelo(object):
         if frmt[0] != '.':
             frmt = '.' + frmt
         arch = valid_nombre_arch(nombre + frmt)
+        if direc is not None:
+            arch = os.path.join(direc, arch)
         if frmt == '.json':
             contenido = res[l_vars].to_dict()
             guardar_json(contenido, arch=arch)
