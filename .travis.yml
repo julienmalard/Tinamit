@@ -2,14 +2,8 @@ language: python
 python:
   - "3.6"
 
-matrix:
-  include:
-  - os: linux
-    sudo: required
-    python: 3.6
-
-  - os: osx
-    language: generic
+os:
+  - linux
 
 install:
   - pip install --upgrade pip setuptools wheel
@@ -17,11 +11,11 @@ install:
   - pip install coveralls codecov
   - python setup.py sdist bdist_wheel
   - pip install tinamit --no-index --find-links=./dist
-  - rm -r tinamit
 
 script:
-- cd pruebas
-- coverage run -m unittest
+  - rm -r tinamit
+  - cd pruebas
+  - coverage run -m unittest
 
 after_success:
   - coveralls --rcfile=.coveragerc
