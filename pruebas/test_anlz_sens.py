@@ -81,11 +81,22 @@ class Test_Muestrear(unittest.TestCase):
         if os.path.isfile('prueba_guardar.json'):
             os.remove('prueba_guardar.json')
 
+dic_direcs = {
+    'algunas_faltan': 'corridas_algunas_faltan',
+    'por_índice': 'corridas_sens_por_índice',
+    'sens_todas': 'corridas_sens_todas',
 
+
+}
 class Test_Corridas(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+
+        for dr in dic_direcs.values():
+            if os.path.isdir(dr):
+                shutil.rmtree(dr)
+
         cls.líms_paráms = {'A': [(0, 1), (2, 3)]}
         cls.mapa_paráms = {'A': [0, 0, 0, 1, 1, 1]}
         cls.mstr = muestrear_paráms(
@@ -138,50 +149,42 @@ class Test_Corridas(unittest.TestCase):
                 npt.assert_array_equal(val_correcto, d_í[var])
 
     def test_buscar_faltan(símismo):
-        direc = 'corridas_algunas_faltan'
+        direc = dic_direcs['algunas_faltan']
 
         índs = [3, 4, 5, 6, 11]
         simul_sens(símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, t_final=10,
-                   direc=direc, var_egr=['A'], índices_mstrs=índs, paralelo=False)
+                   guardar=direc, var_egr=['A'], índices_mstrs=índs, paralelo=False)
         faltan = buscar_simuls_faltan(símismo.mstr, direc=direc)
 
         símismo.assertSetEqual(set(faltan), set(i for i in range(75) if i not in índs))
-        if os.path.isdir(direc):
-            shutil.rmtree(direc)
 
     def test_correr_simuls_por_índices(símismo):
-        direc = 'corridas_sens_por_índice'
+        direc = dic_direcs['por_índice']
         simul_sens(símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, t_final=10,
 
-                   direc=direc, var_egr=['A'], índices_mstrs=(0, 20), paralelo=False)
+                   guardar=direc, var_egr=['A'], índices_mstrs=(0, 20), paralelo=False)
 
         archivos = set([f for f in os.listdir(direc) if os.path.isfile(os.path.join(direc, f))])
         símismo.assertSetEqual(archivos, set([f'{í}.json' for í in range(0, 20)]))
-
-        if os.path.isdir(direc):
-            shutil.rmtree(direc)
 
     def test_gen_índices_grupos(símismo):
         índs_grupos = gen_índices_grupos(n_iter=12, tmñ_grupos=5)
         símismo.assertLessEqual(índs_grupos, [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9], [10, 11]])
 
     def test_correr_por_grupo(símismo):
-        direc = 'corridas_sens_por_grupo'
+        direc = dic_direcs['por_índice']
         simul_sens_por_grupo(
             símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, t_final=10,
-            direc=direc, var_egr=['A'], tmñ_grupos=5, í_grupos=1, paralelo=False
+            guardar=direc, var_egr=['A'], tmñ_grupos=5, í_grupos=1, paralelo=False
         )
         archivos = set([f for f in os.listdir(direc) if os.path.isfile(os.path.join(direc, f))])
         símismo.assertSetEqual(archivos, set([f'{í}.json' for í in range(5, 10)]))
 
-        if os.path.isdir(direc):
-            shutil.rmtree(direc)
-
     def test_correr_simuls_faltan(símismo):
-        direc = 'corridas_algunas_faltan'
+        direc = dic_direcs['algunas_faltan']
         índs = [3, 4, 5, 6, 11]
         simul_sens(símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, t_final=10,
-                   direc=direc, var_egr=['A'], índices_mstrs=índs, paralelo=False)
+                   guardar=direc, var_egr=['A'], índices_mstrs=índs, paralelo=False)
         guardar_mstr_paráms(símismo.mstr, os.path.join(direc, 'mstr.json'))
         simul_faltan(símismo.mod, os.path.join(direc, 'mstr.json'), mapa_paráms=símismo.mapa_paráms, t_final=10,
                      direc=direc, var_egr=['A'])
@@ -190,13 +193,20 @@ class Test_Corridas(unittest.TestCase):
         símismo.assertEqual(len(todavía_faltan), 0)
 
     def test_correr_todas_simuls(símismo):
-        direc = 'corridas_sens_todas'
+        direc = dic_direcs['sens_todas']
         simul_sens(símismo.mod, símismo.mstr, mapa_paráms=símismo.mapa_paráms, t_final=10,
 
-                   direc=direc, var_egr=['A'], paralelo=False)
+                   guardar=direc, var_egr=['A'], paralelo=False)
         n_iter = len(list(símismo.mstr.values())[0])
         archivos = set([f for f in os.listdir(direc) if os.path.isfile(os.path.join(direc, f))])
         símismo.assertSetEqual(archivos, set([f'{í}.json' for í in range(n_iter)]))
 
-        if os.path.isdir(direc):
-            shutil.rmtree(direc)
+    @classmethod
+    def tearDownClass(cls):
+        for dr in dic_direcs.values():
+            if os.path.isdir(dr):
+                shutil.rmtree(dr)
+
+
+class Test_Análisis(unittest.TestCase):
+    pass

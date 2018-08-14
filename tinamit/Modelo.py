@@ -647,7 +647,7 @@ class Modelo(object):
             d_corr0['vars_interés'] = vars_interés
 
             # Después, simular el modelo.
-            res = símismo.simular(**d_corr0, nombre_corrida=corr0)
+            res = símismo.simular(**d_corr0, nombre_corrida=corr0, guardar=guardar)
 
             if res is not None:
                 resultados[mapa_nombres[corr0]] = res

@@ -72,7 +72,7 @@ def muestrear_paráms(líms_paráms, método, mapa_paráms=None, ops_método=Non
     }
 
     if método == 'morris':
-        ops = {'N': 25, 'num_levels': 8, 'grid_jump': 4}  # (25)50, 16(8), 8(4)
+        ops = {'N': 25, 'num_levels': 8, 'grid_jump': 4}
 
         ops.update(ops_método)
         mstr = morris.sample(problema, **ops)
@@ -109,4 +109,3 @@ def cargar_mstr_paráms(archivo):
     mstr = {c: [np.array(p) for p in d] for c, d in mstr_json.items()}
     return mstr
 
-    # def muestrear_paráms(líms_paráms, mapa_paráms, método):

@@ -2,8 +2,8 @@
 def anlzr_sens(líms_paráms, mstr_paráms, var_egr, método):
     prob = None
     sens = {}
-    sens['prom'] = _calc_sens(prob, mstr=mstr_paráms, egr=, método=método)
-    sens['ajst'] = _calc_sens(prob, mstr=mstr_paráms, egr=, método=método)
+    sens['prom'] = _calc_sens(prob, mstr=mstr_paráms, egr=None, método=método)
+    sens['ajst'] = _calc_sens(prob, mstr=mstr_paráms, egr=None, método=método)
 
     return sens
 

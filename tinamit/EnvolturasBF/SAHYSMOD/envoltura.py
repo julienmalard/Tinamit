@@ -120,7 +120,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # Verificar que SAHYSMOD generó egresos.
         if not os.path.isfile(símismo.arch_egreso):
             raise FileNotFoundError(_('El modelo SAHYSMOD no genero egreso. Esto probablemente quiere decir que '
-                                      'tuvo problema. ¡Diviértete! :)'))
+                                      'tuvo problema. ¡Diviértete! :) {}').format(símismo.corrida_activa))
 
     def cerrar_modelo(símismo):
 
@@ -444,7 +444,7 @@ def leer_arch_egr(archivo, n_est, n_p, n_años):
                         if m:
                             val = m.groups()[0]
                             if val == '-':
-                                val = -1
+                                    val = -1
                             else:
                                 try:
                                     val = float(val)
