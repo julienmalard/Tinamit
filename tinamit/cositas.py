@@ -29,19 +29,20 @@ def detectar_codif(archivo, máx_líneas=None, cortar=None):
     """
 
     detector = UniversalDetector()
-    for í, línea in enumerate(open(archivo, 'rb').readlines()):
+    with open(archivo, 'rb') as d:
+        for í, línea in enumerate(d.readlines()):
 
-        if cortar is None or cortar.encode() not in línea:
-            detector.feed(línea)  # Pasar la próxima línea al detector
-        else:
-            detector.feed(línea.split(cortar.encode())[0])
+            if cortar is None or cortar.encode() not in línea:
+                detector.feed(línea)  # Pasar la próxima línea al detector
+            else:
+                detector.feed(línea.split(cortar.encode())[0])
 
-        # Parar si alcanzamos el máximo de líneas
-        if máx_líneas is not None and í >= (máx_líneas - 1):
-            break
+            # Parar si alcanzamos el máximo de líneas
+            if máx_líneas is not None and í >= (máx_líneas - 1):
+                break
 
-        if detector.done:
-            break  # Para si el detector ya está seguro
+            if detector.done:
+                break  # Para si el detector ya está seguro
 
     detector.close()  # Cerrar el detector
 

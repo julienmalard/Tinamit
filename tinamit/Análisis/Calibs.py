@@ -373,7 +373,9 @@ class CalibradorEc(object):
                 })
 
                 # Calibrar
-                res_calib = _calibrar_mod_bayes(mod_bayes_jrq, paráms=paráms + prms_extras, ops=ops_método)
+                res_calib = _calibrar_mod_bayes(
+                    mod_bayes_jrq, paráms=paráms + prms_extras, ops=ops_método, escls_prms=escls_prms
+                )
 
                 # Formatear los resultados
                 resultados = {}
@@ -415,7 +417,7 @@ class CalibradorEc(object):
             return resultados
 
     @staticmethod
-    def _calibrar_optim(ec, var_y, vars_x, líms_paráms, bd_datos, lugares, jerarquía, geog, ops_método):
+    def _calibrar_optim(ec, var_y, vars_x, líms_paráms, bd_datos, lugares, jerarquía, geog, ops_método, tipo):
         """
         Calibra la ecuación con un método de optimización.
 
@@ -452,7 +454,7 @@ class CalibradorEc(object):
         l_vars = vars_x + [var_y]
 
         # Todas las observaciones
-        obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True)
+        obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True, tipo=tipo)
 
         # Calibrar según la situación
         if lugares is None:
@@ -681,7 +683,12 @@ def _procesar_calib_bayes(traza, paráms, escls_prms):
             raise ValueError
 
     # Devolver los resultados procesados.
-    return {p: {'val': d_máx[p], 'dist': traza[p]} for p in paráms}
+    res = {p: {'val': d_máx[p], 'dist': traza[p]} for p in paráms}
+    if escls_prms is not None:
+        for p, escl in escls_prms.items():
+            res[p]['val'] /= escl
+            res[p]['dist'] /= escl
+    return res
 
 
 def _calc_máx_trz(trz):
