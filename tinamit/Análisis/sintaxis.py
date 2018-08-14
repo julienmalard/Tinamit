@@ -58,14 +58,14 @@ class _VstrAPy(object):
 
     def func(símismo, x):
         fun = _conv_fun(x.children[0], símismo.dialecto, 'python')  # Traducir la función a Python
-        comp = [símismo.transformar(a) for a in
+        comp = [símismo.convertir(a) for a in
                 x.children[1].children]  # Recursar a través de los argumentos de la función
 
         # Devolver la función dinámica
         return lambda p, vr: fun(*[a(p=p, vr=vr) for a in comp])
 
     def neg(símismo, x):
-        comp = símismo.transformar(x.children[0])
+        comp = símismo.convertir(x.children[0])
         return lambda p, vr: -comp(p=p, vr=vr)
 
     def var(símismo, x):
@@ -87,9 +87,9 @@ class _VstrAPy(object):
         # Recursar a través de los componentes del operador ahora. Es importante hacerlo antes de
         # las expresiones ``lambda``; sino se llamará `transformar()` sí mismo cada vez que se llama
         # la función generada.
-        comp_1 = símismo.transformar(x.children[0])
-        comp_2 = símismo.transformar(x.children[2])
-        op = símismo.transformar(x.children[1])
+        comp_1 = símismo.convertir(x.children[0])
+        comp_2 = símismo.convertir(x.children[2])
+        op = símismo.convertir(x.children[1])
 
         if op == '*':
             return lambda p, vr: comp_1(p=p, vr=vr) * comp_2(p=p, vr=vr)
@@ -102,9 +102,9 @@ class _VstrAPy(object):
         return str(x.children[0])
 
     def suma(símismo, x):
-        comp_1 = símismo.transformar(x.children[0])
-        comp_2 = símismo.transformar(x.children[2])
-        op = símismo.transformar(x.children[1])
+        comp_1 = símismo.convertir(x.children[0])
+        comp_2 = símismo.convertir(x.children[2])
+        op = símismo.convertir(x.children[1])
 
         if op == '+':
             return lambda p, vr: comp_1(p=p, vr=vr) + comp_2(p=p, vr=vr)
@@ -117,14 +117,14 @@ class _VstrAPy(object):
         return str(x.children[0])
 
     def pod(símismo, x):
-        comp_1 = símismo.transformar(x.children[0])
-        comp_2 = símismo.transformar(x.children[1])
+        comp_1 = símismo.convertir(x.children[0])
+        comp_2 = símismo.convertir(x.children[1])
         return lambda p, vr: comp_1(p=p, vr=vr) ** comp_2(p=p, vr=vr)
 
     def comp(símismo, x):
-        comp_1 = símismo.transformar(x.children[0])
-        comp_2 = símismo.transformar(x.children[2])
-        op = símismo.transformar(x.children[1])
+        comp_1 = símismo.convertir(x.children[0])
+        comp_2 = símismo.convertir(x.children[2])
+        op = símismo.convertir(x.children[1])
 
         if op == '>':
             return lambda p, vr: comp_1(p=p, vr=vr) > comp_2(p=p, vr=vr)
@@ -145,7 +145,7 @@ class _VstrAPy(object):
     def op_comp(símismo, x):
         return str(x.children[0])
 
-    def transformar(símismo, árbol):
+    def convertir(símismo, árbol):
         if hasattr(símismo, árbol.data):
             return getattr(símismo, árbol.data)(árbol)
         else:
@@ -157,14 +157,14 @@ class _VstrATx(object):
         símismo.dialecto = dialecto
 
     def func(símismo, x):
-        args = [símismo.transformar(a) for a in x.children[1].children]
+        args = [símismo.convertir(a) for a in x.children[1].children]
         if len(args) != 1:
             return str(x.children[0]) + '(' + ', '.join(args) + ')'
         elif len(args) == 1:
             return str(x.children[0]) + '(' + args[0] + ')'
 
     def neg(símismo, x):
-        return '-' + símismo.transformar(x.children[0])
+        return '-' + símismo.convertir(x.children[0])
 
     def var(símismo, x):
         return str(x.children[0])
@@ -173,27 +173,134 @@ class _VstrATx(object):
         return str(x.children[0])
 
     def prod(símismo, x):
-        return ''.join(símismo.transformar(a) for a in x.children)
+        return ''.join(símismo.convertir(a) for a in x.children)
 
     def op_prod(símismo, x):
         return str(x.children[0])
 
     def suma(símismo, x):
-        return ''.join(símismo.transformar(a) for a in x.children)
+        return ''.join(símismo.convertir(a) for a in x.children)
 
     def op_suma(símismo, x):
         return str(x.children[0])
 
     def pod(símismo, x):
-        return símismo.transformar(x.children[0]) + '^' + símismo.transformar(x.children[1])
+        return símismo.convertir(x.children[0]) + '^' + símismo.convertir(x.children[1])
 
     def comp(símismo, x):
-        return ''.join(símismo.transformar(a) for a in x.children)
+        return ''.join(símismo.convertir(a) for a in x.children)
 
     def op_comp(símismo, x):
         return str(x.children[0])
 
-    def transformar(símismo, árbol):
+    def convertir(símismo, árbol):
+        if hasattr(símismo, árbol.data):
+            return getattr(símismo, árbol.data)(árbol)
+        else:
+            raise TypeError(árbol.data)
+
+
+class _VstrAPyMC3(object):
+    def __init__(símismo, d_vars_pm, dialecto, obs_x, nv_jerarquía):
+        símismo.d_vars_pm = d_vars_pm
+        símismo.dialecto = dialecto
+        símismo.nv_jerarquía = nv_jerarquía
+        símismo.obs_x = obs_x
+
+    def func(símismo, x):
+        fun = _conv_fun(x.children[0], símismo.dialecto, 'pm')  # Traducir la función a PyMC3
+        args = [símismo.convertir(a) for a in
+                x.children[1].children]  # Recursar a través de los argumentos de la función
+
+        # Devolver la función dinámica
+        return fun(*args)
+
+    def neg(símismo, x):
+        return -símismo.convertir(x.children[0])
+
+    def var(símismo, x):
+        v = str(x.children[0])
+        try:
+            if símismo.nv_jerarquía is None:
+                return símismo.d_vars_pm[v]
+            else:
+                return símismo.d_vars_pm[v][símismo.nv_jerarquía[-1]]
+
+        except KeyError:
+            # Si el variable no es un parámetro calibrable, debe ser un valor observado
+            try:
+                return símismo.obs_x[v].values
+
+            except KeyError:
+                raise ValueError(_('El variable "{}" no es un parámetro, y no se encuentra'
+                                   'en la base de datos observados tampoco.').format(v))
+
+    def num(símismo, x):
+        return float(x.children[0])
+
+    def prod(símismo, x):
+        # Recursar a través de los componentes del operador ahora. Es importante hacerlo antes de
+        # las expresiones ``lambda``; sino se llamará `transformar()` sí mismo cada vez que se llama
+        # la función generada.
+        comp_1 = símismo.convertir(x.children[0])
+        comp_2 = símismo.convertir(x.children[2])
+        op = símismo.convertir(x.children[1])
+
+        if op == '*':
+            return comp_1 * comp_2
+        elif op == '/':
+            return comp_1 / comp_2
+        else:
+            raise ValueError(op)
+
+    def op_prod(símismo, x):
+        return str(x.children[0])
+
+    def suma(símismo, x):
+        comp_1 = símismo.convertir(x.children[0])
+        comp_2 = símismo.convertir(x.children[2])
+        op = símismo.convertir(x.children[1])
+
+        if op == '+':
+            return comp_1 + comp_2
+        elif op == '-':
+            return comp_1 - comp_2
+        else:
+            raise ValueError(op)
+
+    def op_suma(símismo, x):
+        return str(x.children[0])
+
+    def pod(símismo, x):
+        comp_1 = símismo.convertir(x.children[0])
+        comp_2 = símismo.convertir(x.children[1])
+        return comp_1 ** comp_2
+
+    def comp(símismo, x):
+        comp_1 = símismo.convertir(x.children[0])
+        comp_2 = símismo.convertir(x.children[2])
+        op = símismo.convertir(x.children[1])
+
+        if op == '>':
+            return pm.math.gt(comp_1, comp_2)
+        elif op == '<':
+            return pm.math.lt(comp_1, comp_2)
+        elif op == '>=':
+            return pm.math.ge(comp_1, comp_2)
+        elif op == '<=':
+            return pm.math.le(comp_1, comp_2)
+        elif op == '==':
+            return pm.math.eq(comp_1, comp_2)
+        elif op == '!=':
+            return pm.math.neq(comp_1, comp_2)
+        else:
+            # Si no sabemos lo que tenemos, hay error.
+            raise ValueError(op)
+
+    def op_comp(símismo, x):
+        return str(x.children[0])
+
+    def convertir(símismo, árbol):
         if hasattr(símismo, árbol.data):
             return getattr(símismo, árbol.data)(árbol)
         else:
@@ -210,7 +317,7 @@ class _VstrExtrArgs(Visitor):
     def func(símismo, x):
         if x.children[0] == símismo.f:
             símismo.args_f = [
-                _VstrATx(dialecto=símismo.dial).transformar(e) for e in x.children[1].children[:símismo.i]
+                _VstrATx(dialecto=símismo.dial).convertir(e) for e in x.children[1].children[:símismo.i]
             ]
 
     def __call__(símismo, árbol):
@@ -224,6 +331,8 @@ class _VstrCoefDe(Visitor):
         símismo.coef = None
         símismo.inv = None
         símismo.vr = None
+        símismo.error = False
+        símismo.núm = 0
         símismo.l_vars = []
 
     def _valid_consist(símismo, coef, inv):
@@ -232,40 +341,67 @@ class _VstrCoefDe(Visitor):
             símismo.inv = inv
         else:
             if símismo.coef != coef or símismo.inv != inv:
-                símismo.coef = símismo.inv = None
+                símismo.error = True
+        símismo.núm += 1
 
     def prod(símismo, x):
         coef = None
-        if x.children[1].children[0] == '*':
+        op = x.children[1].children[0]
+        args = [x.children[0], x.children[2]]
+        for i, a in enumerate(args):
+            if a.data == 'neg':
+                a = a.children[0]
+            if a.data == 'var':
+                a = a.children[0]
+            else:
+                return
+
+            args[i] = a
+
+        if op == '*':
             inv = False
 
-            if x.children[0].children[0] == símismo.vr and x.children[0].children[0] not in símismo.l_vars:
-                if x.children[2].data == 'var':
-                    coef = str(x.children[2].children[0])
-            elif x.children[2].children[0] == símismo.vr and x.children[0].children[0] not in símismo.l_vars:
-                if x.children[0].data == 'var':
-                    coef = str(x.children[0].children[0])
+            if args[0] == símismo.vr and args[1] not in símismo.l_vars:
+                coef = str(args[1])
+            elif args[1] == símismo.vr and args[0] not in símismo.l_vars:
+                coef = str(args[0])
         else:
             inv = True
-            if x.children[0].children[0] == símismo.vr and x.children[0].children[0] not in símismo.l_vars:
-                if x.children[2].data == 'var':
-                    coef = str(x.children[2].children[0])
-            elif x.children[2].children[0] == símismo.vr and x.children[0].children[0] not in símismo.l_vars:
-                if x.children[0].data == 'var':
-                    coef = str(x.children[0].children[0])
+            if args[0] == símismo.vr and args[1] not in símismo.l_vars:
+                coef = str(args[1])
+            elif args[1] == símismo.vr and args[0] not in símismo.l_vars:
+                coef = str(args[0])
 
         if coef is not None:
             símismo._valid_consist(coef, inv)
 
     def __call__(símismo, árbol, var, l_vars=None):
+        símismo.núm = 0
         símismo.vr = var
         símismo.coef = símismo.inv = None
         símismo.l_vars = [] if l_vars is None else l_vars
         símismo.visit(árbol)
-        if símismo.coef is None:
+        if símismo.error or símismo.coef is None:
+            return None
+        elif not (símismo.núm == _VstrContarVar(símismo.coef)(árbol) == _VstrContarVar(símismo.vr)(árbol)):
             return None
         else:
             return símismo.coef, símismo.inv
+
+
+class _VstrContarVar(Visitor):
+    def __init__(símismo, var):
+        símismo.vr = var
+        símismo.cnt = 0
+
+    def var(símismo, x):
+        if x.children[0] == símismo.vr:
+            símismo.cnt += 1
+
+    def __call__(símismo, árbol):
+        símismo.cnt = 0
+        símismo.visit(árbol)
+        return símismo.cnt
 
 
 def _coef_de_ec(árbol, l_vars=None):
@@ -276,22 +412,25 @@ def _coef_de_ec(árbol, l_vars=None):
         arg2 = árbol.children[2]
         op = árbol.children[1].children[0]
 
-        v = None
+        v = inv = ec = None
         if op == '*':
-            if arg1.data == 'var':
+            inv = True  # Y queda del otro lado de la ecuación que el parámetro
+            if arg1.data == 'var' and v not in l_vars:
                 v = arg1.children[0]
-            elif arg2.data == 'var':
+                ec = arg2
+            elif arg2.data == 'var' and v not in l_vars:
                 v = arg2.children[0]
-            inv = False
-
+                ec = arg1
         else:
-            if arg1.data == 'var':
+            if arg1.data == 'var' and v not in l_vars:
                 v = arg1.children[0]
-            elif arg2.data == 'var':
+                ec = arg2
+                inv = True
+            elif arg2.data == 'var' and v not in l_vars:
                 v = arg2.children[0]
-            inv = True
-
-        if v is not None and v not in l_vars:
+                ec = arg1
+                inv = False
+        if v is not None and _VstrContarVar(v)(ec) == 0:
             return v, inv
     return None
 
@@ -398,7 +537,7 @@ class Ecuación(object):
             La función dinámica Python.
         """
 
-        return _VstrAPy(l_prms=paráms, dialecto=símismo.dialecto).transformar(símismo.árbol)
+        return _VstrAPy(l_prms=paráms, dialecto=símismo.dialecto).convertir(símismo.árbol)
 
     def coef_de(símismo, var, l_vars=None):
         if var == símismo.nombre:
@@ -411,33 +550,25 @@ class Ecuación(object):
         y_norm = obs_y.copy(deep=True)
         líms_norm = líms_paráms.copy()
         escls_prms = {}
-        prms_vrs = {}
 
         for var in x_norm.data_vars:
             res = símismo.coef_de(var, l_vars=x_norm.data_vars)
             if res is not None:
                 prm, inv = res
-                escl = x_norm[var].values.std()
-                if prm not in escls_prms:
-                    escls_prms[prm] = {'escl': escl, 'inv': inv}
-                    prms_vrs[var] = prm
+                rango = x_norm[var].values.std()
+                escls_prms[prm] = escl = 1 / rango if inv else rango
+                np.divide(x_norm[var].values, rango, out=x_norm[var].values)
+                if prm in líms_paráms:
+                    líms_norm[prm] = tuple(lm * escl if lm is not None else None for lm in líms_paráms[prm])
 
         res_y = símismo.coef_de(símismo.nombre, l_vars=x_norm.data_vars)
         if res_y is not None:
             prm, inv = res_y
-            escl = y_norm.values.std()
-            if prm not in escls_prms:
-                escls_prms[prm] = {'escl': escl, 'inv': inv}
-                prms_vrs[símismo.nombre] = prm
-
-        for v, p in prms_vrs.items():
-            if v in x_norm.data_vars:
-                if escls_prms[p]['inv']:
-                    np.multiply(x_norm[v].values, escls_prms[p]['escl'], out=x_norm[v].values)
-                else:
-                    np.divide(x_norm[v].values, escls_prms[p]['escl'], out=x_norm[v].values)
-            else:
-                np.divide(y_norm.values, escls_prms[p], out=y_norm.values)
+            rango = y_norm.values.std()
+            escls_prms[prm] = escl = 1 / rango if inv else rango
+            np.divide(y_norm.values, rango, out=y_norm.values)
+            if prm in líms_paráms:
+                líms_norm[prm] = tuple(lm * escl if lm is not None else None for lm in líms_paráms[prm])
 
         return escls_prms, líms_norm, x_norm, y_norm
 
@@ -446,9 +577,7 @@ class Ecuación(object):
         if pm is None:
             return ImportError(_('Hay que instalar PyMC3 para poder utilizar modelos bayesianos.'))
 
-        dialecto = símismo.dialecto
-
-        escls_prms, líms_paráms, obs_x, obs_y = símismo._normalizar(líms_paráms, obs_x, obs_y)
+        escls_prms, líms_paráms, obs_x, obs_y = símismo.normalizar(líms_paráms, obs_x, obs_y)
 
         def _gen_d_vars_pm(tmñ=(), fmt_nmbrs='{}'):
             egr = {}
@@ -505,7 +634,7 @@ class Ecuación(object):
 
                         mu = pm.Normal(name=nmbr_mu, mu=mu[nv], sd=sg[nv], shape=tmñ_nv)
                         if not últ_niv:
-                            sg = pm.HalfNormal(name=nmbr_sg.format(p, í), sd=obs_y.ptp(), shape=tmñ_nv)
+                            sg = pm.HalfNormal(name=nmbr_sg.format(p, í), sd=obs_y.values.ptp(), shape=tmñ_nv)
                 else:
                     for í, nv in enumerate(nv_jerarquía[:-1]):
                         tmñ_nv = nv.shape
@@ -516,69 +645,11 @@ class Ecuación(object):
                         acotada = pm.Bound(pm.Normal, lower=líms[0], upper=líms[1])
                         mu = acotada(nmbr_mu, mu=mu[nv], sd=sg[nv], shape=tmñ_nv)
                         if not últ_niv:
-                            sg = pm.HalfNormal(name=nmbr_sg.format(p, í), sd=obs_y.ptp(), shape=tmñ_nv)
+                            sg = pm.HalfNormal(name=nmbr_sg.format(p, í), sd=obs_y.values.ptp(), shape=tmñ_nv)
 
                 egr[p] = mu
 
             return egr
-
-        def _a_bayes(á, d_pm):
-
-            if isinstance(á, dict):
-
-                for ll, v in á.items():
-
-                    if ll == 'func':
-
-                        try:
-                            op_pm = _conv_op(v[0], dialecto, 'pm')
-                            return op_pm(_a_bayes(v[1][0], d_pm=d_pm), _a_bayes(v[1][1], d_pm=d_pm))
-                        except (KeyError, StopIteration):
-                            pass
-
-                        if v[0] == '+':
-                            return _a_bayes(v[1][0], d_pm=d_pm) + _a_bayes(v[1][1], d_pm=d_pm)
-                        elif v[0] == '/':
-                            return _a_bayes(v[1][0], d_pm=d_pm) / _a_bayes(v[1][1], d_pm=d_pm)
-                        elif v[0] == '-':
-                            return _a_bayes(v[1][0], d_pm=d_pm) - _a_bayes(v[1][1], d_pm=d_pm)
-                        elif v[0] == '*':
-                            return _a_bayes(v[1][0], d_pm=d_pm) * _a_bayes(v[1][1], d_pm=d_pm)
-                        elif v[0] == '^':
-                            return _a_bayes(v[1][0], d_pm=d_pm) ** _a_bayes(v[1][1], d_pm=d_pm)
-
-                        else:
-                            return _conv_fun(v[0], dialecto, 'pm')(*_a_bayes(v[1], d_pm=d_pm))
-
-                    elif ll == 'var':
-                        try:
-                            if nv_jerarquía is None:
-                                return d_pm[v]
-                            else:
-                                return d_pm[v][nv_jerarquía[-1]]
-
-                        except KeyError:
-
-                            # Si el variable no es un parámetro calibrable, debe ser un valor observado
-                            try:
-                                return obs_x[v].values
-
-                            except KeyError:
-                                raise ValueError(_('El variable "{}" no es un parámetro, y no se encuentra'
-                                                   'en la base de datos observados tampoco.').format(v))
-
-                    elif ll == 'neg':
-                        return -_a_bayes(v, d_pm=d_pm)
-                    else:
-                        raise ValueError(_('Llave "{ll}" desconocida en el árbol sintático de la ecuación "{ec}". '
-                                           'Éste es un error de programación en Tinamït.').format(ll=ll, ec=símismo))
-
-            elif isinstance(á, list):
-                return [_a_bayes(x, d_pm=d_pm) for x in á]
-            elif isinstance(á, int) or isinstance(á, float):
-                return á
-            else:
-                raise TypeError('')
 
         modelo = pm.Model()
         with modelo:
@@ -587,7 +658,9 @@ class Ecuación(object):
             else:
                 d_vars_pm = _gen_d_vars_pm_jer()
 
-            mu = _a_bayes(símismo.árbol, d_vars_pm)
+            mu = _VstrAPyMC3(
+                d_vars_pm=d_vars_pm, dialecto=símismo.dialecto, obs_x=obs_x, nv_jerarquía=nv_jerarquía,
+            ).convertir(símismo.árbol)
             sigma = pm.HalfNormal(name='sigma', sd=max(1, (obs_y.max() - obs_y.min())))
 
             if binario:
@@ -623,11 +696,10 @@ class Ecuación(object):
         return _VstrExtrArgs(f=func, i=i, dial=símismo.dialecto)(símismo.árbol)
 
     def __str__(símismo):
-        return _VstrATx(símismo.dialecto).transformar(símismo.árbol)
+        return _VstrATx(símismo.dialecto).convertir(símismo.árbol)
 
 
 # Funciones auxiliares para ecuaciones.
-_error_comp_ec = _('Componente de ecuación "{}" no reconocido.')
 
 # Un diccionario con conversiones de funciones reconocidas. Si quieres activar más funciones, agregarlas aqui.
 _dic_funs = {
@@ -727,38 +799,3 @@ def _conv_op(oper, dialecto_orig, dialecto_final):
             return next(ll for ll, d in _dic_ops.items() if d[dialecto_orig] == oper)
         else:
             return next(d[dialecto_final] for ll, d in _dic_ops.items() if d[dialecto_orig] == oper)
-
-
-# Para hacer: Funciones que hay que reemplazar con algo más elegante
-def juntar_líns(l, cabeza=None, cola=None):
-    """
-    Esta función junta una lista de líneas de texto en una sola línea de texto.
-
-    :param l: La lexta de líneas de texto.
-    :type l: list[str]
-
-    :param cabeza:
-    :type cabeza:
-
-    :param cola:
-    :type cola:
-
-    :return: El texto combinado.
-    :rtype: str
-
-    """
-
-    # Quitar text no deseado del principio y del final
-    if cabeza is not None:
-        l[0] = regex.sub(r'^({})'.format(cabeza), '', l[0])
-    if cola is not None:
-        l[-1] = regex.sub(r'{}$'.format(cola), '', l[-1])
-
-    # Quitar tabulaciones y símbolos de final de línea
-    l = [x.lstrip('\t').rstrip('\n').rstrip('\\') for x in l]
-
-    # Combinar las líneas y quitar espacios al principio y al final
-    texto = ''.join(l).strip(' ')
-
-    # Devolver el texto combinado.
-    return texto
