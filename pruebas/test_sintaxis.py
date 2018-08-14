@@ -1,6 +1,7 @@
 import math
-import numpy as np
 import unittest
+
+import numpy as np
 import xarray as xr
 
 from tinamit.Análisis.sintaxis import Ecuación
@@ -93,7 +94,11 @@ class Test_AnalizarEc(unittest.TestCase):
                 símismo.assertListEqual(ec.sacar_args_func('f', i=2), ['a', 'x'])
 
     def test_obt_coef_var(símismo):
-        ec = Ecuación('y=1/f(a, b*x, 2*b)')
+        ec = Ecuación('y=1/f(a, b*x, 2*c)')
+        símismo.assertEquals(ec.coef_de('x'), ('b', False))
+
+    def test_obt_coef_var_neg(símismo):
+        ec = Ecuación('y=1/f(a, -b*x, 2*c)')
         símismo.assertEquals(ec.coef_de('x'), ('b', False))
 
     def test_obt_coef_var_div_coef(símismo):
@@ -108,8 +113,20 @@ class Test_AnalizarEc(unittest.TestCase):
         ec = Ecuación('y=a*x + b*x')
         símismo.assertIsNone(ec.coef_de('x'))
 
+    def test_obt_coef_var_dupl_coef(símismo):
+        ec = Ecuación('y=a*x + a')
+        símismo.assertIsNone(ec.coef_de('x'))
+
+    def test_obt_coef_var_dos_veces_falta_coef(símismo):
+        ec = Ecuación('y=a*x + x')
+        símismo.assertIsNone(ec.coef_de('x'))
+
     def test_obt_coef_var_dos_veces_incompat_div_mul(símismo):
         ec = Ecuación('y=a*x + a/x')
+        símismo.assertIsNone(ec.coef_de('x'))
+
+    def test_obt_coef_múltiple(símismo):
+        ec = Ecuación('y=a*(x+b+a)')
         símismo.assertIsNone(ec.coef_de('x'))
 
     def test_obt_coef_var_div(símismo):
@@ -118,19 +135,64 @@ class Test_AnalizarEc(unittest.TestCase):
 
     def test_obt_coef_ec(símismo):
         ec = Ecuación('y=a*(x+b)')
-        símismo.assertEquals(ec.coef_de('y'), ('a', False))
+        símismo.assertEquals(ec.coef_de('y'), ('a', True))  # Inverso porque a y "y" son de lados opuestos del "="
 
     def test_obt_coef_ec_div_coef(símismo):
         ec = Ecuación('y=(x+b)/a')
-        símismo.assertEquals(ec.coef_de('y'), ('a', True))
+        símismo.assertEquals(ec.coef_de('y'), ('a', False))
 
     def test_obt_coef_ec_div(símismo):
         ec = Ecuación('y=a/(x+b)')
         símismo.assertEquals(ec.coef_de('y'), ('a', True))
 
+    def test_obt_coef_ec_múltiple(símismo):
+        ec = Ecuación('y=a*(x+b+a)')
+        símismo.assertIsNone(ec.coef_de('y'))
+
+
+class Test_Normalizar(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.obs_x = xr.Dataset({'x': ('n', np.random.normal(0, 2, 100))})
+        cls.obs_y = xr.DataArray(np.random.normal(0, 10, 100))
+
     def test_normalizar(símismo):
         ec = Ecuación('y=a*x+b')
-        obs_x = xr.Dataset({'x': ('n', np.random.normal(0, 2, 100))})
-        obs_y = xr.DataArray(np.random.normal(0, 10, 100))
-        escls_prms, líms_norm, x_norm, y_norm = ec.normalizar(líms_paráms={'a': (0, 1)}, obs_x=obs_x, obs_y=obs_y)
-        pass
+
+        escls_prms, líms_norm, x_norm, y_norm = ec.normalizar(
+            líms_paráms={'a': (0, 1)}, obs_x=símismo.obs_x, obs_y=símismo.obs_y
+        )
+        símismo.assertAlmostEqual(x_norm['x'].values.std(), 1)
+        símismo.assertTupleEqual(líms_norm['a'], (0, 1 * símismo.obs_x['x'].values.std()))
+
+    def test_normalizar_div(símismo):
+        ec = Ecuación('y=x/a+b')
+        escls_prms, líms_norm, x_norm, y_norm = ec.normalizar(
+            líms_paráms={'a': (0, 1)}, obs_x=símismo.obs_x, obs_y=símismo.obs_y
+        )
+        símismo.assertAlmostEqual(x_norm['x'].values.std(), 1)
+        símismo.assertTupleEqual(líms_norm['a'], (0, 1 / símismo.obs_x['x'].values.std()))
+
+    def test_normalizar_y(símismo):
+        ec = Ecuación('y=a*(x+b)')
+        escls_prms, líms_norm, x_norm, y_norm = ec.normalizar(
+            líms_paráms={'a': (0, 1)}, obs_x=símismo.obs_x, obs_y=símismo.obs_y
+        )
+        símismo.assertAlmostEqual(y_norm.values.std(), 1)
+        símismo.assertTupleEqual(líms_norm['a'], (0, 1 / símismo.obs_y.values.std()))
+
+    def test_normalizar_y_div(símismo):
+        ec = Ecuación('y=a/(x+b)')
+        escls_prms, líms_norm, x_norm, y_norm = ec.normalizar(
+            líms_paráms={'a': (0, 1)}, obs_x=símismo.obs_x, obs_y=símismo.obs_y
+        )
+        símismo.assertAlmostEqual(y_norm.values.std(), 1)
+        símismo.assertTupleEqual(líms_norm['a'], (0, 1 / símismo.obs_y.values.std()))
+
+    def test_normalizar_y_coef_recipr(símismo):
+        ec = Ecuación('y=(x+b)/a')
+        escls_prms, líms_norm, x_norm, y_norm = ec.normalizar(
+            líms_paráms={'a': (0, 1)}, obs_x=símismo.obs_x, obs_y=símismo.obs_y
+        )
+        símismo.assertAlmostEqual(y_norm.values.std(), 1)
+        símismo.assertTupleEqual(líms_norm['a'], (0, 1 * símismo.obs_y.values.std()))
