@@ -1,7 +1,7 @@
 {
   "Lenguas": {
     "Bahasa Indonesia": {
-      "Estado": 0.024390243902439025,
+      "Estado": 0.023255813953488372,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -31,6 +31,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "",
         "NoGuardar": "",
@@ -48,7 +50,7 @@
       }
     },
     "Bahasa Melayu": {
-      "Estado": 0.17073170731707318,
+      "Estado": 0.16279069767441862,
       "IzqaDerech": true,
       "Trads": {
         "AnálisisIncert": "",
@@ -78,6 +80,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "Tidak",
         "NoGuardar": "",
@@ -95,7 +99,7 @@
       }
     },
     "English": {
-      "Estado": 0.926829268292683,
+      "Estado": 0.8837209302325582,
       "IzqaDerech": true,
       "Trads": {
         "AnálisisIncert": "Uncertainty",
@@ -125,6 +129,8 @@
         "ModeloBiofísico": "Physical model",
         "ModeloCargado": "%s model loaded.",
         "ModelosPython": "Python models",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "Vensim published models",
         "No": "No",
         "NoGuardar": "Return",
@@ -172,6 +178,8 @@
         "ModeloBiofísico": "Modelo biofísico",
         "ModeloCargado": "Modelo %s cargado.",
         "ModelosPython": "Modelos Python",
+        "ModelosVensim": "Modelos Vensim",
+        "ModelosXMILE": "Modelos XMILE",
         "ModelospublicadosVENSIM": "Modelos publicados Vensim",
         "No": "No",
         "NoGuardar": "No guardar",
@@ -189,7 +197,7 @@
       }
     },
     "Français": {
-      "Estado": 1.0,
+      "Estado": 0.9534883720930233,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "Incertitude",
@@ -219,6 +227,8 @@
         "ModeloBiofísico": "Modèle biofisique",
         "ModeloCargado": "Modèle %s chargé.",
         "ModelosPython": "Modèles Python",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "Modèles VENSIM publiés",
         "No": "Non",
         "NoGuardar": "Retour",
@@ -266,6 +276,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "",
         "NoGuardar": "",
@@ -283,7 +295,7 @@
       }
     },
     "Italiano": {
-      "Estado": 0.07317073170731707,
+      "Estado": 0.06976744186046512,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -313,6 +325,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "",
         "NoGuardar": "",
@@ -360,6 +374,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "",
         "NoGuardar": "",
@@ -377,7 +393,7 @@
       }
     },
     "K'iche'": {
-      "Estado": 0.04878048780487805,
+      "Estado": 0.046511627906976744,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -407,6 +423,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "",
         "NoGuardar": "",
@@ -424,7 +442,7 @@
       }
     },
     "Kaqchikel": {
-      "Estado": 1.0,
+      "Estado": 0.9534883720930233,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "Me'etamanil\t",
@@ -454,6 +472,8 @@
         "ModeloBiofísico": "K'utb'äl wi'opisiko",
         "ModeloCargado": "Xejqanïx ri k'utb'äl %s rub'i'.",
         "ModelosPython": "K'utb'äl Python",
+        "ModelosVensim": "K'utb'äl Vensim",
+        "ModelosXMILE": "K'utb'äl XMILE",
         "ModelospublicadosVENSIM": "K'utb'äl Vensim",
         "No": "Manaq",
         "NoGuardar": "Man tayak ta",
@@ -461,7 +481,7 @@
         "ParaHacer": "Chi nqib'an na",
         "Paso": "Runimajachoj ramaj",
         "Simulando": "Tajin nsamaj...",
-        "Simular": "Tab'an rub'eyalem",
+        "Simular": "Rub'eyalem",
         "Sí": "Ja'",
         "TiempoFinal": "K'isbäl ramaj",
         "Traducciones": "Ruqaxan tzij",
@@ -471,7 +491,7 @@
       }
     },
     "Kiswahili": {
-      "Estado": 0.4146341463414634,
+      "Estado": 0.3953488372093023,
       "IzqaDerech": true,
       "Trads": {
         "AnálisisIncert": "",
@@ -501,6 +521,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "%s",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "Hapana",
         "NoGuardar": "Usihifadhi",
@@ -518,7 +540,7 @@
       }
     },
     "Português": {
-      "Estado": 0.12195121951219512,
+      "Estado": 0.11627906976744186,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -548,6 +570,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "Não",
         "NoGuardar": "",
@@ -595,6 +619,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "",
         "NoGuardar": "",
@@ -642,6 +668,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "",
         "NoGuardar": "",
@@ -659,7 +687,7 @@
       }
     },
     "Tz'utujil": {
-      "Estado": 0.6341463414634146,
+      "Estado": 0.6046511627906976,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -689,6 +717,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": " je rbanika k´tun chic VENSIM",
         "No": "Majon ",
         "NoGuardar": "Na yikta",
@@ -706,7 +736,7 @@
       }
     },
     "اردو": {
-      "Estado": 1.0,
+      "Estado": 0.9534883720930233,
       "IzqaDerech": false,
       "Trads": {
         "AnálisisIncert": "غیر یقینی صورتحال",
@@ -736,6 +766,8 @@
         "ModeloBiofísico": "طبیعیاتی حیاتی",
         "ModeloCargado": "ہے تیار  %s",
         "ModelosPython": "پیٹھوں",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "وینسم",
         "No": "نہیں",
         "NoGuardar": "واپس",
@@ -783,6 +815,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "",
         "NoGuardar": "",
@@ -830,6 +864,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "",
         "NoGuardar": "",
@@ -877,6 +913,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "",
         "NoGuardar": "",
@@ -894,7 +932,7 @@
       }
     },
     "हिंदी": {
-      "Estado": 0.36585365853658536,
+      "Estado": 0.3488372093023256,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "अनिश्चितता",
@@ -924,6 +962,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "नहीं",
         "NoGuardar": "वापस",
@@ -971,6 +1011,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "",
         "NoGuardar": "",
@@ -988,7 +1030,7 @@
       }
     },
     "ગુજરાતી": {
-      "Estado": 0.21951219512195122,
+      "Estado": 0.20930232558139536,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -1018,6 +1060,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "નથી",
         "NoGuardar": "",
@@ -1035,7 +1079,7 @@
       }
     },
     "தமிழ்": {
-      "Estado": 0.2926829268292683,
+      "Estado": 0.27906976744186046,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -1065,6 +1109,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "இல்லை",
         "NoGuardar": "",
@@ -1082,7 +1128,7 @@
       }
     },
     "日本語": {
-      "Estado": 0.024390243902439025,
+      "Estado": 0.023255813953488372,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -1112,6 +1158,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "",
         "NoGuardar": "",
@@ -1129,7 +1177,7 @@
       }
     },
     "汉语": {
-      "Estado": 0.07317073170731707,
+      "Estado": 0.06976744186046512,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "",
@@ -1159,6 +1207,8 @@
         "ModeloBiofísico": "",
         "ModeloCargado": "",
         "ModelosPython": "",
+        "ModelosVensim": "",
+        "ModelosXMILE": "",
         "ModelospublicadosVENSIM": "",
         "No": "",
         "NoGuardar": "",

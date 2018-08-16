@@ -2,7 +2,7 @@ import tkinter as tk
 
 import pkg_resources
 
-from tinamit import cargar_json
+from tinamit.cositas import cargar_json
 from tinamit.Interfaz import Traducciones as Trad
 
 # Una función para modificar los formatos según la dirección del texto de la lengua

@@ -2,7 +2,7 @@ import json
 
 import pkg_resources
 
-from tinamit import guardar_json, cargar_json
+from tinamit.cositas import guardar_json, cargar_json
 
 
 class Diccionario(object):

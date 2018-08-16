@@ -49,6 +49,8 @@ class ModeloPySD(EnvolturaMDS):
                 unidades = f['Unit']
                 líms = literal_eval(f['Lims'])
                 ec = f['Eqn']
+                obj_ec = Ecuación(ec)
+                var_juego = obj_ec.sacar_args_func('GAME') is not None
 
                 símismo.variables[nombre] = {
                     'val': getattr(símismo.modelo.components, nombre_py)(),
@@ -56,9 +58,11 @@ class ModeloPySD(EnvolturaMDS):
                     'unidades': unidades,
                     'ec': ec,
                     'hijos': [],
-                    'parientes': Ecuación(ec).variables(),
+                    'parientes': obj_ec.variables(),
                     'líms': líms,
-                    'info': f['Comment']
+                    'info': f['Comment'],
+                    'ingreso': True,
+                    'egreso': not var_juego
                 }
 
                 símismo._conv_nombres[nombre] = nombre_py
