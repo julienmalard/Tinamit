@@ -57,7 +57,10 @@ class CajaSubEtp11(CjG.CajaSubEtapa):
 
     def buscar_mds(símismo):
         apli = símismo.apli
-        archivo_mds = diálogo.askopenfilename(filetypes=[(apli.Trads['ModelospublicadosVENSIM'], '*.vpm')],
+        archivo_mds = diálogo.askopenfilename(filetypes=[(apli.Trads['ModelospublicadosVENSIM'], '*.vpm'),
+                                                         (apli.Trads['ModelosVensim'], '*.mdl'),
+                                                         (apli.Trads['ModelosXMILE'], '*.xmile'),
+                                                         (apli.Trads['ModelosXMILE'], '*.xml')],
                                               title=apli.Trads['CargarMDS'])
         if archivo_mds:
             símismo.apli.receta['mds'] = archivo_mds
@@ -196,8 +199,10 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
             símismo.MnVarsBf.reinstaurar(var)
 
         for conex in símismo.apli.receta['conexiones']:
-            símismo.MnVarsMDS.excluir(conex['dic_vars']['mds'])
-            símismo.MnVarsBf.excluir(conex['dic_vars']['bf'])
+            var_mds = conex['var_fuente'] if conex['modelo_fuente'] == 'mds' else conex['var_recip']
+            var_bf = conex['var_fuente'] if conex['modelo_fuente'] == 'bf' else conex['var_recip']
+            símismo.MnVarsMDS.excluir(var_mds)
+            símismo.MnVarsBf.excluir(var_bf)
 
         if símismo.BtMDSFuente.val:
             opciones_mds = vars_mds
@@ -368,7 +373,7 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
         def func_simular():
             nombre = símismo.IngrCorrida.val
             if nombre == '':
-                nombre = None
+                nombre = 'Corrida Tinamït'
 
             símismo.apli.Modelo.simular(paso=símismo.IngrPaso.val, t_final=símismo.IngrTempFinal.val,
                                         nombre_corrida=nombre)
