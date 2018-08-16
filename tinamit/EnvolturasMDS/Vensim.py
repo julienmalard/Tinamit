@@ -47,7 +47,7 @@ class ModeloVensimMdl(MDSEditable):
 
             l = d.readline()
             # Seguir hasta la primera línea que NO contiene información de variables ("****...***" para Vensim).
-            while not regex.match(r'\*+\n$', l):
+            while not regex.match(r'\*+\n$', l) and not regex.match(r'\\\\\\\-\-\-\/\/\/', l):
                 símismo.dic_doc['cuerpo'].append(l)
                 l = d.readline()
 

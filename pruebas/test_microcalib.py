@@ -48,7 +48,7 @@ class Test_Calibrador(unittest.TestCase):
             with símismo.subTest(método=m):
                 calibs = símismo.clbrd.calibrar(método=m, bd_datos=símismo.bd_datos)
                 for p, v in símismo.paráms.items():
-                    símismo.assertAlmostEquals(calibs[p]['val'], v, places=1)
+                    símismo.assertAlmostEqual(calibs[p]['val'], v, places=1)
 
     def test_calibrador_sin_var_y(símismo):
         with símismo.assertRaises(ValueError):
