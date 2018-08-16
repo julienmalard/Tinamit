@@ -15,10 +15,14 @@ class ModeloPySD(EnvolturaMDS):
 
     def __init__(símismo, archivo, nombre='mds'):
 
-        ext = os.path.splitext(archivo)[1]
+        nmbr, ext = os.path.splitext(archivo)
         if ext == '.mdl':
             símismo.tipo = '.mdl'
-            símismo.modelo = pysd.read_vensim(archivo)
+            # Únicamente recrear el archivo .py si necesario
+            if os.path.isfile(nmbr + '.py') and (os.path.getmtime(nmbr + '.py') > os.path.getmtime(archivo)):
+                símismo.modelo = pysd.load(nmbr + '.py')
+            else:
+                símismo.modelo = pysd.read_vensim(archivo)
         elif ext in ['.xmile', '.xml']:
             símismo.tipo = '.xmile'
             símismo.modelo = pysd.read_xmile(archivo)
@@ -51,6 +55,9 @@ class ModeloPySD(EnvolturaMDS):
                 ec = f['Eqn']
                 obj_ec = Ecuación(ec)
                 var_juego = obj_ec.sacar_args_func('GAME') is not None
+
+                if f['Type'] == 'lookup':
+                    continue
 
                 símismo.variables[nombre] = {
                     'val': getattr(símismo.modelo.components, nombre_py)(),
