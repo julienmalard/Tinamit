@@ -4,6 +4,7 @@ import tempfile
 from warnings import warn as avisar
 
 import numpy as np
+import pandas as pd
 import scipy.stats as estad
 import spotpy
 import xarray as xr
@@ -267,12 +268,12 @@ class CalibradorEc(object):
         # Calibrar según la situación
         if lugares is None:
             # Si no hay lugares, generar y calibrar el modelo de una vez.
-            mod_bayes, escls_prms = ec.gen_mod_bayes(
+            mod_bayes = ec.gen_mod_bayes(
                 líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
                 binario=binario, aprioris=None, nv_jerarquía=None
             )
 
-            resultados = _calibrar_mod_bayes(mod_bayes, paráms=paráms, ops=ops_método, escls_prms=escls_prms)
+            resultados = _calibrar_mod_bayes(mod_bayes, paráms=paráms, ops=ops_método)
 
         else:
 
@@ -348,7 +349,7 @@ class CalibradorEc(object):
                 í_nv_jerarquía.insert(0, np.array([nv_jerarquía[-1].index(x) for x in obs['lugar'].values.tolist()]))
 
                 # Generar el modelo bayes
-                mod_bayes_jrq, escls_prms = ec.gen_mod_bayes(
+                mod_bayes_jrq = ec.gen_mod_bayes(
                     líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
                     aprioris=None, binario=binario, nv_jerarquía=í_nv_jerarquía[::-1],
                 )
@@ -374,7 +375,7 @@ class CalibradorEc(object):
 
                 # Calibrar
                 res_calib = _calibrar_mod_bayes(
-                    mod_bayes_jrq, paráms=paráms + prms_extras, ops=ops_método, escls_prms=escls_prms
+                    mod_bayes_jrq, paráms=paráms + prms_extras, ops=ops_método
                 )
 
                 # Formatear los resultados
@@ -392,7 +393,7 @@ class CalibradorEc(object):
                         }
 
             else:
-                # Si no estamos haciendo un único modelo jerárquico, hay que calibrar cada lugar individualmente.
+                # Si no estamos haciendo un modelo jerárquico, hay que calibrar cada lugar individualmente.
 
                 # Efectuar las calibraciones para todos los lugares.
                 resultados = {}
@@ -400,12 +401,12 @@ class CalibradorEc(object):
                     lgs_potenciales = geog.obt_todos_lugares_en(lg)
                     obs_lg = obs.where(obs['lugar'].isin(lgs_potenciales + [lg]), drop=True)
                     if len(obs_lg['n']):
-                        mod_bayes, escls_prms = ec.gen_mod_bayes(
+                        mod_bayes = ec.gen_mod_bayes(
                             líms_paráms=líms_paráms, obs_x=obs_lg[vars_x], obs_y=obs_lg[var_y],
                             binario=binario, aprioris=None, nv_jerarquía=None
                         )
                         resultados[lg] = _calibrar_mod_bayes(
-                            mod_bayes=mod_bayes, paráms=paráms, ops=ops_método, obs=obs_lg, escls_prms=escls_prms
+                            mod_bayes=mod_bayes, paráms=paráms, ops=ops_método, obs=obs_lg
                         )
                     else:
                         resultados[lg] = None
@@ -601,7 +602,7 @@ class CalibradorMod(object):
 
 
 # Unas funciones auxiliares
-def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops=None, escls_prms=None):
+def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops=None):
     """
     Esta función calibra un modelo bayes.
 
@@ -634,8 +635,9 @@ def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops
 
     # Crear el diccionarion de argumentos
     ops_auto = {
-        'tune': 2000,
-        'cores': 1
+        'tune': 1000,
+        'cores': 1,
+        'nuts_kwargs': {'target_accept': 0.99}
     }
     ops_auto.update(ops)
 
@@ -644,10 +646,10 @@ def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops
         t = pm.sample(**ops_auto)
 
     # Devolver los datos procesados
-    return _procesar_calib_bayes(t, paráms=paráms, escls_prms=escls_prms)
+    return _procesar_calib_bayes(t, paráms=paráms)
 
 
-def _procesar_calib_bayes(traza, paráms, escls_prms):
+def _procesar_calib_bayes(traza, paráms):
     """
     Procesa los resultados de una calibración bayes. Con base en la traza PyMC3, calcula el punto de probabilidad más
     alta para cada parámetro de interés.
@@ -667,6 +669,7 @@ def _procesar_calib_bayes(traza, paráms, escls_prms):
 
     # El diccionario para los resultados
     d_máx = {}
+    d_prom = {}
 
     # Calcular el punto de probabilidad máxima
     for p in paráms:
@@ -675,20 +678,18 @@ def _procesar_calib_bayes(traza, paráms, escls_prms):
         dims = traza[p].shape
         if len(dims) == 1:
             d_máx[p] = _calc_máx_trz(traza[p])
+            d_prom[p] = np.mean(traza[p])
         elif len(dims) == 2:
             d_máx[p] = np.empty(dims[1])
+            d_prom[p] = np.empty(dims[1])
             for e in range(dims[1]):
                 d_máx[p][e] = _calc_máx_trz(traza[p][:, e])
+                d_prom[p][e] = np.mean(traza[p][:, e])
         else:
             raise ValueError
 
     # Devolver los resultados procesados.
-    res = {p: {'val': d_máx[p], 'dist': traza[p]} for p in paráms}
-    if escls_prms is not None:
-        for p, escl in escls_prms.items():
-            res[p]['val'] /= escl
-            res[p]['dist'] /= escl
-    return res
+    return {p: {'val': d_prom[p], 'cmbr': d_máx[p], 'dist': traza[p]} for p in paráms}
 
 
 def _calc_máx_trz(trz):
