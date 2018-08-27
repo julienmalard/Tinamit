@@ -1,6 +1,8 @@
 language: python
 python:
   - "3.6"
+  - "3.7"
+  - "3.8"
 
 os:
   - linux
@@ -11,11 +13,11 @@ install:
   - pip install coveralls codecov
   - python setup.py sdist bdist_wheel
   - pip install tinamit --no-index --find-links=./dist
+  - rm -r tinamit
 
 script:
-  - rm -r tinamit
-  - cd pruebas
-  - coverage run -m unittest
+- cd pruebas
+- coverage run -m unittest
 
 after_success:
   - coveralls --rcfile=.coveragerc
