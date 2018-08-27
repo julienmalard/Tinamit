@@ -5,7 +5,6 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import scipy.stats as estad
-
 from pruebas.test_mds import limpiar_mds
 from tinamit.Análisis.Calibs import CalibradorEc
 from tinamit.Análisis.Datos import MicroDatos, SuperBD
@@ -14,15 +13,22 @@ from tinamit.Geog.Geog import Geografía
 
 try:
     import pymc3 as pm
+    import theano as T
 except ImportError:
-    pm = None
+    pm = T = None
+
+if T is None:
+    hay_compil_c = False
+else:
+    hay_compil_c = T.configdefaults.rc == 0
+
 
 dir_act = os.path.split(__file__)[0]
 arch_csv_geog = os.path.join(dir_act, 'recursos/datos/prueba_geog.csv')
 arch_mds = os.path.join(dir_act, 'recursos/MDS/prueba_para_calib.mdl')
 
 métodos = ['optimizar']
-if pm is not None:
+if pm is not None and hay_compil_c:
     métodos.append('inferencia bayesiana')
 
 
@@ -45,18 +51,11 @@ class Test_Calibrador(unittest.TestCase):
         cls.bd_datos.espec_var('y')
 
     def test_calibración_sencilla(símismo):
-        líms = {
-            'sin_líms': None,
-            'un_lím': {'a': (0, None), 'b': (None, 0)},
-            'dos_líms': {'a': (0, 10), 'b': (-10, -1)}
-        }
         for m in métodos:
-            for lm in líms:
-                with símismo.subTest(método=m, líms=lm):
-                    calibs = símismo.clbrd.calibrar(método=m, líms_paráms=líms[lm], bd_datos=símismo.bd_datos)
-                    est = [calibs[p]['val'] for p in símismo.paráms]
-                    val = [v for v in símismo.paráms.values()]
-                    npt.assert_allclose(est, val, rtol=0.1)
+            with símismo.subTest(método=m):
+                calibs = símismo.clbrd.calibrar(método=m, bd_datos=símismo.bd_datos)
+                for p, v in símismo.paráms.items():
+                    símismo.assertAlmostEqual(calibs[p]['val'], v, places=1)
 
     def test_calibrador_sin_var_y(símismo):
         with símismo.assertRaises(ValueError):
@@ -82,7 +81,7 @@ class Test_CalibEnModelo(unittest.TestCase):
     def setUpClass(cls):
         n_obs = {'701': 500, '708': 50, '1001': 500}
         datos_x = {lg: np.random.rand(n) for lg, n in n_obs.items()}
-        datos_y = {lg: datos_x[lg] * d['Factor a'] + d['Factor b'] + np.random.normal(0, 0.1, n_obs[lg])
+        datos_y = {lg: datos_x[lg] * d['Factor a'] + d['Factor b'] + np.random.normal(0, 0.5, n_obs[lg])
                    for lg, d in cls.paráms.items()}  # y = a*x + b
         lugares = [x for ll, v in datos_x.items() for x in [ll] * v.size]
         x = [i for v in datos_x.values() for i in v]
@@ -102,19 +101,18 @@ class Test_CalibEnModelo(unittest.TestCase):
 
         for m in métodos:
             with símismo.subTest(método=m):
-                símismo.mod.especificar_micro_calib(var='Y', método=m, líms_paráms={'a': (0, 50)},
-                                                    ops_método={'draws': 1000} if m == 'inferencia bayesiana' else None)
+                símismo.mod.especificar_micro_calib(var='Y', método=m)
                 símismo.mod.efectuar_micro_calibs(bd=símismo.bd, geog=símismo.geog, corresp_vars={'X': 'x', 'Y': 'y'})
 
                 val = [símismo.paráms[lg][p] for lg in símismo.paráms for p in símismo.paráms[lg]]
                 if m == 'optimizar':
                     est = [símismo.mod.calibs[p][lg]['val'] for lg in símismo.paráms for p in símismo.paráms[lg]]
-                    símismo.mod.borrar_micro_calib('Y')
                     npt.assert_allclose(val, est, rtol=0.2)
+                    símismo.mod.borrar_micro_calib('Y')
                 else:
                     est = [símismo.mod.calibs[p][lg]['dist'] for lg in símismo.paráms for p in símismo.paráms[lg]]
                     símismo.mod.borrar_micro_calib('Y')
-                    símismo._verificar_aprox_bayes(val, est)
+                    símismo._verificar_aprox_bayes(val, est, intvl=80)
 
     def test_calibración_bayes_sin_mod_jerárquíco(símismo):
         """
@@ -144,7 +142,7 @@ class Test_CalibEnModelo(unittest.TestCase):
         símismo.assertDictEqual(calibs, símismo.mod.calibs)
 
     @staticmethod
-    def _verificar_aprox_bayes(val, est, intvl=99):
+    def _verificar_aprox_bayes(val, est, intvl=90):
         npt.assert_allclose([estad.percentileofscore(e, v) for e, v in zip(est, val)], 50, atol=intvl / 2)
 
     @classmethod
