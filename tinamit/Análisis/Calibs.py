@@ -281,7 +281,7 @@ class CalibradorEc(object):
             lugs_obs = obs['lugar'].values
             for lg, subs in sub_lugares.items():
                 lugs_obs[np.isin(lugs_obs, subs)] = lg
-            obs['lugar'] = ('n', lugs_obs)
+            obs['lugar'][:] = lugs_obs
             obs = obs.where(obs['lugar'].isin(lugares), drop=True)
 
             # Si hay distribución geográfica, es un poco más complicado.
@@ -637,7 +637,7 @@ def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops
     ops_auto = {
         'tune': 1000,
         'cores': 1,
-        'nuts_kwargs': {'target_accept': 0.80}
+        'nuts_kwargs': {'target_accept': 0.99}
     }
     ops_auto.update(ops)
 
