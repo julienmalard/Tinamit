@@ -4,11 +4,12 @@ import unittest
 import numpy.testing as npt
 import xarray.testing as xrt
 
-from tinamit.EnvolturasMDS import ModeloVensim, ModeloPySD, generar_mds
+from tinamit.EnvolturasMDS import ModeloVensim, ModeloPySD, ModeloVensimMdl, generar_mds
 from tinamit.MDS import EnvolturaMDS
 
 # Los tipos de modelos DS que queremos comprobar.
 tipos_modelos = {
+    'mdlVensim': {'envlt': ModeloVensimMdl, 'prueba': 'recursos/MDS/prueba_senc.mdl'},
     'PySDVensim': {'envlt': ModeloPySD, 'prueba': 'recursos/MDS/prueba_senc.mdl'},
     'PySD_XMILE': {'envlt': ModeloPySD, 'prueba': 'recursos/MDS/prueba_senc_.xmile'},
     'dllVensim': {'envlt': ModeloVensim, 'prueba': 'recursos/MDS/prueba_senc.vpm'}
@@ -67,52 +68,6 @@ class Test_ModeloSenc(unittest.TestCase):
             with símismo.subTest(mod=ll):
                 vars_modelo = set(mod.variables)
                 símismo.assertSetEqual(set(símismo.info_vars), vars_modelo)
-
-    def test_iniciales(símismo):
-        ref = {'Nivel lago inicial'}
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                iniciales = mod.iniciales()
-                símismo.assertSetEqual(set(iniciales), ref)
-
-    def test_niveles(símismo):
-        ref = {'Lago'}
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                niveles = mod.niveles()
-                símismo.assertSetEqual(set(niveles), ref)
-
-    def test_constantes(símismo):
-        ref = {'Aleatorio', 'Lluvia'}
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                constantes = mod.constantes()
-                símismo.assertSetEqual(set(constantes), ref)
-
-    def test_flujos(símismo):
-        ref = {'Flujo río', 'Evaporación'}
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                flujos = mod.flujos()
-                símismo.assertSetEqual(set(flujos), ref)
-
-    def test_auxiliares(símismo):
-        ref = set()
-
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                auxiliares = mod.auxiliares()
-                símismo.assertSetEqual(set(auxiliares), ref)
-
-    def test_parientes(símismo):
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                símismo.assertSetEqual(set(mod.parientes('Lago')), {'Evaporación', 'Flujo río', 'Nivel lago inicial'})
-
-    def test_hijos(símismo):
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                símismo.assertSetEqual(set(mod.hijos('Lluvia')), {'Flujo río'})
 
     def test_unid_tiempo(símismo):
         """
@@ -262,8 +217,10 @@ class Test_OpcionesSimul(unittest.TestCase):
                 npt.assert_array_equal(res_paso_1, res_paso_2)
 
     def test_simul_con_paso_inválido(símismo):
-        with símismo.assertRaises(ValueError):
-            list(símismo.modelos.values())[0].simular(t_final=100, paso=0)
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                with símismo.assertRaises(ValueError):
+                    mod.simular(t_final=100, paso=0)
 
     def test_simul_exprés(símismo):
         for ll, mod in símismo.modelos.items():
@@ -300,7 +257,7 @@ class Test_GenerarMDS(unittest.TestCase):
         """
 
         with símismo.assertRaises(ValueError):
-            generar_mds(os.path.join(dir_act, 'recursos/MDS/Modelo con extensión no reconocida.வணக்கம்'))
+            generar_mds('recursos/MDS/Modelo con extensión no reconocida.வணக்கம்')
 
     def test_generación_auto_mds_con_motor_especificado(símismo):
         """
@@ -310,9 +267,8 @@ class Test_GenerarMDS(unittest.TestCase):
         mod = generar_mds(tipos_modelos['PySDVensim']['prueba'], motor=ModeloPySD)
         símismo.assertIsInstance(mod, ModeloPySD)
 
-        if ModeloVensim(tipos_modelos['dllVensim']['prueba']).instalado():
-            mod = generar_mds(tipos_modelos['PySDVensim']['prueba'], motor=ModeloVensim)
-            símismo.assertIsInstance(mod, ModeloVensim)
+        mod = generar_mds(tipos_modelos['PySDVensim']['prueba'], motor=ModeloVensimMdl)
+        símismo.assertIsInstance(mod, ModeloVensimMdl)
 
     def test_generación_auto_mds_modelo_erróneo(símismo):
         """
@@ -320,7 +276,7 @@ class Test_GenerarMDS(unittest.TestCase):
         """
 
         with símismo.assertRaises(FileNotFoundError):
-            generar_mds('recursos/MDS/Yo no existo.mdl')
+            generar_mds('Yo no existo.mdl')
 
 
 def limpiar_mds(direc='./recursos/MDS'):
