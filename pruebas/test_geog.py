@@ -110,6 +110,7 @@ class Test_Geografía(unittest.TestCase):
         símismo.assertTrue(os.path.isfile('prueba.jpg'))
         os.remove('prueba.jpg')
 
+    @unittest.skip
     def test_dibujar_desde_matriz_numpy_sin_ids(símismo):
         símismo.geog.agregar_frm_regiones(arch_frm_regiones, col_id='COD_MUNI')
         lugares = símismo.geog.obt_lugares_en(escala='municipio')

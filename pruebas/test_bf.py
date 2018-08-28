@@ -152,6 +152,7 @@ class Test_Envolturas_ModeloImpaciente(unittest.TestCase):
             os.remove(cls.arch_prb_escrb_ingr)
 
 
+@unittest.SkipTest
 class Test_ModeloFlexible(unittest.TestCase):
 
     @classmethod
