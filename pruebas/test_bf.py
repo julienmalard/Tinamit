@@ -8,10 +8,11 @@ from numpy import testing as npt
 import tinamit.EnvolturasBF
 from pruebas.recursos.BF.prueba_bf import ModeloPrueba
 from tinamit.BF import EnvolturaBF
-from tinamit.BF import ModeloDeterminado
+from tinamit.BF import ModeloImpaciente
 
 dir_act = os.path.split(__file__)[0]
 arch_bf = os.path.join(dir_act, 'recursos/BF/prueba_bf.py')
+arch_bf_flexible = os.path.join(dir_act, 'recursos/BF/modelo_flexible.py')
 
 
 # Comprobar que el modelo BF de prueba corre corectamente
@@ -109,3 +110,55 @@ class Test_CrearEnvolturaBF(unittest.TestCase):
         envlt = EnvolturaBF(modelo_bf)
         símismo.assertIsInstance(envlt, EnvolturaBF)
 
+
+class Test_Envolturas_ModeloImpaciente(unittest.TestCase):
+    arch_prb_escrb_ingr = 'prueba_ingr.txt'
+
+    @classmethod
+    def setUpClass(cls):
+        cls.envolturas_disp = {}
+        for nombre, obj in inspect.getmembers(tinamit.EnvolturasBF):
+            if inspect.isclass(obj) and issubclass(obj, ModeloImpaciente):
+                cls.envolturas_disp[nombre] = obj()
+
+    def test_escribir_ingresos(símismo):
+        for nmb, obj in símismo.envolturas_disp.items():
+            with símismo.subTest(envlt=nmb):
+                obj.escribir_ingr(n_años_simul=1, archivo=símismo.arch_prb_escrb_ingr)
+                obj.leer_archivo_vals_inic(archivo=símismo.arch_prb_escrb_ingr)
+
+                d_ref = obj.cargar_ref_ejemplo_vals_inic()
+
+                for v in obj.variables:
+                    act = obj.variables[v]['val']
+                    ref = d_ref[v]['val']
+                    npt.assert_equal(ref, act)
+
+    def test_leer_egresos(símismo):
+        for nmb, obj in símismo.envolturas_disp.items():
+            with símismo.subTest(envlt=nmb):
+                if obj.prb_arch_egr is not None:
+                    dic_ref = obj.cargar_ref_ejemplo_egr()
+
+                    dic_egr = obj.leer_archivo_egr(n_años_egr=1, archivo=obj.prb_arch_egr)
+
+                    for v, val in dic_egr.items():
+                        ref = dic_ref[v]
+                        npt.assert_equal(val, ref)
+
+    @classmethod
+    def tearDownClass(cls):
+        if os.path.isfile(cls.arch_prb_escrb_ingr):
+            os.remove(cls.arch_prb_escrb_ingr)
+
+
+@unittest.SkipTest
+class Test_ModeloFlexible(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = EnvolturaBF(arch_bf_flexible)
+
+    def test_simular(símismo):
+        res = símismo.mod.simular(100, vars_interés='Escala')
+        npt.assert_array_equal(res['Escala'], np.arange(100 + 1))
