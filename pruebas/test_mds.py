@@ -257,7 +257,7 @@ class Test_GenerarMDS(unittest.TestCase):
         """
 
         with símismo.assertRaises(ValueError):
-            generar_mds('Modelo con extensión no reconocida.வணக்கம்')
+            generar_mds('recursos/MDS/Modelo con extensión no reconocida.வணக்கம்')
 
     def test_generación_auto_mds_con_motor_especificado(símismo):
         """
