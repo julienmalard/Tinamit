@@ -637,7 +637,7 @@ def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops
     ops_auto = {
         'tune': 1000,
         'cores': 1,
-        'nuts_kwargs': {'target_accept': 0.99}
+        'nuts_kwargs': {'target_accept': 0.80}
     }
     ops_auto.update(ops)
 
