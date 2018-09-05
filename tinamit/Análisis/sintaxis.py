@@ -1,7 +1,6 @@
 import math as mat
 
 import numpy as np
-import regex
 from pkg_resources import resource_filename
 
 from lark import Lark, Tree
@@ -11,8 +10,9 @@ from tinamit.config import _
 
 try:
     import pymc3 as pm
+    import theano.tensor as T
 except ImportError:  # pragma: sin cobertura
-    pm = None
+    pm = T = None
 
 l_dialectos_potenciales = {
     'vensim': resource_filename('tinamit.Análisis', 'grams/gram_ecs.g'),
@@ -589,14 +589,15 @@ class Ecuación(object):
                     if líms[0] is líms[1] is None:
                         final = pm.Normal(name=nmbr, mu=0, sd=100 ** 2, shape=tmñ)
                     else:
-                        dist_norm = pm.Normal(name='transf' + nmbr, mu=0, sd=100 ** 2, shape=tmñ)
-                        exp = pm.math.exp(dist_norm)
+                        dist_norm = pm.Normal(name='transf' + nmbr, mu=0, sd=1, shape=tmñ)
                         if líms[0] is None:
-                            final = pm.Deterministic(nmbr, líms[1] - exp)
+                            final = pm.Deterministic(nmbr, líms[1] - pm.math.exp(dist_norm))
                         elif líms[1] is None:
-                            final = pm.Deterministic(nmbr, líms[0] + exp)
+                            final = pm.Deterministic(nmbr, líms[0] + pm.math.exp(dist_norm))
                         else:
-                            final = pm.Deterministic(nmbr, exp / (1 + exp) * (líms[1] - líms[0]) + líms[0])
+                            final = pm.Deterministic(
+                                nmbr, (pm.math.tanh(dist_norm) / 2 + 0.5) * (líms[1] - líms[0]) + líms[0]
+                            )
                         norm[p] = dist_norm
                 else:
                     dist, prms = aprioris[p]
@@ -624,8 +625,13 @@ class Ecuación(object):
 
             for p, líms in líms_paráms.items():
                 mu_v = dists_base[p]
+                if líms[0] is líms[1] is None:
+                    mu_sg = 2
+                else:
+                    mu_sg = 0.5
+
                 # sg_v = pm.HalfCauchy(name='sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 1), beta=5, shape=(1,))  # type: pm.model.TransformedRV
-                sg_v = pm.Gamma(name='sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 1), alpha=5, beta=1,
+                sg_v = pm.Gamma(name='sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 1), mu=mu_sg, sd=0.2,
                                 shape=(1,))  # type: pm.model.TransformedRV
 
                 for í, nv in enumerate(nv_jerarquía[:-1]):
@@ -637,42 +643,42 @@ class Ecuación(object):
                     nmbr_sg = 'sg_{}_nv_{}'.format(p, í_nv)
                     nmbr_trsld = 'trlsd_{}_nv_{}'.format(p, í_nv)
 
-                    if trsld_sub:
+                    if False and (trsld_sub or últ_niv):
                         trsld = pm.Normal(name=nmbr_trsld, mu=0, sd=1, shape=tmñ_nv)
                         if líms[0] is líms[1] is None:
                             mu_v = pm.Deterministic(nmbr_mu, mu_v[nv] + trsld * sg_v[nv])
 
                         else:
                             mu_v = pm.Deterministic('transf' + nmbr_mu, mu_v[nv] + trsld * sg_v[nv])
-                            exp = pm.math.exp(mu_v)
                             if líms[0] is None:
-                                final = pm.Deterministic(nmbr_mu, líms[1] - exp)
+                                final = pm.Deterministic(nmbr_mu, líms[1] - pm.math.exp(mu_v))
                             elif líms[1] is None:
-                                final = pm.Deterministic(nmbr_mu, líms[0] + exp)
+                                final = pm.Deterministic(nmbr_mu, líms[0] + pm.math.exp(mu_v))
                             else:
-                                final = pm.Deterministic(nmbr_mu, exp / (1 + exp) * (líms[1] - líms[0]) + líms[0])
+                                final = pm.Deterministic(
+                                    nmbr_mu, (pm.math.tanh(mu_v) / 2 + 0.5) * (líms[1] - líms[0]) + líms[0]
+                                )
 
                             if últ_niv:
                                 mu_v = final
                     else:
                         if líms[0] is líms[1] is None:
                             mu_v = pm.Normal(name=nmbr_mu, mu=mu_v[nv], sd=sg_v[nv], shape=tmñ_nv)
-
                         else:
                             mu_v = pm.Normal(name='transf' + nmbr_mu, mu=mu_v[nv], sd=sg_v[nv], shape=tmñ_nv)
-                            exp = pm.math.exp(mu_v)
                             if líms[0] is None:
-                                final = pm.Deterministic(nmbr_mu, líms[1] - exp)
+                                final = pm.Deterministic(nmbr_mu, líms[1] - pm.math.exp(mu_v))
                             elif líms[1] is None:
-                                final = pm.Deterministic(nmbr_mu, líms[0] + exp)
+                                final = pm.Deterministic(nmbr_mu, líms[0] + pm.math.exp(mu_v))
                             else:
-                                final = pm.Deterministic(nmbr_mu, exp / (1 + exp) * (líms[1] - líms[0]) + líms[0])
-
+                                final = pm.Deterministic(
+                                    nmbr_mu, (pm.math.tanh(mu_v) / 2 + 0.5) * (líms[1] - líms[0]) + líms[0]
+                                )
                             if últ_niv:
                                 mu_v = final
 
                     if not últ_niv:
-                        sg_v = pm.Gamma(name=nmbr_sg, alpha=5, beta=1, shape=tmñ_nv)
+                        sg_v = pm.Gamma(name=nmbr_sg, mu=mu_sg, sd=0.2, shape=tmñ_nv)
 
                 egr[p] = mu_v
 
@@ -688,7 +694,7 @@ class Ecuación(object):
             mu = _VstrAPyMC3(
                 d_vars_pm=d_vars_pm, dialecto=símismo.dialecto, obs_x=obs_x, nv_jerarquía=nv_jerarquía,
             ).convertir(símismo.árbol)
-            sigma = pm.HalfNormal(name='sigma', sd=obs_y.std())
+            sigma = pm.HalfNormal(name='sigma', sd=obs_y.values.std())
 
             if binario:
                 # noinspection PyTypeChecker
@@ -744,9 +750,9 @@ _dic_funs = {
     'sinh': {'vensim': 'SINH', 'pm': pm.math.sinh if pm is not None else None, 'python': mat.sinh},
     'cosh': {'vensim': 'COSH', 'pm': pm.math.cosh if pm is not None else None, 'python': mat.cosh},
     'tanh': {'vensim': 'TANH', 'pm': pm.math.tanh if pm is not None else None, 'python': mat.tanh},
-    'asin': {'vensim': 'ARCSIN', 'python': mat.asin},
-    'acos': {'vensim': 'ARCCOS', 'python': mat.acos},
-    'atan': {'vensim': 'ARCTAN', 'python': mat.atan},
+    'asin': {'vensim': 'ARCSIN', 'pm': T.arcsin if T is not None else None, 'python': mat.asin},
+    'acos': {'vensim': 'ARCCOS', 'pm': T.arccos if T is not None else None, 'python': mat.acos},
+    'atan': {'vensim': 'ARCTAN', 'pm': T.arctan if T is not None else None, 'python': mat.atan},
     'si_sino': {'vensim': 'IF THEN ELSE', 'pm': pm.math.switch if pm is not None else None,
                 'python': lambda cond, si, sino: si if cond else sino}
 }
