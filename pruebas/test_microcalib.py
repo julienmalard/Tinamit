@@ -109,7 +109,8 @@ class Test_CalibEnModelo(unittest.TestCase):
 
         for m in métodos:
             with símismo.subTest(método=m):
-                símismo.mod.especificar_micro_calib(var='Y', método=m)
+                símismo.mod.especificar_micro_calib(var='Y', método=m, líms_paráms={'a': (0, 50)},
+                                                    ops_método={'draws': 1000} if m == 'inferencia bayesiana' else None)
                 símismo.mod.efectuar_micro_calibs(bd=símismo.bd, geog=símismo.geog, corresp_vars={'X': 'x', 'Y': 'y'})
 
                 val = [símismo.paráms[lg][p] for lg in símismo.paráms for p in símismo.paráms[lg]]
@@ -120,7 +121,7 @@ class Test_CalibEnModelo(unittest.TestCase):
                 else:
                     est = [símismo.mod.calibs[p][lg]['dist'] for lg in símismo.paráms for p in símismo.paráms[lg]]
                     símismo.mod.borrar_micro_calib('Y')
-                    símismo._verificar_aprox_bayes(val, est, intvl=80)
+                    símismo._verificar_aprox_bayes(val, est)
 
     def test_calibración_bayes_sin_mod_jerárquíco(símismo):
         """
@@ -150,7 +151,7 @@ class Test_CalibEnModelo(unittest.TestCase):
         símismo.assertDictEqual(calibs, símismo.mod.calibs)
 
     @staticmethod
-    def _verificar_aprox_bayes(val, est, intvl=95):
+    def _verificar_aprox_bayes(val, est, intvl=99):
         npt.assert_allclose([estad.percentileofscore(e, v) for e, v in zip(est, val)], 50, atol=intvl / 2)
 
     @classmethod
