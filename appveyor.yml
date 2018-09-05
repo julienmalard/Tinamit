@@ -19,7 +19,7 @@ install:
 build: false
 
 test_script:
-  - "nosetests"
+- "unittest"
 
 after_test:
   - "%PYTHON%\\python.exe setup.py bdist_wheel"
