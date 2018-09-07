@@ -625,12 +625,12 @@ class Ecuación(object):
 
             for p, líms in líms_paráms.items():
                 mu_v = dists_base[p]
+
                 if líms[0] is líms[1] is None:
                     mu_sg = 2
                 else:
                     mu_sg = 0.5
 
-                # sg_v = pm.HalfCauchy(name='sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 1), beta=5, shape=(1,))  # type: pm.model.TransformedRV
                 sg_v = pm.Gamma(name='sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 1), mu=mu_sg, sd=0.2,
                                 shape=(1,))  # type: pm.model.TransformedRV
 
