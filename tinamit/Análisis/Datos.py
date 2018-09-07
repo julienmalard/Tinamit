@@ -157,7 +157,7 @@ class Datos(object):
 
 class MicroDatos(Datos):
     """
-    No tiene funcionalidad específica, pero esta clase queda muy útil para identificar el tipo de datos.
+    No tiene funcionalidad específica, pero esta clase queda muy útil para identificar el tipo_mod de datos.
     """
 
     def __init__(símismo, nombre, fuente, tiempo=None, lugar=None, cód_vacío=None):
@@ -787,7 +787,7 @@ class SuperBD(object):
 
     @staticmethod
     def _con_tiempo(bd_xr):
-        return not np.all(np.isnat(bd_xr['tiempo'].values))
+        return not np.all(np.equal(bd_xr['tiempo'].values, np.datetime64('NaT')))
 
     def obt_datos(símismo, l_vars=None, lugares=None, bd_datos=None, tiempos=None, excl_faltan=False,
                   tipo=None, interpolar=True, interpolar_estricto=False):
@@ -849,7 +849,7 @@ class SuperBD(object):
                 raise ValueError(_('Los variables "{}" no corresponden con microdatos o con datos normales.')
                                  .format(', '.join(l_vars)))
         else:
-            tipo = tipo.lower()  # Formatear tipo
+            tipo = tipo.lower()  # Formatear tipo_mod
             if tipo == 'microdatos':
                 bd = símismo.microdatos
             elif tipo == 'datos':
@@ -857,7 +857,7 @@ class SuperBD(object):
             elif tipo == 'error':
                 bd = símismo.datos_err
             else:
-                raise ValueError(_('`tipo` debe ser uno de "{}"').format('"microdatos", "datos", o "error".'))
+                raise ValueError(_('`tipo_mod` debe ser uno de "{}"').format('"microdatos", "datos", o "error".'))
 
         # Asegurarse que existe esta base de datos
         if bd is None:
@@ -888,35 +888,18 @@ class SuperBD(object):
 
         # Si tenemos datos generales, tomamos promedios
         if tipo == 'datos':
-            bd_sel = bd_sel.set_index(n=['lugar', 'tiempo']).groupby('n').mean()
-            bd_sel = bd_sel.reset_index('n')
+            bd_sel = bd_sel.set_index(m=['lugar', 'tiempo']).groupby('m').mean()
+            bd_sel = bd_sel.assign(**{'lugar': ('n', bd_sel['m_level_0']), 'tiempo': ('n', bd_sel['m_level_1'])})
+            bd_sel = bd_sel.drop('m')
+            bd_sel = bd_sel.set_coords(['lugar', 'tiempo'])
+            bd_sel = xr.Dataset(data_vars={vr: ('n', bd_sel[vr].values) for vr in bd_sel.data_vars},
+                                coords={vr: ('n', bd_sel[vr].values) for vr in bd_sel.coords})
 
         # Excluir las observaciones que faltan
         if excl_faltan:
             # Si excluyemos las observaciones que faltan, guardar únicamente las filas con observacienes
             # para todos los variables
-            bd_sel_final = bd_sel.dropna('n', subset=[x for x in bd_sel.data_vars])
-            if len(bd_sel_final['tiempo'].values):
-                bd_sel = bd_sel_final
-            else:
-                avisar('Extrapolando por falta de datos en variables: {}'.format(', '.join(l_vars)))
-                bd_sel = bd_sel.dropna(
-                    'n', subset=[x for x in bd_sel.data_vars]
-                )
-                for i, (l, f) in enumerate(zip(bd_sel['lugar'].values, bd_sel['tiempo'].values)):
-                    for v in bd_sel.data_vars:
-                        if np.isnan(bd_sel[v][i].values):
-                            l_f = bd_sel['tiempo'].where(bd_sel['lugar'] == l).where(np.isfinite(bd_sel[v])).dropna(
-                                'n').values
-                            if not len(l_f):
-                                continue
-                            próx = l_f[np.abs(l_f - f).argmin()]
-                            bd_sel[v].values[i] = np.mean(
-                                bd_sel[v].where(bd_sel['lugar'] == l).where(bd_sel['tiempo'] == próx).dropna(
-                                    'n').values)
-
-                bd_sel = bd_sel.dropna('n', subset=[x for x in bd_sel.data_vars])
-
+            bd_sel = bd_sel.dropna('n', subset=[x for x in bd_sel.data_vars])
         else:
             # Sino, exlcuir únicamente las filas que faltans observaciones para todos los variables
             bd_sel = bd_sel.dropna(
@@ -1146,7 +1129,7 @@ class SuperBD(object):
             ejes.set_ylabel(var)
 
         else:
-            ejes.bar(n_lugares, datos[var])
+            ejes.bar(range(n_lugares), datos[var])
             ejes.set_ylabel(var)
             ejes.set_xlabel(_('Lugar'))
             ejes.set_xticks(range(n_lugares))
@@ -1651,25 +1634,25 @@ def obt_fecha_ft(fechas):
     if all(isinstance(f, (ft.datetime, ft.date)) for f in lista_fechas):
         fechas_ft = lista_fechas
     else:
-        try:
-            # Interntar convertir números de años de una vez
-            fechas_ft = [ft.date(year=int(f), month=1, day=1) for f in lista_fechas]
-        except (ValueError, TypeError):
+        if all(len(f) == 7 for f in lista_fechas):
+            lista_fechas = [f + '-01' for f in lista_fechas]
+        elif all(len(f) == 4 for f in lista_fechas):
+            lista_fechas = [f + '-01-01' for f in lista_fechas]
 
-            # Intentar con cada formato en la lista de formatos posibles
-            fechas_ft = None
-            for formato in formatos_posibles:
+        # Intentar con cada formato en la lista de formatos posibles
+        fechas_ft = None
+        for formato in formatos_posibles:
 
-                try:
-                    # Intentar de convertir todas las fechas a objetos ft.datetime
-                    fechas_ft = [ft.datetime.strptime(x, formato).date() for x in lista_fechas]
+            try:
+                # Intentar de convertir todas las fechas a objetos ft.datetime
+                fechas_ft = [ft.datetime.strptime(x, formato).date() for x in lista_fechas]
 
-                    # Si funcionó, parar aquí
-                    break
+                # Si funcionó, parar aquí
+                break
 
-                except ValueError:
-                    # Si no funcionó, intentar el próximo formato
-                    continue
+            except ValueError:
+                # Si no funcionó, intentar el próximo formato
+                continue
 
         # Si todavía no lo hemos logrado, tenemos un problema.
         if fechas_ft is None:
