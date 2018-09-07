@@ -679,6 +679,12 @@ class SuperBD(object):
         # Borrar las bases de datos existentes
         símismo.microdatos = símismo.datos = símismo.datos_err = None
 
+        bds_acronistas = {
+            'microdatos': [],
+            'datos': [],
+            'datos_err': []
+        }
+
         # Agregar datos
         for nmb, bd in símismo.bds.items():
             # Para cada base de datos vinculada...
@@ -708,8 +714,10 @@ class SuperBD(object):
                     if símismo.microdatos is None:
                         símismo.microdatos = bd_temp
                     else:
-
-                        símismo.microdatos = símismo._concat_bds_xr(bd_temp, símismo.microdatos)
+                        if símismo._con_tiempo(bd_temp):
+                            símismo.microdatos = símismo._concat_bds_xr(bd_temp, símismo.microdatos)
+                        else:
+                            bds_acronistas['microdatos'].append(bd_temp)
 
                 # Datos normales
                 else:
@@ -717,7 +725,10 @@ class SuperBD(object):
                     if símismo.datos is None:
                         símismo.datos = bd_temp
                     else:
-                        símismo.datos = símismo._concat_bds_xr(bd_temp, símismo.datos)
+                        if símismo._con_tiempo(bd_temp):
+                            símismo.datos = símismo._concat_bds_xr(bd_temp, símismo.datos)
+                        else:
+                            bds_acronistas['datos'].append(bd_temp)
 
                     # Calcular errores
                     dic_errores = {}
@@ -734,11 +745,37 @@ class SuperBD(object):
                     else:
                         símismo.datos_err = símismo._concat_bds_xr(bd_err_temp, símismo.datos_err)
 
+        for ll, l_bd in bds_acronistas.items():
+            if ll == 'microdatos':
+                símismo.microdatos = símismo._aplicar_acronistas(símismo.microdatos, l_bd)
+            elif ll == 'datos':
+                símismo.datos = símismo._aplicar_acronistas(símismo.datos, l_bd)
+            else:
+                símismo.datos_err = símismo._aplicar_acronistas(símismo.datos_err, l_bd)
+
         # Ya la base de datos sí está actualizada y lista para trabajar
         símismo.bd_lista = True
 
+    def _aplicar_acronistas(símismo, bd_base, l_acrons):
+        if not len(l_acrons):
+            return bd_base
+
+        bd_acron = l_acrons.pop(0)
+        for bd in l_acrons:
+            bd_acron = bd_acron.merge(bd)  # para hacer: verificar
+
+        for vr in bd_acron.data_vars:
+            if vr in bd_base.data_vars:
+                raise ValueError('Bases de datos múltiples con datos para "{}", un variable no temporal.'.format('vr'))
+            bd_base = bd_base.assign(**{vr: ('n', [np.nan] * len(bd_base['n']))})
+            for i, lg in enumerate(bd_acron['lugar'].values):
+                bd_base[vr].values[np.where(bd_base['lugar'].values == lg)] = bd_acron[vr][i]
+
+        return bd_base
+
     @staticmethod
     def _concat_bds_xr(bd1, bd2):
+
         faltan_en_1 = [x for x in bd2.data_vars if x not in bd1.data_vars]
         faltan_en_2 = [x for x in bd1.data_vars if x not in bd2.data_vars]
         n_1 = len(bd1['n'])
@@ -747,6 +784,10 @@ class SuperBD(object):
         bd2 = bd2.assign(**{v: ('n', [np.nan] * n_2) for v in faltan_en_2})
 
         return xr.concat([bd1, bd2], 'n')
+
+    @staticmethod
+    def _con_tiempo(bd_xr):
+        return not np.all(np.equal(bd_xr['tiempo'].values, np.datetime64('NaT')))
 
     def obt_datos(símismo, l_vars=None, lugares=None, bd_datos=None, tiempos=None, excl_faltan=False,
                   tipo=None, interpolar=True, interpolar_estricto=False):
@@ -844,6 +885,15 @@ class SuperBD(object):
         # Seleccionar las observaciones en las fechas de interés
         if tiempos is not None:
             bd_sel = símismo._filtrar_tiempo(bd_sel, tiempos)
+
+        # Si tenemos datos generales, tomamos promedios
+        if tipo == 'datos':
+            bd_sel = bd_sel.set_index(m=['lugar', 'tiempo']).groupby('m').mean()
+            bd_sel = bd_sel.assign(**{'lugar': ('n', bd_sel['m_level_0']), 'tiempo': ('n', bd_sel['m_level_1'])})
+            bd_sel = bd_sel.drop('m')
+            bd_sel = bd_sel.set_coords(['lugar', 'tiempo'])
+            bd_sel = xr.Dataset(data_vars={vr: ('n', bd_sel[vr].values) for vr in bd_sel.data_vars},
+                                coords={vr: ('n', bd_sel[vr].values) for vr in bd_sel.coords})
 
         # Excluir las observaciones que faltan
         if excl_faltan:

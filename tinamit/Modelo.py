@@ -1473,12 +1473,12 @@ class Modelo(object):
         pass
 
     def especificar_micro_calib(símismo, var, método=None, paráms=None, líms_paráms=None, tipo=None,
-                                escala=None, ops_método=None):
+                                escala=None, ops_método=None, ec=None):
 
         # Verificar el variable
         var = símismo.valid_var(var)
 
-        if 'ec' not in símismo.variables[var]:
+        if ec is None and 'ec' not in símismo.variables[var]:
             raise ValueError(_('El variable "{}" no tiene ecuación asociada.').format(var))
 
         # Especificar la micro calibración.
@@ -1488,7 +1488,8 @@ class Modelo(object):
             'ops_método': ops_método,
             'paráms': paráms,
             'líms_paráms': líms_paráms,
-            'tipo': tipo
+            'tipo': tipo,
+            'ec': ec
         }
 
     def verificar_micro_calib(símismo, var, bd, en=None, escala=None, geog=None, corresp_vars=None):
@@ -1593,7 +1594,7 @@ class Modelo(object):
         l_vars = {}  # para hacer: arreglar problemas de determinar paráms vs. otras ecuaciones
 
         # Preparar la ecuación
-        ec = símismo.variables[var]['ec']
+        ec = símismo.info_calibs['micro calibs'][var]['ec'] or símismo.variables[var]['ec']
 
         # El objeto de calibración.
         mod_calib = CalibradorEc(
