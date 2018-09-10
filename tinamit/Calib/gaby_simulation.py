@@ -79,7 +79,6 @@ def get_result():
 # get the Dw# from the output simulation results
 '''
 
-
 def simulation(sampling_parameters, tiempo_final, nombre):
     run = {'CWU': {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,
                    'Policy RH': 0, 'Policy Irrigation improvement': 0}

@@ -1,11 +1,13 @@
 import os
 import re
+import time
+from datetime import datetime
 
 import numpy as np
 
 from tinamit.Análisis.Sens.muestr import cargar_mstr_paráms
 from tinamit.config import _
-from tinamit.cositas import guardar_json
+from tinamit.cositas import guardar_json, cargar_json
 
 
 def gen_vals_inic(mstr, mapa_paráms):
@@ -21,7 +23,7 @@ def gen_vals_inic(mstr, mapa_paráms):
         iters = ej_mstr.keys()
 
     vals_inic = {í: {p: v[í] for p, v in mstr.items()
-                     if not any(re.match(r'{}(_[0-9]*)?$'.format(p2), p) for p2 in mapa_paráms)
+                     if not any(re.match(r'{}(_[0-9]*)?$'.format(p2), p) for p2 in mapa_paráms) and p != 'Ficticia'
                      }
                  for í in iters}
 
@@ -49,7 +51,6 @@ def gen_vals_inic(mstr, mapa_paráms):
                         raise ValueError(_('Transformación "{}" no reconocida.').format(transf))
 
                     vals_inic[í][var] = np.array(val_var)
-
     return vals_inic
 
 
@@ -95,11 +96,13 @@ def simul_sens(mod, mstr_paráms, mapa_paráms, var_egr, t_final, guardar=True, 
     # chosen samples
 
     vals_inic = gen_vals_inic(mstrs_escogidas, mapa_paráms)
-
+    start_time = datetime.now().strftime("%H:%M:%S")
+    FMT = '%H:%M:%S'
+    print(f"Initializing simulation {start_time} ")
     res_corridas = mod.simular_grupo(
         t_final=t_final, vals_inic=vals_inic, vars_interés=var_egr, paralelo=paralelo, guardar=guardar
     )
-
+    print(f"Simulation elapse {datetime.strptime(datetime.now().strftime('%H:%M:%S'), FMT) - datetime.strptime(start_time, FMT)}")
     return res_corridas
 
 

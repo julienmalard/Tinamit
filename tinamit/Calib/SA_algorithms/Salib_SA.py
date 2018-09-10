@@ -9,7 +9,7 @@ import numpy as np
 import json
 import matplotlib.pyplot as plt
 from scipy import optimize
-
+import scipy.stats as sp
 
 class SA(object):
     # root_path = 'D:\\Thesis\\pythonProject\\Tinamit\\tinamit\\Calib\\SA_algorithms\\Morris'

@@ -26,14 +26,16 @@ mapa_paráms = {
 }
 
 
-
 líms_paráms = {
     'Ptq - Aquifer total pore space': [(0.368, 0.506), (0.368, 0.551), (0.374, 0.500), (0.375, 0.551)],
     'Ptr - Root zone total pore space': [(0.375, 0.551), (0.350, 0.555), (0.351, 0.555), (0.332, 0.464)],
     'Kaq': [(26, 103), (26, 120), (26, 158), (26, 52)],
-    'Peq - Aquifer effective porosity': [(0.01, 0.33), (0.01, 0.33), (0.01, 0.33), (0.01, 0.33)],
+    'Peq - Aquifer effective porosity': [(0.1, 0.33)] * 4,
     'Pex - Transition zone effective porosity': [(0.01, 0.33)] * 4,
     'POH Kharif Tinamit': (355, 450),
     'POH rabi Tinamit': (235, 300),
     'Capacity per tubewell': (100.8, 201.6),
 }
+
+# 'Gw - Groundwater extraction': [(0.08, 0.35)]
+#GW6, Per

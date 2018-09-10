@@ -11,7 +11,6 @@ from tinamit.Calib.SA_algorithms.Salib_SA import SA
 from tinamit.Calib.SA_algorithms import morris as morris2
 
 
-
 class MorrisSA(SA):
     root_path = 'D:\\Thesis\\pythonProject\\local use\\Morris'
 
