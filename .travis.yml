@@ -2,8 +2,14 @@ language: python
 python:
   - "3.6"
 
-os:
-  - linux
+matrix:
+  include:
+  - os: linux
+    sudo: required
+    python: 3.6
+
+  - os: osx
+    language: generic
 
 install:
   - pip install --upgrade pip setuptools wheel
