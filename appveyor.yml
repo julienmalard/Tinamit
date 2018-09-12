@@ -4,17 +4,17 @@ environment:
     - PYTHON: "C:\\Python36-x64"
 
 install:
-- call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-  - "set PATH=%PATH%;%PYTHON%\\Scripts"
-  - "%PYTHON%\\python.exe -m pip install --upgrade pip"
-  - "%PYTHON%\\python.exe -m pip install --upgrade setuptools"
-  - "%PYTHON%\\python.exe -m pip install --upgrade wheel"
-  - "git clone https://github.com/julienmalard/taqdir.git"
-  - ps: cd taqdir
-  - "%PYTHON%\\python.exe setup.py -q install"
-  - ps: cd ..
-  - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
-  - "%PYTHON%\\python.exe setup.py -q install"
+- "call \"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat\""
+- "set PATH=%PATH%;%PYTHON%\\Scripts"
+- "%PYTHON%\\python.exe -m pip install --upgrade pip"
+- "%PYTHON%\\python.exe -m pip install --upgrade setuptools"
+- "%PYTHON%\\python.exe -m pip install --upgrade wheel"
+- "git clone https://github.com/julienmalard/taqdir.git"
+- ps: cd taqdir
+- "%PYTHON%\\python.exe setup.py -q install"
+- ps: cd ..
+- "%PYTHON%\\python.exe -m pip install -r requirements.txt"
+- "%PYTHON%\\python.exe setup.py -q install"
 
 build: false
 
