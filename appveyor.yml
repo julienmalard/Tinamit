@@ -4,6 +4,7 @@ environment:
     - PYTHON: "C:\\Python36-x64"
 
 install:
+- call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
   - "set PATH=%PATH%;%PYTHON%\\Scripts"
   - "%PYTHON%\\python.exe -m pip install --upgrade pip"
   - "%PYTHON%\\python.exe -m pip install --upgrade setuptools"
