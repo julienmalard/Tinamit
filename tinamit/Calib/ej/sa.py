@@ -3,7 +3,8 @@ from tinamit.Calib.ej.info_paráms import mapa_paráms, líms_paráms
 
 from tinamit.Conectado import Conectado
 from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
-from tinamit.Análisis.Sens.anlzr import anlzr_sens
+from tinamit.Análisis.Sens.anlzr import anlzr_sens, analy_by_file
+
 
 def gen_mod():
     # Create a coupled model instance
@@ -50,7 +51,9 @@ if __name__ == "__main__":
 
     # direc = os.path.join(os.path.split(__file__)[0], "Morris_sim_")
     direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\simular")
-    guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\\anlzr\\anlzr_new")
+    guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\\anlzr\\anlzr_new_logístico")
+    # direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\simular")
+    # guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\\anlzr_new")
 
     #direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\simular")
     #guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\\anlzr")
@@ -80,7 +83,7 @@ if __name__ == "__main__":
 
     res = analy_by_file('morris',líms_paráms=líms_paráms, mapa_paráms=mapa_paráms, mstr_path=archivo_muestrea,
                   simulation_path={'arch_simular': direc, 'num_samples': 625}, t_final=10, var_egr=['mds_Watertable depth Tinamit'],
-                  tipo_egr='linear')
+                  tipo_egr='logístico')
 
     guardar_json(res, guardar)
 

@@ -175,14 +175,14 @@ class ModeloExpo(PlantillaForma):
                 'dims': (1,)
             },
             'B': {
-                'val': 1,
+                'val': 1.1,
                 'unidades': 'm3',
                 'líms': (0, 2),
                 'ingreso': True,
                 'egreso': False,
                 'dims': (1,)
             },
-            'y': {'val': 0.1,
+            'y': {'val': 0.2,
                   'unidades': 'm3',
                   'líms': (0, None),
                   'ingreso': True,
@@ -196,7 +196,7 @@ class ModeloExpo(PlantillaForma):
         a = vals_inic['A']
         b = vals_inic['B']
         x = np.arange(tiempo_final + 1)
-        símismo.valores = a * (b ** x)
+        símismo.valores = a * (b ** x) + np.random.normal(scale=0.1, size=x.size)
 
 class ModeloLogistic(PlantillaForma):
     def _inic_dic_vars(símismo):
@@ -242,15 +242,15 @@ class ModeloLogistic(PlantillaForma):
         b = vals_inic['B']
         c = vals_inic['C']
         x = np.arange(tiempo_final + 1)
-        símismo.valores = a / (1 + np.exp(-b * x + c))
+        símismo.valores = a / (1 + np.exp(-b * x + c)) + np.random.normal(scale=0.01)
 
-class ModeloInverse(PlantillaForma):
+class ModeloInverso(PlantillaForma):
     def _inic_dic_vars(símismo):
         símismo.variables.clear()
 
         símismo.variables.update({
             'A': {
-                'val': 0.1,
+                'val': 3,
                 'unidades': 'm3/mes',
                 'líms': (0, None),
                 'ingreso': False,
@@ -258,14 +258,14 @@ class ModeloInverse(PlantillaForma):
                 'dims': (1,)
             },
             'B': {
-                'val': 0.1,
+                'val': 0.4,
                 'unidades': 'm3',
-                'líms': (-3, None),
+                'líms': (0.4, None),
                 'ingreso': True,
                 'egreso': False,
                 'dims': (1,)
             },
-            'y': {'val': 1,
+            'y': {'val': 2.1,
                   'unidades': 'm3',
                   'líms': (None, None),
                   'ingreso': True,
@@ -279,7 +279,7 @@ class ModeloInverse(PlantillaForma):
         a = vals_inic['A']
         b = vals_inic['B']
         x = np.arange(tiempo_final + 1)
-        símismo.valores = a/(x + b)
+        símismo.valores = a/(x + b) +np.random.normal(scale=0.1, size=x.size)
 
 class ModeloLog(PlantillaForma):
     def _inic_dic_vars(símismo):
@@ -316,38 +316,38 @@ class ModeloLog(PlantillaForma):
         a = vals_inic['A']
         b = vals_inic['B']
         x = np.arange(tiempo_final + 1)
-        símismo.valores = a * np.log(x + b)
+        símismo.valores = a * np.log(x + b) +np.random.normal(scale=0.1, size=x.size)
 
-class ModeloOcilación(PlantillaForma):
+class ModeloOscil(PlantillaForma):
     def _inic_dic_vars(símismo):
         símismo.variables.clear()
 
         símismo.variables.update({
             'A': {
-                'val': 1,
+                'val': 0.7,
                 'unidades': 'm3/mes',
-                'líms': (0, None),
+                'líms': (0.1, None),
                 'ingreso': False,
                 'egreso': True,
                 'dims': (1,)
             },
             'B': {
-                'val': 0.3,
+                'val': 0.6,
                 'unidades': 'm3',
-                'líms': (0, None),
+                'líms': (1, None),
                 'ingreso': True,
                 'egreso': False,
                 'dims': (1,)
             },
             'C': {
-                'val': 1,
+                'val': 1.0,
                 'unidades': 'm3',
                 'líms': (0, None),
                 'ingreso': True,
                 'egreso': False,
                 'dims': (1,)
             },
-            'y': {'val': 1,
+            'y': {'val': 0.55,
                   'unidades': 'm3',
                   'líms': (0, None),
                   'ingreso': True,
@@ -362,15 +362,15 @@ class ModeloOcilación(PlantillaForma):
         b = vals_inic['B']
         c = vals_inic['C']
         x = np.arange(tiempo_final + 1)
-        símismo.valores = a * np.sin(b * x + c)
+        símismo.valores = a * np.sin(b * x + c) + np.random.normal(scale=0.1, size=x.size)
 
-class ModeloOcilación_aten(PlantillaForma):
+class ModeloOscilAten(PlantillaForma):
     def _inic_dic_vars(símismo):
         símismo.variables.clear()
 
         símismo.variables.update({
             'A': {
-                'val': 1,
+                'val': 0.1,
                 'unidades': 'm3/mes',
                 'líms': (0, None),
                 'ingreso': False,
@@ -378,7 +378,7 @@ class ModeloOcilación_aten(PlantillaForma):
                 'dims': (1,)
             },
             'B': {
-                'val': 0.3,
+                'val': 0.7,
                 'unidades': 'm3',
                 'líms': (0, None),
                 'ingreso': True,
@@ -386,7 +386,7 @@ class ModeloOcilación_aten(PlantillaForma):
                 'dims': (1,)
             },
             'C': {
-                'val': 1,
+                'val': 0.6,
                 'unidades': 'm3',
                 'líms': (0, None),
                 'ingreso': True,
@@ -394,7 +394,7 @@ class ModeloOcilación_aten(PlantillaForma):
                 'dims': (1,)
             },
             'D': {
-                'val': 1,
+                'val': 1.1,
                 'unidades': 'm3',
                 'líms': (0, None),
                 'ingreso': True,
@@ -417,4 +417,4 @@ class ModeloOcilación_aten(PlantillaForma):
         c = vals_inic['C']
         d = vals_inic['D']
         x = np.arange(tiempo_final + 1)
-        símismo.valores = np.exp(a * x) * b * np.sin(c * x + d)
+        símismo.valores = np.exp(a * x) * b * np.sin(c * x + d) +np.random.normal(scale=0.1, size=x.size)

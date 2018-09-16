@@ -1,16 +1,17 @@
 import os
 import shutil
 import unittest
+
 import numpy as np
 import numpy.testing as npt
 
-from pruebas.recursos.BF.prueba_forma import ModeloLinear, ModeloExpo, ModeloLogistic
+from pruebas.recursos.BF.prueba_forma import ModeloLinear, ModeloExpo, ModeloLogistic, ModeloInverso, ModeloLog, \
+    ModeloOscil, ModeloOscilAten
 from pruebas.recursos.mod_prueba_sens import ModeloPrueba
+from tinamit.Análisis.Sens.anlzr import anlzr_sens
 from tinamit.Análisis.Sens.corridas import gen_vals_inic, gen_índices_grupos, simul_sens, simul_sens_por_grupo, \
     buscar_simuls_faltan, simul_faltan
-from tinamit.Análisis.Sens.muestr import muestrear_paráms, guardar_mstr_paráms, cargar_mstr_paráms, gen_problema
-from tinamit.Análisis.Sens.anlzr import anlzr_sens
-from SALib.analyze import morris, fast
+from tinamit.Análisis.Sens.muestr import muestrear_paráms, guardar_mstr_paráms, cargar_mstr_paráms
 
 métodos = ['morris', 'fast']
 
@@ -104,6 +105,12 @@ dic_direcs = {
     'por_índice': 'corridas_sens_por_índice',
     'sens_todas': 'corridas_sens_todas',
 }
+
+
+def _borrar_direcs_egr():
+    for dr in dic_direcs.values():
+        if os.path.isdir(dr):
+            shutil.rmtree(dr)
 
 
 class Test_Corridas(unittest.TestCase):
@@ -232,406 +239,212 @@ class Test_Corridas(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        for dr in dic_direcs.values():
-            if os.path.isdir(dr):
-                shutil.rmtree(dr)
+        _borrar_direcs_egr()
 
 
-dic_direcs2 = {
-    'algunas_faltan': 'corridas_algunas_faltan',
-    'por_índice': 'corridas_sens_por_índice',
-    'sens_todas': 'corridas_sens_todas',
-}
+ops_métodos = {'morris': {'num_levels': 4, 'grid_jump': 2}}
 
 
 class Test_Análisis(unittest.TestCase):
 
+    def _verificar_sens(símismo, mod, t_final, líms_paráms, tipo_egr, sensibles, no_sensibles=None, mtds=None,
+                        ops_método=None):
+        if mtds is None:
+            mtds = métodos
+        if ops_método is None:
+            ops_método = {}
+
+        if sensibles is None:
+            sensibles = {}
+        else:
+            for prm, vr in sensibles.items():
+                if isinstance(vr, str):
+                    sensibles[prm] = [vr]
+
+        vars_egr = []
+        for prm, l_vr in sensibles.items():
+            for vr in l_vr:
+                if isinstance(vr, list):
+                    vars_egr.append(vr[0])
+                else:
+                    vars_egr.append(vr)
+
+        if no_sensibles is None:
+            no_sensibles = {
+                prm: [vr[0] for otro_prm, vr in sensibles.items() if otro_prm != prm] for prm in sensibles
+            }
+        else:
+            for prm, l_vr in no_sensibles.items():
+                for vr in l_vr:
+                    if isinstance(vr, list):
+                        vars_egr.append(vr[0])
+                    else:
+                        vars_egr.append(vr)
+
+        vars_egr = list(set(vars_egr))
+
+        for m in mtds:
+            if m not in ops_método:
+                ops_método[m] = {}
+
+            with símismo.subTest(método=m):
+                res = anlzr_sens(
+                    mod, método=m, mapa_paráms=None, líms_paráms=líms_paráms,
+                    t_final=t_final, var_egr=vars_egr, ops_método=ops_método[m], tipo_egr=tipo_egr
+                )
+                for prm, l_eg in sensibles.items():
+                    for eg in l_eg:
+                        símismo._proc_res_sens(eg, prm, res, m, tipo_egr, sens=True)
+                for prm, l_eg in no_sensibles.items():
+                    for eg in l_eg:
+                        símismo._proc_res_sens(eg, prm, res, m, tipo_egr, sens=False)
+
+    @staticmethod
+    def _proc_res_sens(eg, prm, res, m, t_egr, sens):
+        if not isinstance(eg, list):
+            eg = [eg]
+
+        def _sacar_val(nombre, egr):
+            d_vals = res[t_egr][egr[0]][nombre]
+            val_prm = d_vals[prm]
+            val_fict = d_vals['Ficticia']
+
+            for e in egr[1:]:
+                val_prm = val_prm[e]
+                val_fict = val_fict[e]
+
+            return val_prm, val_fict
+
+        def _verificar_no_sig(val_prm, val_fict, sello, rtol=0.5):
+            try:
+                npt.assert_array_less(val_prm, sello)
+            except AssertionError:
+                try:
+                    npt.assert_array_less(val_prm, val_fict)
+                except AssertionError:
+                    npt.assert_allclose(val_prm, val_fict, rtol=rtol, atol=0.5)
+
+        def _verificar_sig(val_prm, val_fict, sello, rtol=0.5):
+            npt.assert_array_less(sello, val_prm)
+            npt.assert_array_less(val_fict, val_prm)
+            npt.assert_array_less(rtol, np.abs(val_fict - val_prm) / val_fict)
+
+        if m == 'morris':
+            pass
+            mu_star_prm, mu_star_fict = _sacar_val('mu_star', eg)
+
+            if sens:
+                _verificar_sig(mu_star_prm, mu_star_fict, sello=0.1)
+
+            else:
+                _verificar_no_sig(mu_star_prm, mu_star_fict, sello=0.1)
+
+        elif m == 'fast':
+            si_prm, si_fict = _sacar_val('Si', eg)
+            st_si_prm, st_si_fict = _sacar_val('St-Si', eg)
+
+            if sens:
+                _verificar_sig(si_prm, si_fict, sello=0.01)
+            else:
+                _verificar_no_sig(st_si_prm, st_si_fict, sello=0.1)
+                _verificar_no_sig(si_prm, si_fict, sello=0.01)
+
+        else:
+            raise ValueError(m)
+
     def test_sens_paso(símismo):
         líms_paráms = {'A': (0, 1), 'B': (2, 3)}
         mod = ModeloLinear()
-        for m in métodos:
-            if m == 'morris':
-                with símismo.subTest(método='morris'):
-                    res = anlzr_sens(mod, método=m, num_samples=100, mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=5, var_egr=['A', 'B'], ops_método={'num_levels': 4, 'grid_jump': 2},
-                                     tipo_egr="paso_tiempo")
-
-                    npt.assert_array_less(0.1, np.asarray(res['paso_tiempo']['A']['mu_star']['A']))
-                    npt.assert_array_less(np.asarray(res['paso_tiempo']['A']['mu_star']['B']), 0.1)
-                    npt.assert_array_less(np.asarray(res['paso_tiempo']['A']['mu_star']['Ficticia']), 0.1)
-
-            elif m == 'fast':
-                with símismo.subTest(método='fast'):
-                    res = anlzr_sens(mod, método='fast', num_samples=195, mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=3, var_egr=['A', 'B'],
-                                     tipo_egr="paso_tiempo")
-                    npt.assert_array_less(0.01, np.asarray(res['paso_tiempo']['A']['Si']['A']))
-                    símismo.assertTrue(res['paso_tiempo']['A']['Si']['B'] < 0.01 and
-                                       res['paso_tiempo']['A']['St-Si']['B'] < 0.1)
-                    símismo.assertTrue(res['paso_tiempo']['A']['Si']['Ficticia'] < 0.01 and
-                                       res['paso_tiempo']['A']['St-Si']['Ficticia'] < 0.1)
-            else:
-                raise NotImplementedError
+        símismo._verificar_sens(
+            mod, t_final=5, líms_paráms=líms_paráms, tipo_egr='paso_tiempo',
+            sensibles={'A': 'A', 'B': 'B'},
+            no_sensibles={'A': 'B', 'B': 'A', 'Ficticia': ['A', 'B']},
+            ops_método=ops_métodos
+        )
 
     def test_sens_final(símismo):
         líms_paráms = {'A': (0, 1), 'B': (2, 3)}
         mod = ModeloLinear()
-        for m in métodos:
-            if m == 'morris':
-                with símismo.subTest(método='morris'):
-                    res = anlzr_sens(mod, método=m, num_samples=100, mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=5, var_egr=['A', 'B'], ops_método={'num_levels': 4, 'grid_jump': 2},
-                                     tipo_egr="final")
-
-                    símismo.assertGreaterEqual(res['final']['A']['mu_star']['A'], 0.1)
-                    símismo.assertLessEqual(res['final']['A']['mu_star']['B'], 0.1)
-                    símismo.assertLessEqual(res['final']['A']['mu_star']['Ficticia'], 0.1)
-
-            elif m == 'fast':
-                with símismo.subTest(método='fast'):
-                    res = anlzr_sens(mod, método='fast', num_samples=195, mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=3, var_egr=['A', 'B'],
-                                     tipo_egr="final")
-                    símismo.assertGreaterEqual(res['final']['A']['Si']['A'], 0.01)
-                    símismo.assertTrue(res['final']['A']['Si']['B'] < 0.01 and res['final']['A']['St-Si']['B'] < 0.1)
-                    símismo.assertTrue(res['final']['A']['Si']['Ficticia'] < 0.01 and
-                                       res['final']['A']['St-Si']['Ficticia'] < 0.1)
-            else:
-                raise NotImplementedError
+        símismo._verificar_sens(
+            mod, t_final=5, líms_paráms=líms_paráms, tipo_egr='final',
+            sensibles={'A': 'A', 'B': 'B'},
+            no_sensibles={'A': 'B', 'B': 'A', 'Ficticia': ['A', 'B']},
+            ops_método=ops_métodos
+        )
 
     def test_sens_promedio(símismo):
         líms_paráms = {'A': (0, 1), 'B': (2, 3)}
         mod = ModeloLinear()
-        for m in métodos:
-            if m == 'morris':
-                with símismo.subTest(método='morris'):
-                    res = anlzr_sens(mod, método=m, num_samples=100, mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=5, var_egr=['A', 'B'], ops_método={'num_levels': 4, 'grid_jump': 2},
-                                     tipo_egr="promedio")
-
-                    símismo.assertGreaterEqual(res['promedio']['A']['mu_star']['A'], 0.1)
-                    símismo.assertLessEqual(res['promedio']['A']['mu_star']['B'], 0.1)
-                    símismo.assertLessEqual(res['promedio']['A']['mu_star']['Ficticia'], 0.1)
-
-            elif m == 'fast':
-                with símismo.subTest(método='fast'):
-                    res = anlzr_sens(mod, método='fast', num_samples=195, mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=3, var_egr=['A', 'B'],
-                                     tipo_egr="promedio")
-                    símismo.assertGreaterEqual(res['promedio']['A']['Si']['A'], 0.01)
-                    símismo.assertTrue(res['promedio']['A']['Si']['B'] < 0.01 and
-                                       res['promedio']['A']['St-Si']['B'] < 0.1)
-                    símismo.assertTrue(res['promedio']['A']['Si']['Ficticia'] < 0.01 and
-                                       res['promedio']['A']['St-Si']['Ficticia'] < 0.1)
-            else:
-                raise NotImplementedError
+        símismo._verificar_sens(
+            mod, t_final=5, líms_paráms=líms_paráms, tipo_egr='promedio',
+            sensibles={'A': 'A', 'B': 'B'},
+            no_sensibles={'A': 'B', 'B': 'A', 'Ficticia': ['A', 'B']},
+            ops_método=ops_métodos
+        )
 
     def test_sens_linear(símismo):
         líms_paráms = {'A': (0, 2), 'B': (0, 1)}
         mod = ModeloLinear()
-        for m in métodos:
-            if m == 'morris':
-                with símismo.subTest(método='morris'):
-                    res = anlzr_sens(mod, método=m, mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=5, var_egr=['y'], ops_método={'num_levels': 4, 'grid_jump': 2},
-                                     tipo_egr="linear")
-
-                    mu_star = res['linear']['y']['mu_star']
-                    símismo.assertGreaterEqual(mu_star['A']['slope'], 0.1)
-                    npt.assert_allclose(mu_star['A']['intercept'], mu_star['Ficticia']['intercept'], rtol=0.5)
-
-                    símismo.assertGreaterEqual(mu_star['B']['intercept'], 0.1)
-                    npt.assert_allclose(mu_star['B']['slope'], mu_star['Ficticia']['slope'], rtol=0.5)
-
-
-            elif m == 'fast':
-                with símismo.subTest(método='fast'):
-                    res = anlzr_sens(mod, método='fast', mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=5, var_egr=['y'],
-                                     tipo_egr="linear")
-
-                    si = res['linear']['y']['Si']
-                    st_si = res['linear']['y']['St-Si']
-                    símismo.assertGreaterEqual(si['A']['slope'], 0.01)
-                    símismo.assertTrue(si['A']['intercept'] <= 0.01 and st_si['A']['intercept'] <= 0.1)
-
-                    símismo.assertGreaterEqual(si['B']['intercept'], 0.01)
-                    símismo.assertTrue(si['B']['slope'] <= 0.01 and st_si['B']['slope'] <= 0.1)
-
-                    símismo.assertTrue(si['Ficticia']['intercept'] <= 0.01 and st_si['Ficticia']['intercept'] <= 0.1)
-                    símismo.assertTrue(si['Ficticia']['slope'] <= 0.01 and st_si['Ficticia']['slope'] <= 0.1)
-            else:
-                raise NotImplementedError
+        símismo._verificar_sens(
+            mod, t_final=20, líms_paráms=líms_paráms, tipo_egr='linear',
+            sensibles={'A': [['y', 'slope']], 'B': [['y', 'intercept']]},
+            ops_método=ops_métodos
+        )
 
     def test_sens_expo(símismo):
-        líms_paráms = {'A': (0.0000001, 10), 'B': (0.0000001, 2)}
+        líms_paráms = {'A': (0.1, 5), 'B': (1.1, 2)}
         mod = ModeloExpo()
-        for m in métodos:
-            if m == 'morris':
-                with símismo.subTest(método='morris'):
-                    res = anlzr_sens(mod, método=m, mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=5, var_egr=['y'],
-                                     ops_método={'num_levels': 4, 'grid_jump': 2}, tipo_egr="exponential")
-                    mu_star = res['exponential']['y']['mu_star']
-                    símismo.assertGreaterEqual(mu_star['A']['y_intercept'], 0.1)
-                    símismo.assertLessEqual(mu_star['A']['g_d'], 0.1)
-
-                    símismo.assertLessEqual(mu_star['B']['y_intercept'], 0.1)
-                    símismo.assertGreaterEqual(mu_star['B']['g_d'], 0.1)
-
-                    símismo.assertLessEqual(mu_star['Ficticia']['y_intercept'], 0.1)
-                    símismo.assertLessEqual(mu_star['Ficticia']['g_d'], 0.1)
-
-            elif m == 'fast':
-                with símismo.subTest(método='fast'):
-                    res = anlzr_sens(mod, método='fast', mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=5, var_egr=['y'],
-                                     tipo_egr="exponential")
-                    si = res['exponential']['y']['Si']
-                    st_si = res['exponential']['y']['St-Si']
-                    símismo.assertGreaterEqual(si['A']['y_intercept'], 0.01)
-                    símismo.assertTrue(si['A']['g_d'] < 0.01 and st_si['A']['g_d'] < 0.1)
-
-                    símismo.assertGreaterEqual(si['B']['g_d'], 0.01)
-                    símismo.assertTrue(si['B']['y_intercept'] < 0.01 and st_si['B']['y_intercept'] < 0.1)
-
-                    símismo.assertTrue(si['Ficticia']['g_d'] < 0.01 and st_si['Ficticia']['g_d'] < 0.1)
-                    símismo.assertTrue(si['Ficticia']['y_intercept'] < 0.01 and st_si['Ficticia']['y_intercept'] < 0.1)
-            else:
-                raise NotImplementedError
+        símismo._verificar_sens(
+            mod, t_final=15, líms_paráms=líms_paráms, tipo_egr='exponencial',
+            sensibles={'A': [['y', 'y_intercept']], 'B': [['y', 'g_d']]},
+            ops_método=ops_métodos
+        )
 
     def test_sens_logistic(símismo):
         líms_paráms = {'A': (3, 10), 'B': (0.5, 2), 'C': (3, 5)}
         mod = ModeloLogistic()
-        for m in métodos:
-            if m == 'morris':
-                with símismo.subTest(método='morris'):
-                    res = anlzr_sens(mod, método=m, mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=5, var_egr=['y'], ops_método={'num_levels': 4, 'grid_jump': 2},
-                                     tipo_egr="logistic")
-                    # should be more sensitive to B than A (B-rate of growth and decay, A Y-intercept)
-                    mu_star = res['logistic']['y']['mu_star']
-                    símismo.assertGreaterEqual(mu_star['A']['maxi_val'], 0.1)
-                    símismo.assertLessEqual(mu_star['A']['g_d'], 0.1)
-                    símismo.assertLessEqual(mu_star['A']['mid_point'], 0.1)
-
-                    símismo.assertGreaterEqual(mu_star['B']['g_d'], 0.1)
-                    símismo.assertLessEqual(mu_star['B']['maxi_val'], 0.1)
-                    símismo.assertLessEqual(mu_star['B']['mid_point'], 0.1)
-
-                    símismo.assertLessEqual(mu_star['Ficticia']['maxi_val'], 0.1)
-                    símismo.assertLessEqual(mu_star['Ficticia']['g_d'], 0.1)
-                    símismo.assertLessEqual(mu_star['Ficticia']['mid_point'], 0.1)
-
-            elif m == 'fast':
-                with símismo.subTest(método='fast'):
-                    res = anlzr_sens(mod, método='fast', mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=3, var_egr=['y'],
-                                     tipo_egr="logistic")
-
-                    si = res['logistic']['y']['Si']
-                    st_si = res['logistic']['y']['St-Si']
-                    símismo.assertGreaterEqual(si['A']['maxi_val'], 0.01)
-                    símismo.assertTrue(si['A']['g_d'] < 0.01 and st_si['A']['g_d'] < 0.1)
-                    símismo.assertTrue(si['A']['mid_point'] < 0.01 and st_si['A']['mid_point'] < 0.1)
-
-
-                    símismo.assertGreaterEqual(si['B']['g_d'], 0.01)
-                    símismo.assertTrue(si['B']['maxi_val'] < 0.01 and st_si['B']['maxi_val'] < 0.1)
-                    símismo.assertTrue(si['B']['mid_point'] < 0.01 and st_si['B']['mid_point'] < 0.1)
-
-                    símismo.assertGreaterEqual(si['C']['mid_point'], 0.01)
-                    símismo.assertTrue(si['C']['g_d'] < 0.01 and st_si['C']['g_d'] < 0.1)
-                    símismo.assertTrue(si['C']['maxi_val'] < 0.01 and st_si['C']['maxi_val'] < 0.1)
-
-                    símismo.assertTrue(si['Ficticia']['maxi_val'] < 0.01 and st_si['Ficticia']['maxi_val'] < 0.1)
-                    símismo.assertTrue(si['Ficticia']['g_d'] < 0.01 and st_si['Ficticia']['g_d'] < 0.1)
-                    símismo.assertTrue(si['Ficticia']['mid_point'] < 0.01 and st_si['Ficticia']['mid_point'] < 0.1)
-
-            else:
-                raise NotImplementedError
+        símismo._verificar_sens(
+            mod, t_final=10, líms_paráms=líms_paráms, tipo_egr='logístico',
+            sensibles={'A': [['y', 'maxi_val']], 'B': [['y', 'g_d']], 'C': [['y', 'mid_point']]},
+            ops_método=ops_métodos
+        )
 
     def test_sens_inverse(símismo):
-        líms_paráms = {'A': (0.2, 2), 'B': (0.1, 1)}
-        mod = ModeloExpo()
-        for m in métodos:
-            if m == 'morris':
-                with símismo.subTest(método='morris'):
-                    res = anlzr_sens(mod, método=m, mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=5, var_egr=['y'],
-                                     ops_método={'num_levels': 4, 'grid_jump': 2}, tipo_egr="inverse")
-                    # b_params = {'g_d': params[0], 'phi': params[1]}
-                    mu_star = res['inverse']['y']['mu_star']
-                    símismo.assertGreaterEqual(mu_star['A']['g_d'], 0.1)
-                    símismo.assertLessEqual(mu_star['A']['phi'], 0.1)
-
-                    símismo.assertLessEqual(mu_star['B']['phi'], 0.1)
-                    símismo.assertGreaterEqual(mu_star['B']['g_d'], 0.1)
-
-                    símismo.assertLessEqual(mu_star['Ficticia']['g_d'], 0.1)
-                    símismo.assertLessEqual(mu_star['Ficticia']['phi'], 0.1)
-
-            elif m == 'fast':
-                continue
-                with símismo.subTest(método='fast'):
-                    res = anlzr_sens(mod, método='fast', mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=5, var_egr=['y'],
-                                     tipo_egr="inverse")
-                    si = res['inverse']['y']['Si']
-                    st_si = res['inverse']['y']['St-Si']
-                    símismo.assertGreaterEqual(si['A']['g_d'], 0.01)
-                    símismo.assertTrue(si['A']['phi'] < 0.01 and st_si['A']['phi'] < 0.1)
-
-                    símismo.assertGreaterEqual(si['B']['phi'], 0.01)
-                    símismo.assertTrue(si['B']['g_d'] < 0.01 and st_si['B']['g_d'] < 0.1)
-
-                    símismo.assertTrue(si['Ficticia']['g_d'] < 0.01 and st_si['Ficticia']['g_d'] < 0.1)
-                    símismo.assertTrue(si['Ficticia']['phi'] < 0.01 and st_si['Ficticia']['phi'] < 0.1)
-            else:
-                raise NotImplementedError
+        líms_paráms = {'A': (3, 10), 'B': (0.4, 2)}
+        mod = ModeloInverso()
+        símismo._verificar_sens(
+            mod, t_final=10, líms_paráms=líms_paráms, tipo_egr='inverso',
+            sensibles={'A': [['y', 'g_d']], 'B': [['y', 'phi']]},
+            ops_método=ops_métodos
+        )
 
     def test_sens_log(símismo):
-        líms_paráms = {'A': (0.2, 2), 'B': (0.1, 1)}
-        mod = ModeloExpo()
-        for m in métodos:
-            if m == 'morris':
-                with símismo.subTest(método='morris'):
-                    res = anlzr_sens(mod, método=m, mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=5, var_egr=['y'],
-                                     ops_método={'num_levels': 4, 'grid_jump': 2}, tipo_egr="log")
-                    # b_params = {'g_d': params[0], 'phi': params[1]}
-                    mu_star = res['log']['y']['mu_star']
-                    símismo.assertGreaterEqual(mu_star['A']['g_d'], 0.1)
-                    símismo.assertLessEqual(mu_star['A']['phi'], 0.1)
+        líms_paráms = {'A': (0.2, 2), 'B': (2, 5)}
+        mod = ModeloLog()
+        símismo._verificar_sens(
+            mod, t_final=10, líms_paráms=líms_paráms, tipo_egr='log',
+            sensibles={'A': [['y', 'g_d']], 'B': [['y', 'phi']]},
+            ops_método=ops_métodos
+        )
 
-                    símismo.assertLessEqual(mu_star['B']['phi'], 0.1)
-                    símismo.assertGreaterEqual(mu_star['B']['g_d'], 0.1)
-
-                    símismo.assertLessEqual(mu_star['Ficticia']['g_d'], 0.1)
-                    símismo.assertLessEqual(mu_star['Ficticia']['phi'], 0.1)
-
-            elif m == 'fast':
-                with símismo.subTest(método='fast'):
-                    res = anlzr_sens(mod, método='fast', mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=5, var_egr=['y'],
-                                     tipo_egr="log")
-                    si = res['log']['y']['Si']
-                    st_si = res['log']['y']['St-Si']
-                    símismo.assertGreaterEqual(si['A']['g_d'], 0.01)
-                    símismo.assertTrue(si['A']['phi'] < 0.01 and st_si['A']['phi'] < 0.1)
-
-                    símismo.assertGreaterEqual(si['B']['phi'], 0.01)
-                    símismo.assertTrue(si['B']['g_d'] < 0.01 and st_si['B']['g_d'] < 0.1)
-
-                    símismo.assertTrue(si['Ficticia']['g_d'] < 0.01 and st_si['Ficticia']['g_d'] < 0.1)
-                    símismo.assertTrue(si['Ficticia']['phi'] < 0.01 and st_si['Ficticia']['phi'] < 0.1)
-            else:
-                raise NotImplementedError
-
-    def test_sens_ocilación(símismo):
-        líms_paráms = {'A': (3, 10), 'B': (0.5, 2), 'C': (3, 5)}
-        mod = ModeloLogistic()
-        for m in métodos:
-            if m == 'morris':
-                with símismo.subTest(método='morris'):
-                    res = anlzr_sens(mod, método=m, mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=5, var_egr=['y'], ops_método={'num_levels': 4, 'grid_jump': 2},
-                                     tipo_egr="ocilación")
-                    # b_params = {'amplitude': params[0], 'period': params[1], 'phi': params[2]}
-                    # should be more sensitive to B than A (B-rate of growth and decay, A Y-intercept)
-                    mu_star = res['ocilación']['y']['mu_star']
-                    símismo.assertGreaterEqual(mu_star['A']['maxi_val'], 0.1)
-                    símismo.assertLessEqual(mu_star['A']['g_d'], 0.1)
-                    símismo.assertLessEqual(mu_star['A']['mid_point'], 0.1)
-
-                    símismo.assertGreaterEqual(mu_star['B']['g_d'], 0.1)
-                    símismo.assertLessEqual(mu_star['B']['maxi_val'], 0.1)
-                    símismo.assertLessEqual(mu_star['B']['mid_point'], 0.1)
-
-                    símismo.assertLessEqual(mu_star['Ficticia']['maxi_val'], 0.1)
-                    símismo.assertLessEqual(mu_star['Ficticia']['g_d'], 0.1)
-                    símismo.assertLessEqual(mu_star['Ficticia']['mid_point'], 0.1)
-
-            elif m == 'fast':
-                with símismo.subTest(método='fast'):
-                    res = anlzr_sens(mod, método='fast', mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=3, var_egr=['y'],
-                                     tipo_egr="ocilación")
-
-                    si = res['ocilación']['y']['Si']
-                    st_si = res['logistic']['y']['St-Si']
-                    símismo.assertGreaterEqual(si['A']['maxi_val'], 0.01)
-                    símismo.assertTrue(si['A']['g_d'] < 0.01 and st_si['A']['g_d'] < 0.1)
-                    símismo.assertTrue(si['A']['mid_point'] < 0.01 and st_si['A']['mid_point'] < 0.1)
-
-                    símismo.assertGreaterEqual(si['B']['g_d'], 0.01)
-                    símismo.assertTrue(si['B']['maxi_val'] < 0.01 and st_si['B']['maxi_val'] < 0.1)
-                    símismo.assertTrue(si['B']['mid_point'] < 0.01 and st_si['B']['mid_point'] < 0.1)
-
-                    símismo.assertGreaterEqual(si['C']['mid_point'], 0.01)
-                    símismo.assertTrue(si['C']['g_d'] < 0.01 and st_si['C']['g_d'] < 0.1)
-                    símismo.assertTrue(si['C']['maxi_val'] < 0.01 and st_si['C']['maxi_val'] < 0.1)
-
-                    símismo.assertTrue(si['Ficticia']['maxi_val'] < 0.01 and st_si['Ficticia']['maxi_val'] < 0.1)
-                    símismo.assertTrue(si['Ficticia']['g_d'] < 0.01 and st_si['Ficticia']['g_d'] < 0.1)
-                    símismo.assertTrue(si['Ficticia']['mid_point'] < 0.01 and st_si['Ficticia']['mid_point'] < 0.1)
-
-            else:
-                raise NotImplementedError
+    def test_sens_oscilación(símismo):
+        líms_paráms = {'A': (0.7, 1.0), 'B': (0.6, 0.8), 'C': (1.1, 1.4)}
+        mod = ModeloOscil()
+        símismo._verificar_sens(
+            mod, t_final=10, líms_paráms=líms_paráms, tipo_egr='oscilación',
+            sensibles={'A': [['y', 'amplitude']], 'B': [['y', 'period']], 'C': [['y', 'phi']]},
+            ops_método=ops_métodos
+        )
 
     def test_sens_ocilación_aten(símismo):
-        líms_paráms = {'A': (3, 10), 'B': (0.5, 2), 'C': (3, 5)}
-        mod = ModeloLogistic()
-        for m in métodos:
-            if m == 'morris':
-                with símismo.subTest(método='morris'):
-                    res = anlzr_sens(mod, método=m, mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=5, var_egr=['y'], ops_método={'num_levels': 4, 'grid_jump': 2},
-                                     tipo_egr="ocilación_aten")
-                    # b_params = {'g_d': params[0], 'amplitude': params[1], 'period': params[2], 'phi': params[3]}
-                    # should be more sensitive to B than A (B-rate of growth and decay, A Y-intercept)
-                    mu_star = res['ocilación_aten']['y']['mu_star']
-                    símismo.assertGreaterEqual(mu_star['A']['maxi_val'], 0.1)
-                    símismo.assertLessEqual(mu_star['A']['g_d'], 0.1)
-                    símismo.assertLessEqual(mu_star['A']['mid_point'], 0.1)
+        líms_paráms = {'A': (0.1, 0.3), 'B': (0.7, 1), 'C': (0.6, 0.8), 'D': (1.1, 1.4)}
+        mod = ModeloOscilAten()
+        símismo._verificar_sens(
+            mod, t_final=10, líms_paráms=líms_paráms, tipo_egr='oscilación_aten',
+            sensibles={'A': [['y', 'g_d']], 'B': [['y', 'amplitude']], 'C': [['y', 'period']], 'D': [['y', 'phi']]},
+            ops_método=ops_métodos
+        )
 
-                    símismo.assertGreaterEqual(mu_star['B']['g_d'], 0.1)
-                    símismo.assertLessEqual(mu_star['B']['maxi_val'], 0.1)
-                    símismo.assertLessEqual(mu_star['B']['mid_point'], 0.1)
-
-                    símismo.assertLessEqual(mu_star['Ficticia']['maxi_val'], 0.1)
-                    símismo.assertLessEqual(mu_star['Ficticia']['g_d'], 0.1)
-                    símismo.assertLessEqual(mu_star['Ficticia']['mid_point'], 0.1)
-
-            elif m == 'fast':
-                with símismo.subTest(método='fast'):
-                    res = anlzr_sens(mod, método='fast', mapa_paráms=None, líms_paráms=líms_paráms,
-                                     t_final=3, var_egr=['y'],
-                                     tipo_egr="ocilación_aten")
-
-                    si = res['ocilación_aten']['y']['Si']
-                    st_si = res['ocilación_aten']['y']['St-Si']
-                    símismo.assertGreaterEqual(si['A']['maxi_val'], 0.01)
-                    símismo.assertTrue(si['A']['g_d'] < 0.01 and st_si['A']['g_d'] < 0.1)
-                    símismo.assertTrue(si['A']['mid_point'] < 0.01 and st_si['A']['mid_point'] < 0.1)
-
-                    símismo.assertGreaterEqual(si['B']['g_d'], 0.01)
-                    símismo.assertTrue(si['B']['maxi_val'] < 0.01 and st_si['B']['maxi_val'] < 0.1)
-                    símismo.assertTrue(si['B']['mid_point'] < 0.01 and st_si['B']['mid_point'] < 0.1)
-
-                    símismo.assertGreaterEqual(si['C']['mid_point'], 0.01)
-                    símismo.assertTrue(si['C']['g_d'] < 0.01 and st_si['C']['g_d'] < 0.1)
-                    símismo.assertTrue(si['C']['maxi_val'] < 0.01 and st_si['C']['maxi_val'] < 0.1)
-
-                    símismo.assertTrue(si['Ficticia']['maxi_val'] < 0.01 and st_si['Ficticia']['maxi_val'] < 0.1)
-                    símismo.assertTrue(si['Ficticia']['g_d'] < 0.01 and st_si['Ficticia']['g_d'] < 0.1)
-                    símismo.assertTrue(si['Ficticia']['mid_point'] < 0.01 and st_si['Ficticia']['mid_point'] < 0.1)
-
-            else:
-                raise NotImplementedError
-
-
-    @unittest.skip
     def test_sens_forma(símismo):
         raise NotImplementedError
 
@@ -641,4 +454,6 @@ class Test_Análisis(unittest.TestCase):
     def test_ficticia_análisis_sens(símismo):
         raise NotImplementedError
 
-
+    @classmethod
+    def tearDownClass(cls):
+        _borrar_direcs_egr()
