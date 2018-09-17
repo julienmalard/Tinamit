@@ -281,7 +281,7 @@ class CalibradorEc(object):
             lugs_obs = obs['lugar'].values
             for lg, subs in sub_lugares.items():
                 lugs_obs[np.isin(lugs_obs, subs)] = lg
-            obs['lugar'][:] = lugs_obs
+            obs['lugar'] = ('n', lugs_obs)
             obs = obs.where(obs['lugar'].isin(lugares), drop=True)
 
             # Si hay distribución geográfica, es un poco más complicado.
