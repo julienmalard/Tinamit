@@ -18,4 +18,4 @@ install:
 build: false
 
 test_script:
-- "%PYTHON%\\python.exe -m unittest"
+- "%PYTHON%\\python.exe -m unittest pruebas"
