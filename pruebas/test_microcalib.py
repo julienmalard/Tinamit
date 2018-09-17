@@ -13,15 +13,22 @@ from tinamit.Geog.Geog import Geografía
 
 try:
     import pymc3 as pm
+    import theano as T
 except ImportError:
-    pm = None
+    pm = T = None
+
+if T is None:
+    hay_compil_c = False
+else:
+    hay_compil_c = T.configdefaults.rc == 0
+
 
 dir_act = os.path.split(__file__)[0]
 arch_csv_geog = os.path.join(dir_act, 'recursos/datos/prueba_geog.csv')
 arch_mds = os.path.join(dir_act, 'recursos/MDS/prueba_para_calib.mdl')
 
 métodos = ['optimizar']
-if pm is not None:
+if pm is not None and hay_compil_c:
     métodos.append('inferencia bayesiana')
 
 
