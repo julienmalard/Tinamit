@@ -694,7 +694,6 @@ class Ecuación(object):
             mu = _VstrAPyMC3(
                 d_vars_pm=d_vars_pm, dialecto=símismo.dialecto, obs_x=obs_x, nv_jerarquía=nv_jerarquía,
             ).convertir(símismo.árbol)
-            sigma = pm.HalfNormal(name='sigma', sd=obs_y.values.std())
 
             if binario:
                 pm.Bernoulli(name='Y_obs', p=mu, observed=obs_y.values)
