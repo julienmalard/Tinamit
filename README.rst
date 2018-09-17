@@ -8,6 +8,9 @@
 .. image:: https://travis-ci.org/julienmalard/Tinamit.svg?branch=master
    :target: https://travis-ci.org/julienmalard/Tinamit
 
+.. image:: https://ci.appveyor.com/api/projects/status/3s1ppuilm0vioa3p?svg=true
+   :target: https://ci.appveyor.com/project/julienmalard/tinamit
+
 .. image:: https://coveralls.io/repos/github/julienmalard/Tinamit/badge.svg?branch=master
    :target: https://coveralls.io/github/julienmalard/Tinamit?branch=master
 
@@ -17,7 +20,7 @@
    
 .. image:: https://api.codeclimate.com/v1/badges/cd1b1bf43ee40c270604/maintainability
    :target: https://codeclimate.com/github/julienmalard/Tinamit/maintainability
-   :alt: Maintainability
+   :alt: Mantenimiento del código
 
 Tinamit
 =======
