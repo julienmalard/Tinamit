@@ -697,12 +697,10 @@ class Ecuación(object):
             sigma = pm.HalfNormal(name='sigma', sd=obs_y.values.std())
 
             if binario:
-                # noinspection PyTypeChecker
-                x = pm.Normal(name='logit_prob', mu=mu, sd=sigma, shape=obs_y.shape, testval=np.full(obs_y.shape, 0))
-                pm.Bernoulli(name='Y_obs', logit_p=-x, observed=obs_y.values)  #
+                pm.Bernoulli(name='Y_obs', p=mu, observed=obs_y.values)
 
             else:
-                # noinspection PyTypeChecker
+                sigma = pm.HalfNormal(name='sigma', sd=obs_y.values.std())
                 pm.Normal(name='Y_obs', mu=mu, sd=sigma, observed=obs_y.values)
 
         return modelo
