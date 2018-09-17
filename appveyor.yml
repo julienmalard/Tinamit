@@ -1,25 +1,21 @@
 environment:
 
   matrix:
-
-    - PYTHON: "C:\\Python35-x64"
-    - PYTHON: "C:\\Python36-x64"
+  - PYTHON: "C:\\Python36-x64"
 
 install:
-  - "set PATH=%PATH%;%PYTHON%\\Scripts"
-  - "%PYTHON%\\python.exe -m pip install --upgrade pip"
-  - "%PYTHON%\\python.exe -m pip install --upgrade setuptools"
-  - "%PYTHON%\\python.exe -m pip install --upgrade wheel"
-  - "%PYTHON%\\python.exe -m pip install nose"
-  - "%PYTHON%\\python.exe -m pip show pip"
-  - "%PYTHON%\\python.exe -m pip show wheel"
-  - "%PYTHON%\\python.exe -m pip show setuptools"
-  - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
+- "set PATH=%PATH%;%PYTHON%\\Scripts"
+- "%PYTHON%\\python.exe -m pip install --upgrade pip"
+- "%PYTHON%\\python.exe -m pip install --upgrade setuptools"
+- "%PYTHON%\\python.exe -m pip install --upgrade wheel"
+- "git clone https://github.com/julienmalard/taqdir.git"
+- ps: cd taqdir
+- "%PYTHON%\\python.exe setup.py -q install"
+- ps: cd ..
+- "%PYTHON%\\python.exe -m pip install -r requirements.txt"
+- "%PYTHON%\\python.exe setup.py -q install"
 
 build: false
 
 test_script:
-  - "nosetests"
-
-after_test:
-  - "%PYTHON%\\python.exe setup.py bdist_wheel"
+- "%PYTHON%\\python.exe -m unittest"
