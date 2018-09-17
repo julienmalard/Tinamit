@@ -18,7 +18,6 @@ import tinamit.Geog.Geog as Geog
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
 from tinamit.Análisis.Datos import obt_fecha_ft, gen_SuperBD, jsonificar, numpyficar, SuperBD
 from tinamit.Análisis.Valids import validar_resultados
-from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.Unidades.conv import convertir
 from tinamit.config import _, obt_val_config
 from tinamit.cositas import detectar_codif, valid_nombre_arch, guardar_json, cargar_json
@@ -1440,7 +1439,7 @@ class Modelo(object):
         pass
 
     def especificar_micro_calib(símismo, var, método=None, paráms=None, líms_paráms=None, tipo=None,
-                                escala=None, ops_método=None, ec=None):
+                                escala=None, ops_método=None, ec=None, binario=False):
 
         # Verificar el variable
         var = símismo.valid_var(var)
@@ -1455,8 +1454,10 @@ class Modelo(object):
             'ops_método': ops_método,
             'paráms': paráms,
             'líms_paráms': líms_paráms,
+            'binario': binario,
             'tipo': tipo,
             'ec': ec
+
         }
 
     def verificar_micro_calib(símismo, var, bd, en=None, escala=None, geog=None, corresp_vars=None):
@@ -1575,6 +1576,7 @@ class Modelo(object):
         paráms = símismo.info_calibs['micro calibs'][var]['paráms']
         ops = símismo.info_calibs['micro calibs'][var]['ops_método']
         tipo = símismo.info_calibs['micro calibs'][var]['tipo']
+        binario = símismo.info_calibs['micro calibs'][var]['binario']
 
         # Aplicar límites automáticos
         if líms_paráms is None:
@@ -1586,7 +1588,7 @@ class Modelo(object):
         # Efectuar la calibración.
         calib = mod_calib.calibrar(
             paráms=paráms, líms_paráms=líms_paráms, método=método, bd_datos=bd, geog=geog, tipo=tipo,
-            en=en, escala=escala, jrq=jrq, ops_método=ops, no_recalc=no_recalc
+            en=en, escala=escala, jrq=jrq, ops_método=ops, no_recalc=no_recalc, binario=binario
         )
         if calib is None:
             return
