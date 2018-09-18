@@ -21,13 +21,17 @@ class SuperConectado(Modelo):
     instancias de sí misma, así permitiendo la conexión de números arbitrarios de modelos.
     """
 
-    def __init__(símismo, nombre="SuperConectado"):
+    def __init__(símismo, nombre="SuperConectado", modelos=None):
         """
         El nombre automático para este modelo es "SuperConectado". Si vas a conectar más que un modelo
         :class:`.SuperConectado` en un modelo jerárquico, asegúrate de darle un nombre distinto al menos a un de ellos.
 
-        :param nombre: El nombre del modelo :class:`.SuperConectado`.
-        :type nombre: str
+        Parameters
+        ----------
+        nombre : str
+            El nombre del modelo :class:`.SuperConectado`.
+        modelos : list[Modelos]
+            Lista opcional de submodelos para conectar de una vez.
 
         """
 
@@ -47,13 +51,18 @@ class SuperConectado(Modelo):
         # {'nombre_modelo_1': factor_conv,
         # {'nombre_modelo_2': factor_conv,
         # ...}
-        # Al menos uno de los dos factores siempre será = a 1.
+        # Al menos uno de los  factores siempre será = a 1.
         símismo.conv_tiempo = {}
         símismo.conv_tiempo_dudoso = False  # Para acordarse si Tinamït tuvo que adivinar la conversión o no.
         símismo.mod_base_tiempo = None
 
         # Inicializamos el SuperConectado como todos los Modelos.
         super().__init__(nombre=nombre)
+
+        # Agregar submodelos, si habían
+        if modelos is not None:
+            for m in modelos:
+                símismo.agregar_modelo(m)
 
     def agregar_modelo(símismo, modelo):
         """
@@ -561,13 +570,13 @@ class SuperConectado(Modelo):
         :type var_fuente: str
 
         :param modelo_fuente: El nombre del modelo fuente.
-        :type modelo_fuente: str
+        :type modelo_fuente: str | Modelo
 
         :param var_recip: El variable recipiente de la conexión.
         :type var_recip: str
 
         :param modelo_recip: El nombre del modelo recipiente.
-        :type modelo_recip: str
+        :type modelo_recip: str | Modelo
 
         :param conv: La conversión entre las unidades de los modelos. En el caso ``None``, se intentará adivinar la
         conversión con el módulo `~tinamit.Unidades`.
@@ -577,9 +586,8 @@ class SuperConectado(Modelo):
         """
 
         # Verificar que todos los modelos existan.
-        for m in [modelo_fuente, modelo_recip]:
-            if m not in símismo.modelos:
-                raise ValueError(_('El submodelo "{}" no existe en este modelo.').format(m))
+        modelo_fuente = símismo._verificar_nombre_submodelo(modelo_fuente)
+        modelo_recip = símismo._verificar_nombre_submodelo(modelo_recip)
 
         # Verificar que todos los variables existan.
         for v, m in [(var_fuente, modelo_fuente), (var_recip, modelo_recip)]:
@@ -645,11 +653,17 @@ class SuperConectado(Modelo):
         """
         Esta función desconecta variables.
 
-        :param var_fuente: El variable fuente de la conexión.
-        :type var_fuente: str
-
-        :param modelo_fuente: El modelo fuente de la conexión.
-        :type modelo_fuente: str
+        Parameters
+        ----------
+        var_fuente : str
+             El variable fuente de la conexión.
+        modelo_fuente : str | Modelo
+            El modelo fuente de la conexión.
+        modelo_recip : str | Modelo
+            El modelo recipiente. Si no se especifica, se quitarán todas conexiones con el variable y modelo fuente.
+        var_recip : str
+            El variable recipiente. Si no se especifica, se quitarán todas conexiones con el variable y modelo fuente
+            y el modelo recipiente especificado. Sin efecto si `modelo_recip` es ``None``.
 
         """
 
@@ -658,6 +672,10 @@ class SuperConectado(Modelo):
             avisar(_('`var_recip` sin `modelo_recip` será ignorado en la función '
                      '`SuperConectado.desconectar_vars()`.'))
 
+        # Verificar los nombres de modelos
+        modelo_fuente = símismo._verificar_nombre_submodelo(modelo_fuente)
+        modelo_recip = símismo._verificar_nombre_submodelo(modelo_recip)
+
         # Buscar la conexión correspondiente...
         for n, conex in enumerate(símismo.conexiones):
             # Para cada conexión existente...
@@ -665,17 +683,23 @@ class SuperConectado(Modelo):
                 # Si el modelo y variable fuente corresponden...
 
                 # Identificar si el modelo recipiente corresponde también.
-                quitar = False
                 if modelo_recip is None:
-                    quitar = True
+                    símismo.conexiones.pop(n)
                 else:
                     if modelo_recip == conex['modelo_recip']:
                         if var_recip is None or var_recip == conex['var_recip']:
-                            quitar = True
+                            símismo.conexiones.pop(n)
 
-                # Si corresponde todo, quitar la conexión.
-                if quitar:
-                    símismo.conexiones.pop(n)
+    def _verificar_nombre_submodelo(símismo, modelo):
+        if modelo is None:
+            return
+        elif isinstance(modelo, Modelo):
+            modelo = str(Modelo)
+
+        if modelo not in símismo.modelos:
+            raise ValueError(_('El submodelo "{}" no existe en este modelo.'.format(modelo)))
+        return modelo
+
 
     def estab_conv_unid_tiempo(símismo, unid_ref, factor):
 

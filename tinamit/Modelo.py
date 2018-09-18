@@ -87,7 +87,7 @@ class Modelo(object):
         símismo.vars_clima = {}  # Formato: {var1: {'nombre_extrn': nombre_oficial, 'combin': 'prom' | 'total'}, ...}
 
         # Para manejar unidades de tiempo y su correspondencia con fechas iniciales.
-        símismo._conv_unid_tiempo = {'unid_ref': None, 'factor': 1}
+        símismo._conv_unid_tiempo = {'unid_ref': None, 'factor': 1}  # type: dict[str]
 
     def _inic_dic_vars(símismo):
         """
@@ -1012,14 +1012,17 @@ class Modelo(object):
             # Aplicar el cambio
             símismo.cambiar_vals(valores={var: datos[var_clima] * conv})
 
-    def estab_conv_unid_tiempo(símismo, unid_ref, factor):
+    def estab_conv_unid_tiempo(símismo, unid_ref, factor=1):
         """
-        Establece, manualmente, el factor de conversión para convertir la unidad de tiempo del modelo a meses, días
-        o años. Únicamente necesario si Tinamït no logra inferir este factor por sí mismo.
+        Establece, manualmente, el factor de conversión para convertir la unidad de tiempo del modelo a unidades
+        reconocidas por Tinamït. Únicamente necesario si Tinamït no logra inferir este factor por sí mismo.
 
-        :param conv: El factor de conversión entre la unidad de tiempo del modelo y un mes.
-        :type: float | int
-
+        Parameters
+        ----------
+        unid_ref : str
+            La unidad de referencia.
+        factor : float | int
+            El factor de conversión entre la unidad del modelo y la de referencia.
         """
 
         símismo._conv_unid_tiempo['unid_ref'] = unid_ref

@@ -9,10 +9,10 @@ from warnings import warn as avisar
 
 import numpy as np
 from dateutil.relativedelta import relativedelta as deltarelativo
-
 from tinamit.Modelo import Modelo
 from tinamit.config import _
 from tinamit.config import guardar_json, cargar_json
+
 from .Unidades.conv import convertir
 
 
@@ -296,7 +296,7 @@ class ModeloBF(Modelo):
         return cargar_json(símismo.dic_prb_datos_inic)
 
 
-class ModeloImpaciente(ModeloBF):
+class ModeloImpacienteAnterior(ModeloBF):
     """
     Esta clase ofrece una clase pariente muy útil para modelos biofísicos cuyos pasos mínimos de simulación quedan más
     pequeños que el nivel de detalle que ofrecen. Por ejemplo, el modelo de salinidad SAHYSMOD corre por *al menos* un
@@ -353,18 +353,6 @@ class ModeloImpaciente(ModeloBF):
 
         # Leer los valores iniciales
         símismo._leer_vals_inic()
-
-    def _cambiar_vals_modelo_externo(símismo, valores):
-        """
-        Solamente nos tenemos que asegurar que los datos internos (para variables estacionales) queda consistente
-        con los nuevos valores cambiadas por la conexión con el modelo externo. La función `.avanzar_modelo()` debe
-        utilizar este diccionario interno para mandar los nuevos valores a la próxima simulación.
-
-        :param valores: Un diccionario de variables y valores para cambiar.
-        :type valores: dict
-
-        """
-        pass
 
     def _act_vals_clima(símismo, n_paso, f):
         """
@@ -487,29 +475,6 @@ class ModeloImpaciente(ModeloBF):
         """
         pass
 
-    def unidad_tiempo(símismo):
-        """
-        **¡Cuidado!** Esta función devuelve la unidad de tiempo del modelo **a la cual quieres que pueda
-        evaluarse**.  Así que función debe devolver "mes" y no "año".
-
-        :return: La unidad de tiempo **deseada** del modelo.
-        :rtype: str
-        """
-        return "Mes"
-
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
-        """
-        Esta función debe preparar el modelo para una simulación. Si necesitas esta función para tu subclase,
-        no se te olvide llamar ``super().iniciar_modelo`` para no saltar la reinicialización de la estación y del mes.
-
-        """
-
-        # Reestablecer el mes y la estación inicial
-        símismo.estación = 0
-        símismo.mes = 0
-
-        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic=vals_inic)
-
     def cerrar_modelo(símismo):
         """
         Esta función debe cerrar la simulación. No se aplica a todos los modelos biofísicos (en ese caso, usar ``pass``
@@ -537,15 +502,6 @@ class ModeloImpaciente(ModeloBF):
 
         """
 
-        raise NotImplementedError
-
-    def avanzar_modelo(símismo):
-        """
-        Esta función debe avanzar el modelo de ``n_paso_mín`` de paso mínimos de simulación. Por ejemplo, si tienes
-        un modelo que simula con un paso mínimo de 1 año pero que quieres conectar con paso mensual, esta función
-        debe avanzar el modelo de `n_paso_mín` **años**.
-
-        """
         raise NotImplementedError
 
     def _leer_vals_inic(símismo):
@@ -690,140 +646,126 @@ class ModeloImpaciente(ModeloBF):
         return tuple()
 
 
-class ModeloFlexible(ModeloBF):
-    """
-    Esta clase permite desarrollar envolturas para modelos con pasos variables (por ejemplo, modelos de cultivos
-    cuyas duraciones de simulación depienden del tiempo hasta la cosecha).
-    """
+class ModeloIndeterminado(ModeloBF):
+    pass
 
-    def __init__(símismo):
-        """
-        Esta función correrá automáticamente con la inclusión de `super().__init__()` en la función `__init__()` de las
-        subclases de esta clase.
-        """
-        super().__init__()
+
+class ModeloImpaciente(ModeloBF):
+
+    def __init__(símismo, nombre='modeloBF'):
+        super().__init__(nombre=nombre)
+        símismo.tmñ_ciclo = None
+        símismo.i_en_ciclo = 0
+        símismo.matrs_ingr = {}
+        símismo.matrs_egr = {}
+        símismo.proces_ingrs = {}
 
     def _cambiar_vals_modelo_externo(símismo, valores):
         """
-        Esta función debe cambiar el valor de variables en el modelo biofísico.
-
-        :param valores: Un diccionario de variables y valores para cambiar．
-        :type valores: dict
+        Solamente nos tenemos que asegurar que los datos internos (para variables estacionales) queda consistente
+        con los nuevos valores cambiadas por la conexión con el modelo externo. La función `.avanzar_modelo()` debe
+        utilizar este diccionario interno para mandar los nuevos valores a la próxima simulación. Así
 
         """
-        raise NotImplementedError
 
     def _incrementar(símismo, paso, guardar_cada=None):
-        """
-        Parameters
-        ----------
-        guardar_cada :
+        # Para simplificar el código un poco.
+        i = símismo.i_en_ciclo
 
+        # Apuntar el diccionario interno de los valores al valor de este paso del ciclo
+        símismo._act_vals_dic_var({var: símismo.matrs_ingr[var][i] for var in símismo.matrs_ingr})
 
-        """
+        # Si es el principio de un ciclo, también hay que correr una simulación del modelo externo.
+        if i == 0:
+            # El número de ciclos para simular
+            c = mat.ceil(paso / símismo.tmñ_ciclo)  # type: int
 
-        raise NotImplementedError
+            # Avanzar la simulación
+            símismo.avanzar_modelo(n_ciclos=c)
+
+        # Aplicar el incremento de paso
+        i += int(paso)
+
+        # Guardar la estación y el mes por la próxima vez.
+        símismo.i_en_ciclo = i % símismo.tmñ_ciclo
 
     def _leer_vals(símismo):
-        """
-        Esta función debe leer los variables del modelo desde el modelo externo y copiarlos al diccionario interno
-        de variables. Asegúrese que esté *actualizando* el diccionario interno, y que no lo esté recreando, lo cual
-        quebrará las conexiones con el modelo conectado.
-
-        """
-        raise NotImplementedError
-
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
-        """
-        Esta función debe preparar el modelo para una simulación.
-
-        """
-
-        raise NotImplementedError
+        pass
 
     def cerrar_modelo(símismo):
-        """
-        Esta función debe cerrar la simulación. No se aplica a todos los modelos biofísicos (en ese caso, usar ``pass``
-        ).
-        """
         raise NotImplementedError
 
     def unidad_tiempo(símismo):
-        """
-        **¡Cuidado!** Esta función debe devolver la unidad de tiempo del modelo **a la cual quieres que pueda
-        evaluarse**.  Por ejemplo, si tu modelo biofísico evalua con un paso de simulación mínimo de 1 año, pero
-        quieres que se pueda conectar con un paso de 1 mes, esta función debe devolver "mes" y no "año".
-
-        :return: La unidad de tiempo **deseada** del modelo.
-        :rtype: str
-        """
         raise NotImplementedError
 
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+        símismo.i_en_ciclo = 0
+        símismo.tmñ_ciclo = símismo.obt_tmñ_ciclo()
+
+        super()._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
+
     def _inic_dic_vars(símismo):
-        """
-        Esta función debe iniciar el diccionario interno de variables.
-
-        MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe para símismo.variables, no crear un
-        diccionario nuevo.
-        Por ejemplo, NO HAGAS:
-        |  símismo.variables = {var1: {...}, var2: {...}, ...}
-
-        sino:
-        |  símismo.variables[var1] = {...}
-        |  símismo.variables[var2] = {...}
-
-        Al no hacer esto, romperás la conección entre los diccionarios de variables de ClaseModeloBF y EnvolturasBF,
-        lo cual impedirá después la conexión de estos variables con el modelo DS.
-
-        """
-
         raise NotImplementedError
 
     def _leer_vals_inic(símismo):
-        """
+        pass
 
-        """
+    def obt_tmñ_ciclo(símismo):
         raise NotImplementedError
 
-    def leer_archivo_vals_inic(símismo):
-        """
-        Esta función devuelve un diccionario con los valores leídos del fuente de valores iniciales.
-        :return:
-        :rtype: (dict, tuple)
-        """
+    def avanzar_modelo(símismo, n_ciclos):
         raise NotImplementedError
 
-    def mandar_simul(símismo):
+
+class ModeloBloques(ModeloBF):
+    def __init__(símismo, nombre):
+        super().__init__(nombre=nombre)
+
+        símismo.bloque = 0
+        símismo.paso_en_bloque = 0
+        símismo.tmñ_bloques = None
+
+    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+        """
+        Esta función debe preparar el modelo para una simulación. Si necesitas esta función para tu subclase,
+        no se te olvide llamar ``super().iniciar_modelo()`` para no saltar la reinicialización del bloque y del paso.
+
         """
 
-        :return: El número de pasos que avanzamos con esta simulación.
-        :rtype: int
+        símismo.bloque = 0
+        símismo.paso_en_bloque = 0
+        símismo.tmñ_bloques = símismo._obt_tmñ_bloques()
+
+        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic=vals_inic)
+
+    def avanzar_modelo(símismo, n_ciclos):
         """
-
-        raise NotImplementedError
-
-    def leer_archivo_egr(símismo, n_años_egr):
-        """
-
-        :param n_años_egr:
-        :type n_años_egr:
-        :return:
-        :rtype: dict
-        """
-
-        raise NotImplementedError
-
-    def escribir_archivo_ingr(símismo, n_años_simul, dic_ingr):
-        """
-
-        :param n_años_simul:
-        :type n_años_simul: int
-        :param dic_ingr:
-        :type dic_ingr: dict
+        Esta función debe avanzar el modelo de `n_ciclos` ciclos.
 
         """
 
         raise NotImplementedError
 
-    def __getinitargs__(símismo):
-        return tuple()
+    def _obt_tmñ_bloques(símismo):
+        raise NotImplementedError
+
+    def _cambiar_vals_modelo_externo(símismo, valores):
+        pass
+
+    def _incrementar(símismo, paso, guardar_cada=None):
+        pass
+
+    def _leer_vals(símismo):
+        pass
+
+    def cerrar_modelo(símismo):
+        pass
+
+    def unidad_tiempo(símismo):
+        raise NotImplementedError
+
+    def _inic_dic_vars(símismo):
+        pass
+
+    def _leer_vals_inic(símismo):
+        pass

@@ -3,8 +3,8 @@ import unittest
 
 import numpy as np
 import numpy.testing as npt
-
 from pruebas.recursos.BF.prueba_bf import ModeloPrueba
+from pruebas.recursos.BF.variantes import EjBloques, EjImpaciente, EjIndeterminado
 from pruebas.test_mds import generar_modelos_prueba, limpiar_mds
 from tinamit.BF import EnvolturaBF
 from tinamit.Conectado import Conectado, SuperConectado
@@ -289,3 +289,106 @@ class Test_ConversionesUnidadesTiempo(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         limpiar_mds()
+
+
+class Test_ConectarModeloBloques(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.tmñ_blqs = [1, 3, 8]
+        mod_bloques = EjBloques(nombre='blq', blqs=cls.tmñ_blqs, unid_tiempo='meses')
+        mod_base = ModeloPrueba(nombre='base', unid_tiempo='meses')
+        mod_con = SuperConectado(modelos=[mod_base, mod_bloques])
+        mod_con.conectar_vars('bloque', modelo_fuente=mod_bloques, var_recip='Vacío', modelo_recip=mod_base)
+        mod_con.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_suma', modelo_recip=mod_bloques)
+        mod_con.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_último', modelo_recip=mod_bloques)
+        mod_con.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_máx', modelo_recip=mod_bloques)
+        mod_con.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_prom', modelo_recip=mod_bloques)
+
+        cls.n_ciclos = 2
+        cls.res = mod_con.simular(
+            t_final=int(cls.n_ciclos * np.sum(cls.tmñ_blqs)),
+            vars_interés=['blq_ingr', 'base_Vacío'])
+
+    def test_de_mod_bloques(símismo):
+        npt.assert_equal(
+            símismo.res['base_Vacío'].values,
+            [x for i, t in enumerate(símismo.tmñ_blqs) for x in [i] * t] * símismo.n_ciclos
+        )
+
+    def test_hacia_mod_bloques_suma(símismo):
+        cum = np.insert(np.cumsum(símismo.tmñ_blqs), 0, 0)
+        bloques_ingr_escala = [np.arange(cum[i], cum[i + 1]) for i in range(len(cum) - 1)]
+        npt.assert_equal(
+            símismo.res['blq_ingr_máx'],
+
+        )
+
+
+class Test_ConectarModeloImpaciente(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.n_ciclos = 2
+        cls.tmñ_ciclo = 12
+        mod_impac = EjImpaciente(nombre='imp', n=cls.tmñ_ciclo, unid_tiempo='meses')
+        mod_base = ModeloPrueba(nombre='base', unid_tiempo='meses')
+        mod_con = SuperConectado(modelos=[mod_base, mod_impac])
+        mod_con.conectar_vars('ciclo', modelo_fuente=mod_impac, var_recip='Vacío', modelo_recip=mod_base)
+        mod_con.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_último', modelo_recip=mod_impac)
+        mod_con.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_suma', modelo_recip=mod_impac)
+        mod_con.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_prom', modelo_recip=mod_impac)
+        mod_con.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_máx', modelo_recip=mod_impac)
+        mod_con.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_directo', modelo_recip=mod_impac)
+        cls.res = mod_con.simular(t_final=cls.tmñ_ciclo * cls.n_ciclos, vars_interés=['base_Vacío'])
+
+        cls.escala = [np.arange(c * cls.tmñ_ciclo, c * cls.tmñ_ciclo + cls.tmñ_ciclo) for c in range(cls.n_ciclos)]
+
+    def test_de_mod_impac(símismo):
+        npt.assert_equal(
+            símismo.res['base_Vacío'], [x for i in range(símismo.n_ciclos) for x in [i] * símismo.tmñ_ciclo]
+        )
+
+    def test_hacia_mod_impac_último(símismo):
+        npt.assert_equal(
+            símismo.res['ingr_último'].values,
+            [x for i in símismo.escala for x in [i[-1]] * símismo.tmñ_ciclo]
+        )
+
+    def test_hacia_mod_impac_suma(símismo):
+        npt.assert_equal(
+            símismo.res['ingr_último'].values,
+            [x for i in símismo.escala for x in [i.sum()] * símismo.tmñ_ciclo]
+        )
+
+    def test_hacia_mod_impac_prom(símismo):
+        npt.assert_equal(
+            símismo.res['ingr_último'].values,
+            [x for i in símismo.escala for x in [i.mean()] * símismo.tmñ_ciclo]
+        )
+
+    def test_hacia_mod_impac_máx(símismo):
+        npt.assert_equal(
+            símismo.res['ingr_último'].values,
+            [x for i in símismo.escala for x in [i.max()] * símismo.tmñ_ciclo]
+        )
+
+    def test_hacia_mod_impac_directo(símismo):
+        npt.assert_equal(
+            símismo.res['ingr_último'].values,
+            [x for i in símismo.escala for x in i]
+        )
+
+
+class Test_ConectarModeloIndeterminado(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        mod_bloques = EjIndeterminado((1, 12), unid_tiempo='meses')
+        mod_base = ModeloPrueba(unid_tiempo='meses')
+        mod_con = SuperConectado(modelos=[mod_base, mod_bloques])
+        mod_con.conectar_vars('')
+        cls.res = mod_con.simular(t_final=36, vars_interés=['egr', 'ingr'])
+
+    def test_de_mod_indeter(símismo):
+        pass
+
+    def test_hacia_mod_indeter(símismo):
+        pass

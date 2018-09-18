@@ -5,9 +5,9 @@ from tinamit.BF import ModeloBF
 
 class ModeloPrueba(ModeloBF):
 
-    def __init__(símismo, unid_tiempo='años'):
+    def __init__(símismo, unid_tiempo='años', nombre='modeloBF'):
         símismo.unid_tiempo = unid_tiempo
-        super().__init__()
+        super().__init__(nombre=nombre)
 
     def _cambiar_vals_modelo_externo(símismo, valores):
         pass

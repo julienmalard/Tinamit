@@ -123,7 +123,7 @@ class Test_Envolturas_ModeloImpaciente(unittest.TestCase):
     def test_escribir_ingresos(símismo):
         for nmb, obj in símismo.envolturas_disp.items():
             with símismo.subTest(envlt=nmb):
-                obj.escribir_ingr(n_años_simul=1, archivo=símismo.arch_prb_escrb_ingr)
+                obj.prep_ingr(n_años_simul=1, archivo=símismo.arch_prb_escrb_ingr)
                 obj.leer_archivo_vals_inic(archivo=símismo.arch_prb_escrb_ingr)
 
                 d_ref = obj.cargar_ref_ejemplo_vals_inic()
