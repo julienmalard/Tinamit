@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     # direc = os.path.join(os.path.split(__file__)[0], "Morris_sim_")
     direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\simular")
-    guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\\anlzr\\anlzr_new_logístico")
+    guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\\anlzr\\anlzr_new_calib")
     # direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\simular")
     # guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\\anlzr_new")
 
@@ -82,8 +82,8 @@ if __name__ == "__main__":
     #            cal_raw='paso_tiempo')
 
     res = analy_by_file('morris',líms_paráms=líms_paráms, mapa_paráms=mapa_paráms, mstr_path=archivo_muestrea,
-                  simulation_path={'arch_simular': direc, 'num_samples': 625}, t_final=10, var_egr=['mds_Watertable depth Tinamit'],
-                  tipo_egr='logístico')
+                  simulation_path={'arch_simular': direc, 'num_samples': 625}, var_egr=['mds_Watertable depth Tinamit'],
+                  tipo_egr='linear')
 
     guardar_json(res, guardar)
 

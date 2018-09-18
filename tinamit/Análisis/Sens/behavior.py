@@ -2,8 +2,6 @@ import numpy as np
 import pylab as plt
 from scipy import optimize
 import scipy.stats as estad
-import collections
-
 
 def curve_fit(x_data=None, y_data=None, tipo_egr='linear'):
 
@@ -63,25 +61,25 @@ def curve_fit(x_data=None, y_data=None, tipo_egr='linear'):
 
     return b_params
 
-def linear(x, x_data):
+def lin(x, x_data):
     return x[0] * x_data + x[1]
 
-def exponential(x, x_data):
+def expo(x, x_data):
     return x[0] * (x[1] ** x_data)
 
-def logistic(x, x_data):
+def logi(x, x_data):
     return x[0] / (1 + np.exp(-x[1] * x_data + x[2]))
 
-def inverse(x, x_data):
+def inv(x, x_data):
     return x[0] / (x_data + x[1])
 
-def log(x, x_data):
+def lo(x, x_data):
     return x[0] * np.log(x_data + x[1])
 
-def ocilación(x, x_data):
+def oci(x, x_data):
     return x[0] * np.sin(x[1] * x_data + x[2])
 
-def ocilación_aten(x, x_data):
+def oci_aten(x, x_data):
     # , b>0 larger amplitude, a<o ocilation decay, c=1 horizontal ocilation
     # larger e smaller the curve cycle
     # b is eseential, when b is (0, 1), larger b, tend to growth faster and approach to X-axis more (no slope)
@@ -126,37 +124,37 @@ def minimize(x_data=None, y_data=None, tipo_egr='linear', gof=False):
         slope, intercept, r_value, p_value, std_err = estad.linregress(x_data, y_data)
         b_params = {'parameters': {'slope': slope, 'intercept': intercept}}
         if gof:
-            b_params.update({'gof': aic(len(b_params), linear([slope, intercept], x_data), y_data)})
+            b_params.update({'gof': aic(len(b_params['parameters']), lin([slope, intercept], x_data), y_data)})
     elif tipo_egr == 'exponencial':
         params = optimize.minimize(exponential, x0=[0.1, 1.1], method='Nelder-Mead', args=(x_data, y_data)).x
         b_params = {'parameters':{'y_intercept':params[0], 'g_d':params[1]}}
         if gof:
-            b_params.update({'gof': aic(len(b_params), linear(params, x_data), y_data)})
+            b_params.update({'gof': aic(len(b_params['parameters']), expo(params, x_data), y_data)})
     elif tipo_egr == 'logístico':
-        params = optimize.minimize(logistic, x0=[4.0, 0.3, 4.0], method='Nelder-Mead', args=(x_data, y_data)).x
+        params = optimize.minimize(logistic, x0=[5.0, 0.85, 3.0], method='Nelder-Mead', args=(x_data, y_data)).x
         b_params = {'parameters': {'maxi_val': params[0], 'g_d': params[1], 'mid_point': params[2]}}
         if gof:
-            b_params.update({'gof': aic(len(b_params), linear(params, x_data), y_data)})
+            b_params.update({'gof': aic(len(b_params['parameters']), logi(params, x_data), y_data)})
     elif tipo_egr == 'inverso':
         params = optimize.minimize(inverse, x0=[3.0, 0.4], method='Nelder-Mead', args=(x_data, y_data)).x
         b_params = {'parameters': {'g_d': params[0], 'phi': params[1]}}
         if gof:
-            b_params.update({'gof': aic(len(b_params), linear(params, x_data), y_data)})
+            b_params.update({'gof': aic(len(b_params['parameters']), inv(params, x_data), y_data)})
     elif tipo_egr == 'log':
         params = optimize.minimize(log, x0=[0.3, 0.1], method='Nelder-Mead', args=(x_data, y_data)).x
         b_params = {'parameters': {'g_d': params[0], 'phi': params[1]}}
         if gof:
-            b_params.update({'gof': aic(len(b_params), linear(params, x_data), y_data)})
+            b_params.update({'gof': aic(len(b_params['parameters']), lo(params, x_data), y_data)})
     elif tipo_egr == 'oscilación':
         params = optimize.minimize(ocilación, x0=[0.7, 0.6, 1.0], method='Nelder-Mead', args=(x_data, y_data)).x
         b_params = {'parameters': {'amplitude': params[0], 'period': params[1], 'phi': params[2]}}
         if gof:
-            b_params.update({'gof': aic(len(b_params), linear(params, x_data), y_data)})
+            b_params.update({'gof': aic(len(b_params['parameters']), oci(params, x_data), y_data)})
     elif tipo_egr == 'oscilación_aten':
         params = optimize.minimize(ocilación_aten, x0=[0.1, 0.7, 0.6, 1.0],method='Nelder-Mead',args=(x_data, y_data)).x
         b_params = {'parameters': {'g_d': params[0], 'amplitude': params[1], 'period': params[2], 'phi':params[3]}}
         if gof:
-            b_params.update({'gof': aic(len(b_params), linear(params, x_data), y_data)})
+            b_params.update({'gof': aic(len(b_params['parameters']), oci_aten(params, x_data), y_data)})
     # elif tipo_egr == 'superposition':
         # for func in functions:
         # params, params_covariance = optimize.curve_fit(ocil_aten, x_data, y_data, p0=[1.0, 1.0, -0.2, 0, 10, 0, 0])
@@ -169,14 +167,29 @@ def minimize(x_data=None, y_data=None, tipo_egr='linear', gof=False):
                           'oscilación': {},
                           'oscilación_aten': {}}
 
-        for behavior in behaviors_aics:
+        for behavior in behaviors_aics.keys():
             behaviors_aics[behavior] = minimize(x_data, y_data, behavior, gof=True)
 
+        # # comparison
+        # gof_dict = {key: val['gof'] for key, val in behaviors_aics.items()}
+        # gof_dict = sorted(gof_dict.items(), key=lambda x: x[1])
+        #
+        # fit_behaviors = {}
+        # fit_behaviors.update({gof_dict[0][0]: behaviors_aics[gof_dict[0][0]]})
+        # i = 1
+        # while i < len(gof_dict):
+        #     if gof_dict[i][1] - gof_dict[0][1] > 2:
+        #         break
+        #     else:
+        #         fit_behaviors.update({gof_dict[i][0]: behaviors_aics[gof_dict[i][0]]})
+        #     i += 1
 
+        # return fit_behaviors
+        return behaviors_aics
 
     else:
         raise ValueError(tipo_egr)
-
+    # {'parameters': {'slope': 0.13, 'intercept': 1.4266666666666667}}
     return b_params
 
 def superposition(ocilación, func2):

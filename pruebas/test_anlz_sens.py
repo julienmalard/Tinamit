@@ -247,8 +247,8 @@ ops_métodos = {'morris': {'num_levels': 4, 'grid_jump': 2}}
 
 class Test_Análisis(unittest.TestCase):
 
-    def _verificar_sens(símismo, mod, t_final, líms_paráms, tipo_egr, sensibles, no_sensibles=None, mtds=None,
-                        ops_método=None):
+    def _verificar_sens_mod(símismo, mod, t_final, líms_paráms, tipo_egr, sensibles, no_sensibles=None, mtds=None,
+                            ops_método=None):
         if mtds is None:
             mtds = métodos
         if ops_método is None:
@@ -283,21 +283,54 @@ class Test_Análisis(unittest.TestCase):
 
         vars_egr = list(set(vars_egr))
 
+        with símismo.subTest(tipo_mod='sencillo'):
+            símismo._verif_sens(mod=mod(), mapa_paráms=None, ops_método=ops_método, líms_paráms=líms_paráms,
+                                t_final=t_final, vars_egr=vars_egr, tipo_egr=tipo_egr,
+                                sensibles=sensibles, no_sensibles=no_sensibles, mtds=mtds, ficticia=True)
+
+        with símismo.subTest(tipo_mod='multidim'):
+            símismo._verif_sens(mod=mod(dims=(3,)), mapa_paráms=None, ops_método=ops_método, líms_paráms=líms_paráms,
+                                t_final=t_final, vars_egr=vars_egr, tipo_egr=tipo_egr,
+                                sensibles=sensibles, no_sensibles=no_sensibles, mtds=mtds, ficticia=True)
+
+        with símismo.subTest(tipo_mod='mapa_matr'):
+            raise NotImplementedError
+            n = 3
+            mapa, líms = símismo._gen_mapa_prms(líms_paráms, n, tipo='matr')
+            símismo._verif_sens(mod=mod(dims=(n,)), mapa_paráms=mapa, ops_método=ops_método, líms_paráms=líms,
+                                t_final=t_final, vars_egr=vars_egr, tipo_egr=tipo_egr,
+                                sensibles=sensibles, no_sensibles=no_sensibles, mtds=mtds, ficticia=True)
+
+        with símismo.subTest(tipo_mod='mapa_dic'):
+            raise NotImplementedError
+            n = 10
+            mapa, líms = símismo._gen_mapa_prms(líms_paráms, n, tipo='dic')
+            símismo._verif_sens(mod=mod(dims=(n,)), mapa_paráms=mapa, ops_método=ops_método, líms_paráms=líms,
+                                t_final=t_final, vars_egr=vars_egr, tipo_egr=tipo_egr,
+                                sensibles=sensibles, no_sensibles=no_sensibles, mtds=mtds, ficticia=True)
+
+    def _verif_sens(
+            símismo, mod, mapa_paráms, ops_método, líms_paráms, t_final, vars_egr, tipo_egr,
+            sensibles, no_sensibles, mtds, ficticia
+    ):
         for m in mtds:
             if m not in ops_método:
                 ops_método[m] = {}
 
             with símismo.subTest(método=m):
                 res = anlzr_sens(
-                    mod, método=m, mapa_paráms=None, líms_paráms=líms_paráms,
-                    t_final=t_final, var_egr=vars_egr, ops_método=ops_método[m], tipo_egr=tipo_egr
+                    mod, método=m, mapa_paráms=mapa_paráms, líms_paráms=líms_paráms,
+                    t_final=t_final, var_egr=vars_egr, ops_método=ops_método[m], tipo_egr=tipo_egr, ficticia=ficticia
                 )
-                for prm, l_eg in sensibles.items():
-                    for eg in l_eg:
-                        símismo._proc_res_sens(eg, prm, res, m, tipo_egr, sens=True)
-                for prm, l_eg in no_sensibles.items():
-                    for eg in l_eg:
-                        símismo._proc_res_sens(eg, prm, res, m, tipo_egr, sens=False)
+                if mapa_paráms is None:
+                    for prm, l_eg in sensibles.items():
+                        for eg in l_eg:
+                            símismo._proc_res_sens(eg, prm, res, m, tipo_egr, sens=True)
+                    for prm, l_eg in no_sensibles.items():
+                        for eg in l_eg:
+                            símismo._proc_res_sens(eg, prm, res, m, tipo_egr, sens=False)
+                else:
+                    raise NotImplementedError
 
     @staticmethod
     def _proc_res_sens(eg, prm, res, m, t_egr, sens):
@@ -352,11 +385,30 @@ class Test_Análisis(unittest.TestCase):
         else:
             raise ValueError(m)
 
+    @staticmethod
+    def _gen_mapa_prms(líms_prms, n, tipo):
+
+        if tipo == 'matr':
+            líms = {vr: [lms] * 2 for vr, lms in líms_prms.items()}
+            mapa = {vr: np.random.choice(range(2), size=n) for vr in líms_prms}
+
+        elif tipo == 'dic':
+            líms = {vr: [lms] * 4 for vr, lms in líms_prms.items()}
+            mapa = {
+                'transf': 'prom',
+                'mapa': {vr: [
+                    (np.random.choice(range(4)), np.random.choice(range(4))) for _ in range(n)
+                ] for vr in líms_prms}
+            }
+        else:
+            raise ValueError(tipo)
+
+        return mapa, líms
+
     def test_sens_paso(símismo):
         líms_paráms = {'A': (0, 1), 'B': (2, 3)}
-        mod = ModeloLinear()
-        símismo._verificar_sens(
-            mod, t_final=5, líms_paráms=líms_paráms, tipo_egr='paso_tiempo',
+        símismo._verificar_sens_mod(
+            ModeloLinear, t_final=5, líms_paráms=líms_paráms, tipo_egr='paso_tiempo',
             sensibles={'A': 'A', 'B': 'B'},
             no_sensibles={'A': 'B', 'B': 'A', 'Ficticia': ['A', 'B']},
             ops_método=ops_métodos
@@ -364,19 +416,18 @@ class Test_Análisis(unittest.TestCase):
 
     def test_sens_final(símismo):
         líms_paráms = {'A': (0, 1), 'B': (2, 3)}
-        mod = ModeloLinear()
-        símismo._verificar_sens(
-            mod, t_final=5, líms_paráms=líms_paráms, tipo_egr='final',
+        símismo._verificar_sens_mod(
+            ModeloLinear, t_final=5, líms_paráms=líms_paráms, tipo_egr='final',
             sensibles={'A': 'A', 'B': 'B'},
             no_sensibles={'A': 'B', 'B': 'A', 'Ficticia': ['A', 'B']},
             ops_método=ops_métodos
         )
 
     def test_sens_promedio(símismo):
+
         líms_paráms = {'A': (0, 1), 'B': (2, 3)}
-        mod = ModeloLinear()
-        símismo._verificar_sens(
-            mod, t_final=5, líms_paráms=líms_paráms, tipo_egr='promedio',
+        símismo._verificar_sens_mod(
+            ModeloLinear, t_final=5, líms_paráms=líms_paráms, tipo_egr='promedio',
             sensibles={'A': 'A', 'B': 'B'},
             no_sensibles={'A': 'B', 'B': 'A', 'Ficticia': ['A', 'B']},
             ops_método=ops_métodos
@@ -384,63 +435,56 @@ class Test_Análisis(unittest.TestCase):
 
     def test_sens_linear(símismo):
         líms_paráms = {'A': (0, 2), 'B': (0, 1)}
-        mod = ModeloLinear()
-        símismo._verificar_sens(
-            mod, t_final=20, líms_paráms=líms_paráms, tipo_egr='linear',
+        símismo._verificar_sens_mod(
+            ModeloLinear, t_final=20, líms_paráms=líms_paráms, tipo_egr='linear',
             sensibles={'A': [['y', 'slope']], 'B': [['y', 'intercept']]},
             ops_método=ops_métodos
         )
 
     def test_sens_expo(símismo):
         líms_paráms = {'A': (0.1, 5), 'B': (1.1, 2)}
-        mod = ModeloExpo()
-        símismo._verificar_sens(
-            mod, t_final=15, líms_paráms=líms_paráms, tipo_egr='exponencial',
+        símismo._verificar_sens_mod(
+            ModeloExpo, t_final=15, líms_paráms=líms_paráms, tipo_egr='exponencial',
             sensibles={'A': [['y', 'y_intercept']], 'B': [['y', 'g_d']]},
             ops_método=ops_métodos
         )
 
-    def test_sens_logistic(símismo):
-        líms_paráms = {'A': (3, 10), 'B': (0.5, 2), 'C': (3, 5)}
-        mod = ModeloLogistic()
-        símismo._verificar_sens(
-            mod, t_final=10, líms_paráms=líms_paráms, tipo_egr='logístico',
+    def test_sens_logistic(símismo): # muldim Morris
+        líms_paráms = {'A': (5, 10), 'B': (0.85, 2), 'C': (3, 5)} #C (2, 3)
+        símismo._verificar_sens_mod(
+            ModeloLogistic, t_final=10, líms_paráms=líms_paráms, tipo_egr='logístico',
             sensibles={'A': [['y', 'maxi_val']], 'B': [['y', 'g_d']], 'C': [['y', 'mid_point']]},
             ops_método=ops_métodos
         )
 
     def test_sens_inverse(símismo):
         líms_paráms = {'A': (3, 10), 'B': (0.4, 2)}
-        mod = ModeloInverso()
-        símismo._verificar_sens(
-            mod, t_final=10, líms_paráms=líms_paráms, tipo_egr='inverso',
+        símismo._verificar_sens_mod(
+            ModeloInverso, t_final=10, líms_paráms=líms_paráms, tipo_egr='inverso',
             sensibles={'A': [['y', 'g_d']], 'B': [['y', 'phi']]},
             ops_método=ops_métodos
         )
 
-    def test_sens_log(símismo):
-        líms_paráms = {'A': (0.2, 2), 'B': (2, 5)}
-        mod = ModeloLog()
-        símismo._verificar_sens(
-            mod, t_final=10, líms_paráms=líms_paráms, tipo_egr='log',
+    def test_sens_log(símismo): # multidim not working, or Morris_multidim
+        líms_paráms = {'A': (0.5, 2), 'B': (2, 5)}
+        símismo._verificar_sens_mod(
+            ModeloLog, t_final=10, líms_paráms=líms_paráms, tipo_egr='log',
             sensibles={'A': [['y', 'g_d']], 'B': [['y', 'phi']]},
             ops_método=ops_métodos
         )
 
-    def test_sens_oscilación(símismo):
+    def test_sens_oscilación(símismo): # not stable... simple Morris crush sometimes
         líms_paráms = {'A': (0.7, 1.0), 'B': (0.6, 0.8), 'C': (1.1, 1.4)}
-        mod = ModeloOscil()
-        símismo._verificar_sens(
-            mod, t_final=10, líms_paráms=líms_paráms, tipo_egr='oscilación',
+        símismo._verificar_sens_mod(
+            ModeloOscil, t_final=20, líms_paráms=líms_paráms, tipo_egr='oscilación',
             sensibles={'A': [['y', 'amplitude']], 'B': [['y', 'period']], 'C': [['y', 'phi']]},
             ops_método=ops_métodos
         )
 
-    def test_sens_ocilación_aten(símismo):
-        líms_paráms = {'A': (0.1, 0.3), 'B': (0.7, 1), 'C': (0.6, 0.8), 'D': (1.1, 1.4)}
-        mod = ModeloOscilAten()
-        símismo._verificar_sens(
-            mod, t_final=10, líms_paráms=líms_paráms, tipo_egr='oscilación_aten',
+    def test_sens_ocilación_aten(símismo): # no
+        líms_paráms = {'A': (0.01, 0.2), 'B': (0.7, 1), 'C': (0.6, 0.8), 'D': (1.1, 1.4)} #'A'(0.01, 0.3)
+        símismo._verificar_sens_mod(
+            ModeloOscilAten, t_final=10, líms_paráms=líms_paráms, tipo_egr='oscilación_aten',
             sensibles={'A': [['y', 'g_d']], 'B': [['y', 'amplitude']], 'C': [['y', 'period']], 'D': [['y', 'phi']]},
             ops_método=ops_métodos
         )
