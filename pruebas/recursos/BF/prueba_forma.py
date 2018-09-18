@@ -95,6 +95,12 @@ class PlantillaForma(Modelo):
 
     def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         # function
+        multidim = símismo.dims != (1,)
+        if multidim:
+            for vr, val in vals_inic.items():
+                if not isinstance(val, np.ndarray):
+                    vals_inic[vr] = np.full(símismo.dims, val)
+
         símismo._calcular_func(tiempo_final, vals_inic)
         símismo.i = 0
 
@@ -195,7 +201,7 @@ class ModeloExpo(PlantillaForma):
 
         símismo.variables.update({
             'A': {
-                'val': np.full(dims, 0.1) if multidim else 0.1,
+                'val': np.full(dims, 0.1, dtype=float) if multidim else 0.1,
                 'unidades': 'm3/mes',
                 'líms': (0, None),
                 'ingreso': False,
@@ -203,14 +209,14 @@ class ModeloExpo(PlantillaForma):
                 'dims': dims
             },
             'B': {
-                'val': np.full(dims, 1.1) if multidim else 1.1,
+                'val': np.full(dims, 1.1, dtype=float) if multidim else 1.1,
                 'unidades': 'm3',
                 'líms': (0, 2),
                 'ingreso': True,
                 'egreso': False,
                 'dims': dims
             },
-            'y': {'val': np.full(dims, 0.2) if multidim else 0.2,
+            'y': {'val': np.full(dims, 0.2, dtype=float) if multidim else 0.2,
                   'unidades': 'm3',
                   'líms': (0, None),
                   'ingreso': True,
@@ -223,6 +229,7 @@ class ModeloExpo(PlantillaForma):
     def _calcular_func(símismo, tiempo_final, vals_inic):
         a = vals_inic['A']
         b = vals_inic['B']
+
         x = símismo._gen_x_tiempo(tiempo_final, l_vars=[a, b])
         símismo.valores = a * (b ** x) + np.random.normal(scale=0.1, size=x.shape)
 
@@ -236,7 +243,7 @@ class ModeloLogistic(PlantillaForma):
 
         símismo.variables.update({
             'A': {
-                'val': np.full(dims, 5) if multidim else 5,
+                'val': np.full(dims, 5, dtype=float) if multidim else 5,
                 'unidades': 'm3/mes',
                 'líms': (0, None),
                 'ingreso': False,
@@ -244,7 +251,7 @@ class ModeloLogistic(PlantillaForma):
                 'dims': dims
             },
             'B': {
-                'val': np.full(dims, 0.85) if multidim else 0.85,
+                'val': np.full(dims, 0.85, dtype=float) if multidim else 0.85,
                 'unidades': 'm3',
                 'líms': (0, None),
                 'ingreso': True,
@@ -252,14 +259,14 @@ class ModeloLogistic(PlantillaForma):
                 'dims': dims
             },
             'C': {
-                'val': np.full(dims, 3) if multidim else 3,
+                'val': np.full(dims, 3, dtype=float) if multidim else 3,
                 'unidades': 'm3',
                 'líms': (0, None),
                 'ingreso': True,
                 'egreso': False,
                 'dims': dims
             },
-            'y': {'val': np.full(dims, 1) if multidim else 1,
+            'y': {'val': np.full(dims, 1, dtype=float) if multidim else 1,
                   'unidades': 'm3',
                   'líms': (0, None),
                   'ingreso': True,
@@ -274,7 +281,7 @@ class ModeloLogistic(PlantillaForma):
         b = vals_inic['B']
         c = vals_inic['C']
         x = símismo._gen_x_tiempo(tiempo_final, l_vars=[a, b, c])
-        símismo.valores = a / (1 + np.exp(-b * x + c)) + np.random.normal(scale=0.01)
+        símismo.valores = a / (1 + np.exp(-b * x + c)) + np.random.normal(scale=0.01, size=x.shape)
 
 
 class ModeloInverso(PlantillaForma):
@@ -286,7 +293,7 @@ class ModeloInverso(PlantillaForma):
 
         símismo.variables.update({
             'A': {
-                'val': np.full(dims, 3) if multidim else 3,
+                'val': np.full(dims, 3, dtype=float) if multidim else 3,
                 'unidades': 'm3/mes',
                 'líms': (0, None),
                 'ingreso': False,
@@ -294,14 +301,14 @@ class ModeloInverso(PlantillaForma):
                 'dims': dims
             },
             'B': {
-                'val': np.full(dims, 0.4) if multidim else 0.4,
+                'val': np.full(dims, 0.4, dtype=float) if multidim else 0.4,
                 'unidades': 'm3',
                 'líms': (0.4, None),
                 'ingreso': True,
                 'egreso': False,
                 'dims': dims
             },
-            'y': {'val': np.full(dims, 2.1) if multidim else 2.1,
+            'y': {'val': np.full(dims, 2.1, dtype=float) if multidim else 2.1,
                   'unidades': 'm3',
                   'líms': (None, None),
                   'ingreso': True,
@@ -315,7 +322,7 @@ class ModeloInverso(PlantillaForma):
         a = vals_inic['A']
         b = vals_inic['B']
         x = símismo._gen_x_tiempo(tiempo_final, l_vars=[a, b])
-        símismo.valores = a / (x + b) + np.random.normal(scale=0.1, size=x.size)
+        símismo.valores = a / (x + b) + np.random.normal(scale=0.01, size=x.shape)
 
 
 class ModeloLog(PlantillaForma):
@@ -327,7 +334,7 @@ class ModeloLog(PlantillaForma):
 
         símismo.variables.update({
             'A': {
-                'val': np.full(dims, 0.3) if multidim else 0.3,
+                'val': np.full(dims, 0.5, dtype=float) if multidim else 0.5,
                 'unidades': 'm3/mes',
                 'líms': (0, None),
                 'ingreso': False,
@@ -335,14 +342,14 @@ class ModeloLog(PlantillaForma):
                 'dims': dims
             },
             'B': {
-                'val': np.full(dims, 0.1) if multidim else 0.1,
+                'val': np.full(dims, 2, dtype=float) if multidim else 2,
                 'unidades': 'm3',
                 'líms': (0, None),
                 'ingreso': True,
                 'egreso': False,
                 'dims': dims
             },
-            'y': {'val': np.full(dims, 1) if multidim else 1,
+            'y': {'val': np.full(dims, 1, dtype=float) if multidim else 1,
                   'unidades': 'm3',
                   'líms': (0, None),
                   'ingreso': True,
@@ -356,7 +363,7 @@ class ModeloLog(PlantillaForma):
         a = vals_inic['A']
         b = vals_inic['B']
         x = símismo._gen_x_tiempo(tiempo_final, l_vars=[a, b])
-        símismo.valores = a * np.log(x + b) + np.random.normal(scale=0.1, size=x.size)
+        símismo.valores = a * np.log(x + b) + np.random.normal(scale=0.01, size=x.shape)
 
 
 class ModeloOscil(PlantillaForma):
@@ -368,7 +375,7 @@ class ModeloOscil(PlantillaForma):
 
         símismo.variables.update({
             'A': {
-                'val': np.full(dims, 0.7) if multidim else 0.7,
+                'val': np.full(dims, 0.7, dtype=float) if multidim else 0.7,
                 'unidades': 'm3/mes',
                 'líms': (0.1, None),
                 'ingreso': False,
@@ -376,7 +383,7 @@ class ModeloOscil(PlantillaForma):
                 'dims': dims
             },
             'B': {
-                'val': np.full(dims, 0.6) if multidim else 0.6,
+                'val': np.full(dims, 0.6, dtype=float) if multidim else 0.6,
                 'unidades': 'm3',
                 'líms': (1, None),
                 'ingreso': True,
@@ -384,14 +391,14 @@ class ModeloOscil(PlantillaForma):
                 'dims': dims
             },
             'C': {
-                'val': np.full(dims, 1) if multidim else 1,
+                'val': np.full(dims, 1.1, dtype=float) if multidim else 1.1,
                 'unidades': 'm3',
                 'líms': (0, None),
                 'ingreso': True,
                 'egreso': False,
                 'dims': dims
             },
-            'y': {'val': np.full(dims, 0.55) if multidim else 0.55,
+            'y': {'val': np.full(dims, 0.55, dtype=float) if multidim else 0.55,
                   'unidades': 'm3',
                   'líms': (0, None),
                   'ingreso': True,
@@ -406,7 +413,7 @@ class ModeloOscil(PlantillaForma):
         b = vals_inic['B']
         c = vals_inic['C']
         x = símismo._gen_x_tiempo(tiempo_final, l_vars=[a, b, c])
-        símismo.valores = a * np.sin(b * x + c) + np.random.normal(scale=0.1, size=x.size)
+        símismo.valores = a * np.sin(b * x + c) + np.random.normal(scale=0.01, size=x.shape)
 
 
 class ModeloOscilAten(PlantillaForma):
@@ -418,7 +425,7 @@ class ModeloOscilAten(PlantillaForma):
 
         símismo.variables.update({
             'A': {
-                'val': np.full(dims, 0.1) if multidim else 0.1,
+                'val': np.full(dims, 0.01, dtype=float) if multidim else 0.01,
                 'unidades': 'm3/mes',
                 'líms': (0, None),
                 'ingreso': False,
@@ -426,7 +433,7 @@ class ModeloOscilAten(PlantillaForma):
                 'dims': dims
             },
             'B': {
-                'val': np.full(dims, 0.7) if multidim else 0.7,
+                'val': np.full(dims, 0.7, dtype=float) if multidim else 0.7,
                 'unidades': 'm3',
                 'líms': (0, None),
                 'ingreso': True,
@@ -434,7 +441,7 @@ class ModeloOscilAten(PlantillaForma):
                 'dims': dims
             },
             'C': {
-                'val': np.full(dims, 0.6) if multidim else 0.6,
+                'val': np.full(dims, 0.6, dtype=float) if multidim else 0.6,
                 'unidades': 'm3',
                 'líms': (0, None),
                 'ingreso': True,
@@ -442,14 +449,14 @@ class ModeloOscilAten(PlantillaForma):
                 'dims': dims
             },
             'D': {
-                'val': np.full(dims, 1.1) if multidim else 1.1,
+                'val': np.full(dims, 1.1, dtype=float) if multidim else 1.1,
                 'unidades': 'm3',
                 'líms': (0, None),
                 'ingreso': True,
                 'egreso': False,
                 'dims': dims
             },
-            'y': {'val': np.full(dims, 1) if multidim else 1,
+            'y': {'val': np.full(dims, 1, dtype=float) if multidim else 1,
                   'unidades': 'm3',
                   'líms': (0, None),
                   'ingreso': True,
@@ -465,4 +472,4 @@ class ModeloOscilAten(PlantillaForma):
         c = vals_inic['C']
         d = vals_inic['D']
         x = símismo._gen_x_tiempo(tiempo_final, l_vars=[a, b, c, d])
-        símismo.valores = np.exp(a * x) * b * np.sin(c * x + d) + np.random.normal(scale=0.1, size=x.size)
+        símismo.valores = np.exp(a * x) * b * np.sin(c * x + d) + np.random.normal(scale=0.01, size=x.shape)

@@ -348,16 +348,16 @@ class Test_Análisis(unittest.TestCase):
 
             return val_prm, val_fict
 
-        def _verificar_no_sig(val_prm, val_fict, sello, rtol=0.5):
+        def _verificar_no_sig(val_prm, val_fict, sello, rtol=0.1):
             try:
                 npt.assert_array_less(val_prm, sello)
             except AssertionError:
                 try:
                     npt.assert_array_less(val_prm, val_fict)
                 except AssertionError:
-                    npt.assert_allclose(val_prm, val_fict, rtol=rtol, atol=0.5)
+                    npt.assert_allclose(val_prm, val_fict, rtol=rtol)
 
-        def _verificar_sig(val_prm, val_fict, sello, rtol=0.5):
+        def _verificar_sig(val_prm, val_fict, sello, rtol=0.1):
             npt.assert_array_less(sello, val_prm)
             npt.assert_array_less(val_fict, val_prm)
             npt.assert_array_less(rtol, np.abs(val_fict - val_prm) / val_fict)
