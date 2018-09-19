@@ -105,14 +105,6 @@ class ModeloPySD(EnvolturaMDS):
 
         return unid_tiempo
 
-    def _leer_vals_inic(símismo):
-
-        for v, d_v in símismo.variables.items():
-            nombre_py = símismo._conv_nombres[v]
-            val = getattr(símismo.modelo.components, nombre_py)()
-
-            símismo._act_vals_dic_var({v: val})
-
     def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
 
         # Poner los variables y el tiempo a sus valores iniciales

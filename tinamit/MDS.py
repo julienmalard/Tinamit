@@ -21,17 +21,31 @@ class EnvolturaMDS(Modelo):
         if not os.path.isfile(archivo):
             raise FileNotFoundError(_('El fuente "{}" no existe.').format(archivo))
 
-        # Listas vacías para distintos tipos de variables.
-        símismo.constantes = []
-        símismo.niveles = []
-        símismo.flujos = []
-        símismo.auxiliares = []
-
         # Acordarse de dónde venimos
         símismo.archivo = archivo
 
         # Modelos DS se identifican por el nombre 'mds'.
         super().__init__(nombre=nombre)
+
+    def constantes(símismo):
+        return [var for var, d_var in símismo.variables if 'tipo' in d_var and d_var['tipo'] == 'constante']
+
+    def niveles(símismo):
+        return [var for var, d_var in símismo.variables if 'tipo' in d_var and d_var['tipo'] == 'nivel']
+
+    def flujos(símismo):
+        return [var for var, d_var in símismo.variables if 'tipo' in d_var and d_var['tipo'] == 'flujo']
+
+    def auxiliares(símismo):
+        return [var for var, d_var in símismo.variables if 'tipo' in d_var and d_var['tipo'] == 'auxiliar']
+
+    def hijos(símismo, var):
+        var = símismo.valid_var(var)
+        return símismo.variables[var]['hijos']
+
+    def parientes(símismo, var):
+        var = símismo.valid_var(var)
+        return símismo.variables[var]['parientes']
 
     def _inic_dic_vars(símismo):
         """
@@ -121,9 +135,6 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def _leer_vals_inic(símismo):
-        raise NotImplementedError
-
     def __getinitargs__(símismo):
         return símismo.archivo,
 
@@ -189,9 +200,6 @@ class MDSEditable(EnvolturaMDS):
 
     def leer_arch_resultados(símismo, archivo, var=None, col_tiempo='tiempo'):
         return símismo.mod.leer_arch_resultados(archivo=archivo, var=var)
-
-    def _leer_vals_inic(símismo):
-        return símismo.mod._leer_vals_inic()
 
     def publicar_modelo(símismo):
         raise NotImplementedError

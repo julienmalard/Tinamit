@@ -274,12 +274,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                   símismo.variables]:
             l.clear()
 
-        editables = símismo.editables
-        constantes = símismo.constantes
-        niveles = símismo.niveles
-        auxiliares = símismo.auxiliares
-        flujos = símismo.flujos
-
         # Primero, verificamos el tamañano de memoria necesario para guardar una lista de los nombres de los variables.
         variables = []
         for t in [1, 2, 4, 5, 12]:
@@ -315,16 +309,16 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                    val_error=-1
                    )
 
-        editables.extend([x for x in mem.raw.decode().split('\x00') if x])
+        editables = [x for x in mem.raw.decode().split('\x00') if x]
 
-        for var in variables:
+        for var in list(variables):  # Iteramos sobre la lista para poder modificarla
             # Para cada variable...
 
             # Sacar sus unidades
-            unidades = símismo.obt_atrib_var(var, cód_attrib=1)
+            unidades = símismo._obt_atrib_var(var, cód_attrib=1)
 
             # Verificar el tipo del variable
-            tipo_var = símismo.obt_atrib_var(var, cód_attrib=14)
+            tipo_var = símismo._obt_atrib_var(var, cód_attrib=14)
 
             # No incluir a los variables de verificación (pruebas de modelo) Vensim
             if tipo_var == 'Constraint':
@@ -333,14 +327,14 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
             # Guardamos los variables constantes en una lista.
             if tipo_var == 'Constant':
-                constantes.append(var)
+                tipo_var = 'constante'
             elif tipo_var == 'Level':
-                niveles.append(var)
+                tipo_var = 'nivel'
             elif tipo_var == 'Auxiliary':
-                auxiliares.append(var)
+                tipo_var = 'auxiliar'
 
             # Sacar las dimensiones del variable
-            subs = símismo.obt_atrib_var(var, cód_attrib=9)
+            subs = símismo._obt_atrib_var(var, cód_attrib=9)
 
             if len(subs):
                 dims = (len(subs),)  # Para hacer: soporte para más que 1 dimensión
@@ -350,22 +344,22 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                 nombres_subs = None
 
             # Sacar los límites del variable
-            rango = (símismo.obt_atrib_var(var, cód_attrib=11), símismo.obt_atrib_var(var, cód_attrib=12))
+            rango = (símismo._obt_atrib_var(var, cód_attrib=11), símismo._obt_atrib_var(var, cód_attrib=12))
             rango = tuple(float(l) if l != '' else None for l in rango)
 
             # Leer la descripción del variable.
-            info = símismo.obt_atrib_var(var, 2)
+            info = símismo._obt_atrib_var(var, 2)
 
             # Leer la ecuación del variable, sus hijos y sus parientes directamente de Vensim
-            ec = símismo.obt_atrib_var(var, 3)
-            hijos = símismo.obt_atrib_var(var, 5)
-            parientes = símismo.obt_atrib_var(var, 4)
+            ec = símismo._obt_atrib_var(var, 3)
+            hijos = símismo._obt_atrib_var(var, 5)
+            parientes = símismo._obt_atrib_var(var, 4)
 
             # Actualizar el diccionario de variables.
             # Para cada variable, creamos un diccionario especial, con su valor y unidades. Puede ser un variable
             # de ingreso si es de tipo editable ("Gaming"), y puede ser un variable de egreso si no es un valor
             # constante.
-            dic_var = {'val': None if dims == (1,) else np.empty(dims),
+            dic_var = {'val': None if dims == (1,) else np.zeros(dims),  # Se llenarán los valores ahorita
                        'unidades': unidades,
                        'ingreso': var in editables,
                        'dims': dims,
@@ -373,20 +367,26 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                        'ec': ec,
                        'hijos': hijos,
                        'parientes': parientes,
-                       'egreso': var not in constantes,
+                       'tipo': tipo_var,
+                       'egreso': tipo_var != 'constante',
                        'líms': rango,
                        'info': info}
 
             # Guardar el diccionario del variable en el diccionario general de variables.
             símismo.variables[var] = dic_var
 
-        # Actualizar los auxiliares
-        for var in símismo.auxiliares.copy():
-            for hijo in símismo.variables[var]['hijos']:
-                if hijo in símismo.niveles:
-                    flujos.append(var)
-                    if var in auxiliares:
-                        auxiliares.remove(var)
+        # Convertir los auxiliares parientes de niveles a flujos
+        nivs = símismo.niveles()
+        for nv in nivs:
+            flujos = símismo.parientes(nv)
+            for flj in flujos:
+
+                # No cambiar variables constantes a flujos, únicamente auxiliares
+                if símismo.variables[flj]['tipo'] == 'auxiliar':
+                    símismo.variables[flj]['tipo'] = 'flujo'
+
+        # Llenar los valores iniciales
+        símismo._leer_vals_de_vensim()
 
     def unidad_tiempo(símismo):
         """
@@ -398,8 +398,10 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         """
 
         # Leer las unidades de tiempo
-        unidades = símismo.obt_atrib_var(var='TIME STEP', cód_attrib=1,
-                                         mns_error='Error obteniendo el paso de tiempo para el modelo Vensim.')
+        unidades = símismo._obt_atrib_var(
+            var='TIME STEP', cód_attrib=1,
+            mns_error=_('Error obteniendo la unidad de tiempo para el modelo Vensim.')
+        )
 
         return unidades
 
@@ -442,10 +444,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         # Aplicar los valores iniciales de variables editables
         símismo.cambiar_vals({var: val for var, val in vals_inic.items() if var not in símismo.constantes})
-
-    def _leer_vals_inic(símismo):
-
-        símismo._leer_vals_de_vensim()
 
     def _cambiar_vals_modelo_externo(símismo, valores):
         """
@@ -609,7 +607,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                              val_error=-1, devolver=True)
         return int(estatus)
 
-    def obt_atrib_var(símismo, var, cód_attrib, mns_error=None):
+    def _obt_atrib_var(símismo, var, cód_attrib, mns_error=None):
         """
 
         :param var:
@@ -705,7 +703,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         # Si tenemos formato '.vdf', debemos convertirlo a '.csv' primero.
         if ext == '.vdf':
-
             archivo = corr + '.csv'
             símismo._vdf_a_csv(corr)
 

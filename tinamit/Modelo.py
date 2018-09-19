@@ -109,25 +109,13 @@ class Modelo(object):
 
         raise NotImplementedError
 
-    def _leer_vals_inic(símismo):
-        """
-        Esta función debe leer los valores iniciales del modelo (por ejemplo, de un archivo externo), si aplica,
-        y guardarlos en el diccionario interno.
-
-        """
-
-        raise NotImplementedError
-
     def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
 
         # Establecer la corrida actual
         símismo.corrida_activa = nombre_corrida
 
-        # Acciones de inicialización propias a cada modelo
+        # Acciones de inicialización propias a cada modelo, incluyendo leer los valores iniciales
         símismo._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
-
-        # Leer los valores iniciales
-        símismo._leer_vals_inic()
 
         # Actualizar el diccionario de variables con los valores iniciales
         símismo._act_vals_dic_var(vals_inic)
