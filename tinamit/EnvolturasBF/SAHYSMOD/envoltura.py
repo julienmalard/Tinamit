@@ -202,7 +202,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # Devolver el diccionario final
         return dic_final
 
-    def leer_archivo_vals_inic(símismo, archivo=None):
+    def _gen_dic_vals_inic(símismo, archivo=None):
 
         if archivo is None:
             archivo = símismo.datos_inic

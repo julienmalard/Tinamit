@@ -504,32 +504,6 @@ class ModeloImpacienteAnterior(ModeloBF):
 
         raise NotImplementedError
 
-    def _leer_vals_inic(símismo):
-        """
-        Esta función lee los valores iniciales del modelo.
-
-        """
-        dic_inic, dims = símismo.leer_archivo_vals_inic()
-
-        for var, d_var in símismo.variables.items():
-            d_var['val'] = np.zeros(dims, dtype=float)
-            d_var['dims'] = dims
-
-            if var in símismo.tipos_vars['Estacionales']:
-                símismo.datos_internos[var] = np.zeros((símismo.n_estaciones, *dims), dtype=float)
-
-        for var in símismo.tipos_vars['Ingresos']:
-            datos = np.array(dic_inic[var], dtype=float)
-            if var in símismo.tipos_vars['IngrEstacionales']:
-                símismo.datos_internos[var][:] = datos
-                símismo.variables[var]['val'] = datos[0]  # Crear un enlace dinámico
-            else:
-                if var in símismo.tipos_vars['Estacionales']:
-                    símismo.datos_internos[var][:] = datos
-                    símismo.variables[var]['val'] = datos[0]  # Crear un enlace dinámico
-                else:
-                    símismo.variables[var]['val'][:] = datos
-
     def leer_archivo_vals_inic(símismo, archivo=None):
         """
         Esta función devuelve un diccionario con los valores leídos del fuente de valores iniciales.
@@ -655,7 +629,7 @@ class ModeloImpaciente(ModeloBF):
     def __init__(símismo, nombre='modeloBF'):
         super().__init__(nombre=nombre)
         símismo.tmñ_ciclo = None
-        símismo.i_en_ciclo = 0
+        símismo.i_pasito = 0
         símismo.matrs_ingr = {}
         símismo.matrs_egr = {}
         símismo.proces_ingrs = {}
@@ -663,17 +637,20 @@ class ModeloImpaciente(ModeloBF):
     def _cambiar_vals_modelo_externo(símismo, valores):
         """
         Solamente nos tenemos que asegurar que los datos internos (para variables estacionales) queda consistente
-        con los nuevos valores cambiadas por la conexión con el modelo externo. La función `.avanzar_modelo()` debe
-        utilizar este diccionario interno para mandar los nuevos valores a la próxima simulación. Así
-
+        con los nuevos valores cambiadas por la conexión con el modelo externo. La función
+        :meth:`avanzar_modelo` debe utilizar este diccionario interno para mandar los nuevos valores
+        a la próxima simulación. Así que está función no se necesita.
         """
+
+        pass
 
     def _incrementar(símismo, paso, guardar_cada=None):
         # Para simplificar el código un poco.
-        i = símismo.i_en_ciclo
+        i = símismo.i_pasito
 
         # Apuntar el diccionario interno de los valores al valor de este paso del ciclo
-        símismo._act_vals_dic_var({var: símismo.matrs_ingr[var][i] for var in símismo.matrs_ingr})
+        símismo._act_vals_dic_var({var: matr[i] for var, matr in símismo.matrs_ingr.items()})
+        símismo._act_vals_dic_var({var: matr[i] for var, matr in símismo.matrs_egr.items()})
 
         # Si es el principio de un ciclo, también hay que correr una simulación del modelo externo.
         if i == 0:
@@ -687,7 +664,7 @@ class ModeloImpaciente(ModeloBF):
         i += int(paso)
 
         # Guardar la estación y el mes por la próxima vez.
-        símismo.i_en_ciclo = i % símismo.tmñ_ciclo
+        símismo.i_pasito = i % símismo.tmñ_ciclo
 
     def _leer_vals(símismo):
         pass
@@ -699,21 +676,72 @@ class ModeloImpaciente(ModeloBF):
         raise NotImplementedError
 
     def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
-        símismo.i_en_ciclo = 0
+        símismo.i_pasito = 0
         símismo.tmñ_ciclo = símismo.obt_tmñ_ciclo()
 
+        por_pasito = símismo._vars_por_pasito()
+
+        símismo.matrs_ingr.clear()
+        símismo.matrs_egr.clear()
+
+        for vr in símismo.ingresos():
+            if vr in por_pasito:
+                símismo.matrs_ingr[vr] = np.zeros(símismo.tmñ_ciclo)
+
+        for vr in símismo.vars_saliendo:
+            if vr in por_pasito:
+                símismo.matrs_egr[vr] = np.zeros(símismo.tmñ_ciclo)
+
         super()._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
+
+    def _vars_por_pasito(símismo):
+        return [var for var, d_var in símismo.variables.items() if 'pasito' in d_var and d_var['pasito']]
+
+    def estab_proces_ingr(símismo, var_ingr, proc):
+        posibilidades = ['último', 'suma', 'prom', 'máx', 'directo', None]
+        if proc not in posibilidades:
+            raise ValueError(proc)
+        var_ingr = símismo.valid_var(var_ingr)
+
+        if proc is not None:
+            símismo.proces_ingrs[var_ingr] = proc
+        else:
+            símismo.proces_ingrs.pop(var_ingr)
 
     def _inic_dic_vars(símismo):
         raise NotImplementedError
 
     def _leer_vals_inic(símismo):
-        pass
+        dic_inic, dims = símismo._gen_dic_vals_inic()
+
+        por_pasito = símismo._vars_por_pasito()
+
+        for var, d_var in símismo.variables.items():
+            d_var['val'] = np.zeros(dims, dtype=float)
+            d_var['dims'] = dims
+
+            if var in por_pasito:
+                símismo.datos_internos[var] = np.zeros((símismo.n_estaciones, *dims), dtype=float)
+
+        for var in símismo.tipos_vars['Ingresos']:
+            datos = np.array(dic_inic[var], dtype=float)
+            if var in símismo.tipos_vars['IngrEstacionales']:
+                símismo.datos_internos[var][:] = datos
+                símismo.variables[var]['val'] = datos[0]  # Crear un enlace dinámico
+            else:
+                if var in símismo.tipos_vars['Estacionales']:
+                    símismo.datos_internos[var][:] = datos
+                    símismo.variables[var]['val'] = datos[0]  # Crear un enlace dinámico
+                else:
+                    símismo.variables[var]['val'][:] = datos
 
     def obt_tmñ_ciclo(símismo):
         raise NotImplementedError
 
     def avanzar_modelo(símismo, n_ciclos):
+        raise NotImplementedError
+
+    def _gen_dic_vals_inic(símismo):
         raise NotImplementedError
 
 

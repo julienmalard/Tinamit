@@ -694,10 +694,10 @@ class SuperConectado(Modelo):
         if modelo is None:
             return
         elif isinstance(modelo, Modelo):
-            modelo = str(Modelo)
+            modelo = str(modelo)
 
         if modelo not in símismo.modelos:
-            raise ValueError(_('El submodelo "{}" no existe en este modelo.'.format(modelo)))
+            raise ValueError(_('El submodelo "{}" no existe en este modelo.'.format(str(modelo))))
         return modelo
 
 

@@ -124,7 +124,7 @@ class Test_Envolturas_ModeloImpaciente(unittest.TestCase):
         for nmb, obj in símismo.envolturas_disp.items():
             with símismo.subTest(envlt=nmb):
                 obj.prep_ingr(n_años_simul=1, archivo=símismo.arch_prb_escrb_ingr)
-                obj.leer_archivo_vals_inic(archivo=símismo.arch_prb_escrb_ingr)
+                obj._gen_dic_vals_inic(archivo=símismo.arch_prb_escrb_ingr)
 
                 d_ref = obj.cargar_ref_ejemplo_vals_inic()
 

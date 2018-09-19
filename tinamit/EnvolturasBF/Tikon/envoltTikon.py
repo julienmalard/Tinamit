@@ -9,7 +9,7 @@ class ModeloTikon(ModeloImpaciente):  # pragma: sin cobertura
     def _escribir_archivo_ingr(símismo, n_años_simul, dic_ingr):
         pass
 
-    def leer_archivo_vals_inic(símismo):
+    def _gen_dic_vals_inic(símismo):
         pass
 
     def _act_vals_clima(símismo, n_paso, f):
