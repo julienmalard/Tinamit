@@ -2,7 +2,7 @@ import os
 
 from tinamit.EnvolturasMDS.PySD import ModeloPySD
 from tinamit.EnvolturasMDS.Vensim import ModeloVensim, ModeloVensimMdl
-from tinamit.MDS import EnvolturaMDS
+from tinamit.MDS import EnvolturaMDS, MDSEditable
 from tinamit.config import _
 from tinamit.cositas import verificar_dirección_arch
 
@@ -17,7 +17,7 @@ dic_motores = {
 }
 
 
-def generar_mds(archivo, motor=None):
+def generar_mds(archivo, motor=None, editables=True):
     """
     Esta función genera una instancia de modelo de DS. Identifica el tipo de fuente por su extensión (p. ej., .vpm) y
     después genera una instancia de la subclase apropiada de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS`.
@@ -54,6 +54,9 @@ def generar_mds(archivo, motor=None):
             if not isinstance(motor, list):
                 motor = [motor]
             motores_potenciales = [x for x in dic_motores[ext] if x in motor]
+
+        if not editables:
+            motores_potenciales = [m for m in motores_potenciales if not issubclass(m, MDSEditable)]
 
         for env in motores_potenciales:
             try:

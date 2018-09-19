@@ -18,7 +18,6 @@ import tinamit.Geog.Geog as Geog
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
 from tinamit.Análisis.Datos import obt_fecha_ft, gen_SuperBD, jsonificar, numpyficar, SuperBD
 from tinamit.Análisis.Valids import validar_resultados
-from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.Unidades.conv import convertir
 from tinamit.config import _, obt_val_config
 from tinamit.cositas import detectar_codif, valid_nombre_arch, guardar_json, cargar_json
@@ -66,6 +65,7 @@ class Modelo(object):
         #  ...}
         símismo.variables = {}
         símismo._inic_dic_vars()  # Iniciar los variables.
+        símismo._verificar_dic_vars()
 
         # Para calibraciones
         símismo.calibs = {}
@@ -97,6 +97,25 @@ class Modelo(object):
 
         raise NotImplementedError
 
+    def _verificar_dic_vars(símismo, reqs=None):
+
+        requísitos = ['val', 'unidades', 'líms', 'ingreso', 'egreso']
+        if reqs is not None:
+            requísitos += reqs
+
+        for var, d_var in símismo.variables.items():
+            faltan = [r for r in requísitos if r not in d_var]
+            if len(faltan):
+                raise ValueError(
+                    _('Al variable "{var}" le falta los atributos siguientes: {atr}').format(var=var,
+                                                                                             atr=', '.join(faltan))
+                )
+
+            if isinstance(d_var['val'], np.ndarray):
+                d_var['dims'] = d_var['val'].shape
+            else:
+                d_var['dims'] = (1,)
+
     def unidad_tiempo(símismo):
         """
         Esta función debe devolver la unidad de tiempo empleada por el modelo.
@@ -114,21 +133,26 @@ class Modelo(object):
         # Establecer la corrida actual
         símismo.corrida_activa = nombre_corrida
 
-        # Acciones de inicialización propias a cada modelo, incluyendo leer los valores iniciales
-        símismo._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
+        # Reestablecer valores iniciales
+        símismo._reinic_vals()
 
-        # Actualizar el diccionario de variables con los valores iniciales
+        # Actualizar valores iniciales en el diccionario interno
         símismo._act_vals_dic_var(vals_inic)
+
+        # Acciones de inicialización propias a cada modelo, incluso aplicación de valores iniciales al modelo externo
+        símismo._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
         # Actualizar los valores de variables que tienen valor inicial bajo nombre de otro variable
         símismo._aplicar_vals_inic()
 
     def _aplicar_vals_inic(símismo):
-        for v, d_v in símismo.variables.items():
-            if 'val_inic' in d_v and d_v['val_inic']:
-                hijos = d_v['hijos']
-                val = símismo.obt_val_actual_var(v)
-                símismo._act_vals_dic_var({hj: val for hj in hijos})
+        for v in símismo.iniciales():
+            hijos = símismo.hijos(v)
+            val = símismo.obt_val_actual_var(v)
+            símismo._act_vals_dic_var({hj: val for hj in hijos})
+
+    def _reinic_vals(símismo):
+        raise NotImplementedError
 
     def _act_vals_dic_var(símismo, valores):
         """
@@ -197,7 +221,7 @@ class Modelo(object):
         elif isinstance(t_final, ft.datetime):
             t_final = t_final.date()
         elif isinstance(t_final, np.datetime64):
-            t_final = ft.datetime.utcfromtimestamp(t_final.tolist() / 1e9).date()
+            t_final = t_final.astype('datetime64[D]').tolist()
         elif isinstance(t_final, (np.float, np.int)):
             t_final = int(t_final)
 

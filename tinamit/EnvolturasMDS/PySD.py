@@ -2,6 +2,7 @@ import os
 from ast import literal_eval
 
 import numpy as np
+import regex
 import xarray as xr
 
 import pysd
@@ -46,9 +47,14 @@ class ModeloPySD(EnvolturaMDS):
         símismo.variables.clear()
         símismo._conv_nombres.clear()
 
+        internos = ['FINAL TIME', 'TIME STEP', 'SAVEPER', 'INITIAL TIME']
         for i, f in símismo.modelo.doc().iterrows():
+
+            if f['Type'] == 'lookup':
+                continue
+
             nombre = f['Real Name']
-            if nombre not in ['FINAL TIME', 'TIME STEP', 'SAVEPER', 'INITIAL TIME']:
+            if nombre not in internos:
                 nombre_py = f['Py Name']
                 unidades = f['Unit']
                 líms = literal_eval(f['Lims'])
@@ -56,37 +62,53 @@ class ModeloPySD(EnvolturaMDS):
                 obj_ec = Ecuación(ec)
                 var_juego = obj_ec.sacar_args_func('GAME') is not None
 
-                if f['Type'] == 'lookup':
-                    continue
+                if regex.match(r'INTEG *\(', ec):
+                    tipo = 'nivel'
+                else:
+                    tipo = 'auxiliar'  # cambiaremos el resto después
 
                 símismo.variables[nombre] = {
                     'val': getattr(símismo.modelo.components, nombre_py)(),
-                    'dims': (1,),  # Para hacer
                     'unidades': unidades,
                     'ec': ec,
                     'hijos': [],
                     'parientes': obj_ec.variables(),
                     'líms': líms,
                     'info': f['Comment'],
+                    'tipo': tipo,
                     'ingreso': True,
                     'egreso': not var_juego
                 }
 
                 símismo._conv_nombres[nombre] = nombre_py
 
+        # Aplicar parientes a hijos
         for v, d_v in símismo.variables.items():
             for p in d_v['parientes']:
                 d_p = símismo.variables[p]
                 d_p['hijos'].append(v)
 
-        for v, d_v in símismo.variables.items():
-            ec = Ecuación(d_v['ec'], dialecto='vensim')
-            try:
-                args_inic = ec.sacar_args_func('INTEG')[1]
-                if args_inic in símismo.variables:
-                    símismo.variables[args_inic]['val_inic'] = True
-            except TypeError:
-                pass
+        # Aplicar los otros tipos de variables
+        for niv in símismo.niveles():
+            ec = Ecuación(símismo.obt_ec_var(niv), dialecto='vensim')
+            args_integ, args_inic = ec.sacar_args_func('INTEG')  # Analizar la función INTEG de VENSIM
+
+            # Identificar variables iniciales
+            if args_inic in símismo.variables:
+                símismo.variables[args_inic]['tipo'] = 'inicial'
+
+            # Los flujos, por definición, son los otros parientes de los niveles.
+            flujos = [v for v in Ecuación(args_integ, dialecto='vensim').variables() if
+                      v not in internos]
+            for flujo in flujos:
+                # Para cada nivel en el modelo...
+                símismo.variables[flujo]['tipo'] = 'flujo'
+
+        # Los constantes son los variables todavía marcados como "auxiliares" y que no tienen parientes.
+        for var in símismo.auxiliares():
+            d_var = símismo.variables[var]
+            if not len(d_var['parientes']):
+                d_var['tipo'] = 'constante'
 
     def unidad_tiempo(símismo):
         docs = símismo.modelo.doc()
@@ -116,6 +138,16 @@ class ModeloPySD(EnvolturaMDS):
         símismo.paso_act = símismo.modelo.time._t
         símismo.vars_para_cambiar.clear()
         símismo.vars_para_cambiar.update(vals_inic)
+
+    def _reinic_vals(símismo):
+        """
+        Empleamos :meth:`_act_vals_dic_var` y no :meth:`cambiar_vals` porque no hay necesidad de cambiar los valores
+        en el modelo externo, visto que de allí estamos tomando los nuevos valores.
+        """
+
+        símismo._act_vals_dic_var({
+            var: getattr(símismo.modelo.components, símismo._conv_nombres[var])() for var in símismo.variables
+        })
 
     def _cambiar_vals_modelo_externo(símismo, valores):
         símismo.vars_para_cambiar.clear()

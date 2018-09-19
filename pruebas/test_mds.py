@@ -217,10 +217,8 @@ class Test_OpcionesSimul(unittest.TestCase):
                 npt.assert_array_equal(res_paso_1, res_paso_2)
 
     def test_simul_con_paso_inválido(símismo):
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                with símismo.assertRaises(ValueError):
-                    mod.simular(t_final=100, paso=0)
+        with símismo.assertRaises(ValueError):
+            list(símismo.modelos.values())[0].simular(t_final=100, paso=0)
 
     def test_simul_exprés(símismo):
         for ll, mod in símismo.modelos.items():

@@ -28,16 +28,19 @@ class EnvolturaMDS(Modelo):
         super().__init__(nombre=nombre)
 
     def constantes(símismo):
-        return [var for var, d_var in símismo.variables if 'tipo' in d_var and d_var['tipo'] == 'constante']
+        return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'constante']
+
+    def iniciales(símismo):
+        return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'inicial']
 
     def niveles(símismo):
-        return [var for var, d_var in símismo.variables if 'tipo' in d_var and d_var['tipo'] == 'nivel']
+        return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'nivel']
 
     def flujos(símismo):
-        return [var for var, d_var in símismo.variables if 'tipo' in d_var and d_var['tipo'] == 'flujo']
+        return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'flujo']
 
     def auxiliares(símismo):
-        return [var for var, d_var in símismo.variables if 'tipo' in d_var and d_var['tipo'] == 'auxiliar']
+        return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'auxiliar']
 
     def hijos(símismo, var):
         var = símismo.valid_var(var)
@@ -57,6 +60,26 @@ class EnvolturaMDS(Modelo):
         Ver :func:`Modelo.Modelo._inic_dic_vars` para más información.
         """
 
+        raise NotImplementedError
+
+    def _verificar_dic_vars(símismo, reqs=None):
+
+        requísitos = ['ec', 'hijos', 'parientes', 'tipo', 'info']
+        if reqs is not None:
+            requísitos += reqs
+
+        super()._verificar_dic_vars(reqs=requísitos)
+
+        mens_err = _('Error en las relaciones pariente-hijos de variable "{}"')
+        for var in símismo.variables:
+            parientes = símismo.parientes(var)
+            hijos = símismo.hijos(var)
+            if not all(var in símismo.hijos(p) for p in parientes):
+                raise ValueError(mens_err.format(var))
+            if not all(var in símismo.parientes(h) for h in hijos):
+                raise ValueError(mens_err.format(var))
+
+    def _reinic_vals(símismo):
         raise NotImplementedError
 
     def unidad_tiempo(símismo):
@@ -145,7 +168,7 @@ class MDSEditable(EnvolturaMDS):
 
         from tinamit.EnvolturasMDS import generar_mds
         símismo.mod = None  # type: EnvolturaMDS
-        símismo._estab_mod(generar_mds(archivo=archivo))
+        símismo._estab_mod(generar_mds(archivo=archivo, editables=False))
         símismo.combin_incrs = símismo.mod.combin_pasos
 
         símismo.editado = False
@@ -170,11 +193,17 @@ class MDSEditable(EnvolturaMDS):
         símismo.mod._act_vals_dic_var(valores=valores)
         super()._act_vals_dic_var(valores)
 
+    def _reinic_vals(símismo):
+        símismo.mod._reinic_vals()
+
     def _inic_dic_vars(símismo):
         raise NotImplementedError
 
     def unidad_tiempo(símismo):
         raise NotImplementedError
+
+    def obt_val_actual_var(símismo, var):
+        return símismo.mod.obt_val_actual_var(var)
 
     def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         from tinamit.EnvolturasMDS import generar_mds
@@ -184,6 +213,7 @@ class MDSEditable(EnvolturaMDS):
             símismo.editado = False
 
         símismo.mod.corrida_activa = nombre_corrida
+
         símismo.mod._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
     def _cambiar_vals_modelo_externo(símismo, valores):

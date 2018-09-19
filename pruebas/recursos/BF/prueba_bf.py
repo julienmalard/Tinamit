@@ -36,7 +36,6 @@ class ModeloPrueba(ModeloBF):
                 'líms': (0, None),
                 'ingreso': False,
                 'egreso': True,
-                'dims': (1,)
             },
             'Lago': {
                 'val': 1000,
@@ -44,7 +43,6 @@ class ModeloPrueba(ModeloBF):
                 'líms': (0, None),
                 'ingreso': True,
                 'egreso': False,
-                'dims': (1,)
             },
             'Escala': {
                 'val': 0,
@@ -52,7 +50,6 @@ class ModeloPrueba(ModeloBF):
                 'líms': (0, None),
                 'ingreso': False,
                 'egreso': True,
-                'dims': (1,)
             },
             'Vacío': {
                 'val': 10,
@@ -60,7 +57,6 @@ class ModeloPrueba(ModeloBF):
                 'líms': (0, None),
                 'ingreso': True,
                 'egreso': False,
-                'dims': (1,)
             },
             'Aleatorio': {
                 'val': 0,
@@ -68,7 +64,6 @@ class ModeloPrueba(ModeloBF):
                 'líms': (0, 1),
                 'ingreso': False,
                 'egreso': True,
-                'dims': (1,)
             }
         }
         )

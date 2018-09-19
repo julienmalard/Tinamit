@@ -19,13 +19,11 @@ class Envoltura(ModeloBF):
                                        'unidades': 'm*m*m/mes',
                                        'ingreso': False,
                                        'egreso': True,
-                                       'dims': (1,)
                                        }
         símismo.variables['Bosques'] = {'val': 1000000,
                                         'unidades': 'm*m',
                                         'ingreso': True,
                                         'egreso': False,
-                                        'dims': (1,)
                                         }
 
     def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):

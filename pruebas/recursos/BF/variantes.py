@@ -30,7 +30,6 @@ class EjImpaciente(ModeloImpaciente):
                 'líms': (0, None),
                 'ingreso': False,
                 'egreso': True,
-                'dims': (1,)
             },
             'pasito': {
                 'val': 0,
@@ -39,7 +38,6 @@ class EjImpaciente(ModeloImpaciente):
                 'ingreso': False,
                 'egreso': True,
                 'pasito': True,
-                'dims': (1,)
             }
         })
         símismo.variables.update(
@@ -50,7 +48,6 @@ class EjImpaciente(ModeloImpaciente):
                 'ingreso': True,
                 'egreso': False,
                 'pasito': True,
-                'dims': (1,)
             } for x in ['último', 'suma', 'prom', 'máx', 'directo']}
         )
 
