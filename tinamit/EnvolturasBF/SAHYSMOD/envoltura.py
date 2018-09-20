@@ -93,7 +93,7 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         símismo.tipos_vars['IngrEstacionales'] = [códs_a_vars[x] for x in ingresos_estacionales]
         símismo.tipos_vars['EgrEstacionales'] = [códs_a_vars[x] for x in egresos_estacionales]
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
 
         # Crear un diccionario de trabajo específico a esta corrida.
         símismo.direc_trabajo = os.path.join(símismo.direc_base, '_temp', nombre_corrida)
@@ -106,6 +106,8 @@ class ModeloSAHYSMOD(ModeloImpaciente):
         # Generar la comanda de corrida (para después)
         args = dict(SAHYSMOD=símismo.exe_SAHYSMOD, ingreso=símismo.arch_ingreso, egreso=símismo.arch_egreso)
         símismo.comanda = '"{SAHYSMOD}" "{ingreso}" "{egreso}"'.format(**args)
+
+        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
 
     def avanzar_modelo(símismo):
 

@@ -27,8 +27,7 @@ class ModeloDSSAT(ModeloFlexible):  # pragma: sin cobertura
             símismo.variables[name] = {'val': None,
                                        'unidades': dic['unidades'],
                                        'ingreso': dic['ingr'],
-                                       'egreso': dic['egr'],
-                                       'dims': (1,)
+                                       'egreso': dic['egr']
                                        }
 
     def unidad_tiempo(símismo):

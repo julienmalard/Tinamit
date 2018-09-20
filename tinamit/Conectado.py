@@ -484,7 +484,7 @@ class SuperConectado(Modelo):
         for mod in símismo.modelos.values():
             mod.leer_vals()  # Leer los valores de los variables.
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         """
         Inicia el modelo en preparación para una simulación.
 
@@ -543,6 +543,8 @@ class SuperConectado(Modelo):
             mod.iniciar_modelo(
                 tiempo_final=tiempo_final * conv_tiempo, nombre_corrida=nombre_corrida, vals_inic=vals_inic_mod
             )  # Iniciar el modelo
+
+        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
 
     def especificar_var_saliendo(símismo, var):
 

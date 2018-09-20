@@ -7,6 +7,7 @@ import sys
 import numpy as np
 import regex
 
+from Análisis.sintaxis import Ecuación
 from tinamit.MDS import EnvolturaMDS
 from tinamit.config import _
 
@@ -61,25 +62,10 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
     def _generar_mod(símismo, archivo, **ops_mód):
 
-        nmbr, ext = os.path.splitext(archivo)
-        if ext == '.mdl':
-            símismo.tipo_mod = '.mdl'
-
-            # Únicamente recrear el archivo .vpm si necesario
-            if os.path.isfile(nmbr + '.vpm') and (os.path.getmtime(nmbr + '.vpm') > os.path.getmtime(archivo)):
-                símismo.publicar_modelo()
-            archivo = nmbr + '.vpm'
-
-        elif ext == '.vpm':
-            símismo.tipo_mod = '.vpm'
-
-        else:
-            raise ValueError(
-                _('Vensim no sabe leer modelos del formato "{}". Debes darle un modelo ".mdl" o ".vpm".')
-                    .format(ext)
-            )
-
-        dll_Vensim = ops_mód['dll_Vensim']
+        try:
+            dll_Vensim = ops_mód['dll_Vensim']
+        except KeyError:
+            dll_Vensim = None
 
         # Llamar el DLL de Vensim.
         if dll_Vensim is None:
@@ -95,6 +81,25 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                 dll = crear_dll_Vensim(arch_dll_Vensim)
         else:
             dll = crear_dll_Vensim(dll_Vensim)
+
+        nmbr, ext = os.path.splitext(archivo)
+        if ext == '.mdl':
+            símismo.tipo_mod = '.mdl'
+
+            if dll is not None:
+                # Únicamente recrear el archivo .vpm si necesario
+                if not os.path.isfile(nmbr + '.vpm') or (os.path.getmtime(nmbr + '.vpm') < os.path.getmtime(archivo)):
+                    símismo.publicar_modelo(dll=dll)
+                archivo = nmbr + '.vpm'
+
+        elif ext == '.vpm':
+            símismo.tipo_mod = '.vpm'
+
+        else:
+            raise ValueError(
+                _('Vensim no sabe leer modelos del formato "{}". Debes darle un modelo ".mdl" o ".vpm".')
+                    .format(ext)
+            )
 
         if dll is None:
             return
@@ -146,8 +151,16 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                 if x and x not in ['FINAL TIME', 'TIME STEP', 'INITIAL TIME', 'SAVEPER', 'Time']
             ]
 
-        # Para guardar los nombres de variables editables
-        editables = []
+        # Para guardar los nombres de variables editables (se debe hacer aquí y no por `tipo_var` porque Vensim
+        # los reporta como de tipo `Auxiliary`.
+        cmd_vensim(func=símismo.mod.vensim_get_varnames,
+                   args=['*', 12, mem, tamaño_nec],
+                   mensaje_error=_('Error obteniendo los nombres de los variables editables ("Gaming") de '
+                                   'VENSIM.'),
+                   val_error=-1
+                   )
+
+        símismo.editables = [x for x in mem.raw.decode().split('\x00') if x]
 
         for var in variables:
             # Para cada variable...
@@ -167,9 +180,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                 tipo_var = 'auxiliar'
             elif tipo_var == 'Initial':
                 tipo_var = 'inicial'
-            elif tipo_var == 'Gaming':
-                editables.append(var)
-                tipo_var = 'auxiliar'
             elif tipo_var in [
                 'Data', 'Constraint', 'Lookup', 'Group', 'Subscript Range', 'Test Input', 'Time Base',
                 'Subscript Constant'
@@ -201,6 +211,11 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
             hijos = símismo._obt_atrib_var(var, 5)
             parientes = símismo._obt_atrib_var(var, 4)
 
+            if tipo_var == 'auxiliar' and not len(parientes):
+                tipo_var = 'constante'
+
+            ingreso = tipo_var in ['constante', 'inicial']
+
             # Actualizar el diccionario de variables.
             # Para cada variable, creamos un diccionario especial, con su valor y unidades. Puede ser un variable
             # de ingreso si es de tipo_mod editable ("Gaming"), y puede ser un variable de egreso si no es un valor
@@ -211,9 +226,9 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                        'ec': ec,
                        'hijos': hijos,
                        'parientes': parientes,
-                       'tipo_mod': tipo_var,
-                       'ingreso': var in editables,
-                       'egreso': tipo_var != 'constante',
+                       'tipo': tipo_var,
+                       'ingreso': ingreso,
+                       'egreso': tipo_var not in ['constante', 'inicial'],
                        'líms': rango,
                        'info': info}
 
@@ -223,12 +238,19 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         # Convertir los auxiliares parientes de niveles a flujos
         nivs = símismo.niveles()
         for nv in nivs:
-            flujos = símismo.parientes(nv)
-            for flj in flujos:
+            ec = Ecuación(símismo.obt_ec_var(nv), dialecto='vensim')
+            args_integ, args_inic = ec.sacar_args_func('INTEG')
 
-                # No cambiar variables constantes a flujos, únicamente auxiliares
-                if símismo.variables[flj]['tipo_mod'] == 'auxiliar':
-                    símismo.variables[flj]['tipo_mod'] = 'flujo'
+            # Identificar variables iniciales
+            if args_inic in símismo.variables:
+                símismo.variables[args_inic]['tipo'] = 'inicial'
+
+            flujos = [v for v in Ecuación(args_integ, dialecto='vensim').variables() if v in símismo.variables]
+            for flj in flujos:
+                símismo.variables[flj]['tipo'] = 'flujo'
+
+        # Aplicar los variables iniciales
+        símismo._leer_vals_de_vensim()
 
     def _reinic_vals(símismo):
         """
@@ -255,7 +277,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         return unidades
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         """
         Acciones necesarias para iniciar el modelo Vensim.
 
@@ -268,7 +290,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         """
 
         # En Vensim, tenemos que incializar los valores de variables constantes antes de empezar la simulación.
-        símismo.cambiar_vals({var: val for var, val in vals_inic.items() if var in símismo.constantes()})
+        símismo.cambiar_vals({var: val for var, val in vals_inic.items() if var not in símismo.editables})
 
         # Establecer el nombre de la corrida.
         cmd_vensim(func=símismo.mod.vensim_command,
@@ -293,7 +315,9 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                    mensaje_error=_('Error estableciendo el paso de Vensim.'))
 
         # Aplicar los valores iniciales de variables editables
-        símismo.cambiar_vals({var: val for var, val in vals_inic.items() if var not in símismo.constantes()})
+        símismo.cambiar_vals({var: val for var, val in vals_inic.items() if var in símismo.editables})
+
+        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
 
     def _cambiar_vals_modelo_externo(símismo, valores):
         """
@@ -599,56 +623,20 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
     def _generar_archivo_mod(símismo):
 
-        # Leer las tres secciones generales de la fuente
-        with open(símismo.archivo, encoding='UTF-8') as d:
-            # La primera línea del documento, con {UTF-8}
-            cabeza = [d.readline()]
+        gen_archivo_mdl(archivo_plantilla=símismo.archivo, d_vars=símismo.variables)
 
-            l = d.readline()
-            # Seguir hasta la primera línea que NO contiene información de variables ("****...***" para Vensim).
-            while not regex.match(r'\*+\n$', l) and not regex.match(r'\\\\\\\-\-\-\/\/\/', l):
-                l = d.readline()
+    def publicar_modelo(símismo, dll=None):  # pragma: sin cobertura
 
-            # Guardar todo el resto del fuente (que no contiene información de ecuaciones de variables).
-            cola = d.readlines()
-            cola += [l] + cola
+        if dll is None:
+            dll = símismo.mod
 
-        cuerpo = [símismo._escribir_var(var) for var in símismo.variables]
-
-        return '\n'.join(*(cabeza + cuerpo + cola))
-
-    def _escribir_var(símismo, var):
-        """
-
-        :param var:
-        :type var: str
-
-        :return:
-        :rtype: str
-        """
-
-        dic_var = símismo.variables[var]
-
-        if dic_var['ec'] == '':
-            dic_var['ec'] = 'A FUNCTION OF (%s)' % ', '.join(dic_var['parientes'])
-        lím_línea = 80
-
-        texto = [var + '=\n',
-                 _cortar_líns(dic_var['ec'], lím_línea, lín_1='\t', lín_otras='\t\t'),
-                 _cortar_líns(dic_var['unidades'], lím_línea, lín_1='\t', lín_otras='\t\t'),
-                 _cortar_líns(dic_var['comentarios'], lím_línea, lín_1='\t~\t', lín_otras='\t\t'), '\t' + '|']
-
-        return texto
-
-    def publicar_modelo(símismo):  # pragma: sin cobertura
-
-        if símismo.tipo_mod is not '.mdl':
+        if símismo.tipo_mod != '.mdl':
             raise ValueError(_('Solamente se pueden publicar a .vpm los modelos de formato .mdl'))
 
-        cmd_vensim(símismo.mod.vensim_command, 'SPECIAL>LOADMODEL|%s' % símismo.archivo)
+        cmd_vensim(dll.vensim_command, 'SPECIAL>LOADMODEL|%s' % símismo.archivo)
 
         archivo_frm = os.path.join(os.path.split(os.path.dirname(__file__))[0], 'Vensim.frm')
-        cmd_vensim(símismo.mod.vensim_command, ('FILE>PUBLISH|%s' % archivo_frm))
+        cmd_vensim(dll.vensim_command, ('FILE>PUBLISH|%s' % archivo_frm))
 
     def instalado(símismo):
         return símismo.mod is not None
@@ -715,6 +703,48 @@ def cmd_vensim(func, args, mensaje_error=None, val_error=None, devolver=False): 
     # Devolver el valor devuelto por la función Vensim, si aplica.
     if devolver:
         return resultado
+
+
+def gen_archivo_mdl(archivo_plantilla, d_vars):
+    # Leer las tres secciones generales de la fuente
+    with open(archivo_plantilla, encoding='UTF-8') as d:
+        # La primera línea del documento, con {UTF-8}
+        cabeza = [d.readline()]
+
+        l = d.readline()
+        # Seguir hasta la primera línea que NO contiene información de variables ("****...***" para Vensim).
+        while not regex.match(r'\*+\n$', l) and not regex.match(r'\\\\\\\-\-\-\/\/\/', l):
+            l = d.readline()
+
+        # Guardar todo el resto del fuente (que no contiene información de ecuaciones de variables).
+        cola = d.readlines()
+        cola += [l] + cola
+
+    cuerpo = [_escribir_var(var, d_var) for var, d_var in d_vars.items()]
+
+    return '\n'.join(*(cabeza + cuerpo + cola))
+
+
+def _escribir_var(var, dic_var):
+    """
+
+    :param var:
+    :type var: str
+
+    :return:
+    :rtype: str
+    """
+
+    if dic_var['ec'] == '':
+        dic_var['ec'] = 'A FUNCTION OF (%s)' % ', '.join(dic_var['parientes'])
+    lím_línea = 80
+
+    texto = [var + '=\n',
+             _cortar_líns(dic_var['ec'], lím_línea, lín_1='\t', lín_otras='\t\t'),
+             _cortar_líns(dic_var['unidades'], lím_línea, lín_1='\t', lín_otras='\t\t'),
+             _cortar_líns(dic_var['comentarios'], lím_línea, lín_1='\t~\t', lín_otras='\t\t'), '\t' + '|']
+
+    return texto
 
 
 def _cortar_líns(texto, máx_car, lín_1=None, lín_otras=None):

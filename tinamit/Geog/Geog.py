@@ -285,7 +285,7 @@ class Geografía(object):
                                   'color': color,
                                   'llenar': llenar,
                                   'alpha': alpha,
-                                  'tipo_mod': tipo}
+                                  'tipo': tipo}
 
     def agregar_frm_regiones(símismo, archivo, col_id, escala_geog=None):
         """
@@ -642,7 +642,7 @@ class Geografía(object):
 
         for nombre, d_obj in símismo.formas.items():
 
-            tipo = d_obj['tipo_mod']
+            tipo = d_obj['tipo']
 
             for a in ['color', 'llenar', 'alpha']:
                 if d_obj[a] is None:

@@ -4,12 +4,11 @@ import unittest
 import numpy.testing as npt
 import xarray.testing as xrt
 
-from tinamit.EnvolturasMDS import ModeloVensim, ModeloPySD, ModeloVensimMdl, generar_mds
+from tinamit.EnvolturasMDS import ModeloVensim, ModeloPySD, generar_mds
 from tinamit.MDS import EnvolturaMDS
 
 # Los tipos de modelos DS que queremos comprobar.
 tipos_modelos = {
-    'mdlVensim': {'envlt': ModeloVensimMdl, 'prueba': 'recursos/MDS/prueba_senc.mdl'},
     'PySDVensim': {'envlt': ModeloPySD, 'prueba': 'recursos/MDS/prueba_senc.mdl'},
     'PySD_XMILE': {'envlt': ModeloPySD, 'prueba': 'recursos/MDS/prueba_senc_.xmile'},
     'dllVensim': {'envlt': ModeloVensim, 'prueba': 'recursos/MDS/prueba_senc.vpm'}
@@ -68,6 +67,52 @@ class Test_ModeloSenc(unittest.TestCase):
             with símismo.subTest(mod=ll):
                 vars_modelo = set(mod.variables)
                 símismo.assertSetEqual(set(símismo.info_vars), vars_modelo)
+
+    def test_iniciales(símismo):
+        ref = {'Nivel lago inicial'}
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                iniciales = mod.iniciales()
+                símismo.assertSetEqual(set(iniciales), ref)
+
+    def test_niveles(símismo):
+        ref = {'Lago'}
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                niveles = mod.niveles()
+                símismo.assertSetEqual(set(niveles), ref)
+
+    def test_constantes(símismo):
+        ref = {'Aleatorio', 'Lluvia'}
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                constantes = mod.constantes()
+                símismo.assertSetEqual(set(constantes), ref)
+
+    def test_flujos(símismo):
+        ref = {'Flujo río', 'Evaporación'}
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                flujos = mod.flujos()
+                símismo.assertSetEqual(set(flujos), ref)
+
+    def test_auxiliares(símismo):
+        ref = set()
+
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                auxiliares = mod.auxiliares()
+                símismo.assertSetEqual(set(auxiliares), ref)
+
+    def test_parientes(símismo):
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                símismo.assertSetEqual(set(mod.parientes('Lago')), {'Evaporación', 'Flujo río', 'Nivel lago inicial'})
+
+    def test_hijos(símismo):
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                símismo.assertSetEqual(set(mod.hijos('Lluvia')), {'Flujo río'})
 
     def test_unid_tiempo(símismo):
         """
@@ -265,8 +310,8 @@ class Test_GenerarMDS(unittest.TestCase):
         mod = generar_mds(tipos_modelos['PySDVensim']['prueba'], motor=ModeloPySD)
         símismo.assertIsInstance(mod, ModeloPySD)
 
-        mod = generar_mds(tipos_modelos['PySDVensim']['prueba'], motor=ModeloVensimMdl)
-        símismo.assertIsInstance(mod, ModeloVensimMdl)
+        mod = generar_mds(tipos_modelos['PySDVensim']['prueba'], motor=ModeloVensim, enforzar_instalado=False)
+        símismo.assertIsInstance(mod, ModeloVensim)
 
     def test_generación_auto_mds_modelo_erróneo(símismo):
         """

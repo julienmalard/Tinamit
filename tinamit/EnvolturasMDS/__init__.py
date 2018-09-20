@@ -8,7 +8,7 @@ from tinamit.cositas import verificar_dirección_arch
 
 dic_motores = {
     '.vpm': [ModeloVensim],
-    '.mdl': [ModeloPySD],
+    '.mdl': [ModeloPySD, ModeloVensim],
     '.xml': [ModeloPySD],
     '.xmile': [ModeloPySD]
 
@@ -16,7 +16,7 @@ dic_motores = {
 }
 
 
-def generar_mds(archivo, motor=None):
+def generar_mds(archivo, motor=None, enforzar_instalado=True):
     """
     Esta función genera una instancia de modelo de DS. Identifica el tipo_mod de fuente por su extensión (p. ej., .vpm) y
     después genera una instancia de la subclase apropiada de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS`.
@@ -54,11 +54,16 @@ def generar_mds(archivo, motor=None):
                 motor = [motor]
             motores_potenciales = [x for x in dic_motores[ext] if x in motor]
 
+        if not len(motores_potenciales):
+            raise ValueError(_('No encontramos envoltura potencial para modelos de tipo "{}".').format(ext))
+
         for env in motores_potenciales:
             try:
                 mod = env(archivo)  # type: EnvolturaMDS
-                if mod.instalado():
+                if mod.instalado() or not enforzar_instalado:
                     return mod
+                else:
+                    errores[env.__name__] = 'Programa no instalado.'
             except BaseException as e:
                 errores[env.__name__] = e
 

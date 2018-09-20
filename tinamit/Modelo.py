@@ -111,11 +111,6 @@ class Modelo(object):
                                                                                              atr=', '.join(faltan))
                 )
 
-            if isinstance(d_var['val'], np.ndarray):
-                d_var['dims'] = d_var['val'].shape
-            else:
-                d_var['dims'] = (1,)
-
     def unidad_tiempo(símismo):
         """
         Esta función debe devolver la unidad de tiempo empleada por el modelo.
@@ -129,6 +124,18 @@ class Modelo(object):
         raise NotImplementedError
 
     def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+        """
+        Esta función llama cualquier acción necesaria para preparar el modelo para la simulación. Esto incluye aplicar
+        valores iniciales. En general es muy fácil y se hace simplemente con "símismo.cambiar_vals(vals_inic)",
+        pero para unos modelos (como Vensim) es un poco más delicado así que los dejamos a ti para implementar.
+
+        :param tiempo_final: El tiempo final de la simulación.
+        :type tiempo_final: int
+
+        :param nombre_corrida: El nombre de la corrida (generalmente para guardar resultados).
+        :type nombre_corrida: str
+
+        """
 
         # Establecer la corrida actual
         símismo.corrida_activa = nombre_corrida
@@ -139,17 +146,8 @@ class Modelo(object):
         # Actualizar valores iniciales en el diccionario interno
         símismo._act_vals_dic_var(vals_inic)
 
-        # Acciones de inicialización propias a cada modelo, incluso aplicación de valores iniciales al modelo externo
-        símismo._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
-
-        #
-        símismo._aplicar_vals_inic()
-
     def _reinic_vals(símismo):
         raise NotImplementedError
-
-    def _aplicar_vals_inic(símismo):
-        pass
 
     def _act_vals_dic_var(símismo, valores):
         """
@@ -176,21 +174,6 @@ class Modelo(object):
                 # Si no es matriz, podemos cambiar el valor directamente.
                 if not np.isnan(val):  # Evitar cambiar si no existe el nuevo valor.
                     símismo.variables[var]['val'] = val
-
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
-        """
-        Esta función llama cualquier acción necesaria para preparar el modelo para la simulación. Esto incluye aplicar
-        valores iniciales. En general es muy fácil y se hace simplemente con "símismo.cambiar_vals(vals_inic)",
-        pero para unos modelos (como Vensim) es un poco más delicado así que los dejamos a ti para implementar.
-
-        :param tiempo_final: El tiempo final de la simulación.
-        :type tiempo_final: int
-
-        :param nombre_corrida: El nombre de la corrida (generalmente para guardar resultados).
-        :type nombre_corrida: str
-
-        """
-        raise NotImplementedError
 
     def _procesar_rango_tiempos(símismo, t_inic, t_final, paso):
 
@@ -1202,7 +1185,11 @@ class Modelo(object):
         """
 
         var = símismo.valid_var(var)
-        return símismo.variables[var]['dims']
+        val = símismo.variables[var]['val']
+        if isinstance(val, np.ndarray):
+            return val.shape
+        else:
+            return (1,)
 
     def obt_ec_var(símismo, var):
         """
@@ -1467,7 +1454,7 @@ class Modelo(object):
             'ops_método': ops_método,
             'paráms': paráms,
             'líms_paráms': líms_paráms,
-            'tipo_mod': tipo
+            'tipo': tipo
         }
 
     def verificar_micro_calib(símismo, var, bd, en=None, escala=None, geog=None, corresp_vars=None):
@@ -1585,7 +1572,7 @@ class Modelo(object):
         líms_paráms = símismo.info_calibs['micro calibs'][var]['líms_paráms']
         paráms = símismo.info_calibs['micro calibs'][var]['paráms']
         ops = símismo.info_calibs['micro calibs'][var]['ops_método']
-        tipo = símismo.info_calibs['micro calibs'][var]['tipo_mod']
+        tipo = símismo.info_calibs['micro calibs'][var]['tipo']
 
         # Aplicar límites automáticos
         if líms_paráms is None:

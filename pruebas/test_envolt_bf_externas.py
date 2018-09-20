@@ -18,7 +18,7 @@ class Test_EnvolturasBF(unittest.TestCase):
     def test_dic_vars(símismo):
         for nmb, obj in símismo.envolturas_disp.items():
             with símismo.subTest(envlt=nmb):
-                ll_necesarias = ['val', 'unidades', 'ingreso', 'egreso', 'dims', 'líms', 'info']
+                ll_necesarias = ['val', 'unidades', 'ingreso', 'egreso', 'líms', 'info']
                 símismo.assertTrue(all(all(x in d_v for x in ll_necesarias) for d_v in obj.variables.values()))
 
     def test_leer_ingresos(símismo):

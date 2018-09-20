@@ -38,21 +38,21 @@ class EnvolturaMDS(Modelo):
 
     def constantes(símismo):
         return [var for var, d_var in símismo.variables.items() if
-                'tipo_mod' in d_var and d_var['tipo_mod'] == 'constante']
+                'tipo' in d_var and d_var['tipo'] == 'constante']
 
     def iniciales(símismo):
         return [var for var, d_var in símismo.variables.items() if
-                'tipo_mod' in d_var and d_var['tipo_mod'] == 'inicial']
+                'tipo' in d_var and d_var['tipo'] == 'inicial']
 
     def niveles(símismo):
-        return [var for var, d_var in símismo.variables.items() if 'tipo_mod' in d_var and d_var['tipo_mod'] == 'nivel']
+        return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'nivel']
 
     def flujos(símismo):
-        return [var for var, d_var in símismo.variables.items() if 'tipo_mod' in d_var and d_var['tipo_mod'] == 'flujo']
+        return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'flujo']
 
     def auxiliares(símismo):
         return [var for var, d_var in símismo.variables.items() if
-                'tipo_mod' in d_var and d_var['tipo_mod'] == 'auxiliar']
+                'tipo' in d_var and d_var['tipo'] == 'auxiliar']
 
     def hijos(símismo, var):
         var = símismo.valid_var(var)
@@ -113,7 +113,7 @@ class EnvolturaMDS(Modelo):
 
     def _verificar_dic_vars(símismo, reqs=None):
 
-        requísitos = ['ec', 'hijos', 'parientes', 'tipo_mod', 'info']
+        requísitos = ['ec', 'hijos', 'parientes', 'tipo', 'info']
         if reqs is not None:
             requísitos += reqs
 
@@ -131,7 +131,7 @@ class EnvolturaMDS(Modelo):
     def _reinic_vals(símismo):
         raise NotImplementedError
 
-    def _propagar_vals_vars_inic(símismo, valores):
+    def _propagar_vals_inic_niveles(símismo):
 
         for v in símismo.iniciales():
             hijos = símismo.hijos(v)
@@ -149,7 +149,7 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         """
         Este método se deja a las subclases de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS` para implementar. Notar que la
         implementación de este método debe incluir la aplicación de valores iniciales.
@@ -172,7 +172,9 @@ class EnvolturaMDS(Modelo):
 
             os.remove(arch_temp)
 
-        super()._iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
+        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
+
+        símismo._propagar_vals_inic_niveles()
 
     def _cambiar_vals_modelo_externo(símismo, valores):
         """

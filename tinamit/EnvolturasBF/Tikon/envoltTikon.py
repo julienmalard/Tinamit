@@ -21,8 +21,8 @@ class ModeloTikon(ModeloImpaciente):  # pragma: sin cobertura
     def _inic_dic_vars(símismo):
         pass
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
-        pass
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
 
     def avanzar_modelo(símismo):
         pass

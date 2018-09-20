@@ -1,4 +1,5 @@
 import os
+import xml.etree.ElementTree as ET
 from ast import literal_eval
 
 import numpy as np
@@ -7,6 +8,7 @@ import xarray as xr
 
 import pysd
 from tinamit.Análisis.sintaxis import Ecuación
+from tinamit.EnvolturasMDS.Vensim import gen_archivo_mdl
 from tinamit.MDS import EnvolturaMDS
 from tinamit.config import _
 
@@ -66,53 +68,72 @@ class ModeloPySD(EnvolturaMDS):
                 obj_ec = Ecuación(ec)
                 var_juego = obj_ec.sacar_args_func('GAME') is not None
 
-                if regex.match(r'INTEG *\(', ec):
-                    tipo = 'nivel'
+                if símismo.tipo_mod == '.mdl':
+                    if regex.match(r'INTEG *\(', ec):
+                        tipo = 'nivel'
+                    else:
+                        tipo = 'auxiliar'  # cambiaremos el resto después
                 else:
-                    tipo = 'auxiliar'  # cambiaremos el resto después
+                    try:
+                        getattr(símismo.mod.components, 'integ_' + nombre_py)
+                        tipo = 'nivel'
+                    except AttributeError:
+                        tipo = 'auxiliar'
+
+                parientes = obj_ec.variables()
+
+                if tipo == 'auxiliar' and not len(parientes):
+                    tipo = 'constante'
 
                 símismo.variables[nombre] = {
                     'val': getattr(símismo.mod.components, nombre_py)(),
                     'unidades': unidades,
                     'ec': ec,
                     'hijos': [],
-                    'parientes': obj_ec.variables(),
+                    'parientes': parientes,
                     'líms': líms,
                     'info': f['Comment'],
-                    'tipo_mod': tipo,
+                    'tipo': tipo,
                     'ingreso': True,
                     'egreso': not var_juego
                 }
 
                 símismo._conv_nombres[nombre] = nombre_py
 
+        # Aplicar los otros tipos de variables
+        for niv in símismo.niveles():
+            ec = Ecuación(símismo.obt_ec_var(niv), dialecto='vensim')
+            if símismo.tipo_mod == '.mdl':
+                args_integ, args_inic = ec.sacar_args_func('INTEG')  # Analizar la función INTEG de VENSIM
+
+                # Identificar variables iniciales
+                if args_inic in símismo.variables:
+                    símismo.variables[args_inic]['tipo'] = 'inicial'
+
+                # Los flujos, por definición, son los otros parientes de los niveles.
+                flujos = [v for v in Ecuación(args_integ, dialecto='vensim').variables() if
+                          v not in internos]
+            else:
+                flujos = ec.variables()
+
+            for flujo in flujos:
+                # Para cada nivel en el modelo...
+                símismo.variables[flujo]['tipo'] = 'flujo'
+
+        # Detectar los variables iniciales de XMILE
+        if símismo.tipo_mod == '.xmile':
+            for nv in ET.parse(símismo.archivo).getroot().iter('{http://www.systemdynamics.org/XMILE}stock'):
+                inic = nv.find('{http://www.systemdynamics.org/XMILE}eqn').text
+
+                if inic in símismo.variables:
+                    símismo.variables[inic]['tipo'] = 'inicial'
+                    símismo.variables[nv.attrib['name']]['parientes'].add(inic)
+
         # Aplicar parientes a hijos
         for v, d_v in símismo.variables.items():
             for p in d_v['parientes']:
                 d_p = símismo.variables[p]
                 d_p['hijos'].append(v)
-
-        # Aplicar los otros tipos de variables
-        for niv in símismo.niveles():
-            ec = Ecuación(símismo.obt_ec_var(niv), dialecto='vensim')
-            args_integ, args_inic = ec.sacar_args_func('INTEG')  # Analizar la función INTEG de VENSIM
-
-            # Identificar variables iniciales
-            if args_inic in símismo.variables:
-                símismo.variables[args_inic]['tipo_mod'] = 'inicial'
-
-            # Los flujos, por definición, son los otros parientes de los niveles.
-            flujos = [v for v in Ecuación(args_integ, dialecto='vensim').variables() if
-                      v not in internos]
-            for flujo in flujos:
-                # Para cada nivel en el modelo...
-                símismo.variables[flujo]['tipo_mod'] = 'flujo'
-
-        # Los constantes son los variables todavía marcados como "auxiliares" y que no tienen parientes.
-        for var in símismo.auxiliares():
-            d_var = símismo.variables[var]
-            if not len(d_var['parientes']):
-                d_var['tipo_mod'] = 'constante'
 
     def unidad_tiempo(símismo):
         docs = símismo.mod.doc()
@@ -131,7 +152,7 @@ class ModeloPySD(EnvolturaMDS):
 
         return unid_tiempo
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
 
         # Poner los variables y el tiempo a sus valores iniciales
         símismo.mod.reload()
@@ -142,6 +163,8 @@ class ModeloPySD(EnvolturaMDS):
         símismo.paso_act = símismo.mod.time._t
         símismo.vars_para_cambiar.clear()
         símismo.vars_para_cambiar.update(vals_inic)
+
+        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
 
     def _reinic_vals(símismo):
         """
@@ -200,8 +223,14 @@ class ModeloPySD(EnvolturaMDS):
     def cerrar_modelo(símismo):
         pass
 
+    def _generar_archivo_mod(símismo):
+        if símismo.tipo_mod == '.mdl':
+            return gen_archivo_mdl(archivo_plantilla=símismo.archivo, d_vars=símismo.variables)
+        else:
+            raise NotImplementedError(símismo.tipo_mod)
+
     def paralelizable(símismo):
         return True
 
     def editable(símismo):
-        return símismo.tipo_mod != '.py'
+        return símismo.tipo_mod != '.py' and símismo.tipo_mod != '.xmile'  # para hacer: agregar xmile

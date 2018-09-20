@@ -140,7 +140,7 @@ class EnvolturaBF(Modelo):
     def _leer_vals_inic(símismo):
         pass
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         """
         Inicializa el modelo biofísico interno, incluyendo la inicialización de variables.
 
@@ -153,6 +153,8 @@ class EnvolturaBF(Modelo):
         # Aplicar valores iniciales después de la inicialización del modelo. Simplemente llamamos la función
         # símismo.cambiar_vals() con el diccionario de valores iniciales.
         símismo.cambiar_vals(vals_inic)
+
+        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
 
     def cerrar_modelo(símismo):
         """
@@ -224,7 +226,7 @@ class ModeloBF(Modelo):
         """
         raise NotImplementedError
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         """
         Esta función debe preparar el modelo para una simulación.
 
@@ -233,6 +235,8 @@ class ModeloBF(Modelo):
         if not símismo.instalado():
             raise OSError(_('El modelo "{}" se debe instalar corectamente antes de hacer simulaciones.')
                           .format(símismo.__class__.__name__))
+
+        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
 
     def cerrar_modelo(símismo):
         """
@@ -675,7 +679,7 @@ class ModeloImpaciente(ModeloBF):
     def unidad_tiempo(símismo):
         raise NotImplementedError
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         símismo.i_pasito = 0
         símismo.tmñ_ciclo = símismo.obt_tmñ_ciclo()
 
@@ -692,7 +696,7 @@ class ModeloImpaciente(ModeloBF):
             if vr in por_pasito:
                 símismo.matrs_egr[vr] = np.zeros(símismo.tmñ_ciclo)
 
-        super()._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
+        super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
     def _vars_por_pasito(símismo):
         return [var for var, d_var in símismo.variables.items() if 'pasito' in d_var and d_var['pasito']]
@@ -718,7 +722,6 @@ class ModeloImpaciente(ModeloBF):
 
         for var, d_var in símismo.variables.items():
             d_var['val'] = np.zeros(dims, dtype=float)
-            d_var['dims'] = dims
 
             if var in por_pasito:
                 símismo.datos_internos[var] = np.zeros((símismo.n_estaciones, *dims), dtype=float)
@@ -753,7 +756,7 @@ class ModeloBloques(ModeloBF):
         símismo.paso_en_bloque = 0
         símismo.tmñ_bloques = None
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         """
         Esta función debe preparar el modelo para una simulación. Si necesitas esta función para tu subclase,
         no se te olvide llamar ``super().iniciar_modelo()`` para no saltar la reinicialización del bloque y del paso.

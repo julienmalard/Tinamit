@@ -90,28 +90,24 @@ class EnvoltDSSAT(ModeloBF):  # pragma: sin cobertura
                  'unidades': 'kg/año',
                  'ingreso': False,
                  'egreso': True,
-                 'dims': (1,)
                  },
             'Irrigación':
                 {'val': 0,
                  'unidades': None,
                  'ingreso': True,
                  'egreso': False,
-                 'dims': (1,)
                  },
             'Orgánico':
                 {'val': 0,
                  'unidades': None,
                  'ingreso': True,
                  'egreso': False,
-                 'dims': (1,)
                  },
             'Químico':
                 {'val': 1,
                  'unidades': None,
                  'ingreso': True,
                  'egreso': False,
-                 'dims': (1,)
                  },
         }
 

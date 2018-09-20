@@ -26,8 +26,8 @@ class Envoltura(ModeloBF):
                                         'egreso': False,
                                         }
 
-    def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
-        pass
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
 
     def unidad_tiempo(símismo):
         return "Meses"
