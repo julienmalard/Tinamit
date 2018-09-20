@@ -830,7 +830,7 @@ class SuperConectado(Modelo):
 
 class Conectado(SuperConectado):
     """
-    Esta clase representa un tipo especial de modelo :class:`~tinamit.Conectado.SuperConectado`: la conexión entre un
+    Esta clase representa un tipo_mod especial de modelo :class:`~tinamit.Conectado.SuperConectado`: la conexión entre un
     modelo biofísico y un modelo DS.
     """
 

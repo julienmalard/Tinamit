@@ -177,7 +177,7 @@ class EnvolturaBF(Modelo):
 
 class ModeloBF(Modelo):
     """
-    Se debe desarrollar una subclase de esta clase para cada tipo modelo biofísico que se quiere volver compatible
+    Se debe desarrollar una subclase de esta clase para cada tipo_mod modelo biofísico que se quiere volver compatible
     con Tinamit.
     """
 
@@ -303,7 +303,7 @@ class ModeloImpacienteAnterior(ModeloBF):
     año, pero ofrece detalles al nivel estacional (de 1-12 meses) que pueden ser muy diferentes para distintas
     estaciones. Los llamo "impacientes" porque no los puedes hacer correr por un mes, sin que el modelo simule
     el año entero, sino más.
-    Esta envoltura te permite crear envolturas con pasos mensuales para este tipo de modelo anual,　pero sin　el
+    Esta envoltura te permite crear envolturas con pasos mensuales para este tipo_mod de modelo anual,　pero sin　el
     dolor de cabeza.
     """
 
@@ -321,7 +321,7 @@ class ModeloImpacienteAnterior(ModeloBF):
         símismo.n_estaciones = 12
         símismo.dur_estaciones = [1] * 12
 
-        # Un diccionario de variables de ingreso, egreso, y variables estacionales de cada tipo.
+        # Un diccionario de variables de ingreso, egreso, y variables estacionales de cada tipo_mod.
         símismo.tipos_vars = {
             'Ingresos': [], 'Egresos': [], 'IngrEstacionales': [], 'EgrEstacionales': []
         }

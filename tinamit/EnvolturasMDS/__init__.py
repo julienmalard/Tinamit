@@ -19,7 +19,7 @@ dic_motores = {
 
 def generar_mds(archivo, motor=None, editables=True):
     """
-    Esta función genera una instancia de modelo de DS. Identifica el tipo de fuente por su extensión (p. ej., .vpm) y
+    Esta función genera una instancia de modelo de DS. Identifica el tipo_mod de fuente por su extensión (p. ej., .vpm) y
     después genera una instancia de la subclase apropiada de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS`.
 
     Parameters
@@ -41,10 +41,10 @@ def generar_mds(archivo, motor=None, editables=True):
     # Identificar la extensión.
     ext = os.path.splitext(archivo)[1]
 
-    # Verificar si podemos leer este tipo de fuente.
+    # Verificar si podemos leer este tipo_mod de fuente.
     if ext not in dic_motores:
         # Mensaje para modelos todavía no incluidos en Tinamit.
-        raise ValueError(_('El tipo de modelo "{}" no se acepta como modelo DS en Tinamit al momento. Si piensas'
+        raise ValueError(_('El tipo_mod de modelo "{}" no se acepta como modelo DS en Tinamit al momento. Si piensas'
                            'que podrías contribuir aquí, ¡contáctenos!').format(ext))
     else:
         errores = {}

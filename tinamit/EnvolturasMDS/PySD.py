@@ -16,24 +16,7 @@ class ModeloPySD(EnvolturaMDS):
 
     def __init__(símismo, archivo, nombre='mds'):
 
-        nmbr, ext = os.path.splitext(archivo)
-        if ext == '.mdl':
-            símismo.tipo = '.mdl'
-            # Únicamente recrear el archivo .py si necesario
-            if os.path.isfile(nmbr + '.py') and (os.path.getmtime(nmbr + '.py') > os.path.getmtime(archivo)):
-                símismo.modelo = pysd.load(nmbr + '.py')
-            else:
-                símismo.modelo = pysd.read_vensim(archivo)
-        elif ext in ['.xmile', '.xml']:
-            símismo.tipo = '.xmile'
-            símismo.modelo = pysd.read_xmile(archivo)
-        elif ext == '.py':  # Modelos PySD ya traducidos
-            símismo.tipo = '.py'
-            símismo.modelo = pysd.load(archivo)
-        else:
-            raise ValueError(_('PySD no sabe leer modelos del formato "{}". Debes darle un modelo ".mdl" o ".xmile".')
-                             .format(ext))
-
+        símismo.tipo_mod = None
         símismo._conv_nombres = {}
         símismo.tiempo_final = None
         símismo.cont_simul = False
@@ -43,12 +26,33 @@ class ModeloPySD(EnvolturaMDS):
 
         super().__init__(archivo, nombre=nombre)
 
+    def _generar_mod(símismo, archivo, **ops_mód):
+        nmbr, ext = os.path.splitext(archivo)
+        if ext == '.mdl':
+            símismo.tipo_mod = '.mdl'
+            # Únicamente recrear el archivo .py si necesario
+            if os.path.isfile(nmbr + '.py') and (os.path.getmtime(nmbr + '.py') > os.path.getmtime(archivo)):
+                return pysd.load(nmbr + '.py')
+            else:
+                return pysd.read_vensim(archivo)
+        elif ext in ['.xmile', '.xml']:
+            símismo.tipo_mod = '.xmile'
+            return pysd.read_xmile(archivo)
+        elif ext == '.py':  # Modelos PySD ya traducidos
+            símismo.tipo_mod = '.py'
+            return pysd.load(archivo)
+        else:
+            raise ValueError(
+                _('PySD no sabe leer modelos del formato "{}". Debes darle un modelo ".py", ".mdl" o ".xmile".')
+                    .format(ext)
+            )
+
     def _inic_dic_vars(símismo):
         símismo.variables.clear()
         símismo._conv_nombres.clear()
 
         internos = ['FINAL TIME', 'TIME STEP', 'SAVEPER', 'INITIAL TIME']
-        for i, f in símismo.modelo.doc().iterrows():
+        for i, f in símismo.mod.doc().iterrows():
 
             if f['Type'] == 'lookup':
                 continue
@@ -68,14 +72,14 @@ class ModeloPySD(EnvolturaMDS):
                     tipo = 'auxiliar'  # cambiaremos el resto después
 
                 símismo.variables[nombre] = {
-                    'val': getattr(símismo.modelo.components, nombre_py)(),
+                    'val': getattr(símismo.mod.components, nombre_py)(),
                     'unidades': unidades,
                     'ec': ec,
                     'hijos': [],
                     'parientes': obj_ec.variables(),
                     'líms': líms,
                     'info': f['Comment'],
-                    'tipo': tipo,
+                    'tipo_mod': tipo,
                     'ingreso': True,
                     'egreso': not var_juego
                 }
@@ -95,29 +99,29 @@ class ModeloPySD(EnvolturaMDS):
 
             # Identificar variables iniciales
             if args_inic in símismo.variables:
-                símismo.variables[args_inic]['tipo'] = 'inicial'
+                símismo.variables[args_inic]['tipo_mod'] = 'inicial'
 
             # Los flujos, por definición, son los otros parientes de los niveles.
             flujos = [v for v in Ecuación(args_integ, dialecto='vensim').variables() if
                       v not in internos]
             for flujo in flujos:
                 # Para cada nivel en el modelo...
-                símismo.variables[flujo]['tipo'] = 'flujo'
+                símismo.variables[flujo]['tipo_mod'] = 'flujo'
 
         # Los constantes son los variables todavía marcados como "auxiliares" y que no tienen parientes.
         for var in símismo.auxiliares():
             d_var = símismo.variables[var]
             if not len(d_var['parientes']):
-                d_var['tipo'] = 'constante'
+                d_var['tipo_mod'] = 'constante'
 
     def unidad_tiempo(símismo):
-        docs = símismo.modelo.doc()
+        docs = símismo.mod.doc()
 
-        if símismo.tipo == '.mdl':
+        if símismo.tipo_mod == '.mdl':
             unid_tiempo = docs.loc[docs['Real Name'] == 'TIME STEP', 'Unit'].values[0]
 
         else:
-            with open(símismo.modelo.py_model_file, 'r', encoding='UTF-8') as d:
+            with open(símismo.mod.py_model_file, 'r', encoding='UTF-8') as d:
                 f = d.readline()
                 while f != 'def time_step():\n':
                     f = d.readline()
@@ -130,12 +134,12 @@ class ModeloPySD(EnvolturaMDS):
     def _iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
 
         # Poner los variables y el tiempo a sus valores iniciales
-        símismo.modelo.reload()
-        símismo.modelo.initialize()
+        símismo.mod.reload()
+        símismo.mod.initialize()
 
         símismo.cont_simul = False
         símismo.tiempo_final = tiempo_final
-        símismo.paso_act = símismo.modelo.time._t
+        símismo.paso_act = símismo.mod.time._t
         símismo.vars_para_cambiar.clear()
         símismo.vars_para_cambiar.update(vals_inic)
 
@@ -146,7 +150,7 @@ class ModeloPySD(EnvolturaMDS):
         """
 
         símismo._act_vals_dic_var({
-            var: getattr(símismo.modelo.components, símismo._conv_nombres[var])() for var in símismo.variables
+            var: getattr(símismo.mod.components, símismo._conv_nombres[var])() for var in símismo.variables
         })
 
     def _cambiar_vals_modelo_externo(símismo, valores):
@@ -161,12 +165,12 @@ class ModeloPySD(EnvolturaMDS):
         símismo.paso_act += paso
 
         if símismo.cont_simul:
-            símismo._res_recién = símismo.modelo.run(
+            símismo._res_recién = símismo.mod.run(
                 initial_condition='current', params=símismo.vars_para_cambiar,
                 return_timestamps=pasos_devolv, return_columns=símismo.vars_saliendo
             )
         else:
-            símismo._res_recién = símismo.modelo.run(
+            símismo._res_recién = símismo.mod.run(
                 return_timestamps=pasos_devolv, params=símismo.vars_para_cambiar,
                 return_columns=símismo.vars_saliendo
             )
@@ -198,3 +202,6 @@ class ModeloPySD(EnvolturaMDS):
 
     def paralelizable(símismo):
         return True
+
+    def editable(símismo):
+        return símismo.tipo_mod != '.py'

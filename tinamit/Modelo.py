@@ -27,7 +27,7 @@ class Modelo(object):
     """
     Todas las cosas en Tinamit son instancias de `Modelo`, que sea un modelo de dinámicas de los sistemas, un modelo de
     cultivos o de suelos o de clima, o un modelo conectado.
-    Cada tipo de modelo se representa por subclases específicas. Por eso, la gran mayoría de los métodos definidos
+    Cada tipo_mod de modelo se representa por subclases específicas. Por eso, la gran mayoría de los métodos definidos
     aquí se implementan de manera independiente en cada subclase de `Modelo`.
     """
 
@@ -142,17 +142,14 @@ class Modelo(object):
         # Acciones de inicialización propias a cada modelo, incluso aplicación de valores iniciales al modelo externo
         símismo._iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
-        # Actualizar los valores de variables que tienen valor inicial bajo nombre de otro variable
+        #
         símismo._aplicar_vals_inic()
-
-    def _aplicar_vals_inic(símismo):
-        for v in símismo.iniciales():
-            hijos = símismo.hijos(v)
-            val = símismo.obt_val_actual_var(v)
-            símismo._act_vals_dic_var({hj: val for hj in hijos})
 
     def _reinic_vals(símismo):
         raise NotImplementedError
+
+    def _aplicar_vals_inic(símismo):
+        pass
 
     def _act_vals_dic_var(símismo, valores):
         """
@@ -395,10 +392,10 @@ class Modelo(object):
         nombre_corrida : str
             El nombre de la corrida.
         vals_inic : dict | str | list | pd.DataFrame | xr.Dataset
-            Valores iniciales para variables. Si es de tipo ``str`` o ``list``, se tomarán los valores de `bd`.
+            Valores iniciales para variables. Si es de tipo_mod ``str`` o ``list``, se tomarán los valores de `bd`.
         vals_extern : dict | str | list | pd.DataFrame | xr.Dataset
             Valores externos que hay que actualizar a través de la simulación (no necesariamente iniciales).
-            Si es de tipo ``str`` o ``list``, se tomarán los valores de `bd`.
+            Si es de tipo_mod ``str`` o ``list``, se tomarán los valores de `bd`.
         bd : SuperBD | dict | str | pd.DataFrame | xr.Dataset
             Una base de datos opcional. Si se especifica, se empleará para obtener los valores de variables iniciales
             y externos.
@@ -570,10 +567,10 @@ class Modelo(object):
         nombre_corrida : list | str
             El nombre de la corrida.
         vals_inic : list | dict | str | list | pd.DataFrame | xr.Dataset
-            Valores iniciales para variables. Si es de tipo ``str`` o ``list``, se tomarán los valores de `bd`.
+            Valores iniciales para variables. Si es de tipo_mod ``str`` o ``list``, se tomarán los valores de `bd`.
         vals_extern : list | dict | str | list | pd.DataFrame | xr.Dataset
             Valores externos que hay que actualizar a través de la simulación (no necesariamente iniciales).
-            Si es de tipo ``str`` o ``list``, se tomarán los valores de `bd`.
+            Si es de tipo_mod ``str`` o ``list``, se tomarán los valores de `bd`.
         bd : SuperBD | dict | str | pd.DataFrame | xr.Dataset
             Una base de datos opcional. Si se especifica, se empleará para obtener los valores de variables iniciales
             y externos.
@@ -611,7 +608,7 @@ class Modelo(object):
         opciones = {'paso': paso, 't_inic': t_inic, 'lugar_clima': lugar_clima, 'vals_inic': vals_inic,
                     'vals_extern': vals_extern, 'clima': clima, 't_final': t_final}
 
-        # Entender el tipo de opciones (lista, diccionario, o valor único)
+        # Entender el tipo_mod de opciones (lista, diccionario, o valor único)
         tipos_ops = {
             nmb: dict if isinstance(op, dict) else list if isinstance(op, list) else 'val'
             for nmb, op in opciones.items()
@@ -619,7 +616,7 @@ class Modelo(object):
 
         # Una excepción para "vals_inic" y "vals_extern":
         # si es un diccionario con nombres de variables como llaves, es valor único;
-        # si tiene nombres de corridas como llaves y diccionarios de variables como valores, es de tipo diccionario.
+        # si tiene nombres de corridas como llaves y diccionarios de variables como valores, es de tipo_mod diccionario.
         for op in ['vals_inic', 'vals_extern']:
             op_inic = opciones[op]
             if isinstance(op_inic, list):
@@ -1470,7 +1467,7 @@ class Modelo(object):
             'ops_método': ops_método,
             'paráms': paráms,
             'líms_paráms': líms_paráms,
-            'tipo': tipo
+            'tipo_mod': tipo
         }
 
     def verificar_micro_calib(símismo, var, bd, en=None, escala=None, geog=None, corresp_vars=None):
@@ -1588,7 +1585,7 @@ class Modelo(object):
         líms_paráms = símismo.info_calibs['micro calibs'][var]['líms_paráms']
         paráms = símismo.info_calibs['micro calibs'][var]['paráms']
         ops = símismo.info_calibs['micro calibs'][var]['ops_método']
-        tipo = símismo.info_calibs['micro calibs'][var]['tipo']
+        tipo = símismo.info_calibs['micro calibs'][var]['tipo_mod']
 
         # Aplicar límites automáticos
         if líms_paráms is None:

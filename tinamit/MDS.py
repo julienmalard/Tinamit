@@ -1,5 +1,8 @@
 import os
+import tempfile
 
+from Análisis.sintaxis import Ecuación
+from cositas import guardar_archivo
 from tinamit.Modelo import Modelo
 from tinamit.config import _
 
@@ -7,10 +10,10 @@ from tinamit.config import _
 class EnvolturaMDS(Modelo):
     """
     Esta clase sirve para representar modelo de dinámicas de los sistemas (EnvolturasMDS). Se debe crear una subclase para cada
-    tipo de EnvolturasMDS. Al momento, el único incluido es VENSIM.
+    tipo_mod de EnvolturasMDS. Al momento, el único incluido es VENSIM.
     """
 
-    def __init__(símismo, archivo, nombre='mds'):
+    def __init__(símismo, archivo, nombre='mds', **ops_mód):
         """
         Iniciamos el modelo DS.
 
@@ -24,23 +27,32 @@ class EnvolturaMDS(Modelo):
         # Acordarse de dónde venimos
         símismo.archivo = archivo
 
+        # Generar el modelo externo
+        símismo.mod = símismo._generar_mod(archivo, **ops_mód)
+
+        #
+        símismo.editado = False
+
         # Modelos DS se identifican por el nombre 'mds'.
         super().__init__(nombre=nombre)
 
     def constantes(símismo):
-        return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'constante']
+        return [var for var, d_var in símismo.variables.items() if
+                'tipo_mod' in d_var and d_var['tipo_mod'] == 'constante']
 
     def iniciales(símismo):
-        return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'inicial']
+        return [var for var, d_var in símismo.variables.items() if
+                'tipo_mod' in d_var and d_var['tipo_mod'] == 'inicial']
 
     def niveles(símismo):
-        return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'nivel']
+        return [var for var, d_var in símismo.variables.items() if 'tipo_mod' in d_var and d_var['tipo_mod'] == 'nivel']
 
     def flujos(símismo):
-        return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'flujo']
+        return [var for var, d_var in símismo.variables.items() if 'tipo_mod' in d_var and d_var['tipo_mod'] == 'flujo']
 
     def auxiliares(símismo):
-        return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'auxiliar']
+        return [var for var, d_var in símismo.variables.items() if
+                'tipo_mod' in d_var and d_var['tipo_mod'] == 'auxiliar']
 
     def hijos(símismo, var):
         var = símismo.valid_var(var)
@@ -49,6 +61,43 @@ class EnvolturaMDS(Modelo):
     def parientes(símismo, var):
         var = símismo.valid_var(var)
         return símismo.variables[var]['parientes']
+
+    def editable(símismo):
+        return False
+
+    def editar_ec(símismo, var, ec):
+
+        if not símismo.editable():
+            raise NotImplementedError(_('El modelo "{}" no se puede editar.').format(str(símismo)))
+
+        var = símismo.valid_var(var)
+        try:
+            obj_ec = Ecuación(ec)
+            vars_ec = obj_ec.variables()
+            for v in vars_ec:
+                símismo.valid_var(v)
+
+        except ValueError:
+            raise ValueError(_('Error sintáctico en la ecuación "{}"').format(ec))
+
+        símismo.variables[var]['ec'] = ec
+        símismo.editado = True
+
+    def guardar_mod(símismo, archivo=None):
+
+        if archivo is None:
+            archivo = símismo.archivo
+
+        if símismo.editado:
+            guardar_archivo(arch=archivo, contenido=símismo._generar_archivo_mod())
+            símismo.mod = símismo._generar_mod(archivo)
+            símismo.editado = False
+
+    def _generar_archivo_mod(símismo):
+        raise NotImplementedError
+
+    def _generar_mod(símismo, archivo, **ops_mód):
+        raise NotImplementedError
 
     def _inic_dic_vars(símismo):
         """
@@ -64,7 +113,7 @@ class EnvolturaMDS(Modelo):
 
     def _verificar_dic_vars(símismo, reqs=None):
 
-        requísitos = ['ec', 'hijos', 'parientes', 'tipo', 'info']
+        requísitos = ['ec', 'hijos', 'parientes', 'tipo_mod', 'info']
         if reqs is not None:
             requísitos += reqs
 
@@ -81,6 +130,13 @@ class EnvolturaMDS(Modelo):
 
     def _reinic_vals(símismo):
         raise NotImplementedError
+
+    def _propagar_vals_vars_inic(símismo, valores):
+
+        for v in símismo.iniciales():
+            hijos = símismo.hijos(v)
+            val = símismo.obt_val_actual_var(v)
+            símismo._act_vals_dic_var({hj: val for hj in hijos})
 
     def unidad_tiempo(símismo):
         """
@@ -107,7 +163,16 @@ class EnvolturaMDS(Modelo):
         :type tiempo_final: int
 
         """
-        raise NotImplementedError
+        if símismo.editado:
+            ext = os.path.splitext(símismo.archivo)[1]
+            arch_temp = tempfile.NamedTemporaryFile('w', encoding='UTF-8', suffix=ext, delete=False).name
+            símismo.guardar_mod(arch_temp)
+
+            símismo.mod = símismo._generar_mod(archivo=arch_temp)
+
+            os.remove(arch_temp)
+
+        super()._iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
 
     def _cambiar_vals_modelo_externo(símismo, valores):
         """

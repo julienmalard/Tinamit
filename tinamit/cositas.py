@@ -1,6 +1,8 @@
 import json
 import os
+import shutil
 import tempfile
+from warnings import warn as avisar
 
 from chardet import UniversalDetector
 
@@ -108,10 +110,31 @@ def guardar_json(obj, arch):
         El fuente en el cual hay que guardar el objeto json.
 
     """
+    nmbr, ext = os.path.splitext(arch)
+    if not len(ext):
+        arch = nmbr + '.json'
+
+    contenido = json.dumps(obj, ensure_ascii=False, sort_keys=True, indent=2)
+    guardar_archivo(arch, contenido=contenido)
+
+
+def guardar_archivo(arch, contenido):
+    """
+    Guarda un documento de manera segura, sin riesgo de corrumpir el archivo existente si se interrumpe el proceso.
+
+    Parameters
+    ----------
+    arch : str
+        El archivo que hay que escribir.
+    contenido : str
+        El contenido deseado del archivo.
+
+    """
+
     with tempfile.NamedTemporaryFile('w', encoding='UTF-8', delete=False) as temp:
         # Escribimos primero a un fuente temporario para evitar de corrumpir nuestro fuente principal si el programa
         # se interrumpe durante la operación.
-        json.dump(obj, temp, ensure_ascii=False, sort_keys=True, indent=2)
+        temp.write(contenido)
 
         # Crear el directorio, si necesario
         direc = os.path.split(arch)[0]
@@ -119,17 +142,20 @@ def guardar_json(obj, arch):
             os.makedirs(os.path.split(arch)[0])
 
     # Después de haber escrito el fuente, ya podemos cambiar el nombre sin riesgo.
-    nmbr, ext = os.path.splitext(arch)
-    if not len(ext):
-        arch = nmbr + '.json'
-
     try:
-        os.replace(temp.name, arch)
+
+        if os.path.splitdrive(temp.name)[0] == os.path.splitdrive(arch)[0]:
+            os.replace(temp.name, arch)
+        else:
+            # En casos de documentos en distintos discos, debemos emplear `shutil` en vez.
+            shutil.move(temp.name, arch)
+
     except (PermissionError, FileNotFoundError):  # pragma: sin cobertura
         # Necesario en el caso de corridas en paralelo en Windows. Sin este, la reimportación de Tinamït ocasionada
         # por varias corridas paralelas al mismo tiempo puede causar que el mismo documento se escriba por dos procesos
         # al mismo tiempo, el cual trava el sistema.
-        pass
+        from config import _
+        avisar(_('No se pudo escribir al documento "{}"').format(arch))
 
 
 def cargar_json(arch, codif='UTF-8'):

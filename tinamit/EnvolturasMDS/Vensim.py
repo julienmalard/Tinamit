@@ -101,7 +101,7 @@ class ModeloVensimMdl(MDSEditable):
 
             ec = str(obj_ec)
 
-            # Detectar el tipo de variable
+            # Detectar el tipo_mod de variable
             if regex.match(r'INTEG *\(', ec):
                 tipo = 'nivel'
             else:
@@ -117,7 +117,7 @@ class ModeloVensimMdl(MDSEditable):
                 'parientes': obj_ec.variables(),
                 'ingreso': None,
                 'egreso': None,
-                'tipo': tipo,
+                'tipo_mod': tipo,
                 'info': tx_info.strip(),
             }
 
@@ -134,20 +134,20 @@ class ModeloVensimMdl(MDSEditable):
 
             # Identificar variables iniciales
             if args_inic in símismo.variables:
-                símismo.variables[args_inic]['tipo'] = 'inicial'
+                símismo.variables[args_inic]['tipo_mod'] = 'inicial'
 
             # Los flujos, por definición, son los otros parientes de los niveles.
             internos = ['FINAL TIME', 'TIME STEP', 'INITIAL TIME', 'SAVEPER', 'Time']
             flujos = [v for v in Ecuación(args_integ, dialecto='vensim').variables() if v not in internos]
             for flujo in flujos:
                 # Para cada nivel en el modelo...
-                símismo.variables[flujo]['tipo'] = 'flujo'
+                símismo.variables[flujo]['tipo_mod'] = 'flujo'
 
         # Los constantes son los variables todavía marcados como "auxiliares" y que no tienen parientes.
         for var in símismo.auxiliares():
             d_var = símismo.variables[var]
             if not len(d_var['parientes']):
-                d_var['tipo'] = 'constante'
+                d_var['tipo_mod'] = 'constante'
 
     def _escribir_var(símismo, var):
         """
@@ -181,34 +181,15 @@ class ModeloVensimMdl(MDSEditable):
     def publicar_modelo(símismo):
         símismo.publicar_vpm()
 
-    def publicar_vpm(símismo):  # pragma: sin cobertura
-
-        try:
-            dll = ctypes.WinDLL('C:\\Windows\\System32\\vendll32.dll')
-        except OSError:
-            raise OSError(_mnsj_falta_dll)
-
-        cmd_vensim(dll.vensim_command, 'SPECIAL>LOADMODEL|%s' % símismo.archivo_mds)
-        símismo.guardar_mds()
-
-        archivo_vpm = os.path.join(os.path.split(símismo.archivo_mds)[0], 'Tinamit.vpm')
-
-        archivo_frm = os.path.join(os.path.split(os.path.dirname(__file__))[0], 'VENSIM.frm')
-
-        cmd_vensim(dll.vensim_command, ('FILE>PUBLISH|%s' % archivo_frm))
-
 
 class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
     """
-    Esta es la envoltura para modelos de tipo VENSIM. Puede leer y controlar (casi) cualquier modelo VENSIM para que
+    Esta es la envoltura para modelos de tipo_mod VENSIM. Puede leer y controlar (casi) cualquier modelo VENSIM para que
     se pueda emplear en Tinamit.
     Necesitarás la __versión__ DSS de VENSIM para que funcione en Tinamit.
     """
 
     combin_pasos = True
-
-    def instalado(símismo):
-        return símismo.dll is not None
 
     def __init__(símismo, archivo, nombre='mds', dll_Vensim=None):
         """
@@ -219,6 +200,39 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         :type archivo: str
         """
 
+        # El paso para incrementar
+        símismo.paso = 1
+
+        # Una lista de variables editables
+        símismo.editables = []
+
+        símismo.tipo_mod = None
+
+        # Inicializar ModeloVENSIM como una EnvolturasMDS.
+        super().__init__(archivo=archivo, nombre=nombre, ops_mód={'dll_Vensim': dll_Vensim})
+
+    def _generar_mod(símismo, archivo, **ops_mód):
+
+        nmbr, ext = os.path.splitext(archivo)
+        if ext == '.mdl':
+            símismo.tipo_mod = '.mdl'
+
+            # Únicamente recrear el archivo .vpm si necesario
+            if os.path.isfile(nmbr + '.vpm') and (os.path.getmtime(nmbr + '.vpm') > os.path.getmtime(archivo)):
+                símismo.publicar_modelo()
+            archivo = nmbr + '.vpm'
+
+        elif ext == '.vpm':
+            símismo.tipo_mod = '.vpm'
+
+        else:
+            raise ValueError(
+                _('Vensim no sabe leer modelos del formato "{}". Debes darle un modelo ".mdl" o ".vpm".')
+                    .format(ext)
+            )
+
+        dll_Vensim = ops_mód['dll_Vensim']
+
         # Llamar el DLL de Vensim.
         if dll_Vensim is None:
             lugares_probables = [
@@ -228,38 +242,31 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
             arch_dll_Vensim = símismo._obt_val_config(llave='dll_Vensim', cond=os.path.isfile,
                                                       respaldo=lugares_probables)
             if arch_dll_Vensim is None:
-                símismo.dll = None
+                dll = None
             else:
-                símismo.dll = crear_dll_Vensim(arch_dll_Vensim)
+                dll = crear_dll_Vensim(arch_dll_Vensim)
         else:
-            símismo.dll = crear_dll_Vensim(dll_Vensim)
+            dll = crear_dll_Vensim(dll_Vensim)
 
-        if símismo.dll is None:
+        if dll is None:
             return
 
         # Inicializar Vensim
-        cmd_vensim(func=símismo.dll.vensim_command,
+        cmd_vensim(func=dll.vensim_command,
                    args=[''],
                    mensaje_error=_('Error iniciando VENSIM.'))
 
         # Cargar el modelo
-        cmd_vensim(func=símismo.dll.vensim_command,
+        cmd_vensim(func=dll.vensim_command,
                    args='SPECIAL>LOADMODEL|%s' % archivo,
                    mensaje_error=_('Error cargando el modelo de VENSIM.'))
 
         # Parámetros estéticos de ejecución.
-        cmd_vensim(func=símismo.dll.vensim_be_quiet, args=[2],
+        cmd_vensim(func=dll.vensim_be_quiet, args=[2],
                    mensaje_error=_('Error en la comanda "vensim_be_quiet".'),
                    val_error=-1)
 
-        # El paso para incrementar
-        símismo.paso = 1
-
-        # Una lista de variables editables
-        símismo.editables = []
-
-        # Inicializar ModeloVENSIM como una EnvolturasMDS.
-        super().__init__(archivo=archivo, nombre=nombre)
+        return dll
 
     def _inic_dic_vars(símismo):
         """
@@ -272,7 +279,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
             mem = ctypes.create_string_buffer(0)  # Crear una memoria intermedia
 
             # Verificar el tamaño necesario
-            tamaño_nec = cmd_vensim(func=símismo.dll.vensim_get_varnames,
+            tamaño_nec = cmd_vensim(func=símismo.mod.vensim_get_varnames,
                                     args=['*', t, mem, 0],
                                     mensaje_error=_('Error obteniendo eñ tamaño de los variables VENSIM.'),
                                     val_error=-1, devolver=True
@@ -281,7 +288,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
             mem = ctypes.create_string_buffer(tamaño_nec)  # Una memoria intermedia con el tamaño apropiado
 
             # Guardar y decodar los nombres de los variables.
-            cmd_vensim(func=símismo.dll.vensim_get_varnames,
+            cmd_vensim(func=símismo.mod.vensim_get_varnames,
                        args=['*', t, mem, tamaño_nec],
                        mensaje_error=_('Error obteniendo los nombres de los variables de VENSIM.'),
                        val_error=-1
@@ -300,7 +307,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
             # Sacar sus unidades
             unidades = símismo._obt_atrib_var(var, cód_attrib=1)
 
-            # Verificar el tipo del variable
+            # Verificar el tipo_mod del variable
             tipo_var = símismo._obt_atrib_var(var, cód_attrib=14)
 
             # Guardamos los variables constantes en una lista.
@@ -348,7 +355,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
             # Actualizar el diccionario de variables.
             # Para cada variable, creamos un diccionario especial, con su valor y unidades. Puede ser un variable
-            # de ingreso si es de tipo editable ("Gaming"), y puede ser un variable de egreso si no es un valor
+            # de ingreso si es de tipo_mod editable ("Gaming"), y puede ser un variable de egreso si no es un valor
             # constante.
             dic_var = {'val': None if dims == (1,) else np.zeros(dims),  # Se llenarán los valores ahorita
                        'unidades': unidades,
@@ -356,7 +363,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                        'ec': ec,
                        'hijos': hijos,
                        'parientes': parientes,
-                       'tipo': tipo_var,
+                       'tipo_mod': tipo_var,
                        'ingreso': var in editables,
                        'egreso': tipo_var != 'constante',
                        'líms': rango,
@@ -372,8 +379,8 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
             for flj in flujos:
 
                 # No cambiar variables constantes a flujos, únicamente auxiliares
-                if símismo.variables[flj]['tipo'] == 'auxiliar':
-                    símismo.variables[flj]['tipo'] = 'flujo'
+                if símismo.variables[flj]['tipo_mod'] == 'auxiliar':
+                    símismo.variables[flj]['tipo_mod'] = 'flujo'
 
     def _reinic_vals(símismo):
         """
@@ -416,24 +423,24 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         símismo.cambiar_vals({var: val for var, val in vals_inic.items() if var in símismo.constantes()})
 
         # Establecer el nombre de la corrida.
-        cmd_vensim(func=símismo.dll.vensim_command,
+        cmd_vensim(func=símismo.mod.vensim_command,
                    args="SIMULATE>RUNNAME|%s" % nombre_corrida,
                    mensaje_error=_('Error iniciando la corrida VENSIM.'))
 
         # Establecer el tiempo final.
-        cmd_vensim(func=símismo.dll.vensim_command,
+        cmd_vensim(func=símismo.mod.vensim_command,
                    args='SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', tiempo_final + 1),
                    mensaje_error=_('Error estableciendo el tiempo final para VENSIM.'))
 
         # Iniciar la simulación en modo juego ("Game"). Esto permitirá la actualización de los valores de los variables
         # a través de la simulación.
-        cmd_vensim(func=símismo.dll.vensim_command,
+        cmd_vensim(func=símismo.mod.vensim_command,
                    args="MENU>GAME",
                    mensaje_error=_('Error inicializando el juego VENSIM.'))
 
         # Es ABSOLUTAMENTE necesario establecer el intervalo del juego aquí. Sino, no reinicializa el paso
         # correctamente entre varias corridas (aún modelos) distintas.
-        cmd_vensim(func=símismo.dll.vensim_command,
+        cmd_vensim(func=símismo.mod.vensim_command,
                    args="GAME>GAMEINTERVAL|%i" % símismo.paso,
                    mensaje_error=_('Error estableciendo el paso de VENSIM.'))
 
@@ -443,7 +450,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
     def _cambiar_vals_modelo_externo(símismo, valores):
         """
         Esta función cambiar los valores de variables en VENSIM. Notar que únicamente los variables identificados como
-        de tipo "Gaming" en el modelo podrán actualizarse.
+        de tipo_mod "Gaming" en el modelo podrán actualizarse.
 
         :param valores: Un diccionario de variables y sus nuevos valores.
         :type valores: dict
@@ -458,7 +465,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
                 # Actualizar el valor en el modelo VENSIM.
                 if not np.isnan(val):
-                    cmd_vensim(func=símismo.dll.vensim_command,
+                    cmd_vensim(func=símismo.mod.vensim_command,
                                args='SIMULATE>SETVAL|%s = %f' % (var, val),
                                mensaje_error=_('Error cambiando el variable %s.') % var)
             else:
@@ -475,7 +482,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                     var_s = var + s
                     val_s = matr[n]
                     if not np.isnan(val_s):
-                        cmd_vensim(func=símismo.dll.vensim_command,
+                        cmd_vensim(func=símismo.mod.vensim_command,
                                    args='SIMULATE>SETVAL|%s = %f' % (var_s, val_s),
                                    mensaje_error=_('Error cambiando el variable %s.') % var_s)
 
@@ -490,13 +497,13 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         # Establecer el paso.
         if paso != símismo.paso:
-            cmd_vensim(func=símismo.dll.vensim_command,
+            cmd_vensim(func=símismo.mod.vensim_command,
                        args="GAME>GAMEINTERVAL|%i" % paso,
                        mensaje_error=_('Error estableciendo el paso de VENSIM.'))
             símismo.paso = paso
 
         # Avanzar el modelo.
-        cmd_vensim(func=símismo.dll.vensim_command,
+        cmd_vensim(func=símismo.mod.vensim_command,
                    args="GAME>GAMEON", mensaje_error=_('Error para incrementar VENSIM.'))
 
     def _pedir_val_var(símismo, var):
@@ -505,7 +512,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         mem_inter = ctypes.create_string_buffer(4)
 
         # Leer el valor del variable
-        cmd_vensim(func=símismo.dll.vensim_get_val,
+        cmd_vensim(func=símismo.mod.vensim_get_val,
                    args=[var, mem_inter],
                    mensaje_error=_('Error con VENSIM para leer variable "{}".').format(var))
 
@@ -561,15 +568,15 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         # Necesario para guardar los últimos valores de los variables conectados. (Muy incómodo, yo sé.)
         if símismo.paso != 1:
-            cmd_vensim(func=símismo.dll.vensim_command,
+            cmd_vensim(func=símismo.mod.vensim_command,
                        args="GAME>GAMEINTERVAL|%i" % 1,
                        mensaje_error=_('Error estableciendo el paso de VENSIM.'))
-        cmd_vensim(func=símismo.dll.vensim_command,
+        cmd_vensim(func=símismo.mod.vensim_command,
                    args="GAME>GAMEON",
                    mensaje_error=_('Error para terminar la simulación VENSIM.'))
 
         # ¡Por fin! Llamar la comanda para terminar la simulación.
-        cmd_vensim(func=símismo.dll.vensim_command,
+        cmd_vensim(func=símismo.mod.vensim_command,
                    args="GAME>ENDGAME",
                    mensaje_error=_('Error para terminar la simulación VENSIM.'))
 
@@ -595,7 +602,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         """
 
         # Obtener el estatus.
-        estatus = cmd_vensim(func=símismo.dll.vensim_check_status,
+        estatus = cmd_vensim(func=símismo.mod.vensim_check_status,
                              args=[],
                              mensaje_error=_('Error verificando el estatus de VENSIM. De verdad, la cosa '
                                              'te va muy mal.'),
@@ -627,7 +634,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
             l_atrs = [_('las unidades'), _('la descipción'), _('la ecuación'), _('las causas'), _('las consecuencias'),
                       _('la causas iniciales'), _('las causas activas'), _('los subscriptos'),
                       _('las combinaciones de subscriptos'), _('los subscriptos de gráfico'), _('el mínimo'),
-                      _('el máximo'), _('el rango'), _('el tipo')]
+                      _('el máximo'), _('el rango'), _('el tipo_mod')]
             mns_error1 = _('Error leyendo el tamaño de memoria para obtener {} del variable "{}" en Vensim') \
                 .format(l_atrs[cód_attrib - 1], var)
             mns_error2 = _('Error leyendo {} del variable "{}" en Vensim.').format(l_atrs[cód_attrib - 1], var)
@@ -635,14 +642,14 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
             mns_error1 = mns_error2 = mns_error
 
         mem = ctypes.create_string_buffer(10)
-        tmñ = cmd_vensim(func=símismo.dll.vensim_get_varattrib,
+        tmñ = cmd_vensim(func=símismo.mod.vensim_get_varattrib,
                          args=[var, cód_attrib, mem, 0],
                          mensaje_error=mns_error1,
                          val_error=-1,
                          devolver=True)
 
         mem = ctypes.create_string_buffer(tmñ)
-        cmd_vensim(func=símismo.dll.vensim_get_varattrib,
+        cmd_vensim(func=símismo.mod.vensim_get_varattrib,
                    args=[var, cód_attrib, mem, tmñ],
                    mensaje_error=mns_error2,
                    val_error=-1)
@@ -714,11 +721,11 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         archivo_csv = archivo_csv or '!'
 
         # Necesitas el dll de Vensim para que funcione
-        if símismo.dll is None:
+        if símismo.mod is None:
             raise OSError(_mnsj_falta_dll)
 
         # Vensim hace la conversión para nosotr@s
-        símismo.dll.vensim_command(
+        símismo.mod.vensim_command(
             'MENU>VDF2CSV|{archVDF}|{archCSV}'.format(
                 archVDF=archivo_vdf + '.vdf', archCSV=archivo_csv + '.csv'
             ).encode()
@@ -742,10 +749,26 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
             escr = csv.writer(d)
             escr.writerows(filas)
 
+    def publicar_modelo(símismo):  # pragma: sin cobertura
+
+        if símismo.tipo_mod is not '.mdl':
+            raise ValueError(_('Solamente se pueden publicar a .vpm los modelos de formato .mdl'))
+
+        cmd_vensim(símismo.mod.vensim_command, 'SPECIAL>LOADMODEL|%s' % símismo.archivo)
+
+        archivo_frm = os.path.join(os.path.split(os.path.dirname(__file__))[0], 'VENSIM.frm')
+        cmd_vensim(símismo.mod.vensim_command, ('FILE>PUBLISH|%s' % archivo_frm))
+
+    def instalado(símismo):
+        return símismo.mod is not None
+
+    def editable(símismo):
+        return símismo.instalado() and símismo.tipo_mod == '.mdl'
+
 
 def cmd_vensim(func, args, mensaje_error=None, val_error=None, devolver=False):  # pragma: sin cobertura
     """
-    Esta función sirve para llamar todo tipo de comanda VENSIM.
+    Esta función sirve para llamar todo tipo_mod de comanda VENSIM.
 
     :param func: La función DLL a llamar.
     :type func: callable

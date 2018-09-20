@@ -50,7 +50,7 @@ def convertir(de, a, val=1, lengua=None):
 
     # Agregar unidades no reconocidas por Pint
     for u in unids_pres:
-        # Para cada tipo de unidad detectada en las unidades iniciales...
+        # Para cada tipo_mod de unidad detectada en las unidades iniciales...
 
         try:
             # Ver si Pint lo reconoce
