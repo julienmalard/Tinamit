@@ -137,8 +137,8 @@ class EnvolturaBF(Modelo):
         """
         símismo.modelo.leer_vals()
 
-    def _leer_vals_inic(símismo):
-        pass
+    def _reinic_vals(símismo):
+        símismo.modelo._reinic_vals()
 
     def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         """

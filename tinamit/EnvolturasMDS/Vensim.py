@@ -254,7 +254,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
     def _reinic_vals(símismo):
         """
-        Inecesario porque llamar una nueva simulación de Vensim en :meth:`_iniciar_modelo` reinicializa valores
+        Inecesario porque llamar una nueva simulación de Vensim en :meth:`iniciar_modelo` reinicializa valores
         automáticamente.
         """
 

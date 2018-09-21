@@ -36,14 +36,6 @@ class EnvolturaMDS(Modelo):
         # Modelos DS se identifican por el nombre 'mds'.
         super().__init__(nombre=nombre)
 
-    def constantes(símismo):
-        return [var for var, d_var in símismo.variables.items() if
-                'tipo' in d_var and d_var['tipo'] == 'constante']
-
-    def iniciales(símismo):
-        return [var for var, d_var in símismo.variables.items() if
-                'tipo' in d_var and d_var['tipo'] == 'inicial']
-
     def niveles(símismo):
         return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'nivel']
 
@@ -61,6 +53,9 @@ class EnvolturaMDS(Modelo):
     def parientes(símismo, var):
         var = símismo.valid_var(var)
         return símismo.variables[var]['parientes']
+
+    def paráms(símismo):
+        return símismo.constantes()
 
     def editable(símismo):
         return False

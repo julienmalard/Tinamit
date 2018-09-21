@@ -244,10 +244,19 @@ class Test_3ModelosConectados(unittest.TestCase):
 
 
 class Test_GenerarConectado(unittest.TestCase):
+
     def test_generar_con_submodelos(símismo):
         mds = generar_mds(archivo=arch_mds)
         bf = ModeloPrueba(unid_tiempo='mes')
         cnctd = Conectado(bf, mds)
+        símismo.assertSetEqual(set(cnctd.modelos), {'mds', 'bf'})
+
+    def test_generar_sin_submodelos(símismo):
+        mds = generar_mds(archivo=arch_mds)
+        bf = ModeloPrueba(unid_tiempo='mes')
+        cnctd = Conectado()
+        cnctd.estab_bf(bf)
+        cnctd.estab_mds(mds)
         símismo.assertSetEqual(set(cnctd.modelos), {'mds', 'bf'})
 
 

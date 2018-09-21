@@ -471,8 +471,9 @@ class SuperConectado(Modelo):
             # Aplicar los cambios
             símismo.modelos[m_r].cambiar_vals(valores=dic_vals)
 
-    def _leer_vals_inic(símismo):
-        pass  # Se hace en iniciar_modelo para los submodelos.
+    def _reinic_vals(símismo):
+        for m in símismo.modelos.values():
+            m._reinic_vals()
 
     def _leer_vals(símismo):
         """
@@ -702,14 +703,6 @@ class SuperConectado(Modelo):
             raise ValueError(_('El submodelo "{}" no existe en este modelo.'.format(str(modelo))))
         return modelo
 
-
-    def estab_conv_unid_tiempo(símismo, unid_ref, factor):
-
-        super().estab_conv_unid_tiempo(unid_ref, factor)
-
-        for mod in símismo.modelos.values():
-            mod.estab_conv_unid_tiempo(unid_ref, factor)
-
     def valid_var(símismo, var):
         if var in símismo.variables:
             return var
@@ -882,7 +875,7 @@ class Conectado(SuperConectado):
         Establece el modelo biofísico (:class:`~tinamit.BF.EnvolturasBF`).
 
         :param bf: El fuente con la clase del modelo biofísico. **Debe** ser un fuente de Python.
-        :type bf: str | EnvolturaBF
+        :type bf: str | EnvolturaBF | ModeloBF
 
         """
 

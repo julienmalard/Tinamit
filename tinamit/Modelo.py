@@ -48,16 +48,8 @@ class Modelo(object):
 
         """
 
-        # No se puede incluir nombres de modelos con "_" en el nombre (podría corrumpir el manejo de variables en
-        # modelos jerarquizados).
-        if "_" in nombre:
-            avisar(_('No se pueden emplear nombres de modelos con "_", así que no puedes nombrar tu modelo "{}".\n'
-                     'Sino, causaría problemas de conexión de variables por una razón muy compleja y oscura.\n'
-                     'Vamos a renombrar tu modelo "{}". Lo siento.').format(nombre, nombre.replace('_', '.')))
-            nombre = nombre.replace('_', '.')
-
         # El nombre del modelo (sirve como una referencia a este modelo en el modelo conectado).
-        símismo.nombre = nombre
+        símismo.nombre = _valid_nombre_mod(nombre)
 
         # El diccionario de variables necesita la forma siguiente. Se llena con la función símismo._inic_dic_vars().
         # {var1: {'val': 13, 'unidades': cm, 'ingreso': True, 'egreso': True},
@@ -86,8 +78,8 @@ class Modelo(object):
         # Para guardar variables climáticos
         símismo.vars_clima = {}  # Formato: {var1: {'nombre_extrn': nombre_oficial, 'combin': 'prom' | 'total'}, ...}
 
-        # Para manejar unidades de tiempo y su correspondencia con fechas iniciales.
-        símismo._conv_unid_tiempo = {'unid_ref': None, 'factor': 1}  # type: dict[str]
+        # Para manejar conversiones entre unidades de tiempo.
+        símismo._conv_unid_tiempo = {}
 
     def _inic_dic_vars(símismo):
         """
@@ -107,8 +99,8 @@ class Modelo(object):
             faltan = [r for r in requísitos if r not in d_var]
             if len(faltan):
                 raise ValueError(
-                    _('Al variable "{var}" le falta los atributos siguientes: {atr}').format(var=var,
-                                                                                             atr=', '.join(faltan))
+                    _('Al variable "{var}" le falta los atributos siguientes: {atr}')
+                        .format(var=var, atr=', '.join(faltan))
                 )
 
     def unidad_tiempo(símismo):
@@ -1004,7 +996,7 @@ class Modelo(object):
             # Aplicar el cambio
             símismo.cambiar_vals(valores={var: datos[var_clima] * conv})
 
-    def estab_conv_unid_tiempo(símismo, unid_ref, factor=1):
+    def estab_conv_unid_tiempo(símismo, unid_ref, unid=None, factor=1):
         """
         Establece, manualmente, el factor de conversión para convertir la unidad de tiempo del modelo a unidades
         reconocidas por Tinamït. Únicamente necesario si Tinamït no logra inferir este factor por sí mismo.
@@ -1013,12 +1005,17 @@ class Modelo(object):
         ----------
         unid_ref : str
             La unidad de referencia.
+        unid : str
+            La unidad para convertir a la unidad de referencia. Dejar como ``None`` para utilizar la unidad de tiempo
+            del modelo.
         factor : float | int
             El factor de conversión entre la unidad del modelo y la de referencia.
         """
 
-        símismo._conv_unid_tiempo['unid_ref'] = unid_ref
-        símismo._conv_unid_tiempo['factor'] = factor
+        if unid is None:
+            unid = símismo.unidad_tiempo()
+
+        símismo._conv_unid_tiempo[unid] = {'ref': unid_ref, 'factor': factor}
 
     def dibujar_mapa(símismo, var, geog, directorio, corrida=None, i_paso=None, colores=None, escala=None):
         """
@@ -1239,6 +1236,14 @@ class Modelo(object):
 
         return [v for v, d_v in símismo.variables.items() if d_v['ingreso']]
 
+    def constantes(símismo):
+        return [var for var, d_var in símismo.variables.items() if
+                'tipo' in d_var and d_var['tipo'] == 'constante']
+
+    def iniciales(símismo):
+        return [var for var, d_var in símismo.variables.items() if
+                'tipo' in d_var and d_var['tipo'] == 'inicial']
+
     def paráms(símismo):
         """
         Devuelve los nombres de los parámetros del modelo.
@@ -1251,25 +1256,14 @@ class Modelo(object):
 
         """
 
-        seguros = [v for v, d_v in símismo.variables.items() if ['parám'] in d_v and d_v['parám']]
+        seguros = [v for v in símismo.constantes() if v not in símismo.iniciales()]
 
-        potenciales = [v for v, d_v in símismo.variables.items()
-                       if v not in seguros and d_v['ingreso'] is True and
-                       (not d_v['estado_inicial'] or 'estado_inicial' not in d_v)]
+        potenciales = [
+            v for v, d_v in símismo.variables.items() if
+            v not in seguros and v in símismo.ingresos() and v not in símismo.egresos() and v not in símismo.iniciales()
+        ]
 
         return {'seguros': seguros, 'potenciales': potenciales}
-
-    def vars_estado_inicial(símismo):
-        """
-        Devuelve los variables que determinan el estado inicial del modelo.
-
-        Returns
-        -------
-        list[str]:
-            Una lista de variables de estado inicial.
-        """
-
-        return [v for v, d_v in símismo.variables.items() if 'estado_inicial' in d_v and d_v['estado_inicial']]
 
     def leer_resultados(símismo, var=None, corrida=None):
         """
@@ -2152,3 +2146,28 @@ def _gen_dic_ops_corridas(nombre_corrida, combinar, tipos_ops, opciones):
                               'de texto.'))
 
     return corridas
+
+
+def _valid_nombre_mod(nombre):
+    """
+    No se puede incluir nombres de modelos con "_" en el nombre (podría corrumpir el manejo de variables en
+    modelos jerarquizados).
+
+    Parameters
+    ----------
+    nombre : str
+        El nombre propuesto para el modelo.
+
+    Returns
+    -------
+    str:
+        Un nombre aceptable.
+    """
+
+    if "_" in nombre:
+        avisar(_('No se pueden emplear nombres de modelos con "_", así que no puedes nombrar tu modelo "{}".\n'
+                 'Sino, causaría problemas de conexión de variables por una razón muy compleja y oscura.\n'
+                 'Vamos a renombrar tu modelo "{}". Lo siento.').format(nombre, nombre.replace('_', '.')))
+        nombre = nombre.replace('_', '.')
+
+    return nombre

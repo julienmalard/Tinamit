@@ -30,24 +30,27 @@ class ModeloPySD(EnvolturaMDS):
 
     def _generar_mod(símismo, archivo, **ops_mód):
         nmbr, ext = os.path.splitext(archivo)
-        if ext == '.mdl':
-            símismo.tipo_mod = '.mdl'
+
+        if ext == '.py':  # Modelos PySD ya traducidos
+            símismo.tipo_mod = '.py'
+            return pysd.load(archivo)
+
+        else:
+            if ext == '.mdl':
+                símismo.tipo_mod = '.mdl'
+            elif ext in ['.xmile', '.xml']:
+                símismo.tipo_mod = '.xmile'
+            else:
+                raise ValueError(
+                    _('PySD no sabe leer modelos del formato "{}". Debes darle un modelo ".py", ".mdl" o ".xmile".')
+                        .format(ext)
+                )
+
             # Únicamente recrear el archivo .py si necesario
             if os.path.isfile(nmbr + '.py') and (os.path.getmtime(nmbr + '.py') > os.path.getmtime(archivo)):
                 return pysd.load(nmbr + '.py')
             else:
-                return pysd.read_vensim(archivo)
-        elif ext in ['.xmile', '.xml']:
-            símismo.tipo_mod = '.xmile'
-            return pysd.read_xmile(archivo)
-        elif ext == '.py':  # Modelos PySD ya traducidos
-            símismo.tipo_mod = '.py'
-            return pysd.load(archivo)
-        else:
-            raise ValueError(
-                _('PySD no sabe leer modelos del formato "{}". Debes darle un modelo ".py", ".mdl" o ".xmile".')
-                    .format(ext)
-            )
+                return pysd.read_vensim(archivo) if ext == '.mdl' else pysd.read_xmile(archivo)
 
     def _inic_dic_vars(símismo):
         símismo.variables.clear()
