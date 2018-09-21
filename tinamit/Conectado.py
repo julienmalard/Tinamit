@@ -285,11 +285,8 @@ class SuperConectado(Modelo):
 
         vals_inic = símismo._frmt_dic_vars(vals_inic)
 
-        # ¡No se puede simular con menos de un modelo!
-        if len(símismo.modelos) < 1:
-            raise ValueError(_('Hay que conectar submodelos antes de empezar una simulación.'))
-
         # Si no estamos seguro de la conversión de unidades de tiempo, decirlo aquí.
+        símismo.unidad_tiempo()  # Recalcular la unidad de tiempo
         if símismo.conv_tiempo_dudoso:
             l_unids = [m.unidad_tiempo() for m in símismo.modelos.values()]
             avisar(_('No se pudo inferir la conversión de unidades de tiempo entre {}.\n'
@@ -417,6 +414,9 @@ class SuperConectado(Modelo):
         símismo.leer_vals()
 
         # Intercambiar variables
+        símismo._intercambiar_vars()
+
+    def _intercambiar_vars(símismo):
         for m_r, d_m_r in símismo.conex_rápida.items():
             dic_vals = {}
             for v_r, d_v_r in d_m_r.items():
@@ -505,6 +505,9 @@ class SuperConectado(Modelo):
             mod.iniciar_modelo(
                 tiempo_final=tiempo_final * conv_tiempo, nombre_corrida=nombre_corrida, vals_inic=vals_inic_mod
             )  # Iniciar el modelo
+
+        # Actualizar variables conectados para paso = 0
+        símismo._intercambiar_vars()
 
         super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
 
@@ -597,7 +600,7 @@ class SuperConectado(Modelo):
                 conv = convertir(de=unid_fuente, a=unid_recip)
             except ValueError:
                 # Si eso no funcionó, suponer una conversión de 1.
-                avisar(_('No se pudo identificar una conversión automática para las unidades de los variables'
+                avisar(_('No se pudo identificar una conversión automática para las unidades de los variables '
                          '"{}" (unidades: {}) y "{}" (unidades: {}). Se está suponiendo un factor de conversión de 1.')
                        .format(var_fuente, unid_fuente, var_recip, unid_recip))
                 conv = 1
