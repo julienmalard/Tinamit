@@ -45,6 +45,20 @@ class Test_Conectado(unittest.TestCase):
             mod_con.conectar(var_mds='Lago', var_bf='Lago', mds_fuente=True)
             mod_con.conectar(var_mds='Aleatorio', var_bf='Aleatorio', mds_fuente=False)
 
+    def test_reinic_vals(símismo):
+        """
+        Asegurarse que los variables se reinicializen correctamente después de una simulación.
+        """
+
+        for ll, mod in símismo.modelos.items():
+            with símismo.subTest(mod=ll):
+                egr1 = mod.simular(t_final=100, vars_interés=list(mod.variables))
+                egr2 = mod.simular(t_final=100, vars_interés=list(mod.variables))
+
+                for var in egr1.data_vars:
+                    if 'Aleatorio' not in var:
+                        npt.assert_array_equal(egr1[var].values, egr2[var].values, err_msg=var)
+
     def test_intercambio_de_variables_en_simular(símismo):
         """
         Asegurarse que valores intercambiados tengan valores iguales en los resultados de ambos modelos.
@@ -291,7 +305,7 @@ class Test_ConversionesUnidadesTiempo(unittest.TestCase):
         bf = ModeloPrueba(unid_tiempo='દિવસ')
         cnctd = Conectado(bf, símismo.mds)
         cnctd.conectar(var_mds='Aleatorio', var_bf='Escala', mds_fuente=False)
-        cnctd.estab_conv_tiempo(mod_base='mds', conv=30)
+        cnctd.estab_conv_unid_tiempo(unid_ref='día', unid='દિવસ')
         res = cnctd.simular(10, vars_interés=['bf_Escala', 'mds_Aleatorio'])
         npt.assert_array_equal(res['mds_Aleatorio'], np.arange(11 * 30, step=30))
 

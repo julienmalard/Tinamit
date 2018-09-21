@@ -301,11 +301,11 @@ class CajaCabeza(tk.Frame):
 
             if len(receta['conv_tiempo']):
                 if receta['conv_tiempo'][l_mod[0]] == 1:
-                    modelo.estab_conv_tiempo(mod_base=l_mod[0],
-                                             conv=receta['conv_tiempo'][l_mod[1]])
+                    modelo.estab_conv_unid_tiempo(mod_base=l_mod[0],
+                                                  conv=receta['conv_tiempo'][l_mod[1]])
                 else:
-                    modelo.estab_conv_tiempo(mod_base=l_mod[1],
-                                             conv=receta['conv_tiempo'][l_mod[0]])
+                    modelo.estab_conv_unid_tiempo(mod_base=l_mod[1],
+                                                  conv=receta['conv_tiempo'][l_mod[0]])
 
             receta['conexiones'] = modelo.conexiones
             receta['conv_tiempo'] = modelo.conv_tiempo

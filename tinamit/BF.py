@@ -9,10 +9,10 @@ from warnings import warn as avisar
 
 import numpy as np
 from dateutil.relativedelta import relativedelta as deltarelativo
+
 from tinamit.Modelo import Modelo
 from tinamit.config import _
 from tinamit.config import guardar_json, cargar_json
-
 from .Unidades.conv import convertir
 
 
@@ -33,6 +33,13 @@ class EnvolturaBF(Modelo):
 
         """
 
+        super().__init__(nombre=nombre)
+
+        # El modelo externo se debe establecer después de super().__init__ para que no se borren las conexiones
+        # dinámicas con los variables sel modelo externo.
+        símismo._estab_mod_extern(modelo)
+
+    def _estab_mod_extern(símismo, modelo):
         if isinstance(modelo, str):
 
             if not os.path.isfile(modelo):
@@ -84,8 +91,8 @@ class EnvolturaBF(Modelo):
                 raise TypeError(_('El parámetro "modelo" debe ser o una instancia o subclase de "ModeloBF", o un '
                                   'fuente Python que contiene uno.'))
 
-        super().__init__(nombre=nombre)
-
+        # Crear el vínculo
+        símismo.variables = símismo.modelo.variables
         símismo.vars_saliendo = símismo.modelo.vars_saliendo
         símismo.vars_clima = símismo.modelo.vars_clima
 
@@ -102,12 +109,11 @@ class EnvolturaBF(Modelo):
 
     def _inic_dic_vars(símismo):
         """
-        Inicializa los variables del modelo biofísico y los conecta al diccionario de variables del modelo.
+        No necesario porque el diccionario de variables está conectado con él del submodelo, que se inicializa
+        al instanciarse el submodelo.
 
         """
-
-        # Crear el vínculo
-        símismo.variables = símismo.modelo.variables
+        pass
 
     def _cambiar_vals_modelo_externo(símismo, valores):
         """
@@ -137,8 +143,11 @@ class EnvolturaBF(Modelo):
         """
         símismo.modelo.leer_vals()
 
-    def _reinic_vals(símismo):
-        símismo.modelo._reinic_vals()
+    def _vals_inic(símismo):
+        """
+        Inecesario porque :meth:`ModeloBF.iniciar_modelo` del modelo externo inicializará los variables.
+        """
+        return {}
 
     def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
         """
@@ -272,7 +281,7 @@ class ModeloBF(Modelo):
 
         raise NotImplementedError
 
-    def _leer_vals_inic(símismo):
+    def _vals_inic(símismo):
         """
         Lee los valores iniciales de los variables.
 
@@ -354,9 +363,6 @@ class ModeloImpacienteAnterior(ModeloBF):
         #  ...
         #  }
         símismo.datos_internos = {var: None for var in símismo.variables if var in símismo.tipos_vars['Estacionales']}
-
-        # Leer los valores iniciales
-        símismo._leer_vals_inic()
 
     def _act_vals_clima(símismo, n_paso, f):
         """
@@ -715,7 +721,7 @@ class ModeloImpaciente(ModeloBF):
     def _inic_dic_vars(símismo):
         raise NotImplementedError
 
-    def _leer_vals_inic(símismo):
+    def _vals_inic(símismo):
         dic_inic, dims = símismo._gen_dic_vals_inic()
 
         por_pasito = símismo._vars_por_pasito()
@@ -798,5 +804,5 @@ class ModeloBloques(ModeloBF):
     def _inic_dic_vars(símismo):
         pass
 
-    def _leer_vals_inic(símismo):
+    def _vals_inic(símismo):
         pass

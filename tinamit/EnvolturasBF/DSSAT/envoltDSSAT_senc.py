@@ -111,5 +111,5 @@ class EnvoltDSSAT(ModeloBF):  # pragma: sin cobertura
                  },
         }
 
-    def _leer_vals_inic(símismo):
+    def _vals_inic(símismo):
         pass

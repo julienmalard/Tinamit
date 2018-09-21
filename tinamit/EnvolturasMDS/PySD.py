@@ -139,9 +139,9 @@ class ModeloPySD(EnvolturaMDS):
                 d_p['hijos'].append(v)
 
     def unidad_tiempo(símismo):
-        docs = símismo.mod.doc()
 
         if símismo.tipo_mod == '.mdl':
+            docs = símismo.mod.doc()
             unid_tiempo = docs.loc[docs['Real Name'] == 'TIME STEP', 'Unit'].values[0]
 
         else:
@@ -169,15 +169,9 @@ class ModeloPySD(EnvolturaMDS):
 
         super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
 
-    def _reinic_vals(símismo):
-        """
-        Empleamos :meth:`_act_vals_dic_var` y no :meth:`cambiar_vals` porque no hay necesidad de cambiar los valores
-        en el modelo externo, visto que de allí estamos tomando los nuevos valores.
-        """
+    def _vals_inic(símismo):
 
-        símismo._act_vals_dic_var({
-            var: getattr(símismo.mod.components, símismo._conv_nombres[var])() for var in símismo.variables
-        })
+        return {var: getattr(símismo.mod.components, símismo._conv_nombres[var])() for var in símismo.variables}
 
     def _cambiar_vals_modelo_externo(símismo, valores):
         símismo.vars_para_cambiar.clear()

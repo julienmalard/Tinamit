@@ -2,44 +2,6 @@ from random import random as alea
 
 from tinamit.BF import ModeloBF
 
-d_vars = {
-    'Lluvia': {
-        'val': 1,
-        'unidades': 'm3/mes',
-        'líms': (0, None),
-        'ingreso': False,
-        'egreso': True,
-    },
-    'Lago': {
-        'val': 1000,
-        'unidades': 'm3',
-        'líms': (0, None),
-        'ingreso': True,
-        'egreso': False,
-    },
-    'Escala': {
-        'val': 0,
-        'unidades': '',
-        'líms': (0, None),
-        'ingreso': False,
-        'egreso': True,
-    },
-    'Vacío': {
-        'val': 10,
-        'unidades': 'm3/mes',
-        'líms': (0, None),
-        'ingreso': True,
-        'egreso': False,
-    },
-    'Aleatorio': {
-        'val': 0,
-        'unidades': 'Sdmn',
-        'líms': (0, 1),
-        'ingreso': False,
-        'egreso': True,
-    }
-}
-
 
 class ModeloPrueba(ModeloBF):
 
@@ -67,17 +29,41 @@ class ModeloPrueba(ModeloBF):
     def _inic_dic_vars(símismo):
         símismo.variables.clear()
 
-        símismo.variables.update(d_vars)
+        símismo.variables.update({
+            'Lluvia': {
+                'unidades': 'm3/mes',
+                'líms': (0, None),
+                'ingreso': False,
+                'egreso': True,
+            },
+            'Lago': {
+                'unidades': 'm3',
+                'líms': (0, None),
+                'ingreso': True,
+                'egreso': False,
+            },
+            'Escala': {
+                'unidades': '',
+                'líms': (0, None),
+                'ingreso': False,
+                'egreso': True,
+            },
+            'Vacío': {
+                'unidades': 'm3/mes',
+                'líms': (0, None),
+                'ingreso': True,
+                'egreso': False,
+            },
+            'Aleatorio': {
+                'unidades': 'Sdmn',
+                'líms': (0, 1),
+                'ingreso': False,
+                'egreso': True,
+            }
+        })
 
-    def _leer_vals_inic(símismo):
-        símismo.variables['Lluvia']['val'] = 1
-        símismo.variables['Lago']['val'] = 1000
-        símismo.variables['Escala']['val'] = 0
-        símismo.variables['Vacío']['val'] = 10
-        símismo.variables['Aleatorio']['val'] = 0
+    def _vals_inic(símismo):
+        return {'Lluvia': 1, 'Lago': 1000, 'Escala': 0, 'Vacío': 10, 'Aleatorio': 0}
 
     def paralelizable(símismo):
         return True
-
-    def _reinic_vals(símismo):
-        símismo.cambiar_vals({vr: d_vr['val'] for vr, d_vr in d_vars.items()})

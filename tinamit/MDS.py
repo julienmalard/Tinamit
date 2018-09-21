@@ -123,7 +123,7 @@ class EnvolturaMDS(Modelo):
             if not all(var in símismo.parientes(h) for h in hijos):
                 raise ValueError(mens_err.format(var))
 
-    def _reinic_vals(símismo):
+    def _vals_inic(símismo):
         raise NotImplementedError
 
     def _propagar_vals_inic_niveles(símismo):

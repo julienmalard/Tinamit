@@ -252,13 +252,13 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         # Aplicar los variables iniciales
         símismo._leer_vals_de_vensim()
 
-    def _reinic_vals(símismo):
+    def _vals_inic(símismo):
         """
         Inecesario porque llamar una nueva simulación de Vensim en :meth:`iniciar_modelo` reinicializa valores
-        automáticamente.
+        automáticamente, y la función :meth:`iniciar_modelo` los copia al diccionario interno después.
         """
 
-        pass
+        return {}
 
     def unidad_tiempo(símismo):
         """
@@ -316,6 +316,9 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         # Aplicar los valores iniciales de variables editables
         símismo.cambiar_vals({var: val for var, val in vals_inic.items() if var in símismo.editables})
+
+        # Reinicializar el diccionario interno también.
+        símismo._leer_vals_de_vensim()
 
         super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
 

@@ -321,18 +321,20 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
         cj_bt_simul.place(**gf(Fm.ubic_cj_bt_simular))
 
     def acción_desbloquear(símismo):
-        unidad_tiempo_mds = símismo.apli.Modelo.mds.unidad_tiempo()
-        unidad_tiempo_bf = símismo.apli.Modelo.bf.unidad_tiempo()
+        mds = símismo.apli.Modelo.mds
+        bf = símismo.apli.Modelo.bf
+        unidad_tiempo_mds = mds.unidad_tiempo()
+        unidad_tiempo_bf = bf.unidad_tiempo()
         símismo.MnTiempoRef.refrescar(opciones=[unidad_tiempo_mds, unidad_tiempo_bf])
-        if not len(símismo.apli.Modelo.conv_tiempo):
-            símismo.apli.Modelo.estab_conv_tiempo(mod_base='mds', conv=1)
+        if not len(símismo.apli.Modelo.conv_tiempo_mods):
+            símismo.apli.Modelo.estab_conv_unid_tiempo(unidad_tiempo_mds, unid=unidad_tiempo_bf, factor=1)
 
-        if símismo.apli.Modelo.conv_tiempo['mds'] == 1:
+        if símismo.apli.Modelo.conv_tiempo_mods['mds'] == 1:
             símismo.MnTiempoRef.poner(unidad_tiempo_mds)
-            conv = símismo.apli.Modelo.conv_tiempo['bf']
+            conv = símismo.apli.Modelo.conv_tiempo_mods[unidad_tiempo_bf]['factor']
         else:
             símismo.MnTiempoRef.poner(unidad_tiempo_bf)
-            conv = símismo.apli.Modelo.conv_tiempo['mds']
+            conv = símismo.apli.Modelo.conv_tiempo_mods[unidad_tiempo_mds]['factor']
         símismo.IngrConvUnidTiempo.poner(conv)
 
         símismo.verificar_completo()

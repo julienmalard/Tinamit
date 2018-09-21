@@ -58,6 +58,7 @@ class Modelo(object):
         símismo.variables = {}
         símismo._inic_dic_vars()  # Iniciar los variables.
         símismo._verificar_dic_vars()
+        símismo._reinic_vals()
 
         # Para calibraciones
         símismo.calibs = {}
@@ -91,11 +92,15 @@ class Modelo(object):
 
     def _verificar_dic_vars(símismo, reqs=None):
 
-        requísitos = ['val', 'unidades', 'líms', 'ingreso', 'egreso']
+        requísitos = ['unidades', 'líms', 'ingreso', 'egreso']
         if reqs is not None:
             requísitos += reqs
 
         for var, d_var in símismo.variables.items():
+
+            if 'val' not in d_var:
+                d_var['val'] = None
+
             faltan = [r for r in requísitos if r not in d_var]
             if len(faltan):
                 raise ValueError(
@@ -139,6 +144,10 @@ class Modelo(object):
         símismo._act_vals_dic_var(vals_inic)
 
     def _reinic_vals(símismo):
+        vals_inic = símismo._vals_inic()
+        símismo._act_vals_dic_var(vals_inic)
+
+    def _vals_inic(símismo):
         raise NotImplementedError
 
     def _act_vals_dic_var(símismo, valores):
@@ -156,11 +165,18 @@ class Modelo(object):
         # Para cara variable y valor...
         for var, val in valores.items():
 
-            if isinstance(símismo.variables[var]['val'], np.ndarray):
+            val_antes = símismo.variables[var]['val']
+
+            if val_antes is None:
+                # Si no existía valor antes, poner el nuevo valor sin pregunta (pero hacemos copias de matrices
+                # en caso que la matriz original se pueda modificar en otro lugar).
+                símismo.variables[var]['val'] = val.copy() if isinstance(val, np.ndarray) else val
+
+            elif isinstance(val_antes, np.ndarray):
                 # Si es matriz, tenemos que cambiar sus valores sin crear nueva matriz.
 
                 existen = np.invert(np.isnan(val))  # No cambiamos nuevos valores que faltan
-                símismo.variables[var]['val'][existen] = val[existen]
+                val_antes[existen] = val[existen]
 
             else:
                 # Si no es matriz, podemos cambiar el valor directamente.
