@@ -6,12 +6,12 @@ from subprocess import run
 import numpy as np
 import pkg_resources
 
-from tinamit.BF import ModeloImpaciente
+from tinamit.BF import ModeloBloques
 from tinamit.config import _
 from ._sahysmodIE import leer_info_dic_paráms, escribir_desde_dic_paráms
 
 
-class ModeloSAHYSMOD(ModeloImpaciente):
+class ModeloSAHYSMOD(ModeloBloques):
     """
     Envoltura para modelos SAHYSMOD.
     """

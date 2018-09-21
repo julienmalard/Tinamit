@@ -66,9 +66,11 @@ class Test_Conectado(unittest.TestCase):
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                egr = mod.simular(t_final=100, vars_interés=['bf_Aleatorio', 'mds_Aleatorio'])
+                egr = mod.simular(t_final=100)
 
-                npt.assert_array_equal(egr['bf_Aleatorio'], egr['mds_Aleatorio'])
+                npt.assert_array_equal(egr['bf_Aleatorio'], egr['mds_Aleatorio'], err_msg='Aleatorio')
+                npt.assert_array_equal(egr['bf_Lluvia'], egr['mds_Lluvia'], err_msg='Lluvia')
+                npt.assert_array_equal(egr['bf_Lago'], egr['mds_Lago'], err_msg='Lago')
 
     def test_simular_grupo(símismo):
         """
@@ -348,55 +350,69 @@ class Test_ConectarModeloBloques(unittest.TestCase):
 
 
 class Test_ConectarModeloImpaciente(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
         cls.n_ciclos = 2
         cls.tmñ_ciclo = 12
-        mod_impac = EjImpaciente(nombre='imp', n=cls.tmñ_ciclo, unid_tiempo='meses')
+        cls.mod_impac = mod_impac = EjImpaciente(nombre='imp', n=cls.tmñ_ciclo, unid_tiempo='meses')
         mod_base = ModeloPrueba(nombre='base', unid_tiempo='meses')
-        mod_con = SuperConectado(modelos=[mod_base, mod_impac])
-        mod_con.conectar_vars('ciclo', modelo_fuente=mod_impac, var_recip='Vacío', modelo_recip=mod_base)
-        mod_con.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_último', modelo_recip=mod_impac)
-        mod_con.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_suma', modelo_recip=mod_impac)
-        mod_con.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_prom', modelo_recip=mod_impac)
-        mod_con.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_máx', modelo_recip=mod_impac)
-        mod_con.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_directo', modelo_recip=mod_impac)
-        cls.res = mod_con.simular(t_final=cls.tmñ_ciclo * cls.n_ciclos, vars_interés=['base_Vacío'])
+        mod_cnctd = SuperConectado(modelos=[mod_base, mod_impac])
+
+        mod_cnctd.conectar_vars('ciclo', modelo_fuente=mod_impac, var_recip='Vacío', modelo_recip=mod_base)
+        mod_cnctd.conectar_vars('pasito', modelo_fuente=mod_impac, var_recip='Vacío2', modelo_recip=mod_base)
+        mod_cnctd.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_último', modelo_recip=mod_impac)
+        mod_cnctd.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_suma', modelo_recip=mod_impac)
+        mod_cnctd.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_prom', modelo_recip=mod_impac)
+        mod_cnctd.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_máx', modelo_recip=mod_impac)
+        mod_cnctd.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_directo', modelo_recip=mod_impac)
+
+        mod_impac.estab_proces_ingr('ingr_último', 'último')
+        mod_impac.estab_proces_ingr('ingr_suma', 'suma')
+        mod_impac.estab_proces_ingr('ingr_prom', 'prom')
+        mod_impac.estab_proces_ingr('ingr_máx', 'máx')
+
+        cls.res = mod_cnctd.simular(t_final=cls.tmñ_ciclo * cls.n_ciclos - 1)
 
         cls.escala = [np.arange(c * cls.tmñ_ciclo, c * cls.tmñ_ciclo + cls.tmñ_ciclo) for c in range(cls.n_ciclos)]
 
     def test_de_mod_impac(símismo):
         npt.assert_equal(
-            símismo.res['base_Vacío'], [x for i in range(símismo.n_ciclos) for x in [i] * símismo.tmñ_ciclo]
+            símismo.res['base_Vacío'].values, [x for i in range(símismo.n_ciclos) for x in [i] * símismo.tmñ_ciclo]
+        )
+
+    def test_de_mod_impac_por_pasito(símismo):
+        npt.assert_equal(
+            símismo.res['base_Vacío2'].values, np.tile(np.arange(símismo.tmñ_ciclo), 2)
         )
 
     def test_hacia_mod_impac_último(símismo):
         npt.assert_equal(
-            símismo.res['ingr_último'].values,
-            [x for i in símismo.escala for x in [i[-1]] * símismo.tmñ_ciclo]
+            símismo.res['imp_egr_último'].values,
+            [0] * símismo.tmñ_ciclo + [x for i in símismo.escala[:-1] for x in [i[-1]] * símismo.tmñ_ciclo]
         )
 
     def test_hacia_mod_impac_suma(símismo):
         npt.assert_equal(
-            símismo.res['ingr_último'].values,
-            [x for i in símismo.escala for x in [i.sum()] * símismo.tmñ_ciclo]
+            símismo.res['imp_egr_suma'].values,
+            [0] * símismo.tmñ_ciclo + [x for i in símismo.escala[:-1] for x in [i.sum()] * símismo.tmñ_ciclo]
         )
 
     def test_hacia_mod_impac_prom(símismo):
         npt.assert_equal(
-            símismo.res['ingr_último'].values,
-            [x for i in símismo.escala for x in [i.mean()] * símismo.tmñ_ciclo]
+            símismo.res['imp_egr_prom'].values,
+            [0] * símismo.tmñ_ciclo + [x for i in símismo.escala[:-1] for x in [i.mean()] * símismo.tmñ_ciclo]
         )
 
     def test_hacia_mod_impac_máx(símismo):
         npt.assert_equal(
-            símismo.res['ingr_último'].values,
-            [x for i in símismo.escala for x in [i.max()] * símismo.tmñ_ciclo]
+            símismo.res['imp_egr_máx'].values,
+            [0] * símismo.tmñ_ciclo + [x for i in símismo.escala[:-1] for x in [i.max()] * símismo.tmñ_ciclo]
         )
 
     def test_hacia_mod_impac_directo(símismo):
         npt.assert_equal(
-            símismo.res['ingr_último'].values,
+            símismo.res['imp_ingr_directo'].values,
             [x for i in símismo.escala for x in i]
         )
 

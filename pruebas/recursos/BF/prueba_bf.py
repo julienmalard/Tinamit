@@ -39,8 +39,8 @@ class ModeloPrueba(ModeloBF):
             'Lago': {
                 'unidades': 'm3',
                 'líms': (0, None),
-                'ingreso': True,
-                'egreso': False,
+                'ingreso': False,
+                'egreso': True,
             },
             'Escala': {
                 'unidades': '',
@@ -49,7 +49,13 @@ class ModeloPrueba(ModeloBF):
                 'egreso': True,
             },
             'Vacío': {
-                'unidades': 'm3/mes',
+                'unidades': '',
+                'líms': (0, None),
+                'ingreso': True,
+                'egreso': False,
+            },
+            'Vacío2': {
+                'unidades': '',
                 'líms': (0, None),
                 'ingreso': True,
                 'egreso': False,
@@ -63,7 +69,7 @@ class ModeloPrueba(ModeloBF):
         })
 
     def _vals_inic(símismo):
-        return {'Lluvia': 1, 'Lago': 1000, 'Escala': 0, 'Vacío': 10, 'Aleatorio': 0}
+        return {'Lluvia': 1, 'Lago': 1000, 'Escala': 0, 'Vacío': 10, 'Vacío2': 10, 'Aleatorio': 0}
 
     def paralelizable(símismo):
         return True

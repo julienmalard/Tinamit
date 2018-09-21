@@ -147,6 +147,12 @@ class Modelo(object):
         vals_inic = símismo._vals_inic()
         símismo._act_vals_dic_var(vals_inic)
 
+        vars_vacíos = [v for v in símismo.variables if símismo.obt_val_actual_var(v) is None]
+        if len(vars_vacíos):
+            raise ValueError(
+                _('No se inicializó valor para los variables siguientes: {}.').format(', '.join(vars_vacíos))
+            )
+
     def _vals_inic(símismo):
         raise NotImplementedError
 
@@ -406,7 +412,7 @@ class Modelo(object):
 
         # Formatear argumentos
         if vars_interés is None:
-            vars_interés = []
+            vars_interés = list(símismo.variables)
         elif isinstance(vars_interés, str):
             vars_interés = [vars_interés]
 

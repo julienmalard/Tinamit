@@ -637,12 +637,21 @@ class ModeloIndeterminado(ModeloBF):
 class ModeloImpaciente(ModeloBF):
 
     def __init__(símismo, nombre='modeloBF'):
-        super().__init__(nombre=nombre)
+
         símismo.tmñ_ciclo = None
         símismo.i_pasito = 0
         símismo.matrs_ingr = {}
         símismo.matrs_egr = {}
         símismo.proces_ingrs = {}
+
+        super().__init__(nombre=nombre)
+
+    def cambiar_vals(símismo, valores):
+
+        for var, val in valores.items():
+            símismo.matrs_ingr[var][símismo.i_pasito] = val
+
+        super().cambiar_vals(valores)
 
     def _cambiar_vals_modelo_externo(símismo, valores):
         """
@@ -658,26 +667,41 @@ class ModeloImpaciente(ModeloBF):
         # Para simplificar el código un poco.
         i = símismo.i_pasito
 
-        # Apuntar el diccionario interno de los valores al valor de este paso del ciclo
-        símismo._act_vals_dic_var({var: matr[i] for var, matr in símismo.matrs_ingr.items()})
-        símismo._act_vals_dic_var({var: matr[i] for var, matr in símismo.matrs_egr.items()})
+        # Aplicar el incremento de paso
+        i += int(paso)
+        avanzar = i // símismo.tmñ_ciclo > 0
+        i %= símismo.tmñ_ciclo
 
-        # Si es el principio de un ciclo, también hay que correr una simulación del modelo externo.
-        if i == 0:
+        # Guardar el pasito actual por la próxima vez.
+        símismo.i_pasito = i
+
+        # Si hay que avanzar el modelo externo, lanzar una su simulación aquí.
+        if avanzar:
             # El número de ciclos para simular
             c = mat.ceil(paso / símismo.tmñ_ciclo)  # type: int
+
+            # Procesar los ingresos
+            símismo.procesar_ingr_modelo()
 
             # Avanzar la simulación
             símismo.avanzar_modelo(n_ciclos=c)
 
-        # Aplicar el incremento de paso
-        i += int(paso)
+            # Leer los egresos del modelo
+            símismo.procesar_egr_modelo()
 
-        # Guardar la estación y el mes por la próxima vez.
-        símismo.i_pasito = i % símismo.tmñ_ciclo
+        # Apuntar el diccionario interno de los valores al valor de este paso del ciclo
+        símismo._act_vals_dic_var({var: matr[i] for var, matr in símismo.matrs_ingr.items()})
+        símismo._act_vals_dic_var({var: matr[i] for var, matr in símismo.matrs_egr.items()})
 
     def _leer_vals(símismo):
+        """
+        No necesario porque :meth:`_incrementar` ya incluye funciones para leer los egresos del modelo.
+        """
+
         pass
+
+    def leer_egr_modelo(símismo):
+        raise NotImplementedError
 
     def cerrar_modelo(símismo):
         raise NotImplementedError
@@ -689,18 +713,19 @@ class ModeloImpaciente(ModeloBF):
         símismo.i_pasito = 0
         símismo.tmñ_ciclo = símismo.obt_tmñ_ciclo()
 
-        por_pasito = símismo._vars_por_pasito()
 
         símismo.matrs_ingr.clear()
         símismo.matrs_egr.clear()
 
         for vr in símismo.ingresos():
-            if vr in por_pasito:
-                símismo.matrs_ingr[vr] = np.zeros(símismo.tmñ_ciclo)
+            dims = símismo.obt_dims_var(vr)
+            símismo.matrs_ingr[vr] = np.zeros((símismo.tmñ_ciclo, *dims) if dims != (1,) else símismo.tmñ_ciclo)
 
+        por_pasito = símismo._vars_por_pasito()
         for vr in símismo.vars_saliendo:
             if vr in por_pasito:
-                símismo.matrs_egr[vr] = np.zeros(símismo.tmñ_ciclo)
+                dims = símismo.obt_dims_var(vr)
+                símismo.matrs_egr[vr] = np.zeros((símismo.tmñ_ciclo, *dims) if dims != (1,) else símismo.tmñ_ciclo)
 
         super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
@@ -708,10 +733,13 @@ class ModeloImpaciente(ModeloBF):
         return [var for var, d_var in símismo.variables.items() if 'pasito' in d_var and d_var['pasito']]
 
     def estab_proces_ingr(símismo, var_ingr, proc):
-        posibilidades = ['último', 'suma', 'prom', 'máx', 'directo', None]
+        posibilidades = ['último', 'suma', 'prom', 'máx', None]
         if proc not in posibilidades:
             raise ValueError(proc)
         var_ingr = símismo.valid_var(var_ingr)
+
+        if var_ingr not in símismo.ingresos():
+            raise ValueError(_('El variable "{}" no es variable de ingreso.').format(var_ingr))
 
         if proc is not None:
             símismo.proces_ingrs[var_ingr] = proc
@@ -721,28 +749,44 @@ class ModeloImpaciente(ModeloBF):
     def _inic_dic_vars(símismo):
         raise NotImplementedError
 
+    def procesar_ingr_modelo(símismo):
+        for var, proc in símismo.proces_ingrs.items():
+            matr = símismo.matrs_ingr[var]
+            if proc == 'último':
+                símismo._act_vals_dic_var({var: matr[-1]})
+            elif proc == 'suma':
+                símismo._act_vals_dic_var({var: matr.sum()})
+            elif proc == 'prom':
+                símismo._act_vals_dic_var({var: matr.mean()})
+            elif proc == 'máx':
+                símismo._act_vals_dic_var({var: matr.max()})
+
+    def procesar_egr_modelo(símismo):
+        valores = símismo.leer_egr_modelo()
+
+        por_pasito = símismo._vars_por_pasito()
+        for var, val in valores.items():
+            if var in por_pasito:
+                símismo._act_vals_dic_var({var: val[0]})
+                if var in símismo.matrs_egr:
+                    símismo.matrs_egr[var][:] = val
+            else:
+                símismo._act_vals_dic_var({var: val})
+
     def _vals_inic(símismo):
-        dic_inic, dims = símismo._gen_dic_vals_inic()
+        dic_inic = símismo._gen_dic_vals_inic()
 
         por_pasito = símismo._vars_por_pasito()
 
-        for var, d_var in símismo.variables.items():
-            d_var['val'] = np.zeros(dims, dtype=float)
-
+        for var, val in dic_inic.items():
             if var in por_pasito:
-                símismo.datos_internos[var] = np.zeros((símismo.n_estaciones, *dims), dtype=float)
+                if var in símismo.ingresos():
+                    símismo.matrs_ingr[var] = val.copy()
+                if var in símismo.egresos():
+                    símismo.matrs_egr[var] = val.copy()
+                dic_inic[var] = val[0]
 
-        for var in símismo.tipos_vars['Ingresos']:
-            datos = np.array(dic_inic[var], dtype=float)
-            if var in símismo.tipos_vars['IngrEstacionales']:
-                símismo.datos_internos[var][:] = datos
-                símismo.variables[var]['val'] = datos[0]  # Crear un enlace dinámico
-            else:
-                if var in símismo.tipos_vars['Estacionales']:
-                    símismo.datos_internos[var][:] = datos
-                    símismo.variables[var]['val'] = datos[0]  # Crear un enlace dinámico
-                else:
-                    símismo.variables[var]['val'][:] = datos
+        return dic_inic
 
     def obt_tmñ_ciclo(símismo):
         raise NotImplementedError

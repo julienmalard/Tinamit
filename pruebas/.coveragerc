@@ -9,7 +9,6 @@ omit =
        */Ejemplos/*
 
 exclude_lines =
-    pragma: no cover
     pragma: sin cobertura
     def __repr__
     raise NotImplementedError
