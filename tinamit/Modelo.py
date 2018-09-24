@@ -73,8 +73,9 @@ class Modelo(object):
         # Una referncia para acordarse si los valores de los variables en el diccionario de variables están actualizados
         símismo.vals_actualizadas = False
 
-        # Listas de los nombres de los variables que sirven de conexión con otro modelo.
+        # Listas de los nombres de los variables que sirven de conexión con otro modelo o con datos externos.
         símismo.vars_saliendo = set()
+        símismo.vars_entrando = set()
 
         # Para guardar variables climáticos
         símismo.vars_clima = {}  # Formato: {var1: {'nombre_extrn': nombre_oficial, 'combin': 'prom' | 'total'}, ...}
@@ -453,11 +454,16 @@ class Modelo(object):
 
         # Verificar los nombres de los variables de interés
         símismo.vars_saliendo.clear()
+        símismo.vars_entrando.clear()
 
         for i, v in enumerate(vars_interés.copy()):
             var = símismo.valid_var(v)
             vars_interés[i] = var
             símismo.vars_saliendo.add(var)
+
+        if vals_extern is not None:
+            for v in vals_extern.variables():
+                símismo.vars_entrando.add(v)
 
         # Preparar el objeto Xarray para guardar los resultados
         símismo.mem_vars = mem_vars = xr.Dataset({

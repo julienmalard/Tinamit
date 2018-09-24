@@ -60,6 +60,12 @@ class ModeloPrueba(ModeloBF):
                 'ingreso': True,
                 'egreso': False,
             },
+            'Vacío3': {
+                'unidades': '',
+                'líms': (0, None),
+                'ingreso': True,
+                'egreso': False,
+            },
             'Aleatorio': {
                 'unidades': 'Sdmn',
                 'líms': (0, 1),
@@ -69,7 +75,7 @@ class ModeloPrueba(ModeloBF):
         })
 
     def _vals_inic(símismo):
-        return {'Lluvia': 1, 'Lago': 1000, 'Escala': 0, 'Vacío': 10, 'Vacío2': 10, 'Aleatorio': 0}
+        return {'Lluvia': 1, 'Lago': 1000, 'Escala': 0, 'Vacío': 10, 'Vacío2': 10, 'Vacío3': 10, 'Aleatorio': 0}
 
     def paralelizable(símismo):
         return True

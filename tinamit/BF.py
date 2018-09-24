@@ -13,7 +13,6 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 from tinamit.Modelo import Modelo
 from tinamit.config import _
 from tinamit.config import guardar_json, cargar_json
-from .Unidades.conv import convertir
 
 
 class EnvolturaBF(Modelo):
@@ -320,50 +319,6 @@ class ModeloImpacienteAnterior(ModeloBF):
     dolor de cabeza.
     """
 
-    def __init__(símismo):
-        """
-        Esta función correrá automáticamente con la inclusión de `super().__init__()` en la función `__init__()` de las
-        subclases de esta clase.
-        """
-
-        símismo.arch_egreso = None  # type: str
-        símismo.arch_ingreso = None  # type: str
-
-        # Número y duración de las estaciones del año. Para modelos puramente اعداد_مہینہ, puedes utilizar 12 y 1.
-        # Se deben modificar, si necesario, en la función leer_archivo_vals_inic() de la subclase.
-        símismo.n_estaciones = 12
-        símismo.dur_estaciones = [1] * 12
-
-        # Un diccionario de variables de ingreso, egreso, y variables estacionales de cada tipo_mod.
-        símismo.tipos_vars = {
-            'Ingresos': [], 'Egresos': [], 'IngrEstacionales': [], 'EgrEstacionales': []
-        }
-
-        # Inicializar como la clase pariente.
-        super().__init__()
-
-        símismo.paso_mín = "Año"
-        try:
-            símismo.ratio_pasos = convertir(de=símismo.unidad_tiempo(), a=símismo.paso_mín)
-        except ValueError:
-            raise ValueError(_('La unidad de tiempo ("{}") del modelo no se pudo convertir a años.')
-                             .format(símismo.unidad_tiempo(), símismo.paso_mín))
-
-        # Una lista de todos los variables estacionales (que sean ingresos o egresos)
-        símismo.tipos_vars['Estacionales'] = list(
-            {*símismo.tipos_vars['IngrEstacionales'], *símismo.tipos_vars['EgrEstacionales']})
-
-        # El mes y la estación iniciales
-        símismo.estación = 0
-        símismo.mes = 0
-
-        # Creamos un diccionario para guardar valores de variables para cada estación. Tiene el formato siguiente:
-        # {'var 1': [valorestación1, valorestación2, ...],
-        #  'var 2': [valorestación1, valorestación2, ...],
-        #  ...
-        #  }
-        símismo.datos_internos = {var: None for var in símismo.variables if var in símismo.tipos_vars['Estacionales']}
-
     def _act_vals_clima(símismo, n_paso, f):
         """
         Actualiza los variables climáticos, según la estación.
@@ -435,93 +390,8 @@ class ModeloImpacienteAnterior(ModeloBF):
         if int(paso) != paso:
             raise ValueError(_('El paso debe ser un número entero.'))
 
-        # Para simplificar el código un poco.
-        m = símismo.mes
-        e = símismo.estación
 
-        # Si es el primer mes de la estación, hay que cambiar los variables
-        if m == 0:
-            # Apuntar el diccionario interno de los valores al valor de esta estación
-            for var in símismo.datos_internos:
-                # Para cada variable en el diccionario interno de variables (es decir, todos los variables que
-                # cambian por estación)...
 
-                # Poner el valor del variable al valor de esta estación. (Guarda el enlace dinámico.)
-                símismo.variables[var]['val'] = símismo.datos_internos[var][e]
-
-            # Si es la primera estación del año, también hay que correr una simulación del modelo externo.
-            if e == 0:
-                # El número de años para simular
-                a = mat.ceil(paso / 12)  # type: int
-
-                # Escribir el fuente de ingresos
-                símismo.escribir_ingr(n_años_simul=a)
-
-                # Avanzar la simulación
-                símismo.avanzar_modelo()
-
-                # Leer los egresos
-                símismo.leer_egr(n_años_egr=a)
-
-        # Aplicar el incremento de paso
-        m += int(paso)
-
-        # Calcular la nueva estación y mes para el próximo incremento
-        while m >= símismo.dur_estaciones[e]:
-            m -= int(símismo.dur_estaciones[e])
-            e += 1
-            e %= símismo.n_estaciones  # s empieza a contar en 0 (convención de Python)
-
-        # Guardar la estación y el mes por la próxima vez.
-        símismo.mes = m
-        símismo.estación = e
-
-    def _leer_vals(símismo):
-        """
-        Empleamos :func:`ModeloImpaciente.leer_egr` en vez, lo cual lee los egresos de todas los pasos de la última
-        simulación. :func:`ModeloImpaciente.incrementar` arregla lo de apuntar los diccionarios de
-        variables actuales a la estación apropiada.
-
-        """
-        pass
-
-    def cerrar_modelo(símismo):
-        """
-        Esta función debe cerrar la simulación. No se aplica a todos los modelos biofísicos (en ese caso, usar ``pass``
-        ).
-        """
-        raise NotImplementedError
-
-    def _inic_dic_vars(símismo):
-        """
-        Esta función debe iniciar el diccionario interno de variables.
-
-        MUY IMPORTANTE: Esta función debe modificar el diccionario que ya existe para símismo.variables, no crear un
-        diccionario nuevo.
-
-        Por ejemplo, NO HAGAS: ``símismo.variables = {var1: {...}, var2: {...}, ...}``
-
-        sino: ``símismo.variables[var1] = {...}``, ``símismo.variables[var2] = {...}``, etc.
-
-        Al no hacer esto, romperás la conección entre los diccionarios de variables de :class:`ModeloBF` y
-        :class:`EnvolturasBF`, lo cual impedirá después la conexión de estos variables con el modelo DS.
-
-        También debe actualizar ``símismo.tipos_vars``, poniendo en 'Ingresos' los nombres de todos los variables
-        de ingreso, en 'Egresos' todos los variables de egreso, en 'IngrEstacionales' únicamente los variables de
-        ingreso estacionales, y en 'EgrEstacionales' los variables de egresos estacionales.
-
-        """
-
-        raise NotImplementedError
-
-    def leer_archivo_vals_inic(símismo, archivo=None):
-        """
-        Esta función devuelve un diccionario con los valores leídos del fuente de valores iniciales.
-        :return: Un diccionario de los variables iniciales y sus valores, con el número de polígonos (para modelos
-        espaciales). Si el modelo no es espacial, devolver ``(1,)`` para las dimensiones.
-        :rtype: (dict, tuple)
-        """
-        raise NotImplementedError
 
     def leer_egr(símismo, n_años_egr, archivo=None):
         """
@@ -582,17 +452,6 @@ class ModeloImpacienteAnterior(ModeloBF):
 
         símismo._escribir_archivo_ingr(n_años_simul=n_años_simul, dic_ingr=dic_ingr, archivo=archivo)
 
-    def leer_archivo_egr(símismo, n_años_egr, archivo):
-        """
-        Lee un fuente de egresos del modelo.
-
-        :param n_años_egr: El número de años en los egresos. Solamente leerá el último año.
-        :type n_años_egr: int
-        :return: Un diccionario de los resultados por variable.
-        :rtype: dict
-        """
-
-        raise NotImplementedError
 
     def _escribir_archivo_ingr(símismo, n_años_simul, dic_ingr, archivo):
         """
@@ -630,107 +489,52 @@ class ModeloImpacienteAnterior(ModeloBF):
         return tuple()
 
 
-class ModeloIndeterminado(ModeloBF):
-    pass
-
-
 class ModeloImpaciente(ModeloBF):
 
     def __init__(símismo, nombre='modeloBF'):
-
+        símismo.paso_en_ciclo = None
+        símismo.ciclo = None
         símismo.tmñ_ciclo = None
-        símismo.i_pasito = 0
-        símismo.matrs_ingr = {}
         símismo.matrs_egr = {}
+        símismo.matrs_ingr = {}
         símismo.proces_ingrs = {}
 
         super().__init__(nombre=nombre)
 
-    def cambiar_vals(símismo, valores):
-
-        for var, val in valores.items():
-            símismo.matrs_ingr[var][símismo.i_pasito] = val
-
-        super().cambiar_vals(valores)
-
     def _cambiar_vals_modelo_externo(símismo, valores):
         """
-        Solamente nos tenemos que asegurar que los datos internos (para variables estacionales) queda consistente
-        con los nuevos valores cambiadas por la conexión con el modelo externo. La función
-        :meth:`avanzar_modelo` debe utilizar este diccionario interno para mandar los nuevos valores
-        a la próxima simulación. Así que está función no se necesita.
+        Esta función no se necesita porque :meth:`avanzar_modelo` se cargará de pasar los valores necesarios a la
+        próxima simulación del modelo externo.
         """
 
         pass
-
-    def _incrementar(símismo, paso, guardar_cada=None):
-        # Para simplificar el código un poco.
-        i = símismo.i_pasito
-
-        # Aplicar el incremento de paso
-        i += int(paso)
-        avanzar = i // símismo.tmñ_ciclo > 0
-        i %= símismo.tmñ_ciclo
-
-        # Guardar el pasito actual por la próxima vez.
-        símismo.i_pasito = i
-
-        # Si hay que avanzar el modelo externo, lanzar una su simulación aquí.
-        if avanzar:
-            # El número de ciclos para simular
-            c = mat.ceil(paso / símismo.tmñ_ciclo)  # type: int
-
-            # Procesar los ingresos
-            símismo.procesar_ingr_modelo()
-
-            # Avanzar la simulación
-            símismo.avanzar_modelo(n_ciclos=c)
-
-            # Leer los egresos del modelo
-            símismo.procesar_egr_modelo()
-
-        # Apuntar el diccionario interno de los valores al valor de este paso del ciclo
-        símismo._act_vals_dic_var({var: matr[i] for var, matr in símismo.matrs_ingr.items()})
-        símismo._act_vals_dic_var({var: matr[i] for var, matr in símismo.matrs_egr.items()})
 
     def _leer_vals(símismo):
         """
         No necesario porque :meth:`_incrementar` ya incluye funciones para leer los egresos del modelo.
         """
-
         pass
 
-    def leer_egr_modelo(símismo):
-        raise NotImplementedError
-
-    def cerrar_modelo(símismo):
-        raise NotImplementedError
-
-    def unidad_tiempo(símismo):
-        raise NotImplementedError
-
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
-        símismo.i_pasito = 0
-        símismo.tmñ_ciclo = símismo.obt_tmñ_ciclo()
-
-
-        símismo.matrs_ingr.clear()
-        símismo.matrs_egr.clear()
-
-        for vr in símismo.ingresos():
-            dims = símismo.obt_dims_var(vr)
-            símismo.matrs_ingr[vr] = np.zeros((símismo.tmñ_ciclo, *dims) if dims != (1,) else símismo.tmñ_ciclo)
-
-        por_pasito = símismo._vars_por_pasito()
-        for vr in símismo.vars_saliendo:
-            if vr in por_pasito:
-                dims = símismo.obt_dims_var(vr)
-                símismo.matrs_egr[vr] = np.zeros((símismo.tmñ_ciclo, *dims) if dims != (1,) else símismo.tmñ_ciclo)
-
-        super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
-
     def _vars_por_pasito(símismo):
-        return [var for var, d_var in símismo.variables.items() if 'pasito' in d_var and d_var['pasito']]
+        return [var for var, d_var in símismo.variables.items() if 'por' in d_var and d_var['por'] == 'pasito']
+
+    def _vals_inic(símismo):
+        dic_inic = símismo._gen_dic_vals_inic()
+
+        subciclo = símismo._vars_subciclo()
+
+        for var, val in dic_inic.items():
+            if var in subciclo:
+
+                if var in símismo.ingresos():
+                    símismo.matrs_ingr[var] = val.copy()
+
+                if var in símismo.egresos():
+                    símismo.matrs_egr[var] = val.copy()
+
+                dic_inic[var] = val[0]
+
+        return dic_inic
 
     def estab_proces_ingr(símismo, var_ingr, proc):
         posibilidades = ['último', 'suma', 'prom', 'máx', None]
@@ -746,8 +550,18 @@ class ModeloImpaciente(ModeloBF):
         else:
             símismo.proces_ingrs.pop(var_ingr)
 
-    def _inic_dic_vars(símismo):
-        raise NotImplementedError
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+
+        símismo.paso_en_ciclo = símismo.ciclo = -1
+
+        super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
+
+    def cambiar_vals(símismo, valores):
+
+        for var, val in valores.items():
+            símismo.matrs_ingr[var][símismo.paso_en_ciclo] = val
+
+        super().cambiar_vals(valores)
 
     def procesar_ingr_modelo(símismo):
         for var, proc in símismo.proces_ingrs.items():
@@ -762,48 +576,229 @@ class ModeloImpaciente(ModeloBF):
                 símismo._act_vals_dic_var({var: matr.max()})
 
     def procesar_egr_modelo(símismo):
+
         valores = símismo.leer_egr_modelo()
 
-        por_pasito = símismo._vars_por_pasito()
+        por_subciclo = símismo._vars_subciclo()
         for var, val in valores.items():
-            if var in por_pasito:
+            if var in por_subciclo:
                 símismo._act_vals_dic_var({var: val[0]})
                 if var in símismo.matrs_egr:
-                    símismo.matrs_egr[var][:] = val
+                    if símismo.matrs_egr[var].shape == val.shape:
+                        símismo.matrs_egr[var][:] = val
+                    else:
+                        símismo.matrs_egr[var] = val
             else:
                 símismo._act_vals_dic_var({var: val})
 
-    def _vals_inic(símismo):
-        dic_inic = símismo._gen_dic_vals_inic()
+    def _vars_subciclo(símismo):
+        return símismo._vars_por_pasito()
 
-        por_pasito = símismo._vars_por_pasito()
-
-        for var, val in dic_inic.items():
-            if var in por_pasito:
-                if var in símismo.ingresos():
-                    símismo.matrs_ingr[var] = val.copy()
-                if var in símismo.egresos():
-                    símismo.matrs_egr[var] = val.copy()
-                dic_inic[var] = val[0]
-
-        return dic_inic
-
-    def obt_tmñ_ciclo(símismo):
+    def _incrementar(símismo, paso, guardar_cada=None):
         raise NotImplementedError
 
-    def avanzar_modelo(símismo, n_ciclos):
+    def unidad_tiempo(símismo):
+        raise NotImplementedError
+
+    def _inic_dic_vars(símismo):
         raise NotImplementedError
 
     def _gen_dic_vals_inic(símismo):
         raise NotImplementedError
 
+    def leer_egr_modelo(símismo):
+        raise NotImplementedError
 
-class ModeloBloques(ModeloBF):
+    def cerrar_modelo(símismo):
+        raise NotImplementedError
+
+    def obt_tmñ_ciclo(símismo):
+        raise NotImplementedError
+
+
+class ModeloIndeterminado(ModeloImpaciente):
+
+    def __init__(símismo, nombre='modeloBF'):
+        símismo.dic_ingr = {}
+        super().__init__(nombre)
+
+    def cambiar_vals(símismo, valores):
+        for var, val in valores.items():
+            proc = símismo.proces_ingrs[var]
+            if símismo.dic_ingr[var] is None:
+                símismo.dic_ingr[var] = val
+            else:
+                if proc == 'máx':
+                    símismo.dic_ingr[var] = np.maximum(símismo.dic_ingr[var], val)
+                elif proc == 'último':
+                    símismo.dic_ingr[var] = val
+                elif proc in ['suma', 'prom']:
+                    símismo.dic_ingr[var] += val  # La división para `prom` se hará después en `procesar_ingr_modelo()`
+                else:
+                    raise ValueError(proc)
+
+    def _incrementar(símismo, paso, guardar_cada=None):
+        # Para simplificar el código un poco.
+        i = símismo.paso_en_ciclo
+
+        # Aplicar el incremento de paso
+        i += int(paso)
+        while i >= símismo.tmñ_ciclo:
+
+            # Procesar los ingresos
+            if símismo.ciclo != -1:
+                símismo.procesar_ingr_modelo()
+
+            símismo.ciclo += 1
+            i -= símismo.tmñ_ciclo
+
+            símismo.tmñ_ciclo = símismo.mandar_modelo()
+
+            if i <= símismo.tmñ_ciclo:
+                # Leer los egresos del modelo
+                símismo.procesar_egr_modelo()
+
+        # Guardar el pasito actual para la próxima vez.
+        símismo.paso_en_ciclo = i
+
+        # Apuntar el diccionario interno de los valores al valor de este paso del ciclo
+        símismo._act_vals_dic_var({var: matr[i] for var, matr in símismo.matrs_egr.items()})
+
+    def _leer_vals(símismo):
+        """
+        No necesario porque :meth:`_incrementar` ya incluye funciones para leer los egresos del modelo.
+        """
+
+        pass
+
+    def _vals_inic(símismo):
+        return símismo._gen_dic_vals_inic()
+
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+        símismo.tmñ_ciclo = 0
+
+        for var in símismo.vars_entrando:
+            if var not in símismo.proces_ingrs:
+                símismo.proces_ingrs[var] = 'último'
+
+        símismo.dic_ingr.clear()
+        símismo.dic_ingr.update({
+            vr: None for vr in símismo.vars_entrando
+        })
+
+        super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
+
+    def procesar_ingr_modelo(símismo):
+        for var, proc in símismo.proces_ingrs.items():
+            val = símismo.dic_ingr[var]
+            if proc == 'prom':
+                símismo._act_vals_dic_var({var: val / símismo.tmñ_ciclo})
+            else:
+                símismo._act_vals_dic_var({var: val})
+
+    def obt_tmñ_ciclo(símismo):
+        return símismo.tmñ_ciclo
+
+    def unidad_tiempo(símismo):
+        raise NotImplementedError
+
+    def _inic_dic_vars(símismo):
+        raise NotImplementedError
+
+    def _gen_dic_vals_inic(símismo):
+        raise NotImplementedError
+
+    def leer_egr_modelo(símismo):
+        raise NotImplementedError
+
+    def mandar_modelo(símismo):
+        raise NotImplementedError
+
+    def cerrar_modelo(símismo):
+        raise NotImplementedError
+
+
+class ModeloDeterminado(ModeloImpaciente):
+
+    def _incrementar(símismo, paso, guardar_cada=None):
+        # Para simplificar el código un poco.
+        i = símismo.paso_en_ciclo
+
+        paso = int(paso)
+
+        # Aplicar el incremento de paso
+        avanzar = i == símismo.ciclo == -1
+        i += paso
+        avanzar = avanzar or (i // símismo.tmñ_ciclo > 0)
+        i %= símismo.tmñ_ciclo
+
+        # Guardar el pasito actual para la próxima vez.
+        símismo.paso_en_ciclo = i
+
+        # Si hay que avanzar el modelo externo, lanzar una su simulación aquí.
+        if avanzar:
+            # El número de ciclos para simular
+            c = mat.ceil(paso / símismo.tmñ_ciclo)  # type: int
+            símismo.ciclo += c
+
+            # Procesar los ingresos
+            símismo.procesar_ingr_modelo()
+
+            # Avanzar la simulación
+            símismo.avanzar_modelo(n_ciclos=c)
+
+            # Leer los egresos del modelo
+            símismo.procesar_egr_modelo()
+
+        # Apuntar el diccionario interno de los valores al valor de este paso del ciclo
+        símismo._act_vals_dic_var({var: matr[i] for var, matr in símismo.matrs_egr.items()})
+
+    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+
+        símismo.tmñ_ciclo = símismo.obt_tmñ_ciclo()
+
+        símismo.matrs_ingr.clear()
+        símismo.matrs_egr.clear()
+
+        for vr in símismo.vars_entrando:
+            dims = símismo.obt_dims_var(vr)
+            símismo.matrs_ingr[vr] = np.zeros((símismo.tmñ_ciclo, *dims) if dims != (1,) else símismo.tmñ_ciclo)
+
+        por_pasito = símismo._vars_por_pasito()
+        for vr in símismo.vars_saliendo:
+            if vr in por_pasito:
+                dims = símismo.obt_dims_var(vr)
+                símismo.matrs_egr[vr] = np.zeros((símismo.tmñ_ciclo, *dims) if dims != (1,) else símismo.tmñ_ciclo)
+
+        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
+
+    def unidad_tiempo(símismo):
+        raise NotImplementedError
+
+    def obt_tmñ_ciclo(símismo):
+        raise NotImplementedError
+
+    def _inic_dic_vars(símismo):
+        raise NotImplementedError
+
+    def _gen_dic_vals_inic(símismo):
+        raise NotImplementedError
+
+    def leer_egr_modelo(símismo):
+        raise NotImplementedError
+
+    def avanzar_modelo(símismo, n_ciclos):
+        raise NotImplementedError
+
+    def cerrar_modelo(símismo):
+        raise NotImplementedError
+
+
+class ModeloBloques(ModeloImpaciente):
+
     def __init__(símismo, nombre):
         super().__init__(nombre=nombre)
 
-        símismo.bloque = 0
-        símismo.paso_en_bloque = 0
         símismo.tmñ_bloques = None
 
     def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
@@ -813,11 +808,100 @@ class ModeloBloques(ModeloBF):
 
         """
 
-        símismo.bloque = 0
-        símismo.paso_en_bloque = 0
-        símismo.tmñ_bloques = símismo._obt_tmñ_bloques()
+        símismo.tmñ_bloques = símismo.obt_tmñ_bloques()
+        símismo.tmñ_ciclo = símismo.obt_tmñ_ciclo()
+
+        símismo.matrs_ingr.clear()
+        símismo.matrs_egr.clear()
+
+        for vr in símismo.vars_entrando:
+            dims = símismo.obt_dims_var(vr)
+            símismo.matrs_ingr[vr] = np.zeros((símismo.tmñ_ciclo, *dims) if dims != (1,) else símismo.tmñ_ciclo)
+
+        por_pasito = símismo._vars_por_pasito()
+        for vr in símismo.vars_saliendo:
+            if vr in por_pasito:
+                dims = símismo.obt_dims_var(vr)
+                símismo.matrs_egr[vr] = np.zeros((símismo.tmñ_ciclo, *dims) if dims != (1,) else símismo.tmñ_ciclo)
 
         super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic=vals_inic)
+
+    def _incrementar(símismo, paso, guardar_cada=None):
+
+        # Para simplificar el código un poco.
+        i = símismo.paso_en_ciclo
+
+        paso = int(paso)
+
+        # Aplicar el incremento de paso
+        primer_incr = i == símismo.ciclo == -1
+
+        i += paso
+        avanzar = primer_incr or (i // símismo.tmñ_ciclo > 0)
+        i %= símismo.tmñ_ciclo
+
+        # Guardar el pasito actual para la próxima vez.
+        símismo.paso_en_ciclo = i
+
+        # Si hay que avanzar el modelo externo, lanzar una su simulación aquí.
+        if avanzar:
+            # El número de ciclos para simular
+            c = mat.ceil(paso / símismo.tmñ_ciclo)  # type: int
+            símismo.ciclo += c
+
+            # Procesar los ingresos
+            símismo.procesar_ingr_modelo()
+
+            # Avanzar la simulación
+            símismo.avanzar_modelo(n_ciclos=c)
+
+            # Leer los egresos del modelo
+            símismo.procesar_egr_modelo()
+
+        # Apuntar los valores de egreso al bloque actual
+        b = símismo.bloque_actual()
+        símismo._act_vals_dic_var(
+            {var: símismo.matrs_egr[var][b] for var in símismo._vars_por_bloques() if var in símismo.egresos()})
+
+        símismo._act_vals_dic_var(
+            {var: símismo.matrs_egr[var][i] for var in símismo._vars_por_pasito() if var in símismo.egresos()})
+
+    def bloque_actual(símismo):
+        tmñ_bloques_cum = np.cumsum(símismo.obt_tmñ_bloques())
+        n_bloques = len(tmñ_bloques_cum)
+
+        for i in range(n_bloques):
+            if símismo.paso_en_ciclo < tmñ_bloques_cum[i]:
+                return i
+
+        raise ValueError(símismo.paso_en_ciclo)
+
+    def _vars_subciclo(símismo):
+        return símismo._vars_por_pasito() + símismo._vars_por_bloques()
+
+    def _vars_por_bloques(símismo):
+        return [var for var, d_var in símismo.variables.items() if 'por' in d_var and d_var['por'] == 'bloques']
+
+    def obt_tmñ_ciclo(símismo):
+        return np.sum(símismo.obt_tmñ_bloques())
+
+    def _gen_dic_vals_inic(símismo):
+        raise NotImplementedError
+
+    def leer_egr_modelo(símismo):
+        raise NotImplementedError
+
+    def cerrar_modelo(símismo):
+        raise NotImplementedError
+
+    def unidad_tiempo(símismo):
+        raise NotImplementedError
+
+    def _inic_dic_vars(símismo):
+        raise NotImplementedError
+
+    def obt_tmñ_bloques(símismo):
+        raise NotImplementedError
 
     def avanzar_modelo(símismo, n_ciclos):
         """
@@ -826,27 +910,3 @@ class ModeloBloques(ModeloBF):
         """
 
         raise NotImplementedError
-
-    def _obt_tmñ_bloques(símismo):
-        raise NotImplementedError
-
-    def _cambiar_vals_modelo_externo(símismo, valores):
-        pass
-
-    def _incrementar(símismo, paso, guardar_cada=None):
-        pass
-
-    def _leer_vals(símismo):
-        pass
-
-    def cerrar_modelo(símismo):
-        pass
-
-    def unidad_tiempo(símismo):
-        raise NotImplementedError
-
-    def _inic_dic_vars(símismo):
-        pass
-
-    def _vals_inic(símismo):
-        pass

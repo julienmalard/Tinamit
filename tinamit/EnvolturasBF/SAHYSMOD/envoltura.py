@@ -23,7 +23,7 @@ class ModeloSAHYSMOD(ModeloBloques):
     prb_arch_egr = pkg_resources.resource_filename(__name__, 'recursos/prb_egresos.out')
     dic_prb_egr = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_egr.json')
 
-    def __init__(símismo, datos_iniciales=None, exe_sahysmod=None):
+    def __init__(símismo, datos_iniciales=None, exe_sahysmod=None, nombre='SAHYSMOD'):
 
         if datos_iniciales is None:
             datos_iniciales = símismo.prb_datos_inic
@@ -48,7 +48,7 @@ class ModeloSAHYSMOD(ModeloBloques):
         símismo.comanda = None
 
         # Inicializar la clase pariente.
-        super().__init__()
+        super().__init__(nombre=nombre)
 
         # Buscar la ubicación del modelo SAHYSMOD.
         símismo.exe_SAHYSMOD = símismo._obt_val_config(

@@ -1,8 +1,8 @@
 import os
 import tempfile
 
-from Análisis.sintaxis import Ecuación
-from cositas import guardar_archivo
+from tinamit.Análisis.sintaxis import Ecuación
+from tinamit.cositas import guardar_archivo
 from tinamit.Modelo import Modelo
 from tinamit.config import _
 

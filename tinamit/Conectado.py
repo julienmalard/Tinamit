@@ -462,6 +462,7 @@ class SuperConectado(Modelo):
 
         for m in símismo.modelos.values():
             m.vars_saliendo.clear()
+            m.vars_entrando.clear()
 
         for conex in símismo.conexiones:
             # Para cada conexión establecida...
@@ -489,11 +490,17 @@ class SuperConectado(Modelo):
 
             # Especificar el variable como variable egreso para la simulación, de manera recursiva si es una
             # instancia de :class:`SuperConectado`.
-            obj_mod = símismo.modelos[mod_fuente]
-            if isinstance(obj_mod, SuperConectado):
-                obj_mod.especificar_var_saliendo(var_fuente)
+            obj_mod_fnt = símismo.modelos[mod_fuente]
+            if isinstance(obj_mod_fnt, SuperConectado):
+                obj_mod_fnt.especificar_var_conex(var_fuente, saliendo=True)
             else:
-                obj_mod.vars_saliendo.add(var_fuente)
+                obj_mod_fnt.vars_saliendo.add(var_fuente)
+
+            obj_mod_rcp = símismo.modelos[mod_recip]
+            if isinstance(obj_mod_rcp, SuperConectado):
+                obj_mod_rcp.especificar_var_conex(var_recip, saliendo=False)
+            else:
+                obj_mod_rcp.vars_entrando.add(var_recip)
 
         # Iniciar los submodelos también.
         for nmbr, mod in símismo.modelos.items():
@@ -511,14 +518,17 @@ class SuperConectado(Modelo):
 
         super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
 
-    def especificar_var_saliendo(símismo, var):
+    def especificar_var_conex(símismo, var, saliendo):
 
         mod, var_mod = símismo.resolver_nombre_var(var)
         obj_mod = símismo.modelos[mod]
         if isinstance(obj_mod, SuperConectado):
-            obj_mod.especificar_var_saliendo(var_mod)
+            obj_mod.especificar_var_conex(var_mod, saliendo=saliendo)
         else:
-            símismo.modelos[mod].vars_saliendo.add(var_mod)
+            if saliendo:
+                símismo.modelos[mod].vars_saliendo.add(var_mod)
+            else:
+                símismo.modelos[mod].vars_entrando.add(var_mod)
 
     def cerrar_modelo(símismo):
         """

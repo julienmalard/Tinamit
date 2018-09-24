@@ -7,7 +7,7 @@ import sys
 import numpy as np
 import regex
 
-from Análisis.sintaxis import Ecuación
+from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.MDS import EnvolturaMDS
 from tinamit.config import _
 

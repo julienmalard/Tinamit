@@ -8,7 +8,7 @@ from numpy import testing as npt
 import tinamit.EnvolturasBF
 from pruebas.recursos.BF.prueba_bf import ModeloPrueba
 from tinamit.BF import EnvolturaBF
-from tinamit.BF import ModeloImpaciente
+from tinamit.BF import ModeloDeterminado
 
 dir_act = os.path.split(__file__)[0]
 arch_bf = os.path.join(dir_act, 'recursos/BF/prueba_bf.py')
@@ -117,7 +117,7 @@ class Test_Envolturas_ModeloImpaciente(unittest.TestCase):
     def setUpClass(cls):
         cls.envolturas_disp = {}
         for nombre, obj in inspect.getmembers(tinamit.EnvolturasBF):
-            if inspect.isclass(obj) and issubclass(obj, ModeloImpaciente):
+            if inspect.isclass(obj) and issubclass(obj, ModeloDeterminado):
                 cls.envolturas_disp[nombre] = obj()
 
     def test_escribir_ingresos(símismo):
