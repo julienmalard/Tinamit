@@ -8,7 +8,7 @@
 .. image:: https://travis-ci.org/julienmalard/Tinamit.svg?branch=master
    :target: https://travis-ci.org/julienmalard/Tinamit
 
-.. image:: https://ci.appveyor.com/api/projects/status/3s1ppuilm0vioa3p?svg=true
+.. image:: https://ci.appveyor.com/api/projects/status/3s1ppuilm0vioa3p/branch/master?svg=true
    :target: https://ci.appveyor.com/project/julienmalard/tinamit
 
 .. image:: https://coveralls.io/repos/github/julienmalard/Tinamit/badge.svg?branch=master
