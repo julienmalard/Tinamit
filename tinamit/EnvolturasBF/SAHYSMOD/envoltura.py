@@ -84,15 +84,6 @@ class ModeloSAHYSMOD(ModeloBloques):
                 'por': 'bloque' if cód[-1] == '#' else 'ciclo'
             }
 
-        # Establecer los ingresos y egresos estacionales
-        egresos_estacionales = [x for x in vars_egreso_SAHYSMOD if x[-1] == '#']
-
-        ingresos_no_estacionales = [
-            'Kr', 'CrA', 'CrB', 'CrU', 'Cr4', 'Hw', 'C1*', 'C2*', 'C3*', 'Cxf', 'Cxa', 'Cxb', 'Cqf'
-        ]
-        ingresos_estacionales = [x for x in vars_ingreso_SAHYSMOD if x[-1] == '#'
-                                 and x[:-1] not in ingresos_no_estacionales]
-
     def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
 
         # Crear un diccionario de trabajo específico a esta corrida.

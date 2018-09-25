@@ -239,7 +239,11 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         nivs = símismo.niveles()
         for nv in nivs:
             ec = Ecuación(símismo.obt_ec_var(nv), dialecto='vensim')
-            args_integ, args_inic = ec.sacar_args_func('INTEG')
+            args = ec.sacar_args_func('INTEG')
+            if args is None:
+                continue
+            else:
+                args_integ, args_inic = args
 
             # Identificar variables iniciales
             if args_inic in símismo.variables:
@@ -248,6 +252,11 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
             flujos = [v for v in Ecuación(args_integ, dialecto='vensim').variables() if v in símismo.variables]
             for flj in flujos:
                 símismo.variables[flj]['tipo'] = 'flujo'
+
+        for var, d_var in símismo.variables.items():
+            d_var['hijos'] = [h for h in d_var['hijos'] if h in símismo.variables]
+            d_var['parientes'] = [p for p in d_var['parientes'] if p in símismo.variables]
+
 
         # Aplicar los variables iniciales
         símismo._leer_vals_de_vensim()
