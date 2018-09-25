@@ -362,21 +362,26 @@ class Test_ModelosImpacientes(unittest.TestCase):
         escala = [np.arange(c * cls.tmñ_ciclo + 1, c * cls.tmñ_ciclo + cls.tmñ_ciclo + 1) for c in
                   range(cls.n_ciclos)]
         tmñ_ciclos_indet = np.array([x for x in Counter(cls.res[indet]['indet_ciclo'].values).values()])
+        tmñ_ciclos_indet[0] -= 1
         cumsum_indet = np.cumsum([x for x in tmñ_ciclos_indet])
-        escala_indet = [np.arange(x) if i == 0 else np.arange(cumsum_indet[i - 1], x) for i, x in
-                        enumerate(cumsum_indet)]
+        escala_indet = [np.arange(cumsum_indet[i] + 1, x + 1) for i, x in enumerate(cumsum_indet[1:])]
         cls.escala = {
             det: escala, blq: escala, indet: escala_indet
         }
         cls.tmñ_ciclo_mods = {det: [cls.tmñ_ciclo] * cls.n_ciclos, blq: [cls.tmñ_ciclo] * cls.n_ciclos,
-                              indet: tmñ_ciclos_indet}
+                              indet: tmñ_ciclos_indet[1:]}
+
+    def _simular_proc_ingr(símismo, mod, f):
+        return [0] * símismo.tmñ_ciclo_mods[mod][0] + [x for j, i in enumerate(símismo.escala[mod][:-1]) for x in
+                                                       [f(i)] * símismo.tmñ_ciclo_mods[mod][j + 1]]
 
     def test_de_mod_impac_por_ciclo(símismo):
         for nmbr, res in símismo.res.items():
             with símismo.subTest(mod=nmbr):
                 npt.assert_equal(
                     res['base_Vacío'].values,
-                    [-1] + [x for i in range(símismo.n_ciclos) for x in [i] * símismo.tmñ_ciclo]
+                    [-1] + [x for i in range(len(símismo.tmñ_ciclo_mods[nmbr])) for x in
+                            [i] * símismo.tmñ_ciclo_mods[nmbr][i]]
                 )
 
     def test_de_mod_impac_por_bloque(símismo):
@@ -391,52 +396,41 @@ class Test_ModelosImpacientes(unittest.TestCase):
         for nmbr, res in símismo.res.items():
             with símismo.subTest(mod=nmbr):
                 npt.assert_equal(
-                    res['base_Vacío2'].values, np.insert(np.tile(np.arange(símismo.tmñ_ciclo), símismo.n_ciclos), 0, 0)
+                    res['base_Vacío2'].values, [0] + [x for i in símismo.tmñ_ciclo_mods[nmbr] for x in range(i)]
                 )
 
     def test_hacia_mod_impac_último(símismo):
         for nmbr, res in símismo.res.items():
             with símismo.subTest(mod=nmbr):
                 npt.assert_equal(
-                    res['{}_egr_último'.format(nmbr)].values[1:],
-                    [0] * símismo.tmñ_ciclo + [x for i in símismo.escala[nmbr][:-1] for x in
-                                               [i[-1]] * símismo.tmñ_ciclo_mods[nmbr]]
-                )
+                    res['{}_egr_último'.format(nmbr)].values[1:], símismo._simular_proc_ingr(nmbr, lambda x: x[-1]))
 
     def test_hacia_mod_impac_suma(símismo):
         for nmbr, res in símismo.res.items():
             with símismo.subTest(mod=nmbr):
-                npt.assert_equal(
-                    res['{}_egr_suma'.format(nmbr)].values[1:],
-                    [0] * símismo.tmñ_ciclo + [x for i in símismo.escala[nmbr][:-1] for x in
-                                               [i.sum()] * símismo.tmñ_ciclo_mods[nmbr]]
-                )
+                npt.assert_equal(res['{}_egr_suma'.format(nmbr)].values[1:], símismo._simular_proc_ingr(nmbr, np.sum))
 
     def test_hacia_mod_impac_prom(símismo):
         for nmbr, res in símismo.res.items():
             with símismo.subTest(mod=nmbr):
-                npt.assert_equal(
-                    res['{}_egr_prom'.format(nmbr)].values[1:],
-                    [0] * símismo.tmñ_ciclo + [x for i in símismo.escala[nmbr][:-1] for x in
-                                               [i.mean()] * símismo.tmñ_ciclo_mods[nmbr]]
-                )
+                npt.assert_equal(res['{}_egr_prom'.format(nmbr)].values[1:], símismo._simular_proc_ingr(nmbr, np.mean))
 
     def test_hacia_mod_impac_máx(símismo):
         for nmbr, res in símismo.res.items():
             with símismo.subTest(mod=nmbr):
-                npt.assert_equal(
-                    res['{}_egr_máx'.format(nmbr)].values[1:],
-                    [0] * símismo.tmñ_ciclo_mods[nmbr][0] +
-                    [x for j, i in enumerate(símismo.escala[nmbr][:-1]) for x in
-                     [i.max()] * símismo.tmñ_ciclo_mods[nmbr][j]]
-                )
+                npt.assert_equal(res['{}_egr_máx'.format(nmbr)].values[1:], símismo._simular_proc_ingr(nmbr, np.max))
 
     def test_hacia_mod_impac_directo(símismo):
         for nmbr, res in símismo.res.items():
-            if nmbr == 'indet':
-                continue
+
             with símismo.subTest(mod=nmbr):
-                npt.assert_equal(
-                    res['{}_ingr_directo'.format(nmbr)].values[1:],
-                    [x for i in símismo.escala[nmbr] for x in i]
-                )
+                if nmbr == 'indet':
+                    npt.assert_equal(
+                        res['{}_ingr_directo'.format(nmbr)].values,
+                        res['{}_ingr_último'.format(nmbr)].values
+                    )
+                else:
+                    npt.assert_equal(
+                        res['{}_ingr_directo'.format(nmbr)].values[1:],
+                        [x for i in símismo.escala[nmbr] for x in i]
+                    )

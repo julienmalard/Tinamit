@@ -234,9 +234,7 @@ class Modelo(object):
 
         elif isinstance(t_inic, ft.date):
 
-            unid_ref_tiempo = símismo._conv_unid_tiempo['unid_ref']
-            if unid_ref_tiempo is None:
-                unid_ref_tiempo = símismo.unidad_tiempo()
+            unid_ref_tiempo = símismo.unidad_tiempo()
             for u in ['año', 'mes', 'día']:
                 try:
                     factor = convertir(de=unid_ref_tiempo, a=u)
@@ -462,7 +460,7 @@ class Modelo(object):
             símismo.vars_saliendo.add(var)
 
         if vals_extern is not None:
-            for v in vals_extern.variables():
+            for v in vals_extern.data_vars:
                 símismo.vars_entrando.add(v)
 
         # Preparar el objeto Xarray para guardar los resultados

@@ -11,7 +11,7 @@ class EjBloques(ModeloBloques):
 
         super().__init__(nombre)
 
-    def leer_egr_modelo(símismo):
+    def leer_egr_modelo(símismo, n_ciclos, archivo=None):
         dic = {
             'ciclo': símismo.ciclo, 'pasito': np.arange(símismo.obt_tmñ_ciclo()),
             'bloque': np.arange(len(símismo.blqs))
@@ -66,7 +66,7 @@ class EjBloques(ModeloBloques):
                 'líms': (0, None),
                 'ingreso': False,
                 'egreso': True,
-                'por': 'bloques'
+                'por': 'bloque'
             },
             'ingr_directo': {
                 'unidades': '',
@@ -108,7 +108,7 @@ class EjDeterminado(ModeloDeterminado):
 
         super().__init__(nombre)
 
-    def leer_egr_modelo(símismo):
+    def leer_egr_modelo(símismo, n_ciclos, archivo=None):
         dic = {'ciclo': símismo.ciclo, 'pasito': np.arange(símismo.n)}
 
         dic.update(
@@ -188,7 +188,7 @@ class EjIndeterminado(ModeloIndeterminado):
 
         super().__init__(nombre)
 
-    def leer_egr_modelo(símismo):
+    def leer_egr_modelo(símismo, n_ciclos, archivo=None):
         dic = {'ciclo': símismo.ciclo, 'pasito': np.arange(símismo.n)}
 
         dic.update(
@@ -200,7 +200,7 @@ class EjIndeterminado(ModeloIndeterminado):
 
     def _gen_dic_vals_inic(símismo):
         return {
-            vr: 0 for vr in símismo.variables
+            vr: -1 if vr == 'ciclo' else 0 for vr in símismo.variables
         }
 
     def cerrar_modelo(símismo):

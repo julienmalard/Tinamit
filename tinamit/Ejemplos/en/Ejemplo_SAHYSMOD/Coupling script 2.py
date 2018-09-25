@@ -71,7 +71,7 @@ modelo = Conectado()
 # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
 modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Vensim', 'Tinamit_Rechna.vpm'))
 modelo.estab_bf(Envoltura)
-modelo.estab_conv_tiempo(mod_base='mds', conv=6)
+modelo.estab_conv_unid_tiempo(unid='season', unid_ref='mes', factor=6)
 
 # Couple models(Change variable names as needed)
 modelo.conectar(var_mds='Soil salinity Tinamit CropA', mds_fuente=False, var_bf="CrA - Root zone salinity crop A")
@@ -104,12 +104,8 @@ if not climate_change:
 
         print('Runing model {}.\n-----------------'.format(name))
 
-        # Set appropriate switches for policy analysis
-        for switch, val in run.items():
-            modelo.mds.inic_val_var(var=switch, val=val)
-
         # Simulate the coupled model
-        modelo.simular(paso=1, t_final=40, nombre_corrida=name)  # time step and final time are in months
+        modelo.simular(paso=1, t_final=40, vals_inic=run, nombre_corrida=name)  # time step and final time are in months
 
         # Draw maps
         modelo.dibujar_mapa(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
@@ -129,7 +125,7 @@ else:
     modelo.mds.conectar_var_clima(var='Tmin', var_clima='Temperatura mínima', conv=1)
     modelo.mds.conectar_var_clima(var='Tmax', var_clima='Temperatura máxima', conv=1)
     modelo.mds.conectar_var_clima(var='RainfallTinamit', var_clima='Precipitación', conv=0.001)
-    modelo.estab_conv_unid_tiempo('mes', 6)
+    modelo.estab_conv_unid_tiempo('mes', unid='season', factor=6)
 
     vals_inic = {x: {'mds': v} for x, v in runs.items()}
     dibs = [dict(geog=Rechna_Doab, var='Watertable depth Tinamit', directorio='Maps'),

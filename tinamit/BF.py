@@ -575,19 +575,22 @@ class ModeloImpaciente(ModeloBF):
             elif proc == 'máx':
                 símismo._act_vals_dic_var({var: matr.max()})
 
-    def procesar_egr_modelo(símismo):
+    def procesar_egr_modelo(símismo, n_ciclos):
 
-        valores = símismo.leer_egr_modelo()
+        valores = símismo.leer_egr_modelo(n_ciclos=n_ciclos)
 
         por_subciclo = símismo._vars_subciclo()
         for var, val in valores.items():
             if var in por_subciclo:
                 símismo._act_vals_dic_var({var: val[0]})
+
                 if var in símismo.matrs_egr:
-                    if símismo.matrs_egr[var].shape == val.shape:
+                    anterior = símismo.matrs_egr[var]
+                    if isinstance(anterior, np.ndarray) and anterior.shape == val.shape:
                         símismo.matrs_egr[var][:] = val
                     else:
                         símismo.matrs_egr[var] = val
+
             else:
                 símismo._act_vals_dic_var({var: val})
 
@@ -606,7 +609,7 @@ class ModeloImpaciente(ModeloBF):
     def _gen_dic_vals_inic(símismo):
         raise NotImplementedError
 
-    def leer_egr_modelo(símismo):
+    def leer_egr_modelo(símismo, n_ciclos, archivo=None):
         raise NotImplementedError
 
     def cerrar_modelo(símismo):
@@ -656,9 +659,11 @@ class ModeloIndeterminado(ModeloImpaciente):
 
             if i <= símismo.tmñ_ciclo:
                 # Leer los egresos del modelo
-                símismo.procesar_egr_modelo()
+                símismo.procesar_egr_modelo(n_ciclos=1)
+                for ll in símismo.dic_ingr:
+                    símismo.dic_ingr[ll] = None
 
-        # Guardar el pasito actual para la próxima vez.
+                    # Guardar el pasito actual para la próxima vez.
         símismo.paso_en_ciclo = i
 
         # Apuntar el diccionario interno de los valores al valor de este paso del ciclo
@@ -686,6 +691,11 @@ class ModeloIndeterminado(ModeloImpaciente):
             vr: None for vr in símismo.vars_entrando
         })
 
+        símismo.matrs_egr.clear()
+        for var in símismo._vars_subciclo():
+            if var in símismo.vars_saliendo:
+                símismo.matrs_egr[var] = None
+
         super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
     def procesar_ingr_modelo(símismo):
@@ -708,7 +718,7 @@ class ModeloIndeterminado(ModeloImpaciente):
     def _gen_dic_vals_inic(símismo):
         raise NotImplementedError
 
-    def leer_egr_modelo(símismo):
+    def leer_egr_modelo(símismo, n_ciclos, archivo=None):
         raise NotImplementedError
 
     def mandar_modelo(símismo):
@@ -748,7 +758,7 @@ class ModeloDeterminado(ModeloImpaciente):
             símismo.avanzar_modelo(n_ciclos=c)
 
             # Leer los egresos del modelo
-            símismo.procesar_egr_modelo()
+            símismo.procesar_egr_modelo(n_ciclos=c)
 
         # Apuntar el diccionario interno de los valores al valor de este paso del ciclo
         símismo._act_vals_dic_var({var: matr[i] for var, matr in símismo.matrs_egr.items()})
@@ -784,7 +794,7 @@ class ModeloDeterminado(ModeloImpaciente):
     def _gen_dic_vals_inic(símismo):
         raise NotImplementedError
 
-    def leer_egr_modelo(símismo):
+    def leer_egr_modelo(símismo, n_ciclos, archivo=None):
         raise NotImplementedError
 
     def avanzar_modelo(símismo, n_ciclos):
@@ -856,7 +866,7 @@ class ModeloBloques(ModeloImpaciente):
             símismo.avanzar_modelo(n_ciclos=c)
 
             # Leer los egresos del modelo
-            símismo.procesar_egr_modelo()
+            símismo.procesar_egr_modelo(n_ciclos=c)
 
         # Apuntar los valores de egreso al bloque actual
         b = símismo.bloque_actual()
@@ -880,7 +890,7 @@ class ModeloBloques(ModeloImpaciente):
         return símismo._vars_por_pasito() + símismo._vars_por_bloques()
 
     def _vars_por_bloques(símismo):
-        return [var for var, d_var in símismo.variables.items() if 'por' in d_var and d_var['por'] == 'bloques']
+        return [var for var, d_var in símismo.variables.items() if 'por' in d_var and d_var['por'] == 'bloque']
 
     def obt_tmñ_ciclo(símismo):
         return np.sum(símismo.obt_tmñ_bloques())
@@ -888,7 +898,7 @@ class ModeloBloques(ModeloImpaciente):
     def _gen_dic_vals_inic(símismo):
         raise NotImplementedError
 
-    def leer_egr_modelo(símismo):
+    def leer_egr_modelo(símismo, n_ciclos, archivo=None):
         raise NotImplementedError
 
     def cerrar_modelo(símismo):

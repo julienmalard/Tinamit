@@ -15,12 +15,6 @@ class Test_EnvolturasBF(unittest.TestCase):
             if inspect.isclass(obj) and issubclass(obj, ModeloBF):
                 cls.envolturas_disp[nombre] = obj()
 
-    def test_dic_vars(símismo):
-        for nmb, obj in símismo.envolturas_disp.items():
-            with símismo.subTest(envlt=nmb):
-                ll_necesarias = ['val', 'unidades', 'ingreso', 'egreso', 'líms', 'info']
-                símismo.assertTrue(all(all(x in d_v for x in ll_necesarias) for d_v in obj.variables.values()))
-
     def test_leer_ingresos(símismo):
         for nmb, obj in símismo.envolturas_disp.items():
             with símismo.subTest(envlt=nmb):
@@ -30,4 +24,4 @@ class Test_EnvolturasBF(unittest.TestCase):
                 for v in obj.variables:
                     act = obj.variables[v]['val']
                     ref = d_ref[v]['val']
-                    npt.assert_equal(ref, act)
+                    npt.assert_equal(ref, act, err_msg=v)

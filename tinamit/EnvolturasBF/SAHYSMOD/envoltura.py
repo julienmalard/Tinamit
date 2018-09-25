@@ -7,6 +7,8 @@ import numpy as np
 import pkg_resources
 
 from tinamit.BF import ModeloBloques
+from tinamit.EnvolturasBF.SAHYSMOD.variables import vars_SAHYSMOD, códs_a_vars, vars_ingreso_SAHYSMOD, \
+    vars_egreso_SAHYSMOD
 from tinamit.config import _
 from ._sahysmodIE import leer_info_dic_paráms, escribir_desde_dic_paráms
 
@@ -41,6 +43,8 @@ class ModeloSAHYSMOD(ModeloBloques):
         símismo.datos_inic = datos_iniciales
         símismo.direc_base = os.path.split(datos_iniciales)[0]
 
+        símismo.arch_egreso = símismo.arch_ingreso = None
+
         # Estableceremos el directorio para escribir y leer ingresos y egresos según el nombre de la corrida más tarde
         símismo.direc_trabajo = None  # type: str
 
@@ -69,13 +73,15 @@ class ModeloSAHYSMOD(ModeloBloques):
         símismo.variables.clear()
 
         for nombre, dic in vars_SAHYSMOD.items():
+            cód = vars_SAHYSMOD[nombre]['cód']
             símismo.variables[nombre] = {
                 'val': None,
                 'unidades': dic['unids'],
                 'ingreso': dic['ingr'],
                 'egreso': dic['egr'],
                 'líms': dic['líms'] if 'líms' in dic else (None, None),
-                'info': ''
+                'info': '',
+                'por': 'bloque' if cód[-1] == '#' else 'ciclo'
             }
 
         # Establecer los ingresos y egresos estacionales
@@ -86,12 +92,6 @@ class ModeloSAHYSMOD(ModeloBloques):
         ]
         ingresos_estacionales = [x for x in vars_ingreso_SAHYSMOD if x[-1] == '#'
                                  and x[:-1] not in ingresos_no_estacionales]
-
-        # Guardar todo al diccionario interno
-        símismo.tipos_vars['Ingresos'] = [códs_a_vars[x] for x in vars_ingreso_SAHYSMOD]
-        símismo.tipos_vars['Egresos'] = [códs_a_vars[x] for x in vars_egreso_SAHYSMOD]
-        símismo.tipos_vars['IngrEstacionales'] = [códs_a_vars[x] for x in ingresos_estacionales]
-        símismo.tipos_vars['EgrEstacionales'] = [códs_a_vars[x] for x in egresos_estacionales]
 
     def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
 
@@ -109,7 +109,9 @@ class ModeloSAHYSMOD(ModeloBloques):
 
         super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
 
-    def avanzar_modelo(símismo):
+    def avanzar_modelo(símismo, n_ciclos):
+
+        símismo._escribir_archivo_ingr(n_años_simul=n_ciclos, dic_ingr=símismo.dic_ingr, archivo=símismo.arch_ingreso)
 
         # Limpiar archivos de egresos que podrían estar allí
         if os.path.isfile(símismo.arch_egreso):
@@ -129,30 +131,11 @@ class ModeloSAHYSMOD(ModeloBloques):
             if re.match('Name(0|[0-9]{2})$', f):
                 os.remove(f)
 
-    def _escribir_archivo_ingr(símismo, n_años_simul, dic_ingr, archivo):
-
-        # Establecer el número de años de simulación
-        símismo.dic_ingr['NY'] = n_años_simul
-
-        # Copiar datos desde el diccionario de ingresos
-        for var, val in dic_ingr.items():
-            var_cód = vars_SAHYSMOD[var]['cód']
-            llave = var_cód.replace('#', '').upper()
-
-            símismo.dic_ingr[llave] = val
-
-        # Aseguarse que no quedamos con áreas que faltan
-        for k in ["A", "B"]:
-            vec = símismo.dic_ingr[k]
-            vec[vec == -1] = 0
-
-        # Y finalmente, escribir el fuente de valores de ingreso
-        escribir_desde_dic_paráms(dic_paráms=símismo.dic_ingr, archivo_obj=archivo)
-
-    def leer_archivo_egr(símismo, n_años_egr, archivo):
+    def leer_egr_modelo(símismo, n_ciclos, archivo=None):
+        archivo = archivo or símismo.arch_egreso
 
         dic_egr = leer_arch_egr(archivo=archivo, n_est=símismo.n_estaciones, n_p=símismo.n_polí,
-                                n_años=n_años_egr)
+                                n_años=n_ciclos)
 
         for cr in ['CrA#', 'CrB#', 'CrU#', 'Cr4#', 'A#', 'B#', 'U#']:
             dic_egr[cr][dic_egr[cr] == -1] = 0
@@ -203,6 +186,32 @@ class ModeloSAHYSMOD(ModeloBloques):
         # Devolver el diccionario final
         return dic_final
 
+    def unidad_tiempo(símismo):
+        return 'mes'
+
+    def obt_tmñ_bloques(símismo):
+        return símismo.dur_estaciones
+
+    def _escribir_archivo_ingr(símismo, n_años_simul, dic_ingr, archivo):
+
+        # Establecer el número de años de simulación
+        símismo.dic_ingr['NY'] = n_años_simul
+
+        # Copiar datos desde el diccionario de ingresos
+        for var, val in dic_ingr.items():
+            var_cód = vars_SAHYSMOD[var]['cód']
+            llave = var_cód.replace('#', '').upper()
+
+            símismo.dic_ingr[llave] = val
+
+        # Aseguarse que no quedamos con áreas que faltan
+        for k in ["A", "B"]:
+            vec = símismo.dic_ingr[k]
+            vec[vec == -1] = 0
+
+        # Y finalmente, escribir el fuente de valores de ingreso
+        escribir_desde_dic_paráms(dic_paráms=símismo.dic_ingr, archivo_obj=archivo)
+
     def _gen_dic_vals_inic(símismo, archivo=None):
 
         if archivo is None:
@@ -231,18 +240,31 @@ class ModeloSAHYSMOD(ModeloBloques):
         for c in vars_ingreso_SAHYSMOD:
             llave = c.upper().replace('#', '')
 
-            if llave in dic_ingr:
-                var_name = códs_a_vars[c]
-                dic_final[var_name] = dic_ingr[llave]
+            nombre_var = códs_a_vars[c]
+            dic_final[nombre_var] = dic_ingr[llave]
 
-        return dic_final, (símismo.n_polí,)
+        por_bloques = símismo._vars_por_bloques()
+
+        for c in vars_egreso_SAHYSMOD:
+
+            nombre_var = códs_a_vars[c]
+            if nombre_var not in dic_final:
+                if nombre_var in por_bloques:
+                    tmñ = (símismo.n_estaciones, símismo.n_polí)
+                else:
+                    tmñ = símismo.n_polí
+                dic_final[nombre_var] = np.zeros(tmñ)
+
+        return dic_final
 
     def paralelizable(símismo):
         """
         El modelo SAHYSMOD sí es paralelizable si las corridas tienen nombres distintos.
 
-        :return: Verdadero.
-        :rtype: bool
+        Returns
+        -------
+        bool
+            Verdadero
         """
 
         return True
@@ -254,166 +276,10 @@ class ModeloSAHYSMOD(ModeloBloques):
         return símismo.argsinic
 
 
-# Un diccionario de variables SAHYSMOD. Ver la documentación SAHYSMOD para más detalles.
-vars_SAHYSMOD = {'Pp - Rainfall': {'cód': 'Pp#', 'unids': 'm3/season/m2', 'ingr': True, 'egr': False},
-                 'Ci - Incoming canal salinity': {'cód': 'Ci#', 'unids': 'dS/m', 'ingr': True, 'egr': True},
-                 'Cinf - Aquifer inflow salinity': {'cód': 'Cinf', 'unids': 'dS/m', 'ingr': True, 'egr': False},
-                 'Dc - Capillary rise critical depth': {'cód': 'Dc', 'unids': 'm', 'ingr': True, 'egr': False},
-                 'Dd - Subsurface drain depth': {'cód': 'Dd', 'unids': 'm', 'ingr': True, 'egr': False},
-                 'Dr - Root zone thickness': {'cód': 'Dr', 'unids': 'm', 'ingr': True, 'egr': False},
-                 'Dx - Transition zone thickness': {'cód': 'Dx', 'unids': 'm', 'ingr': True, 'egr': False},
-                 'EpA - Potential ET crop A': {'cód': 'EpA#', 'unids': 'm3/season/m2', 'ingr': True, 'egr': False},
-                 'EpB - Potential ET crop B': {'cód': 'EpB#', 'unids': 'm3/season/m2', 'ingr': True, 'egr': False},
-                 'EpU - Potential ET non-irrigated': {'cód': 'EpU#', 'unids': 'm3/season/m2', 'ingr': True,
-                                                      'egr': False},
-                 'Flq - Aquifer leaching efficienty': {'cód': 'Flq', 'unids': 'Dmnl', 'ingr': True, 'egr': False},
-                 'Flr - Root zone leaching efficiency': {'cód': 'Flr', 'unids': 'Dmnl', 'ingr': True, 'egr': False},
-                 'Flx - Transition zone leaching efficiency': {'cód': 'Flx', 'unids': 'Dmnl', 'ingr': True,
-                                                               'egr': False},
-                 'Frd - Drainage function reduction factor': {'cód': 'Frd#', 'unids': 'Dmnl', 'ingr': True,
-                                                              'egr': False},
-                 'FsA - Water storage efficiency crop A': {'cód': 'FsA#', 'unids': 'Dmnl', 'ingr': True, 'egr': False},
-                 'FsB - Water storage efficiency crop B': {'cód': 'FsB#', 'unids': 'Dmnl', 'ingr': True, 'egr': False},
-                 'FsU - Water storage efficiency non-irrigated': {'cód': 'FsU#', 'unids': 'Dmnl',
-                                                                  'ingr': True, 'egr': False},
-                 'Fw - Fraction well water to irrigation': {'cód': 'Fw#', 'unids': 'Dmnl', 'ingr': True, 'egr': False},
-                 'Gu - Subsurface drainage for irrigation': {'cód': 'Gu#', 'unids': 'm3/season/m2',
-                                                             'ingr': True, 'egr': False},
-                 'Gw - Groundwater extraction': {'cód': 'Gw#', 'unids': 'm3/season/m2', 'ingr': True, 'egr': True},
-                 'Hp - Initial water level semi-confined': {'cód': 'Hc', 'unids': 'm', 'ingr': True, 'egr': False},
-                 'IaA - Crop A field irrigation': {'cód': 'IaA#', 'unids': 'm3/season/m2', 'ingr': True, 'egr': True},
-                 'IaB - Crop B field irrigation': {'cód': 'IaB#', 'unids': 'm3/season/m2', 'ingr': True, 'egr': True},
-                 'Rice A - Crop A paddy?': {'cód': 'KcA#', 'unids': 'Dmnl', 'ingr': True, 'egr': False},
-                 'Rice B - Crop B paddy?': {'cód': 'KcB#', 'unids': 'Dmnl', 'ingr': True, 'egr': False},
-                 'Kd - Subsurface drainage?': {'cód': 'Kd', 'unids': 'Dmnl', 'ingr': True, 'egr': False},
-                 'Kf - Farmers\'s responses?': {'cód': 'Kf', 'unids': 'Dmnl', 'ingr': True, 'egr': False},
-                 'Kaq1 - Horizontal hydraulic conductivity 1': {'cód': 'Kaq1', 'unids': 'm/day', 'ingr': True,
-                                                                'egr': False},
-                 'Kaq2 - Horizontal hydraulic conductivity 2': {'cód': 'Kaq2', 'unids': 'm/day', 'ingr': True,
-                                                                'egr': False},
-                 'Kaq3 - Horizontal hydraulic conductivity 3': {'cód': 'Kaq3', 'unids': 'm/day', 'ingr': True,
-                                                                'egr': False},
-                 'Kaq4 - Horizontal hydraulic conductivity 4': {'cód': 'Kaq4', 'unids': 'm/day', 'ingr': True,
-                                                                'egr': False},
-                 'Ksc1 - Semi-confined aquifer 1?': {'cód': 'Ksc1', 'unids': 'Dmnl', 'ingr': True, 'egr': False},
-                 'Ksc2 - Semi-confined aquifer 2?': {'cód': 'Ksc2', 'unids': 'Dmnl', 'ingr': True, 'egr': False},
-                 'Ksc3 - Semi-confined aquifer 3?': {'cód': 'Ksc3', 'unids': 'Dmnl', 'ingr': True, 'egr': False},
-                 'Ksc4 - Semi-confined aquifer 4?': {'cód': 'Ksc4', 'unids': 'Dmnl', 'ingr': True, 'egr': False},
-                 'Kr - Land use key': {'cód': 'Kr#', 'unids': 'Dmnl', 'ingr': True, 'egr': True},
-                 'Kvert - Vertical hydraulic conductivity semi-confined': {'cód': 'Kvert', 'unids': 'm/day',
-                                                                           'ingr': True, 'egr': False},
-                 'Lc - Canal percolation': {'cód': 'Lc#', 'unids': 'm3/season/m2', 'ingr': True, 'egr': False},
-                 'Peq - Aquifer effective porosity': {'cód': 'Peq', 'unids': 'm/m', 'ingr': True, 'egr': False},
-                 'Per - Root zone effective porosity': {'cód': 'Per', 'unids': 'm/m', 'ingr': True, 'egr': False},
-                 'Pex - Transition zone effective porosity': {'cód': 'Pex', 'unids': 'm/m', 'ingr': True, 'egr': False},
-                 'Psq - Semi-confined aquifer storativity': {'cód': 'Psq', 'unids': 'Dmnl', 'ingr': True, 'egr': False},
-                 'Ptq - Aquifer total pore space': {'cód': 'Ptq', 'unids': 'm/m', 'ingr': True, 'egr': False},
-                 'Ptr - Root zone total pore space': {'cód': 'Ptr', 'unids': 'm/m', 'ingr': True, 'egr': False},
-                 'Ptx - Transition zone total pore space': {'cód': 'Ptx', 'unids': 'm/m', 'ingr': True, 'egr': False},
-                 'QH1 - Drain discharge to water table height ratio': {'cód': 'QH1', 'unids': 'm/day/m',
-                                                                       'ingr': True, 'egr': False},
-                 'QH2 - Drain discharge to sq. water table height ratio': {'cód': 'QH2', 'unids': 'm/day/m2',
-                                                                           'ingr': True, 'egr': False},
-                 'Qinf - Aquifer inflow': {'cód': 'Qinf', 'unids': 'm3/season/m2', 'ingr': True, 'egr': False},
-                 'Qout - Aquifer outflow': {'cód': 'Qout', 'unids': 'm3/season/m2', 'ingr': True, 'egr': False},
-                 'SL - Soil surface level': {'cód': 'SL', 'unids': 'm', 'ingr': True, 'egr': False},
-                 'SiU - Surface inflow to non-irrigated': {'cód': 'SiU#', 'unids': 'm3/season/m2',
-                                                           'ingr': True, 'egr': False},
-                 'SdA - Surface outflow crop A': {'cód': 'SoA#', 'unids': 'm3/season/m2', 'ingr': True, 'egr': False},
-                 'SdB - Surface outflow crop B': {'cód': 'SoB#', 'unids': 'm3/season/m2', 'ingr': True, 'egr': False},
-                 'SoU - Surface outflow non-irrigated': {'cód': 'SoU#', 'unids': 'm3/season/m2',
-                                                         'ingr': True, 'egr': False},
-                 'It - Total irrigation': {'cód': 'It#', 'unids': 'm3/season/m2', 'ingr': False, 'egr': True},
-                 'Is - Canal irrigation': {'cód': 'Is#', 'unids': 'm3/season/m2', 'ingr': False, 'egr': True},
-
-                 'FfA - Irrigation efficiency crop A': {'cód': 'FfA#', 'unids': 'Dmnl', 'ingr': False, 'egr': True},
-                 'FfB - Irrigation efficiency crop B': {'cód': 'FfB#', 'unids': 'Dmnl', 'ingr': False, 'egr': True},
-                 'FfT - Total irrigation efficiency': {'cód': 'FfT#', 'unids': 'Dmnl', 'ingr': False, 'egr': True},
-                 'Io - Water leaving by canal': {'cód': 'Io#', 'unids': 'm3/season/m2', 'ingr': False, 'egr': True},
-                 'JsA - Irrigation sufficiency crop A': {'cód': 'JsA#', 'unids': 'Dmnl', 'ingr': False, 'egr': True},
-                 'JsB - Irrigation sufficiency crop B': {'cód': 'JsB#', 'unids': 'Dmnl', 'ingr': False, 'egr': True},
-                 'EaU - Actual evapotranspiration nonirrigated': {'cód': 'EaU#', 'unids': 'm3/season/m2',
-                                                                  'ingr': False, 'egr': True},
-                 'LrA - Root zone percolation crop A': {'cód': 'LrA#', 'unids': 'm3/season/m2',
-                                                        'ingr': False, 'egr': True},
-                 'LrB - Root zone percolation crop B': {'cód': 'LrB#', 'unids': 'm3/season/m2',
-                                                        'ingr': False, 'egr': True},
-                 'LrU - Root zone percolation nonirrigated': {'cód': 'LrU#', 'unids': 'm3/season/m2',
-                                                              'ingr': False, 'egr': True},
-                 'LrT - Total root zone percolation': {'cód': 'LrT#', 'unids': 'm3/season/m2', 'ingr': False,
-                                                       'egr': True},
-                 'RrA - Capillary rise crop A': {'cód': 'RrA#', 'unids': 'm3/season/m2', 'ingr': False, 'egr': True},
-                 'RrB - Capillary rise crop B': {'cód': 'RrB#', 'unids': 'm3/season/m2', 'ingr': False, 'egr': True},
-                 'RrU - Capillary rise non-irrigated': {'cód': 'RrU#', 'unids': 'm3/season/m2', 'ingr': False,
-                                                        'egr': True},
-                 'RrT - Total capillary rise': {'cód': 'RrT#', 'unids': 'm3/season/m2', 'ingr': False, 'egr': True},
-                 'Gti - Trans zone horizontal incoming groundwater': {'cód': 'Gti#', 'unids': 'm3/season/m2',
-                                                                      'ingr': False, 'egr': True},
-                 'Gto - Trans zone horizontal outgoing groundwater': {'cód': 'Gto#', 'unids': 'm3/season/m2',
-                                                                      'ingr': False, 'egr': True},
-                 'Qv - Net vertical water table recharge': {'cód': 'Qv#', 'unids': 'm', 'ingr': False, 'egr': True},
-                 'Gqi - Aquifer horizontal incoming groundwater': {'cód': 'Gqi#', 'unids': 'm3/season/m2',
-                                                                   'ingr': False, 'egr': True},
-                 'Gqo - Aquifer horizontal outgoing groundwater': {'cód': 'Gqo#', 'unids': 'm3/season/m2',
-                                                                   'ingr': False, 'egr': True},
-                 'Gaq - Net aquifer horizontal flow': {'cód': 'Gaq#', 'unids': 'm3/season/m2',
-                                                       'ingr': False, 'egr': True},
-                 'Gnt - Net horizontal groundwater flow': {'cód': 'Gnt#', 'unids': 'm3/season/m2',
-                                                           'ingr': False, 'egr': True},
-                 'Gd - Total subsurface drainage': {'cód': 'Gd#', 'unids': 'm3/season/m2',
-                                                    'ingr': False, 'egr': True},
-                 'Ga - Subsurface drainage above drains': {'cód': 'Ga#', 'unids': 'm3/season/m2',
-                                                           'ingr': False, 'egr': True},
-                 'Gb - Subsurface drainage below drains': {'cód': 'Gb#', 'unids': 'm3/season/m2',
-                                                           'ingr': False, 'egr': True},
-                 'Dw - Groundwater depth': {'cód': 'Dw#', 'unids': 'm', 'ingr': False, 'egr': True},
-                 'Hw - Water table elevation': {'cód': 'Hw#', 'unids': 'm', 'ingr': True, 'egr': True},
-                 'Hq - Subsoil hydraulic head': {'cód': 'Hq#', 'unids': 'm', 'ingr': False, 'egr': True},
-                 'Sto - Water table storage': {'cód': 'Sto#', 'unids': 'm', 'ingr': False, 'egr': True},
-                 'Zs - Surface water salt': {'cód': 'Zs#', 'unids': 'm*dS/m', 'ingr': False, 'egr': True},
-                 'Area A - Seasonal fraction area crop A': {'cód': 'A#', 'unids': 'Dmnl', 'ingr': True, 'egr': True},
-                 'Area B - Seasonal fraction area crop B': {'cód': 'B#', 'unids': 'Dmnl', 'ingr': True, 'egr': True},
-                 'Area U - Seasonal fraction area nonirrigated': {'cód': 'U#', 'unids': 'Dmnl', 'ingr': False,
-                                                                  'egr': True},
-                 'Uc - Fraction permanently non-irrigated': {'cód': 'Uc#', 'unids': 'Dmnl', 'ingr': False, 'egr': True},
-                 'CrA - Root zone salinity crop A': {'cód': 'CrA#', 'unids': 'dS / m', 'ingr': True, 'egr': True},
-                 'CrB - Root zone salinity crop B': {'cód': 'CrB#', 'unids': 'dS / m', 'ingr': True, 'egr': True},
-                 'CrU - Root zone salinity non-irrigated': {'cód': 'CrU#', 'unids': 'dS / m',
-                                                            'ingr': True, 'egr': True},
-                 'Cr4 - Fully rotated land irrigated root zone salinity': {'cód': 'Cr4#', 'unids': 'dS / m',
-                                                                           'ingr': False, 'egr': True},
-                 'C1 - Key 1 non-permanently irrigated root zone salinity': {'cód': 'C1*#', 'unids': 'dS / m',
-                                                                             'ingr': False, 'egr': True},
-                 'C2 - Key 2 non-permanently irrigated root zone salinity': {'cód': 'C2*#', 'unids': 'dS / m',
-                                                                             'ingr': False, 'egr': True},
-                 'C3 - Key 3 non-permanently irrigated root zone salinity': {'cód': 'C3*#', 'unids': 'dS / m',
-                                                                             'ingr': False, 'egr': True},
-                 'Cxf - Transition zone salinity': {'cód': 'Cxf#', 'unids': 'dS / m', 'ingr': True, 'egr': True},
-                 'Cxa - Transition zone above-drain salinity': {'cód': 'Cxa#', 'unids': 'dS / m', 'ingr': True,
-                                                                'egr': True},
-                 'Cxb - Transition zone below-drain salinity': {'cód': 'Cxb#', 'unids': 'dS / m', 'ingr': True,
-                                                                'egr': True},
-                 'Cti - Transition zone incoming salinity': {'cód': 'Cti#', 'unids': 'dS / m', 'ingr': False,
-                                                             'egr': True},
-                 'Cqf - Aquifer salinity': {'cód': 'Cqf#', 'unids': 'dS / m', 'ingr': True, 'egr': True},
-                 'Cd - Drainage salinity': {'cód': 'Cd#', 'unids': 'ds / m', 'ingr': False, 'egr': True},
-                 'Cw - Well water salinity': {'cód': 'Cw#', 'unids': 'ds / m', 'ingr': False, 'egr': True},
-                 }
-
-# Un diccionario para obtener el nombre de un variable a base de su código SAHYSMOD.
-códs_a_vars = dict([(v['cód'], k) for (k, v) in vars_SAHYSMOD.items()])
-
-# Una lista con únicamente los códigos de variables ingersos de SAHYSMOD
-vars_ingreso_SAHYSMOD = [v['cód'] for v in vars_SAHYSMOD.values() if v['ingr']]
-
-# Una lista con únicamente los códigos de variables egresos de SAHYSMOD
-vars_egreso_SAHYSMOD = [v['cód'] for v in vars_SAHYSMOD.values() if v['egr']]
-
-
 def leer_arch_egr(archivo, n_est, n_p, n_años):
     """
     :return: eje 0 = estación, eje 1 = polígono. -1 = valor que falta
-    :rtype: dict[np.ndarray]
+    :rtype: dict[str, np.ndarray]
     """
 
     dic_datos = dict([(k, np.empty((n_est, n_p))) for k in vars_egreso_SAHYSMOD])
