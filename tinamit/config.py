@@ -27,10 +27,12 @@ try:
             _configs[c] = v_c
         elif not isinstance(_configs[c], type(v_c)):
             _configs[c] = v_c
-    _guardar_conf()
 except (FileNotFoundError, json.decoder.JSONDecodeError):
     _configs = _config_base.copy()
+try:
     _guardar_conf()
+except PermissionError:
+    pass
 
 
 def obt_val_config(llave, cond=None, mnsj_err=None, respaldo=None):
