@@ -15,7 +15,7 @@ mapa_paráms = {
     'Kaq': {
         'transf': 'prom',
         'mapa': {
-            'Kaq1 - Horizontal hydraulic conductivity 1': gen_mapa_kaq(0, all_soil_class, p_neighbors),
+            'Kaq1 - Horizontal hydraulic conductivity 1': gen_mapa_kaq(0, all_soil_class, p_neighbors), #average(self, upper)
             'Kaq2 - Horizontal hydraulic conductivity 2': gen_mapa_kaq(1, all_soil_class, p_neighbors),
             'Kaq3 - Horizontal hydraulic conductivity 3': gen_mapa_kaq(2, all_soil_class, p_neighbors),
             'Kaq4 - Horizontal hydraulic conductivity 4': gen_mapa_kaq(3, all_soil_class, p_neighbors)

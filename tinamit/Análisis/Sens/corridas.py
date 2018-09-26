@@ -100,7 +100,7 @@ def simul_sens(mod, mstr_paráms, mapa_paráms, var_egr, t_final, guardar=True, 
     FMT = '%H:%M:%S'
     print(f"Initializing simulation {start_time} ")
     res_corridas = mod.simular_grupo(
-        t_final=t_final, vals_inic=vals_inic, vars_interés=var_egr, paralelo=paralelo, guardar=guardar
+        t_final=t_final, vals_inic=vals_inic, vars_interés=var_egr, paralelo=paralelo, guardar=guardar, n_proc=3
     )
     print(f"Simulation elapse {datetime.strptime(datetime.now().strftime('%H:%M:%S'), FMT) - datetime.strptime(start_time, FMT)}")
     return res_corridas

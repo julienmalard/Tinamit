@@ -38,7 +38,7 @@ def gen_mod():
     #'Policy RH' = 1, Fw = 1, Policy Irrigation improvement = 1, Policy Canal lining=1, Capacity per tubewell =(100.8, 201.6),
     return modelo
 
-devolver = ['Watertable depth Tinamit']
+devolver = ['Watertable depth Tinamit', '']
 
 # %% Buchiana 1
 # %% Farida 2
@@ -49,43 +49,5 @@ if __name__ == "__main__":
     from tinamit.Calib.ej.muestrear import mstr, archivo_muestrea
 
 
-    # direc = os.path.join(os.path.split(__file__)[0], "Morris_sim_")
     direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\simular")
     guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\\anlzr\\anlzr_new_calib")
-    # direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\simular")
-    # guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\\anlzr_new")
-
-    #direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\simular")
-    #guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\\anlzr")
-
-    # simul_sens_por_grupo(
-    #     gen_mod(), t_final=5, mstr_paráms=mstr, mapa_paráms=mapa_paráms, var_egr=devolver,
-    #     tmñ_grupos=9, í_grupos=[2, 5], paralelo=True, guardar=direc
-    # )
-
-    # simul_faltan(
-    #     gen_mod(), arch_mstr=archivo_muestrea, mapa_paráms=mapa_paráms, var_egr=devolver, direc=direc,
-    #     t_final=10, índices_mstrs=None, paralelo=True
-    # )
-
-    # simul_sens(
-    #     gen_mod(), mstr_paráms=mstr, mapa_paráms=mapa_paráms, var_egr=devolver, t_final=3, guardar=direc,
-    #     índices_mstrs=None, paralelo=True
-    # )
-
-    # mstr_paráms = format_mstr(cargar_mstr_paráms(archivo_muestrea), problema['names']) #这里不行 参数格式需要是625＊24
-
-    # anlzr_sens(archivo_muestrea, "morris", líms_paráms, mapa_paráms, direc, 625, guardar, var_egr='mds_Watertable depth Tinamit',
-    #            tipo_egr='linear')
-
-    # anlzr_sens(archivo_muestrea, "morris", problema_arch, direc, 625, guardar, var_egr='mds_Watertable depth Tinamit',
-    #            cal_raw='paso_tiempo')
-
-    res = analy_by_file('morris',líms_paráms=líms_paráms, mapa_paráms=mapa_paráms, mstr_path=archivo_muestrea,
-                  simulation_path={'arch_simular': direc, 'num_samples': 625}, var_egr=['mds_Watertable depth Tinamit'],
-                  tipo_egr='linear')
-
-    guardar_json(res, guardar)
-
-    # Draw maps
-    # modelo.dibujar_mapa(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')

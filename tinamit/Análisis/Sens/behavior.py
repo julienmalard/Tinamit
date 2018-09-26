@@ -151,7 +151,7 @@ def minimize(x_data=None, y_data=None, tipo_egr='linear', gof=False):
         if gof:
             b_params.update({'gof': aic(len(b_params['parameters']), oci(params, x_data), y_data)})
     elif tipo_egr == 'oscilación_aten':
-        params = optimize.minimize(ocilación_aten, x0=[0.1, 0.7, 0.6, 1.0],method='Nelder-Mead',args=(x_data, y_data)).x
+        params = optimize.minimize(ocilación_aten, x0=[0.01, 0.7, 1, 0.01],method='Nelder-Mead',args=(x_data, y_data)).x
         b_params = {'parameters': {'g_d': params[0], 'amplitude': params[1], 'period': params[2], 'phi':params[3]}}
         if gof:
             b_params.update({'gof': aic(len(b_params['parameters']), oci_aten(params, x_data), y_data)})

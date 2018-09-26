@@ -1,5 +1,6 @@
 import json
 import os
+from copy import deepcopy
 
 import numpy as np
 from SALib.sample import morris
@@ -28,6 +29,7 @@ def muestrear_paráms(líms_paráms, método, mapa_paráms=None, ops_método=Non
 
     if ficticia is True:
         ficticia = {"Ficticia": (0, 1)}
+        líms_paráms = deepcopy(líms_paráms)
         líms_paráms.update(ficticia)
 
     problema, líms_paráms_final = gen_problema(líms_paráms, mapa_paráms)
@@ -52,6 +54,7 @@ def muestrear_paráms(líms_paráms, método, mapa_paráms=None, ops_método=Non
 def gen_problema(líms_paráms, mapa_paráms, ficticia=True):
     if ficticia is True:
         ficticia = {"Ficticia": (0, 1)}
+        líms_paráms = deepcopy(líms_paráms)
         líms_paráms.update(ficticia)
 
     if mapa_paráms is None:

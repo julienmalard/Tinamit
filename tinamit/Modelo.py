@@ -545,7 +545,7 @@ class Modelo(object):
 
     def simular_grupo(
             símismo, t_final, t_inic=None, paso=1, nombre_corrida='', vals_inic=None, vals_extern=None, bd=None,
-            lugar_clima=None, clima=None, combinar=True, paralelo=None, vars_interés=None, guardar=False
+            lugar_clima=None, clima=None, combinar=True, paralelo=None, vars_interés=None, guardar=False, n_proc=None,
     ):
         """
         Correr grupos de simulación. Puede ser mucho más fácil que de efectuar las corridas manualmente.
@@ -697,7 +697,7 @@ class Modelo(object):
                 l_trabajos.append((copia_mod, d_args))
 
             # Hacer las corridas en paralelo
-            with Reserva() as r:
+            with Reserva(processes=n_proc) as r:
                 res_paralelo = r.map(_correr_modelo, l_trabajos)
 
             # Ya terminamos la parte difícil. Desde ahora, sí permitiremos otras ejecuciones de esta función.

@@ -126,7 +126,10 @@ class ModeloSAHYSMOD(ModeloImpaciente):
 
         for f in os.listdir(símismo.direc_trabajo):
             if re.match('Name(0|[0-9]{2})$', f):
-                os.remove(f)
+                try:
+                    os.remove(f)
+                except FileNotFoundError:
+                    pass
 
     def _escribir_archivo_ingr(símismo, n_años_simul, dic_ingr, archivo):
 

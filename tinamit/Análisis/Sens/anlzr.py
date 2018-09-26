@@ -1,4 +1,5 @@
 import os
+from copy import deepcopy
 
 from tinamit.Análisis.Sens.corridas import simul_sens
 from tinamit.Análisis.Sens.muestr import cargar_mstr_paráms, gen_problema, muestrear_paráms
@@ -159,7 +160,7 @@ def analy_by_file(método, líms_paráms, mapa_paráms, mstr_path, simulation_pa
     )
 
 def anlzr_sens(mod, método, líms_paráms, mapa_paráms, t_final, var_egr,
-               ops_método=None, tipo_egr=None, ficticia=True, shape=None):
+               ops_método=None, tipo_egr=None, ficticia=True):
     método = método.lower()
     if tipo_egr:
         tipo_egr = tipo_egr.lower()
@@ -168,9 +169,10 @@ def anlzr_sens(mod, método, líms_paráms, mapa_paráms, t_final, var_egr,
         ops_método = {}
 
     mstr = muestrear_paráms(líms_paráms, método, mapa_paráms=mapa_paráms, ficticia=ficticia)
-
+    # n_param * Ns
     simulation = simul_sens(mod, mstr_paráms=mstr, mapa_paráms=mapa_paráms, t_final=t_final, var_egr=var_egr,
-                            guardar=False)
+                            guardar=False) #250(Ns)* xarray
+    # 150 NS * xarray (ts*3)=simulation['0']['y'].values (150*21*3)
     # import matplotlib.pyplot as ppt
     # for i in range(len(simulation)):
     #     ppt.plot(simulation[str(i)]['y'].values)
@@ -197,99 +199,131 @@ def anlzr_simul(método, líms_paráms, mstr, mapa_paráms, ficticia, simulation
         d_tp = egr[tp]
 
         for vr in var_egr:
-            if isinstance(list(simulation.values())[0], list):
-                p_f_simul = format_simulation_data(simulation, vr, tp)
-                d_var = {}
-                for poly, f_simul in p_f_simul.items():
-                    d_var[poly] = anlzr_simul_stepwise(problema, f_simul, método, f_mstr, ops_método)
-            else:
-                f_simul = format_simul(simulation=simulation, vr=vr, tipo_egr=tp)
-                d_var = anlzr_simul_stepwise(problema, f_simul, método, f_mstr, ops_método)
+            f_simul = format_simul(simulation=simulation, vr=vr, tipo_egr=tp)
+            d_var = anlzr_simul_salib(problema, f_simul, método, f_mstr, ops_método, líms_paráms)
 
             d_tp[vr] = d_var
     return egr
 
 
-def anlzr_simul_stepwise(problema, f_simul, método, f_mstr, ops_método):
-    if isinstance(f_simul, dict): #linear, all shapes {'mustar': {'A': nparray(len(Ns))}}
+def anlzr_simul_salib(problema, f_simul, método, f_mstr, ops_método, líms_paráms):
+    líms_paráms = deepcopy(líms_paráms)
+    if 'Ficticia' in problema['names']:
+        líms_paráms['Ficticia'] = (0, 1)
+
+    if isinstance(f_simul, dict):
         if np.asarray(list(f_simul.values())).ndim != 1:
-            tmñ = np.asarray(list(f_simul.values())).shape[2:] # size = dimention
+            tmñ = np.asarray(list(f_simul.values())).shape[2:] # take the poly (n)
         else:
             tmñ = np.asarray(list(f_simul.values())).shape[1:]
 
         if método == 'morris':
-            d_var = {'mu_star': {name: {ll: np.empty(tmñ) for ll in f_simul} for name in problema['names']},
-                     'sigma': {name: {ll: np.empty(tmñ) for ll in f_simul} for name in problema['names']},
+            d_var = {'mu_star': {name: {ll: np.empty(tmñ) for ll in f_simul} for name in líms_paráms},
+                     'sigma': {name: {ll: np.empty(tmñ) for ll in f_simul} for name in líms_paráms},
                      'sum_sigma': {ll: np.empty(tmñ) for ll in f_simul}}
         elif método == 'fast':
-            d_var = {'Si': {name: {ll: np.empty(tmñ) for ll in f_simul} for name in problema['names']},
-                     'ST': {name: {ll: np.empty(tmñ) for ll in f_simul} for name in problema['names']},
-                     'St-Si': {name: {ll: np.empty(tmñ) for ll in f_simul} for name in problema['names']},
+            d_var = {'Si': {name: {ll: np.empty(tmñ) for ll in f_simul} for name in líms_paráms},
+                     'ST': {name: {ll: np.empty(tmñ) for ll in f_simul} for name in líms_paráms},
+                     'St-Si': {name: {ll: np.empty(tmñ) for ll in f_simul} for name in líms_paráms},
                      'sum_s1': {ll: np.empty(tmñ) for ll in f_simul},
                      'sum_st': {ll: np.empty(tmñ) for ll in f_simul},
                      'sum_st-s1': {ll: np.empty(tmñ) for ll in f_simul}}
-
         else:
             raise ValueError(método)
 
-        for ll, v in f_simul.items(): # mul_dim, v=(100*3)
-            if v.ndim == 1:
+        for ll, v in f_simul.items():
+            if v.ndim == 1: # only Ns
                 res = _anlzr_salib(método=método, problema=problema,
                                    mstr=f_mstr, simul=v, ops_método=ops_método)
+
                 for si, val in res.items():
                     if isinstance(val, dict):
                         for pa, p_var in val.items():
                             d_var[si][pa][ll] = p_var
                     else:
                         d_var[si][ll] = val
+
             else:
-                for i in range(v.shape[1]):
+                for i in range(v.shape[1]): # [1] -> dimentions (poly)
                     res = _anlzr_salib(método=método, problema=problema,
                                        mstr=f_mstr, simul=v[:, i], ops_método=ops_método)
-                    for si in list(d_var.keys()):
-                        if isinstance(res[si], dict):
-                            for name in problema['names']:
-                                d_var[si][name][ll][i] = res[si][name]
+                    for si, val in res.items():
+                        if isinstance(val, dict):
+                            for key, va in líms_paráms.items():
+                                if isinstance(va, list):
+                                    if d_var[si][key][ll].shape != (len(va), tmñ[0]):
+                                        d_var[si][key][ll] = np.empty([len(va), tmñ[0]])
+                                    for j in range(len(va)):
+                                        d_var[si][key][ll][j, i] = val[key + '_' + str(j)]
+                                else:
+                                    d_var[si][key][ll][i] = res[si][key]
                         else:
-                            d_var[si][ll][i] = res[si]
+                            d_var[si][ll][i] = val
 
     else:
-        if len(f_simul.shape) > 1:
-            tmñ = f_simul.shape[1:] # simple=6, multidim=ts * n_dim (6*3)
+        if len(f_simul.shape) > 1: #mean, final, paso (Ns*dim)
+            tmñ = f_simul.shape[1:] # simple=6, multidim=ts * n_dim (6*3), paso=(ts*n)
             if método == 'morris':
-                d_var = {'mu_star': {name: np.empty(tmñ) for name in problema['names']},
-                         'sigma': {name: np.empty(tmñ) for name in problema['names']},
+                d_var = {'mu_star': {name: np.empty(tmñ) for name in líms_paráms},
+                         'sigma': {name: np.empty(tmñ) for name in líms_paráms},
                          'sum_sigma': np.empty(tmñ)}
             elif método == 'fast':
-                d_var = {'Si': {name: np.empty(tmñ) for name in problema['names']},
-                         'ST': {name: np.empty(tmñ) for name in problema['names']},
-                         'St-Si': {name: np.empty(tmñ) for name in problema['names']},
+                d_var = {'Si': {name: np.empty(tmñ) for name in líms_paráms},
+                         'ST': {name: np.empty(tmñ) for name in líms_paráms},
+                         'St-Si': {name: np.empty(tmñ) for name in líms_paráms},
                          'sum_s1': np.empty(tmñ),
                          'sum_st': np.empty(tmñ),
                          'sum_st-s1': np.empty(tmñ)}
             else:
                 raise ValueError(método)
+
             if f_simul.ndim == 2:
-                for i in range(f_simul.shape[1]):
+                for i in range(f_simul.shape[1]): # i=dim
                     res = _anlzr_salib(método=método, problema=problema,
                                        mstr=f_mstr, simul=f_simul[:, i], ops_método=ops_método)
                     for si, val in res.items():
-                        if isinstance(val, dict):
-                            for pa, p_var in val.items():
-                                d_var[si][pa][i] = p_var
+                        if len(list(res.values())[0]) == len(líms_paráms):
+                            if isinstance(val, dict):
+                                for pa, p_var in val.items():
+                                    d_var[si][pa][i] = p_var
+                            else:
+                                d_var[si][i] = val
                         else:
-                            d_var[si][i] = val
-            else:
-                for i in range(f_simul.shape[2]):
-                    for j in range(f_simul.shape[1]):
+                            if isinstance(val, dict):
+                                for key, va in líms_paráms.items():
+                                    if isinstance(va, list):
+                                        if d_var[si][key].shape != (len(va), tmñ[0]):
+                                            d_var[si][key] = np.empty([len(va), tmñ[0]])
+                                        for j in range(len(va)):
+                                            d_var[si][key][j, i] = val[key + '_' + str(j)]
+                                    else:
+                                        d_var[si][key][i] = res[si][key]
+                            else:
+                                d_var[si][i] = val
+            else: #paso
+                for i in range(f_simul.shape[2]): #f_simul =(ns*ts*n); i=10
+                    for j in range(f_simul.shape[1]): #j=6
                         res = _anlzr_salib(método=método, problema=problema,
                                            mstr=f_mstr, simul=f_simul[:, j, i], ops_método=ops_método)
                         for si, val in res.items():
-                            if isinstance(val, dict):
-                                for pa, p_var in val.items():
-                                    d_var[si][pa][j, i] = p_var
+                            if len(list(res.values())[0]) == len(líms_paráms):
+                                if isinstance(val, dict):
+                                    for pa, p_var in val.items():
+                                        d_var[si][pa][j, i] = p_var
+                                else:
+                                    d_var[si][j, i] = val
                             else:
-                                d_var[si][j, i] = val
+                                if isinstance(val, dict):
+                                    for key, va in líms_paráms.items():
+                                        if isinstance(va, list):
+                                            if d_var[si][key].shape != (len(va), *tmñ):
+                                                d_var[si][key] = np.empty([len(va), *tmñ])
+                                            for k in range(len(va)):
+                                                d_var[si][key][k, j, i] = val[key + '_' + str(k)]
+                                        else:
+                                            d_var[si][key][j, i] = res[si][key]
+                                else:
+                                    d_var[si][j, i] = val
 
         else:
             d_var = {}
@@ -305,7 +339,6 @@ def format_simul(simulation, vr, tipo_egr):
     :param simulation: { 'sample_id': {'y': []}}
     :param vr:
     :param tipo_egr:
-    :param n_dimension:
     :return: [] or {'p': []}
     """
     if simulation['0'][vr].values.ndim == 2:
@@ -318,7 +351,11 @@ def format_simul(simulation, vr, tipo_egr):
     if tipo_egr == "promedio":
         f_simul = np.empty(tmñ)
         for i, val in enumerate(simulation.values()):
-            f_simul[i] = np.average(val[vr].values)
+            if simulation['0'][vr].values.ndim == 2:
+                for j in range(val[vr].values.shape[1]):
+                    f_simul[i, j] = np.average(val[vr].values[:, j])
+            else:
+                f_simul[i] = np.average(val[vr].values)
 
     elif tipo_egr == "final":
         f_simul = np.empty(tmñ)
@@ -374,11 +411,11 @@ def behavior_anlzr(simulation, bf_simul, vr, tipo_egr):
             b_param = behavior.minimize(np.asarray(range(val[vr].values.size)), y_data, tipo_egr)['parameters']
             for k, v in bf_simul.items():
                 bf_simul[k][i] = b_param[k]
-        else:
-            for j in range(y_data.shape[1]):
+        else: #val = 21*10
+            for j in range(y_data.shape[1]): # j- dimension
                 b_param = behavior.minimize(np.asarray(range(val[vr].values.shape[0])), y_data[:, j], tipo_egr)['parameters']
                 for k, v in bf_simul.items():
-                    bf_simul[k][i , j] = b_param[k]
+                    bf_simul[k][i, j] = b_param[k]
     return bf_simul
 
 
