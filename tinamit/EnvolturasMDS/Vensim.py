@@ -286,15 +286,15 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         return unidades
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
         """
         Acciones necesarias para iniciar el modelo Vensim.
 
         :param nombre_corrida: El nombre de la corrida del modelo.
         :type nombre_corrida: str
 
-        :param tiempo_final: El tiempo final de la simulación.
-        :type tiempo_final: int
+        :param n_pasos: El tiempo final de la simulación.
+        :type n_pasos: int
 
         """
 
@@ -308,7 +308,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         # Establecer el tiempo final.
         cmd_vensim(func=símismo.mod.vensim_command,
-                   args='SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', tiempo_final + 1),
+                   args='SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', t_final + 1),
                    mensaje_error=_('Error estableciendo el tiempo final para Vensim.'))
 
         # Iniciar la simulación en modo juego ("Game"). Esto permitirá la actualización de los valores de los variables
@@ -329,7 +329,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         # Reinicializar el diccionario interno también.
         símismo._leer_vals_de_vensim()
 
-        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
+        super().iniciar_modelo(n_pasos, t_final, nombre_corrida, vals_inic)
 
     def _cambiar_vals_modelo_externo(símismo, valores):
         """
@@ -457,12 +457,12 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                        mensaje_error=_('Error estableciendo el paso de Vensim.'))
         cmd_vensim(func=símismo.mod.vensim_command,
                    args="GAME>GAMEON",
-                   mensaje_error=_('Error para terminar la simulación Vensim.'))
+                   mensaje_error=_('Error terminando la simulación Vensim.'))
 
         # ¡Por fin! Llamar la comanda para terminar la simulación.
         cmd_vensim(func=símismo.mod.vensim_command,
                    args="GAME>ENDGAME",
-                   mensaje_error=_('Error para terminar la simulación Vensim.'))
+                   mensaje_error=_('Error terminando la simulación Vensim.'))
 
         #
         símismo._vdf_a_csv()

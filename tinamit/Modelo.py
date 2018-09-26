@@ -121,14 +121,14 @@ class Modelo(object):
 
         raise NotImplementedError
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
         """
         Esta función llama cualquier acción necesaria para preparar el modelo para la simulación. Esto incluye aplicar
         valores iniciales. En general es muy fácil y se hace simplemente con "símismo.cambiar_vals(vals_inic)",
         pero para unos modelos (como Vensim) es un poco más delicado así que los dejamos a ti para implementar.
 
-        :param tiempo_final: El tiempo final de la simulación.
-        :type tiempo_final: int
+        :param n_pasos:
+        :type n_pasos: int
 
         :param nombre_corrida: El nombre de la corrida (generalmente para guardar resultados).
         :type nombre_corrida: str
@@ -182,13 +182,39 @@ class Modelo(object):
             elif isinstance(val_antes, np.ndarray):
                 # Si es matriz, tenemos que cambiar sus valores sin crear nueva matriz.
 
-                existen = np.invert(np.isnan(val))  # No cambiamos nuevos valores que faltan
-                val_antes[existen] = val[existen]
+                if isinstance(val, np.ndarray):
+                    existen = np.invert(np.isnan(val))  # No cambiamos nuevos valores que faltan
+                    val_antes[existen] = val[existen]
+                else:
+                    val_antes[:] = val
 
             else:
                 # Si no es matriz, podemos cambiar el valor directamente.
                 if not np.isnan(val):  # Evitar cambiar si no existe el nuevo valor.
                     símismo.variables[var]['val'] = val
+
+    def _unid_tiempo_python(símismo):
+        unid_ref_tiempo = ref_final = símismo.unidad_tiempo()
+        factor = 1
+        for u in ['año', 'mes', 'día']:
+            try:
+                d_conv = símismo._conv_unid_tiempo[unid_ref_tiempo]
+                factor = convertir(de=d_conv['ref'], a=u, val=d_conv['factor'])
+                ref_final = u
+                if factor == d_conv['factor']:
+                    break
+            except (KeyError, ValueError):
+                try:
+                    factor = convertir(de=unid_ref_tiempo, a=u)
+                    ref_final = u
+                    if factor == 1:
+                        break
+                except ValueError:
+                    pass
+        if ref_final not in ['año', 'mes', 'día']:
+            raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a años, meses o días.')
+                             .format(unid_ref_tiempo))
+        return ref_final, factor
 
     def _procesar_rango_tiempos(símismo, t_inic, t_final, paso):
 
@@ -234,43 +260,33 @@ class Modelo(object):
 
         elif isinstance(t_inic, ft.date):
 
-            unid_ref_tiempo = símismo.unidad_tiempo()
-            for u in ['año', 'mes', 'día']:
-                try:
-                    factor = convertir(de=unid_ref_tiempo, a=u)
-                    if factor == 1:
-                        unid_ref_tiempo = u
-                        break
-                except ValueError:
-                    pass
-            if unid_ref_tiempo not in ['año', 'mes', 'día']:
-                raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a años, meses o días.')
-                                 .format(unid_ref_tiempo))
+            ref_final, factor = símismo._unid_tiempo_python()
 
             dic_trad_tiempo = {'año': 'year', 'mes': 'months', 'día': 'days'}
 
             if isinstance(t_final, int):
                 n_pasos = int(math.ceil(t_final / paso))
                 t_final = t_inic + deltarelativo(
-                    **{dic_trad_tiempo[unid_ref_tiempo]: n_pasos}
+                    **{dic_trad_tiempo[ref_final]: n_pasos}
                 )  # type: ft.date
             else:
                 if t_inic >= t_final:
                     t_inic, t_final = t_final, t_inic
 
-                if unid_ref_tiempo == 'año':
+                if ref_final == 'año':
                     dlt = deltarelativo(t_final, t_inic)
                     plazo = dlt.years + (not dlt.months == dlt.days == 0)
-                elif unid_ref_tiempo == 'mes':
+                elif ref_final == 'mes':
                     dlt = deltarelativo(t_final, t_inic)
                     plazo = dlt.years * 12 + dlt.months + (not dlt.days == 0)
-                elif unid_ref_tiempo == 'día':
+                elif ref_final == 'día':
                     plazo = (t_final - t_inic).days
                 else:
                     raise ValueError
+                plazo *= factor
                 n_pasos = math.ceil(plazo / paso)
 
-            delta_fecha = deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: paso})
+            delta_fecha = deltarelativo(**{dic_trad_tiempo[ref_final]: paso})
 
         else:
             raise TypeError(_('t_inic debe ser fecha o número entero, no "{}".').format(type(t_inic)))
@@ -448,7 +464,7 @@ class Modelo(object):
             lugar_clima.prep_datos(fecha_inic=t_inic, fecha_final=t_final, tcr=clima)
 
         # Iniciamos el modelo.
-        símismo.iniciar_modelo(tiempo_final=t_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
+        símismo.iniciar_modelo(n_pasos=n_pasos, t_final=t_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
         # Verificar los nombres de los variables de interés
         símismo.vars_saliendo.clear()
@@ -601,9 +617,6 @@ class Modelo(object):
             if isinstance(vars_interés, str):
                 vars_interés = [vars_interés]
             vars_interés = [símismo.valid_var(v) for v in vars_interés]
-        else:
-            if not guardar:
-                avisar(_('No podremos guardar datos porque tienes `guardar=False` y no especificaste `vars_interés`.'))
 
         # Poner las opciones de simulación en un diccionario.
         opciones = {'paso': paso, 't_inic': t_inic, 'lugar_clima': lugar_clima, 'vals_inic': vals_inic,

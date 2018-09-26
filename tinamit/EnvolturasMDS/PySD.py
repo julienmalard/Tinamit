@@ -155,19 +155,19 @@ class ModeloPySD(EnvolturaMDS):
 
         return unid_tiempo
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
 
         # Poner los variables y el tiempo a sus valores iniciales
         símismo.mod.reload()
         símismo.mod.initialize()
 
         símismo.cont_simul = False
-        símismo.tiempo_final = tiempo_final
+        símismo.tiempo_final = n_pasos
         símismo.paso_act = símismo.mod.time._t
         símismo.vars_para_cambiar.clear()
         símismo.vars_para_cambiar.update(vals_inic)
 
-        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
+        super().iniciar_modelo(n_pasos, t_final, nombre_corrida, vals_inic)
 
     def _vals_inic(símismo):
 

@@ -5,11 +5,11 @@ from subprocess import run
 
 import numpy as np
 import pkg_resources
-
 from tinamit.BF import ModeloBloques
 from tinamit.EnvolturasBF.SAHYSMOD.variables import vars_SAHYSMOD, códs_a_vars, vars_ingreso_SAHYSMOD, \
     vars_egreso_SAHYSMOD
 from tinamit.config import _
+
 from ._sahysmodIE import leer_info_dic_paráms, escribir_desde_dic_paráms
 
 
@@ -25,12 +25,10 @@ class ModeloSAHYSMOD(ModeloBloques):
     prb_arch_egr = pkg_resources.resource_filename(__name__, 'recursos/prb_egresos.out')
     dic_prb_egr = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_egr.json')
 
-    def __init__(símismo, datos_iniciales=None, exe_sahysmod=None, nombre='SAHYSMOD'):
+    def __init__(símismo, datos_iniciales, exe_sahysmod=None, nombre='SAHYSMOD'):
 
-        if datos_iniciales is None:
-            datos_iniciales = símismo.prb_datos_inic
-
-        símismo.argsinic = (datos_iniciales, exe_sahysmod)
+        # Necesario para paralelismo
+        símismo.argsinic = (datos_iniciales, exe_sahysmod, nombre)
 
         # Número de polígonos internos
         símismo.n_polí = None
@@ -52,7 +50,7 @@ class ModeloSAHYSMOD(ModeloBloques):
         símismo.comanda = None
 
         # Inicializar la clase pariente.
-        super().__init__(nombre=nombre)
+        super().__init__(nombre=nombre, archivo=datos_iniciales)
 
         # Buscar la ubicación del modelo SAHYSMOD.
         símismo.exe_SAHYSMOD = símismo._obt_val_config(
@@ -65,15 +63,27 @@ class ModeloSAHYSMOD(ModeloBloques):
         )
 
         # Establecer los variables climáticos.
-        símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total',
-                                   conv=0.001)
+        símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total', conv=0.001)
 
     def _inic_dic_vars(símismo):
 
         símismo.variables.clear()
 
+        ingresos_no_estacionales = [
+            'Kr', 'CrA', 'CrB', 'CrU', 'Cr4', 'Hw', 'C1*', 'C2*', 'C3*', 'Cxf', 'Cxa', 'Cxb', 'Cqf'
+        ]
+
         for nombre, dic in vars_SAHYSMOD.items():
             cód = vars_SAHYSMOD[nombre]['cód']
+
+            if cód[-1] == '#':
+                if cód[:-1] in ingresos_no_estacionales:
+                    por = 'bloque-egr'
+                else:
+                    por = 'bloque'
+            else:
+                por = 'ciclo'
+
             símismo.variables[nombre] = {
                 'val': None,
                 'unidades': dic['unids'],
@@ -81,10 +91,10 @@ class ModeloSAHYSMOD(ModeloBloques):
                 'egreso': dic['egr'],
                 'líms': dic['líms'] if 'líms' in dic else (None, None),
                 'info': '',
-                'por': 'bloque' if cód[-1] == '#' else 'ciclo'
+                'por': por
             }
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
 
         # Crear un diccionario de trabajo específico a esta corrida.
         símismo.direc_trabajo = os.path.join(símismo.direc_base, '_temp', nombre_corrida)
@@ -98,7 +108,7 @@ class ModeloSAHYSMOD(ModeloBloques):
         args = dict(SAHYSMOD=símismo.exe_SAHYSMOD, ingreso=símismo.arch_ingreso, egreso=símismo.arch_egreso)
         símismo.comanda = '"{SAHYSMOD}" "{ingreso}" "{egreso}"'.format(**args)
 
-        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
+        super().iniciar_modelo(n_pasos, nombre_corrida, vals_inic)
 
     def avanzar_modelo(símismo, n_ciclos):
 

@@ -329,7 +329,10 @@ def buscar_singular(u):
 
 
 # Actualizar las traducciones al importar este módulo
-act_arch_trads(l_d_t=l_dic_trads)
+import babel
+
+if os.path.getmtime(babel.__file__) > os.path.getmtime(_archivo_trads):
+    act_arch_trads(l_d_t=l_dic_trads)
 básicas = {
     'month': 'mes',
     'year': 'año',

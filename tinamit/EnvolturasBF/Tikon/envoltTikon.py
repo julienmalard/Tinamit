@@ -21,8 +21,8 @@ class ModeloTikon(ModeloDeterminado):  # pragma: sin cobertura
     def _inic_dic_vars(símismo):
         pass
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
-        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
+    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
+        super().iniciar_modelo(n_pasos, nombre_corrida, vals_inic)
 
     def avanzar_modelo(símismo):
         pass

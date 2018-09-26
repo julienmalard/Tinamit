@@ -1,13 +1,15 @@
-import datetime as ft
+import xarray as xr
 import inspect
 import math as mat
 import os
 import sys
+import unittest
 from copy import deepcopy as copiar_profundo
 from importlib import import_module as importar_mod
 from warnings import warn as avisar
 
 import numpy as np
+import numpy.testing as npt
 from dateutil.relativedelta import relativedelta as deltarelativo
 
 from tinamit.Modelo import Modelo
@@ -34,6 +36,8 @@ class EnvolturaBF(Modelo):
 
         super().__init__(nombre=nombre)
 
+        símismo.archivo = None
+
         # El modelo externo se debe establecer después de super().__init__ para que no se borren las conexiones
         # dinámicas con los variables sel modelo externo.
         símismo._estab_mod_extern(modelo)
@@ -46,8 +50,6 @@ class EnvolturaBF(Modelo):
 
             if os.path.splitext(modelo)[1] != '.py':
                 raise ValueError(_('El archivo "{}" no parece ser un archivo Python.').format(modelo))
-
-            símismo.archivo = modelo
 
             dir_mod, nombre_mod = os.path.split(modelo)
             sys.path.append(dir_mod)
@@ -94,6 +96,7 @@ class EnvolturaBF(Modelo):
         símismo.variables = símismo.modelo.variables
         símismo.vars_saliendo = símismo.modelo.vars_saliendo
         símismo.vars_clima = símismo.modelo.vars_clima
+        símismo.archivo = símismo.modelo.archivo
 
     def unidad_tiempo(símismo):
         """
@@ -148,7 +151,7 @@ class EnvolturaBF(Modelo):
         """
         return {}
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
         """
         Inicializa el modelo biofísico interno, incluyendo la inicialización de variables.
 
@@ -156,13 +159,13 @@ class EnvolturaBF(Modelo):
 
         # Inicializar el modelo.
         símismo.modelo.corrida_activa = nombre_corrida
-        símismo.modelo.iniciar_modelo(tiempo_final, nombre_corrida, vals_inic=vals_inic)
+        símismo.modelo.iniciar_modelo(n_pasos, t_final, nombre_corrida, vals_inic=vals_inic)
 
         # Aplicar valores iniciales después de la inicialización del modelo. Simplemente llamamos la función
         # símismo.cambiar_vals() con el diccionario de valores iniciales.
         símismo.cambiar_vals(vals_inic)
 
-        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
+        super().iniciar_modelo(n_pasos, t_final, nombre_corrida, vals_inic)
 
     def cerrar_modelo(símismo):
         """
@@ -191,15 +194,13 @@ class ModeloBF(Modelo):
     con Tinamit.
     """
 
-    prb_datos_inic = dic_prb_datos_inic = None
-    prb_arch_egr = dic_prb_egr = None
-
-    def __init__(símismo, nombre='modeloBF'):
+    def __init__(símismo, archivo=None, nombre='modeloBF'):
         """
         Esta función correrá automáticamente con la inclusión de `super().__init__()` en la función `__init__()` de las
         subclases de esta clase.
         """
 
+        símismo.archivo = archivo
         super().__init__(nombre=nombre)
 
     def _cambiar_vals_modelo_externo(símismo, valores):
@@ -234,7 +235,7 @@ class ModeloBF(Modelo):
         """
         raise NotImplementedError
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
         """
         Esta función debe preparar el modelo para una simulación.
 
@@ -244,7 +245,7 @@ class ModeloBF(Modelo):
             raise OSError(_('El modelo "{}" se debe instalar corectamente antes de hacer simulaciones.')
                           .format(símismo.__class__.__name__))
 
-        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
+        super().iniciar_modelo(n_pasos, t_final, nombre_corrida, vals_inic)
 
     def cerrar_modelo(símismo):
         """
@@ -288,210 +289,130 @@ class ModeloBF(Modelo):
 
         raise NotImplementedError
 
-    def __getinitargs__(símismo):
-        return tuple()
+    @classmethod
+    def verificar(cls, clase_unittest=None):
+        """
 
-    def cargar_ref_ejemplo_vals_inic(símismo):
-        if not os.path.isfile(símismo.dic_prb_datos_inic):
-            avisar(_('\nNo encontramos diccionario con los valores corectos de referencia para comprobar que el'
-                     '\nmodelo sí esté leyendo bien los datos iniciales. Lo generaremos con base en el los valores'
-                     '\nactualmente leídos por el modelo. Asegúrate que los valores generados en'
-                     '\n\t"{}"'
-                     '\nestén correctos, y si no lo son, bórralo. En el futuro, se empleará este fuente para '
-                     '\ncomprobar la función de lectura de datos iniciales.').format(símismo.dic_prb_datos_inic))
-            d_vals = copiar_profundo(símismo.variables)
+        Parameters
+        ----------
+        clase_unittest : unittest.TestCase
+
+        Returns
+        -------
+
+        """
+        if clase_unittest is not None:
+            with clase_unittest.subTest('inic_dic_vals'):
+                cls.verificar_inic_dic_vals()
+            with clase_unittest.subTest('avanzar'):
+                cls.verificar_avanzar()
+        else:
+            cls.verificar_inic_dic_vals()
+
+    @classmethod
+    def verificar_inic_dic_vals(cls):
+        arch, ref = cls.archivos_prueba_vals_inic()
+
+        if arch is not None:
+            mod = cls(archivo=arch)
+            cls.cargar_ref_vals_inic(ref, mod)
+            for var in mod.variables:
+                npt.assert_equal(ref[var]['val'], mod.obt_val_actual_var(var), err_msg=var)
+
+    @classmethod
+    def archivos_prueba_vals_inic(cls):
+        return None, None
+
+    @classmethod
+    def cargar_ref_vals_inic(cls, arch_ref, mod):
+
+        try:
+            return cargar_json(arch_ref)
+        except FileNotFoundError:
+            avisar(_(
+                '\nNo encontramos diccionario con los valores corectos de referencia para comprobar que el'
+                '\nmodelo sí esté leyendo bien los datos iniciales. Lo generaremos con base en el los valores'
+                '\nactualmente leídos por el modelo. Asegúrate que los valores generados en'
+                '\n\t"{}"'
+                '\nestén correctos, y si no lo son, bórralo. En el futuro, se empleará este fuente para '
+                '\ncomprobar la función de lectura de datos iniciales.').format(arch_ref)
+                   )
+            d_vals = copiar_profundo(mod.variables)
             for d_v in d_vals.values():
                 if isinstance(d_v['val'], np.ndarray):
                     d_v['val'] = d_v['val'].tolist()
-            guardar_json(d_vals, arch=símismo.dic_prb_datos_inic)
+            guardar_json(d_vals, arch=arch_ref)
 
-        return cargar_json(símismo.dic_prb_datos_inic)
+            return d_vals
 
+    @classmethod
+    def verificar_avanzar(cls, n_pasos=3):
+        arch_ref = cls.archivo_ref_avanzar()
 
-class ModeloImpacienteAnterior(ModeloBF):
-    """
-    Esta clase ofrece una clase pariente muy útil para modelos biofísicos cuyos pasos mínimos de simulación quedan más
-    pequeños que el nivel de detalle que ofrecen. Por ejemplo, el modelo de salinidad SAHYSMOD corre por *al menos* un
-    año, pero ofrece detalles al nivel estacional (de 1-12 meses) que pueden ser muy diferentes para distintas
-    estaciones. Los llamo "impacientes" porque no los puedes hacer correr por un mes, sin que el modelo simule
-    el año entero, sino más.
-    Esta envoltura te permite crear envolturas con pasos mensuales para este tipo_mod de modelo anual,　pero sin　el
-    dolor de cabeza.
-    """
+        if arch_ref is not None:
+            arch_inic = cls.archivos_prueba_vals_inic()[0]
+            if arch_inic is not None:
+                mod = cls(archivo=arch_inic)
+                res = mod.simular(t_final=n_pasos)
 
-    def _act_vals_clima(símismo, n_paso, f):
-        """
-        Actualiza los variables climáticos, según la estación.
+                ref = cls.cargar_ref_avanzar(arch_ref, res=res)
+                xr.testing.assert_equal(ref, res)
 
-        :param n_paso: El número de pasos para avanzar
-        :type n_paso: int
-        :param f: La fecha actual.
-        :type f: ft.datetime | ft.date
-
+    @classmethod
+    def archivo_ref_avanzar(cls):
         """
 
-        # Si avanzamos por más que un año, perderemos la precisión del clima
-        if n_paso > 12:
-            avisar('El paso es superior a 1 año (12 meses). Las predicciones climáticas perderán su precisión.')
-
-        # Solamante hay que cambiar los datos si es el principio de un nuevo año.
-        if símismo.mes == 0 and símismo.estación == 0:
-
-            # La lista de variables climáticos
-            vars_clima = list(símismo.vars_clima)
-            nombres_extrn = [d['nombre_extrn'] for d in símismo.vars_clima.values()]
-
-            # La lista de maneras de combinar los valores diarios
-            combins = [d['combin'] for d in símismo.vars_clima.values()]
-
-            # La lista de factores de conversiones de variables de clima
-            convs = [d['conv'] for d in símismo.vars_clima.values()]
-
-            # La fecha inicial
-            f_inic = f
-
-            for e, dur in enumerate(símismo.dur_estaciones):
-                # Para cada estación...
-
-                # La fecha final
-                f_final = f_inic + deltarelativo(months=+dur)
-
-                # Calcular los datos
-                datos = símismo.lugar.comb_datos(vars_clima=nombres_extrn, combin=combins,
-                                                 f_inic=f_inic, f_final=f_final)
-
-                # Aplicar los valores de variables calculados
-                for i, var in enumerate(vars_clima):
-                    # Para cada variable en la lista de clima...
-
-                    # El nombre oficial del variable de clima
-                    var_clima = nombres_extrn[i]
-
-                    # El factor de conversión
-                    conv = convs[i]
-
-                    # Guardar el valor para esta estación
-                    símismo.datos_internos[var][e, ...] = datos[var_clima] * conv
-
-                # Avanzar la fecha
-                f_inic = f_final
-
-    def _incrementar(símismo, paso, guardar_cada=None):
+        Returns
+        -------
+        str
         """
-        Incrementa el modelo, tomando valores de variables desde el diccionario de valores internos.
-        Si necesitamos avanzar la simulación del modelo externo, lo hace ahora y después lee los resultados.
+        return None
 
-        :param paso: El paso con cual avanzar la simulación.
-        :type paso: int
-
+    @classmethod
+    def cargar_ref_avanzar(cls, arch_ref, res):
         """
 
-        # No podemos tener pasos fraccionales
-        if int(paso) != paso:
-            raise ValueError(_('El paso debe ser un número entero.'))
+        Parameters
+        ----------
+        arch_ref :
+        res : xr.DataSet
 
-
-
-
-    def leer_egr(símismo, n_años_egr, archivo=None):
-        """
-        Lee los egresos del modelo y los guarda en los diccionarios internos apropiados.
-
-        :param n_años_egr: El número de años que se corrió la última simulación. Solamente se leerá el último año
-          de egresos.
-        :type n_años_egr: int
+        Returns
+        -------
 
         """
+        try:
+            return xr.Dataset.from_dict(cargar_json(arch_ref))
+        except FileNotFoundError:
+            avisar(_(
+                '\nNo encontramos diccionario con los valores corectos de referencia para comprobar que el'
+                '\nmodelo sí esté simulando correctamente. Lo generaremos con base en el los valores'
+                '\nactualmente leídos por el modelo. Asegúrate que los valores generados en'
+                '\n\t"{}"'
+                '\nestén correctos, y si no lo son, bórralo. En el futuro, se empleará este fuente para '
+                '\ncomprobar la función de simulación de modelo.').format(arch_ref)
+                   )
 
-        if archivo is None:
-            archivo = símismo.arch_egreso
+            guardar_json(res.to_dict(), arch=arch_ref)
 
-        # Leer el fuente de egreso
-        dic_egr = símismo.leer_archivo_egr(n_años_egr=n_años_egr, archivo=archivo)
-
-        # Para simplificar el código
-        estacionales = símismo.tipos_vars['EgrEstacionales']
-        finales = [v for v in símismo.tipos_vars['Egresos'] if v not in estacionales]
-
-        # Guardar los nuevos valores
-        for var in estacionales:
-            # Para variables estacionales...
-
-            símismo.datos_internos[var][:] = dic_egr[var]
-            # Nota: el enlace dinámico con símismo.variables ya se hizo antes.
-
-        for var in finales:
-            # Para variables no estacionales...
-
-            símismo.variables[var]['val'][:] = dic_egr[var]
-
-    def escribir_ingr(símismo, n_años_simul, archivo=None):
-        """
-        Escribe un fuente de ingresos del modelo en el formato que lee el modelo externo.
-        :param n_años_simul: El número de años para la simulación siguiente.
-        :type n_años_simul: int
-        """
-
-        if archivo is None:
-            archivo = símismo.arch_ingreso
-
-        dic_ingr = {}
-
-        ingresos = símismo.tipos_vars['Ingresos']
-        estacionales = símismo.tipos_vars['Estacionales']
-        ingr_estacional = símismo.tipos_vars['IngrEstacionales']
-
-        for var in ingresos:
-            if var in estacionales:
-                if var in ingr_estacional:
-                    dic_ingr[var] = símismo.datos_internos[var]
-                else:
-                    dic_ingr[var] = símismo.datos_internos[var][-1, ...]
-            else:
-                dic_ingr[var] = símismo.variables[var]['val']
-
-        símismo._escribir_archivo_ingr(n_años_simul=n_años_simul, dic_ingr=dic_ingr, archivo=archivo)
-
-
-    def _escribir_archivo_ingr(símismo, n_años_simul, dic_ingr, archivo):
-        """
-        Escribe un fuente de ingresos para el modelo, en un formato que lee el modelo externo.
-
-        :param n_años_simul: El número de años para simular.
-        :type n_años_simul: int
-        :param dic_ingr: El diccionario de valores iniciales, por variable.
-        :type dic_ingr: dict
-
-        """
-
-        raise NotImplementedError
-
-    def cargar_ref_ejemplo_egr(símismo):
-        if not os.path.isfile(símismo.dic_prb_egr):
-            avisar(_('\nNo encontramos diccionario con los valores corectos de referencia para comprobar que el'
-                     '\nmodelo sí esté leyendo bien los egresos de modelos. Lo generaremos con base en el los valores'
-                     '\nactualmente leídos por el modelo. Asegúrate que los valores generados en'
-                     '\n\t"{}"'
-                     '\nestén correctos, y si no lo son, bórralo. En el futuro, se empleará este fuente para '
-                     '\ncomprobar la función de lectura de egresos.').format(símismo.dic_prb_egr))
-            d_egr = símismo.leer_archivo_egr(n_años_egr=1, archivo=símismo.prb_arch_egr)
-            for var, val in d_egr.items():
-                if isinstance(val, np.ndarray):
-                    d_egr[var] = val.tolist()
-
-            guardar_json(d_egr, arch=símismo.dic_prb_egr)
-
-        d_egr = cargar_json(símismo.dic_prb_egr)
-
-        return d_egr
+            return res
 
     def __getinitargs__(símismo):
         return tuple()
 
 
 class ModeloImpaciente(ModeloBF):
+    """
+    Esta clase ofrece una clase pariente muy útil para modelos biofísicos cuyos pasos mínimos de simulación quedan más
+    pequeños que el nivel de detalle que ofrecen. Por ejemplo, el modelo de salinidad SAHYSMOD corre por *al menos* un
+    año, pero ofrece detalles al nivel estacional (de 1-12 meses) que pueden ser muy diferentes para distintas
+    estaciones. Los llamo "impacientes" porque no los puedes hacer correr por un mes, sin que el modelo simule
+    el año entero, sino más.
+    Esta envoltura te permite crear envolturas, por ejemplo, con pasos mensuales para este tipo_mod de modelo anual,
+    pero sin el dolor de cabeza.
+    """
 
-    def __init__(símismo, nombre='modeloBF'):
+    def __init__(símismo, archivo=None, nombre='modeloBF'):
         símismo.paso_en_ciclo = None
         símismo.ciclo = None
         símismo.tmñ_ciclo = None
@@ -499,7 +420,7 @@ class ModeloImpaciente(ModeloBF):
         símismo.matrs_ingr = {}
         símismo.proces_ingrs = {}
 
-        super().__init__(nombre=nombre)
+        super().__init__(archivo=archivo, nombre=nombre)
 
     def _cambiar_vals_modelo_externo(símismo, valores):
         """
@@ -515,24 +436,31 @@ class ModeloImpaciente(ModeloBF):
         """
         pass
 
-    def _vars_por_pasito(símismo):
-        return [var for var, d_var in símismo.variables.items() if 'por' in d_var and d_var['por'] == 'pasito']
+    def _vars_por_pasito(símismo, solamente=None):
+
+        posibles = ['pasito', 'pasito-ingr', 'pasito-egr']
+        if solamente == 'ingr':
+            posibles.remove('pasito-egr')
+        elif solamente == 'egr':
+            posibles.remove('pasito-ingr')
+
+        return [var for var, d_var in símismo.variables.items() if 'por' in d_var and d_var['por'] in posibles]
 
     def _vals_inic(símismo):
         dic_inic = símismo._gen_dic_vals_inic()
 
         subciclo = símismo._vars_subciclo()
+        subciclo_ingr = símismo._vars_subciclo(solamente='ingr')
 
         for var, val in dic_inic.items():
             if var in subciclo:
 
-                if var in símismo.ingresos():
+                if var in subciclo_ingr:
                     símismo.matrs_ingr[var] = val.copy()
+                    dic_inic[var] = val[0]
 
                 if var in símismo.egresos():
                     símismo.matrs_egr[var] = val.copy()
-
-                dic_inic[var] = val[0]
 
         return dic_inic
 
@@ -550,11 +478,11 @@ class ModeloImpaciente(ModeloBF):
         else:
             símismo.proces_ingrs.pop(var_ingr)
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
 
         símismo.paso_en_ciclo = símismo.ciclo = -1
 
-        super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
+        super().iniciar_modelo(n_pasos=n_pasos, t_final=t_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
     def cambiar_vals(símismo, valores):
 
@@ -594,8 +522,53 @@ class ModeloImpaciente(ModeloBF):
             else:
                 símismo._act_vals_dic_var({var: val})
 
-    def _vars_subciclo(símismo):
-        return símismo._vars_por_pasito()
+    def escribir_ingr(símismo, n_ciclos, archivo=None):
+        """
+        Escribe un fuente de ingresos del modelo en el formato que lee el modelo externo.
+
+        Parameters
+        ----------
+        n_ciclos : int
+            El número de años para la simulación siguiente.
+        archivo : str
+            El archivo en el cuál escribir los ingresos.
+
+        """
+
+        if archivo is None:
+            archivo = símismo.archivo
+
+        # Procesar los ingresos
+        if símismo.ciclo != -1:
+            símismo.procesar_ingr_modelo()
+
+        dic_ingr = {}
+
+        ingr_por_pasito = símismo._vars_por_pasito(solamente='ingr')
+
+        for var in símismo.ingresos():
+            if var in ingr_por_pasito:
+                dic_ingr[var] = símismo.matrs_ingr[var]
+            else:
+                dic_ingr[var] = símismo.obt_val_actual_var(var)
+
+        símismo._escribir_archivo_ingr(n_ciclos=n_ciclos, dic_ingr=dic_ingr, archivo=archivo)
+
+    def _vars_subciclo(símismo, solamente=None):
+        return símismo._vars_por_pasito(solamente)
+
+    @classmethod
+    def verificar(cls, clase_unittest=None):
+        if clase_unittest is not None:
+            with clase_unittest.subTest('leer_egresos'):
+                cls.verificar_leer_egresos()
+        else:
+            cls.verificar_leer_egresos()
+        super().verificar(clase_unittest)
+
+    @classmethod
+    def verificar_leer_egresos(cls):
+        pass
 
     def _incrementar(símismo, paso, guardar_cada=None):
         raise NotImplementedError
@@ -618,12 +591,15 @@ class ModeloImpaciente(ModeloBF):
     def obt_tmñ_ciclo(símismo):
         raise NotImplementedError
 
+    def _escribir_archivo_ingr(símismo, n_ciclos, dic_ingr, archivo):
+        raise NotImplementedError
+
 
 class ModeloIndeterminado(ModeloImpaciente):
 
-    def __init__(símismo, nombre='modeloBF'):
+    def __init__(símismo, archivo=None, nombre='modeloIndeterminado'):
         símismo.dic_ingr = {}
-        super().__init__(nombre)
+        super().__init__(archivo=archivo, nombre=nombre)
 
     def cambiar_vals(símismo, valores):
         for var, val in valores.items():
@@ -648,9 +624,8 @@ class ModeloIndeterminado(ModeloImpaciente):
         i += int(paso)
         while i >= símismo.tmñ_ciclo:
 
-            # Procesar los ingresos
-            if símismo.ciclo != -1:
-                símismo.procesar_ingr_modelo()
+            # Escribir el archivo de ingresos
+            símismo.escribir_ingr(n_ciclos=1)
 
             símismo.ciclo += 1
             i -= símismo.tmñ_ciclo
@@ -679,7 +654,7 @@ class ModeloIndeterminado(ModeloImpaciente):
     def _vals_inic(símismo):
         return símismo._gen_dic_vals_inic()
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
         símismo.tmñ_ciclo = 0
 
         for var in símismo.vars_entrando:
@@ -696,7 +671,7 @@ class ModeloIndeterminado(ModeloImpaciente):
             if var in símismo.vars_saliendo:
                 símismo.matrs_egr[var] = None
 
-        super().iniciar_modelo(tiempo_final=tiempo_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
+        super().iniciar_modelo(n_pasos=n_pasos, t_final=t_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
     def procesar_ingr_modelo(símismo):
         for var, proc in símismo.proces_ingrs.items():
@@ -718,6 +693,9 @@ class ModeloIndeterminado(ModeloImpaciente):
     def _gen_dic_vals_inic(símismo):
         raise NotImplementedError
 
+    def _escribir_archivo_ingr(símismo, n_ciclos, dic_ingr, archivo):
+        raise NotImplementedError
+
     def leer_egr_modelo(símismo, n_ciclos, archivo=None):
         raise NotImplementedError
 
@@ -729,6 +707,9 @@ class ModeloIndeterminado(ModeloImpaciente):
 
 
 class ModeloDeterminado(ModeloImpaciente):
+
+    def __init__(símismo, archivo=None, nombre='modeloDeterminado'):
+        super().__init__(archivo, nombre)
 
     def _incrementar(símismo, paso, guardar_cada=None):
         # Para simplificar el código un poco.
@@ -751,8 +732,8 @@ class ModeloDeterminado(ModeloImpaciente):
             c = mat.ceil(paso / símismo.tmñ_ciclo)  # type: int
             símismo.ciclo += c
 
-            # Procesar los ingresos
-            símismo.procesar_ingr_modelo()
+            # Escribir los archivos de ingreso
+            símismo.escribir_ingr(n_ciclos=c)
 
             # Avanzar la simulación
             símismo.avanzar_modelo(n_ciclos=c)
@@ -763,7 +744,7 @@ class ModeloDeterminado(ModeloImpaciente):
         # Apuntar el diccionario interno de los valores al valor de este paso del ciclo
         símismo._act_vals_dic_var({var: matr[i] for var, matr in símismo.matrs_egr.items()})
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
 
         símismo.tmñ_ciclo = símismo.obt_tmñ_ciclo()
 
@@ -780,7 +761,7 @@ class ModeloDeterminado(ModeloImpaciente):
                 dims = símismo.obt_dims_var(vr)
                 símismo.matrs_egr[vr] = np.zeros((símismo.tmñ_ciclo, *dims) if dims != (1,) else símismo.tmñ_ciclo)
 
-        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
+        super().iniciar_modelo(n_pasos, t_final, nombre_corrida, vals_inic)
 
     def unidad_tiempo(símismo):
         raise NotImplementedError
@@ -792,6 +773,9 @@ class ModeloDeterminado(ModeloImpaciente):
         raise NotImplementedError
 
     def _gen_dic_vals_inic(símismo):
+        raise NotImplementedError
+
+    def _escribir_archivo_ingr(símismo, n_ciclos, dic_ingr, archivo):
         raise NotImplementedError
 
     def leer_egr_modelo(símismo, n_ciclos, archivo=None):
@@ -806,12 +790,12 @@ class ModeloDeterminado(ModeloImpaciente):
 
 class ModeloBloques(ModeloImpaciente):
 
-    def __init__(símismo, nombre):
-        super().__init__(nombre=nombre)
+    def __init__(símismo, archivo=None, nombre='modeloBloques'):
+        super().__init__(nombre=nombre, archivo=archivo)
 
         símismo.tmñ_bloques = None
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
         """
         Esta función debe preparar el modelo para una simulación. Si necesitas esta función para tu subclase,
         no se te olvide llamar ``super().iniciar_modelo()`` para no saltar la reinicialización del bloque y del paso.
@@ -834,7 +818,7 @@ class ModeloBloques(ModeloImpaciente):
                 dims = símismo.obt_dims_var(vr)
                 símismo.matrs_egr[vr] = np.zeros((símismo.tmñ_ciclo, *dims) if dims != (1,) else símismo.tmñ_ciclo)
 
-        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic=vals_inic)
+        super().iniciar_modelo(n_pasos, t_final, nombre_corrida, vals_inic=vals_inic)
 
     def _incrementar(símismo, paso, guardar_cada=None):
 
@@ -859,8 +843,8 @@ class ModeloBloques(ModeloImpaciente):
             c = mat.ceil(paso / símismo.tmñ_ciclo)  # type: int
             símismo.ciclo += c
 
-            # Procesar los ingresos
-            símismo.procesar_ingr_modelo()
+            # Escribir los archivos de ingreso
+            símismo.escribir_ingr(n_ciclos=c)
 
             # Avanzar la simulación
             símismo.avanzar_modelo(n_ciclos=c)
@@ -886,11 +870,61 @@ class ModeloBloques(ModeloImpaciente):
 
         raise ValueError(símismo.paso_en_ciclo)
 
-    def _vars_subciclo(símismo):
-        return símismo._vars_por_pasito() + símismo._vars_por_bloques()
+    def _vars_subciclo(símismo, solamente=None):
+        return símismo._vars_por_pasito(solamente) + símismo._vars_por_bloques(solamente)
 
-    def _vars_por_bloques(símismo):
-        return [var for var, d_var in símismo.variables.items() if 'por' in d_var and d_var['por'] == 'bloque']
+    def _vars_por_bloques(símismo, solamente=None):
+        posibles = ['bloque', 'bloque-ingr', 'bloque-egr']
+        if solamente == 'ingr':
+            posibles.remove('bloque-egr')
+        elif solamente == 'egr':
+            posibles.remove('bloque-ingr')
+
+        return [var for var, d_var in símismo.variables.items() if 'por' in d_var and d_var['por'] in posibles]
+
+    def _act_vals_clima(símismo, f_0, f_1, lugar):
+
+        # Solamante hay que cambiar los datos si es el principio de un nuevo ciclo.
+        if símismo.ciclo == 0 and símismo.paso_en_ciclo == 0:
+
+            # La lista de variables climáticos
+            vars_clima = list(símismo.vars_clima)
+            nombres_extrn = [d['nombre_extrn'] for d in símismo.vars_clima.values()]
+
+            # La lista de maneras de combinar los valores diarios
+            combins = [d['combin'] for d in símismo.vars_clima.values()]
+
+            # La lista de factores de conversiones de variables de clima
+            convs = [d['conv'] for d in símismo.vars_clima.values()]
+
+            # La fecha inicial
+            f_inic = f_0
+
+            for b, tmñ in enumerate(símismo.tmñ_bloques):
+                # Para cada bloque...
+
+                # La fecha final
+                base_t, factor = símismo._unid_tiempo_python()
+                f_final = f_0 + deltarelativo(**{base_t: tmñ * factor})
+
+                # Calcular los datos
+                datos = lugar.comb_datos(vars_clima=nombres_extrn, combin=combins, f_inic=f_inic, f_final=f_final)
+
+                # Aplicar los valores de variables calculados
+                for i, var in enumerate(vars_clima):
+                    # Para cada variable en la lista de clima...
+
+                    # El nombre oficial del variable de clima
+                    var_clima = nombres_extrn[i]
+
+                    # El factor de conversión
+                    conv = convs[i]
+
+                    # Guardar el valor para esta estación
+                    símismo.matrs_ingr[var][b, ...] = datos[var_clima] * conv
+
+                # Avanzar la fecha
+                f_inic = f_final
 
     def obt_tmñ_ciclo(símismo):
         return np.sum(símismo.obt_tmñ_bloques())
@@ -899,6 +933,9 @@ class ModeloBloques(ModeloImpaciente):
         raise NotImplementedError
 
     def leer_egr_modelo(símismo, n_ciclos, archivo=None):
+        raise NotImplementedError
+
+    def _escribir_archivo_ingr(símismo, n_ciclos, dic_ingr, archivo):
         raise NotImplementedError
 
     def cerrar_modelo(símismo):

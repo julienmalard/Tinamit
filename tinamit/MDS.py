@@ -144,7 +144,7 @@ class EnvolturaMDS(Modelo):
         """
         raise NotImplementedError
 
-    def iniciar_modelo(símismo, tiempo_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
         """
         Este método se deja a las subclases de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS` para implementar. Notar que la
         implementación de este método debe incluir la aplicación de valores iniciales.
@@ -154,8 +154,8 @@ class EnvolturaMDS(Modelo):
         :param nombre_corrida: El nombre de la corrida (útil para guardar resultados).
         :type nombre_corrida: str
 
-        :param tiempo_final: El tiempo final de la simulación.
-        :type tiempo_final: int
+        :param n_pasos: El tiempo final de la simulación.
+        :type n_pasos: int
 
         """
         if símismo.editado:
@@ -167,7 +167,7 @@ class EnvolturaMDS(Modelo):
 
             os.remove(arch_temp)
 
-        super().iniciar_modelo(tiempo_final, nombre_corrida, vals_inic)
+        super().iniciar_modelo(n_pasos, t_final, nombre_corrida, vals_inic)
 
         símismo._propagar_vals_inic_niveles()
 

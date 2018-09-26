@@ -154,8 +154,7 @@ def guardar_archivo(arch, contenido):
         # Necesario en el caso de corridas en paralelo en Windows. Sin este, la reimportación de Tinamït ocasionada
         # por varias corridas paralelas al mismo tiempo puede causar que el mismo documento se escriba por dos procesos
         # al mismo tiempo, el cual trava el sistema.
-        from config import _
-        avisar(_('No se pudo escribir al documento "{}"').format(arch))
+        avisar(arch)
 
 
 def cargar_json(arch, codif='UTF-8'):
