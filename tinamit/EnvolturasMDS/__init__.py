@@ -16,7 +16,7 @@ dic_motores = {
 }
 
 
-def generar_mds(archivo, motor=None, enforzar_instalado=True):
+def generar_mds(archivo, motor=None):
     """
     Esta función genera una instancia de modelo de DS. Identifica el tipo_mod de fuente por su extensión (p. ej., .vpm) y
     después genera una instancia de la subclase apropiada de :class:`~tinamit.EnvolturasMDS.EnvolturasMDS`.
@@ -60,7 +60,7 @@ def generar_mds(archivo, motor=None, enforzar_instalado=True):
         for env in motores_potenciales:
             try:
                 mod = env(archivo)  # type: EnvolturaMDS
-                if mod.instalado() or not enforzar_instalado:
+                if mod.instalado():
                     return mod
                 else:
                     errores[env.__name__] = 'Programa no instalado.'

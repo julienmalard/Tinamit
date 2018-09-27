@@ -61,7 +61,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         super().__init__(archivo=archivo, nombre=nombre, ops_mód={'dll_Vensim': dll_Vensim})
 
     def _generar_mod(símismo, archivo, **ops_mód):
-
         try:
             dll_Vensim = ops_mód['dll_Vensim']
         except KeyError:
@@ -73,8 +72,9 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                 'C:\\Windows\\System32\\vendll32.dll',
                 'C:\\Windows\\SysWOW64\\vendll32.dll'
             ]
-            arch_dll_Vensim = símismo._obt_val_config(llave='dll_Vensim', cond=os.path.isfile,
-                                                      respaldo=lugares_probables)
+            arch_dll_Vensim = símismo._obt_val_config(
+                llave='dll_Vensim', cond=os.path.isfile, respaldo=lugares_probables
+            )
             if arch_dll_Vensim is None:
                 dll = None
             else:
@@ -289,13 +289,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
     def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
         """
         Acciones necesarias para iniciar el modelo Vensim.
-
-        :param nombre_corrida: El nombre de la corrida del modelo.
-        :type nombre_corrida: str
-
-        :param n_pasos: El tiempo final de la simulación.
-        :type n_pasos: int
-
         """
 
         # En Vensim, tenemos que incializar los valores de variables constantes antes de empezar la simulación.
@@ -308,7 +301,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         # Establecer el tiempo final.
         cmd_vensim(func=símismo.mod.vensim_command,
-                   args='SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', t_final + 1),
+                   args='SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', n_pasos + 1),
                    mensaje_error=_('Error estableciendo el tiempo final para Vensim.'))
 
         # Iniciar la simulación en modo juego ("Game"). Esto permitirá la actualización de los valores de los variables

@@ -252,7 +252,7 @@ class Modelo(object):
                 if t_inic >= t_final:
                     t_inic, t_final = t_final, t_inic
 
-                n_pasos = int(math.ceil((t_final - t_inic) / paso))
+                n_iter = int(math.ceil((t_final - t_inic) / paso))
                 delta_fecha = None
 
             else:
@@ -265,9 +265,9 @@ class Modelo(object):
             dic_trad_tiempo = {'año': 'year', 'mes': 'months', 'día': 'days'}
 
             if isinstance(t_final, int):
-                n_pasos = int(math.ceil(t_final / paso))
+                n_iter = int(math.ceil(t_final / paso))
                 t_final = t_inic + deltarelativo(
-                    **{dic_trad_tiempo[ref_final]: n_pasos}
+                    **{dic_trad_tiempo[ref_final]: n_iter}
                 )  # type: ft.date
             else:
                 if t_inic >= t_final:
@@ -284,14 +284,15 @@ class Modelo(object):
                 else:
                     raise ValueError
                 plazo *= factor
-                n_pasos = math.ceil(plazo / paso)
+                n_iter = math.ceil(plazo / paso)
 
             delta_fecha = deltarelativo(**{dic_trad_tiempo[ref_final]: paso})
 
         else:
             raise TypeError(_('t_inic debe ser fecha o número entero, no "{}".').format(type(t_inic)))
 
-        return n_pasos, t_inic, t_final, delta_fecha
+        n_pasos = n_iter * paso
+        return n_iter, n_pasos, t_inic, t_final, delta_fecha
 
     def _procesar_vars_extern(símismo, vars_inic, vars_extern, bd, t_inic, t_final, lg=None):
         """
@@ -440,7 +441,7 @@ class Modelo(object):
             t_final = t_final or bd.tiempos()[-1]
 
         # Procesar los tiempos iniciales y finales
-        n_pasos, t_inic, t_final, delta_fecha = símismo._procesar_rango_tiempos(t_inic, t_final, paso)
+        n_iter, n_pasos, t_inic, t_final, delta_fecha = símismo._procesar_rango_tiempos(t_inic, t_final, paso)
         simul_fecha = isinstance(t_inic, ft.date)  # Si tenemos una simulación basada en fechas
         if bd is not None and simul_fecha is not bd.tiempo_fecha():
             raise ValueError(_('Los datos y los tiempos de simulación deben ser ambos o fechas, o números.'))
@@ -482,17 +483,17 @@ class Modelo(object):
         # Preparar el objeto Xarray para guardar los resultados
         símismo.mem_vars = mem_vars = xr.Dataset({
             v:
-                ('n', np.empty(n_pasos + 1)) if (símismo.obt_dims_var(v) in [1, (1,)]) else
+                ('n', np.empty(n_iter + 1)) if (símismo.obt_dims_var(v) in [1, (1,)]) else
                 (
-                    ('n', *tuple('x' + str(i) for i in range(len(símismo.obt_dims_var(v))))),
-                    np.empty((n_pasos + 1, *símismo.obt_dims_var(v)))
+                    ('n', *tuple('x' + str(i) for i in símismo.obt_dims_var(v))),
+                    np.empty((n_iter + 1, *símismo.obt_dims_var(v)))
                 )
             for v in vars_interés
         })
 
         # Agregar el eje temporal
         if simul_fecha:
-            l_tiempos = np.array([t_inic + delta_fecha * i for i in range(n_pasos + 1)], dtype='datetime64')
+            l_tiempos = np.array([t_inic + delta_fecha * i for i in range(n_iter + 1)], dtype='datetime64')
         else:
             l_tiempos = np.arange(t_inic, t_final + paso, paso)
         mem_vars.coords['tiempo'] = ('n', l_tiempos)
@@ -502,7 +503,7 @@ class Modelo(object):
         if clima is None and símismo.combin_pasos and vals_extern is None:
 
             # Correr todos los pasos de una vez
-            símismo.incrementar(paso=n_pasos * paso, guardar_cada=paso)
+            símismo.incrementar(paso=n_iter * paso, guardar_cada=paso)
 
             # Después de la simulación, cerramos el modelo.
             símismo.cerrar_modelo()
@@ -537,7 +538,7 @@ class Modelo(object):
                         símismo.cambiar_vals(nuevas)
 
             # Hasta llegar al tiempo final, incrementamos el modelo.
-            for i in range(n_pasos):
+            for i in range(n_iter):
 
                 t_actual = mem_vars['tiempo'].values[i]  # El tiempo actual
                 _act_vals_externos(t_actual)
@@ -1408,7 +1409,7 @@ class Modelo(object):
         res_xr = xr.Dataset({
             vr:
                 ('n', res[vr]) if len(res[vr].shape) == 1 else
-                (('n', *tuple('x' + str(i) for i in range(len(res[vr].shape)))), res[vr])
+                (('n', *tuple('x' + str(i) for i in res[vr].shape)), res[vr])
             for vr in l_vars
         })
         res_xr.coords['tiempo'] = ('n', res['tiempo'])

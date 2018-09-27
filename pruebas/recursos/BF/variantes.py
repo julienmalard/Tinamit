@@ -9,7 +9,7 @@ class EjBloques(ModeloBloques):
         símismo.blqs = blqs
         símismo.unid_tiempo = unid_tiempo
 
-        super().__init__(nombre)
+        super().__init__(nombre=nombre)
 
     def leer_egr_modelo(símismo, n_ciclos, archivo=None):
         dic = {
@@ -99,6 +99,9 @@ class EjBloques(ModeloBloques):
     def avanzar_modelo(símismo, n_ciclos):
         pass
 
+    def _escribir_archivo_ingr(símismo, n_ciclos, dic_ingr, archivo):
+        pass
+
 
 class EjDeterminado(ModeloDeterminado):
 
@@ -106,7 +109,7 @@ class EjDeterminado(ModeloDeterminado):
         símismo.n = n
         símismo.unid_tiempo = unid_tiempo
 
-        super().__init__(nombre)
+        super().__init__(nombre=nombre)
 
     def leer_egr_modelo(símismo, n_ciclos, archivo=None):
         dic = {'ciclo': símismo.ciclo, 'pasito': np.arange(símismo.n)}
@@ -178,6 +181,9 @@ class EjDeterminado(ModeloDeterminado):
     def avanzar_modelo(símismo, n_ciclos):
         pass
 
+    def _escribir_archivo_ingr(símismo, n_ciclos, dic_ingr, archivo):
+        pass
+
 
 class EjIndeterminado(ModeloIndeterminado):
 
@@ -186,7 +192,7 @@ class EjIndeterminado(ModeloIndeterminado):
         símismo.unid_tiempo = unid_tiempo
         símismo.n = np.random.randint(*rango_n)
 
-        super().__init__(nombre)
+        super().__init__(nombre=nombre)
 
     def leer_egr_modelo(símismo, n_ciclos, archivo=None):
         dic = {'ciclo': símismo.ciclo, 'pasito': np.arange(símismo.n)}
@@ -229,7 +235,7 @@ class EjIndeterminado(ModeloIndeterminado):
                 'líms': (0, None),
                 'ingreso': True,
                 'egreso': False,
-                'por': 'pasito'
+                'por': 'ciclo'
             }
         })
         símismo.variables.update(
@@ -252,3 +258,6 @@ class EjIndeterminado(ModeloIndeterminado):
     def mandar_modelo(símismo):
         símismo.n = np.random.randint(*símismo.rango_n)
         return símismo.n
+
+    def _escribir_archivo_ingr(símismo, n_ciclos, dic_ingr, archivo):
+        pass

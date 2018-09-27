@@ -318,7 +318,7 @@ class Test_ConversionesUnidadesTiempo(unittest.TestCase):
         limpiar_mds()
 
 
-class Test_ModelosImpacientes(unittest.TestCase):
+class Test_ConectarConModelosImpacientes(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.n_ciclos = 3

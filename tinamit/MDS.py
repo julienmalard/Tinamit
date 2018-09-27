@@ -33,8 +33,9 @@ class EnvolturaMDS(Modelo):
         #
         símismo.editado = False
 
-        # Modelos DS se identifican por el nombre 'mds'.
-        super().__init__(nombre=nombre)
+        # Iniciar como la clase pariente si el modelo está instalado. Sino, parar aquí.
+        if símismo.instalado():
+            super().__init__(nombre=nombre)
 
     def niveles(símismo):
         return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'nivel']

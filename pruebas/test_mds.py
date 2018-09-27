@@ -310,8 +310,9 @@ class Test_GenerarMDS(unittest.TestCase):
         mod = generar_mds(tipos_modelos['PySDVensim']['prueba'], motor=ModeloPySD)
         símismo.assertIsInstance(mod, ModeloPySD)
 
-        mod = generar_mds(tipos_modelos['PySDVensim']['prueba'], motor=ModeloVensim, enforzar_instalado=False)
-        símismo.assertIsInstance(mod, ModeloVensim)
+        if ModeloVensim(tipos_modelos['dllVensim']['prueba']).instalado():
+            mod = generar_mds(tipos_modelos['PySDVensim']['prueba'], motor=ModeloVensim)
+            símismo.assertIsInstance(mod, ModeloVensim)
 
     def test_generación_auto_mds_modelo_erróneo(símismo):
         """

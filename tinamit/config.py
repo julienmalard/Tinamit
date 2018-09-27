@@ -27,7 +27,7 @@ try:
             _configs[c] = v_c
         elif not isinstance(_configs[c], type(v_c)):
             _configs[c] = v_c
-except (FileNotFoundError, json.decoder.JSONDecodeError):
+except (FileNotFoundError, json.decoder.JSONDecodeError, PermissionError):
     _configs = _config_base.copy()
 try:
     _guardar_conf()
