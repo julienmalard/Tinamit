@@ -15,7 +15,7 @@ install:
 script:
   - rm -r tinamit
   - cd pruebas
-  - python -m unittest --with-coverage --cover-package=tinamit
+  - nosetests --with-coverage --cover-package=tinamit
 
 after_success:
   - coveralls --rcfile=.coveragerc
