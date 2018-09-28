@@ -45,15 +45,19 @@ devolver = ['Watertable depth Tinamit', 'Soil salinity Tinamit CropA']
 # %% Chuharkana 4
 
 if __name__ == "__main__":
-    from tinamit.Calib.ej.muestrear import mstr_morris
-    direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\simular")
-    guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\\anlzr\\anlzr_new_calib")
+    from tinamit.Calib.ej.muestrear import mstr_fast
+    direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\simular")
+    guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\\anlzr_new_calib")
 
     # direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\simular")
     # guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\\new_calib")
 
     simul_sens(
-        gen_mod(), mstr_paráms=mstr_morris, mapa_paráms=mapa_paráms, var_egr=devolver, t_final=20, guardar=direc,
+        gen_mod(), mstr_paráms=mstr_fast, mapa_paráms=mapa_paráms, var_egr=devolver, t_final=20, guardar=direc,
         índices_mstrs=None, paralelo=True
     )
 
+    simul_sens_por_grupo(gen_mod(), mstr_paráms=mstr_fast, mapa_paráms=mapa_paráms, var_egr=devolver, t_final=20,
+                         tmñ_grupos=240, í_grupos=[i for i in range(40)], guardar=direc, paralelo=True)
+
+# 240 groups size of each group = 500

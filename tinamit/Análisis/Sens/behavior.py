@@ -189,7 +189,6 @@ def minimize(x_data=None, y_data=None, tipo_egr='linear', gof=False):
 
     else:
         raise ValueError(tipo_egr)
-    # {'parameters': {'slope': 0.13, 'intercept': 1.4266666666666667}}
     return b_params
 
 def superposition(ocilación, func2):

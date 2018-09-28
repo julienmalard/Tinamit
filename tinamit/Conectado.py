@@ -341,7 +341,7 @@ class SuperConectado(Modelo):
     def simular_grupo(
             símismo, t_final, t_inic=None, paso=1, nombre_corrida='', vals_inic=None, vals_extern=None,
             lugar_clima=None, clima=None, recalc_clima=True, combinar=True, dibujar=None,
-            paralelo=None, vars_interés=None, guardar=False
+            paralelo=None, vars_interés=None, guardar=False, n_proc=None
     ):
 
         vals_inic = símismo._frmt_dic_vars(vals_inic)
@@ -351,7 +351,7 @@ class SuperConectado(Modelo):
             t_final=t_final, paso=paso, nombre_corrida=nombre_corrida, vals_inic=vals_inic,
             vals_extern=vals_extern,
             t_inic=t_inic, lugar_clima=lugar_clima, clima=clima, combinar=combinar, paralelo=paralelo,
-            vars_interés=vars_interés, guardar=guardar
+            vars_interés=vars_interés, guardar=guardar, n_proc=n_proc
         )
 
     def _act_vals_dic_var(símismo, valores):

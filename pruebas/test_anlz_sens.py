@@ -284,16 +284,19 @@ class Test_Análisis(unittest.TestCase):
         vars_egr = list(set(vars_egr))
 
         with símismo.subTest(tipo_mod='sencillo'):
+            raise NotImplementedError
             símismo._verif_sens(mod=mod(), mapa_paráms=None, ops_método=ops_método, líms_paráms=líms_paráms,
                                 t_final=t_final, vars_egr=vars_egr, tipo_egr=tipo_egr,
                                 sensibles=sensibles, no_sensibles=no_sensibles, mtds=mtds, ficticia=True)
 
         with símismo.subTest(tipo_mod='multidim'):
+            # raise NotImplementedError
             símismo._verif_sens(mod=mod(dims=(3,)), mapa_paráms=None, ops_método=ops_método, líms_paráms=líms_paráms,
                                 t_final=t_final, vars_egr=vars_egr, tipo_egr=tipo_egr,
                                 sensibles=sensibles, no_sensibles=no_sensibles, mtds=mtds, ficticia=True)
 
         with símismo.subTest(tipo_mod='mapa_matr'):
+            raise NotImplementedError
             n = 3
             mapa, líms = símismo._gen_mapa_prms(líms_paráms, n, tipo='matr')
             símismo._verif_sens(mod=mod(dims=(n,)), mapa_paráms=mapa, ops_método=ops_método, líms_paráms=líms,
@@ -301,6 +304,7 @@ class Test_Análisis(unittest.TestCase):
                                 sensibles=sensibles, no_sensibles=no_sensibles, mtds=mtds, ficticia=True)
 
         with símismo.subTest(tipo_mod='mapa_dic'):
+            # raise NotImplementedError
             n = 5
             mapa, líms = símismo._gen_mapa_prms(líms_paráms, n, tipo='dic')
             símismo._verif_sens(mod=mod(dims=(n,)), mapa_paráms=mapa, ops_método=ops_método, líms_paráms=líms,
