@@ -45,7 +45,7 @@ class Test_AnalizarEc(unittest.TestCase):
 
     def _verificar_ec(símismo, ec, val_x, resp):
         ec_py = ec.a_python(paráms=[])
-        símismo.assertEquals(ec_py([], {'x': val_x}), resp)
+        símismo.assertEqual(ec_py([], {'x': val_x}), resp)
 
     def test_ec_a_tx(símismo):
         for nmbr, (ec, x, y) in símismo.ecs.items():
