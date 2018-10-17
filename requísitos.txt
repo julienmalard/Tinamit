@@ -10,7 +10,7 @@ lxml
 Babel
 polib
 pint
-pyshp==1.*
+pyshp
 pillow
 theano
 spotpy
