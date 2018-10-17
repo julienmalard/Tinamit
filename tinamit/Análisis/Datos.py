@@ -157,7 +157,7 @@ class Datos(object):
 
 class MicroDatos(Datos):
     """
-    No tiene funcionalidad específica, pero esta clase queda muy útil para identificar el tipo_mod de datos.
+    No tiene funcionalidad específica, pero esta clase queda muy útil para identificar el tipo de datos.
     """
 
     def __init__(símismo, nombre, fuente, tiempo=None, lugar=None, cód_vacío=None):
@@ -849,7 +849,7 @@ class SuperBD(object):
                 raise ValueError(_('Los variables "{}" no corresponden con microdatos o con datos normales.')
                                  .format(', '.join(l_vars)))
         else:
-            tipo = tipo.lower()  # Formatear tipo_mod
+            tipo = tipo.lower()  # Formatear tipo
             if tipo == 'microdatos':
                 bd = símismo.microdatos
             elif tipo == 'datos':
@@ -857,7 +857,7 @@ class SuperBD(object):
             elif tipo == 'error':
                 bd = símismo.datos_err
             else:
-                raise ValueError(_('`tipo_mod` debe ser uno de "{}"').format('"microdatos", "datos", o "error".'))
+                raise ValueError(_('`tipo` debe ser uno de "{}"').format('"microdatos", "datos", o "error".'))
 
         # Asegurarse que existe esta base de datos
         if bd is None:
