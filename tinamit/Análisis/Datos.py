@@ -888,8 +888,9 @@ class SuperBD(object):
 
         # Si tenemos datos generales, tomamos promedios
         if tipo == 'datos':
-            bd_sel = bd_sel.set_index(n=['lugar', 'tiempo']).groupby('n').mean()
-            bd_sel = bd_sel.reset_index('n')
+            bd_sel = bd_sel.set_index(n=['lugar', 'tiempo']).groupby('n').mean().reset_index('n')
+            if 'tiempo' not in bd_sel.coords:  # para hacer: algo más elegante
+                bd_sel = bd_sel.rename({'n_level_0': 'lugar', 'n_level_1': 'tiempo'})
 
         # Excluir las observaciones que faltan
         if excl_faltan:
