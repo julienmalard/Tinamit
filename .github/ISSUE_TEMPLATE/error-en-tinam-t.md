@@ -4,6 +4,8 @@ about: Avísanos y lo arreglaremos :)
 
 ---
 
+> Nota: Favor escribir en español. Apoyamos la diversidad, así que siéntate libre de agregar traducción en cualquier otro idioma para aumentar la accesibilidad de Tinamït para otros usuarios. :)
+
 **Describe el error**
 ¿Qué pasó?
 
