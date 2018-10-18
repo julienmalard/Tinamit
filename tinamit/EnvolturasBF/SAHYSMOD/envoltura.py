@@ -20,10 +20,14 @@ class ModeloSAHYSMOD(ModeloBloques):
 
     leng_orig = 'en'  # La lengua de los nombres y descripción de los variables (y NO la del código aquí)
 
-    prb_datos_inic = pkg_resources.resource_filename(__name__, 'recursos/prb_datos_inic.inp')
-    dic_prb_datos_inic = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_datos_inic.json')
     prb_arch_egr = pkg_resources.resource_filename(__name__, 'recursos/prb_egresos.out')
     dic_prb_egr = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_egr.json')
+
+    @classmethod
+    def archivos_prueba_vals_inic(cls):
+        prb_datos_inic = pkg_resources.resource_filename(__name__, 'recursos/prb_datos_inic.inp')
+        dic_prb_datos_inic = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_datos_inic.json')
+        return prb_datos_inic, dic_prb_datos_inic
 
     def __init__(símismo, datos_iniciales, exe_sahysmod=None, nombre='SAHYSMOD'):
 
