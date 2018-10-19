@@ -4,6 +4,8 @@ about: "¿Tienes una nueva idea para Tinamït?"
 
 ---
 
+> Nota: Favor escribir en español. Apoyamos la diversidad, así que siéntate libre de agregar traducción en cualquier otro idioma para aumentar la accesibilidad de Tinamït para otros usuarios. :)
+
 **¿Cuál funcionalidad te gustaría ver?**
 Describe la idea. P. ej., "quiero hacer simulaciones con base en fechas."
 

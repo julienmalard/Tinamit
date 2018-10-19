@@ -314,7 +314,7 @@ class ModeloBF(Modelo):
         arch, ref = cls.archivos_prueba_vals_inic()
 
         if arch is not None:
-            mod = cls(archivo=arch)
+            mod = cls(arch)
             cls.cargar_ref_vals_inic(ref, mod)
             for var in mod.variables:
                 npt.assert_equal(ref[var]['val'], mod.obt_val_actual_var(var), err_msg=var)
