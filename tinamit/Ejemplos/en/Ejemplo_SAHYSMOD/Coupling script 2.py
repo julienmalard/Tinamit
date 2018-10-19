@@ -134,4 +134,4 @@ if __name__ == '__main__':
 
         modelo.simular_grupo(paso=1, t_final=100 * 2, t_inic='01/11/1989', lugar_clima=location,
                              recalc_clima=False, clima=[0, 2.6, 4.5, 6.0, 8.5], vals_inic=vals_inic, combinar=True,
-                             nombre_corrida='', dibujar=dibs, paralelo=True)
+                             nombre_corrida='', dibujar=dibs, paralelo=False)

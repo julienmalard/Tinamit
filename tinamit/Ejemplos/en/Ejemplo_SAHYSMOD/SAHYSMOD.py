@@ -1,6 +1,6 @@
 import os
 
-from EnvolturasBF.SAHYSMOD import ModeloSAHYSMOD
+from tinamit.EnvolturasBF.SAHYSMOD import ModeloSAHYSMOD
 
 # Path to the SAHYSMOD input file with the initial data. Change as needed on your computer.
 directory = os.path.dirname(__file__)
