@@ -6,7 +6,7 @@ import numpy.testing as npt
 import tinamit.EnvolturasBF
 from tinamit.BF import ModeloBF
 
-
+@unittest.skip
 class Test_EnvolturasBF(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
