@@ -108,7 +108,7 @@ class ModeloSAHYSMOD(ModeloBloques):
         args = dict(SAHYSMOD=símismo.exe_SAHYSMOD, ingreso=símismo.arch_ingreso, egreso=símismo.arch_egreso)
         símismo.comanda = '"{SAHYSMOD}" "{ingreso}" "{egreso}"'.format(**args)
 
-        super().iniciar_modelo(n_pasos, nombre_corrida, vals_inic)
+        super().iniciar_modelo(n_pasos, t_final, nombre_corrida, vals_inic)
 
     def avanzar_modelo(símismo, n_ciclos):
 
