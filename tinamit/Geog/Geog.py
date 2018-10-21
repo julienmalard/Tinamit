@@ -12,11 +12,11 @@ import shapefile as sf
 from matplotlib import cm
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
-from تقدیر.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
-from تقدیر.مقام import مقام
 
 from tinamit.config import _
 from tinamit.cositas import detectar_codif, valid_nombre_arch
+from تقدیر.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
+from تقدیر.مقام import مقام
 
 # Ofrecemos la oportunidad de utilizar taqdir, تقدیر, en español
 
@@ -259,7 +259,7 @@ class Lugar(مقام):
 
 class Geografía(object):
     """
-    Esta clase representa la geografía de un lugar.
+    Esta clase representa la geografía de un lugares.
     """
 
     def __init__(símismo, nombre, archivo=None):
@@ -303,23 +303,20 @@ class Geografía(object):
         nombres_attr = [field[0] for field in attrs]
 
         try:
-            ids = np.array([x.record[nombres_attr.index(col_id)] for x in af.shapeRecords()], dtype=str)
+            ids = np.array([x.record[nombres_attr.index(col_id)] for x in af.shapeRecords()])
         except ValueError:
             raise ValueError(_('La columna "{}" no existe en la base de datos.').format(col_id))
-        if escala_geog is None:
+        ids_no_existen = [id_ for id_ in ids if str(id_) not in símismo.cód_a_lugar]
+        if len(ids_no_existen):
+            avisar(_('Las formas con id "{}" no se encuentran en la geografía actual.'))
+        escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids if id_ not in ids_no_existen)
+        if len(escls_ids) != 1:
+            raise ValueError
 
-            ids_no_existen = [id_ for id_ in ids if str(id_) not in símismo.cód_a_lugar]
-            if len(ids_no_existen):
-                avisar(_('Las formas con id "{}" no se encuentran en la geografía actual.').format(ids_no_existen))
-            escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids if id_ not in ids_no_existen)
-            if len(escls_ids) > 1:
-                raise ValueError
-            elif len(escls_ids) == 1:
-                if escala_geog is None:
-                    escala_geog = list(escls_ids)[0]
-            else:
-                if escala_geog is None:
-                    escala_geog = 'Automática'
+        if escala_geog is None:
+            escala_geog = list(escls_ids)[0]
+        elif escala_geog != list(escls_ids)[0]:
+            raise ValueError
 
         símismo.formas_reg[escala_geog] = {'af': af, 'ids': ids}
 
@@ -539,7 +536,7 @@ class Geografía(object):
                              .format(cód=cód, geog=símismo.nombre))
         return cód
 
-    def dibujar(símismo, archivo, valores=None, ids=None, alpha=1, título=None, unidades=None, colores=None, escala_num=None):
+    def dibujar(símismo, archivo, valores=None, ids=None, título=None, unidades=None, colores=None, escala_num=None):
         """
         Dibuja la Geografía.
 
@@ -577,23 +574,12 @@ class Geografía(object):
 
             if isinstance(valores, np.ndarray):
                 if ids is None:
-                    try:
-                        escls_ids = next(x for x, v in símismo.info_geog.items() if len(v) == len(valores))
-                        ids = símismo.info_geog[escls_ids]
-
-                    except StopIteration:
-                        escls_ids = next(x for x, d in símismo.formas_reg.items() if len(d['ids']) == len(valores))
-                        ids = [str(x) for x in símismo.formas_reg[escls_ids]['ids']]
-
+                    escls_ids = next(x for x, v in símismo.info_geog.items() if len(v) == len(valores))
+                    ids = símismo.info_geog[escls_ids]
                     escls_ids = [escls_ids]
 
                 else:
-                    try:
-                        escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids)
-                    except ValueError:
-                        escls_ids = [next(
-                            x for x, d in símismo.formas_reg.items() if all(str(i) in d['ids'] for i in ids)
-                        )]
+                    escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids)
                     if valores.shape[0] != len(ids):
                         raise ValueError
                 dic_valores = {id_: valores[í] for í, id_ in enumerate(ids)}
@@ -628,31 +614,29 @@ class Geografía(object):
                          '\nno se podrán dibujar: "{}"').format(', '.join(ids_faltan_frm)))
                 dic_valores = {ll: v for ll, v in dic_valores.items() if ll not in ids_faltan_frm}
 
-            vec_valores = np.array([dic_valores[x] if x in dic_valores else np.nan for x in ids_frm])
-            if isinstance(alpha, dict):
-                alphas = np.array([alpha[x] if x in alpha else 0 for x in ids_frm])
-            else:
-                alphas = np.full(ids_frm.shape, alpha)
+            vec_valores = np.array([x for x in dic_valores.values()])
+            orden = [list(dic_valores).index(str(x)) if str(x) in list(dic_valores) else np.nan for x in ids_frm]
 
             # n_regiones = len(regiones.shapes())
             # if len(valores) != n_regiones:
             #     raise ValueError(_('El número de regiones no corresponde con el tamaño de los valores.'))
 
             if escala_num is None:
-                escala_num = (np.nanmin(vec_valores), np.nanmax(vec_valores))
+                escala_num = (np.min(vec_valores), np.max(vec_valores))
+            elif len(escala_num) != 2:
+                raise ValueError
 
             vals_norm = (vec_valores - escala_num[0]) / (escala_num[1] - escala_num[0])
 
             d_clrs = _gen_d_mapacolores(colores=colores)
 
             mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs)
-            norm = colors.Normalize(vmin=escala_num[0], vmax=escala_num[-1])
+            norm = colors.Normalize(vmin=escala_num[0], vmax=escala_num[1])
             cpick = cm.ScalarMappable(norm=norm, cmap=mapa_color)
             cpick.set_array([])
 
             v_cols = mapa_color(vals_norm)
-            v_cols[np.isnan(vals_norm)] = 1
-            _dibujar_shp(ejes=ejes, frm=regiones, colores=v_cols, alpha=alphas)
+            _dibujar_shp(ejes=ejes, frm=regiones, orden=orden, colores=v_cols)
 
             if unidades is not None:
                 fig.colorbar(cpick, label=unidades)
@@ -780,16 +764,14 @@ def _dibujar_shp(ejes, frm, colores, orden=None, alpha=1.0, llenar=True):
     :type orden: np.ndarray | list
 
     :param alpha: La transparencia
-    :type alpha: float | int | np.ndarray
+    :type alpha: float | int
 
     :param llenar: Si hay que llenar la forma, o simplemente dibujar los contornos.
     :type llenar: bool
     """
 
     if orden is not None:
-        regiones = [
-            x for o, x in sorted([t for t in zip(orden, frm.shapes()) if not np.isnan(t[0])], key=lambda x: x[0])
-        ]
+        regiones = [x for o, x in sorted([t for t in zip(orden, frm.shapes()) if not np.isnan(t[0])])]
     else:
         regiones = frm.shapes()
 
@@ -801,10 +783,7 @@ def _dibujar_shp(ejes, frm, colores, orden=None, alpha=1.0, llenar=True):
         if len(colores) != n_formas:
             raise ValueError
 
-    if not isinstance(alpha, (list, np.ndarray)):
-        alpha = np.full_like(regiones, alpha)
-
-    for forma, col, alph in zip(regiones, colores, alpha):
+    for forma, col in zip(regiones, colores):
         n_puntos = len(forma.points)
         n_partes = len(forma.parts)
 
@@ -815,9 +794,9 @@ def _dibujar_shp(ejes, frm, colores, orden=None, alpha=1.0, llenar=True):
                 x_lon[ip] = forma.points[ip][0]
                 y_lat[ip] = forma.points[ip][1]
             if llenar:
-                ejes.fill(x_lon, y_lat, color=col, alpha=alph)
+                ejes.fill(x_lon, y_lat, color=col, alpha=alpha)
             else:
-                ejes.plot(x_lon, y_lat, color=col, alpha=alph)
+                ejes.plot(x_lon, y_lat, color=col, alpha=alpha)
 
         else:
             for ip in range(n_partes):  # Para cada parte del imagen
@@ -835,9 +814,9 @@ def _dibujar_shp(ejes, frm, colores, orden=None, alpha=1.0, llenar=True):
                     y_lat[i] = seg[i][1]
 
                 if llenar:
-                    ejes.fill(x_lon, y_lat, color=col, alpha=alph)
+                    ejes.fill(x_lon, y_lat, color=col, alpha=alpha)
                 else:
-                    ejes.plot(x_lon, y_lat, color=col, alpha=alph)
+                    ejes.plot(x_lon, y_lat, color=col, alpha=alpha)
 
 
 def _hex_a_rva(hx):
