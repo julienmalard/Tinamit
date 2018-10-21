@@ -574,11 +574,14 @@ class Geografía(object):
 
             if isinstance(valores, np.ndarray):
                 if ids is None:
-                    raise ValueError
+                    escls_ids = next(x for x, v in símismo.info_geog.items() if len(v) == len(valores))
+                    ids = símismo.info_geog[escls_ids]
+                    escls_ids = [escls_ids]
+
                 else:
                     escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids)
-                if valores.shape[0] != len(ids):
-                    raise ValueError
+                    if valores.shape[0] != len(ids):
+                        raise ValueError
                 dic_valores = {id_: valores[í] for í, id_ in enumerate(ids)}
 
             else:
