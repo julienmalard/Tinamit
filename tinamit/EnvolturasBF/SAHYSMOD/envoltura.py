@@ -197,10 +197,10 @@ class ModeloSAHYSMOD(ModeloBloques):
     def obt_tmñ_bloques(símismo):
         return símismo.dur_estaciones
 
-    def _escribir_archivo_ingr(símismo, n_años_simul, dic_ingr, archivo):
+    def _escribir_archivo_ingr(símismo, n_ciclos, dic_ingr, archivo):
 
         # Establecer el número de años de simulación
-        símismo.dic_ingr['NY'] = n_años_simul
+        símismo.dic_ingr['NY'] = n_ciclos
 
         # Copiar datos desde el diccionario de ingresos
         for var, val in dic_ingr.items():
