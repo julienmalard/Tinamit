@@ -98,23 +98,33 @@ class Test_Geografía(unittest.TestCase):
         símismo.assertNotIn('bosque', símismo.geog.formas)
 
     def test_agregar_y_quitar_forma_regiones(símismo):
-        símismo.geog.agregar_frm_regiones(arch_frm_regiones, col_id='COD_MUNI')
-        símismo.assertIn('municipio', símismo.geog.formas_reg)
-        símismo.geog.quitar_forma('municipio')
-        símismo.assertNotIn('municipio', símismo.geog.formas_reg)
+        geog = Geografía(nombre='Prueba Guatemala')
+        geog.espec_estruct_geog(archivo=arch_csv_geog)
+        geog.agregar_frm_regiones(arch_frm_regiones, col_id='COD_MUNI')
 
-    def test_dibujar_desde_matriz_numpy(símismo):
+        símismo.assertIn('municipio', geog.formas_reg)
+        geog.quitar_forma('municipio')
+        símismo.assertNotIn('municipio', geog.formas_reg)
+
+    def test_dibujar_desde_matriz_np(símismo):
         símismo.geog.agregar_frm_regiones(arch_frm_regiones, col_id='COD_MUNI')
         lugares = símismo.geog.obt_lugares_en(escala='municipio')
         símismo.geog.dibujar(archivo='prueba.jpg', valores=np.random.rand(len(lugares)), ids=lugares)
         símismo.assertTrue(os.path.isfile('prueba.jpg'))
         os.remove('prueba.jpg')
 
-    def test_dibujar_desde_matriz_numpy_sin_ids(símismo):
+    def test_dibujar_desde_matriz_np_sin_ids(símismo):
         símismo.geog.agregar_frm_regiones(arch_frm_regiones, col_id='COD_MUNI')
         lugares = símismo.geog.obt_lugares_en(escala='municipio')
         símismo.geog.dibujar(archivo='prueba.jpg', valores=np.random.rand(len(lugares)))
         símismo.assertTrue(os.path.isfile('prueba.jpg'))
+        os.remove('prueba.jpg')
+
+    def test_dibujar_desde_matriz_np_sin_estruct(símismo):
+        geog = Geografía(nombre='Prueba Guatemala')
+        geog.agregar_frm_regiones(arch_frm_regiones, col_id='COD_MUNI', escala_geog='municipio')
+        lugares = geog.formas_reg['municipio']['ids']
+        geog.dibujar(archivo='prueba.jpg', valores=np.random.rand(len(lugares)))
         os.remove('prueba.jpg')
 
 
