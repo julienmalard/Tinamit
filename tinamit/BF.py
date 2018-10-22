@@ -14,7 +14,8 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 
 from tinamit.Modelo import Modelo
 from tinamit.config import _
-from tinamit.config import guardar_json, cargar_json
+from tinamit.config import guardar_json
+from tinamit.cositas import cargar_json
 
 
 class EnvolturaBF(Modelo):
@@ -308,20 +309,21 @@ class ModeloBF(Modelo):
                 cls.verificar_avanzar()
         else:
             cls.verificar_inic_dic_vals()
+            cls.verificar_avanzar()
 
     @classmethod
     def verificar_inic_dic_vals(cls):
         arch, ref = cls.archivos_prueba_vals_inic()
 
-        if arch is not None:
+        if arch is not None and ref is not None:
             mod = cls(arch)
-            cls.cargar_ref_vals_inic(ref, mod)
+            ref = cls.cargar_ref_vals_inic(ref, mod)
             for var in mod.variables:
                 npt.assert_equal(ref[var]['val'], mod.obt_val_actual_var(var), err_msg=var)
 
     @classmethod
     def archivos_prueba_vals_inic(cls):
-        return None, None
+        return None, None  # type: tuple[str, str]
 
     @classmethod
     def cargar_ref_vals_inic(cls, arch_ref, mod):
