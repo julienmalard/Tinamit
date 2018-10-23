@@ -1,4 +1,3 @@
-import xarray as xr
 import inspect
 import math as mat
 import os
@@ -10,6 +9,7 @@ from warnings import warn as avisar
 
 import numpy as np
 import numpy.testing as npt
+import xarray as xr
 from dateutil.relativedelta import relativedelta as deltarelativo
 
 from tinamit.Modelo import Modelo
@@ -302,34 +302,27 @@ class ModeloBF(Modelo):
         -------
 
         """
-        if clase_unittest is not None:
-            with clase_unittest.subTest('inic_dic_vals'):
-                cls.verificar_inic_dic_vals()
-            with clase_unittest.subTest('avanzar'):
-                cls.verificar_avanzar()
-        else:
+        if clase_unittest is None:
+            clase_unittest = unittest.TestCase()
+
+        with clase_unittest.subTest('inic_dic_vals'):
             cls.verificar_inic_dic_vals()
+        with clase_unittest.subTest('avanzar'):
             cls.verificar_avanzar()
+        with clase_unittest.subTest('leer_egr'):
+            cls.verificar_leer_egr()
 
     @classmethod
     def verificar_inic_dic_vals(cls):
-        arch, ref = cls.archivos_prueba_vals_inic()
+        try:
+            arch_inic, arch_ref = cls.refs_prb_vals_inic()
+        except NotImplementedError:
+            return
 
-        if arch is not None and ref is not None:
-            mod = cls(arch)
-            ref = cls.cargar_ref_vals_inic(ref, mod)
-            for var in mod.variables:
-                npt.assert_equal(ref[var]['val'], mod.obt_val_actual_var(var), err_msg=var)
-
-    @classmethod
-    def archivos_prueba_vals_inic(cls):
-        return None, None  # type: tuple[str, str]
-
-    @classmethod
-    def cargar_ref_vals_inic(cls, arch_ref, mod):
+        mod = cls(arch_inic)
 
         try:
-            return cargar_json(arch_ref)
+            ref = cargar_json(arch_ref)
         except FileNotFoundError:
             avisar(_(
                 '\nNo encontramos diccionario con los valores corectos de referencia para comprobar que el'
@@ -345,46 +338,24 @@ class ModeloBF(Modelo):
                     d_v['val'] = d_v['val'].tolist()
             guardar_json(d_vals, arch=arch_ref)
 
-            return d_vals
+            ref = d_vals
+
+        for var in mod.variables:
+            npt.assert_equal(ref[var]['val'], mod.obt_val_actual_var(var), err_msg=var)
 
     @classmethod
     def verificar_avanzar(cls, n_pasos=3):
-        arch_ref = cls.archivo_ref_avanzar()
-
-        if arch_ref is not None:
-            arch_inic = cls.archivos_prueba_vals_inic()[0]
-            if arch_inic is not None:
-                mod = cls(archivo=arch_inic)
-                res = mod.simular(t_final=n_pasos)
-
-                ref = cls.cargar_ref_avanzar(arch_ref, res=res)
-                xr.testing.assert_equal(ref, res)
-
-    @classmethod
-    def archivo_ref_avanzar(cls):
-        """
-
-        Returns
-        -------
-        str
-        """
-        return None
-
-    @classmethod
-    def cargar_ref_avanzar(cls, arch_ref, res):
-        """
-
-        Parameters
-        ----------
-        arch_ref :
-        res : xr.DataSet
-
-        Returns
-        -------
-
-        """
         try:
-            return xr.Dataset.from_dict(cargar_json(arch_ref))
+            arch_ref = cls.refs_prb_avanzar()
+            arch_inic = cls.refs_prb_vals_inic()[0]
+        except NotImplementedError:
+            return
+
+        mod = cls(archivo=arch_inic)
+        res = mod.simular(t_final=n_pasos)
+
+        try:
+            ref = xr.Dataset.from_dict(cargar_json(arch_ref))
         except FileNotFoundError:
             avisar(_(
                 '\nNo encontramos diccionario con los valores corectos de referencia para comprobar que el'
@@ -397,7 +368,57 @@ class ModeloBF(Modelo):
 
             guardar_json(res.to_dict(), arch=arch_ref)
 
-            return res
+            ref = res
+
+        xr.testing.assert_equal(ref, res)
+
+    @classmethod
+    def verificar_leer_egr(cls):
+        try:
+            arch_egr, arch_ref = cls.refs_prb_leer_egr()
+        except NotImplementedError:
+            return
+
+        egr = cls.leer_arch_resultados(arch_egr)
+
+        try:
+            ref = cargar_json(arch_ref)
+        except FileNotFoundError:
+            avisar(_(
+                '\nNo encontramos diccionario con los valores corectos de referencia para comprobar que el'
+                '\nmodelo sí esté leyendo bien los archivos de egresos. Lo generaremos con base en el los valores'
+                '\nactualmente leídos por el modelo. Asegúrate que los valores generados en'
+                '\n\t"{}"'
+                '\nestén correctos, y si no lo son, bórralo. En el futuro, se empleará este fuente para '
+                '\ncomprobar la función de lectura de egresos.').format(arch_ref)
+                   )
+            for var, val in egr.items():
+                if isinstance(val, np.ndarray):
+                    egr[var] = val.tolist()
+            guardar_json(egr, arch=arch_ref)
+
+            ref = egr
+
+        for var in ref:
+            npt.assert_equal(ref[var], egr[var], err_msg=var)
+
+    @classmethod
+    def refs_prb_vals_inic(cls):
+        raise NotImplementedError
+
+    @classmethod
+    def refs_prb_avanzar(cls):
+        """
+
+        Returns
+        -------
+        str
+        """
+        raise NotImplementedError
+
+    @classmethod
+    def refs_prb_leer_egr(cls):
+        raise NotImplementedError
 
     def __getinitargs__(símismo):
         return tuple()

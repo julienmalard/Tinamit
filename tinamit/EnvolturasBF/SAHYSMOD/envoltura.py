@@ -25,9 +25,9 @@ class ModeloSAHYSMOD(ModeloBloques):
         prb_arch_egr = pkg_resources.resource_filename(__name__, 'recursos/prb_egresos.out')
         dic_prb_egr = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_egr.json')
         return prb_arch_egr, dic_prb_egr
-    
+
     @classmethod
-    def archivos_prueba_vals_inic(cls):
+    def refs_prb_vals_inic(cls):
         prb_datos_inic = pkg_resources.resource_filename(__name__, 'recursos/prb_datos_inic.inp')
         dic_prb_datos_inic = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_datos_inic.json')
         return prb_datos_inic, dic_prb_datos_inic
