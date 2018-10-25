@@ -12,11 +12,11 @@ import shapefile as sf
 from matplotlib import cm
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
+from تقدیر.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
+from تقدیر.مقام import مقام
 
 from tinamit.config import _
 from tinamit.cositas import detectar_codif, valid_nombre_arch
-from تقدیر.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
-from تقدیر.مقام import مقام
 
 # Ofrecemos la oportunidad de utilizar taqdir, تقدیر, en español
 
@@ -303,7 +303,7 @@ class Geografía(object):
         nombres_attr = [field[0] for field in attrs]
 
         try:
-            ids = np.array([x.record[nombres_attr.index(col_id)] for x in af.shapeRecords()])
+            ids = np.array([x.record[nombres_attr.index(col_id)] for x in af.shapeRecords()], dtype=str)
         except ValueError:
             raise ValueError(_('La columna "{}" no existe en la base de datos.').format(col_id))
         if escala_geog is None:
@@ -588,7 +588,12 @@ class Geografía(object):
                     escls_ids = [escls_ids]
 
                 else:
-                    escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids)
+                    try:
+                        escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids)
+                    except ValueError:
+                        escls_ids = [next(
+                            x for x, d in símismo.formas_reg.items() if all(str(i) in d['ids'] for i in ids)
+                        )]
                     if valores.shape[0] != len(ids):
                         raise ValueError
                 dic_valores = {id_: valores[í] for í, id_ in enumerate(ids)}
