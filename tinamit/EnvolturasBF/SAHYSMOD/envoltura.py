@@ -28,7 +28,7 @@ class ModeloSAHYSMOD(ModeloBloques):
     def refs_prb_leer_egr(cls):
         prb_arch_egr = pkg_resources.resource_filename(__name__, 'recursos/prb_egresos.out')
         dic_prb_egr = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_egr.json')
-        raise NotImplementedError
+        return NotImplementedError
         return prb_arch_egr, dic_prb_egr
 
     @classmethod
@@ -46,7 +46,7 @@ class ModeloSAHYSMOD(ModeloBloques):
         símismo.n_polí = None
 
         # Directorio vacío para guardar datos de ingresos después
-        símismo.plantilla_ingr = {}
+        símismo.dic_ingr = {}
 
         # Poner el directorio de trabajo (donde escribiremos los egresos del modelo), y acordarse de dónde se ubican
         # los datos iniciales.
@@ -123,6 +123,8 @@ class ModeloSAHYSMOD(ModeloBloques):
         super().iniciar_modelo(n_pasos, t_final, nombre_corrida, vals_inic)
 
     def avanzar_modelo(símismo, n_ciclos):
+
+        símismo._escribir_archivo_ingr(n_ciclos=n_ciclos, dic_ingr=símismo.dic_ingr, archivo=símismo.arch_ingreso)
 
         # Limpiar archivos de egresos que podrían estar allí
         if os.path.isfile(símismo.arch_egreso):
@@ -203,22 +205,22 @@ class ModeloSAHYSMOD(ModeloBloques):
     def _escribir_archivo_ingr(símismo, n_ciclos, dic_ingr, archivo):
 
         # Establecer el número de años de simulación
-        símismo.plantilla_ingr['NY'] = n_ciclos
+        símismo.dic_ingr['NY'] = n_ciclos
 
         # Copiar datos desde el diccionario de ingresos
         for var, val in dic_ingr.items():
             var_cód = vars_SAHYSMOD[var]['cód']
             llave = var_cód.replace('#', '').upper()
 
-            símismo.plantilla_ingr[llave] = val
+            símismo.dic_ingr[llave] = val
 
         # Aseguarse que no quedamos con áreas que faltan
         for k in ["A", "B"]:
-            vec = símismo.plantilla_ingr[k]
+            vec = símismo.dic_ingr[k]
             vec[vec == -1] = 0
 
         # Y finalmente, escribir el fuente de valores de ingreso
-        escribir_desde_dic_paráms(dic_paráms=símismo.plantilla_ingr, archivo_obj=archivo)
+        escribir_desde_dic_paráms(dic_paráms=símismo.dic_ingr, archivo_obj=archivo)
 
     def _gen_dic_vals_inic(símismo, archivo=None):
 
@@ -227,8 +229,8 @@ class ModeloSAHYSMOD(ModeloBloques):
 
         # Leer el fuente de ingreso
         dic_ingr = leer_info_dic_paráms(archivo_fnt=archivo)
-        símismo.plantilla_ingr.clear()
-        símismo.plantilla_ingr.update(dic_ingr)  # Guardar valores para escribir el fuente de valores iniciales en el futuro
+        símismo.dic_ingr.clear()
+        símismo.dic_ingr.update(dic_ingr)  # Guardar valores para escribir el fuente de valores iniciales en el futuro
 
         # Guardar el número de estaciones y de polígonos
         símismo.n_estaciones = int(dic_ingr['NS'])
@@ -251,7 +253,7 @@ class ModeloSAHYSMOD(ModeloBloques):
             nombre_var = códs_a_vars[c]
             dic_final[nombre_var] = dic_ingr[llave]
 
-        por_bloques = símismo._vars_por_bloques(solamente = 'ingr')
+        por_bloques = símismo._vars_por_bloques()
 
         for c in vars_egreso_SAHYSMOD:
 
