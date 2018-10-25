@@ -5,11 +5,11 @@ from subprocess import run
 
 import numpy as np
 import pkg_resources
+
 from tinamit.BF import ModeloBloques
 from tinamit.EnvolturasBF.SAHYSMOD.variables import vars_SAHYSMOD, códs_a_vars, vars_ingreso_SAHYSMOD, \
     vars_egreso_SAHYSMOD
 from tinamit.config import _
-
 from ._sahysmodIE import leer_info_dic_paráms, escribir_desde_dic_paráms
 
 
@@ -18,13 +18,20 @@ class ModeloSAHYSMOD(ModeloBloques):
     Envoltura para modelos SAHYSMOD.
     """
 
+    @classmethod
+    def refs_prb_avanzar(cls):
+        raise NotImplementedError
+
     leng_orig = 'en'  # La lengua de los nombres y descripción de los variables (y NO la del código aquí)
 
-    prb_arch_egr = pkg_resources.resource_filename(__name__, 'recursos/prb_egresos.out')
-    dic_prb_egr = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_egr.json')
+    @classmethod
+    def refs_prb_leer_egr(cls):
+        prb_arch_egr = pkg_resources.resource_filename(__name__, 'recursos/prb_egresos.out')
+        dic_prb_egr = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_egr.json')
+        return prb_arch_egr, dic_prb_egr
 
     @classmethod
-    def archivos_prueba_vals_inic(cls):
+    def refs_prb_vals_inic(cls):
         prb_datos_inic = pkg_resources.resource_filename(__name__, 'recursos/prb_datos_inic.inp')
         dic_prb_datos_inic = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_datos_inic.json')
         return prb_datos_inic, dic_prb_datos_inic
@@ -112,11 +119,11 @@ class ModeloSAHYSMOD(ModeloBloques):
         args = dict(SAHYSMOD=símismo.exe_SAHYSMOD, ingreso=símismo.arch_ingreso, egreso=símismo.arch_egreso)
         símismo.comanda = '"{SAHYSMOD}" "{ingreso}" "{egreso}"'.format(**args)
 
-        super().iniciar_modelo(n_pasos, nombre_corrida, vals_inic)
+        super().iniciar_modelo(n_pasos, t_final, nombre_corrida, vals_inic)
 
     def avanzar_modelo(símismo, n_ciclos):
 
-        símismo._escribir_archivo_ingr(n_años_simul=n_ciclos, dic_ingr=símismo.dic_ingr, archivo=símismo.arch_ingreso)
+        símismo._escribir_archivo_ingr(n_ciclos=n_ciclos, dic_ingr=símismo.dic_ingr, archivo=símismo.arch_ingreso)
 
         # Limpiar archivos de egresos que podrían estar allí
         if os.path.isfile(símismo.arch_egreso):
@@ -152,31 +159,28 @@ class ModeloSAHYSMOD(ModeloBloques):
 
         # Crear una máscara boleana para cada valor potencial de Kr y llenarlo con la salinidad correspondiente
         kr0 = (kr == 0)
-        salin_suelo[kr0] = dic_egr['A#'][kr0] * dic_egr['CrA#'][kr0] + \
-                           dic_egr['B#'][kr0] * dic_egr['CrB#'][kr0] + \
+        salin_suelo[kr0] = dic_egr['A#'][kr0] * dic_egr['CrA#'][kr0] + dic_egr['B#'][kr0] * dic_egr['CrB#'][kr0] + \
                            dic_egr['U#'][kr0] * dic_egr['CrU#'][kr0]
 
         kr1 = (kr == 1)
-        salin_suelo[kr1] = dic_egr['CrU#'][kr1] * dic_egr['U#'][kr1] + \
-                           dic_egr['C1*#'][kr1] * (1 - dic_egr['U#'][kr1])
+        salin_suelo[kr1] = dic_egr['CrU#'][kr1] * dic_egr['U#'][kr1] + dic_egr['C1*#'][kr1] * (1 - dic_egr['U#'][kr1])
 
         kr2 = (kr == 2)
-        salin_suelo[kr2] = dic_egr['CrA#'][kr2] * dic_egr['A#'][kr2] + \
-                           dic_egr['C2*#'][kr2] * (1 - dic_egr['A#'][kr2])
+        salin_suelo[kr2] = dic_egr['CrA#'][kr2] * dic_egr['A#'][kr2] + dic_egr['C2*#'][kr2] * (1 - dic_egr['A#'][kr2])
 
         kr3 = (kr == 3)
-        salin_suelo[kr3] = dic_egr['CrB#'][kr3] * dic_egr['B#'][kr3] + \
-                           dic_egr['C3*#'][kr3] * (1 - dic_egr['B#'][kr3])
+        salin_suelo[kr3] = dic_egr['CrB#'][kr3] * dic_egr['B#'][kr3] + dic_egr['C3*#'][kr3] * (1 - dic_egr['B#'][kr3])
 
         kr4 = (kr == 4)
         salin_suelo[kr4] = dic_egr['Cr4#'][kr4]
 
-        para_llenar = [{'mask': kr0, 'cr': ['Cr4#']},
-                       {'mask': kr1, 'cr': ['CrA#', 'CrB#', 'Cr4#']},
-                       {'mask': kr2, 'cr': ['CrB#', 'CrU#', 'Cr4#']},
-                       {'mask': kr3, 'cr': ['CrA#', 'CrU#', 'Cr4#']},
-                       {'mask': kr4, 'cr': ['CrA#', 'CrB#', 'CrU#']}
-                       ]
+        para_llenar = [
+            {'mask': kr0, 'cr': ['Cr4#']},
+            {'mask': kr1, 'cr': ['CrA#', 'CrB#', 'Cr4#']},
+            {'mask': kr2, 'cr': ['CrB#', 'CrU#', 'Cr4#']},
+            {'mask': kr3, 'cr': ['CrA#', 'CrU#', 'Cr4#']},
+            {'mask': kr4, 'cr': ['CrA#', 'CrB#', 'CrU#']}
+        ]
 
         for d in para_llenar:
             l_cr = d['cr']
@@ -197,10 +201,10 @@ class ModeloSAHYSMOD(ModeloBloques):
     def obt_tmñ_bloques(símismo):
         return símismo.dur_estaciones
 
-    def _escribir_archivo_ingr(símismo, n_años_simul, dic_ingr, archivo):
+    def _escribir_archivo_ingr(símismo, n_ciclos, dic_ingr, archivo):
 
         # Establecer el número de años de simulación
-        símismo.dic_ingr['NY'] = n_años_simul
+        símismo.dic_ingr['NY'] = n_ciclos
 
         # Copiar datos desde el diccionario de ingresos
         for var, val in dic_ingr.items():
