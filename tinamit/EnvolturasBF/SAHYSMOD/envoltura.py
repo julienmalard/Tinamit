@@ -119,7 +119,7 @@ class ModeloSAHYSMOD(ModeloBloques):
 
     def avanzar_modelo(símismo, n_ciclos):
 
-        símismo._escribir_archivo_ingr(n_años_simul=n_ciclos, dic_ingr=símismo.dic_ingr, archivo=símismo.arch_ingreso)
+        símismo._escribir_archivo_ingr(n_ciclos=n_ciclos, dic_ingr=símismo.dic_ingr, archivo=símismo.arch_ingreso)
 
         # Limpiar archivos de egresos que podrían estar allí
         if os.path.isfile(símismo.arch_egreso):

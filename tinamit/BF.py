@@ -559,7 +559,7 @@ class ModeloImpaciente(ModeloBF):
         """
 
         if archivo is None:
-            archivo = símismo.archivo
+            archivo = símismo.arch_ingreso
 
         # Procesar los ingresos
         if símismo.ciclo != -1:
