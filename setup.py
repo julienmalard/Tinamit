@@ -169,10 +169,11 @@ setup(
 
     # Tenemos que hacer unos cambiocitos a las funciones de distribución automáticas para poder compilar
     # traducciones de manera automática.
-    cmdclass={'compilar_cat': compilar_cat,  # Compilar el catálogo (PO a MO)
-              'extraer_mens': babel.extract_messages,  # Extraer mensajes (crear POT)
-              'inic_cat': inic_cat,  # Iniciar el catálogo (agregar idiomas)
-              'act_cat': act_cat,  # Actualizar catálogo (sincronizar PO con POT)
-              'sdist': dist_f  # Comanda para crear distribución instalable
-              }
+    cmdclass={
+        'compilar_cat': compilar_cat,  # Compilar el catálogo (PO a MO)
+        'extraer_mens': babel.extract_messages,  # Extraer mensajes (crear POT)
+        'inic_cat': inic_cat,  # Iniciar el catálogo (agregar idiomas)
+        'act_cat': act_cat,  # Actualizar catálogo (sincronizar PO con POT)
+        'sdist': dist_f  # Comanda para crear distribución instalable
+    }
 )

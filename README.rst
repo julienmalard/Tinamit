@@ -38,6 +38,31 @@ Tinamït permite conectar modelos biofísicos con modelos socioeconómicos de di
 Es muy útil para proyectos de modelización participativa, especialmente en proyectos de manejo del ambiente.
 El interaz gráfico traducible facilita la adopción por comunidades en cualquier parte del mundo.
 
+
+Instalación
+===========
+`pip install tinamit`
+
+
+Uso
+===
+Es muy sencillo.
+
+.. code-block::
+
+    from tinamit.Conectado import Conectado
+
+    modelo = Conectado()
+
+    modelo.estab_mds('Prueba dll.vpm')
+    modelo.estab_bf('Prueba bf.py')
+
+    modelo.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)
+    modelo.conectar(var_mds='Bosques', var_bf='Bosques', mds_fuente=True)
+
+    modelo.simular(paso=1, t_final=100, nombre_corrida='Corrida_Tinamit')
+
+
 Autores
 =======
 
