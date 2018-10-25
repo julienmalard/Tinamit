@@ -7,7 +7,7 @@ os:
 
 install:
   - pip install --upgrade pip setuptools wheel
-  - pip install -r requísitos.txt
+  - pip install -r reqs.txt
   - pip install coveralls codecov
   - python setup.py sdist bdist_wheel
   - pip install tinamit --no-index --find-links=./dist
