@@ -127,6 +127,13 @@ class Test_Geografía(unittest.TestCase):
         geog.dibujar(archivo='prueba.jpg', valores=np.random.rand(len(lugares)))
         os.remove('prueba.jpg')
 
+    def test_dibujar_desde_matriz_np_sin_estruct_con_ids(símismo):
+        geog = Geografía(nombre='Prueba Guatemala')
+        geog.agregar_frm_regiones(arch_frm_regiones, col_id='COD_MUNI', escala_geog='municipio')
+        lugares = geog.formas_reg['municipio']['ids']
+        geog.dibujar(archivo='prueba.jpg', valores=np.random.rand(len(lugares)), ids=lugares[::-1])
+        os.remove('prueba.jpg')
+
 
 class Test_Lugar(unittest.TestCase):
     def test_observar_diarios(símismo):
