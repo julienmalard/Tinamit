@@ -28,6 +28,7 @@ class ModeloSAHYSMOD(ModeloBloques):
     def refs_prb_leer_egr(cls):
         prb_arch_egr = pkg_resources.resource_filename(__name__, 'recursos/prb_egresos.out')
         dic_prb_egr = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_egr.json')
+        return NotImplementedError
         return prb_arch_egr, dic_prb_egr
 
     @classmethod
