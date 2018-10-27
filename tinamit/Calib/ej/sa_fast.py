@@ -33,7 +33,7 @@ def gen_mod():
     modelo.conectar(var_mds='EpA', mds_fuente=True, var_bf='EpA - Potential ET crop A')
     modelo.conectar(var_mds='EpB', mds_fuente=True, var_bf='EpB - Potential ET crop B')
     modelo.conectar(var_mds='Irrigation efficiency', mds_fuente=True, var_bf='FsA - Water storage efficiency crop A')
-    #modelo.conectar(var_mds='Fw', mds_fuente=True, var_bf='Fw - Fraction well water to irrigation')  ##0 - 0.8
+    modelo.conectar(var_mds='Fw', mds_fuente=True, var_bf='Fw - Fraction well water to irrigation')  ##0 - 0.8
     #'Policy RH' = 1, Fw = 1, Policy Irrigation improvement = 1, Policy Canal lining=1, Capacity per tubewell =(100.8, 201.6),
     return modelo
 
@@ -45,6 +45,7 @@ devolver = ['Watertable depth Tinamit', 'Soil salinity Tinamit CropA']
 # %% Chuharkana 4
 
 if __name__ == "__main__":
+    import os
     from tinamit.Calib.ej.muestrear import mstr_fast
     direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\simular")
     guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\\anlzr_new_calib")
@@ -52,12 +53,12 @@ if __name__ == "__main__":
     # direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\simular")
     # guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\\new_calib")
 
-    simul_sens(
-        gen_mod(), mstr_paráms=mstr_fast, mapa_paráms=mapa_paráms, var_egr=devolver, t_final=20, guardar=direc,
-        índices_mstrs=None, paralelo=True
-    )
+    # simul_sens(
+    #     gen_mod(), mstr_paráms=mstr_fast, mapa_paráms=mapa_paráms, var_egr=devolver, t_final=20, guardar=direc,
+    #     índices_mstrs=None, paralelo=True
+    # )
 
     simul_sens_por_grupo(gen_mod(), mstr_paráms=mstr_fast, mapa_paráms=mapa_paráms, var_egr=devolver, t_final=20,
-                         tmñ_grupos=240, í_grupos=[i for i in range(40)], guardar=direc, paralelo=True)
+                         tmñ_grupos=360, í_grupos=[0], guardar=direc, paralelo=True)
 
-# 240 groups size of each group = 500
+# 360 groups size of each group = 500

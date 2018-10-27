@@ -1,14 +1,15 @@
 import os
 import shutil
 import unittest
+from collections import Counter
 
-import numpy as np
 import numpy.testing as npt
 
 from pruebas.recursos.BF.prueba_forma import ModeloLinear, ModeloExpo, ModeloLogistic, ModeloInverso, ModeloLog, \
-    ModeloOscil, ModeloOscilAten
+    ModeloOscil, ModeloOscilAten, ModForma
 from pruebas.recursos.mod_prueba_sens import ModeloPrueba
-from tinamit.Análisis.Sens.anlzr import anlzr_sens
+from tinamit.Análisis.Sens.anlzr import anlzr_sens, format_simul, gen_bf_simul
+from tinamit.Análisis.Sens.behavior import *
 from tinamit.Análisis.Sens.corridas import gen_vals_inic, gen_índices_grupos, simul_sens, simul_sens_por_grupo, \
     buscar_simuls_faltan, simul_faltan
 from tinamit.Análisis.Sens.muestr import muestrear_paráms, guardar_mstr_paráms, cargar_mstr_paráms
@@ -247,8 +248,9 @@ ops_métodos = {'morris': {'num_levels': 4, 'grid_jump': 2}}
 
 class Test_Análisis(unittest.TestCase):
 
-    def _verificar_sens_mod(símismo, mod, t_final, líms_paráms, tipo_egr, sensibles, no_sensibles=None, mtds=None,
-                            ops_método=None):
+    def _verificar_sens_mod(
+            símismo, mod, t_final, líms_paráms, tipo_egr, sensibles, no_sensibles=None, mtds=None, ops_método=None
+    ):
         if mtds is None:
             mtds = métodos
         if ops_método is None:
@@ -284,19 +286,16 @@ class Test_Análisis(unittest.TestCase):
         vars_egr = list(set(vars_egr))
 
         with símismo.subTest(tipo_mod='sencillo'):
-            raise NotImplementedError
             símismo._verif_sens(mod=mod(), mapa_paráms=None, ops_método=ops_método, líms_paráms=líms_paráms,
                                 t_final=t_final, vars_egr=vars_egr, tipo_egr=tipo_egr,
                                 sensibles=sensibles, no_sensibles=no_sensibles, mtds=mtds, ficticia=True)
 
         with símismo.subTest(tipo_mod='multidim'):
-            # raise NotImplementedError
             símismo._verif_sens(mod=mod(dims=(3,)), mapa_paráms=None, ops_método=ops_método, líms_paráms=líms_paráms,
                                 t_final=t_final, vars_egr=vars_egr, tipo_egr=tipo_egr,
                                 sensibles=sensibles, no_sensibles=no_sensibles, mtds=mtds, ficticia=True)
 
         with símismo.subTest(tipo_mod='mapa_matr'):
-            raise NotImplementedError
             n = 3
             mapa, líms = símismo._gen_mapa_prms(líms_paráms, n, tipo='matr')
             símismo._verif_sens(mod=mod(dims=(n,)), mapa_paráms=mapa, ops_método=ops_método, líms_paráms=líms,
@@ -311,40 +310,40 @@ class Test_Análisis(unittest.TestCase):
                                 t_final=t_final, vars_egr=vars_egr, tipo_egr=tipo_egr,
                                 sensibles=sensibles, no_sensibles=no_sensibles, mtds=mtds, ficticia=True)
 
+    def _gen_matr_i_sens(símismo, líms_prm, mapa_prm, t_final, tipo_egr):
+        if not isinstance(mapa_prm, dict):
+            if tipo_egr == 'paso_tiempo':
+                matr_i_sens = np.zeros([len(líms_prm), t_final + 1, len(mapa_prm)])
+                for t in range(t_final + 1):
+                    for y in range(len(mapa_prm)):
+                        matr_i_sens[mapa_prm[y], t, y] = 1
+            else:
+                matr_i_sens = np.zeros([len(líms_prm), len(mapa_prm)])
+                for y in range(len(mapa_prm)):
+                    matr_i_sens[mapa_prm[y], y] = 1
+        else:
+            l_y = list(mapa_prm['mapa'].values())[0]
+            if tipo_egr == 'paso_tiempo':
+                matr_i_sens = np.zeros([len(líms_prm), t_final + 1, len(l_y)])
+                for t in range(t_final + 1):
+                    for y in range(len(l_y)):
+                        matr_i_sens[l_y[y], t, y] = 1
+            else:
+                matr_i_sens = np.zeros([len(líms_prm), len(l_y)])
+                for y in range(len(l_y)):
+                    if isinstance(l_y[0], tuple):
+                        matr_i_sens[l_y[y], y] = 1
+                    else:
+                        matr_i_sens[mapa_prm[y], y] = 1
+
+        msk = np.greater(matr_i_sens, 0)
+
+        return msk
+
     def _verif_sens(
             símismo, mod, mapa_paráms, ops_método, líms_paráms, t_final, vars_egr, tipo_egr,
             sensibles, no_sensibles, mtds, ficticia
     ):
-
-        def _gen_matr_i_sens(líms_prm, mapa_prm, t_final, tipo_egr):
-            if not isinstance(mapa_prm, dict):
-                if tipo_egr == 'paso_tiempo':
-                    matr_i_sens = np.zeros([len(líms_prm),t_final+1, len(mapa_prm)])
-                    for t in range(t_final+1):
-                        for y in range(len(mapa_prm)):
-                            matr_i_sens[mapa_prm[y], t, y] = 1
-                else:
-                    matr_i_sens = np.zeros([len(líms_prm), len(mapa_prm)])
-                    for y in range(len(mapa_prm)):
-                        matr_i_sens[mapa_prm[y], y] = 1
-            else:
-                l_y = list(mapa_prm['mapa'].values())[0]
-                if tipo_egr == 'paso_tiempo':
-                    matr_i_sens = np.zeros([len(líms_prm), t_final+1, len(l_y)])
-                    for t in range(t_final+1):
-                        for y in range(len(l_y)):
-                            matr_i_sens[l_y[y], t, y] = 1
-                else:
-                    matr_i_sens = np.zeros([len(líms_prm), len(l_y)])
-                    for y in range(len(l_y)):
-                        if isinstance(l_y[0], tuple):
-                            matr_i_sens[l_y[y], y] = 1
-                        else:
-                            matr_i_sens[mapa_prm[y], y] = 1
-
-            msk = np.greater(matr_i_sens, 0)
-
-            return msk
 
         for m in mtds:
             if m not in ops_método:
@@ -365,11 +364,12 @@ class Test_Análisis(unittest.TestCase):
                             if dims_y == (1,):
                                 dims_p = (1,)
                             else:
-                                dims_p = (t_final+1,)
+                                dims_p = (t_final + 1,)
                         for eg in l_eg:
-                            símismo._proc_res_sens(eg, prm, res, m, tipo_egr, dims_p, dims_y, t_final, mapa_paráms, sens=True, i_sens=None)
+                            símismo._proc_res_sens(eg, prm, res, m, tipo_egr, dims_p, dims_y, t_final, mapa_paráms,
+                                                   sens=True, i_sens=None)
                     else:
-                        mask = _gen_matr_i_sens(líms_paráms[prm], mapa_paráms[prm], t_final, tipo_egr)
+                        mask = símismo._gen_matr_i_sens(líms_paráms[prm], mapa_paráms[prm], t_final, tipo_egr)
                         dims_p = (len(líms_paráms[prm]),)
                         for eg in l_eg:
                             símismo._proc_res_sens(
@@ -392,7 +392,7 @@ class Test_Análisis(unittest.TestCase):
                             símismo._proc_res_sens(eg, prm, res, m, tipo_egr, dims_p, dims_y, t_final,
                                                    mapa_paráms, sens=False, i_sens=None)
                     else:
-                        mask = _gen_matr_i_sens(líms_paráms[prm], mapa_paráms[prm], t_final, tipo_egr)
+                        mask = símismo._gen_matr_i_sens(líms_paráms[prm], mapa_paráms[prm], t_final, tipo_egr)
                         dims_p = (len(líms_paráms[prm]),)
                         for eg in l_eg:
                             símismo._proc_res_sens(eg, prm, res, m, tipo_egr, dims_p, dims_y, t_final,
@@ -428,14 +428,14 @@ class Test_Análisis(unittest.TestCase):
                         assert val_prm.shape == (dims_y)
                 else:
                     if dims_y == (1,):
-                        assert val_prm.shape == (t_final+1,)
+                        assert val_prm.shape == (t_final + 1,)
                     else:
                         assert val_prm.shape == (*dims_p, *dims_y)
             else:
                 if list(res.keys())[0] != 'paso_tiempo':
                     assert val_prm.shape == (*dims_p, *dims_y)
                 else:
-                    assert val_prm.shape == (*dims_p, t_final+1, *dims_y)
+                    assert val_prm.shape == (*dims_p, t_final + 1, *dims_y)
 
         def _verificar_no_sig(val_prm, val_fict, sello, rtol=0.1):
             if i_sens is not None:
@@ -445,7 +445,7 @@ class Test_Análisis(unittest.TestCase):
                     _no_sig(val_prm[inv_sens], sello, val_fict[np.where(i_sens)[1]], rtol)
 
                 else:
-                    for t in range(t_final+1):
+                    for t in range(t_final + 1):
                         _no_sig(val_prm[inv_sens], sello, val_fict[t, np.where(inv_sens)[2]], rtol)
             else:
                 if val_prm.ndim < 2:
@@ -469,7 +469,7 @@ class Test_Análisis(unittest.TestCase):
                     _sig(val_prm[i_sens], sello, val_fict[np.where(i_sens)[1]], rtol)
 
                 else:
-                    for t in range(t_final+1):
+                    for t in range(t_final + 1):
                         _sig(val_prm[i_sens], sello, val_fict[t, np.where(i_sens)[2]], rtol)
             else:
                 if val_prm.ndim < 2:
@@ -482,7 +482,6 @@ class Test_Análisis(unittest.TestCase):
             npt.assert_array_less(sello, val_prm)
             npt.assert_array_less(val_fict, val_prm)
             npt.assert_array_less(rtol, np.abs(val_fict - val_prm) / val_fict)
-
 
         if m == 'morris':
             mu_star_prm, mu_star_fict = _sacar_val('mu_star', eg, dims_p, dims_y)
@@ -611,6 +610,38 @@ class Test_Análisis(unittest.TestCase):
         )
 
     def test_sens_forma(símismo):
+        líms_prms = {'A': (3, 3.5), 'B': (3, 3.5), 'P': (0.1, 1)}
+        líms = {vr: [lms] * 2 for vr, lms in líms_prms.items()}
+        mapa = {vr: np.random.choice(range(2), size=3) for vr in líms_prms}
+
+        mtds = {'morris': {'num_levels': 4, 'grid_jump': 2},
+                'fast': {'N': 65}}
+
+        for m, ops in mtds.items():
+            ops_método = mtds[m]
+            with símismo.subTest(método=m):
+                # res = anlzr_sens(
+                #     mod=ModForma(dims=(3,)), método=m, líms_paráms=líms, mapa_paráms=mapa,
+                #     t_final=10, var_egr='y', ops_método=ops_método, tipo_egr='forma', ficticia=False)
+
+                res = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\\f_simul\\test_egr.npy").tolist()
+                msk_a = símismo._gen_matr_i_sens(líms['A'], mapa['A'], t_final=10, tipo_egr='forma')
+                msk_b = símismo._gen_matr_i_sens(líms['B'], mapa['B'], t_final=10, tipo_egr='forma')
+                msk_p = símismo._gen_matr_i_sens(líms['P'], mapa['P'], t_final=10, tipo_egr='forma')
+                for patt, val in res['forma']['y'].items():
+                    param_a = val['gof']['mu_star']['A']['aic'][msk_a]
+                    param_b = val['gof']['mu_star']['B']['aic'][msk_b]
+                    wt = val['gof']['mu_star']['P']['aic'][msk_p]
+
+                    npt.assert_array_less(param_a, 0.1)
+                    npt.assert_array_less(param_b, 0.1)
+                    npt.assert_array_less(0.1, wt)
+
+    # verificar AIC sensitivo a ‘p’ y no a "a" o "b"
+    # Create a model which could is a combined function y = log + oscilation. and the p is a weight param,
+    # the output aic should only sensitive to the weight p, the parameter determined the shapes
+
+    def test_sens_superposition(símismo):
         raise NotImplementedError
 
     def test_sens_trasiciones(símismo):
@@ -618,4 +649,90 @@ class Test_Análisis(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        raise NotImplementedError
         _borrar_direcs_egr()
+
+
+class Test_AdivinarParams(unittest.TestCase):
+    x_data = np.arange(1, 10)
+    behaviors = {'linear':
+                     {'y_datos': linear(np.array([1, 2]), x_data),
+                      'y_dat': linear(np.array([1, 2]), np.arange(1, 20)),
+                      'set_parmas': np.array([1, 2])},
+                 'exponencial':
+                     {'y_datos': exponencial(np.array([2, 1.3, 0.1]), x_data),
+                      'y_dat': exponencial(np.array([2, 1.3, 0.1]), np.arange(1, 20)),
+                      'set_parmas': np.array([2, 1.3, 0.1])},
+                 'logístico':
+                     {'y_datos': logístico(np.array([5.0, 0.85, 3.0, 0.1]), x_data),
+                      'y_dat': logístico(np.array([5, 1, 8, 0.1]), np.arange(1, 20)),
+                      'set_parmas': np.array([5.0, 0.85, 3.0, 0.1])},
+                 'inverso':
+                     {'y_datos': inverso(np.array([3.0, 0.4, 0.1]), x_data),
+                      'y_dat': inverso(np.array([3.0, 0.4, 0.1]), np.arange(1, 20)),
+                      'set_parmas': np.array([3.0, 0.4, 0.1])},
+                 'log':
+                     {'y_datos': log(np.array([0.3, 0.1, 0.1]), x_data),
+                      'y_dat': log(np.array([3, -0.5, 6]), np.arange(1, 20)),
+                      'set_parmas': np.array([0.3, 0.1, 0.1])},
+                 'oscilación':
+                     {'y_datos': oscilación(np.array([0.7, 0.6, 1.0, 0.1]), x_data),
+                      'y_dat': oscilación(np.array([7, 1.6, 0, 0]), np.arange(1, 20)),
+                      'set_parmas': np.array([0.7, 0.6, 1.0, 0.1])},
+                 'oscilación_aten':
+                     {'y_datos': oscilación_aten(np.array([0.1, 0.7, 2, 0.01, 0.1]), x_data),
+                      'y_dat': oscilación_aten(np.array([0.1, 0.7, 2, 0.01, 0.1]), np.arange(1, 20)),
+                      # 0.1, 1, 2.4, 2, 0.1
+                      'set_parmas': np.array([0.1, 0.7, 2, 0.01, 0.1])}}
+
+    def test_adivinarparams(símismo, behaviors=behaviors):
+        for tipo_egr in behaviors:
+            with símismo.subTest(tipo_egr):
+                pred = np.asarray(list(
+                    simple_shape(x_data=np.arange(1, 10), y_data=behaviors[tipo_egr]['y_datos'], tipo_egr=tipo_egr)
+                    ['bp_params'].values()))
+
+                npt.assert_allclose(pred, behaviors[tipo_egr]['set_parmas'], rtol=0.05)
+
+    def test_FormaÚnica(símismo, behaviors=behaviors):
+        for tipo_egr in behaviors:
+            with símismo.subTest(tipo_egr):
+                best_behav = find_best_behavior(forma(np.arange(1, 20), behaviors[tipo_egr]['y_dat']))
+
+                counted_behaviors = Counter([k for k, v in best_behav])
+                fr_estim = list(counted_behaviors.keys())
+
+                símismo.assertEqual(tipo_egr, fr_estim[0])
+
+    def test_Superposición(símismo):
+        # use forma model to generate logístico+osci curve
+
+        # Comprobar con forma sin superposición, Check form without superpo
+
+        # Comprobar con forma con superposición, check shap with superpo
+        raise NotImplementedError
+
+        # formas = {
+        #     'linear':
+        #         {'mod': ModeloLinear(),
+        #          'líms_paráms': {'A': (0.1, 2), 'B': (0.1, 1)}},
+        #     'exponencial':
+        #         {'mod': ModeloExpo(),
+        #          'líms_paráms': {'A': (0.1, 5), 'B': (1.1, 2)}},
+        #     'logístico':
+        #         {'mod': ModeloLogistic(),
+        #          'líms_paráms': {'A': (5, 10), 'B': (0.85, 2), 'C': (3, 5)}},
+        #     'inverso':
+        #         {'mod': ModeloInverso(),
+        #          'líms_paráms': {'A': (3, 10), 'B': (0.4, 2)}},
+        #     'log':
+        #         {'mod': ModeloLog(),
+        #          'líms_paráms': {'A': (0.5, 2), 'B': (2, 5)}},
+        #     'oscilación':
+        #         {'mod': ModeloOscil(),
+        #          'líms_paráms': {'A': (0.7, 1.0), 'B': (0.6, 1), 'C': (0.7, 1.0)}},
+        #     'oscilación_aten':
+        #         {'mod': ModeloOscilAten(),
+        #          'líms_paráms': {'A': (0.25, 0.3), 'B': (0.7, 1), 'C': (0.6, 1), 'D': (0.7, 1.0)}}}
+        #
+        # for patt, val in formas.items():

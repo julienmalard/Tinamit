@@ -19,19 +19,19 @@ class SA(object):
     # 0. Site geography
     def __init__(self, sa_name=None):
         self.sa_name = sa_name
-        # Rechna_Doab = Geografía(nombre='Rechna Doab')
-        #
-        # base_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Shape_files')
-        # Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir, 'Internal_Polygon.shp'), col_id="Polygon_ID")
-        #
-        # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'External_Polygon.shp'), color='#edf4da')
-        # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'RIVR.shp'), tipo='agua')
-        # # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'Forst_polygon.shp'), tipo='bosque')
-        # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'CNL_Arc.shp'), tipo='agua', color='#1ba4c6', llenar=False)
-        # # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'buildup_Polygon.shp'), tipo='ciudad')
-        # # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'road.shp'), tipo='calle')
-        #
-        # self.Rechna_Doab = Rechna_Doab
+        Rechna_Doab = Geografía(nombre='Rechna Doab')
+
+        base_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Shape_files')
+        Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir, 'Internal_Polygon.shp'), col_id="Polygon_ID")
+
+        Rechna_Doab.agregar_forma(os.path.join(base_dir, 'External_Polygon.shp'), color='#edf4da')
+        Rechna_Doab.agregar_forma(os.path.join(base_dir, 'RIVR.shp'), tipo='agua')
+        # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'Forst_polygon.shp'), tipo='bosque')
+        Rechna_Doab.agregar_forma(os.path.join(base_dir, 'CNL_Arc.shp'), tipo='agua', color='#1ba4c6', llenar=False)
+        # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'buildup_Polygon.shp'), tipo='ciudad')
+        # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'road.shp'), tipo='calle')
+
+        self.Rechna_Doab = Rechna_Doab
 
     def problems_setup2(self):
         '''

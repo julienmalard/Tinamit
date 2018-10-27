@@ -90,6 +90,8 @@ def gen_problema(líms_paráms, mapa_paráms, ficticia=True):
                     raise ValueError(
                         _('Los índices en `mápa_paráms` no corresponden con el número de rangos en `líms_paráms` para'
                           'el parámetro "{}".').format(p))
+
+                # líms_paráms_final.update({f"{key}_{i}": líms_paráms[p][i] for key in mapa['mapa'] for i in range(n_versiones_parám)})
                 líms_paráms_final.update(
                     {f'{p}_{í}': líms_paráms[p][í] for í in range(n_versiones_parám)}
                 )

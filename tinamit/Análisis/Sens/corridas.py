@@ -1,13 +1,11 @@
 import os
 import re
-import time
 from datetime import datetime
 
 import numpy as np
 
 from tinamit.Análisis.Sens.muestr import cargar_mstr_paráms
 from tinamit.config import _
-from tinamit.cositas import guardar_json, cargar_json
 
 
 def gen_vals_inic(mstr, mapa_paráms):
@@ -36,10 +34,8 @@ def gen_vals_inic(mstr, mapa_paráms):
                     mstr[f'{p}_{í_p}'][í] for í_p in mapa_paráms[p]
                 ]
                 vals_inic[í][p] = np.array(val_var)
-
         elif isinstance(mapa, dict):
             transf = mapa['transf'].lower()
-
             for í in iters:
                 for var, mp_var in mapa['mapa'].items():
                     if transf == 'prom':
@@ -93,7 +89,7 @@ def simul_sens(mod, mstr_paráms, mapa_paráms, var_egr, t_final, guardar=True, 
         índices_mstrs = range(*índices_mstrs)
 
     mstrs_escogidas = {p: {í: mstr_paráms[p][í] for í in índices_mstrs} for p in mstr_paráms}
-    # chosen samples
+    # chosen samples 23*625
 
     vals_inic = gen_vals_inic(mstrs_escogidas, mapa_paráms)
     start_time = datetime.now().strftime("%H:%M:%S")

@@ -473,4 +473,54 @@ class ModeloOscilAten(PlantillaForma):
         c = vals_inic['C']
         d = vals_inic['D']
         x = símismo._gen_x_tiempo(tiempo_final, l_vars=[a, b, c, d])
-        símismo.valores = np.exp(a * x) * b * np.sin(c * x + d) + np.random.normal(scale=0.001, size=x.shape)
+        símismo.valores = np.exp(a * x) * b * np.sin(c * x + d) + np.random.normal(scale=0.0001, size=x.shape)
+
+class ModForma(PlantillaForma):
+    def _inic_dic_vars(símismo):
+        dims = símismo.dims
+        multidim = dims != (1,)
+
+        símismo.variables.clear()
+
+        símismo.variables.update({
+            'A': {
+                'val': np.full(dims, 3, dtype=float) if multidim else 3,
+                'unidades': 'm3/mes',
+                'líms': (1, None),
+                'ingreso': False,
+                'egreso': True,
+                'dims': dims
+            },
+            'B': {
+                'val': np.full(dims, 3, dtype=float) if multidim else 3,
+                'unidades': 'm3',
+                'líms': (1, None),
+                'ingreso': True,
+                'egreso': False,
+                'dims': dims
+            },
+            'P': {
+                'val': np.full(dims, 0.5, dtype=float) if multidim else 0.5,
+                'unidades': 'm3',
+                'líms': (0, 1),
+                'ingreso': True,
+                'egreso': False,
+                'dims': dims
+            },
+
+            'y': {'val': np.full(dims, 0.455, dtype=float) if multidim else 0.455,
+                  'unidades': 'm3',
+                  'líms': (0.1, None),
+                  'ingreso': True,
+                  'egreso': False,
+                  'dims': dims}
+
+        }
+        )
+
+    def _calcular_func(símismo, tiempo_final, vals_inic):
+        a = vals_inic['A']
+        b = vals_inic['B']
+        p = vals_inic['P']
+        x = símismo._gen_x_tiempo(tiempo_final, l_vars=[a, b, p])
+        símismo.valores = a*np.log(x) * p + np.sin(b*x) * (1-p) + np.random.normal(scale=0.00001, size=x.shape)

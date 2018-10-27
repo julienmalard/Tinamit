@@ -1,6 +1,12 @@
 import os
+import multiprocessing as mp
+import time
 from copy import deepcopy
+from datetime import datetime
 
+from xarray import Dataset
+
+from tinamit.Análisis.Sens.behavior import find_best_behavior
 from tinamit.Análisis.Sens.corridas import simul_sens
 from tinamit.Análisis.Sens.muestr import cargar_mstr_paráms, gen_problema, muestrear_paráms
 from tinamit.cositas import cargar_json
@@ -45,7 +51,7 @@ def _anlzr_salib(método, problema, mstr, simul, ops_método):
         mor.update(
             {'mu_star': {j: Si['mu_star'][i] for i, j in enumerate(problema['names'])},
              'sigma': {j: Si['sigma'][i] for i, j in enumerate(problema['names'])},
-             'sum_sigma': np.sum(Si['sigma'])
+             # 'sum_sigma': np.sum(Si['sigma'])
              })
         return mor
 
@@ -58,9 +64,9 @@ def _anlzr_salib(método, problema, mstr, simul, ops_método):
         fa.update({'Si': {j: Si['S1'][i] for i, j in enumerate(problema['names'])},
                    'ST': {j: Si['ST'][i] for i, j in enumerate(problema['names'])},
                    'St-Si': {j: Si['ST'][i] - Si['S1'][i] for i, j in enumerate(problema['names'])},
-                   'sum_s1': np.sum(Si['S1']),
-                   'sum_st': np.sum(Si['ST']),
-                   'sum_st-s1': np.absolute(np.sum(Si['ST']) - np.sum(Si['S1']))
+                   # 'sum_s1': np.sum(Si['S1']),
+                   # 'sum_st': np.sum(Si['ST']),
+                   # 'sum_st-s1': np.absolute(np.sum(Si['ST']) - np.sum(Si['S1']))
                    })
         return fa
 
@@ -68,74 +74,15 @@ def _anlzr_salib(método, problema, mstr, simul, ops_método):
         raise ValueError(_('Algoritmo "{}" no reconocido.').format(método))
 
 
-def format_sens_ind(si, método, problema, var_egr):
-    # here the result should be
-    # {var_egr: {important(mu*>0.1):{}, non-influential(mu* < 0.1):{}, sum_sigma:()}}
-    # {var_egr: {important(Si>0.01):{}, non-influential(Si<0.01&St-Si < 0.1):{}, sum_si:[], sum_st:[]}}
-    if método == 'morris':
-        important = {'important':
-                         {problema['names'][i]: si['mu_star'].tolist()[i] for i in np.where(si['mu_star'] > 0.1)[0]}
-                     }
-
-        non_influential = {'non_influential':
-                               {problema['names'][i]: si['mu_star'].tolist()[i] for i in
-                                np.where(si['mu_star'] < 0.1)[0]}
-                           }
-
-        if var_egr is None:
-            mor_ff_fp = {var: {'sum_sigma': si['sum_sigma']} for var in var_egr}
-
-            for var in var_egr:
-                mor_ff_fp[var].update(important)
-                mor_ff_fp[var].update(non_influential)
-        else:
-            mor_ff_fp = {var_egr: {'sum_sigma': si['sum_sigma']}}
-            mor_ff_fp[var_egr].update(important)
-            mor_ff_fp[var_egr].update(non_influential)
-        return mor_ff_fp
-
-    elif método == 'fast':
-        important = {'important':
-                         {problema['names'][i]: si['S1'][i] for i in np.where(np.asarray(si['S1']) > 0.01)[0]}
-                     }
-
-        non_influential = {'non_influential':
-                               {problema['names'][j]: si['S1'][j] for j in
-                                [i for i in np.where(np.asarray(si['ST-S1']) < 0.1)[0].tolist()
-                                 if i in np.where(np.asarray(si['S1']) < 0.01)[0].tolist()]}
-                           }
-        interaction = {'interaction':
-                           {problema['names'][i]: si['ST-S1'][i] for i in np.where(np.asarray(si['ST-S1']) > 0.1)[0]}}
-
-        if var_egr is None:
-            fa_ff_fp = {var: {'sum_s1': si['sum_s1'], 'sum_st': si['sum_st'],
-                              'sum_st-s1': si['sum_st-s1']} for var in var_egr}
-
-            for var in var_egr:
-                fa_ff_fp[var].update(important)
-                fa_ff_fp[var].update(non_influential)
-                fa_ff_fp[var].update(interaction)
-        else:
-            fa_ff_fp = {var_egr: {'sum_s1': si['sum_s1'], 'sum_st': si['sum_st'], 'sum_st-s1': si['sum_st-s1']}}
-            fa_ff_fp[var_egr].update(important)
-            fa_ff_fp[var_egr].update(non_influential)
-            fa_ff_fp[var_egr].update(interaction)
-
-        return fa_ff_fp
-
-    else:
-        raise ValueError(_('Algoritmo "{}" no reconocido.').format(método))
-
-
-def analy_by_file(método, líms_paráms, mapa_paráms, mstr_path, simulation_path, var_egr,
-                  ops_método=None, tipo_egr=None, ficticia=True):
+def analy_by_file(método, líms_paráms, mapa_paráms, mstr_arch, simul_arch, var_egr=None,
+                  ops_método=None, tipo_egr=None, ficticia=True, f_simul_arch=None, dim=None):
     """
 
     :param método:
     :param líms_paráms:
     :param mapa_paráms:
-    :param mstr_path:
-    :param simulation_path: {'arch_simular': str, 'num_samples': int}
+    :param mstr_arch:
+    :param simul_arch: {'arch_simular': str, 'num_samples': int}
     :param t_final:
     :param var_egr:
     :param ops_método:
@@ -150,16 +97,53 @@ def analy_by_file(método, líms_paráms, mapa_paráms, mstr_path, simulation_pa
     if ops_método is None:
         ops_método = {}
 
-    mstr = cargar_mstr_paráms(mstr_path)
-    simulation = read_simulation_data(simulation_path['arch_simular'], simulation_path['num_samples'], var_egr)
+    mstr = cargar_mstr_paráms(mstr_arch)
+    # mstr_new = {p: [] for p in mstr}
+    # for p in mstr:
+    #     for i in range(2):
+    #         mstr_new[p].append(mstr[p][i])
+
+    simulation, var_egr = carg_simul_dt(simul_arch['arch_simular'], simul_arch['num_samples'],
+                                        var_egr, dim)  # simulation: '625' * xarray(21*215); '625'*ndarray[21]
 
     return anlzr_simul(
         método=método, líms_paráms=líms_paráms, mstr=mstr, mapa_paráms=mapa_paráms, ficticia=ficticia,
-        simulation=simulation, var_egr=var_egr, ops_método=ops_método, tipo_egr=tipo_egr
+        simulation=simulation, var_egr=var_egr, ops_método=ops_método, tipo_egr=tipo_egr,
+        f_simul_arch=f_simul_arch, dim=dim
     )
 
+
+def behav_proc_from_file(simul_arch, var_egr=None, tipo_egr=None, dim=None, guardar=None):
+    if tipo_egr:
+        tipo_egr = tipo_egr.lower()
+
+    counted_all_behaviors = []
+    bf_simul = None
+    pool = mp.Pool(processes=7)
+
+    count = 1
+    for i in range(34, simul_arch['num_samples']):
+        simulation, var_egr = carg_simul_dt(simul_arch['arch_simular'], i,
+                                            var_egr, dim)
+
+        # f_simul = format_simul(simulation=simulation, vr=vr, tipo_egr=tipo_egr, dim=dim)
+        if not bf_simul:
+            bf_simul = gen_bf_simul(tipo_egr, tmñ=[len(simulation), simulation[str(i)].shape[1]])
+        print(f"for sample {i} ")
+
+        pool.apply_async(uni_behav_anlzr, args=(tipo_egr, simulation[str(i)],
+                                                var_egr, 0, bf_simul, dim, 1, counted_all_behaviors,
+                                                guardar + f'f_simul_{i}'))
+        if count % 7 == 0:
+            time.sleep(180)
+        count += 1
+        # f_simul = uni_behav_anlzr(tipo_egr, simulation[str(i)], var_egr, 0, bf_simul, dim, 1, counted_all_behaviors)
+
+    np.save(guardar + f'counted_all_behaviors', counted_all_behaviors)
+
+
 def anlzr_sens(mod, método, líms_paráms, mapa_paráms, t_final, var_egr,
-               ops_método=None, tipo_egr=None, ficticia=True):
+               ops_método=None, tipo_egr=None, ficticia=True, f_simul_arch=None, simulation=None, dim=None):
     método = método.lower()
     if tipo_egr:
         tipo_egr = tipo_egr.lower()
@@ -169,8 +153,11 @@ def anlzr_sens(mod, método, líms_paráms, mapa_paráms, t_final, var_egr,
 
     mstr = muestrear_paráms(líms_paráms, método, mapa_paráms=mapa_paráms, ficticia=ficticia)
     # n_param * Ns
-    simulation = simul_sens(mod, mstr_paráms=mstr, mapa_paráms=mapa_paráms, t_final=t_final, var_egr=var_egr,
-                            guardar=False) #250(Ns)* xarray
+    if simulation is None:
+        simulation = simul_sens(mod, mstr_paráms=mstr, mapa_paráms=mapa_paráms, t_final=t_final, var_egr=var_egr,
+                                guardar=False)  # 250(Ns)* xarray
+    else:
+        simulation = simulation
     # 150 NS * xarray (ts*3)=simulation['0']['y'].values (150*21*3)
     # import matplotlib.pyplot as ppt
     # for i in range(len(simulation)):
@@ -181,97 +168,118 @@ def anlzr_sens(mod, método, líms_paráms, mapa_paráms, t_final, var_egr,
     # sample_size*xarray --> 100*
     return anlzr_simul(
         método=método, líms_paráms=líms_paráms, mstr=mstr, mapa_paráms=mapa_paráms, ficticia=ficticia,
-        simulation=simulation, var_egr=var_egr, ops_método=ops_método, tipo_egr=tipo_egr
+        simulation=simulation, var_egr=var_egr, ops_método=ops_método, tipo_egr=tipo_egr,
+        f_simul_arch=f_simul_arch, dim=dim
     )
 
 
-def anlzr_simul(método, líms_paráms, mstr, mapa_paráms, ficticia, simulation, var_egr, ops_método,
+def anlzr_simul(método, líms_paráms, mstr, mapa_paráms, ficticia, simulation, var_egr, ops_método, f_simul_arch, dim,
                 tipo_egr="promedio"):
     if isinstance(tipo_egr, str):
         tipo_egr = [tipo_egr]
 
-    problema = gen_problema(líms_paráms, mapa_paráms, ficticia)[0]
+    problema, líms_paráms_final = gen_problema(líms_paráms, mapa_paráms, ficticia)
     egr = {tp: {v: {} for v in var_egr} for tp in tipo_egr}
-    f_mstr = [[mstr[para][i] for para in problema['names']] for i in range(len(list(mstr.values())[0]))]
+    f_mstr = [[mstr[para][i] for para in problema['names']] for i in
+              range(len(list(mstr.values())[0]))]  # 625*24ndarray
 
     for tp in tipo_egr:
         d_tp = egr[tp]
 
         for vr in var_egr:
-            f_simul = format_simul(simulation=simulation, vr=vr, tipo_egr=tp)
-            d_var = anlzr_simul_salib(problema, f_simul, método, f_mstr, ops_método, líms_paráms, tipo_egr)
+            if f_simul_arch is None:
+                f_simul = format_simul(simulation=simulation, vr=vr, tipo_egr=tp, dim=dim)
+                # np.save(os.path.join(f"D:\Gaby\Tinamit-master\Dt\Fast\\f_simul\\f_simul_spp_sam{dim}"),
+                #         f_simul)
+            else:
+                f_simul = np.load(f_simul_arch).tolist()
+            d_var = anlzr_simul_salib(problema, f_simul, método, f_mstr, ops_método, líms_paráms, tp)
 
             d_tp[vr] = d_var
     return egr
 
 
-
-
 def anlzr_simul_salib(problema, f_simul, método, f_mstr, ops_método, líms_paráms, tipo_egr):
-    líms_paráms = deepcopy(líms_paráms)
-    if 'Ficticia' in problema['names']:
-        líms_paráms['Ficticia'] = (0, 1)
-
-    if isinstance(f_simul, dict):
-        if list(f_simul.values())[0].ndim != 1:
-            tmñ = np.asarray(list(f_simul.values())).shape[2:] # take the poly (n)
-        else:
-            tmñ = np.asarray(list(f_simul.values())).shape[1:]
-        d_var = gen_d_var(tmñ, f_simul, líms_paráms, método)
-
+    def _f_simul_behav(f_simul, dict_var):
         for ll, v in f_simul.items():
-            if v.ndim == 1: # only Ns
+            if v.ndim == 1:  # only Ns
                 res = _anlzr_salib(método=método, problema=problema,
                                    mstr=f_mstr, simul=v, ops_método=ops_método)
 
                 for si, val in res.items():
                     if isinstance(val, dict):
                         for pa, p_var in val.items():
-                            d_var[si][pa][ll] = p_var
+                            dict_var[si][pa][ll] = p_var
                     else:
-                        d_var[si][ll] = val
+                        dict_var[si][ll] = val
 
             else:
-                for i in range(v.shape[1]): # [1] -> dimentions (poly)
+                for i in range(v.shape[1]):  # [1] -> dimentions (poly)
                     res = _anlzr_salib(método=método, problema=problema,
                                        mstr=f_mstr, simul=v[:, i], ops_método=ops_método)
                     for si, val in res.items():
                         if isinstance(val, dict):
                             for key, va in líms_paráms.items():
                                 if isinstance(va, list):
-                                    if d_var[si][key][ll].shape != (len(va), tmñ[0]):
-                                        d_var[si][key][ll] = np.empty([len(va), tmñ[0]])
-                                    for j in range(len(va)):
-                                        d_var[si][key][ll][j, i] = val[key + '_' + str(j)]
+                                    if dict_var[si][key][ll].shape != (len(va), tmñ[0]):  # 4*215
+                                        dict_var[si][key][ll] = np.empty([len(va), tmñ[0]])  # make it to 4*215
+                                    for j in range(len(va)):  # j-4
+                                        dict_var[si][key][ll][j, i] = val[key + '_' + str(j)]
                                 else:
-                                    d_var[si][key][ll][i] = res[si][key]
+                                    dict_var[si][key][ll][i] = res[si][key]
                         else:
-                            d_var[si][ll][i] = val
+                            dict_var[si][ll][i] = val
+
+    líms_paráms = deepcopy(líms_paráms)
+    if 'Ficticia' in problema['names']:
+        líms_paráms['Ficticia'] = (0, 1)
+
+    if isinstance(f_simul, dict):
+        if tipo_egr == 'forma' or tipo_egr == 'superposition':
+            tmñ = list(list(f_simul.values())[0]['gof'].values())[0].shape[1:]  # poly (215,)
+        elif list(f_simul.values())[0].ndim != 1:
+            tmñ = np.asarray(list(f_simul.values())).shape[2:]  # take the poly (n)
+        else:
+            tmñ = np.asarray(list(f_simul.values())).shape[1:]
+
+        if tipo_egr == 'forma' or tipo_egr == 'superposition':
+            d_var = {b_p: {bp_gof: {} for bp_gof in f_simul[b_p]} for b_p in f_simul}
+            for bp, bp_dict in f_simul.items():
+                for b_g, bg_val in bp_dict.items():
+                    dict_var = gen_d_var(tmñ, bg_val, líms_paráms, método)
+                    _f_simul_behav(bg_val, dict_var)
+                    d_var[bp][b_g] = dict_var
+
+        else:
+            d_var = gen_d_var(tmñ, f_simul, líms_paráms, método)
+            _f_simul_behav(f_simul, d_var)
+
 
     else:
-        if f_simul.ndim > 1: #mean, final (Ns*dim)
-            tmñ = f_simul.shape[1:] # simple=6, multidim=ts * n_dim (6*3), paso=(ts*n)
+        if f_simul.ndim > 1:  # mean, final (Ns*dim)
+            tmñ = f_simul.shape[1:]  # simple=215, multidim=ts * n_dim (6*3), paso=(ts*n)
             d_var = gen_d_var(tmñ, f_simul, líms_paráms, método)
 
-            for i in range(f_simul.shape[1]): # i=dim
+            for i in range(f_simul.shape[1]):  # i=dim
                 res = _anlzr_salib(método=método, problema=problema,
                                    mstr=f_mstr, simul=f_simul[:, i], ops_método=ops_método)
 
                 for si, val in res.items():
-                    if len(list(res.values())[0]) == len(líms_paráms): # dummy
-                        if isinstance(val, dict): # sum_sigma
+                    if len(list(res.values())[0]) == len(líms_paráms):  # dummy 24==9
+                        if isinstance(val, dict):  # sum_sigma
                             for pa, p_var in val.items():
                                 d_var[si][pa][i] = p_var
                         else:
                             d_var[si][i] = val
                     else:
-                        if isinstance(val, dict):
+                        if isinstance(val, dict):  # val={prms: val}
                             for key, va in líms_paráms.items():
-                                if isinstance(va, list):
+                                if isinstance(va, list):  # all bf params
                                     if d_var[si][key].shape != (len(va), tmñ[0]):
                                         d_var[si][key] = np.empty([len(va), tmñ[0]])
                                     for j in range(len(va)):
                                         d_var[si][key][j, i] = val[key + '_' + str(j)]
+
                                 else:
                                     d_var[si][key][i] = res[si][key]
                         else:
@@ -283,74 +291,96 @@ def anlzr_simul_salib(problema, f_simul, método, f_mstr, ops_método, líms_par
                              simul=f_simul, ops_método=ops_método))
     return d_var
 
+
 def gen_d_var(tmñ, f_simul, líms_paráms, método):
     if isinstance(f_simul, dict):
+
         if método == 'morris':
             d_var = {'mu_star': {name: {ll: np.empty(tmñ) for ll in f_simul} for name in líms_paráms},
                      'sigma': {name: {ll: np.empty(tmñ) for ll in f_simul} for name in líms_paráms},
-                     'sum_sigma': {ll: np.empty(tmñ) for ll in f_simul}}
+                     # 'sum_sigma': {ll: np.empty(tmñ) for ll in f_simul}
+                     }
         elif método == 'fast':
             d_var = {'Si': {name: {ll: np.empty(tmñ) for ll in f_simul} for name in líms_paráms},
                      'ST': {name: {ll: np.empty(tmñ) for ll in f_simul} for name in líms_paráms},
                      'St-Si': {name: {ll: np.empty(tmñ) for ll in f_simul} for name in líms_paráms},
-                     'sum_s1': {ll: np.empty(tmñ) for ll in f_simul},
-                     'sum_st': {ll: np.empty(tmñ) for ll in f_simul},
-                     'sum_st-s1': {ll: np.empty(tmñ) for ll in f_simul}}
+                     # 'sum_s1': {ll: np.empty(tmñ) for ll in f_simul},
+                     # 'sum_st': {ll: np.empty(tmñ) for ll in f_simul},
+                     # 'sum_st-s1': {ll: np.empty(tmñ) for ll in f_simul}
+                     }
         else:
             raise ValueError(método)
     else:
         if método == 'morris':
             d_var = {'mu_star': {name: np.empty(tmñ) for name in líms_paráms},
                      'sigma': {name: np.empty(tmñ) for name in líms_paráms},
-                     'sum_sigma': np.empty(tmñ)}
+                     # 'sum_sigma': np.empty(tmñ)
+                     }
         elif método == 'fast':
             d_var = {'Si': {name: np.empty(tmñ) for name in líms_paráms},
                      'ST': {name: np.empty(tmñ) for name in líms_paráms},
                      'St-Si': {name: np.empty(tmñ) for name in líms_paráms},
-                     'sum_s1': np.empty(tmñ),
-                     'sum_st': np.empty(tmñ),
-                     'sum_st-s1': np.empty(tmñ)}
+                     # 'sum_s1': np.empty(tmñ),
+                     # 'sum_st': np.empty(tmñ),
+                     # 'sum_st-s1': np.empty(tmñ)
+                     }
         else:
             raise ValueError(método)
     return d_var
 
-# def process_res(res, ):
-#     for si, val in res.items():
-#         if isinstance(val, dict):
-#             for pa, p_var in val.items():
-#                 d_var[si][pa][ll] = p_var
-#         else:
-#             d_var[si][ll
-def gen_bf_simul(tipo_egr, tmñ):
+
+def gen_bf_simul(tipo_egr, tmñ, gof=False):
     if tipo_egr == "linear":
-        bf_simul = {'slope': np.empty(tmñ), 'intercept': np.empty(tmñ)}
+        bf_simul = {'slope': np.empty(tmñ), 'intercept': np.empty(tmñ), 'constant': np.empty(tmñ)}
 
     elif tipo_egr == "exponencial":
-        bf_simul = {'y_intercept': np.empty(tmñ), 'g_d': np.empty(tmñ)}
+        bf_simul = {'y_intercept': np.empty(tmñ), 'g_d': np.empty(tmñ), 'constant': np.empty(tmñ)}
 
     elif tipo_egr == "logístico":
         bf_simul = {'maxi_val': np.empty(tmñ), 'g_d': np.empty(tmñ),
-                    'mid_point': np.empty(tmñ)}
+                    'mid_point': np.empty(tmñ), 'constant': np.empty(tmñ)}
 
     elif tipo_egr == "inverso":
-        bf_simul = {'g_d': np.empty(tmñ), 'phi': np.empty(tmñ)}
+        bf_simul = {'g_d': np.empty(tmñ), 'phi': np.empty(tmñ), 'constant': np.empty(tmñ)}
 
     elif tipo_egr == "log":
-        bf_simul = {'g_d': np.empty(tmñ), 'phi': np.empty(tmñ)}
+        bf_simul = {'g_d': np.empty(tmñ), 'phi': np.empty(tmñ), 'constant': np.empty(tmñ)}
 
     elif tipo_egr == "oscilación":
         bf_simul = {'amplitude': np.empty(tmñ), 'period': np.empty(tmñ),
-                    'phi': np.empty(tmñ)}
+                    'phi': np.empty(tmñ), 'constant': np.empty(tmñ)}
 
     elif tipo_egr == "oscilación_aten":
         bf_simul = {'g_d': np.empty(tmñ), 'amplitude': np.empty(tmñ),
-                    'period': np.empty(tmñ), 'phi': np.empty(tmñ)}
+                    'period': np.empty(tmñ), 'phi': np.empty(tmñ), 'constant': np.empty(tmñ)}
+
+    elif tipo_egr == "forma":
+        bf_simul = {}
+
+    elif tipo_egr == 'superposition':
+        bf_simul = {}
+        all_behaviors = ['linear', 'exponencial', 'logístico', 'inverso', 'log', 'oscilación', 'oscilación_aten']
+        for beh in all_behaviors:
+            beh_simul = gen_bf_simul(beh, tmñ, gof=False)
+            oscil = gen_bf_simul("oscilación", tmñ, gof=True)
+            oscil_aten = gen_bf_simul("oscilación_aten", tmñ, gof=True)
+            oscil['bp_params'].update({k + "_1": v for k, v in beh_simul.items()})
+            oscil_aten['bp_params'].update({k + "_1": v for k, v in beh_simul.items()})
+
+            bf_simul.update({beh: gen_bf_simul(beh, tmñ, gof=True)})
+            bf_simul.update({f'spp_oscil_{beh}': oscil})
+            bf_simul.update({f'spp_oscil_aten_{beh}': oscil_aten})
+
     else:
         raise ValueError(tipo_egr)
 
+    if gof:
+        bf_simul = {'bp_params': bf_simul, 'gof': {'aic': np.empty(tmñ)}}
+
     return bf_simul
 
-def format_simul(simulation, vr, tipo_egr):
+
+def format_simul(simulation, vr, tipo_egr, dim):
     """
 
     :param simulation: { 'sample_id': {'y': []}}
@@ -358,12 +388,13 @@ def format_simul(simulation, vr, tipo_egr):
     :param tipo_egr:
     :return: [] or {'p': []}
     """
-    if simulation['0'][vr].values.ndim == 2:
-        tmñ = [len(simulation), *simulation['0'][vr].values.shape[1:]] # Ns * n-dim (195*3)
-        # tmñ_para_paso = [len(simulation), *simulation['0'][vr].values.shape] # 195*20*3
+    if dim is None:
+        if simulation['0'][vr].values.ndim == 2:
+            tmñ = [len(simulation), *simulation['0'][vr].values.shape[1:]]  # Ns * n-dim (625*215); 200*3
+        else:
+            tmñ = [len(simulation)]
     else:
-        tmñ = [len(simulation)]
-        # tmñ_para_paso = [len(simulation), simulation['0'][vr].values.size]
+        tmñ = [len(simulation), 1]
 
     if tipo_egr == "promedio":
         f_simul = np.empty(tmñ)
@@ -387,235 +418,114 @@ def format_simul(simulation, vr, tipo_egr):
                 f_simul[f'paso_{j}'][int(i)] = val
     else:
         bf_simul = gen_bf_simul(tipo_egr, tmñ)
-        f_simul = behavior_anlzr(simulation, bf_simul, vr, tipo_egr)
-
+        f_simul = behavior_anlzr(simulation, vr, tipo_egr, dim, bf_simul=bf_simul)
     return f_simul
 
-def behavior_anlzr(simulation, vr, tipo_egr, bf_simul=None):
-    if tipo_egr == 'calibration':
-        bf_simul = {}
+
+def behavior_anlzr(simulation, vr, tipo_egr, dim, bf_simul=None):
+    counted_all_behaviors = []
+
+    start_time = datetime.now().strftime("%H:%M:%S")
+    FMT = '%H:%M:%S'
+    print(f"Initializing behavior {start_time} ")
+
     for i, val in enumerate(simulation.values()):
-        y_data = val[vr].values
-        if y_data.ndim == 1:
-            b_param = behavior.minimize(np.asarray(range(val[vr].values.size)), y_data, tipo_egr)['parameters']
-            for k, v in bf_simul.items():
-                bf_simul[k][i] = b_param[k]
-        else: #val = 21*10
-            behaviours_data = []
-            for j in range(y_data.shape[1]): # j- dimension
-                b_param = behavior.minimize(np.asarray(range(val[vr].values.shape[0])), y_data[:, j], tipo_egr)
-                if 'parameters' not in b_param.keys():
-                    behaviours_data.append(b_param)
-                    print(f"Polygon {j} is under processing!")
-                else:
-                    for k, v in bf_simul.items():
-                        bf_simul[k][i, j] = b_param['parameters'][k]
+        uni_behav_anlzr(tipo_egr, val, vr, i, bf_simul, dim, len(simulation), counted_all_behaviors)
 
-            if len(behaviours_data):
-                fited_behaviors = []
-                for beh in behaviours_data:
-                    gof_dict = {key: val['gof'] for key, val in beh.items()}
-                    gof_dict = sorted(gof_dict.items(), key=lambda x: x[1])
+    print(
+        f"Counting over {datetime.strptime(datetime.now().strftime('%H:%M:%S'), FMT) - datetime.strptime(start_time, FMT)}")
 
-                    fited_behaviors.append(gof_dict[0])
-                    m = 1
-                    while m < len(gof_dict):
-                        if gof_dict[m][1] - gof_dict[0][1] > 2:
-                            break
-                        else:
-                            fited_behaviors.append(gof_dict[m])
-                        m += 1
-                counted_behaviors = Counter([k for k, v in fited_behaviors])
-                detail_info = {pattern: [i for i, val in enumerate(fited_behaviors) if val[0] == pattern] for pattern in counted_behaviors}
+    if len(counted_all_behaviors):
+        all_behaviors = set(counted_all_behaviors)
 
-                if not len(bf_simul):
-                    tmñ = [len(simulation), len(behaviours_data)]
-                    bf_simul = {pattern: gen_bf_simul(pattern, tmñ) for pattern in counted_behaviors}
+        new_bf = {patt: bf_simul[patt] for patt in all_behaviors}
+        return new_bf
 
-                for pattern in counted_behaviors:
-                    for j in range(len(behaviours_data)):
-                        for k, v in behaviours_data[j][pattern]['parameters'].items():
-                            bf_simul[pattern][k][i, j] = v
-
-                print()
-
+    print(
+        f"Behavior analysis elapse {datetime.strptime(datetime.now().strftime('%H:%M:%S'), FMT) - datetime.strptime(start_time, FMT)}")
     return bf_simul
 
 
-def read_simulation_data(arch_simular, num_samples, var_egr=None):
-    """
+def uni_behav_anlzr(tipo_egr, val, vr, sam_ind, bf_simul, dim, len_simulation, counted_all_behaviors, save_path=None):
+    if not isinstance(val, np.ndarray):
+        y_data = val[vr].values  ##### add [1:, :]
+    else:
+        y_data = val
 
-    :param arch_simular:
-    :param num_samples:
-    :param var_egr:
-    :return: {'para_name': [samples[time_step[ploy]]]}
-    """
+    if dim is None and y_data.ndim == 1:
+        b_param = behavior.simple_shape(np.asarray(range(val[vr].values.size)), y_data, tipo_egr)['bp_params']
+
+        for k, v in bf_simul.items():
+            bf_simul[k][sam_ind] = b_param[k]
+
+    else:  # simple shape val = 21*10 (21*215)
+        all_beh_dt = []
+
+        if dim is not None:
+            shape = dim + 1
+        else:
+            shape = y_data.shape[1]
+
+        for j in range(shape):  # j- dimension polys
+            y_dt = y_data[:, j]
+            print(f"Polygon {j} is under processing!")
+
+            if tipo_egr == 'superposition':
+                b_param, behaviors_aics = behavior.superposition(np.asarray(range(y_data.shape[0])), y_dt)
+                all_beh_dt.append(b_param)
+            elif tipo_egr == 'forma':
+                b_param = behavior.forma(np.asarray(range(y_data.shape[0])), y_dt)
+                all_beh_dt.append(b_param)
+            else:
+                b_param = behavior.simple_shape(np.asarray(range(y_data.shape[0])), y_dt, tipo_egr)
+                for k, v in bf_simul.items():
+                    bf_simul[k][sam_ind, j] = b_param['bp_params'][k]
+
+        if len(all_beh_dt):  # 215*21/7
+            fited_behaviors = []
+            for d_beh in all_beh_dt:
+                fited_behaviors.append(find_best_behavior(d_beh)[0])
+
+            counted_behaviors = Counter([k for k, v in fited_behaviors])
+            counted_all_behaviors.extend(list(counted_behaviors.keys()))
+            # detail_info = {pattern: [i for i, val in enumerate(fited_behaviors) if val[0] == pattern] for pattern in counted_behaviors}
+
+            if not len(bf_simul):
+                tmñ = [len_simulation, len(all_beh_dt)]  # Ns*n-dimension 625*215
+                if tipo_egr == 'forma':
+                    bf_simul = {pattern: gen_bf_simul(pattern, tmñ, gof=True) for pattern in b_param}
+                elif tipo_egr == 'superposition':
+                    bf_simul = gen_bf_simul(tipo_egr, tmñ)
+                else:
+                    raise ValueError(f"the behavior '{tipo_egr}' is not in the processing list")
+
+            for fit_behav in b_param:  # detected best behaviors within the samples
+                for j in range(len(all_beh_dt)):  # 215 or 1
+                    for b_g, bg_dict in all_beh_dt[j][fit_behav].items():
+                        for bpp, bpp_va in bg_dict.items():
+                            bf_simul[fit_behav][b_g][bpp][sam_ind, j] = bpp_va
+    if save_path:
+        np.save(save_path, bf_simul)
+    else:
+        return bf_simul
+
+
+def carg_simul_dt(arch_simular, num_samples, var_egr=None, dim=None):
     if arch_simular is None:
         raise ValueError(_("la ruta de simulación es ninguna."))
 
-    r = cargar_json(os.path.join(arch_simular, '0.json'))
-    data = r['data_vars']
-
-    if data is not None:
-        var_nombre = [var for var in data]
+    simulation_data = {}  # {625('0')× xarray} or {'0': ndarray}
+    if dim is None:
+        for i in range(num_samples):
+            simulation_data.update({str(i): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{i}')))})
+    else:
+        # print(i, float(getsizeof(simulation_data)/(1024*1024)), 'MB')
+        simulation_data.update(
+            {str(num_samples): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{num_samples}')))
+            [var_egr].values})
+    # simulation_data.update({str(100): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{100}')))}) # for soil_sanility
 
     if var_egr is None:
-        simulation_data = {var: [cargar_json(os.path.join(arch_simular, f'{i}.json'))['data_vars'][var]['data']
-                                 for i in range(num_samples)] for var in var_nombre}
-    else:
-        # {para_name:[num_samples*time_step*num_polys]}
-        simulation_data = {}
-        for var in var_egr:
-            simulation_data[var] = [cargar_json(os.path.join(arch_simular, f'{i}.json'))['data_vars'][var]['data']
-                                    for i in range(num_samples)]
+        var_egr = [list(list(simulation_data.values())[0].data_vars.variables.mapping)[1]]  # [0] - soil salinity, 1 wtd
 
-    return simulation_data
-
-
-def format_simulation_data(simulation_data, vr, tipo_egr="paso_tiempo"):
-    """
-
-    :param simulation: {'para_name': [samples[time_step[ploy]]]}
-    :param tipo_egr:
-    :return: {para_name: {poly_id: {time_step: []}}}
-    """
-    if simulation_data is None:
-        raise ValueError(_(""))
-
-    num_samples = len(simulation_data[vr])
-    time_step = len(simulation_data[vr][0])
-    num_polys = len(simulation_data[vr][0][0])
-
-    if tipo_egr == "promedio":
-
-        # var: wtd, value=[625*21*215]
-        samples = []
-        for i in range(num_samples):
-            polys = []
-            for j in range(num_polys):
-                sum = 0
-                for k in range(1, time_step):
-                    sum += simulation_data[vr][i][k][j]
-                sum /= float(time_step - 1)
-                polys.append(sum)
-            samples.append([polys])
-        # sam = np.empty([len(simulation_data[vr][0]), len(simulation_data[vr])], dtype=object)
-        # for i in range(num_samples):
-        #     for j in range(num_polys):
-        #         for k in range(1, time_step):
-        #             sam[i] = np.average(simulation_data[vr][i][k][j]) ###
-        formato_simular = {poly:
-                               {step:
-                                    [samples[sample][step][poly]
-                                     for sample in range(num_samples)]
-                                for step in [0]}
-                           for poly in range(num_polys)}
-
-        return formato_simular
-
-    elif tipo_egr == "final":
-
-        formato_simular = {poly:
-                               {step:
-                                    [simulation_data[vr][sample][step][poly]
-                                     for sample in range(num_samples)]
-                                for step in [time_step - 1]}
-                           for poly in range(num_polys)}
-
-        return formato_simular
-
-    elif tipo_egr == "paso_tiempo":
-        formato_simular = {poly:
-                               {step:
-                                    [simulation_data[vr][sample][step][poly]
-                                     for sample in range(num_samples)]
-                                for step in range(time_step) if step != 0}
-                           for poly in range(num_polys)}
-        return formato_simular
-
-    elif tipo_egr == 'linear' or tipo_egr == 'oscilación' or tipo_egr == 'logístico' or tipo_egr == 'exponencial' \
-            or tipo_egr == 'oscilación_aten':
-
-        simulations = conduct_behavior_analysis(simulation_data[vr], num_samples, num_polys, time_step, tipo_egr)
-        # {var: 625*215*[slope, intercept]}
-        formato_simular = {poly:
-                               {para:
-                                    [simulations[sample][poly][para]
-                                     for sample in range(num_samples)]
-                                for para, val in simulations[0][poly].items()}
-                           for poly in range(num_polys)}
-        return formato_simular
-
-    elif tipo_egr == 'forma':
-        pass
-
-    elif tipo_egr == 'trasiciones':
-        pass
-
-    elif tipo_egr == 'calibration':
-        simulations = conduct_behavior_analysis(simulation_data[vr], num_samples, num_polys, time_step, tipo_egr)
-        # {var: 625*215*[slope, intercept]}
-        formato_simular = {poly:
-                               {para:
-                                    [simulations[sample][poly][para]
-                                     for sample in range(num_samples)]
-                                for para, val in simulations[0][poly].items()}
-                           for poly in range(num_polys)}
-        return formato_simular
-
-    else:
-        raise ValueError(_("el tipo de salidas ('tipo_egr') debe ser 'promedio', 'final',"
-                           "'paso_tiempo', 'linear', 'forma', 'ocilación', 'trasiciones'. "))
-
-
-def conduct_behavior_analysis(simulation_data, vr, num_samples, tipo_egr):
-    samples = []
-    dim_y  = simulation_data[vr].values.shape[1]
-    paso = simulation_data[vr].values.shape[0]
-    # sam = np.empty([len(simulation_data[0][0]), len(simulation_data)], dtype=object)
-    for i in range(num_samples):
-        polys = []
-        behaviours_data = []
-        for j in range(dim_y):
-            y_data = [simulation_data[i][k][j] for k in range(paso)]
-            print(f"Conduct {tipo_egr} analysis to poly {j} for sample {i}")
-            paras = behavior.minimize(range(len(y_data)), y_data, tipo_egr)
-            if 'parameters' in paras.keys():
-                polys.append(paras['parameters'])
-            else:
-                # sam[j][i] = paras.keys()
-                behaviours_data.append(paras)
-        # samples.append(polys)
-        # 625 * {behavior_name: {params:{}, gof: float}, ...}
-        fited_behaviors = []
-        for beh in behaviours_data:
-            gof_dict = {key: val['gof'] for key, val in beh.items()}
-            gof_dict = sorted(gof_dict.items(), key=lambda x: x[1])
-
-            fited_behaviors.append(gof_dict[0])
-            i = 1
-            while i < len(gof_dict):
-                if gof_dict[i][1] - gof_dict[0][1] > 2:
-                    break
-                else:
-                    fited_behaviors.append(gof_dict[i])
-                    # fit_behaviors.update({gof_dict[i][0]: behavior[gof_dict[i][0]]})
-                i += 1
-        counted_behaviors = Counter(fited_behaviors)
-        fited_behaviours_data = [{key: beh[key] for key in counted_behaviors} for beh in behaviours_data]
-        print()
-
-    return samples
-
-    # samples = np.empty((len(simulation_data)))
-    # poly = np.empty(len(simulation_data[0][0]))
-    #
-    # for i in range(num_samples):
-    #     polys = np.empty(num_polys)
-    #     for j in range(num_polys):
-    #         y_data = [simulation_data[i][k][j] for k in range(1, time_step)]
-    #         print(f"Conduct {tipo_egr} analysis to poly {j} on sample {i}")
-    #         paras = behavior.minimize(range(len(y_data)), y_data, tipo_egr)
-    #         polys[j] = paras['parameters']
-    #     samples.append(polys)
-    # return samples
+    return simulation_data, var_egr

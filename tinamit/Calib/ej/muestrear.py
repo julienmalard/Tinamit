@@ -14,12 +14,9 @@ if not os.path.isfile(archivo_muestrea_morris):
 else:
     mstr_morris = cargar_mstr_paráms(archivo_muestrea_morris)
 
-if not os.path.isfile(archivo_muestrea_fast):
-    mstr_fast = muestrear_paráms(líms_paráms, 'fast', mapa_paráms=mapa_paráms, ops_método={'N': 5000})
-else:
-    mstr_fast = cargar_mstr_paráms(archivo_muestrea_fast)
-
-
-# mstr = muestrear_paráms(líms_paráms, 'morris', problema_arch, mapa_paráms=mapa_paráms,
-#     #                         ops_método = {'N': 25, 'num_levels': 8, 'grid_jump': 4}
-#     #                         )
+# if not os.path.isfile(archivo_muestrea_fast):
+#     mstr_fast = muestrear_paráms(líms_paráms, 'fast', mapa_paráms=mapa_paráms, ops_método={'N': 5000})
+#
+#     guardar_mstr_paráms(mstr_fast, archivo_muestrea_fast)
+# else:
+#     mstr_fast = cargar_mstr_paráms(archivo_muestrea_fast)
