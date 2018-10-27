@@ -74,10 +74,10 @@ if __name__ == "__main__":
     Anlzr
     '''
     guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\corrected_bf_mor_625_spp")
-    mstr_mor = os.path.join('D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\sampled_data\\muestra_morris_625.json')
+    mstr_mor = os.path.join('D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\sampled_data\\muestra_morris_625_corrected_bf.json')
     egr = analy_by_file('morris', líms_paráms, mapa_paráms, mstr_mor,
                         simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='superposition',
-                        var_egr='mds_Watertable depth Tinamit', dim=214)
+                        var_egr='mds_Watertable depth Tinamit')
                         # f_simul_arch="D:\Thesis\pythonProject\localuse\Dt\Mor\\f_simul\\test_fsimul_poly0.npy")
 
     np.save(guardar, egr)

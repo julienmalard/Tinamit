@@ -177,6 +177,8 @@ def anlzr_simul(método, líms_paráms, mstr, mapa_paráms, ficticia, simulation
                 tipo_egr="promedio"):
     if isinstance(tipo_egr, str):
         tipo_egr = [tipo_egr]
+    if isinstance(var_egr, str):
+        var_egr = [var_egr]
 
     problema, líms_paráms_final = gen_problema(líms_paráms, mapa_paráms, ficticia)
     egr = {tp: {v: {} for v in var_egr} for tp in tipo_egr}
@@ -189,8 +191,8 @@ def anlzr_simul(método, líms_paráms, mstr, mapa_paráms, ficticia, simulation
         for vr in var_egr:
             if f_simul_arch is None:
                 f_simul = format_simul(simulation=simulation, vr=vr, tipo_egr=tp, dim=dim)
-                # np.save(os.path.join(f"D:\Gaby\Tinamit-master\Dt\Fast\\f_simul\\f_simul_spp_sam{dim}"),
-                #         f_simul)
+                np.save(os.path.join(f"D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\corrected_bf_f_simul_spp_sam"),
+                        f_simul)
             else:
                 f_simul = np.load(f_simul_arch).tolist()
             d_var = anlzr_simul_salib(problema, f_simul, método, f_mstr, ops_método, líms_paráms, tp)
