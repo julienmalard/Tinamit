@@ -16,5 +16,5 @@ theano
 spotpy
 xarray
 chardet
+pysd
 git+git://github.com/julienmalard/taqdir.git@master
-git+git://github.com/julienmalard/pysd.git@master

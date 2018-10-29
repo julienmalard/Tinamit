@@ -580,19 +580,6 @@ class ModeloImpaciente(ModeloBF):
     def _vars_subciclo(símismo, solamente=None):
         return símismo._vars_por_pasito(solamente)
 
-    @classmethod
-    def verificar(cls, clase_unittest=None):
-        if clase_unittest is not None:
-            with clase_unittest.subTest('leer_egresos'):
-                cls.verificar_leer_egresos()
-        else:
-            cls.verificar_leer_egresos()
-        super().verificar(clase_unittest)
-
-    @classmethod
-    def verificar_leer_egresos(cls):
-        pass
-
     def _incrementar(símismo, paso, guardar_cada=None):
         raise NotImplementedError
 

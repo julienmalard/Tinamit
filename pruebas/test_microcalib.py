@@ -4,6 +4,7 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
+import scipy.stats as estad
 
 from pruebas.test_mds import limpiar_mds
 from tinamit.Análisis.Calibs import CalibradorEc
@@ -39,10 +40,10 @@ class Test_Calibrador(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        n_obs = 100
+        n_obs = 50
         datos_x = np.random.rand(n_obs)
 
-        datos_y = cls.paráms['a'] * datos_x + cls.paráms['b'] + np.random.rand(n_obs) * 0.01
+        datos_y = cls.paráms['a'] * datos_x + cls.paráms['b'] + np.random.normal(0, 0.1, n_obs)
         bd_pds = pd.DataFrame({'y': datos_y, 'x': datos_x})
         bd_datos = MicroDatos('Datos Generados', bd_pds)
 
@@ -51,11 +52,18 @@ class Test_Calibrador(unittest.TestCase):
         cls.bd_datos.espec_var('y')
 
     def test_calibración_sencilla(símismo):
+        líms = {
+            'sin_líms': None,
+            'un_lím': {'a': (0, None), 'b': (None, 0)},
+            'dos_líms': {'a': (0, 10), 'b': (-10, -1)}
+        }
         for m in métodos:
-            with símismo.subTest(método=m):
-                calibs = símismo.clbrd.calibrar(método=m, bd_datos=símismo.bd_datos)
-                for p, v in símismo.paráms.items():
-                    símismo.assertAlmostEqual(calibs[p]['val'], v, places=1)
+            for lm in líms:
+                with símismo.subTest(método=m, líms=lm):
+                    calibs = símismo.clbrd.calibrar(método=m, líms_paráms=líms[lm], bd_datos=símismo.bd_datos)
+                    est = [calibs[p]['val'] for p in símismo.paráms]
+                    val = [v for v in símismo.paráms.values()]
+                    npt.assert_allclose(est, val, rtol=0.1)
 
     def test_calibrador_sin_var_y(símismo):
         with símismo.assertRaises(ValueError):
@@ -75,13 +83,13 @@ class Test_CalibEnModelo(unittest.TestCase):
         '701': {'Factor a': 3.4, 'Factor b': -1.5},
         '708': {'Factor a': 3, 'Factor b': -1.1},
         '1001': {'Factor a': 10, 'Factor b': -3},
-    }
+    }  # Nota: ¡a en (0, +inf) y b en (-inf, +inf) según los límites en el modelo externo!
 
     @classmethod
     def setUpClass(cls):
         n_obs = {'701': 500, '708': 50, '1001': 500}
         datos_x = {lg: np.random.rand(n) for lg, n in n_obs.items()}
-        datos_y = {lg: datos_x[lg] * d['Factor a'] + d['Factor b'] + np.random.rand(n_obs[lg]) * 0.1
+        datos_y = {lg: datos_x[lg] * d['Factor a'] + d['Factor b'] + np.random.normal(0, 0.1, n_obs[lg])
                    for lg, d in cls.paráms.items()}  # y = a*x + b
         lugares = [x for ll, v in datos_x.items() for x in [ll] * v.size]
         x = [i for v in datos_x.values() for i in v]
@@ -101,15 +109,19 @@ class Test_CalibEnModelo(unittest.TestCase):
 
         for m in métodos:
             with símismo.subTest(método=m):
-                símismo.mod.especificar_micro_calib(var='Y', método=m)
+                símismo.mod.especificar_micro_calib(var='Y', método=m, líms_paráms={'a': (0, 50)},
+                                                    ops_método={'draws': 1000} if m == 'inferencia bayesiana' else None)
                 símismo.mod.efectuar_micro_calibs(bd=símismo.bd, geog=símismo.geog, corresp_vars={'X': 'x', 'Y': 'y'})
 
                 val = [símismo.paráms[lg][p] for lg in símismo.paráms for p in símismo.paráms[lg]]
-                est = [símismo.mod.calibs[p][lg]['val'] for lg in símismo.paráms for p in símismo.paráms[lg]]
-
-                npt.assert_allclose(est, val, rtol=0.1)
-
-                símismo.mod.borrar_micro_calib('Y')
+                if m == 'optimizar':
+                    est = [símismo.mod.calibs[p][lg]['val'] for lg in símismo.paráms for p in símismo.paráms[lg]]
+                    símismo.mod.borrar_micro_calib('Y')
+                    npt.assert_allclose(val, est, rtol=0.2)
+                else:
+                    est = [símismo.mod.calibs[p][lg]['dist'] for lg in símismo.paráms for p in símismo.paráms[lg]]
+                    símismo.mod.borrar_micro_calib('Y')
+                    símismo._verificar_aprox_bayes(val, est)
 
     def test_calibración_bayes_sin_mod_jerárquíco(símismo):
         """
@@ -123,11 +135,10 @@ class Test_CalibEnModelo(unittest.TestCase):
             símismo.mod.efectuar_micro_calibs(bd=símismo.bd, geog=símismo.geog, corresp_vars={'X': 'x', 'Y': 'y'})
 
             val = [símismo.paráms[lg][p] for lg in símismo.paráms for p in símismo.paráms[lg]]
-            est = [símismo.mod.calibs[p][lg]['val'] for lg in símismo.paráms for p in símismo.paráms[lg]]
-
-            npt.assert_allclose(est, val, rtol=0.1)
+            est = [símismo.mod.calibs[p][lg]['dist'] for lg in símismo.paráms for p in símismo.paráms[lg]]
 
             símismo.mod.borrar_micro_calib('Y')
+            símismo._verificar_aprox_bayes(val, est)
 
     def test_guardar_cargar_calibs(símismo):
         símismo.mod.especificar_micro_calib(var='Y', método='optimizar')
@@ -138,6 +149,10 @@ class Test_CalibEnModelo(unittest.TestCase):
         símismo.mod.cargar_calibs()
         os.remove('mds_calibs.json')
         símismo.assertDictEqual(calibs, símismo.mod.calibs)
+
+    @staticmethod
+    def _verificar_aprox_bayes(val, est, intvl=99):
+        npt.assert_allclose([estad.percentileofscore(e, v) for e, v in zip(est, val)], 50, atol=intvl / 2)
 
     @classmethod
     def tearDownClass(cls):

@@ -12,11 +12,10 @@ install:
 - ps: cd taqdir
 - "%PYTHON%\\python.exe setup.py -q install"
 - ps: cd ..
-- "%PYTHON%\\python.exe -m pip install -r requirements.txt"
+- "%PYTHON%\\python.exe -m pip install -r reqs.txt"
 - "%PYTHON%\\python.exe setup.py -q install"
 
 build: false
 
 test_script:
-- ps: cd pruebas
-- "%PYTHON%\\python.exe -m unittest"
+- "%PYTHON%\\python.exe -m unittest pruebas"
