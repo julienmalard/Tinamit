@@ -1,4 +1,4 @@
-from tinamit.Análisis.Sens.anlzr import analy_by_file, carg_simul_dt
+from tinamit.Análisis.Sens.anlzr import analy_by_file, carg_simul_dt, behav_proc_from_file
 from tinamit.Calib.ej.info_paráms import mapa_paráms, líms_paráms
 from tinamit.Conectado import Conectado
 from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
@@ -73,14 +73,19 @@ if __name__ == "__main__":
     '''
     Anlzr
     '''
-    guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\corrected_bf_mor_625_spp")
-    mstr_mor = os.path.join('D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\sampled_data\\muestra_morris_625_corrected_bf.json')
-    egr = analy_by_file('morris', líms_paráms, mapa_paráms, mstr_mor,
-                        simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='superposition',
-                        var_egr='mds_Watertable depth Tinamit')
-                        # f_simul_arch="D:\Thesis\pythonProject\localuse\Dt\Mor\\f_simul\\test_fsimul_poly0.npy")
+    guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\corrected_bf\\new_f_simul_spp")
+    # mstr_mor = os.path.join('D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\sampled_data\\muestra_morris_625_corrected_bf.json')
+    # egr = analy_by_file('morris', líms_paráms, mapa_paráms, mstr_mor,
+    #                     simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='superposition',
+    #                     var_egr='mds_Watertable depth Tinamit')
+    #                     # f_simul_arch="D:\Thesis\pythonProject\localuse\Dt\Mor\\f_simul\\test_fsimul_poly0.npy")
+    #
+    #
+    #
+    # np.save(guardar, egr)
 
-    np.save(guardar, egr)
+    behav_proc_from_file(simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='superposition', dim=214,
+                        var_egr='mds_Watertable depth Tinamit', guardar=guardar)
 
     '''
     post_processing Anlzr 

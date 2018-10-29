@@ -119,10 +119,11 @@ def behav_proc_from_file(simul_arch, var_egr=None, tipo_egr=None, dim=None, guar
 
     counted_all_behaviors = []
     bf_simul = None
-    pool = mp.Pool(processes=7)
+    pool = mp.Pool(processes=4)
 
     count = 1
-    for i in range(34, simul_arch['num_samples']):
+    start = 0
+    for i in range(start, 132):
         simulation, var_egr = carg_simul_dt(simul_arch['arch_simular'], i,
                                             var_egr, dim)
 
@@ -131,15 +132,14 @@ def behav_proc_from_file(simul_arch, var_egr=None, tipo_egr=None, dim=None, guar
             bf_simul = gen_bf_simul(tipo_egr, tmñ=[len(simulation), simulation[str(i)].shape[1]])
         print(f"for sample {i} ")
 
-        pool.apply_async(uni_behav_anlzr, args=(tipo_egr, simulation[str(i)],
+        pool.apply(uni_behav_anlzr, args=(tipo_egr, simulation[str(i)],
                                                 var_egr, 0, bf_simul, dim, 1, counted_all_behaviors,
                                                 guardar + f'f_simul_{i}'))
-        if count % 7 == 0:
-            time.sleep(180)
+        # if count % 4 == 0:
+        #     time.sleep(180)
         count += 1
-        # f_simul = uni_behav_anlzr(tipo_egr, simulation[str(i)], var_egr, 0, bf_simul, dim, 1, counted_all_behaviors)
 
-    np.save(guardar + f'counted_all_behaviors', counted_all_behaviors)
+    np.save(guardar + f'counted_all_behaviors_{start}', counted_all_behaviors)
 
 
 def anlzr_sens(mod, método, líms_paráms, mapa_paráms, t_final, var_egr,
