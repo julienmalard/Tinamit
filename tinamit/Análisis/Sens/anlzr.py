@@ -76,20 +76,6 @@ def _anlzr_salib(método, problema, mstr, simul, ops_método):
 
 def analy_by_file(método, líms_paráms, mapa_paráms, mstr_arch, simul_arch, var_egr=None,
                   ops_método=None, tipo_egr=None, ficticia=True, f_simul_arch=None, dim=None):
-    """
-
-    :param método:
-    :param líms_paráms:
-    :param mapa_paráms:
-    :param mstr_arch:
-    :param simul_arch: {'arch_simular': str, 'num_samples': int}
-    :param t_final:
-    :param var_egr:
-    :param ops_método:
-    :param tipo_egr:
-    :param ficticia:
-    :return:
-    """
     método = método.lower()
     if tipo_egr:
         tipo_egr = tipo_egr.lower()
