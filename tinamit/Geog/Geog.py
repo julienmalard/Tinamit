@@ -640,7 +640,10 @@ class Geografía(object):
             elif len(escala_num) != 2:
                 raise ValueError
 
-            vals_norm = (vec_valores - escala_num[0]) / (escala_num[1] - escala_num[0])
+            if escala_num[1] - escala_num[0] == 0:
+                vals_norm = vec_valores - escala_num[0]
+            else:
+                vals_norm = (vec_valores - escala_num[0]) / (escala_num[1] - escala_num[0])
 
             d_clrs = _gen_d_mapacolores(colores=colores)
 

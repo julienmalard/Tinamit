@@ -55,7 +55,7 @@ def simple_shape(x_data=None, y_data=None, tipo_egr='linear', gof=False):
     norm_y_data = (y_data - np.average(y_data)) / np.std(y_data)
 
     if tipo_egr == 'linear':
-        params = optimize.minimize(f_opt, x0=[1, 1, 0], method='Nelder-Mead',
+        params = optimize.minimize(f_opt, x0=[1, 1], method='Nelder-Mead',
                                    args=(x_data, norm_y_data, linear)).x
         b_params = {'bp_params': de_normalize(params, y_data, tipo_egr)}
         # slope, intercept, r_value, p_value, std_err = estad.linregress(x_data, norm_y_data)
@@ -132,10 +132,14 @@ def forma(x_data, y_data):
     return behaviors_aics
 
 
-def find_best_behavior(all_beh_dt):
+def find_best_behavior(all_beh_dt, trans_shape=None):
     fited_behaviors = []
 
-    gof_dict = {key: val['gof']['aic'] for key, val in all_beh_dt.items()}
+    if trans_shape is None:
+        gof_dict = {key: val['gof']['aic'] for key, val in all_beh_dt.items()}
+    else:
+        gof_dict = {key: val['gof']['aic'][:, trans_shape] for key, val in all_beh_dt.items()}
+
     gof_dict = sorted(gof_dict.items(), key=lambda x: x[1])  # list of tuple [('ocsi', -492),()]
 
     fited_behaviors.append(gof_dict[0])
@@ -182,22 +186,6 @@ def superposition(x_data, y_data):
                              'gof': {'aic': spp_osci_aic_atan}}})
 
     return b_param, behaviors_aics
-
-    # if best_beh[1] < spp_osci_aic and best_beh[1] < spp_osci_aic_atan:
-    #     b_param = {best_beh[0]: behaviors_aics[best_beh[0]]}
-    # elif spp_osci_aic < best_beh[1] and spp_osci_aic < spp_osci_aic_atan:
-    #
-    #     b_param = {f'spp_oscil_{best_beh[0]}':
-    #         {'bp_params':
-    #             {osci['bp_params'].update(
-    #                 {k + "_1": v for k, v in behaviors_aics[best_beh[0]]['bp_params'].items()})},
-    #             'gof': {'aic': spp_osci_aic}}}
-    # else:
-    #     b_param = {f'spp_oscil_aten_{best_beh[0]}':
-    #         {'bp_params':
-    #             {osci_atan['bp_params'].update(
-    #                 {k + "_1": v for k, v in behaviors_aics[best_beh[0]]['bp_params'].items()})},
-    #             'gof': {'aic': spp_osci_aic_atan}}}
 
 
 def de_normalize(norm_b_param, y_data, tipo_egr):
@@ -303,4 +291,3 @@ def bic(y_predict, y_obs):
     sse = np.sum(resid ** 2)
     # no = number of observations
     return no * np.log(np.exp(sse / no)) + np * np.log(np.exp(no))
-

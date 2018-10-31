@@ -37,26 +37,34 @@ def map_sens(geog, metodo, tipo_egr, para_name, data, threshold, path, behav=Non
     vars_interés = {tipo_egr: {
         # 'col': ['#21bf13', '#FFCC66', '#eaa607', '#ea0707'],
         'col': ['#0f6607', '#278e1d', '#abed49', '#ccc80c', '#eaea07', '#eaa607', '#ea0707'],
-        'categs': [prm for prm in para_name],  # categs is not in dibujar anymore
         'escala_núm': [np.min(data), np.max(data)]}
     }
 
-    unid = 'Sensitivity Index'  # 'Soil salinity'
+    unid = 'Mor Sensitivity Index'  # 'Soil salinity'
     # this is to calculate the range for the array--values
     # escala = np.int32(0), np.float(threshold)
 
     for v, d in vars_interés.items():
 
-        for j in [0, 5, 15, 20]:
-            geog.dibujar(archivo=path + f'old-{j}', valores=data[j], título=f'Soil salinity old paso-{j}',
-                         unidades='Soil salinity level',
-                         colores=d['col'], ids=[str(i) for i in range(1, 216)])  # for azahr
+        # for j in [0, 5, 15, 20]:
+        #     geog.dibujar(archivo=path + f'old-{j}', valores=data[j], título=f'Soil salinity old paso-{j}',
+        #                  unidades='Soil salinity level',
+        #                  colores=d['col'], ids=[str(i) for i in range(1, 216)])  # for azahr
 
         # paso
-        ll = [0, 5, 15, 20]
-        for i in ll:
-            geog.dibujar(archivo=path + f'{i}{para_name}', valores=data[f'paso_{i}'], título=f"{metodo}-{para_name}-at paso-{i} to Watertable-depth",
-                         unidades=unid, colores=d['col'], ids=[str(j) for j in range(1, 216)], escala_num=d['escala_núm'])
+        # ll = [0, 5, 15, 20]
+        # for i in ll:
+        #     geog.dibujar(archivo=path + f'{i}-{para_name}', valores=data[f'paso_{i}'],
+        #                  título=f"Mor-{para_name[: 5]}-paso-{i} to WTD",
+        #                  unidades=unid, colores=d['col'], ids=[str(j) for j in range(1, 216)],
+        #                  escala_num=(np.min(data[f'paso_{i}']), np.max(data[f'paso_{i}'])))
+
+       # test
+        for i in [0]:
+            geog.dibujar(archivo=path + f'test_{i}-{para_name}', valores=data[f'paso_{i}'],
+                         título=f"Mor-{para_name[: 5]}-paso-{i} to WTD",
+                         unidades=unid, colores=d['col'], ids=[str(j) for j in range(1, 216)],
+                         escala_num=(np.min(data[f'paso_{i}']), np.max(data[f'paso_{i}'])))
 
         # mean val
         # geog.dibujar(archivo=path + f'prom-{para_name}', valores=data,
@@ -65,10 +73,12 @@ def map_sens(geog, metodo, tipo_egr, para_name, data, threshold, path, behav=Non
 
         # beahv
         # for bpprm in data: # "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\spp\\aic\\{bpprm}-{behav}-{para_name}" #f"D:\Thesis\pythonProject\localuse\Dt\Mor\map\spp\\bppprm\\bpprm-{behav}-{para_name}"
-        #     geog.dibujar(archivo=f"D:\Thesis\pythonProject\localuse\Dt\Mor\map\spp\\aic\\{para_name}-{behav}-{bpprm}",
-        #                  valores=data[bpprm], título=f"Mor-{para_name[: 5]}-'{bpprm}'-{behav}",
-        #                  unidades=unid, colores=d['col'], ids=[str(j) for j in range(1, 216)], escala_num=d['escala_núm'])
+        #     geog.dibujar(archivo=path + f"{para_name}-{behav}-{bpprm}",
+        #                  valores=data[bpprm], título=f"Mor-{para_name[: 5]}-{bpprm}-{behav}",
+        #                  unidades=unid, colores=d['col'], ids=[str(j) for j in range(1, 216)], escala_num=(np.min(data[bpprm]), np.max(data[bpprm])))
 
-        # geog.dibujar(archivo="D:\Thesis\pythonProject\localuse\Dt\Mor\map\\test\\test", valores=data['paso_0'],
-        #              título='test', unidades=unid,
-        #              colores=d['col'], ids=[str(i) for i in range(1, 216)], escala_num=d['escala_núm'])
+        # geog.dibujar(archivo=path + f'{i}{para_name}', valores=data[:, 215],
+        #              título=f"{metodo}-{para_name}-paso-{i} to SS", unidades='fast SI',
+        #              colores=d['col'], ids=[str(i) for i in range(1, 216)], escala_num=(np.min(data[:, 215]), np.max(data[:, 215])))
+
+

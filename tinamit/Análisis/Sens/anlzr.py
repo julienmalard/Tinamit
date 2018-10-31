@@ -123,7 +123,7 @@ def behav_proc_from_file(simul_arch, var_egr=None, tipo_egr=None, dim=None, guar
 
     count = 1
     start = 0
-    end = simul_arch['num_samples']
+    end = 4  # simul_arch['num_samples']
     for i in range(start, end):
         simulation, var_egr = carg_simul_dt(simul_arch['arch_simular'], i,
                                             var_egr, dim)
@@ -133,9 +133,12 @@ def behav_proc_from_file(simul_arch, var_egr=None, tipo_egr=None, dim=None, guar
             bf_simul = gen_bf_simul(tipo_egr, tmñ=[len(simulation), simulation[str(i)].shape[1]])
         print(f"for sample {i} ")
 
-        pool.apply_async(uni_behav_anlzr, args=(tipo_egr, simulation[str(i)],
-                                                var_egr, 0, bf_simul, dim, 1, counted_all_behaviors,
-                                                guardar + f'f_simul_{i}'))
+        bf_simul = pool.apply_async(uni_behav_anlzr, args=(tipo_egr, simulation[str(i)],
+                                                           var_egr, 0, bf_simul, dim, 1, counted_all_behaviors,
+                                                           guardar + f'f_simul_{i}'))
+
+        bf_simul.get()
+
         if count % 4 == 0:
             time.sleep(180)
         count += 1
@@ -192,14 +195,47 @@ def anlzr_simul(método, líms_paráms, mstr, mapa_paráms, ficticia, simulation
         for vr in var_egr:
             if f_simul_arch is None:
                 f_simul = format_simul(simulation=simulation, vr=vr, tipo_egr=tp, dim=dim)
-                np.save(os.path.join(f"D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\corrected_bf_f_simul_spp_sam"),
-                        f_simul)
             else:
-                f_simul = np.load(f_simul_arch).tolist()
+                if isinstance(f_simul_arch, dict):
+                    f_simul = carg_fsimul_data(f_simul_arch['arch'],
+                                               f_simul_arch['num_sample'], f_simul_arch['counted_behaviors'])
+                else:
+                    f_simul = carg_fsimul_data(f_simul_arch['arch'])
             d_var = anlzr_simul_salib(problema, f_simul, método, f_mstr, ops_método, líms_paráms, tp)
 
             d_tp[vr] = d_var
     return egr
+
+
+def carg_fsimul_data(f_simul_path, num_sample=None, counted_behaviors=None):
+    if num_sample is None and counted_behaviors is None:
+        return np.load(f_simul_path).tolist()
+
+    counted_all = np.load(counted_behaviors).tolist()
+
+    sam_patt = {patt: np.load(f"{f_simul_path}_{0}.npy").tolist()[patt] for patt in counted_all}
+    sample_patt = _gen_d_patt(num_sample, counted_all, sam_patt)
+
+    for j in range(num_sample):
+        print(f'processing sample {j}')
+        behav = np.load(f"{f_simul_path}_{j}.npy").tolist()
+        for patt in counted_all:
+            print(f'Taking pattern {patt}')
+            for bpp, d1 in behav[patt]['bp_params'].items():
+                sample_patt[patt]['bp_params'][bpp][j, :] = d1
+            for gof, d2 in behav[patt]['gof'].items():
+                sample_patt[patt]['gof'][gof][j, :] = d2
+
+    return sample_patt
+
+
+def _gen_d_patt(num_sample, counted_behaviors, sam_patt):
+    for behav in counted_behaviors:
+        for bpp, d in sam_patt[behav]['bp_params'].items():
+            sam_patt[behav]['bp_params'][bpp] = np.empty([num_sample, d.shape[1]])
+        for gof, d in sam_patt[behav]['gof'].items():
+            sam_patt[behav]['gof'][gof] = np.empty([num_sample, d.shape[1]])
+    return sam_patt
 
 
 def anlzr_simul_salib(problema, f_simul, método, f_mstr, ops_método, líms_paráms, tipo_egr):
@@ -248,6 +284,7 @@ def anlzr_simul_salib(problema, f_simul, método, f_mstr, ops_método, líms_par
         if tipo_egr == 'forma' or tipo_egr == 'superposition':
             d_var = {b_p: {bp_gof: {} for bp_gof in f_simul[b_p]} for b_p in f_simul}
             for bp, bp_dict in f_simul.items():
+                print(f'Processing Pattern {bp}')
                 for b_g, bg_val in bp_dict.items():
                     dict_var = gen_d_var(tmñ, bg_val, líms_paráms, método)
                     _f_simul_behav(bg_val, dict_var)
@@ -334,7 +371,7 @@ def gen_d_var(tmñ, f_simul, líms_paráms, método):
 
 def gen_bf_simul(tipo_egr, tmñ, gof=False):
     if tipo_egr == "linear":
-        bf_simul = {'slope': np.empty(tmñ), 'intercept': np.empty(tmñ), 'constant': np.empty(tmñ)}
+        bf_simul = {'slope': np.empty(tmñ), 'intercept': np.empty(tmñ)}
 
     elif tipo_egr == "exponencial":
         bf_simul = {'y_intercept': np.empty(tmñ), 'g_d': np.empty(tmñ), 'constant': np.empty(tmñ)}
@@ -451,7 +488,7 @@ def behavior_anlzr(simulation, vr, tipo_egr, dim, bf_simul=None):
 
 def uni_behav_anlzr(tipo_egr, val, vr, sam_ind, bf_simul, dim, len_simulation, counted_all_behaviors, save_path=None):
     if not isinstance(val, np.ndarray):
-        y_data = val[vr].values  ##### add [1:, :]
+        y_data = val[vr].values  ## add [1:, :]  for test file
     else:
         y_data = val
 
@@ -526,7 +563,8 @@ def carg_simul_dt(arch_simular, num_samples, var_egr=None, dim=None):
         simulation_data.update(
             {str(num_samples): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{num_samples}')))
             [var_egr].values})
-    # simulation_data.update({str(100): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{100}')))}) # for soil_sanility
+
+    # simulation_data.update({str(1000): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{1000}')))}) # for soil_sanility
 
     if var_egr is None:
         var_egr = [list(list(simulation_data.values())[0].data_vars.variables.mapping)[1]]  # [0] - soil salinity, 1 wtd
