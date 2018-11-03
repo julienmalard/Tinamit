@@ -108,8 +108,8 @@ def behav_proc_from_file(simul_arch, var_egr=None, tipo_egr=None, dim=None, guar
     pool = mp.Pool(processes=4)
 
     count = 1
-    start = 0
-    end = 4  # simul_arch['num_samples']
+    start = 325
+    end = 625  # simul_arch['num_samples']
     for i in range(start, end):
         simulation, var_egr = carg_simul_dt(simul_arch['arch_simular'], i,
                                             var_egr, dim)
@@ -119,14 +119,14 @@ def behav_proc_from_file(simul_arch, var_egr=None, tipo_egr=None, dim=None, guar
             bf_simul = gen_bf_simul(tipo_egr, tmñ=[len(simulation), simulation[str(i)].shape[1]])
         print(f"for sample {i} ")
 
-        bf_simul = pool.apply_async(uni_behav_anlzr, args=(tipo_egr, simulation[str(i)],
+        pool.apply_async(uni_behav_anlzr, args=(tipo_egr, simulation[str(i)],
                                                            var_egr, 0, bf_simul, dim, 1, counted_all_behaviors,
                                                            guardar + f'f_simul_{i}'))
 
         bf_simul.get()
 
         if count % 4 == 0:
-            time.sleep(180)
+            time.sleep(60)
         count += 1
 
     np.save(guardar + f'counted_all_behaviors_{start}_{end}', counted_all_behaviors)

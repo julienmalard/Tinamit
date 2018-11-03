@@ -61,7 +61,7 @@ devolver = ['Watertable depth Tinamit', 'Soil salinity Tinamit CropA']
 if __name__ == "__main__":
     import os
     import numpy as np
-    direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\simular\\corrected_Mor")
+    direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\simular\\625_mor")
     '''
     Simul
     '''
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     '''
     Anlzr
     '''
-    # guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_newbf_paso")
+    guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul")
     # mstr_mor = os.path.join('D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\sampled_data\\muestra_morris_625_corrected_bf.json')
     # egr = analy_by_file('morris', líms_paráms, mapa_paráms, mstr_mor,
     #                     simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='paso_tiempo',
@@ -85,8 +85,8 @@ if __name__ == "__main__":
     #
     # np.save(guardar, egr)
 
-    # behav_proc_from_file(simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='superposition', dim=214,
-    #                     var_egr='mds_Watertable depth Tinamit', guardar=guardar)
+    behav_proc_from_file(simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='superposition', dim=214,
+                        var_egr='mds_Watertable depth Tinamit', guardar=guardar)
 
     '''
     post_processing Anlzr 
@@ -103,14 +103,14 @@ if __name__ == "__main__":
     '''
     from tinamit.Calib.ej.sens_análisis import map_sens, verif_sens
 
-    simulation_data = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_newbf_paso.npy").tolist()
-    final_sens = verif_sens('morris', list(simulation_data.keys())[0], simulation_data, mapa_paráms, p_soil_class)
-    pasos = final_sens['morris'][list(simulation_data.keys())[0]]['mds_Watertable depth Tinamit']
-    for prm, paso in pasos.items():
-        map_sens(gen_geog(), 'morris', list(simulation_data.keys())[0], prm,
-                 paso, 0.1,
-                 "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\")
-            # "C:\\Users\\gis_user\Downloads\\azhar shared\\azhar_plot\\paso_0_new222", ids=range(1, 216))
+    # simulation_data = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_newbf_paso.npy").tolist()
+    # final_sens = verif_sens('morris', list(simulation_data.keys())[0], simulation_data, mapa_paráms, p_soil_class)
+    # pasos = final_sens['morris'][list(simulation_data.keys())[0]]['mds_Watertable depth Tinamit']
+    # for prm, paso in pasos.items():
+    #     map_sens(gen_geog(), 'morris', list(simulation_data.keys())[0], prm,
+    #              paso, 0.1,
+    #              "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\")
+            # "C:\\Users\\gis_user\Downloads\\azhar shared\\azhar_plot\\paso_0_new222", ids=[str(i) for i in range(1, 216))
 
     # for spp
     # for patt, b_g in pasos.items():
@@ -118,12 +118,12 @@ if __name__ == "__main__":
     #     gof_prm = b_g['gof']
         # for prm, bpprm in bpp_prm.items():
             # map_sens(gen_geog(), 'morris', list(simulation_data.keys())[0], prm,
-            #          bpprm, 0.1, behav=patt,
+            #          bpprm, 0.1, behav=patt, ids=[str(i) for i in range(1, 216)]
             #          path="D:\Thesis\pythonProject\localuse\Dt\Mor\map\spp_1\\bpp\\")
 
         # for prm, gof in gof_prm.items():
         #     map_sens(gen_geog(), 'morris', list(simulation_data.keys())[0], prm,
-        #              gof, 0.1, behav=patt,
+        #              gof, 0.1, behav=patt, ids=[str(i) for i in range(1, 216)],
         #              path="D:\Thesis\pythonProject\localuse\Dt\Mor\map\\spp_1\\aic\\")
 
     # FOR AZHAR
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     #                   var_egr='mds_Soil salinity Tinamit CropA')
     # map_sens(gen_geog(), 'morris', 'paso_0', 'Soil salinity',
     #          simulation_data['100'][var_egr].values, 0.1,
-    #          # "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\paso_")
-    #     "C:\\Users\\gis_user\Downloads\\azhar shared\\azhar_plot\\paso_0", ids=range(1, 216))
+    #          # "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\paso_", ids=[str(i) for i in range(1, 216)])
+    #     "C:\\Users\\gis_user\Downloads\\azhar shared\\azhar_plot\\paso_0", ids=[str(i) for i in range(1, 216)])
 
 
