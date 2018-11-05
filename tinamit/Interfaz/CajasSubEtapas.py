@@ -231,10 +231,11 @@ class CajaSubEtp21(CjG.CajaSubEtapa):
     def añadir_conexión(símismo, conexión):
 
         if 'modelo_fuente' in conexión:
+            mds_fuente = conexión['modelo_fuente'] == 'EnvolturasMDS'
             dic_conex = {
-                'mds_fuente': conexión['modelo_fuente'] == 'EnvolturasMDS',
-                'var_mds': conexión['dic_vars']['mds'],
-                'var_bf': conexión['dic_vars']['bf'],
+                'mds_fuente': mds_fuente,
+                'var_mds': conexión['var_fuente'] if mds_fuente else conexión['var_recip'],
+                'var_bf': conexión['var_recip'] if mds_fuente else conexión['var_fuente'],
                 'conv': conexión['conv']
             }
         else:
@@ -331,10 +332,10 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
 
         if símismo.apli.Modelo.conv_tiempo_mods['mds'] == 1:
             símismo.MnTiempoRef.poner(unidad_tiempo_mds)
-            conv = símismo.apli.Modelo.conv_tiempo_mods[unidad_tiempo_bf]['factor']
+            conv = símismo.apli.Modelo.conv_tiempo_mods['bf']
         else:
             símismo.MnTiempoRef.poner(unidad_tiempo_bf)
-            conv = símismo.apli.Modelo.conv_tiempo_mods[unidad_tiempo_mds]['factor']
+            conv = símismo.apli.Modelo.conv_tiempo_mods['mds']
         símismo.IngrConvUnidTiempo.poner(conv)
 
         símismo.verificar_completo()
@@ -346,13 +347,13 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
         val_conv = símismo.IngrConvUnidTiempo.val
 
         if val == unidad_tiempo_mds:
-            símismo.apli.Modelo.conv_tiempo['mds'] = 1
-            símismo.apli.Modelo.conv_tiempo['bf'] = val_conv
+            símismo.apli.Modelo.conv_tiempo_mods['mds'] = 1
+            símismo.apli.Modelo.conv_tiempo_mods['bf'] = val_conv
             símismo.EtiqUnidTiempoFinal.config(text=unidad_tiempo_mds)
             símismo.EtiqUnidTiempoNoRef.config(text=unidad_tiempo_bf)
         else:
-            símismo.apli.Modelo.conv_tiempo['mds'] = val_conv
-            símismo.apli.Modelo.conv_tiempo['bf'] = 1
+            símismo.apli.Modelo.conv_tiempo_mods['mds'] = val_conv
+            símismo.apli.Modelo.conv_tiempo_mods['bf'] = 1
             símismo.EtiqUnidTiempoFinal.config(text=unidad_tiempo_bf)
             símismo.EtiqUnidTiempoNoRef.config(text=unidad_tiempo_mds)
 
@@ -379,6 +380,7 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
 
             símismo.apli.Modelo.simular(paso=símismo.IngrPaso.val, t_final=símismo.IngrTempFinal.val,
                                         nombre_corrida=nombre)
+            símismo.apli.Modelo.guardar_resultados()
             símismo.BtSimul.desbloquear()
             símismo.CjSimulando.pack_forget()
 
