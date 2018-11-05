@@ -17,7 +17,7 @@ except ImportError:  # pragma: sin cobertura
     pm = None
 
 
-def crear_dll_Vensim(archivo):  # pragma: sin cobertura
+def crear_dll_vensim(archivo):  # pragma: sin cobertura
 
     if sys.platform[:3] != 'win':
         raise OSError(_('Desafortunadamente, el dll de Vensim únicamente funciona en Windows.'))
@@ -40,7 +40,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
     combin_pasos = True
 
-    def __init__(símismo, archivo, nombre='mds', dll_Vensim=None):
+    def __init__(símismo, archivo, nombre='mds', dll_vensim=None):
         """
         La función de inicialización del modelo. Creamos el vínculo con el DLL de Vensim y cargamos el modelo
         especificado.
@@ -58,29 +58,29 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         símismo.tipo_mod = None
 
         # Inicializar ModeloVensim como una EnvolturasMDS.
-        super().__init__(archivo=archivo, nombre=nombre, ops_mód={'dll_Vensim': dll_Vensim})
+        super().__init__(archivo=archivo, nombre=nombre, ops_mód={'dll_Vensim': dll_vensim})
 
     def _generar_mod(símismo, archivo, **ops_mód):
         try:
-            dll_Vensim = ops_mód['dll_Vensim']
+            dll_vensim = ops_mód['dll_Vensim']
         except KeyError:
-            dll_Vensim = None
+            dll_vensim = None
 
         # Llamar el DLL de Vensim.
-        if dll_Vensim is None:
+        if dll_vensim is None:
             lugares_probables = [
                 'C:\\Windows\\System32\\vendll32.dll',
                 'C:\\Windows\\SysWOW64\\vendll32.dll'
             ]
-            arch_dll_Vensim = símismo._obt_val_config(
+            arch_dll_vensim = símismo._obt_val_config(
                 llave='dll_Vensim', cond=os.path.isfile, respaldo=lugares_probables
             )
-            if arch_dll_Vensim is None:
+            if arch_dll_vensim is None:
                 dll = None
             else:
-                dll = crear_dll_Vensim(arch_dll_Vensim)
+                dll = crear_dll_vensim(arch_dll_vensim)
         else:
-            dll = crear_dll_Vensim(dll_Vensim)
+            dll = crear_dll_vensim(dll_vensim)
 
         nmbr, ext = os.path.splitext(archivo)
         if ext == '.mdl':
@@ -201,7 +201,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
             # Sacar los límites del variable
             rango = (símismo._obt_atrib_var(var, cód_attrib=11), símismo._obt_atrib_var(var, cód_attrib=12))
-            rango = tuple(float(l) if l != '' else None for l in rango)
+            rango = tuple(float(lm) if lm != '' else None for lm in rango)
 
             # Leer la descripción del variable.
             info = símismo._obt_atrib_var(var, 2)
@@ -256,7 +256,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         for var, d_var in símismo.variables.items():
             d_var['hijos'] = [h for h in d_var['hijos'] if h in símismo.variables]
             d_var['parientes'] = [p for p in d_var['parientes'] if p in símismo.variables]
-
 
         # Aplicar los variables iniciales
         símismo._leer_vals_de_vensim()
@@ -684,7 +683,7 @@ def cmd_vensim(func, args, mensaje_error=None, val_error=None, devolver=False): 
     # Llamar la función Vensim y guardar el resultado.
     try:
         resultado = func(*args)
-    except OSError as e:
+    except OSError:
         try:
             resultado = func(*args)
         except OSError as e:
@@ -716,14 +715,14 @@ def gen_archivo_mdl(archivo_plantilla, d_vars):
         # La primera línea del documento, con {UTF-8}
         cabeza = [d.readline()]
 
-        l = d.readline()
+        ln = d.readline()
         # Seguir hasta la primera línea que NO contiene información de variables ("****...***" para Vensim).
-        while not regex.match(r'\*+\n$', l) and not regex.match(r'\\\\\\\-\-\-\/\/\/', l):
-            l = d.readline()
+        while not regex.match(r'\*+\n$', ln) and not regex.match(r'\\\\\\\-\-\-\/\/\/', ln):
+            ln = d.readline()
 
         # Guardar todo el resto del fuente (que no contiene información de ecuaciones de variables).
         cola = d.readlines()
-        cola += [l] + cola
+        cola += [ln] + cola
 
     cuerpo = [_escribir_var(var, d_var) for var, d_var in d_vars.items()]
 
@@ -757,20 +756,20 @@ def _cortar_líns(texto, máx_car, lín_1=None, lín_otras=None):
 
     while len(texto):
         if len(texto) <= máx_car:
-            l = texto
+            ln = texto
         else:
             dif = máx_car - texto
 
-            l = regex.search(r'(.*)\W.[%s,]' % dif, texto).groups()[0]
+            ln = regex.search(r'(.*)\W.[%s,]' % dif, texto).groups()[0]
 
-        lista.append(l)
-        texto = texto[len(l):]
+        lista.append(ln)
+        texto = texto[len(ln):]
 
     if lín_1 is not None:
         lista[0] = lín_1 + lista[0]
 
     if lín_otras is not None:
-        for n, l in enumerate(lista[1:]):
-            lista[n] = lín_otras + l
+        for n, ln in enumerate(lista[1:]):
+            lista[n] = lín_otras + ln
 
     return lista

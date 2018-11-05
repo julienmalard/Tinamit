@@ -70,9 +70,8 @@ def generar_mds(archivo, motor=None):
                 errores[env.__name__] = traceback.format_exc()
 
         raise ValueError(
-            _(
-                '\n\nEl modelo'
-                '\n\t"{}"'
-                '\nno se pudo leer. Intentamos las envolturas siguientes, pero no funcionaron:{}'
-            ).format(archivo, ''.join(['\n\n\t{}: \n{}'.format(env, e) for env, e in errores.items()]))
+            _('\n\nEl modelo'
+              '\n\t"{}"'
+              '\nno se pudo leer. Intentamos las envolturas siguientes, pero no funcionaron:{}'
+              ).format(archivo, ''.join(['\n\n\t{}: \n{}'.format(env, e) for env, e in errores.items()]))
         )
