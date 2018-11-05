@@ -157,7 +157,7 @@ class Datos(object):
 
 class MicroDatos(Datos):
     """
-    No tiene funcionalidad específica, pero esta clase queda muy útil para identificar el tipo_mod de datos.
+    No tiene funcionalidad específica, pero esta clase queda muy útil para identificar el tipo de datos.
     """
 
     def __init__(símismo, nombre, fuente, tiempo=None, lugar=None, cód_vacío=None):
@@ -679,6 +679,12 @@ class SuperBD(object):
         # Borrar las bases de datos existentes
         símismo.microdatos = símismo.datos = símismo.datos_err = None
 
+        bds_acronistas = {
+            'microdatos': [],
+            'datos': [],
+            'datos_err': []
+        }
+
         # Agregar datos
         for nmb, bd in símismo.bds.items():
             # Para cada base de datos vinculada...
@@ -708,8 +714,10 @@ class SuperBD(object):
                     if símismo.microdatos is None:
                         símismo.microdatos = bd_temp
                     else:
-
-                        símismo.microdatos = símismo._concat_bds_xr(bd_temp, símismo.microdatos)
+                        if símismo._con_tiempo(bd_temp):
+                            símismo.microdatos = símismo._concat_bds_xr(bd_temp, símismo.microdatos)
+                        else:
+                            bds_acronistas['microdatos'].append(bd_temp)
 
                 # Datos normales
                 else:
@@ -717,7 +725,10 @@ class SuperBD(object):
                     if símismo.datos is None:
                         símismo.datos = bd_temp
                     else:
-                        símismo.datos = símismo._concat_bds_xr(bd_temp, símismo.datos)
+                        if símismo._con_tiempo(bd_temp):
+                            símismo.datos = símismo._concat_bds_xr(bd_temp, símismo.datos)
+                        else:
+                            bds_acronistas['datos'].append(bd_temp)
 
                     # Calcular errores
                     dic_errores = {}
@@ -734,11 +745,37 @@ class SuperBD(object):
                     else:
                         símismo.datos_err = símismo._concat_bds_xr(bd_err_temp, símismo.datos_err)
 
+        for ll, l_bd in bds_acronistas.items():
+            if ll == 'microdatos':
+                símismo.microdatos = símismo._aplicar_acronistas(símismo.microdatos, l_bd)
+            elif ll == 'datos':
+                símismo.datos = símismo._aplicar_acronistas(símismo.datos, l_bd)
+            else:
+                símismo.datos_err = símismo._aplicar_acronistas(símismo.datos_err, l_bd)
+
         # Ya la base de datos sí está actualizada y lista para trabajar
         símismo.bd_lista = True
 
+    def _aplicar_acronistas(símismo, bd_base, l_acrons):
+        if not len(l_acrons):
+            return bd_base
+
+        bd_acron = l_acrons.pop(0)
+        for bd in l_acrons:
+            bd_acron = bd_acron.merge(bd)  # para hacer: verificar
+
+        for vr in bd_acron.data_vars:
+            if vr in bd_base.data_vars:
+                raise ValueError('Bases de datos múltiples con datos para "{}", un variable no temporal.'.format('vr'))
+            bd_base = bd_base.assign(**{vr: ('n', [np.nan] * len(bd_base['n']))})
+            for i, lg in enumerate(bd_acron['lugar'].values):
+                bd_base[vr].values[np.where(bd_base['lugar'].values == lg)] = bd_acron[vr][i]
+
+        return bd_base
+
     @staticmethod
     def _concat_bds_xr(bd1, bd2):
+
         faltan_en_1 = [x for x in bd2.data_vars if x not in bd1.data_vars]
         faltan_en_2 = [x for x in bd1.data_vars if x not in bd2.data_vars]
         n_1 = len(bd1['n'])
@@ -747,6 +784,10 @@ class SuperBD(object):
         bd2 = bd2.assign(**{v: ('n', [np.nan] * n_2) for v in faltan_en_2})
 
         return xr.concat([bd1, bd2], 'n')
+
+    @staticmethod
+    def _con_tiempo(bd_xr):
+        return not np.all(np.isnat(bd_xr['tiempo'].values))
 
     def obt_datos(símismo, l_vars=None, lugares=None, bd_datos=None, tiempos=None, excl_faltan=False,
                   tipo=None, interpolar=True, interpolar_estricto=False):
@@ -808,7 +849,7 @@ class SuperBD(object):
                 raise ValueError(_('Los variables "{}" no corresponden con microdatos o con datos normales.')
                                  .format(', '.join(l_vars)))
         else:
-            tipo = tipo.lower()  # Formatear tipo_mod
+            tipo = tipo.lower()  # Formatear tipo
             if tipo == 'microdatos':
                 bd = símismo.microdatos
             elif tipo == 'datos':
@@ -816,7 +857,7 @@ class SuperBD(object):
             elif tipo == 'error':
                 bd = símismo.datos_err
             else:
-                raise ValueError(_('`tipo_mod` debe ser uno de "{}"').format('"microdatos", "datos", o "error".'))
+                raise ValueError(_('`tipo` debe ser uno de "{}"').format('"microdatos", "datos", o "error".'))
 
         # Asegurarse que existe esta base de datos
         if bd is None:
@@ -845,11 +886,38 @@ class SuperBD(object):
         if tiempos is not None:
             bd_sel = símismo._filtrar_tiempo(bd_sel, tiempos)
 
+        # Si tenemos datos generales, tomamos promedios
+        if tipo == 'datos':
+            bd_sel = bd_sel.set_index(n=['lugar', 'tiempo']).groupby('n').mean().reset_index('n')
+            if 'tiempo' not in bd_sel.coords:  # para hacer: algo más elegante
+                bd_sel = bd_sel.rename({'n_level_0': 'lugar', 'n_level_1': 'tiempo'})
+
         # Excluir las observaciones que faltan
         if excl_faltan:
             # Si excluyemos las observaciones que faltan, guardar únicamente las filas con observacienes
             # para todos los variables
-            bd_sel = bd_sel.dropna('n', subset=[x for x in bd_sel.data_vars])
+            bd_sel_final = bd_sel.dropna('n', subset=[x for x in bd_sel.data_vars])
+            if len(bd_sel_final['tiempo'].values):
+                bd_sel = bd_sel_final
+            else:
+                avisar('Extrapolando por falta de datos en variables: {}'.format(', '.join(l_vars)))
+                bd_sel = bd_sel.dropna(
+                    'n', subset=[x for x in bd_sel.data_vars]
+                )
+                for i, (l, f) in enumerate(zip(bd_sel['lugar'].values, bd_sel['tiempo'].values)):
+                    for v in bd_sel.data_vars:
+                        if np.isnan(bd_sel[v][i].values):
+                            l_f = bd_sel['tiempo'].where(bd_sel['lugar'] == l).where(np.isfinite(bd_sel[v])).dropna(
+                                'n').values
+                            if not len(l_f):
+                                continue
+                            próx = l_f[np.abs(l_f - f).argmin()]
+                            bd_sel[v].values[i] = np.mean(
+                                bd_sel[v].where(bd_sel['lugar'] == l).where(bd_sel['tiempo'] == próx).dropna(
+                                    'n').values)
+
+                bd_sel = bd_sel.dropna('n', subset=[x for x in bd_sel.data_vars])
+
         else:
             # Sino, exlcuir únicamente las filas que faltans observaciones para todos los variables
             bd_sel = bd_sel.dropna(
@@ -1079,7 +1147,7 @@ class SuperBD(object):
             ejes.set_ylabel(var)
 
         else:
-            ejes.bar(range(n_lugares), datos[var])
+            ejes.bar(n_lugares, datos[var])
             ejes.set_ylabel(var)
             ejes.set_xlabel(_('Lugar'))
             ejes.set_xticks(range(n_lugares))
@@ -1584,25 +1652,25 @@ def obt_fecha_ft(fechas):
     if all(isinstance(f, (ft.datetime, ft.date)) for f in lista_fechas):
         fechas_ft = lista_fechas
     else:
-        if all(len(f) == 7 for f in lista_fechas):
-            lista_fechas = [f + '-01' for f in lista_fechas]
-        elif all(len(f) == 4 for f in lista_fechas):
-            lista_fechas = [f + '-01-01' for f in lista_fechas]
+        try:
+            # Interntar convertir números de años de una vez
+            fechas_ft = [ft.date(year=int(f), month=1, day=1) for f in lista_fechas]
+        except (ValueError, TypeError):
 
-        # Intentar con cada formato en la lista de formatos posibles
-        fechas_ft = None
-        for formato in formatos_posibles:
+            # Intentar con cada formato en la lista de formatos posibles
+            fechas_ft = None
+            for formato in formatos_posibles:
 
-            try:
-                # Intentar de convertir todas las fechas a objetos ft.datetime
-                fechas_ft = [ft.datetime.strptime(x, formato).date() for x in lista_fechas]
+                try:
+                    # Intentar de convertir todas las fechas a objetos ft.datetime
+                    fechas_ft = [ft.datetime.strptime(x, formato).date() for x in lista_fechas]
 
-                # Si funcionó, parar aquí
-                break
+                    # Si funcionó, parar aquí
+                    break
 
-            except ValueError:
-                # Si no funcionó, intentar el próximo formato
-                continue
+                except ValueError:
+                    # Si no funcionó, intentar el próximo formato
+                    continue
 
         # Si todavía no lo hemos logrado, tenemos un problema.
         if fechas_ft is None:

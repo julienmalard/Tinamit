@@ -306,17 +306,20 @@ class Geografía(object):
             ids = np.array([x.record[nombres_attr.index(col_id)] for x in af.shapeRecords()])
         except ValueError:
             raise ValueError(_('La columna "{}" no existe en la base de datos.').format(col_id))
-        ids_no_existen = [id_ for id_ in ids if str(id_) not in símismo.cód_a_lugar]
-        if len(ids_no_existen):
-            avisar(_('Las formas con id "{}" no se encuentran en la geografía actual.'))
-        escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids if id_ not in ids_no_existen)
-        if len(escls_ids) != 1:
-            raise ValueError
-
         if escala_geog is None:
-            escala_geog = list(escls_ids)[0]
-        elif escala_geog != list(escls_ids)[0]:
-            raise ValueError
+
+            ids_no_existen = [id_ for id_ in ids if str(id_) not in símismo.cód_a_lugar]
+            if len(ids_no_existen):
+                avisar(_('Las formas con id "{}" no se encuentran en la geografía actual.'))
+            escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids if id_ not in ids_no_existen)
+            if len(escls_ids) > 1:
+                raise ValueError
+            elif len(escls_ids) == 1:
+                if escala_geog is None:
+                    escala_geog = list(escls_ids)[0]
+            else:
+                if escala_geog is None:
+                    escala_geog = 'Automática'
 
         símismo.formas_reg[escala_geog] = {'af': af, 'ids': ids}
 
@@ -574,11 +577,20 @@ class Geografía(object):
 
             if isinstance(valores, np.ndarray):
                 if ids is None:
-                    raise ValueError
+                    try:
+                        escls_ids = next(x for x, v in símismo.info_geog.items() if len(v) == len(valores))
+                        ids = símismo.info_geog[escls_ids]
+
+                    except StopIteration:
+                        escls_ids = next(x for x, d in símismo.formas_reg.items() if len(d['ids']) == len(valores))
+                        ids = [str(x) for x in símismo.formas_reg[escls_ids]['ids']]
+
+                    escls_ids = [escls_ids]
+
                 else:
                     escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids)
-                if valores.shape[0] != len(ids):
-                    raise ValueError
+                    if valores.shape[0] != len(ids):
+                        raise ValueError
                 dic_valores = {id_: valores[í] for í, id_ in enumerate(ids)}
 
             else:

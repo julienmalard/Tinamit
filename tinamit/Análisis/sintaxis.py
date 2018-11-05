@@ -1,7 +1,6 @@
 import math as mat
 
 import numpy as np
-import regex
 from pkg_resources import resource_filename
 
 from lark import Lark, Tree
@@ -11,8 +10,9 @@ from tinamit.config import _
 
 try:
     import pymc3 as pm
+    import theano.tensor as T
 except ImportError:  # pragma: sin cobertura
-    pm = None
+    pm = T = None
 
 l_dialectos_potenciales = {
     'vensim': resource_filename('tinamit.Análisis', 'grams/gram_ecs.g'),
@@ -572,107 +572,137 @@ class Ecuación(object):
 
         return escls_prms, líms_norm, x_norm, y_norm
 
-    def gen_mod_bayes(símismo, líms_paráms, obs_x, obs_y, aprioris=None, binario=False, nv_jerarquía=None):
+    def gen_mod_bayes(símismo, líms_paráms, obs_x, obs_y, aprioris=None, binario=False, nv_jerarquía=None,
+                      trsld_sub=False):
 
         if pm is None:
             return ImportError(_('Hay que instalar PyMC3 para poder utilizar modelos bayesianos.'))
 
-        escls_prms, líms_paráms, obs_x, obs_y = símismo.normalizar(líms_paráms, obs_x, obs_y)
+        # escls_prms, líms_paráms, obs_x, obs_y = símismo.normalizar(líms_paráms, obs_x, obs_y)
 
         def _gen_d_vars_pm(tmñ=(), fmt_nmbrs='{}'):
             egr = {}
+            norm = {}
             for p, líms in líms_paráms.items():
                 nmbr = fmt_nmbrs.format(p)
                 if aprioris is None:
-                    if líms[0] is None:
-                        if líms[1] is None:
-                            dist_pm = pm.Flat(nmbr, shape=tmñ)
-                        else:
-                            if líms[1] == 0:
-                                dist_pm = -pm.HalfFlat(nmbr, shape=tmñ)
-                            else:
-                                dist_pm = líms[1] - pm.HalfFlat(nmbr, shape=tmñ)
+                    if líms[0] is líms[1] is None:
+                        final = pm.Normal(name=nmbr, mu=0, sd=100 ** 2, shape=tmñ)
                     else:
-                        if líms[1] is None:
-                            if líms[0] == 0:
-                                dist_pm = pm.HalfFlat(nmbr, shape=tmñ)
-                            else:
-                                dist_pm = líms[0] + pm.HalfFlat(nmbr, shape=tmñ)
+                        dist_norm = pm.Normal(name='transf' + nmbr, mu=0, sd=1, shape=tmñ)
+                        if líms[0] is None:
+                            final = pm.Deterministic(nmbr, líms[1] - pm.math.exp(dist_norm))
+                        elif líms[1] is None:
+                            final = pm.Deterministic(nmbr, líms[0] + pm.math.exp(dist_norm))
                         else:
-                            dist_pm = pm.Uniform(nmbr, lower=líms[0], upper=líms[1], shape=tmñ)
+                            final = pm.Deterministic(
+                                nmbr, (pm.math.tanh(dist_norm) / 2 + 0.5) * (líms[1] - líms[0]) + líms[0]
+                            )
+                        norm[p] = dist_norm
                 else:
                     dist, prms = aprioris[p]
                     if (líms[0] is not None or líms[1] is not None) and dist != pm.Uniform:
                         acotada = pm.Bound(dist, lower=líms[0], upper=líms[1])
-                        dist_pm = acotada(nmbr, shape=tmñ, **prms)
+                        final = acotada(nmbr, shape=tmñ, **prms)
                     else:
                         if dist == pm.Uniform:
                             prms['lower'] = max(prms['lower'], líms[0])
                             prms['upper'] = min(prms['upper'], líms[1])
-                        dist_pm = dist(nmbr, shape=tmñ, **prms)
+                        final = dist(nmbr, shape=tmñ, **prms)
 
-                egr[p] = dist_pm
-            return egr
+                egr[p] = final
+            for p, v in egr.items():
+                if p not in norm:
+                    norm[p] = v
+            return {'final': egr, 'norm': norm}
 
         def _gen_d_vars_pm_jer():
             dists_base = _gen_d_vars_pm(
                 tmñ=(len(set(nv_jerarquía[0])),), fmt_nmbrs='mu_{}_nv_' + str(len(nv_jerarquía) - 1)
-            )
+            )['norm']
 
             egr = {}
 
             for p, líms in líms_paráms.items():
-                mu = dists_base[p]
-                sg = pm.HalfNormal(name='sg_{}'.format(p), sd=10, shape=(1,))  # type: pm.model.TransformedRV
+                mu_v = dists_base[p]
+
                 if líms[0] is líms[1] is None:
-                    for í, nv in enumerate(nv_jerarquía[:-1]):
-                        últ_niv = í == (len(nv_jerarquía) - 2)
-                        tmñ_nv = nv.shape
-
-                        nmbr_mu = p if últ_niv else 'mu_{}_nv_{}'.format(p, len(nv_jerarquía) - 2 - í)
-                        nmbr_sg = 'sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 2 - í)
-
-                        mu = pm.Normal(name=nmbr_mu, mu=mu[nv], sd=sg[nv], shape=tmñ_nv)
-                        if not últ_niv:
-                            sg = pm.HalfNormal(name=nmbr_sg.format(p, í), sd=obs_y.values.ptp(), shape=tmñ_nv)
+                    mu_sg = 2
                 else:
-                    for í, nv in enumerate(nv_jerarquía[:-1]):
-                        tmñ_nv = nv.shape
-                        últ_niv = í == (len(nv_jerarquía) - 2)
-                        nmbr_mu = p if últ_niv else 'mu_{}_nv_{}'.format(p, len(nv_jerarquía) - 2 - í)
-                        nmbr_sg = 'sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 2 - í)
+                    mu_sg = 0.5
 
-                        acotada = pm.Bound(pm.Normal, lower=líms[0], upper=líms[1])
-                        mu = acotada(nmbr_mu, mu=mu[nv], sd=sg[nv], shape=tmñ_nv)
-                        if not últ_niv:
-                            sg = pm.HalfNormal(name=nmbr_sg.format(p, í), sd=obs_y.values.ptp(), shape=tmñ_nv)
+                sg_v = pm.Gamma(name='sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 1), mu=mu_sg, sd=0.2,
+                                shape=(1,))  # type: pm.model.TransformedRV
 
-                egr[p] = mu
+                for í, nv in enumerate(nv_jerarquía[:-1]):
+                    tmñ_nv = nv.shape
+                    últ_niv = í == (len(nv_jerarquía) - 2)
+                    í_nv = len(nv_jerarquía) - 2 - í
+
+                    nmbr_mu = p if últ_niv else 'mu_{}_nv_{}'.format(p, í_nv)
+                    nmbr_sg = 'sg_{}_nv_{}'.format(p, í_nv)
+                    nmbr_trsld = 'trlsd_{}_nv_{}'.format(p, í_nv)
+
+                    if False and (trsld_sub or últ_niv):
+                        trsld = pm.Normal(name=nmbr_trsld, mu=0, sd=1, shape=tmñ_nv)
+                        if líms[0] is líms[1] is None:
+                            mu_v = pm.Deterministic(nmbr_mu, mu_v[nv] + trsld * sg_v[nv])
+
+                        else:
+                            mu_v = pm.Deterministic('transf' + nmbr_mu, mu_v[nv] + trsld * sg_v[nv])
+                            if líms[0] is None:
+                                final = pm.Deterministic(nmbr_mu, líms[1] - pm.math.exp(mu_v))
+                            elif líms[1] is None:
+                                final = pm.Deterministic(nmbr_mu, líms[0] + pm.math.exp(mu_v))
+                            else:
+                                final = pm.Deterministic(
+                                    nmbr_mu, (pm.math.tanh(mu_v) / 2 + 0.5) * (líms[1] - líms[0]) + líms[0]
+                                )
+
+                            if últ_niv:
+                                mu_v = final
+                    else:
+                        if líms[0] is líms[1] is None:
+                            mu_v = pm.Normal(name=nmbr_mu, mu=mu_v[nv], sd=sg_v[nv], shape=tmñ_nv)
+                        else:
+                            mu_v = pm.Normal(name='transf' + nmbr_mu, mu=mu_v[nv], sd=sg_v[nv], shape=tmñ_nv)
+                            if líms[0] is None:
+                                final = pm.Deterministic(nmbr_mu, líms[1] - pm.math.exp(mu_v))
+                            elif líms[1] is None:
+                                final = pm.Deterministic(nmbr_mu, líms[0] + pm.math.exp(mu_v))
+                            else:
+                                final = pm.Deterministic(
+                                    nmbr_mu, (pm.math.tanh(mu_v) / 2 + 0.5) * (líms[1] - líms[0]) + líms[0]
+                                )
+                            if últ_niv:
+                                mu_v = final
+
+                    if not últ_niv:
+                        sg_v = pm.Gamma(name=nmbr_sg, mu=mu_sg, sd=0.2, shape=tmñ_nv)
+
+                egr[p] = mu_v
 
             return egr
 
         modelo = pm.Model()
         with modelo:
             if nv_jerarquía is None:
-                d_vars_pm = _gen_d_vars_pm()
+                d_vars_pm = _gen_d_vars_pm()['final']
             else:
                 d_vars_pm = _gen_d_vars_pm_jer()
 
             mu = _VstrAPyMC3(
                 d_vars_pm=d_vars_pm, dialecto=símismo.dialecto, obs_x=obs_x, nv_jerarquía=nv_jerarquía,
             ).convertir(símismo.árbol)
-            sigma = pm.HalfNormal(name='sigma', sd=max(1, (obs_y.max() - obs_y.min())))
 
             if binario:
-                # noinspection PyTypeChecker
-                x = pm.Normal(name='logit_prob', mu=mu, sd=sigma, shape=obs_y.shape, testval=np.full(obs_y.shape, 0))
-                pm.Bernoulli(name='Y_obs', logit_p=-x, observed=obs_y.values)  #
+                pm.Bernoulli(name='Y_obs', p=mu, observed=obs_y.values)
 
             else:
-                # noinspection PyTypeChecker
+                sigma = pm.HalfNormal(name='sigma', sd=obs_y.values.std())
                 pm.Normal(name='Y_obs', mu=mu, sd=sigma, observed=obs_y.values)
 
-        return modelo, escls_prms
+        return modelo
 
     def sacar_args_func(símismo, func, i=None):
         """
@@ -717,9 +747,9 @@ _dic_funs = {
     'sinh': {'vensim': 'SINH', 'pm': pm.math.sinh if pm is not None else None, 'python': mat.sinh},
     'cosh': {'vensim': 'COSH', 'pm': pm.math.cosh if pm is not None else None, 'python': mat.cosh},
     'tanh': {'vensim': 'TANH', 'pm': pm.math.tanh if pm is not None else None, 'python': mat.tanh},
-    'asin': {'vensim': 'ARCSIN', 'python': mat.asin},
-    'acos': {'vensim': 'ARCCOS', 'python': mat.acos},
-    'atan': {'vensim': 'ARCTAN', 'python': mat.atan},
+    'asin': {'vensim': 'ARCSIN', 'pm': T.arcsin if T is not None else None, 'python': mat.asin},
+    'acos': {'vensim': 'ARCCOS', 'pm': T.arccos if T is not None else None, 'python': mat.acos},
+    'atan': {'vensim': 'ARCTAN', 'pm': T.arctan if T is not None else None, 'python': mat.atan},
     'si_sino': {'vensim': 'IF THEN ELSE', 'pm': pm.math.switch if pm is not None else None,
                 'python': lambda cond, si, sino: si if cond else sino}
 }
