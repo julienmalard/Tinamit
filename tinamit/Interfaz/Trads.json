@@ -227,8 +227,8 @@
         "ModeloBiofísico": "Modèle biofisique",
         "ModeloCargado": "Modèle %s chargé.",
         "ModelosPython": "Modèles Python",
-        "ModelosVensim": "",
-        "ModelosXMILE": "",
+        "ModelosVensim": "Modèles Vensim",
+        "ModelosXMILE": "Modèles XMILE",
         "ModelospublicadosVENSIM": "Modèles VENSIM publiés",
         "No": "Non",
         "NoGuardar": "Retour",
@@ -442,7 +442,7 @@
       }
     },
     "Kaqchikel": {
-      "Estado": 0.9534883720930233,
+      "Estado": 1.0,
       "IzqaDerech": "Normal",
       "Trads": {
         "AnálisisIncert": "Me'etamanil\t",
