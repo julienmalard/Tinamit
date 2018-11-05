@@ -2,6 +2,7 @@ import inspect
 import math as mat
 import os
 import sys
+import traceback
 import unittest
 from copy import deepcopy as copiar_profundo
 from importlib import import_module as importar_mod
@@ -57,19 +58,25 @@ class EnvolturaBF(Modelo):
             módulo = importar_mod(os.path.splitext(nombre_mod)[0])
 
             candidatos = inspect.getmembers(módulo, inspect.isclass)
+            errores = {}
             cands_final = {}
             for nmb, obj in candidatos:
                 if callable(obj):
+                    # noinspection PyBroadException
                     try:
                         obj = obj()
-                    except BaseException:
-                        continue
+                    except NotImplementedError:
+                        pass
+                    except Exception:
+                        errores[nmb] = traceback.format_exc()
                 if isinstance(obj, ModeloBF):
                     cands_final[nmb] = obj
 
             if len(cands_final) == 0:
-                raise AttributeError(_('El fuente especificado ("{}") no contiene subclase de "ModeloBF".')
-                                     .format(modelo))
+                raise AttributeError(_(
+                    'El fuente especificado ("{}") no contiene subclase de "ModeloBF" utilizable. '
+                    '\nErrores encontrados:{}'
+                ).format(modelo, ''.join(['\n\n\t{}: \n{}'.format(nmb, e) for nmb, e in errores.items()])))
             elif len(cands_final) == 1:
                 símismo.modelo = cands_final[list(cands_final)[0]]
             else:
@@ -78,10 +85,10 @@ class EnvolturaBF(Modelo):
                 except KeyError:
                     elegido = list(cands_final)[0]
                     símismo.modelo = elegido
-                    avisar(_('Había más que una instancia de "ModeloBF" en el fuente "{}", '
-                             'y ninguna se llamaba "Envoltura". Tomaremos "{}" como la envoltura '
-                             'y esperaremos que funcione. Si no te parece, asegúrate que la definición de clase u el'
-                             'objeto correcto se llame "Envoltura".').format(modelo, elegido))
+                    avisar(_('\nHabía más que una instancia de "ModeloBF" en el fuente "{}", '
+                             '\ny ninguna se llamaba "Envoltura". Tomaremos "{}" como la envoltura '
+                             '\ny esperaremos que funcione. Si no te parece, asegúrate que la definición de clase u el'
+                             '\nobjeto correcto se llame "Envoltura".').format(modelo, elegido))
 
         else:
             if callable(modelo):

@@ -1,5 +1,5 @@
 ?ec: suma
-    | var "=" suma    -> asign_var
+    | var "=" suma   -> asign_var
     | var ":" subs   -> asign_sub
 ?suma: prod
     | suma op_suma prod
@@ -14,6 +14,11 @@
      | var
      | "(" suma ")"
      | func
+     | consulta
+
+consulta: "(" [rango ","] coord ("," coord)* ")"
+rango: "[" coord "-" coord "]"
+coord: "(" NUM "," NUM ")"
 
 func: nombre "(" args ")"
 args: suma ("," suma)*

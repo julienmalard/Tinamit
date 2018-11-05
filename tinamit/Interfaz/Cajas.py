@@ -288,27 +288,14 @@ class CajaCabeza(tk.Frame):
             except KeyError:
                 pass
 
-            l_mod = list(modelo.modelos)
-
             for conex in receta['conexiones']:
-                mod_fuente = conex['modelo_fuente']
-
-                mod_recip = l_mod[(l_mod.index(mod_fuente) + 1) % 2]
-
-                modelo.conectar_vars(dic_vars={mod_fuente: conex['vars'][mod_fuente],
-                                               mod_recip: conex['vars'][mod_recip]},
-                                     modelo_fuente=mod_fuente, conv=conex['conv'])
+                modelo.conectar_vars(**conex)
 
             if len(receta['conv_tiempo']):
-                if receta['conv_tiempo'][l_mod[0]] == 1:
-                    modelo.estab_conv_unid_tiempo(mod_base=l_mod[0],
-                                                  conv=receta['conv_tiempo'][l_mod[1]])
-                else:
-                    modelo.estab_conv_unid_tiempo(mod_base=l_mod[1],
-                                                  conv=receta['conv_tiempo'][l_mod[0]])
+                modelo.conv_tiempo_mods = receta['conv_tiempo']
 
             receta['conexiones'] = modelo.conexiones
-            receta['conv_tiempo'] = modelo.conv_tiempo
+            receta['conv_tiempo'] = modelo.conv_tiempo_mods
 
             símismo.pariente.ContCjEtapas.ir_a_caja(1)
             símismo.pariente.bloquear_cajas([2, 3, 4])

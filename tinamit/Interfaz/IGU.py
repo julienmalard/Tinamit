@@ -24,7 +24,7 @@ class Apli(tk.Frame):
         símismo.DicLeng = Trad.Diccionario()
         símismo.Trads = símismo.DicLeng.trads_act
         símismo.receta = {'conexiones': símismo.Modelo.conexiones,
-                          'conv_tiempo': símismo.Modelo.conv_tiempo}
+                          'conv_tiempo': símismo.Modelo.conv_tiempo_mods}
         símismo.ubic_archivo = None
 
         símismo.CajaInic = Cj.CajaInic(símismo)
