@@ -86,8 +86,8 @@ def analy_by_file(método, líms_paráms, mapa_paráms, mstr_arch, simul_arch, v
     mstr = cargar_mstr_paráms(mstr_arch)
     # mstr_new = {p: [] for p in mstr}
     # for p in mstr:
-    #     for i in range(2):
-    #         mstr_new[p].append(mstr[p][i])
+    #     # for i in range(4):
+    #     mstr_new[p].append(mstr[p][50]) # take sample 50
 
     simulation, var_egr = carg_simul_dt(simul_arch['arch_simular'], simul_arch['num_samples'],
                                         var_egr, dim)  # simulation: '625' * xarray(21*215); '625'*ndarray[21]
@@ -108,7 +108,7 @@ def behav_proc_from_file(simul_arch, var_egr=None, tipo_egr=None, dim=None, guar
     pool = mp.Pool(processes=4)
 
     count = 1
-    start = 325
+    start = 432
     end = 625  # simul_arch['num_samples']
     for i in range(start, end):
         simulation, var_egr = carg_simul_dt(simul_arch['arch_simular'], i,
@@ -122,8 +122,6 @@ def behav_proc_from_file(simul_arch, var_egr=None, tipo_egr=None, dim=None, guar
         pool.apply_async(uni_behav_anlzr, args=(tipo_egr, simulation[str(i)],
                                                            var_egr, 0, bf_simul, dim, 1, counted_all_behaviors,
                                                            guardar + f'f_simul_{i}'))
-
-        bf_simul.get()
 
         if count % 4 == 0:
             time.sleep(60)
@@ -550,7 +548,7 @@ def carg_simul_dt(arch_simular, num_samples, var_egr=None, dim=None):
             {str(num_samples): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{num_samples}')))
             [var_egr].values})
 
-    # simulation_data.update({str(1000): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{1000}')))}) # for soil_sanility
+    # simulation_data.update({str(118268): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{118268}')))}) # for soil_sanility
 
     if var_egr is None:
         var_egr = [list(list(simulation_data.values())[0].data_vars.variables.mapping)[1]]  # [0] - soil salinity, 1 wtd

@@ -2,7 +2,7 @@ from tinamit.Análisis.Sens.anlzr import analy_by_file, carg_simul_dt, behav_pro
 from tinamit.Calib.ej.info_paráms import mapa_paráms, líms_paráms
 from tinamit.Conectado import Conectado
 from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
-from tinamit.Geog.Geog import Geografía
+from tinamit.Geog.Geog_1 import Geografía
 
 
 def gen_mod():
@@ -33,8 +33,9 @@ def gen_mod():
     modelo.conectar(var_mds='EpB', mds_fuente=True, var_bf='EpB - Potential ET crop B')
     modelo.conectar(var_mds='Irrigation efficiency', mds_fuente=True, var_bf='FsA - Water storage efficiency crop A')
     modelo.conectar(var_mds='Fw', mds_fuente=True, var_bf='Fw - Fraction well water to irrigation')
-    #'Policy RH' = 1, Fw = 1, Policy Irrigation improvement = 1, Policy Canal lining=1, Capacity per tubewell =(100.8, 201.6),
+    # 'Policy RH' = 1, Fw = 1, Policy Irrigation improvement = 1, Policy Canal lining=1, Capacity per tubewell =(100.8, 201.6),
     return modelo
+
 
 def gen_geog():
     Rechna_Doab = Geografía(nombre='Rechna Doab')
@@ -51,6 +52,7 @@ def gen_geog():
 
     return Rechna_Doab
 
+
 devolver = ['Watertable depth Tinamit', 'Soil salinity Tinamit CropA']
 
 # %% Buchiana 1
@@ -61,6 +63,7 @@ devolver = ['Watertable depth Tinamit', 'Soil salinity Tinamit CropA']
 if __name__ == "__main__":
     import os
     import numpy as np
+
     direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\simular\\625_mor")
     '''
     Simul
@@ -73,11 +76,13 @@ if __name__ == "__main__":
     '''
     Anlzr
     '''
-    guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul")
-    # mstr_mor = os.path.join('D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\sampled_data\\muestra_morris_625_corrected_bf.json')
-    # egr = analy_by_file('morris', líms_paráms, mapa_paráms, mstr_mor,
-    #                     simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='paso_tiempo',
-    #                     var_egr='mds_Watertable depth Tinamit')
+    from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims, gen_alpha
+
+    # guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul\\")
+    mstr_mor = os.path.join('D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\sampled_data\\muestra_morris_625.json')
+    egr = analy_by_file('morris', líms_paráms, mapa_paráms, mstr_mor,
+                        simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='superposition',
+                        var_egr='mds_Watertable depth Tinamit')
     #                     # f_simul_arch= {'arch': "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\corrected_bf\\new_spp\\new_f_simul_sppf_simul",
     #                     #                'num_sample': 625,
     #                     #                'counted_behaviors':
@@ -85,14 +90,19 @@ if __name__ == "__main__":
     #
     # np.save(guardar, egr)
 
-    behav_proc_from_file(simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='superposition', dim=214,
-                        var_egr='mds_Watertable depth Tinamit', guardar=guardar)
+    # behav_proc_from_file(simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='superposition', dim=214,
+    #                     var_egr='mds_Watertable depth Tinamit', guardar=guardar)
+
+    # analy_behav_by_dims(625, 215, "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul\\",
+    #                     dim_arch="D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\dict_fited_behav.npy",
+    #                     gaurdar= "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul\counted_all_behav\\")
 
     '''
     post_processing Anlzr 
     '''
     from tinamit.Calib.ej.sens_análisis import verif_sens
     from tinamit.Calib.ej.soil_class import p_soil_class
+
     # egr = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_forma.npy").tolist()
     # egr = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_promedio.npy").tolist()
     # simulation_data = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_paso.npy").tolist()
@@ -102,32 +112,36 @@ if __name__ == "__main__":
     Maping
     '''
     from tinamit.Calib.ej.sens_análisis import map_sens, verif_sens
+    from collections import Counter
 
-    # simulation_data = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_newbf_paso.npy").tolist()
+    # simulation_data = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_spp.npy").tolist()
     # final_sens = verif_sens('morris', list(simulation_data.keys())[0], simulation_data, mapa_paráms, p_soil_class)
-    # pasos = final_sens['morris'][list(simulation_data.keys())[0]]['mds_Watertable depth Tinamit']
+    # pasos = final_sens['morris'][list(simulation_data.keys())[0]]['mds_Watertable depth Tinamit'] # 9prms * 215polys
     # for prm, paso in pasos.items():
     #     map_sens(gen_geog(), 'morris', list(simulation_data.keys())[0], prm,
     #              paso, 0.1,
-    #              "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\")
-            # "C:\\Users\\gis_user\Downloads\\azhar shared\\azhar_plot\\paso_0_new222", ids=[str(i) for i in range(1, 216))
+    #              "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\", ids=[str(i) for i in range(1, 216)])
+    # "C:\\Users\\gis_user\Downloads\\azhar shared\\azhar_plot\\paso_0_new222", ids=[str(i) for i in range(1, 216)])
 
     # for spp
     # for patt, b_g in pasos.items():
+    #     alpha=gen_alpha("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul\counted_all_behav\\fited_behav.npy", patt)
+    #     if Counter(alpha)[0]==215:
+    #         continue
     #     bpp_prm = b_g['bp_params']
     #     gof_prm = b_g['gof']
-        # for prm, bpprm in bpp_prm.items():
-            # map_sens(gen_geog(), 'morris', list(simulation_data.keys())[0], prm,
-            #          bpprm, 0.1, behav=patt, ids=[str(i) for i in range(1, 216)]
-            #          path="D:\Thesis\pythonProject\localuse\Dt\Mor\map\spp_1\\bpp\\")
+    #     for prm, bpprm in gof_prm.items():
+    #         map_sens(gen_geog(), 'morris', list(simulation_data.keys())[0], prm,
+    #                  bpprm, 0.1, behav=patt, ids=[str(i) for i in range(1, 216)], alpha=alpha,
+    #                  path="D:\Thesis\pythonProject\localuse\Dt\Mor\map\spp_1\\aic\\")
 
-        # for prm, gof in gof_prm.items():
-        #     map_sens(gen_geog(), 'morris', list(simulation_data.keys())[0], prm,
-        #              gof, 0.1, behav=patt, ids=[str(i) for i in range(1, 216)],
-        #              path="D:\Thesis\pythonProject\localuse\Dt\Mor\map\\spp_1\\aic\\")
+    # for prm, gof in gof_prm.items():
+    #     map_sens(gen_geog(), 'morris', list(simulation_data.keys())[0], prm,
+    #              gof, 0.1, behav=patt, ids=[str(i) for i in range(1, 216)],
+    #              path="D:\Thesis\pythonProject\localuse\Dt\Mor\map\\spp_1\\aic\\")
 
     # FOR AZHAR
-    #D:\Thesis\pythonProject\localuse\Dt\Mor\mor_new_input  #D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\simular\\625_mor\\
+    # D:\Thesis\pythonProject\localuse\Dt\Mor\mor_new_input  #D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\simular\\625_mor\\
 
     # simulation_data, var_egr = carg_simul_dt(os.path.abspath('D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\simular\\625_mor\\'), 1,
     #                   var_egr='mds_Soil salinity Tinamit CropA')
@@ -135,5 +149,3 @@ if __name__ == "__main__":
     #          simulation_data['100'][var_egr].values, 0.1,
     #          # "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\paso_", ids=[str(i) for i in range(1, 216)])
     #     "C:\\Users\\gis_user\Downloads\\azhar shared\\azhar_plot\\paso_0", ids=[str(i) for i in range(1, 216)])
-
-

@@ -79,17 +79,24 @@ if __name__ == "__main__":
     #                      tmñ_grupos=360, í_grupos=[0], guardar=direc, paralelo=True)
 
 # 360 groups size of each group = 500
+    '''
+    post analysis
+    '''
+    mstr_fa = os.path.join('D:\Thesis\pythonProject\localuse\Dt\Fast\sampled data\\muestra_fast_23params.json')
+    egr = analy_by_file('fast', líms_paráms, mapa_paráms, mstr_fa,
+                        simul_arch={'arch_simular': direc, 'num_samples': 120000}, tipo_egr='superposition',
+                        var_egr='mds_Watertable depth Tinamit')
 
     '''
     map
     '''
     from tinamit.Calib.ej.sens_análisis import map_sens, verif_sens
 
-    simulation_data, var_egr = carg_simul_dt(os.path.abspath('D:\Thesis\pythonProject\localuse\Dt\Fast\simular\\'), 1,
-                      var_egr='mds_Soil salinity Tinamit CropA')
-
-
-    map_sens(gen_geog(), 'fast', 'paso_0', 'SS',
-             simulation_data['1000'][var_egr].values, 0.1,
-             "D:\Thesis\pythonProject\localuse\Dt\Fast\map\\paso_")
+    # simulation_data, var_egr = carg_simul_dt(os.path.abspath('D:\Thesis\pythonProject\localuse\Dt\Fast\simular\\'), 1,
+    #                   var_egr='mds_Soil salinity Tinamit CropA')
+    #
+    #
+    # map_sens(gen_geog(), 'fast', 'paso_0', 'SS',
+    #          simulation_data['1000'][var_egr].values, 0.1,
+    #          "D:\Thesis\pythonProject\localuse\Dt\Fast\map\\paso_")
 

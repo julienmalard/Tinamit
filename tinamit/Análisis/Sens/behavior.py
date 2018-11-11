@@ -6,18 +6,25 @@ def predict(x_data, parameters, pattern):
     if pattern == 'linear':
         return parameters['slope'] * x_data + parameters['intercept']
     elif pattern == 'exponencial':
-        return parameters['y_intercept'] * (parameters['g_d'] ** x_data)
+        return parameters['y_intercept'] * (parameters['g_d'] ** x_data) + parameters['constant']
     elif pattern == 'logístico':
-        return parameters['maxi_val'] / (1 + np.exp(-parameters['g_d'] * x_data + parameters['mid_point']))
+        return parameters['maxi_val'] / (1 + np.exp(-parameters['g_d'] * x_data + parameters['mid_point'])) + \
+               parameters['constant']
     elif pattern == 'inverso':
-        return parameters['g_d'] / (x_data + parameters['phi'])
+        return parameters['g_d'] / (x_data + parameters['phi']) + parameters['constant']
     elif pattern == 'log':
-        return parameters['g_d'] * np.log(x_data + parameters['phi'])
+        return parameters['g_d'] * np.log(x_data + parameters['phi']) + parameters['constant']
     elif pattern == 'oscilación':
-        return parameters['amplitude'] * np.sin(parameters['period'] * x_data + parameters['phi'])
+        return parameters['amplitude'] * np.sin(parameters['period'] * x_data + parameters['phi']) + parameters[
+            'constant']
     elif pattern == 'oscilación_aten':
         return np.exp(parameters['g_d'] * x_data) * parameters['amplitude'] * \
-               np.sin(parameters['period'] * x_data + parameters['phi'])
+               np.sin(parameters['period'] * x_data + parameters['phi']) + parameters['constant']
+    elif pattern == 'spp_oscil_aten_oscilación_aten':
+        return np.exp(parameters['g_d'] * x_data) * parameters['amplitude'] * \
+               np.sin(parameters['period'] * x_data + parameters['phi']) + parameters['constant'] +\
+               np.exp(parameters['g_d_1'] * x_data) * parameters['amplitude_1'] * \
+               np.sin(parameters['period_1'] * x_data + parameters['phi_1']) + parameters['constant_1']
 
 
 def linear(x, x_data):  # x is an np.array
@@ -53,6 +60,7 @@ def simple_shape(x_data=None, y_data=None, tipo_egr='linear', gof=False):
         return compute_rmse(f(x, x_data), y_data)
 
     norm_y_data = (y_data - np.average(y_data)) / np.std(y_data)
+    # norm_y_data = y_data
 
     if tipo_egr == 'linear':
         params = optimize.minimize(f_opt, x0=[1, 1], method='Nelder-Mead',
@@ -88,7 +96,7 @@ def simple_shape(x_data=None, y_data=None, tipo_egr='linear', gof=False):
                                                 inverso(np.asarray(list(b_params['bp_params'].values())), x_data),
                                                 y_data)}})
     elif tipo_egr == 'log':
-        params = optimize.minimize(f_opt, x0=[0.3, 0.1, 0], method='CG', args=(x_data, norm_y_data, log)).x
+        params = optimize.minimize(f_opt, x0=[0.3, 0.1, 0], method='Nelder-Mead', args=(x_data, norm_y_data, log)).x
         b_params = {'bp_params': de_normalize(params, y_data, tipo_egr)}
         if gof:
             b_params.update({'gof': {'aic': aic(len(b_params['bp_params']),
@@ -104,7 +112,7 @@ def simple_shape(x_data=None, y_data=None, tipo_egr='linear', gof=False):
                                                 y_data)}})
     elif tipo_egr == 'oscilación_aten':
         # x0 assignment is very tricky, the period (3rd arg should always>= real period)
-        params = optimize.minimize(f_opt, x0=[0.1, 2, 2, 0, 0], method='Powell',  # 0.1, 1, 2, 0.01, 0
+        params = optimize.minimize(f_opt, x0=[0.1, 2, 2, 0, 0], method='SLSQP',  # 0.1, 1, 2, 0.01, 0, SLSQP, Powell
                                    args=(x_data, norm_y_data, oscilación_aten)).x
         b_params = {'bp_params': de_normalize(params, y_data, tipo_egr)}
         if gof:
@@ -192,34 +200,58 @@ def de_normalize(norm_b_param, y_data, tipo_egr):
     if tipo_egr == 'linear':
         return {'slope': norm_b_param[0] * np.std(y_data),
                 'intercept': norm_b_param[1] * np.std(y_data) + np.average(y_data)}
+        # return {'slope': norm_b_param[0],
+        #         'intercept': norm_b_param[1]}
     elif tipo_egr == 'exponencial':
         return {'y_intercept': norm_b_param[0] * np.std(y_data),
                 'g_d': norm_b_param[1],
                 'constant': norm_b_param[2] * np.std(y_data) + np.average(y_data)}
+        # return {'y_intercept': norm_b_param[0],
+        #         'g_d': norm_b_param[1],
+        #         'constant': norm_b_param[2]}
     elif tipo_egr == 'logístico':
         return {'maxi_val': norm_b_param[0] * np.std(y_data),
                 'g_d': norm_b_param[1],
                 'mid_point': norm_b_param[2],
                 'constant': norm_b_param[3] * np.std(y_data) + np.average(y_data)}
+        # return {'maxi_val': norm_b_param[0],
+        #         'g_d': norm_b_param[1],
+        #         'mid_point': norm_b_param[2],
+        #         'constant': norm_b_param[3]}
     elif tipo_egr == 'inverso':
         return {'g_d': norm_b_param[0] * np.std(y_data),
                 'phi': norm_b_param[1],
                 'constant': norm_b_param[2] * np.std(y_data) + np.average(y_data)}
+        # return {'g_d': norm_b_param[0],
+        #         'phi': norm_b_param[1],
+        #         'constant': norm_b_param[2]}
     elif tipo_egr == 'log':
         return {'g_d': norm_b_param[0] * np.std(y_data),
                 'phi': norm_b_param[1],
                 'constant': norm_b_param[2] * np.std(y_data) + np.average(y_data)}
+        # return {'g_d': norm_b_param[0],
+        #         'phi': norm_b_param[1],
+        #         'constant': norm_b_param[2]}
     elif tipo_egr == 'oscilación':
         return {'amplitude': norm_b_param[0] * np.std(y_data),
                 'period': abs(norm_b_param[1]),
                 'phi': norm_b_param[2],
                 'constant': norm_b_param[3] * np.std(y_data) + np.average(y_data)}
+        # return {'amplitude': norm_b_param[0],
+        #         'period': abs(norm_b_param[1]),
+        #         'phi': norm_b_param[2],
+        #         'constant': norm_b_param[3]}
     elif tipo_egr == 'oscilación_aten':
         return {'g_d': norm_b_param[0],
                 'amplitude': norm_b_param[1] * np.std(y_data),
                 'period': abs(norm_b_param[2]),
                 'phi': norm_b_param[3],
                 'constant': norm_b_param[4] * np.std(y_data) + np.average(y_data)}
+        # return {'g_d': norm_b_param[0],
+        #         'amplitude': norm_b_param[1],
+        #         'period': abs(norm_b_param[2]),
+        #         'phi': norm_b_param[3],
+        #         'constant': norm_b_param[4]}
 
 
 def compute_gof(y_predict, y_obs):
