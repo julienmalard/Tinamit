@@ -546,7 +546,7 @@ def carg_simul_dt(arch_simular, num_samples, var_egr=None, dim=None):
         # print(i, float(getsizeof(simulation_data)/(1024*1024)), 'MB')
         simulation_data.update(
             {str(num_samples): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{num_samples}')))
-            [var_egr].values})
+            [var_egr].values[2:,:]})
 
     # simulation_data.update({str(118268): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{118268}')))}) # for soil_sanility
 

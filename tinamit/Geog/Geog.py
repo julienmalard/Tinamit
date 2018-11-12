@@ -9,6 +9,8 @@ import matplotlib.colors as colors
 import numpy as np
 import pandas as pd
 import shapefile as sf
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
@@ -539,7 +541,8 @@ class Geografía(object):
                              .format(cód=cód, geog=símismo.nombre))
         return cód
 
-    def dibujar(símismo, archivo, valores=None, ids=None, título=None, unidades=None, colores=None, escala_num=None):
+    def dibujar(símismo, archivo, valores=None, midpoint=None, ids=None, título=None, unidades=None, colores=None,
+                escala_num=None, alpha=None):
         """
         Dibuja la Geografía.
 
@@ -645,20 +648,55 @@ class Geografía(object):
             else:
                 vals_norm = (vec_valores - escala_num[0]) / (escala_num[1] - escala_num[0])
 
-            d_clrs = _gen_d_mapacolores(colores=colores)
+            if escala_num[0] == escala_num[1]:
+                norm = colors.Normalize(vmin=0, vmax=0.01)
+            else:
+                norm = colors.Normalize(vmin=escala_num[0], vmax=escala_num[1])
 
-            mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs)
-            norm = colors.Normalize(vmin=escala_num[0], vmax=escala_num[1])
-            cpick = cm.ScalarMappable(norm=norm, cmap=mapa_color)
-            cpick.set_array([])
 
-            v_cols = mapa_color(vals_norm)
-            _dibujar_shp(ejes=ejes, frm=regiones, orden=orden, colores=v_cols)
+            def _cpick(norm, d_clrs=None, colores=colores):
+                if d_clrs is None:
+                    d_clrs = _gen_d_mapacolores(colores)
+                    mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs)
+                else:
+                    mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs)
+
+                v_cols = mapa_color(vals_norm)
+
+                _dibujar_shp(ejes=ejes, frm=regiones, orden=orden, colores=v_cols, alpha=alpha)
+
+                cpick = cm.ScalarMappable(norm=norm, cmap=mapa_color)
+                cpick.set_array([])
+
+                return cpick, v_cols
 
             if unidades is not None:
-                fig.colorbar(cpick, label=unidades)
-            else:
-                fig.colorbar(cpick)
+                if escala_num[1] > midpoint and escala_num[0] > 0:
+                    d_clrs = _gen_d_mapacolores(colores=colores)
+                    fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades, ticks=[0, escala_num[0], midpoint, escala_num[1]])
+                    # col = _cpick(norm, d_clrs)[1]
+
+                elif escala_num[1] == escala_num[0]:
+                    d_clrs = _gen_d_mapacolores(colores=[colores[0]])
+                    # col = _cpick(norm, d_clrs)[1]
+                    fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades, ticks=[0])
+
+                elif escala_num[0] == 0 and escala_num[1] < midpoint:
+                    d_clrs = _gen_d_mapacolores(colores=colores[:3])
+                    # col = _cpick(norm, d_clrs)[1]
+                    fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades, ticks=[escala_num[0], escala_num[1]])
+
+                elif escala_num[0] == 0 and escala_num[1] > midpoint:
+                    d_clrs = _gen_d_mapacolores(colores=colores)
+                    # col = _cpick(norm, d_clrs)[1]
+                    fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades,  ticks=[escala_num[0], midpoint, escala_num[1]])
+
+                elif escala_num[1] < midpoint and escala_num[0] > 0:
+                    d_clrs = _gen_d_mapacolores(colores=colores[:3])
+                    # col = _cpick(norm, d_clrs)[1]
+                    fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades,ticks=[0, escala_num[0], escala_num[1], midpoint])
+
+            fig.colorbar(_cpick(norm, d_clrs=None)[0])
 
         for nombre, d_obj in símismo.formas.items():
 
