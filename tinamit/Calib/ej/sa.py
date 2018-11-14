@@ -76,12 +76,12 @@ if __name__ == "__main__":
     '''
     Anlzr
     '''
-    from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims, gen_alpha
+    from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims, gen_alpha, map_rank, gen_counted_behavior
 
-    guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_new\\")
+    # guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_new\\")
     mstr_mor = os.path.join('D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\sampled_data\\muestra_morris_625.json')
-    # egr = analy_by_file('morris', líms_paráms, mapa_paráms, mstr_mor, dim=215,
-    #                     simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='superposition',
+    # egr = analy_by_file('morris', líms_paráms, mapa_paráms, mstr_mor, dim=214,
+    #                     simul_arch={'arch_simular': direc, 'num_samples': 624}, tipo_egr='superposition',
     #                     var_egr='mds_Watertable depth Tinamit')
     #                     # f_simul_arch= {'arch': "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\corrected_bf\\new_spp\\new_f_simul_sppf_simul",
     #                     #                'num_sample': 625,
@@ -90,12 +90,8 @@ if __name__ == "__main__":
     #
     # np.save(guardar, egr)
 
-    behav_proc_from_file(simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='superposition', dim=214,
-                        var_egr='mds_Watertable depth Tinamit', guardar=guardar)
-
-    # analy_behav_by_dims(625, 215, "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul\\",
-    #                     dim_arch="D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\dict_fited_behav.npy",
-    #                     gaurdar= "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul\counted_all_behav\\")
+    # behav_proc_from_file(simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='superposition', dim=214,
+    #                      var_egr='mds_Watertable depth Tinamit', guardar=guardar)
 
     '''
     post_processing Anlzr 
@@ -103,10 +99,26 @@ if __name__ == "__main__":
     from tinamit.Calib.ej.sens_análisis import verif_sens
     from tinamit.Calib.ej.soil_class import p_soil_class
 
-    # egr = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_forma.npy").tolist()
-    # egr = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_promedio.npy").tolist()
-    # simulation_data = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_paso.npy").tolist()
-    # final_sens = verif_sens('morris', 'promedio', egr, mapa_paráms, p_soil_class)
+    no_ini = "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_no_ini\\fited_behav_noini.npy"
+    ini = "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_ini\\fited_behav_ini.npy"
+    guardar = "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\"
+
+    # analy_behav_by_dims(625, 215, "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_ini\\",
+    #                     # dim_arch=ini,
+    #                     gaurdar= "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_ini\\")
+
+    # counted_all_behaviors = gen_counted_behavior(ini)
+
+    # egr = analy_by_file('morris', líms_paráms, mapa_paráms, mstr_mor, dim=214,
+    #                     simul_arch={'arch_simular': direc, 'num_samples': 624}, tipo_egr='superposition',
+    #                     var_egr='mds_Watertable depth Tinamit',
+    #                     f_simul_arch={
+    #                         'arch': "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_ini\\f_simul",
+    #                         'num_sample': 625,
+    #                         'counted_behaviors':
+    #                             "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_ini\\counted_all_behaviors_ini.npy"})
+    #
+    # np.save(guardar + 'mor_625_spp_ini', egr)
 
     '''
     Maping
@@ -114,9 +126,10 @@ if __name__ == "__main__":
     from tinamit.Calib.ej.sens_análisis import map_sens, verif_sens
     from collections import Counter
 
-    # simulation_data = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_spp.npy").tolist()
-    # final_sens = verif_sens('morris', list(simulation_data.keys())[0], simulation_data, mapa_paráms, p_soil_class)
-    # pasos = final_sens['morris'][list(simulation_data.keys())[0]]['mds_Watertable depth Tinamit'] # 9prms * 215polys
+    simulation_data = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_spp_ini.npy").tolist()
+    final_sens = verif_sens('morris', list(simulation_data.keys())[0], simulation_data, mapa_paráms, p_soil_class)
+    pasos = final_sens['morris'][list(simulation_data.keys())[0]]['mds_Watertable depth Tinamit']  # 9prms * 215polys
+
     # for prm, paso in pasos.items():
     #     map_sens(gen_geog(), 'morris', list(simulation_data.keys())[0], prm,
     #              paso, 0.1,
@@ -124,16 +137,16 @@ if __name__ == "__main__":
     # "C:\\Users\\gis_user\Downloads\\azhar shared\\azhar_plot\\paso_0_new222", ids=[str(i) for i in range(1, 216)])
 
     # for spp
-    # for patt, b_g in pasos.items():
-    #     alpha=gen_alpha("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul\counted_all_behav\\fited_behav.npy", patt)
-    #     if Counter(alpha)[0]==215:
-    #         continue
-    #     bpp_prm = b_g['bp_params']
-    #     gof_prm = b_g['gof']
-    #     for prm, bpprm in gof_prm.items():
-    #         map_sens(gen_geog(), 'morris', list(simulation_data.keys())[0], prm,
-    #                  bpprm, 0.1, behav=patt, ids=[str(i) for i in range(1, 216)], alpha=alpha,
-    #                  path="D:\Thesis\pythonProject\localuse\Dt\Mor\map\spp_1\\aic\\")
+    for patt, b_g in pasos.items():
+        alpha=gen_alpha(ini, patt) #ini/ no_ini
+        if Counter(alpha)[0]==215:
+            continue
+        bpp_prm = b_g['bp_params']
+        gof_prm = b_g['gof']
+        for prm, bpprm in bpp_prm.items():
+            map_sens(gen_geog(), 'Morris', list(simulation_data.keys())[0], prm,
+                     bpprm, 0.1, behav=patt, ids=[str(i) for i in range(1, 216)], alpha=alpha,
+                     path="D:\Thesis\pythonProject\localuse\Dt\Mor\map\ini\\spp\\")
 
     # for prm, gof in gof_prm.items():
     #     map_sens(gen_geog(), 'morris', list(simulation_data.keys())[0], prm,
@@ -149,3 +162,49 @@ if __name__ == "__main__":
     #          simulation_data['100'][var_egr].values, 0.1,
     #          # "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\paso_", ids=[str(i) for i in range(1, 216)])
     #     "C:\\Users\\gis_user\Downloads\\azhar shared\\azhar_plot\\paso_0", ids=[str(i) for i in range(1, 216)])
+
+    # final plot
+    # archivo = "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\final_plot\\"
+    #
+    # paso_data = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_paso.npy").tolist()
+    # mean_data = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_promedio.npy").tolist()
+    # behav_data = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_spp.npy").tolist()
+    #
+    # pasos = verif_sens('morris', list(paso_data.keys())[0], paso_data, mapa_paráms, p_soil_class)['morris'][
+    #     list(paso_data.keys())[0]]['mds_Watertable depth Tinamit']  # 9prms * 215polys
+    # means = verif_sens('morris', list(mean_data.keys())[0], mean_data, mapa_paráms, p_soil_class)['morris'][
+    #     list(mean_data.keys())[0]]['mds_Watertable depth Tinamit']
+    # behaviors = verif_sens('morris', list(behav_data.keys())[0], behav_data, mapa_paráms, p_soil_class)['morris'][
+    #     list(behav_data.keys())[0]]['mds_Watertable depth Tinamit']
+    #
+    # row_labels = list(pasos)
+    # col_labels = ['S_0', 'S_5', 'S_10', 'S_15', 'S_20', 'Mean']
+    # col_labels.extend([f"{behav}_{bpp}" for behav in behaviors for bpp in behaviors[behav]['bp_params']['Kaq']])
+    # col_labels.extend([f"{behav}_gof" for behav in behaviors])
+    #
+    # for i in range(215):
+    #     data = np.empty([len(row_labels), len(col_labels)])
+    #
+    #     # paso
+    #     ps = [0, 5, 10, 15, 20]
+    #     for prmp, d_paso in pasos.items():
+    #         for p in ps:
+    #             data[list(pasos).index(prmp), ps.index(p)] = d_paso[f'paso_{p}'][i]
+    #
+    #     # mean
+    #     for prmm, m_aray in means.items():
+    #         data[list(pasos).index(prmm), col_labels.index('Mean')] = m_aray[i]
+    #
+    #     # behavior
+    #     for patt, d_bg in behaviors.items():
+    #         for pbpp, bpp in d_bg['bp_params'].items():
+    #             for bppm, va in bpp.items():
+    #                 data[list(pasos).index(pbpp),col_labels.index(f'{patt}_{bppm}')]=va[i]
+    #         for paic, aic in d_bg['gof'].items():
+    #             data[list(pasos).index(paic), col_labels.index(f'{patt}_gof')] = aic['aic'][i]
+    #
+    #     map_rank(row_labels, col_labels=col_labels, data=np.round(data, 2), title='Morris Sensitivity Ranking Results',
+    #              archivo=archivo + f'poly{i}',
+    #              threshold=0.1, cbarlabel="Sensitivity Index", cmap="magma_r")
+    #
+    #     print(f'finish the {i}-th poly, yeah!')

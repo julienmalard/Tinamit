@@ -120,8 +120,8 @@ def behav_proc_from_file(simul_arch, var_egr=None, tipo_egr=None, dim=None, guar
         print(f"for sample {i} ")
 
         pool.apply_async(uni_behav_anlzr, args=(tipo_egr, simulation[str(i)],
-                                                           var_egr, 0, bf_simul, dim, 1, counted_all_behaviors,
-                                                           guardar + f'f_simul_{i}'))
+                                                var_egr, 0, bf_simul, dim, 1, counted_all_behaviors,
+                                                guardar + f'f_simul_{i}'))
 
         if count % 4 == 0:
             time.sleep(60)
@@ -418,7 +418,7 @@ def format_simul(simulation, vr, tipo_egr, dim):
         else:
             tmñ = [len(simulation)]
     else:
-        tmñ = [len(simulation), 1]
+        tmñ = [len(simulation), 1] #, 1
 
     if tipo_egr == "promedio":
         f_simul = np.empty(tmñ)
@@ -546,7 +546,7 @@ def carg_simul_dt(arch_simular, num_samples, var_egr=None, dim=None):
         # print(i, float(getsizeof(simulation_data)/(1024*1024)), 'MB')
         simulation_data.update(
             {str(num_samples): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{num_samples}')))
-            [var_egr].values[2:,:]})
+                               [var_egr].values[2:, :]})
 
     # simulation_data.update({str(118268): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{118268}')))}) # for soil_sanility
 
