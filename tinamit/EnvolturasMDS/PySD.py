@@ -18,19 +18,6 @@ class ModeloPySD(EnvolturaMDS):
 
     def __init__(símismo, archivo, nombre='mds'):
 
-        ext = os.path.splitext(archivo)[1]
-        if ext == '.mdl':
-            símismo.tipo = '.mdl'
-            símismo.mod = pysd.read_vensim(archivo)
-        elif ext in ['.xmile', '.xml']:
-            símismo.tipo = '.xmile'
-            símismo.mod = pysd.read_xmile(archivo)
-        elif ext == '.py':  # Modelos PySD ya traducidos
-            símismo.tipo = '.py'
-            símismo.mod = pysd.load(archivo)
-        else:
-            raise ValueError(_('PySD no sabe leer modelos del formato "{}". Debes darle un modelo ".mdl" o ".xmile".')
-                             .format(ext))
         símismo.tipo_mod = None
         símismo._conv_nombres = {}
         símismo.tiempo_final = None
@@ -96,7 +83,7 @@ class ModeloPySD(EnvolturaMDS):
                     except AttributeError:
                         tipo = 'auxiliar'
 
-                parientes = obj_ec.variables()
+                parientes = [v for v in obj_ec.variables() if v not in internos]
 
                 if tipo == 'auxiliar' and not len(parientes):
                     tipo = 'constante'
