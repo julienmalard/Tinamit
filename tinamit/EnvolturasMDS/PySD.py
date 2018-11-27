@@ -83,7 +83,7 @@ class ModeloPySD(EnvolturaMDS):
                     except AttributeError:
                         tipo = 'auxiliar'
 
-                parientes = [v for v in obj_ec.variables() if v not in internos]
+                parientes = {v for v in obj_ec.variables() if v not in internos}
 
                 if tipo == 'auxiliar' and not len(parientes):
                     tipo = 'constante'

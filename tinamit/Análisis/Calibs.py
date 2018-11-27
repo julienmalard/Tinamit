@@ -195,7 +195,10 @@ class CalibradorEc(object):
 
         # Intentar obtener información geográfica, si posible.
         if geog is not None:
-            lugares = geog.obt_lugares_en(en, escala=escala)
+            if escala is None:
+                lugares = [None]
+            else:
+                lugares = geog.obt_lugares_en(en, escala=escala)
             jerarquía = geog.obt_jerarquía(en, escala=escala, orden_jerárquico=jrq)
         else:
             if en is not None or escala is not None:
@@ -636,8 +639,8 @@ def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops
     # Crear el diccionarion de argumentos
     ops_auto = {
         'tune': 1000,
-        'cores': 1,
-        'nuts_kwargs': {'target_accept': 0.80}
+        # 'cores': 1,
+        'nuts_kwargs': {'target_accept': 0.90}
     }
     ops_auto.update(ops)
 

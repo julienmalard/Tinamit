@@ -699,10 +699,10 @@ class Ecuación(object):
                 pm.Bernoulli(name='Y_obs', p=mu, observed=obs_y.values)
 
             else:
-                sigma = pm.HalfNormal(name='sigma', sd=obs_y.values.std())
-                theta = pm.HalfNormal(name='theta', sd=1/obs_y.values.std())
+                sigma = pm.HalfNormal(name='sigma', sd=1)
+                theta = pm.Normal(name='theta', sd=1/obs_y.values.std())
                 beta = pm.Normal(name='beta', sd=obs_y.values.std())
-                pm.Normal(name='Y_obs', mu=mu, sd=sigma * pm.math.invlogit(theta * (mu)), observed=obs_y.values)
+                pm.Normal(name='Y_obs', mu=mu, sd=sigma * mu + beta, observed=obs_y.values)
 
         return modelo
 

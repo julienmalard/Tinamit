@@ -462,6 +462,9 @@ class Geografía(object):
         return orden
 
     def obt_jerarquía(símismo, en=None, escala=None, orden_jerárquico=None):
+        if escala is None:
+            return {}
+
         escala = símismo._validar_escala(escala, en)
         en = símismo._validar_código_lugar(en)
 
