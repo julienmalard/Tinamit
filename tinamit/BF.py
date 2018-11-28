@@ -446,6 +446,7 @@ class ModeloImpaciente(ModeloBF):
         símismo.paso_en_ciclo = None
         símismo.ciclo = None
         símismo.tmñ_ciclo = None
+        símismo.arch_ingreso = None
         símismo.matrs_egr = {}
         símismo.matrs_ingr = {}
         símismo.proces_ingrs = {}
@@ -566,7 +567,7 @@ class ModeloImpaciente(ModeloBF):
         """
 
         if archivo is None:
-            archivo = símismo.archivo
+            archivo = símismo.arch_ingreso
 
         # Procesar los ingresos
         if símismo.ciclo != -1:
@@ -574,7 +575,7 @@ class ModeloImpaciente(ModeloBF):
 
         dic_ingr = {}
 
-        ingr_por_pasito = símismo._vars_por_pasito(solamente='ingr')
+        ingr_por_pasito = símismo._vars_subciclo(solamente='ingr')
 
         for var in símismo.ingresos():
             if var in ingr_por_pasito:
