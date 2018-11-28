@@ -105,9 +105,10 @@ class EjBloques(ModeloBloques):
 
 class EjDeterminado(ModeloDeterminado):
 
-    def __init__(símismo, nombre, n, unid_tiempo):
+    def __init__(símismo, nombre, n, unid_tiempo, archivo):
         símismo.n = n
         símismo.unid_tiempo = unid_tiempo
+        símismo.arch_ingreso = archivo
 
         super().__init__(nombre=nombre)
 

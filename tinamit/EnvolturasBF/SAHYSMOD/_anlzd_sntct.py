@@ -147,7 +147,10 @@ def build_d_línea(nombresParáms, delim, dicParáms):
         if nombreParám[0] != '*':
             valores.append(str(dicParáms[nombreParám]))
         else:
+            #try:
             valores += [str(x) for x in dicParáms[nombreParám.strip('*')]]
+            #except TypeError:
+                #pass
 
     return delim.join(valores) + '  \n'
 

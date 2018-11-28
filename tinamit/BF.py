@@ -574,7 +574,7 @@ class ModeloImpaciente(ModeloBF):
 
         dic_ingr = {}
 
-        ingr_por_pasito = símismo._vars_por_pasito(solamente='ingr')
+        ingr_por_pasito = símismo._vars_subciclo(solamente='ingr')
 
         for var in símismo.ingresos():
             if var in ingr_por_pasito:
