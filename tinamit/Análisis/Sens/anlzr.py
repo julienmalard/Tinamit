@@ -105,11 +105,11 @@ def behav_proc_from_file(simul_arch, var_egr=None, tipo_egr=None, dim=None, guar
 
     counted_all_behaviors = []
     bf_simul = None
-    pool = mp.Pool(processes=10)
+    pool = mp.Pool(processes=4)
 
     count = 1
-    start = 99998
-    end = 100000  # simul_arch['num_samples']
+    start = 432
+    end = 625  # simul_arch['num_samples']
     for i in range(start, end):
         simulation, var_egr = carg_simul_dt(simul_arch['arch_simular'], i,
                                             var_egr, dim)
@@ -119,13 +119,13 @@ def behav_proc_from_file(simul_arch, var_egr=None, tipo_egr=None, dim=None, guar
             bf_simul = gen_bf_simul(tipo_egr, tmñ=[len(simulation), simulation[str(i)].shape[1]])
         print(f"for sample {i} ")
 
-        pool.apply(uni_behav_anlzr, args=(tipo_egr, simulation[str(i)],
+        pool.apply_async(uni_behav_anlzr, args=(tipo_egr, simulation[str(i)],
                                                 var_egr, 0, bf_simul, dim, 1, counted_all_behaviors,
                                                 guardar + f'f_simul_{i}'))
 
-        # if count % 10 == 0:
-        #     time.sleep(85)
-        # count += 1
+        if count % 4 == 0:
+            time.sleep(60)
+        count += 1
 
     np.save(guardar + f'counted_all_behaviors_{start}_{end}', counted_all_behaviors)
 
@@ -161,8 +161,10 @@ def anlzr_sens(mod, método, líms_paráms, mapa_paráms, t_final, var_egr,
     )
 
 
-def anlzr_simul(método, líms_paráms, mstr, mapa_paráms, ficticia, simulation, var_egr, ops_método, f_simul_arch, dim,
-                tipo_egr="promedio"):
+def anlzr_simul(método, líms_paráms, mstr, mapa_paráms, ficticia, var_egr, f_simul_arch, dim,
+                tipo_egr="promedio", simulation=None, ops_método=None):
+    if ops_método is None:
+        ops_método = {}
     if isinstance(tipo_egr, str):
         tipo_egr = [tipo_egr]
     if isinstance(var_egr, str):
@@ -418,7 +420,7 @@ def format_simul(simulation, vr, tipo_egr, dim):
         else:
             tmñ = [len(simulation)]
     else:
-        tmñ = [len(simulation), 1]
+        tmñ = [len(simulation), 1] #, 1
 
     if tipo_egr == "promedio":
         f_simul = np.empty(tmñ)

@@ -1,9 +1,11 @@
 from tinamit.Análisis.Sens.corridas import *
 from tinamit.Calib.ej.info_paráms import mapa_paráms, líms_paráms
+from tinamit.Calib.ej.soil_class import p_soil_class
 
 from tinamit.Conectado import Conectado
 from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
-from tinamit.Análisis.Sens.anlzr import anlzr_sens, analy_by_file, behav_proc_from_file
+from tinamit.Análisis.Sens.anlzr import anlzr_sens, analy_by_file, carg_simul_dt, anlzr_simul
+from tinamit.Geog import Geografía
 
 
 def gen_mod():
@@ -34,8 +36,25 @@ def gen_mod():
     modelo.conectar(var_mds='EpB', mds_fuente=True, var_bf='EpB - Potential ET crop B')
     modelo.conectar(var_mds='Irrigation efficiency', mds_fuente=True, var_bf='FsA - Water storage efficiency crop A')
     modelo.conectar(var_mds='Fw', mds_fuente=True, var_bf='Fw - Fraction well water to irrigation')  ##0 - 0.8
-    #'Policy RH' = 1, Fw = 1, Policy Irrigation improvement = 1, Policy Canal lining=1, Capacity per tubewell =(100.8, 201.6),
+    # 'Policy RH' = 1, Fw = 1, Policy Irrigation improvement = 1, Policy Canal lining=1, Capacity per tubewell =(100.8, 201.6),
     return modelo
+
+
+def gen_geog():
+    Rechna_Doab = Geografía(nombre='Rechna Doab')
+
+    base_dir = os.path.join("D:\Thesis\pythonProject\Tinamit\\tinamit\Ejemplos\en\Ejemplo_SAHYSMOD", 'Shape_files')
+    Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir, 'Internal_Polygon.shp'), col_id="Polygon_ID")
+
+    Rechna_Doab.agregar_forma(os.path.join(base_dir, 'External_Polygon.shp'), color='#edf4da')
+    Rechna_Doab.agregar_forma(os.path.join(base_dir, 'RIVR.shp'), tipo='agua')
+    # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'Forst_polygon.shp'), tipo='bosque')
+    Rechna_Doab.agregar_forma(os.path.join(base_dir, 'CNL_Arc.shp'), tipo='agua', color='#1ba4c6', llenar=False)
+    # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'buildup_Polygon.shp'), tipo='ciudad')
+    # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'road.shp'), tipo='calle')
+
+    return Rechna_Doab
+
 
 devolver = ['Watertable depth Tinamit', 'Soil salinity Tinamit CropA']
 
@@ -46,31 +65,76 @@ devolver = ['Watertable depth Tinamit', 'Soil salinity Tinamit CropA']
 
 if __name__ == "__main__":
     import os
-    from tinamit.Calib.ej.muestrear import mstr_fast
-    direc = os.path.join("D:\Gaby\Tinamit\Dt\Fast\simular\\12000_fa")
-    # guardar = os.path.join("D:\Gaby\Tinamit-master\Dt\Fast\\anlzr\\fa_app")
+    import numpy as np
+
+    direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\simular")
+
+    '''
+    Simul
+    '''
+    # from tinamit.Calib.ej.muestrear import mstr_fast
+
+    # guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\\anlzr_new_calib")
 
     # direc = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\simular")
-    guardar = os.path.join("D:\Gaby\Tinamit\Dt\Fast\\f_simul\\")
+    # guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\\new_calib")
 
+    # simul_sens(
+    #     gen_mod(), mstr_paráms=mstr_fast, mapa_paráms=mapa_paráms, var_egr=devolver, t_final=20, guardar=direc,
+    #     índices_mstrs=None, paralelo=True
+    # )
 
-    '''
-        Simul
-    '''
     # simul_sens_por_grupo(gen_mod(), mstr_paráms=mstr_fast, mapa_paráms=mapa_paráms, var_egr=devolver, t_final=20,
-    #                      tmñ_grupos=240, í_grupos=[i for i in range(475, 500)], guardar=direc, paralelo=True)
+    #                      tmñ_grupos=360, í_grupos=[0], guardar=direc, paralelo=True)
 
+    # 360 groups size of each group = 500
     '''
-        Analysis
+    analysis
     '''
-    # mstr_fa = os.path.join("D:\Gaby\Tinamit-master\Dt\Fast\sampled_data\\muestra_fast.json")  # 625 morris
-    #
+    # For paso/mean val
+
+    mstr_fa = os.path.join('D:\Thesis\pythonProject\localuse\Dt\Fast\sampled data\\muestra_fast_23params.json')
+    # for dim in range(215):
     # egr = analy_by_file('fast', líms_paráms, mapa_paráms, mstr_fa,
     #                     simul_arch={'arch_simular': direc, 'num_samples': 120000}, tipo_egr='superposition',
-    #                     f_simul_arch=None,var_egr='mds_Watertable depth Tinamit', dim=0)
-    # np.save(guardar, egr)
+    #                     var_egr='mds_Watertable depth Tinamit', dim=dim,
+    #                     f_simul_arch={
+    #                         'arch': "D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul", 'num_sample': 120000,
+    #                         'counted_behaviors':
+    #                             "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\corrected_bf\counted_all\\counted_all_behav.npy"})
 
-    behav_proc_from_file(simul_arch={'arch_simular': direc, 'num_samples': 120000}, var_egr='mds_Watertable depth Tinamit', dim=214,
-                         tipo_egr='superposition', guardar=guardar)
+    # After finish the f_simul simulation
+    from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims
 
-# 500 groups size of each group = 240
+    f_simul_arch = 'D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul\\'
+    fited_behav = ''
+    counted_all_beahviors = "D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul\\non_ini\counted_all"
+
+    analy_behav_by_dims('fast', 120000, 215, f_simul_arch, gaurdar=counted_all_beahviors)
+
+    # egr = anlzr_simul('fast', líms_paráms, mstr_fa, mapa_paráms,
+    #                   ficticia=True, var_egr='mds_Watertable depth Tinamit', dim=dim, tipo_egr="superposition",
+    #                   f_simul_arch={
+    #                       'arch': "D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul", 'num_sample': 120000,
+    #                       'counted_behaviors': counted_all_beahviors+ 'counted_all_behaviors.npy'
+    #                           }
+    #                   )
+
+    '''
+    post analysis 
+    '''
+    from tinamit.Calib.ej.sens_análisis import verif_sens, gen_counted_behavior
+    from tinamit.Calib.ej.soil_class import p_soil_class
+
+    '''
+    map
+    '''
+    from tinamit.Calib.ej.sens_análisis import map_sens, verif_sens
+
+    # simulation_data, var_egr = carg_simul_dt(os.path.abspath('D:\Thesis\pythonProject\localuse\Dt\Fast\simular\\'), 1,
+    #                   var_egr='mds_Soil salinity Tinamit CropA')
+    #
+    #
+    # map_sens(gen_geog(), 'fast', 'paso_0', 'SS',
+    #          simulation_data['1000'][var_egr].values, 0.1,
+    #          "D:\Thesis\pythonProject\localuse\Dt\Fast\map\\paso_")
