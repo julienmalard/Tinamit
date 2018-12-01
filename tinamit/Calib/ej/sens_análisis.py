@@ -43,21 +43,29 @@ def verif_sens(método, tipo_egr, egr, mapa_paráms, p_soil_class):
     return final_sens
 
 
-def analy_behav_by_dims(samples, dims, f_simul_arch, dim_arch=None, gaurdar=None):
+def analy_behav_by_dims(method, samples, dims, f_simul_arch, dim_arch=None, gaurdar=None):
     if dim_arch is None:
-        fited_behav = {i: {j: {} for j in range(samples)} for i in range(dims)}
-        for j in range(samples):
-            print(f'this is {j}-th sample')
-            behav = np.load(f_simul_arch + f"f_simul_{j}.npy").tolist()
+        if method == 'morris':
+            fited_behav = {i: {j: {} for j in range(samples)} for i in range(dims)}
+            for j in range(samples):
+                print(f'this is {j}-th sample')
+                behav = np.load(f_simul_arch + f"f_simul_{j}.npy").tolist()
+                for i in range(dims):
+                    fited_behav[i][j] = find_best_behavior(behav, trans_shape=i)
+                    print(f'processing {i} poly')
+            if gaurdar is not None:
+                np.save(gaurdar + 'fited_behav', fited_behav)
+
+        elif method == 'fast':
             for i in range(dims):
-                fited_behav[i][j] = find_best_behavior(behav, trans_shape=i)
-                print(f'processing {i} poly')
-
-        if gaurdar is not None:
-            np.save(gaurdar + 'fited_behav', fited_behav)
-        else:
-            print(f'the best shape for all dims are {fited_behaviors}')
-
+                print(f'Processing {i} poly')
+                fited_behav = {i: {j: {} for j in range(samples)}}
+                for j in range(samples):
+                    print(f'this is {j}-th sample')
+                    behav = np.load(f_simul_arch + f"f_simul_{j}.npy").tolist()
+                    fited_behav[i][j] = find_best_behavior(behav, trans_shape=i)
+                if gaurdar is not None:
+                    np.save(gaurdar + f'fit_beh_poly-{i}', fited_behav)
     else:
         fited_behav = {}
         aic_behav = {}
@@ -153,8 +161,8 @@ def map_sens(geog, metodo, tipo_egr, para_name, data, midpoint, path, alpha=None
             data[np.where(data > 11)] = 11
             max_val = 12
         geog.dibujar(archivo=path + f'mean-{para_name}', valores=data,
-                     título=f"{metodo[:2]}-{para_name}-to WTD-Mean", midpoint=midpoint,clr_bar_dic=clr_bar_dic,
-                         unidades=unid, colores=d['col'], ids=ids, escala_num=(0, max_val))
+                     título=f"{metodo[:2]}-{para_name}-to WTD-Mean", midpoint=midpoint, clr_bar_dic=clr_bar_dic,
+                     unidades=unid, colores=d['col'], ids=ids, escala_num=(0, max_val))
 
         # beahv
         # for bpprm in data:  # "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\spp\\aic\\{bpprm}-{behav}-{para_name}" #f"D:\Thesis\pythonProject\localuse\Dt\Mor\map\spp\\bppprm\\bpprm-{behav}-{para_name}"

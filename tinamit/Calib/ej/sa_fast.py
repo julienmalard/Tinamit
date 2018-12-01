@@ -95,21 +95,22 @@ if __name__ == "__main__":
 
     mstr_fa = os.path.join('D:\Thesis\pythonProject\localuse\Dt\Fast\sampled data\\muestra_fast_23params.json')
     # for dim in range(215):
-        # egr = analy_by_file('fast', líms_paráms, mapa_paráms, mstr_fa,
-        #                     simul_arch={'arch_simular': direc, 'num_samples': 120000}, tipo_egr='superposition',
-        #                     var_egr='mds_Watertable depth Tinamit', dim=dim,
-        #                     f_simul_arch={
-        #                         'arch': "D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul", 'num_sample': 120000,
-        #                         'counted_behaviors':
-        #                             "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\corrected_bf\counted_all\\counted_all_behav.npy"})
+    # egr = analy_by_file('fast', líms_paráms, mapa_paráms, mstr_fa,
+    #                     simul_arch={'arch_simular': direc, 'num_samples': 120000}, tipo_egr='superposition',
+    #                     var_egr='mds_Watertable depth Tinamit', dim=dim,
+    #                     f_simul_arch={
+    #                         'arch': "D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul", 'num_sample': 120000,
+    #                         'counted_behaviors':
+    #                             "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\corrected_bf\counted_all\\counted_all_behav.npy"})
 
     # After finish the f_simul simulation
     from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims
 
-    f_simul_arch = 'D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul'
+    f_simul_arch = 'D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul\\'
     fited_behav = ''
     counted_all_beahviors = "D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul\\non_ini\counted_all"
-    analy_behav_by_dims(120000, 215, f_simul_arch, gaurdar=counted_all_beahviors)
+
+    analy_behav_by_dims('fast', 120000, 215, f_simul_arch, gaurdar=counted_all_beahviors)
 
     # egr = anlzr_simul('fast', líms_paráms, mstr_fa, mapa_paráms,
     #                   ficticia=True, var_egr='mds_Watertable depth Tinamit', dim=dim, tipo_egr="superposition",
