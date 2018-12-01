@@ -105,11 +105,11 @@ def behav_proc_from_file(simul_arch, var_egr=None, tipo_egr=None, dim=None, guar
 
     counted_all_behaviors = []
     bf_simul = None
-    pool = mp.Pool(processes=4)
+    pool = mp.Pool(processes=10)
 
     count = 1
-    start = 432
-    end = 625  # simul_arch['num_samples']
+    start = 99998
+    end = 100000  # simul_arch['num_samples']
     for i in range(start, end):
         simulation, var_egr = carg_simul_dt(simul_arch['arch_simular'], i,
                                             var_egr, dim)
@@ -119,13 +119,13 @@ def behav_proc_from_file(simul_arch, var_egr=None, tipo_egr=None, dim=None, guar
             bf_simul = gen_bf_simul(tipo_egr, tmñ=[len(simulation), simulation[str(i)].shape[1]])
         print(f"for sample {i} ")
 
-        pool.apply_async(uni_behav_anlzr, args=(tipo_egr, simulation[str(i)],
-                                                           var_egr, 0, bf_simul, dim, 1, counted_all_behaviors,
-                                                           guardar + f'f_simul_{i}'))
+        pool.apply(uni_behav_anlzr, args=(tipo_egr, simulation[str(i)],
+                                                var_egr, 0, bf_simul, dim, 1, counted_all_behaviors,
+                                                guardar + f'f_simul_{i}'))
 
-        if count % 4 == 0:
-            time.sleep(60)
-        count += 1
+        # if count % 10 == 0:
+        #     time.sleep(85)
+        # count += 1
 
     np.save(guardar + f'counted_all_behaviors_{start}_{end}', counted_all_behaviors)
 
@@ -546,7 +546,7 @@ def carg_simul_dt(arch_simular, num_samples, var_egr=None, dim=None):
         # print(i, float(getsizeof(simulation_data)/(1024*1024)), 'MB')
         simulation_data.update(
             {str(num_samples): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{num_samples}')))
-            [var_egr].values})
+                               [var_egr].values[2:, :]})
 
     # simulation_data.update({str(118268): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{118268}')))}) # for soil_sanility
 

@@ -12,11 +12,11 @@ import shapefile as sf
 from matplotlib import cm
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
-from تقدیر.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
-from تقدیر.مقام import مقام
 
 from tinamit.config import _
 from tinamit.cositas import detectar_codif, valid_nombre_arch
+from تقدیر.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
+from تقدیر.مقام import مقام
 
 # Ofrecemos la oportunidad de utilizar taqdir, تقدیر, en español
 
@@ -303,23 +303,20 @@ class Geografía(object):
         nombres_attr = [field[0] for field in attrs]
 
         try:
-            ids = np.array([x.record[nombres_attr.index(col_id)] for x in af.shapeRecords()], dtype=str)
+            ids = np.array([x.record[nombres_attr.index(col_id)] for x in af.shapeRecords()])
         except ValueError:
             raise ValueError(_('La columna "{}" no existe en la base de datos.').format(col_id))
-        if escala_geog is None:
+        ids_no_existen = [id_ for id_ in ids if str(id_) not in símismo.cód_a_lugar]
+        if len(ids_no_existen):
+            avisar(_('Las formas con id "{}" no se encuentran en la geografía actual.'))
+        escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids if id_ not in ids_no_existen)
+        if len(escls_ids) != 1:
+            raise ValueError
 
-            ids_no_existen = [id_ for id_ in ids if str(id_) not in símismo.cód_a_lugar]
-            if len(ids_no_existen):
-                avisar(_('Las formas con id "{}" no se encuentran en la geografía actual.'))
-            escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids if id_ not in ids_no_existen)
-            if len(escls_ids) > 1:
-                raise ValueError
-            elif len(escls_ids) == 1:
-                if escala_geog is None:
-                    escala_geog = list(escls_ids)[0]
-            else:
-                if escala_geog is None:
-                    escala_geog = 'Automática'
+        if escala_geog is None:
+            escala_geog = list(escls_ids)[0]
+        elif escala_geog != list(escls_ids)[0]:
+            raise ValueError
 
         símismo.formas_reg[escala_geog] = {'af': af, 'ids': ids}
 
@@ -577,25 +574,11 @@ class Geografía(object):
 
             if isinstance(valores, np.ndarray):
                 if ids is None:
-                    try:
-                        escls_ids = next(x for x, v in símismo.info_geog.items() if len(v) == len(valores))
-                        ids = símismo.info_geog[escls_ids]
-
-                    except StopIteration:
-                        escls_ids = next(x for x, d in símismo.formas_reg.items() if len(d['ids']) == len(valores))
-                        ids = [str(x) for x in símismo.formas_reg[escls_ids]['ids']]
-
-                    escls_ids = [escls_ids]
-
+                    raise ValueError
                 else:
-                    try:
-                        escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids)
-                    except ValueError:
-                        escls_ids = [next(
-                            x for x, d in símismo.formas_reg.items() if all(str(i) in d['ids'] for i in ids)
-                        )]
-                    if valores.shape[0] != len(ids):
-                        raise ValueError
+                    escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids)
+                if valores.shape[0] != len(ids):
+                    raise ValueError
                 dic_valores = {id_: valores[í] for í, id_ in enumerate(ids)}
 
             else:
@@ -640,10 +623,7 @@ class Geografía(object):
             elif len(escala_num) != 2:
                 raise ValueError
 
-            if escala_num[1] - escala_num[0] == 0:
-                vals_norm = vec_valores - escala_num[0]
-            else:
-                vals_norm = (vec_valores - escala_num[0]) / (escala_num[1] - escala_num[0])
+            vals_norm = (vec_valores - escala_num[0]) / (escala_num[1] - escala_num[0])
 
             d_clrs = _gen_d_mapacolores(colores=colores)
 
@@ -879,7 +859,7 @@ def _formatos_auto(a, tipo):
 
     :param a: El atributo.
     :type a: str
-    :param tipo: El tipo_mod de objeto geográfico.
+    :param tipo: El tipo de objeto geográfico.
     :type tipo: str
     :return: El atributo automático.
     :rtype: str | bool | float
