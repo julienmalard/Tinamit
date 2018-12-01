@@ -3,7 +3,12 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 from collections import Counter
+
+from matplotlib.colors import LinearSegmentedColormap
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
 from tinamit.Análisis.Sens.behavior import find_best_behavior
+from tinamit.Geog.Geog import _gen_clrbar_dic
 
 
 def verif_sens(método, tipo_egr, egr, mapa_paráms, p_soil_class):
@@ -94,6 +99,7 @@ def gen_counted_behavior(fited_behav_arch, gaurdar=None):
     else:
         return counted_all_behaviors
 
+
 def gen_alpha(fited_behav_arch, patt):
     fited_behav = np.load(fited_behav_arch).tolist()
     d_alpha = {i: [] for i in fited_behav}
@@ -107,12 +113,21 @@ def gen_alpha(fited_behav_arch, patt):
 
 def map_sens(geog, metodo, tipo_egr, para_name, data, midpoint, path, alpha=None, behav=None, paso=None, ids=None):
     vars_interés = {tipo_egr: {
-        # 'col': ['#21bf13', '#FFCC66', '#eaa607', '#ea0707'],
-        'col': ['#0f6607', '#278e1d', '#abed49', '#ccc80c', '#eaea07', '#eaa607', '#ea0707'],
-        # 'col' : ['#0f6607', '#278e1d'],
-        'escala_núm': [np.min(data), np.max(data)]}}
+        'col': ['#f8fef7', '#e7fde5', '#d6fcd2', '#c5fbc0', '#b4f9ad', '#b4f9ad', '#5ff352',
+                '#5395a0', '#4a8590', '#42767f', '#39666e', '#30565d', '#28474c', '#1f373c',
+                '#ffe6e6', '#ffcccc', '#ffb3b3', '#ff9999', '#ff8080', '#ff2f2f', '#ff0808'
+                ],
+        'escala_núm': [min(data), max(data)]}}
 
-    unid = 'Mor Sensitivity Index'  # 'Soil salinity'
+    # clr_bar_dic = {'green': ['#e6fff2', '#80ffbf'] , # '#33ff99', '#00cc66', '#006633'],
+    #                'blue': ['#80dfff', '#00bfff', '#1ac6ff', '#00ace6', '#007399'],
+    #                'red': ['#ff8000', '#ff8c1a', '#ff8000']}
+
+    clr_bar_dic = {'green': ['#e6fff2', '#b3ffd9'],
+                   'blue': ['#80ff9f', '#80ff80', '#9fff80', '#bfff80', '#dfff80', '#ffff80', '#ffdf80', '#ff8080'],
+                   'red': ['#ff0000', '#ff0000']}
+
+    unid = 'Morris Sensitivity Index'
 
     for v, d in vars_interés.items():
         # for j in [0, 5, 15, 20]:
@@ -123,37 +138,42 @@ def map_sens(geog, metodo, tipo_egr, para_name, data, midpoint, path, alpha=None
         # paso
         # ll = [0, 5, 15, 20]
         # for i in ll:
+        #     max_val = max(data[f'paso_{i}'])
+        #     if max_val > 11:
+        #         data[f'paso_{i}'][np.where(data[f'paso_{i}'] > 11)] = 11
+        #         max_val = 12
         #     geog.dibujar(archivo=path + f'{i}-{para_name}', valores=data[f'paso_{i}'],
-        #                  título=f"Mor-{para_name[: 5]}-paso-{i} to WTD",
-        #                  unidades=unid, colores=d['col'], ids=ids, midpoint=midpoint,
-        #                  escala_num=(np.min(data[f'paso_{i}']), np.max(data[f'paso_{i}'])))
-
-        # test
-        # for i in [20]:
-        #     geog.dibujar(archivo=path + f'test_{i}-{para_name}', valores=data[f'paso_{i}'],
-        #                  título=f"{metodo[:2]}-{para_name[: 5]}-paso-{i} to WTD",
-        #                  unidades=unid, colores=d['col'], ids=ids,alpha=alpha, #midpoint=midpoint,
-        #                  escala_num=(np.min(data[f'paso_{i}']), np.max(data[f'paso_{i}'])))
+        #                  título=f"Mor-{para_name[: 5]}-Timestep-{i} to WTD",
+        #                  unidades=unid, colores=d['col'], ids=ids, midpoint=midpoint, clr_bar_dic=clr_bar_dic,
+        #                  escala_num=(0, max_val))
 
         # mean val
-        # geog.dibujar(archivo=path + f'prom-{para_name}', valores=data,
-        #              título=f"{metodo[:2]}-{para_name}-to watertable-prom", midpoint=midpoint,
-        #                  unidades=unid, colores=d['col'], ids=ids, escala_num=d['escala_núm'])
+        max_val = max(data)
+        if max_val > 11:
+            data[np.where(data > 11)] = 11
+            max_val = 12
+        geog.dibujar(archivo=path + f'mean-{para_name}', valores=data,
+                     título=f"{metodo[:2]}-{para_name}-to WTD-Mean", midpoint=midpoint,clr_bar_dic=clr_bar_dic,
+                         unidades=unid, colores=d['col'], ids=ids, escala_num=(0, max_val))
 
         # beahv
-        for bpprm in data:  # "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\spp\\aic\\{bpprm}-{behav}-{para_name}" #f"D:\Thesis\pythonProject\localuse\Dt\Mor\map\spp\\bppprm\\bpprm-{behav}-{para_name}"
-            geog.dibujar(archivo=path + f"{metodo[:2]}-{para_name[: 5]}-{behav}-{bpprm}",  # midpoint=midpoint,
-                         valores=data[bpprm], título=f"{metodo[:2]}-{para_name[: 5]}-{bpprm}-{behav}", alpha=alpha,
-                         unidades=unid, colores=d['col'], ids=ids,
-                         escala_num=(np.min(data[bpprm]), np.max(data[bpprm])))
+        # for bpprm in data:  # "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\spp\\aic\\{bpprm}-{behav}-{para_name}" #f"D:\Thesis\pythonProject\localuse\Dt\Mor\map\spp\\bppprm\\bpprm-{behav}-{para_name}"
+        #     max_val = max(data[bpprm])
+        #     if max_val > 11:
+        #         data[bpprm][np.where(data[bpprm] > 11)] = 11
+        #         max_val = 12
+        #
+        #     geog.dibujar(archivo=path + f"{metodo[:2]}-{para_name[: 5]}-{behav}-{bpprm}",  # midpoint=midpoint,
+        #                  valores=data[bpprm],
+        #                  título=f"{metodo[:2].capitalize()}-{para_name[0].capitalize()+para_name[1: 5]}-{behav[0].capitalize()+ behav[1:]}-{bpprm}",
+        #                  alpha=alpha, unidades=unid, colores=d['col'], ids=ids, midpoint=midpoint,
+        #                  clr_bar_dic=clr_bar_dic,
+        #                  escala_num=(0, max_val)
+        #                  )
 
-        # geog.dibujar(archivo=path + f'{i}{para_name}', valores=data[:, 215],
-        #              título=f"{metodo[:2]}-{para_name}-paso-{i} to SS", unidades='fast SI', midpoint=midpoint,
-        #              colores=d['col'], ids=ids, escala_num=(np.min(data[:, 215]), np.max(data[:, 215])))
 
-
-def map_rank(row_labels, col_labels, data, title, archivo,
-             threshold=None, ax=None, cbar_kw={}, cbarlabel="Sensitivity Index", **kwargs):
+def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_label, archivo, ax=None, cbar_kw={},
+             cbarlabel="Sensitivity Index", **kwargs):
     '''
 
     Parameters
@@ -191,19 +211,60 @@ def map_rank(row_labels, col_labels, data, title, archivo,
     if not ax:
         fig, ax = plt.subplots()
 
-    # Plot the heatmap
-    im = ax.imshow(data, **kwargs)
+    # clr_bar_dic = {'green': ['#e6fff2', '#80ffbf', '#33ff99', '#00cc66', '#006633'],
+    #                'blue': ['#80dfff', '#00bfff', '#1ac6ff', '#00ace6', '#007399'],
+    #                'red': ['#ff8000', '#ff8c1a', '#ff8000']}
 
-    # Create colorbar
-    cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
-    cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom")
+    clr_bar_dic = {'green': ['#e6fff2', '#b3ffd9'],
+                   'blue': ['#80ff9f', '#80ff80', '#9fff80', '#bfff80', '#dfff80', '#ffff80', '#ffdf80', '#ff8080'],
+                   'red': ['#ff0000', '#ff0000']}
+
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="1.5%", pad=0.05)
+    # fig.colorbar(im, cax=cax)
+
+    # Plot the heatmap and # Create colorbar
+    if fst_cut < data.max() < snd_cut:
+        dic_c = _gen_clrbar_dic(fst_cut=fst_cut, snd_cut=None, maxi=maxi, first_set=clr_bar_dic['green'],
+                                second_set=clr_bar_dic['blue'], third_set=clr_bar_dic['red'])
+        mapa_color = LinearSegmentedColormap('mapa_color', dic_c)
+        im = ax.imshow(data, mapa_color)
+        cbar = fig.colorbar(im, cax=cax, ticks=[0, fst_cut, data.max()])
+        # cbar = ax.figure.colorbar(im, ax=cax, ticks=[0, fst_cut, data.max()], **cbar_kw)
+        cbar.ax.set_yticklabels(['0', f'Screnning threshold, {fst_cut}', f'maximum_val_{data.max()}'], fontsize=3)
+
+    elif data.max() > snd_cut:
+        if data.max() > 11:
+            data[np.where(data > 11)] = 11
+
+        dic_c = _gen_clrbar_dic(fst_cut=fst_cut, snd_cut=snd_cut, maxi=11, first_set=clr_bar_dic['green'],
+                                second_set=clr_bar_dic['blue'], third_set=clr_bar_dic['red'])
+        mapa_color = LinearSegmentedColormap('mapa_color', dic_c)
+        im = ax.imshow(data, mapa_color)
+        cbar = fig.colorbar(im, cax=cax, ticks=[0, fst_cut, snd_cut, 12])
+        cbar.ax.set_yticklabels(
+            ['0', f'Screnning threshold, {fst_cut}', '+ 10 High sensitivity zone', '+ 10 High sensitivity zone'],
+            fontsize=3)
+
+    elif data.max() < fst_cut:
+        dic_c = _gen_clrbar_dic(fst_cut=None, snd_cut=None, maxi=maxi, first_set=clr_bar_dic['green'],
+                                second_set=clr_bar_dic['blue'], third_set=clr_bar_dic['red'])
+        mapa_color = LinearSegmentedColormap('mapa_color', dic_c)
+        im = ax.imshow(data, mapa_color)
+        cbar = fig.colorbar(im, cax=cax, ticks=[0, data.max()])
+        # cbar = ax.figure.colorbar(im, ax=cax, ticks=[0, data.max()], **cbar_kw)
+        cbar.ax.set_yticklabels(['0', f'maximum_val_{data.max()}'], fontsize=3)
+
+    cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom", fontsize=5)
+    ax.tick_params(width=0.1)
+    cbar.ax.tick_params(width=0.1)
 
     # We want to show all ticks...
     ax.set_xticks(np.arange(data.shape[1]))
     ax.set_yticks(np.arange(data.shape[0]))
     # ... and label them with the respective list entries.
-    ax.set_xticklabels(col_labels, fontsize=1)
-    ax.set_yticklabels(row_labels, fontsize=2)
+    ax.set_xticklabels(col_labels, fontsize=3)
+    ax.set_yticklabels(row_labels, fontsize=4)
 
     # Let the horizontal axes labeling appear on top.
     ax.tick_params(top=True, bottom=False, labeltop=True, labelbottom=False)
@@ -218,7 +279,7 @@ def map_rank(row_labels, col_labels, data, title, archivo,
 
     ax.set_xticks(np.arange(data.shape[1] + 1) - .5, minor=True)
     ax.set_yticks(np.arange(data.shape[0] + 1) - .5, minor=True)
-    ax.grid(which="minor", color="w", linestyle='-', linewidth=1)
+    ax.grid(which="minor", color="w", linestyle='-', linewidth=0.5)
     ax.tick_params(which="minor", bottom=False, left=False)
 
     # escala_num = (np.nanmin(data), np.nanmax(data))
@@ -226,7 +287,8 @@ def map_rank(row_labels, col_labels, data, title, archivo,
     # vals_norm = (data - escala_num[0]) / (escala_num[1] - escala_num[0])
     # norm = matplotlib.colors.Normalize(vmin=0, vmax=escala_num[-1])
 
-    def _annotate_rankmap(im=im, valfmt="{x:.2f}", textcolors=["black", "white"], threshold=threshold, **textkw):
+    def _annotate_rankmap(fst_cut=fst_cut, snd_cut=snd_cut, im=im, valfmt="{x:.2f}", txtclr=["white", "black", 'white'],
+                          **textkw):
         """
         A function to annotate a rankmap.
 
@@ -250,10 +312,8 @@ def map_rank(row_labels, col_labels, data, title, archivo,
         """
 
         # Normalize the threshold to the images color range.
-        if threshold is not None:
-            threshold = im.norm(threshold)
-        else:
-            threshold = im.norm(data.max()) / 2.
+        fst_cut = im.norm(fst_cut)
+        snd_cut = im.norm(snd_cut)
 
         # Set default alignment to center, but allow it to be
         # overwritten by textkw.
@@ -270,17 +330,20 @@ def map_rank(row_labels, col_labels, data, title, archivo,
         texts = []
         for i in range(data.shape[0]):
             for j in range(data.shape[1]):
-                kw.update(color=textcolors[im.norm(data[i, j]) > threshold])
+                kw.update(color=txtclr[fst_cut < im.norm(data[i, j]) < snd_cut])
                 text = im.axes.text(j, i, valfmt(data[i, j], None), **kw)
                 texts.append(text)
         return texts
 
-    _annotate_rankmap(im=im, size=0.05)
+    _annotate_rankmap(im=im, size=0.1)
     # matplotlib.ticker.FuncFormatter(
     #     "{:.2f}".format(data).replace("0.", ".").replace("0.00", "")))
     # Loop over data dimensions and create text annotations.
 
-    ax.set_title(title)
-    fig.tight_layout()
+    ax.set_title(title, fontsize=10, y=1.5)
+    ax.set_ylabel(y_label, fontsize=5)
+    # plt.title(title, y=1.5)
 
+    fig.tight_layout(h_pad=1)
     fig.savefig(archivo, dpi=1000)
+    plt.close()

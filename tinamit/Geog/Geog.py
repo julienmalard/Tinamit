@@ -9,8 +9,6 @@ import matplotlib.colors as colors
 import numpy as np
 import pandas as pd
 import shapefile as sf
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
@@ -261,7 +259,7 @@ class Lugar(مقام):
 
 class Geografía(object):
     """
-    Esta clase representa la geografía de un lugares.
+    Esta clase representa la geografía de un lugar.
     """
 
     def __init__(símismo, nombre, archivo=None):
@@ -312,7 +310,7 @@ class Geografía(object):
 
             ids_no_existen = [id_ for id_ in ids if str(id_) not in símismo.cód_a_lugar]
             if len(ids_no_existen):
-                avisar(_('Las formas con id "{}" no se encuentran en la geografía actual.'))
+                avisar(_('Las formas con id "{}" no se encuentran en la geografía actual.').format(ids_no_existen))
             escls_ids = set(símismo.obt_escala_región(id_) for id_ in ids if id_ not in ids_no_existen)
             if len(escls_ids) > 1:
                 raise ValueError
@@ -541,8 +539,8 @@ class Geografía(object):
                              .format(cód=cód, geog=símismo.nombre))
         return cód
 
-    def dibujar(símismo, archivo, valores=None, midpoint=None, ids=None, título=None, unidades=None, colores=None,
-                escala_num=None, alpha=None):
+    def dibujar(símismo, archivo, valores=None, ids=None, alpha=1, título=None, unidades=None, colores=None,
+                escala_num=None, clr_bar_dic=None, midpoint=None):
         """
         Dibuja la Geografía.
 
@@ -631,17 +629,20 @@ class Geografía(object):
                          '\nno se podrán dibujar: "{}"').format(', '.join(ids_faltan_frm)))
                 dic_valores = {ll: v for ll, v in dic_valores.items() if ll not in ids_faltan_frm}
 
-            vec_valores = np.array([x for x in dic_valores.values()])
-            orden = [list(dic_valores).index(str(x)) if str(x) in list(dic_valores) else np.nan for x in ids_frm]
+            vec_valores = np.array([dic_valores[x] if x in dic_valores else np.nan for x in ids_frm])
+            if isinstance(alpha, dict):
+                alphas = np.array([alpha[x] if x in alpha else 0 for x in ids_frm])
+            elif isinstance(alpha, (list, np.ndarray)):
+                alphas = np.array([alpha[ids.index(id_)] for id_ in ids_frm])
+            else:
+                alphas = np.full(ids_frm.shape, alpha)
 
             # n_regiones = len(regiones.shapes())
             # if len(valores) != n_regiones:
             #     raise ValueError(_('El número de regiones no corresponde con el tamaño de los valores.'))
 
             if escala_num is None:
-                escala_num = (np.min(vec_valores), np.max(vec_valores))
-            elif len(escala_num) != 2:
-                raise ValueError
+                escala_num = (np.nanmin(vec_valores), np.nanmax(vec_valores))
 
             if escala_num[1] - escala_num[0] == 0:
                 vals_norm = vec_valores - escala_num[0]
@@ -651,52 +652,87 @@ class Geografía(object):
             if escala_num[0] == escala_num[1]:
                 norm = colors.Normalize(vmin=0, vmax=0.01)
             else:
-                norm = colors.Normalize(vmin=escala_num[0], vmax=escala_num[1])
+                norm = colors.Normalize(vmin=escala_num[0], vmax=escala_num[-1])
 
+            # d_clrs = _gen_d_mapacolores(colores=colores)
+
+            # mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs)
+            # cpick = cm.ScalarMappable(norm=norm, cmap=mapa_color)
+            # cpick.set_array([])
+            #
+            # v_cols = mapa_color(vals_norm)
+            # v_cols[np.isnan(vals_norm)] = 1
+            # _dibujar_shp(ejes=ejes, frm=regiones, colores=v_cols, alpha=alphas)
+
+            # if unidades is not None:
+            #     fig.colorbar(cpick, label=unidades)
+            # else:
+            #     fig.colorbar(cpick)
 
             def _cpick(norm, d_clrs=None, colores=colores):
                 if d_clrs is None:
-                    d_clrs = _gen_d_mapacolores(colores)
+                    d_clrs = _gen_d_mapacolores(colores, maxi=None)
                     mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs)
                 else:
                     mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs)
 
                 v_cols = mapa_color(vals_norm)
+                v_cols[np.isnan(vals_norm)] = 1
 
-                _dibujar_shp(ejes=ejes, frm=regiones, orden=orden, colores=v_cols, alpha=alpha)
+                _dibujar_shp(ejes=ejes, frm=regiones, colores=v_cols, alpha=alphas)
 
+                # if midpoint and top is not None:
+                #     maxi=escala_num[-1]
+                #     bottom_norm = (0, int(midpoint / norm[-1] * 255))
+                #     top_norm = (int(top / norm[-1] * 255), 1)
+                #     bottom = cm.get_cmap('Greens', bottom_norm)
+                #     top = cm.get_cmap('Reds', top_norm)
+                #     middle = cm.ScalarMappable(norm=[int(midpoint / norm[-1] * 255), int(top / norm[-1] * 255)],
+                #                                cmap=mapa_color)
+                #     cpick=np.vstack((top(np.linspace(0, 1, bottom_norm[1])),
+                #                middle(np.linspace(0, 1, 255-bottom_norm[1]-top_norm[1])),
+                #                bottom(np.linspace(0, 1, top_norm[1]))))
+                # else:
                 cpick = cm.ScalarMappable(norm=norm, cmap=mapa_color)
                 cpick.set_array([])
 
                 return cpick, v_cols
 
-            if unidades is not None:
-                if escala_num[1] > midpoint and escala_num[0] > 0:
-                    d_clrs = _gen_d_mapacolores(colores=colores)
-                    fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades, ticks=[0, escala_num[0], midpoint, escala_num[1]])
-                    # col = _cpick(norm, d_clrs)[1]
+            if unidades is not None and midpoint is not None:
+                if 10 > escala_num[1] > midpoint:
+                    d_clrs = _gen_d_mapacolores(colores, clr_bar_dic=clr_bar_dic, fst_cut=midpoint, snd_cut=None,
+                                                maxi=escala_num[-1])
+                    cbar = fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades,
+                                        ticks=[0, midpoint, escala_num[1]])
+                    cbar.set_label(label=unidades, labelpad=-50, y=0.45)
+                    cbar.ax.set_yticklabels(['0', f'Screening Threshold, {midpoint}',
+                                             f'maxi_val, {np.round(escala_num[1], 2)}'], fontsize=6)
+
+                if escala_num[1] > 10:
+                    d_clrs = _gen_d_mapacolores(colores, clr_bar_dic=clr_bar_dic, fst_cut=midpoint, snd_cut=10,
+                                                maxi=escala_num[-1])
+                    cbar = fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades,
+                                        ticks=[0, midpoint, 10, escala_num[1]])
+                    cbar.set_label(label=unidades, labelpad=-50, y=0.45)
+                    cbar.ax.set_yticklabels(
+                        ['0', f'Screnning Threshold, {midpoint}', '10',
+                         f'High sensitivity zone'], fontsize=6)
 
                 elif escala_num[1] == escala_num[0]:
-                    d_clrs = _gen_d_mapacolores(colores=[colores[0]])
-                    # col = _cpick(norm, d_clrs)[1]
+                    d_clrs = _gen_d_mapacolores(colores=colores[:2], maxi=None)
                     fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades, ticks=[0])
 
-                elif escala_num[0] == 0 and escala_num[1] < midpoint:
-                    d_clrs = _gen_d_mapacolores(colores=colores[:3])
-                    # col = _cpick(norm, d_clrs)[1]
-                    fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades, ticks=[escala_num[0], escala_num[1]])
-
-                elif escala_num[0] == 0 and escala_num[1] > midpoint:
-                    d_clrs = _gen_d_mapacolores(colores=colores)
-                    # col = _cpick(norm, d_clrs)[1]
-                    fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades,  ticks=[escala_num[0], midpoint, escala_num[1]])
-
-                elif escala_num[1] < midpoint and escala_num[0] > 0:
-                    d_clrs = _gen_d_mapacolores(colores=colores[:3])
-                    # col = _cpick(norm, d_clrs)[1]
-                    fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades,ticks=[0, escala_num[0], escala_num[1], midpoint])
-
-            fig.colorbar(_cpick(norm, d_clrs=None)[0])
+                elif escala_num[1] < midpoint:
+                    d_clrs = _gen_d_mapacolores(colores, clr_bar_dic=clr_bar_dic, fst_cut=None, snd_cut=None,
+                                                maxi=escala_num[-1])
+                    cbar = fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades,
+                                        ticks=[0, escala_num[1], midpoint])
+                    cbar.set_label(label=unidades, labelpad=-45, y=0.45)
+                    cbar.ax.set_yticklabels(
+                        ['0', f'maxi_val, {np.round(escala_num[1], 2)}', f'Screening Threshold, {midpoint}'],
+                        fontsize=6)
+            else:
+                fig.colorbar(_cpick(norm, d_clrs=None)[0])
 
         for nombre, d_obj in símismo.formas.items():
 
@@ -819,14 +855,16 @@ def _dibujar_shp(ejes, frm, colores, orden=None, alpha=1.0, llenar=True):
     :type orden: np.ndarray | list
 
     :param alpha: La transparencia
-    :type alpha: float | int
+    :type alpha: float | int | np.ndarray
 
     :param llenar: Si hay que llenar la forma, o simplemente dibujar los contornos.
     :type llenar: bool
     """
 
     if orden is not None:
-        regiones = [x for o, x in sorted([t for t in zip(orden, frm.shapes()) if not np.isnan(t[0])])]
+        regiones = [
+            x for o, x in sorted([t for t in zip(orden, frm.shapes()) if not np.isnan(t[0])], key=lambda x: x[0])
+        ]
     else:
         regiones = frm.shapes()
 
@@ -838,7 +876,10 @@ def _dibujar_shp(ejes, frm, colores, orden=None, alpha=1.0, llenar=True):
         if len(colores) != n_formas:
             raise ValueError
 
-    for forma, col in zip(regiones, colores):
+    if not isinstance(alpha, (list, np.ndarray)):
+        alpha = np.full_like(regiones, alpha)
+
+    for forma, col, alph in zip(regiones, colores, alpha):
         n_puntos = len(forma.points)
         n_partes = len(forma.parts)
 
@@ -849,9 +890,9 @@ def _dibujar_shp(ejes, frm, colores, orden=None, alpha=1.0, llenar=True):
                 x_lon[ip] = forma.points[ip][0]
                 y_lat[ip] = forma.points[ip][1]
             if llenar:
-                ejes.fill(x_lon, y_lat, color=col, alpha=alpha)
+                ejes.fill(x_lon, y_lat, color=col, alpha=alph)
             else:
-                ejes.plot(x_lon, y_lat, color=col, alpha=alpha)
+                ejes.plot(x_lon, y_lat, color=col, alpha=alph)
 
         else:
             for ip in range(n_partes):  # Para cada parte del imagen
@@ -869,9 +910,9 @@ def _dibujar_shp(ejes, frm, colores, orden=None, alpha=1.0, llenar=True):
                     y_lat[i] = seg[i][1]
 
                 if llenar:
-                    ejes.fill(x_lon, y_lat, color=col, alpha=alpha)
+                    ejes.fill(x_lon, y_lat, color=col, alpha=alph)
                 else:
-                    ejes.plot(x_lon, y_lat, color=col, alpha=alpha)
+                    ejes.plot(x_lon, y_lat, color=col, alpha=alph)
 
 
 def _hex_a_rva(hx):
@@ -886,7 +927,109 @@ def _hex_a_rva(hx):
     return tuple(int(hx.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4))
 
 
-def _gen_d_mapacolores(colores):
+def _gen_clrbar_dic(fst_cut, snd_cut, maxi, first_set, second_set, third_set):
+    red = []
+    green = []
+    blue = []
+
+    first_rva = [_hex_a_rva(x) for x in first_set]
+    second_rva = [_hex_a_rva(x) for x in second_set]
+    third_rva = [_hex_a_rva(x) for x in third_set]
+
+    if fst_cut is None and snd_cut is None:
+        f_cut = 1
+        for i in range(len(first_rva)):
+            red.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][0] / 255, first_rva[i][0] / 255))
+            green.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][1] / 255, first_rva[i][1] / 255))
+            blue.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][2] / 255, first_rva[i][2] / 255))
+
+    elif snd_cut is None and fst_cut is not None:
+        f_cut = fst_cut / maxi
+        for i in range(len(first_rva)):
+            red.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][0] / 255, first_rva[i][0] / 255))
+            green.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][1] / 255, first_rva[i][1] / 255))
+            blue.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][2] / 255, first_rva[i][2] / 255))
+            last_r = first_rva[i][0] / 255
+            last_g = first_rva[i][1] / 255
+            last_b = first_rva[i][2] / 255  ## check it
+
+        for i in range(len(second_rva)):
+            if i == 0:
+                red.append(
+                    (f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), last_r, second_rva[i][0] / 255))
+                green.append(
+                    (f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), last_g, second_rva[i][1] / 255))
+                blue.append(
+                    (f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), last_b, second_rva[i][2] / 255))
+            else:
+                red.append(
+                    (np.round(f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), 2), second_rva[i][0] / 255,
+                             second_rva[i][0] / 255))
+                green.append(
+                    (np.round(f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), 2), second_rva[i][1] / 255,
+                             second_rva[i][1] / 255))
+                blue.append(
+                    (np.round(f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), 2), second_rva[i][2] / 255,
+                             second_rva[i][2] / 255))
+
+
+    else:
+        f_cut = fst_cut / maxi
+        s_cut = snd_cut / maxi
+        for i in range(len(first_rva)):
+            red.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][0] / 255, first_rva[i][0] / 255))
+            green.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][1] / 255, first_rva[i][1] / 255))
+            blue.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][2] / 255, first_rva[i][2] / 255))
+            last_r = first_rva[i][0] / 255
+            last_g = first_rva[i][1] / 255
+            last_b = first_rva[i][2] / 255
+
+        for i in range(len(second_rva)):
+            if i == 0:
+                red.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), last_r,
+                            second_rva[i][0] / 255))
+                green.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), last_g,
+                              second_rva[i][1] / 255))
+                blue.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), last_b,
+                             second_rva[i][2] / 255))
+            else:
+                red.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), second_rva[i][0] / 255,
+                            second_rva[i][0] / 255))
+                green.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), second_rva[i][1] / 255,
+                              second_rva[i][1] / 255))
+                blue.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), second_rva[i][2] / 255,
+                             second_rva[i][2] / 255))
+                last_r = second_rva[i][0] / 255
+                last_g = second_rva[i][1] / 255
+                last_b = second_rva[i][2] / 255
+
+        for i in range(len(third_rva)):
+            if i == 0:
+                red.append(
+                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), last_r, third_rva[i][0] / 255))
+                green.append(
+                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), last_g, third_rva[i][1] / 255))
+                blue.append(
+                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), last_b, third_rva[i][2] / 255))
+            else:
+                red.append(
+                    (np.round(s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), 2), third_rva[i][0] / 255,
+                             third_rva[i][0] / 255))
+                green.append(
+                    (np.round(s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), 2), third_rva[i][1] / 255,
+                             third_rva[i][1] / 255))
+                blue.append(
+                    (np.round(s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), 2), third_rva[i][2] / 255,
+                             third_rva[i][2] / 255))
+
+    return {
+        'red': tuple(red),
+        'green': tuple(green),
+        'blue': tuple(blue)
+    }
+
+
+def _gen_d_mapacolores(colores, maxi, clr_bar_dic=None, fst_cut=None, snd_cut=None):
     """
     Genera un diccionario de mapa de color para MatPlotLib.
 
@@ -899,14 +1042,18 @@ def _gen_d_mapacolores(colores):
     clrs_rva = [_hex_a_rva(x) for x in colores]
     n_colores = len(colores)
 
-    dic_c = {'red': tuple((round(i / (n_colores - 1), 2), clrs_rva[i][0] / 255, clrs_rva[i][0] / 255) for i in
-                          range(0, n_colores)),
-             'green': tuple(
-                 (round(i / (n_colores - 1), 2), clrs_rva[i][1] / 255, clrs_rva[i][1] / 255) for i in
-                 range(0, n_colores)),
-             'blue': tuple(
-                 (round(i / (n_colores - 1), 2), clrs_rva[i][2] / 255, clrs_rva[i][2] / 255) for i in
-                 range(0, n_colores))}
+    if maxi is None:
+        dic_c = {'red': tuple((round(i / (n_colores - 1), 2), clrs_rva[i][0] / 255, clrs_rva[i][0] / 255) for i in
+                              range(0, n_colores)),
+                 'green': tuple(
+                     (round(i / (n_colores - 1), 2), clrs_rva[i][1] / 255, clrs_rva[i][1] / 255) for i in
+                     range(0, n_colores)),
+                 'blue': tuple(
+                     (round(i / (n_colores - 1), 2), clrs_rva[i][2] / 255, clrs_rva[i][2] / 255) for i in
+                     range(0, n_colores))}
+    else:
+        dic_c = _gen_clrbar_dic(fst_cut=fst_cut, snd_cut=snd_cut, maxi=maxi, first_set=clr_bar_dic['green'],
+                                second_set=clr_bar_dic['blue'], third_set=clr_bar_dic['red'])
 
     return dic_c
 

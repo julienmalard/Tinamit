@@ -22,7 +22,7 @@ def predict(x_data, parameters, pattern):
                np.sin(parameters['period'] * x_data + parameters['phi']) + parameters['constant']
     elif pattern == 'spp_oscil_aten_oscilación_aten':
         return np.exp(parameters['g_d'] * x_data) * parameters['amplitude'] * \
-               np.sin(parameters['period'] * x_data + parameters['phi']) + parameters['constant'] +\
+               np.sin(parameters['period'] * x_data + parameters['phi']) + parameters['constant'] + \
                np.exp(parameters['g_d_1'] * x_data) * parameters['amplitude_1'] * \
                np.sin(parameters['period_1'] * x_data + parameters['phi_1']) + parameters['constant_1']
     elif pattern == 'spp_oscil_aten_inverso':

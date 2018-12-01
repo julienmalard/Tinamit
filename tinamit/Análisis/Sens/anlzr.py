@@ -161,8 +161,10 @@ def anlzr_sens(mod, método, líms_paráms, mapa_paráms, t_final, var_egr,
     )
 
 
-def anlzr_simul(método, líms_paráms, mstr, mapa_paráms, ficticia, simulation, var_egr, ops_método, f_simul_arch, dim,
-                tipo_egr="promedio"):
+def anlzr_simul(método, líms_paráms, mstr, mapa_paráms, ficticia, var_egr, f_simul_arch, dim,
+                tipo_egr="promedio", simulation=None, ops_método=None):
+    if ops_método is None:
+        ops_método = {}
     if isinstance(tipo_egr, str):
         tipo_egr = [tipo_egr]
     if isinstance(var_egr, str):
