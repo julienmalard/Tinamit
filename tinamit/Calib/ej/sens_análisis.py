@@ -71,8 +71,11 @@ def analy_behav_by_dims(method, samples, dims, f_simul_arch, dim_arch=None, gaur
         aic_behav = {}
         for i in range(dims):
             count_fited_behav_by_poly = []
-            # polynal_fited_behav = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\dict_fited_behav.npy")[i]
-            polynal_fited_behav = np.load(dim_arch).tolist()[i]
+            if method == 'morris':
+                polynal_fited_behav = np.load(dim_arch).tolist()[i]
+            elif method == 'fast':
+                polynal_fited_behav = np.load(dim_arch + f'fit_beh_poly-{i}.npy').tolist()[i]
+
             for j in range(samples):
                 count_fited_behav_by_poly.extend([key for key, val in polynal_fited_behav[j]])
 
@@ -82,13 +85,10 @@ def analy_behav_by_dims(method, samples, dims, f_simul_arch, dim_arch=None, gaur
 
             aic_poly = {k: [] for k in count_fited_behav_by_poly}
             for j in range(samples):
-                # behav = np.load(
-                #     f"D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\corrected_bf\\new_spp\\new_f_simul_sppf_simul_{j}.npy").tolist()
                 behav = np.load(f_simul_arch + f"f_simul_{j}.npy").tolist()
-
                 for k in count_fited_behav_by_poly:
                     aic_poly[k].append(behav[k]['gof']['aic'][0, i])
-                print(f'processing sample-{j} for poly-{i}')
+                print(f'Processing sample-{j} for poly-{i}')
             aic_behav.update({i: {k: np.average(v) for k, v in aic_poly.items()}})
 
         if gaurdar is not None:

@@ -90,7 +90,8 @@ def analy_by_file(método, líms_paráms, mapa_paráms, mstr_arch, simul_arch, v
     #     mstr_new[p].append(mstr[p][50]) # take sample 50
 
     simulation, var_egr = carg_simul_dt(simul_arch['arch_simular'], simul_arch['num_samples'],
-                                        var_egr, dim)  # simulation: '625' * xarray(21*215); '625'*ndarray[21]
+                                        var_egr, dim, método=método,
+                                        tipo_egr=tipo_egr)  # simulation: '625' * xarray(21*215); '625'*ndarray[21]
 
     return anlzr_simul(
         método=método, líms_paráms=líms_paráms, mstr=mstr, mapa_paráms=mapa_paráms, ficticia=ficticia,
@@ -180,7 +181,7 @@ def anlzr_simul(método, líms_paráms, mstr, mapa_paráms, ficticia, var_egr, f
 
         for vr in var_egr:
             if f_simul_arch is None:
-                f_simul = format_simul(simulation=simulation, vr=vr, tipo_egr=tp, dim=dim)
+                f_simul = format_simul(simulation=simulation, vr=vr, tipo_egr=tp, dim=dim, método=método)
             else:
                 if isinstance(f_simul_arch, dict):
                     f_simul = carg_fsimul_data(f_simul_arch['arch'],
@@ -406,7 +407,7 @@ def gen_bf_simul(tipo_egr, tmñ, gof=False):
     return bf_simul
 
 
-def format_simul(simulation, vr, tipo_egr, dim):
+def format_simul(simulation, vr, tipo_egr, dim, método=None):
     """
 
     :param simulation: { 'sample_id': {'y': []}}
@@ -420,16 +421,19 @@ def format_simul(simulation, vr, tipo_egr, dim):
         else:
             tmñ = [len(simulation)]
     else:
-        tmñ = [len(simulation), 1] #, 1
+        tmñ = [len(simulation), 1]  # , 1
 
     if tipo_egr == "promedio":
         f_simul = np.empty(tmñ)
         for i, val in enumerate(simulation.values()):
-            if simulation['0'][vr].values.ndim == 2:
-                for j in range(val[vr].values.shape[1]):
-                    f_simul[i, j] = np.average(val[vr].values[:, j])
+            if método is not 'fast' and dim is None:
+                if simulation['0'][vr].values.ndim == 2:
+                    for j in range(val[vr].values.shape[1]):
+                        f_simul[i, j] = np.average(val[vr].values[:, j])
+                else:
+                    f_simul[i] = np.average(val[vr].values)
             else:
-                f_simul[i] = np.average(val[vr].values)
+                f_simul[i]=np.average(val)
 
     elif tipo_egr == "final":
         f_simul = np.empty(tmñ)
@@ -437,11 +441,18 @@ def format_simul(simulation, vr, tipo_egr, dim):
             f_simul[i] = val[vr].values[-1]
 
     elif tipo_egr == "paso_tiempo":
-        paso = simulation['0'][vr].values.shape[0]
-        f_simul = {f'paso_{i}': np.empty(tmñ) for i in range(paso)}
-        for i, sam in simulation.items():
-            for j, val in enumerate(sam[vr].values):
-                f_simul[f'paso_{j}'][int(i)] = val
+        if método is not 'fast' and dim is None:
+            paso = simulation['0'][vr].values.shape[0]
+            f_simul = {f'paso_{i}': np.empty(tmñ) for i in range(paso)}
+            for i, sam in simulation.items():
+                for j, val in enumerate(sam[vr].values):
+                    f_simul[f'paso_{j}'][int(i)] = val
+        else:
+            f_simul = {f'paso_{i}': np.empty(tmñ) for i in range(len(simulation['0']))}
+            for i, sam in simulation.items():
+                for j, val in enumerate(sam):
+                    f_simul[f'paso_{j}'][int(i)] = val
+
     else:
         bf_simul = gen_bf_simul(tipo_egr, tmñ)
         f_simul = behavior_anlzr(simulation, vr, tipo_egr, dim, bf_simul=bf_simul)
@@ -536,21 +547,34 @@ def uni_behav_anlzr(tipo_egr, val, vr, sam_ind, bf_simul, dim, len_simulation, c
         return bf_simul
 
 
-def carg_simul_dt(arch_simular, num_samples, var_egr=None, dim=None):
+def carg_simul_dt(arch_simular, num_samples, var_egr=None, dim=None, tipo_egr=None, método=None):
     if arch_simular is None:
         raise ValueError(_("la ruta de simulación es ninguna."))
 
     simulation_data = {}  # {625('0')× xarray} or {'0': ndarray}
-    if dim is None:
-        for i in range(num_samples):
-            simulation_data.update({str(i): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{i}')))})
-    else:
-        # print(i, float(getsizeof(simulation_data)/(1024*1024)), 'MB')
-        simulation_data.update(
-            {str(num_samples): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{num_samples}')))
-                               [var_egr].values[2:, :]})
 
-    # simulation_data.update({str(118268): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{118268}')))}) # for soil_sanility
+    for i in range(num_samples):
+        if dim is None:
+            simulation_data.update({str(i): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{i}')))})
+        elif tipo_egr is None or tipo_egr == 'promedio':
+            # print(i, float(getsizeof(simulation_data)/(1024*1024)), 'MB')
+            if método == 'morris':
+                simulation_data.update(
+                    {str(i): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{i}')))
+                             [var_egr].values[2:, :]})
+            elif método == 'fast':
+                simulation_data.update(
+                    {str(i): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{i}')))
+                             [var_egr].values[2:, dim]})
+        elif tipo_egr == 'paso_tiempo':
+            if método == 'morris':
+                simulation_data.update(
+                    {str(i): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{i}')))
+                    [var_egr].values})
+            elif método == 'fast':
+                simulation_data.update(
+                    {str(i): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{i}')))
+                             [var_egr].values[:, dim]})
 
     if var_egr is None:
         var_egr = [list(list(simulation_data.values())[0].data_vars.variables.mapping)[1]]  # [0] - soil salinity, 1 wtd

@@ -92,32 +92,30 @@ if __name__ == "__main__":
     analysis
     '''
     # For paso/mean val
-
+    direc = 'F:\\'
     mstr_fa = os.path.join('D:\Thesis\pythonProject\localuse\Dt\Fast\sampled data\\muestra_fast_23params.json')
-    # for dim in range(215):
-    # egr = analy_by_file('fast', líms_paráms, mapa_paráms, mstr_fa,
-    #                     simul_arch={'arch_simular': direc, 'num_samples': 120000}, tipo_egr='superposition',
-    #                     var_egr='mds_Watertable depth Tinamit', dim=dim,
-    #                     f_simul_arch={
-    #                         'arch': "D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul", 'num_sample': 120000,
-    #                         'counted_behaviors':
-    #                             "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\corrected_bf\counted_all\\counted_all_behav.npy"})
+    for dim in range(215):
+        egr = analy_by_file('fast', líms_paráms, mapa_paráms, mstr_fa,
+                            simul_arch={'arch_simular': direc, 'num_samples': 5}, tipo_egr='paso_tiempo',
+                            var_egr='mds_Watertable depth Tinamit', dim=dim,
+                            )
 
-    # After finish the f_simul simulation
+    # After finish the f_simul simulation SAlib for superposition (the best behavior for each poly)
     from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims
 
     f_simul_arch = 'D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul\\'
-    fited_behav = ''
-    counted_all_beahviors = "D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul\\non_ini\counted_all"
+    fited_behav = "D:\Thesis\pythonProject\localuse\Dt\Fast\post_f_simul\\"
 
-    analy_behav_by_dims('fast', 120000, 215, f_simul_arch, gaurdar=counted_all_beahviors)
-
-    # egr = anlzr_simul('fast', líms_paráms, mstr_fa, mapa_paráms,
-    #                   ficticia=True, var_egr='mds_Watertable depth Tinamit', dim=dim, tipo_egr="superposition",
+    # analy_behav_by_dims('fast', 120000, 215, f_simul_arch, gaurdar=fited_behav, dim_arch=fited_behav)
+    #
+    # gen_counted_behavior(fited_behav + 'fited_behav.npy', gaurdar=fited_behav)
+    #
+    # egr = anlzr_simul('fast', líms_paráms, mstr_fa, mapa_paráms, ficticia=True, var_egr='mds_Watertable depth Tinamit',
+    #                   dim=215, tipo_egr="superposition",
     #                   f_simul_arch={
-    #                       'arch': "D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul", 'num_sample': 120000,
-    #                       'counted_behaviors': counted_all_beahviors+ 'counted_all_behaviors.npy'
-    #                           }
+    #                       'arch': "D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul",
+    #                       'num_sample': 120000,
+    #                       'counted_behaviors': fited_behav + 'counted_all_behaviors.npy'}
     #                   )
 
     '''
