@@ -10,6 +10,9 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from tinamit.Análisis.Sens.behavior import find_best_behavior
 from tinamit.Geog.Geog import _gen_clrbar_dic
 
+import multiprocessing as mp
+import time
+
 
 def verif_sens(método, tipo_egr, egr, mapa_paráms, p_soil_class):
     if tipo_egr == "forma" or tipo_egr == 'superposition':
@@ -42,8 +45,17 @@ def verif_sens(método, tipo_egr, egr, mapa_paráms, p_soil_class):
 
     return final_sens
 
+def _single_poly(samples, i, f_simul_arch, gaurdar):
+    fited_behav = {i: {j: {} for j in range(samples)}}
+    for j in range(samples):
+        print(f'this is {j}-th sample')
+        behav = np.load(f_simul_arch + f"f_simul_{j}.npy").tolist()
+        fited_behav[i][j] = find_best_behavior(behav, trans_shape=i)
+    if gaurdar is not None:
+        np.save(gaurdar + f'fit_beh_poly-{i}', fited_behav)
 
 def analy_behav_by_dims(method, samples, dims, f_simul_arch, dim_arch=None, gaurdar=None):
+
     if dim_arch is None:
         if method == 'morris':
             fited_behav = {i: {j: {} for j in range(samples)} for i in range(dims)}
@@ -57,15 +69,20 @@ def analy_behav_by_dims(method, samples, dims, f_simul_arch, dim_arch=None, gaur
                 np.save(gaurdar + 'fited_behav', fited_behav)
 
         elif method == 'fast':
+            pool = mp.Pool(processes=10)
+
+            results = []
             for i in range(dims):
+                if i not in [34, 144, 176, 186]:
+                    continue
                 print(f'Processing {i} poly')
-                fited_behav = {i: {j: {} for j in range(samples)}}
-                for j in range(samples):
-                    print(f'this is {j}-th sample')
-                    behav = np.load(f_simul_arch + f"f_simul_{j}.npy").tolist()
-                    fited_behav[i][j] = find_best_behavior(behav, trans_shape=i)
-                if gaurdar is not None:
-                    np.save(gaurdar + f'fit_beh_poly-{i}', fited_behav)
+                results.append(pool.apply_async(_single_poly, args=(samples, i, f_simul_arch, gaurdar,)))
+
+            [result.wait() for result in results]
+            # output = [p.get() for p in results]
+            print("finished")
+
+
     else:
         fited_behav = {}
         aic_behav = {}
