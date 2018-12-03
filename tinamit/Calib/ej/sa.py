@@ -81,17 +81,17 @@ if __name__ == "__main__":
     '''
     from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims, gen_alpha, map_rank, gen_counted_behavior
 
-    guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_new\\")
-    mstr_mor = os.path.join('D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\sampled_data\\muestra_morris_625.json')
-    egr = analy_by_file('morris', líms_paráms, mapa_paráms, mstr_mor, dim=214,
-                        simul_arch={'arch_simular': direc, 'num_samples': 624}, tipo_egr='superposition',
-                        var_egr='mds_Watertable depth Tinamit')
-                        # f_simul_arch= {'arch': "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\corrected_bf\\new_spp\\new_f_simul_sppf_simul",
-                        #                'num_sample': 625,
-                        #                'counted_behaviors':
-                        #                    "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\corrected_bf\counted_all\\counted_all_behav.npy"})
-
-    np.save(guardar, egr)
+    # guardar = os.path.join("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_new\\")
+    # mstr_mor = os.path.join('D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\sampled_data\\muestra_morris_625.json')
+    # egr = analy_by_file('morris', líms_paráms, mapa_paráms, mstr_mor, dim=214,
+    #                     simul_arch={'arch_simular': direc, 'num_samples': 624}, tipo_egr='superposition',
+    #                     var_egr='mds_Watertable depth Tinamit')
+    #                     # f_simul_arch= {'arch': "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\corrected_bf\\new_spp\\new_f_simul_sppf_simul",
+    #                     #                'num_sample': 625,
+    #                     #                'counted_behaviors':
+    #                     #                    "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\corrected_bf\counted_all\\counted_all_behav.npy"})
+    #
+    # np.save(guardar, egr)
 
     # behav_proc_from_file(simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='superposition', dim=214,
     #                      var_egr='mds_Watertable depth Tinamit', guardar=guardar)
@@ -112,16 +112,16 @@ if __name__ == "__main__":
 
     # counted_all_behaviors = gen_counted_behavior(ini)
 
-    egr = analy_by_file('morris', líms_paráms, mapa_paráms, mstr_mor, dim=214,
-                        simul_arch={'arch_simular': direc, 'num_samples': 624}, tipo_egr='superposition',
-                        var_egr='mds_Watertable depth Tinamit',
-                        f_simul_arch={
-                            'arch': "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_ini\\f_simul",
-                            'num_sample': 625,
-                            'counted_behaviors':
-                                "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_ini\\counted_all_behaviors_ini.npy"})
-
-    np.save(guardar + 'mor_625_spp_ini', egr)
+    # egr = analy_by_file('morris', líms_paráms, mapa_paráms, mstr_mor, dim=214,
+    #                     simul_arch={'arch_simular': direc, 'num_samples': 624}, tipo_egr='superposition',
+    #                     var_egr='mds_Watertable depth Tinamit',
+    #                     f_simul_arch={
+    #                         'arch': "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_ini\\f_simul",
+    #                         'num_sample': 625,
+    #                         'counted_behaviors':
+    #                             "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_ini\\counted_all_behaviors_ini.npy"})
+    #
+    # np.save(guardar + 'mor_625_spp_ini', egr)
 
     '''
     Maping
@@ -129,17 +129,17 @@ if __name__ == "__main__":
     from tinamit.Calib.ej.sens_análisis import map_sens, verif_sens
     from collections import Counter
 
-    # paso_data = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_paso.npy").tolist()
-    # pasos = verif_sens('morris', list(paso_data.keys())[0], paso_data, mapa_paráms, p_soil_class)['morris'][
-    #     list(paso_data.keys())[0]]['mds_Watertable depth Tinamit']  # 9prms * 215polys
-    #
+    paso_data = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_paso.npy").tolist()
+    pasos = verif_sens('morris', list(paso_data.keys())[0], paso_data, mapa_paráms, p_soil_class, si='mu_star')['morris'][
+        list(paso_data.keys())[0]]['mds_Watertable depth Tinamit']  # 9prms * 215polys
+
     # mean_data = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_promedio.npy").tolist()
-    # means = verif_sens('morris', list(mean_data.keys())[0], mean_data, mapa_paráms, p_soil_class)['morris'][
+    # means = verif_sens('morris', list(mean_data.keys())[0], mean_data, mapa_paráms, p_soil_class, si='mu_star')['morris'][
     #     list(mean_data.keys())[0]]['mds_Watertable depth Tinamit']
     #
     # behav_data = np.load(
     #     "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_spp_no_ini.npy").tolist()
-    # behaviors = verif_sens('morris', list(behav_data.keys())[0], behav_data, mapa_paráms, p_soil_class)['morris'][
+    # behaviors = verif_sens('morris', list(behav_data.keys())[0], behav_data, mapa_paráms, p_soil_class, si='mu_star')['morris'][
     #     list(behav_data.keys())[0]]['mds_Watertable depth Tinamit']
     #
     # # paso

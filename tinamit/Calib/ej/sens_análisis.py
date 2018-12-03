@@ -11,17 +11,55 @@ from tinamit.Análisis.Sens.behavior import find_best_behavior
 from tinamit.Geog.Geog import _gen_clrbar_dic
 
 import multiprocessing as mp
-import time
 
 
-def verif_sens(método, tipo_egr, egr, mapa_paráms, p_soil_class):
+def _integrate_egr(egr_arch, dim, si, mapa_paráms, tipo_egr):
+    def _gen_egr_tmp(tipo_egr, egr, si, egr_tmp=None, dim=None):
+        if egr_tmp is None:
+            for egr_var, patt in egr[tipo_egr].items():
+                for p_name, bg_name in patt.items():
+                    for b_g, d_si in bg_name.items():
+                        for para_name, d_bp_gof in d_si[si].items():
+                            for bp_gof_name in d_bp_gof:
+                                if para_name in mapa_paráms:
+                                    d_bp_gof[bp_gof_name] = np.empty([4, dim])
+                                else:
+                                    d_bp_gof[bp_gof_name] = np.empty([dim])
+        else:
+            for egr_var, patt in egr[tipo_egr].items():
+                for p_name, bg_name in patt.items():
+                    for b_g, d_si in bg_name.items():
+                        for para_name, d_bp_gof in d_si[si].items():
+                            for bp_gof_name in d_bp_gof:
+                                if para_name in mapa_paráms:
+                                    egr_tmp[tipo_egr][egr_var][p_name][b_g][si][para_name][bp_gof_name][:, dim] = \
+                                    d_bp_gof[bp_gof_name][:, 0]
+                                else:
+                                    egr_tmp[tipo_egr][egr_var][p_name][b_g][si][para_name][bp_gof_name][dim] = d_bp_gof[
+                                        bp_gof_name]
+
+    egr_tmp = {}
+    egr0 = np.load(egr_arch + f'egr-{0}.npy').tolist()
+    _gen_egr_tmp(tipo_egr=tipo_egr, egr=egr0, si=si, dim=dim)
+    egr_tmp.update(egr0)
+
+    for i in range(dim):
+        _gen_egr_tmp(tipo_egr=tipo_egr, egr=np.load(egr_arch + f'egr-{i}.npy').tolist(), si='Si', egr_tmp=egr_tmp, dim=i)
+
+    return egr_tmp
+
+
+def verif_sens(método, tipo_egr, mapa_paráms, p_soil_class, egr_arch, si, dim, egr=None):
+    if método == 'fast':
+        egr = _integrate_egr(egr_arch, dim, si, mapa_paráms, tipo_egr)
+
     if tipo_egr == "forma" or tipo_egr == 'superposition':
         final_sens = {método: {tipo_egr: {p_name: {b_name: {bp_gof: {para: {f_name: np.asarray([f_val[id][i]
                                                                                                 for i, id in enumerate(
                 p_soil_class)])
                                                                             for f_name, f_val in
                                                                             val.items()} if para in mapa_paráms else val
-                                                                     for para, val in bp_gof_val['mu_star'].items()}
+                                                                     for para, val in bp_gof_val[si].items()}
                                                             for bp_gof, bp_gof_val in b_val.items()}
                                                    for b_name, b_val in p_val.items()}
                                           for p_name, p_val in egr[tipo_egr].items()}}}
@@ -32,18 +70,19 @@ def verif_sens(método, tipo_egr, egr, mapa_paráms, p_soil_class):
                                                                             for i, id in enumerate(p_soil_class)])
                                                           for paso, paso_val in
                                                           val.items()} if para in mapa_paráms else val
-                                                   for para, val in p_val['mu_star'].items()}
+                                                   for para, val in p_val[si].items()}
                                           for p_name, p_val in egr[tipo_egr].items()}}}
     elif tipo_egr == "promedio":
         final_sens = {método: {tipo_egr: {p_name: {para: np.asarray([val[id][i]
                                                                      for i, id in enumerate(
                 p_soil_class)]) if para in mapa_paráms else val
-                                                   for para, val in p_val['mu_star'].items()}
+                                                   for para, val in p_val[si].items()}
                                           for p_name, p_val in egr[tipo_egr].items()}}}
     else:
         raise Exception('Not defined type!')
 
     return final_sens
+
 
 def _single_poly(samples, i, f_simul_arch, gaurdar):
     fited_behav = {i: {j: {} for j in range(samples)}}
@@ -54,8 +93,32 @@ def _single_poly(samples, i, f_simul_arch, gaurdar):
     if gaurdar is not None:
         np.save(gaurdar + f'fit_beh_poly-{i}', fited_behav)
 
-def analy_behav_by_dims(method, samples, dims, f_simul_arch, dim_arch=None, gaurdar=None):
 
+def _compute_single(i, method, dim_arch, samples, f_simul_arch):
+    count_fited_behav_by_poly = []
+    if method == 'morris':
+        polynal_fited_behav = np.load(dim_arch).tolist()[i]
+    elif method == 'fast':
+        polynal_fited_behav = np.load(dim_arch + f'fit_beh_poly-{i}.npy').tolist()[i]
+
+    for j in range(samples):
+        count_fited_behav_by_poly.extend([key for key, val in polynal_fited_behav[j]])
+
+    count_fited_behav_by_poly = [k for k, v in Counter(count_fited_behav_by_poly).items() if
+                                 v / len(count_fited_behav_by_poly) > 0.1]
+    # fited_behav.update({i: count_fited_behav_by_poly})
+
+    aic_poly = {k: [] for k in count_fited_behav_by_poly}
+    for j in range(samples):
+        behav = np.load(f_simul_arch + f"f_simul_{j}.npy").tolist()
+        for k in count_fited_behav_by_poly:
+            aic_poly[k].append(behav[k]['gof']['aic'][0, i])
+        print(f'Processing sample-{j} for poly-{i}')
+    # aic_behav.update({i: {k: np.average(v) for k, v in aic_poly.items()}})
+    return i, count_fited_behav_by_poly, {k: np.average(v) for k, v in aic_poly.items()}
+
+
+def analy_behav_by_dims(method, samples, dims, f_simul_arch, dim_arch=None, gaurdar=None):
     if dim_arch is None:
         if method == 'morris':
             fited_behav = {i: {j: {} for j in range(samples)} for i in range(dims)}
@@ -73,8 +136,8 @@ def analy_behav_by_dims(method, samples, dims, f_simul_arch, dim_arch=None, gaur
 
             results = []
             for i in range(dims):
-                if i not in [34, 144, 176, 186]:
-                    continue
+                # if i not in [34, 144, 176, 186]:
+                #     continue
                 print(f'Processing {i} poly')
                 results.append(pool.apply_async(_single_poly, args=(samples, i, f_simul_arch, gaurdar,)))
 
@@ -86,27 +149,15 @@ def analy_behav_by_dims(method, samples, dims, f_simul_arch, dim_arch=None, gaur
     else:
         fited_behav = {}
         aic_behav = {}
+        results = []
+        pool = mp.Pool(processes=10)
         for i in range(dims):
-            count_fited_behav_by_poly = []
-            if method == 'morris':
-                polynal_fited_behav = np.load(dim_arch).tolist()[i]
-            elif method == 'fast':
-                polynal_fited_behav = np.load(dim_arch + f'fit_beh_poly-{i}.npy').tolist()[i]
+            results.append(pool.apply_async(_compute_single, args=(i, method, dim_arch, samples, f_simul_arch,)))
 
-            for j in range(samples):
-                count_fited_behav_by_poly.extend([key for key, val in polynal_fited_behav[j]])
-
-            count_fited_behav_by_poly = [k for k, v in Counter(count_fited_behav_by_poly).items() if
-                                         v / len(count_fited_behav_by_poly) > 0.1]
-            fited_behav.update({i: count_fited_behav_by_poly})
-
-            aic_poly = {k: [] for k in count_fited_behav_by_poly}
-            for j in range(samples):
-                behav = np.load(f_simul_arch + f"f_simul_{j}.npy").tolist()
-                for k in count_fited_behav_by_poly:
-                    aic_poly[k].append(behav[k]['gof']['aic'][0, i])
-                print(f'Processing sample-{j} for poly-{i}')
-            aic_behav.update({i: {k: np.average(v) for k, v in aic_poly.items()}})
+        for result in results:
+            re = result.get()
+            fited_behav.update({re[0]: re[1]})
+            aic_behav.update({re[0]: re[2]})
 
         if gaurdar is not None:
             np.save(gaurdar + 'fited_behav', fited_behav)
