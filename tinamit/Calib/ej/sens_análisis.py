@@ -17,26 +17,57 @@ def _integrate_egr(egr_arch, dim, si, mapa_paráms, tipo_egr):
     def _gen_egr_tmp(tipo_egr, egr, si, egr_tmp=None, dim=None):
         if egr_tmp is None:
             for egr_var, patt in egr[tipo_egr].items():
-                for p_name, bg_name in patt.items():
-                    for b_g, d_si in bg_name.items():
-                        for para_name, d_bp_gof in d_si[si].items():
-                            for bp_gof_name in d_bp_gof:
-                                if para_name in mapa_paráms:
-                                    d_bp_gof[bp_gof_name] = np.empty([4, dim])
-                                else:
-                                    d_bp_gof[bp_gof_name] = np.empty([dim])
+                if tipo_egr == 'paso_tiempo':
+                    for para, val in patt[si].items():
+                        for paso in val:
+                            if para in mapa_paráms:
+                                val[paso] = np.empty([4, dim])
+                            else:
+                                val[paso] = np.empty([dim])
+                elif tipo_egr == "promedio":
+                    for para in patt[si]:
+                        if para in mapa_paráms:
+                            patt[si][para] = np.empty([4, dim])
+                        else:
+                            patt[si][para] = np.empty([dim])
+                else:
+                    for p_name, bg_name in patt.items():
+                        for b_g, d_si in bg_name.items():
+                            for para_name, d_bp_gof in d_si[si].items():
+                                for bp_gof_name in d_bp_gof:
+                                    if para_name in mapa_paráms:
+                                        d_bp_gof[bp_gof_name] = np.empty([4, dim])
+                                    else:
+                                        d_bp_gof[bp_gof_name] = np.empty([dim])
         else:
             for egr_var, patt in egr[tipo_egr].items():
-                for p_name, bg_name in patt.items():
-                    for b_g, d_si in bg_name.items():
-                        for para_name, d_bp_gof in d_si[si].items():
-                            for bp_gof_name in d_bp_gof:
-                                if para_name in mapa_paráms:
-                                    egr_tmp[tipo_egr][egr_var][p_name][b_g][si][para_name][bp_gof_name][:, dim] = \
-                                    d_bp_gof[bp_gof_name][:, 0]
-                                else:
-                                    egr_tmp[tipo_egr][egr_var][p_name][b_g][si][para_name][bp_gof_name][dim] = d_bp_gof[
-                                        bp_gof_name]
+                if tipo_egr == 'paso_tiempo':
+                    for para, val in patt[si].items():
+                        for paso in val:
+                            if para in mapa_paráms:
+                                egr_tmp[tipo_egr][egr_var][si][para][paso][:, dim] = val[paso][:, 0]
+                            else:
+                                egr_tmp[tipo_egr][egr_var][si][para][paso][dim] = val[paso]
+
+                elif tipo_egr == "promedio":
+                    for para in patt[si]:
+                        if para in mapa_paráms:
+                            egr_tmp[tipo_egr][egr_var][si][para][:, dim] = patt[si][para][:, 0]
+                        else:
+                            egr_tmp[tipo_egr][egr_var][si][para][dim] = patt[si][para]
+
+                else:
+                    for p_name, bg_name in patt.items():
+                        for b_g, d_si in bg_name.items():
+                            for para_name, d_bp_gof in d_si[si].items():
+                                for bp_gof_name in d_bp_gof:
+                                    if para_name in mapa_paráms:
+                                        egr_tmp[tipo_egr][egr_var][p_name][b_g][si][para_name][bp_gof_name][:, dim] = \
+                                            d_bp_gof[bp_gof_name][:, 0]
+                                    else:
+                                        egr_tmp[tipo_egr][egr_var][p_name][b_g][si][para_name][bp_gof_name][dim] = \
+                                        d_bp_gof[
+                                            bp_gof_name]
 
     egr_tmp = {}
     egr0 = np.load(egr_arch + f'egr-{0}.npy').tolist()
@@ -44,12 +75,13 @@ def _integrate_egr(egr_arch, dim, si, mapa_paráms, tipo_egr):
     egr_tmp.update(egr0)
 
     for i in range(dim):
-        _gen_egr_tmp(tipo_egr=tipo_egr, egr=np.load(egr_arch + f'egr-{i}.npy').tolist(), si='Si', egr_tmp=egr_tmp, dim=i)
+        _gen_egr_tmp(tipo_egr=tipo_egr, egr=np.load(egr_arch + f'egr-{i}.npy').tolist(), si='Si', egr_tmp=egr_tmp,
+                     dim=i)
 
     return egr_tmp
 
 
-def verif_sens(método, tipo_egr, mapa_paráms, p_soil_class, egr_arch, si, dim, egr=None):
+def verif_sens(método, tipo_egr, mapa_paráms, p_soil_class, si, dim=None, egr=None, egr_arch=None):
     if método == 'fast':
         egr = _integrate_egr(egr_arch, dim, si, mapa_paráms, tipo_egr)
 
@@ -200,10 +232,10 @@ def map_sens(geog, metodo, tipo_egr, para_name, data, midpoint, path, alpha=None
     #                'red': ['#ff8000', '#ff8c1a', '#ff8000']}
 
     clr_bar_dic = {'green': ['#e6fff2', '#b3ffd9'],
-                   'blue': ['#80ff9f', '#80ff80', '#9fff80', '#bfff80', '#dfff80', '#ffff80', '#ffdf80', '#ff8080'],
+                   'blue': ['#80ff9f', '#80ff80', '#9fff80', '#bfff80', '#dfff80', '#ffff80', '#ffdf80', '#ff8080'], #'#ff8080']
                    'red': ['#ff0000', '#ff0000']}
 
-    unid = 'Morris Sensitivity Index'
+    unid = f'{metodo} Sensitivity Index'
 
     for v, d in vars_interés.items():
         # for j in [0, 5, 15, 20]:
@@ -211,41 +243,55 @@ def map_sens(geog, metodo, tipo_egr, para_name, data, midpoint, path, alpha=None
         #                  unidades='Soil salinity level',
         #                  colores=d['col'], ids=ids)  # for azahr
 
-        # paso
-        # ll = [0, 5, 15, 20]
+            # paso
+        # ll = [0, 5, 10, 15, 20]
+        # # ll = [0, 1, 2, 3, 4]
         # for i in ll:
         #     max_val = max(data[f'paso_{i}'])
         #     if max_val > 11:
         #         data[f'paso_{i}'][np.where(data[f'paso_{i}'] > 11)] = 11
         #         max_val = 12
-        #     geog.dibujar(archivo=path + f'{i}-{para_name}', valores=data[f'paso_{i}'],
-        #                  título=f"Mor-{para_name[: 5]}-Timestep-{i} to WTD",
+        #     geog.dibujar(archivo=path + f'{i*5}-{para_name}', valores=data[f'paso_{i}'],
+        #                  título=f"{metodo}-{para_name[: 5]}-Timestep-{i*5} to WTD",
         #                  unidades=unid, colores=d['col'], ids=ids, midpoint=midpoint, clr_bar_dic=clr_bar_dic,
         #                  escala_num=(0, max_val))
 
-        # mean val
-        max_val = max(data)
-        if max_val > 11:
-            data[np.where(data > 11)] = 11
-            max_val = 12
-        geog.dibujar(archivo=path + f'mean-{para_name}', valores=data,
-                     título=f"{metodo[:2]}-{para_name}-to WTD-Mean", midpoint=midpoint, clr_bar_dic=clr_bar_dic,
-                     unidades=unid, colores=d['col'], ids=ids, escala_num=(0, max_val))
+            # mean val
+        # max_val = max(data)
+        # if max_val > 11:
+        #     data[np.where(data > 11)] = 11
+        #     max_val = 12
+        # geog.dibujar(archivo=path + f'mean-{para_name}', valores=data,
+        #              título=f"{metodo[:2]}-{para_name}-to WTD-Mean", midpoint=midpoint, clr_bar_dic=clr_bar_dic,
+        #              unidades=unid, colores=d['col'], ids=ids, escala_num=(0, max_val))
 
-        # beahv
-        # for bpprm in data:  # "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\spp\\aic\\{bpprm}-{behav}-{para_name}" #f"D:\Thesis\pythonProject\localuse\Dt\Mor\map\spp\\bppprm\\bpprm-{behav}-{para_name}"
-        #     max_val = max(data[bpprm])
-        #     if max_val > 11:
-        #         data[bpprm][np.where(data[bpprm] > 11)] = 11
-        #         max_val = 12
-        #
-        #     geog.dibujar(archivo=path + f"{metodo[:2]}-{para_name[: 5]}-{behav}-{bpprm}",  # midpoint=midpoint,
-        #                  valores=data[bpprm],
-        #                  título=f"{metodo[:2].capitalize()}-{para_name[0].capitalize()+para_name[1: 5]}-{behav[0].capitalize()+ behav[1:]}-{bpprm}",
-        #                  alpha=alpha, unidades=unid, colores=d['col'], ids=ids, midpoint=midpoint,
-        #                  clr_bar_dic=clr_bar_dic,
-        #                  escala_num=(0, max_val)
-        #                  )
+            # beahv
+        for bpprm in data:  # "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\spp\\aic\\{bpprm}-{behav}-{para_name}" #f"D:\Thesis\pythonProject\localuse\Dt\Mor\map\spp\\bppprm\\bpprm-{behav}-{para_name}"
+            # if bpprm != 'amplitude':
+            #     continue
+            # new_alpha = np.zeros([215])
+            # new_alpha[np.where(data[bpprm])[0][np.isin(np.where(data[bpprm]), np.where(alpha > 0))[0]]] = 1
+            if np.round(max(data[bpprm]), 4) == 0:
+                max_val = 0
+            # elif behav == 'linear':
+            #     alpha = 1
+            #     max_val = max(data[bpprm])
+            elif len(np.where(data[bpprm])[0][np.isin(np.where(data[bpprm]), np.where(alpha > 0))[0]]) == 0:
+                max_val = 0
+            else:
+                max_val = max(data[bpprm][[np.where(data[bpprm])[0][np.isin(np.where(data[bpprm]), np.where(alpha > 0))[0]]]])
+                # if max_val < max(data[bpprm]):
+                #     data[bpprm][np.where(data[bpprm] > max_val)[0]] = max_val
+            if max_val > 11:
+                data[bpprm][np.where(data[bpprm] > 11)] = 11
+                max_val = 12
+            geog.dibujar(archivo=path + f"{metodo[:2]}-{para_name[: 5]}-{behav}-{bpprm}",  # midpoint=midpoint,
+                         valores=data[bpprm],
+                         título=f"{metodo[:2].capitalize()}-{para_name[0].capitalize()+para_name[1: 5]}-{behav[0].capitalize()+ behav[1:]}-{bpprm}",
+                         alpha=alpha, unidades=unid, colores=d['col'], ids=ids, midpoint=midpoint,
+                         clr_bar_dic=clr_bar_dic,
+                         escala_num=(0, max_val)
+                         )
 
 
 def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_label, archivo, ax=None, cbar_kw={},
@@ -307,17 +353,16 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
         im = ax.imshow(data, mapa_color)
         cbar = fig.colorbar(im, cax=cax, ticks=[0, fst_cut, data.max()])
         # cbar = ax.figure.colorbar(im, ax=cax, ticks=[0, fst_cut, data.max()], **cbar_kw)
-        cbar.ax.set_yticklabels(['0', f'Screnning threshold, {fst_cut}', f'maximum_val_{data.max()}'], fontsize=3)
+        cbar.ax.set_yticklabels(['0', f'Screnning threshold, {fst_cut}', f'maximum val, {np.round(data.max(), 3)}'], fontsize=3)
 
     elif data.max() > snd_cut:
-        if data.max() > 11:
-            data[np.where(data > 11)] = 11
-
-        dic_c = _gen_clrbar_dic(fst_cut=fst_cut, snd_cut=snd_cut, maxi=11, first_set=clr_bar_dic['green'],
+        if data.max() > snd_cut:
+            data[np.where(data > snd_cut)] = snd_cut + 0.1
+        dic_c = _gen_clrbar_dic(fst_cut=fst_cut, snd_cut=snd_cut-0.1, maxi=10.5, first_set=clr_bar_dic['green'],
                                 second_set=clr_bar_dic['blue'], third_set=clr_bar_dic['red'])
         mapa_color = LinearSegmentedColormap('mapa_color', dic_c)
         im = ax.imshow(data, mapa_color)
-        cbar = fig.colorbar(im, cax=cax, ticks=[0, fst_cut, snd_cut, 12])
+        cbar = fig.colorbar(im, cax=cax, ticks=[0, fst_cut, snd_cut-0.1, 10.5])
         cbar.ax.set_yticklabels(
             ['0', f'Screnning threshold, {fst_cut}', '+ 10 High sensitivity zone', '+ 10 High sensitivity zone'],
             fontsize=3)
@@ -329,7 +374,7 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
         im = ax.imshow(data, mapa_color)
         cbar = fig.colorbar(im, cax=cax, ticks=[0, data.max()])
         # cbar = ax.figure.colorbar(im, ax=cax, ticks=[0, data.max()], **cbar_kw)
-        cbar.ax.set_yticklabels(['0', f'maximum_val_{data.max()}'], fontsize=3)
+        cbar.ax.set_yticklabels(['0', f'maximum val, {data.max()}'], fontsize=3)
 
     cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom", fontsize=5)
     ax.tick_params(width=0.1)
@@ -362,8 +407,11 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
     #
     # vals_norm = (data - escala_num[0]) / (escala_num[1] - escala_num[0])
     # norm = matplotlib.colors.Normalize(vmin=0, vmax=escala_num[-1])
+    def func(x, pos):
+        return "{:.2f}".format(x).replace("10.10", "")
 
-    def _annotate_rankmap(fst_cut=fst_cut, snd_cut=snd_cut, im=im, valfmt="{x:.2f}", txtclr=["white", "black", 'white'],
+    def _annotate_rankmap(fst_cut=fst_cut, snd_cut=snd_cut, im=im, valfmt=matplotlib.ticker.FuncFormatter(func),
+                          txtclr=["white", "black", ''],
                           **textkw):
         """
         A function to annotate a rankmap.
@@ -403,10 +451,11 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
 
         # Loop over the data and create a `Text` for each "pixel".
         # Change the text's color depending on the data.
+
         texts = []
         for i in range(data.shape[0]):
             for j in range(data.shape[1]):
-                kw.update(color=txtclr[fst_cut < im.norm(data[i, j]) < snd_cut])
+                kw.update(color=txtclr[fst_cut < im.norm(data[i, j])< snd_cut])
                 text = im.axes.text(j, i, valfmt(data[i, j], None), **kw)
                 texts.append(text)
         return texts

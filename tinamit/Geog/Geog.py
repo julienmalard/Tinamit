@@ -699,6 +699,10 @@ class Geografía(object):
                 return cpick, v_cols
 
             if unidades is not None and midpoint is not None:
+                if np.round(escala_num[1], 3) == 0:
+                    lst = list(escala_num)
+                    lst[1] = 0
+                    escala_num = tuple(lst)
                 if 10 > escala_num[1] > midpoint:
                     d_clrs = _gen_d_mapacolores(colores, clr_bar_dic=clr_bar_dic, fst_cut=midpoint, snd_cut=None,
                                                 maxi=escala_num[-1])
@@ -706,17 +710,17 @@ class Geografía(object):
                                         ticks=[0, midpoint, escala_num[1]])
                     cbar.set_label(label=unidades, labelpad=-50, y=0.45)
                     cbar.ax.set_yticklabels(['0', f'Screening Threshold, {midpoint}',
-                                             f'maxi_val, {np.round(escala_num[1], 2)}'], fontsize=6)
+                                             f'maxi_val, {np.round(escala_num[1], 6)}'], fontsize=5)
 
                 if escala_num[1] > 10:
                     d_clrs = _gen_d_mapacolores(colores, clr_bar_dic=clr_bar_dic, fst_cut=midpoint, snd_cut=10,
                                                 maxi=escala_num[-1])
                     cbar = fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades,
-                                        ticks=[0, midpoint, 10, escala_num[1]])
+                                        ticks=[0, midpoint, 9.9, escala_num[1]])
                     cbar.set_label(label=unidades, labelpad=-50, y=0.45)
                     cbar.ax.set_yticklabels(
                         ['0', f'Screnning Threshold, {midpoint}', '10',
-                         f'High sensitivity zone'], fontsize=6)
+                         f'High sensitivity zone'], fontsize=5)
 
                 elif escala_num[1] == escala_num[0]:
                     d_clrs = _gen_d_mapacolores(colores=colores[:2], maxi=None)
@@ -729,7 +733,7 @@ class Geografía(object):
                                         ticks=[0, escala_num[1], midpoint])
                     cbar.set_label(label=unidades, labelpad=-45, y=0.45)
                     cbar.ax.set_yticklabels(
-                        ['0', f'maxi_val, {np.round(escala_num[1], 2)}', f'Screening Threshold, {midpoint}'],
+                        ['0', f'maxi_val, {np.round(escala_num[1], 3)}', f'Screening Threshold, {midpoint}'],
                         fontsize=6)
             else:
                 fig.colorbar(_cpick(norm, d_clrs=None)[0])
@@ -945,6 +949,9 @@ def _gen_clrbar_dic(fst_cut, snd_cut, maxi, first_set, second_set, third_set):
 
     elif snd_cut is None and fst_cut is not None:
         f_cut = fst_cut / maxi
+        # rn=1
+        # if 1-f_cut/1 < 0.1:
+        #     rn = 1
         for i in range(len(first_rva)):
             red.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][0] / 255, first_rva[i][0] / 255))
             green.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][1] / 255, first_rva[i][1] / 255))
@@ -961,21 +968,27 @@ def _gen_clrbar_dic(fst_cut, snd_cut, maxi, first_set, second_set, third_set):
                     (f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), last_g, second_rva[i][1] / 255))
                 blue.append(
                     (f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), last_b, second_rva[i][2] / 255))
+            elif i == len(second_rva) - 1:
+                red.append((1, second_rva[i][0] / 255,second_rva[i][0] / 255))
+                green.append((1, second_rva[i][1] / 255,second_rva[i][1] / 255))
+                blue.append((1, second_rva[i][2] / 255,second_rva[i][2] / 255))
             else:
                 red.append(
-                    (np.round(f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), 2), second_rva[i][0] / 255,
-                             second_rva[i][0] / 255))
+                    (f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), second_rva[i][0] / 255,
+                     second_rva[i][0] / 255))
                 green.append(
-                    (np.round(f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), 2), second_rva[i][1] / 255,
-                             second_rva[i][1] / 255))
+                    (f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), second_rva[i][1] / 255,
+                     second_rva[i][1] / 255))
                 blue.append(
-                    (np.round(f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), 2), second_rva[i][2] / 255,
-                             second_rva[i][2] / 255))
-
+                    (f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), second_rva[i][2] / 255,
+                     second_rva[i][2] / 255))
 
     else:
         f_cut = fst_cut / maxi
         s_cut = snd_cut / maxi
+        # rn=2
+        # if 1-s_cut/1 < 0.1:
+        #     rn = 2
         for i in range(len(first_rva)):
             red.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][0] / 255, first_rva[i][0] / 255))
             green.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][1] / 255, first_rva[i][1] / 255))
@@ -1011,16 +1024,20 @@ def _gen_clrbar_dic(fst_cut, snd_cut, maxi, first_set, second_set, third_set):
                     (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), last_g, third_rva[i][1] / 255))
                 blue.append(
                     (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), last_b, third_rva[i][2] / 255))
+            elif i == len(third_rva) - 1:
+                red.append((1, third_rva[i][0] / 255,third_rva[i][0] / 255))
+                green.append((1, third_rva[i][1] / 255,third_rva[i][1] / 255))
+                blue.append((1, third_rva[i][2] / 255,third_rva[i][2] / 255))
             else:
                 red.append(
-                    (np.round(s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), 2), third_rva[i][0] / 255,
-                             third_rva[i][0] / 255))
+                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), third_rva[i][0] / 255,
+                     third_rva[i][0] / 255))
                 green.append(
-                    (np.round(s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), 2), third_rva[i][1] / 255,
-                             third_rva[i][1] / 255))
+                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), third_rva[i][1] / 255,
+                     third_rva[i][1] / 255))
                 blue.append(
-                    (np.round(s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), 2), third_rva[i][2] / 255,
-                             third_rva[i][2] / 255))
+                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), third_rva[i][2] / 255,
+                     third_rva[i][2] / 255))
 
     return {
         'red': tuple(red),

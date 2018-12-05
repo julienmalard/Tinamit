@@ -1,8 +1,9 @@
+from tinamit.Calib.ej.sa import gen_geog, gen_mod, devolver
 from tinamit.Análisis.Sens.corridas import *
 from tinamit.Calib.ej.info_paráms import mapa_paráms, líms_paráms
 from tinamit.Calib.ej.soil_class import p_soil_class
 
-from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims
+from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims, map_rank
 from tinamit.Conectado import Conectado
 from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
 from tinamit.Análisis.Sens.anlzr import anlzr_sens, analy_by_file, carg_simul_dt, anlzr_simul
@@ -10,62 +11,6 @@ from tinamit.Geog import Geografía
 import multiprocessing as mp
 import time
 
-
-def gen_mod():
-    # Create a coupled model instance
-    modelo = Conectado()
-
-    # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
-    modelo.estab_mds('../../../tinamit/Ejemplos/en/Ejemplo_SAHYSMOD/Vensim/Tinamit_Rechna.vpm')
-
-    modelo.estab_bf(Envoltura)
-    modelo.estab_conv_tiempo(mod_base='mds', conv=6)
-
-    # Couple models(Change variable names as needed)
-    modelo.conectar(var_mds='Soil salinity Tinamit CropA', mds_fuente=False, var_bf="CrA - Root zone salinity crop A")
-    modelo.conectar(var_mds='Soil salinity Tinamit CropB', mds_fuente=False, var_bf="CrB - Root zone salinity crop B")
-    modelo.conectar(var_mds='Area fraction Tinamit CropA', mds_fuente=False,
-                    var_bf="Area A - Seasonal fraction area crop A")
-    modelo.conectar(var_mds='Area fraction Tinamit CropB', mds_fuente=False,
-                    var_bf="Area B - Seasonal fraction area crop B")
-    modelo.conectar(var_mds='Watertable depth Tinamit', mds_fuente=False, var_bf="Dw - Groundwater depth")
-    modelo.conectar(var_mds='ECdw Tinamit', mds_fuente=False, var_bf='Cqf - Aquifer salinity')  ###
-    modelo.conectar(var_mds='Final Rainfall', mds_fuente=True, var_bf='Pp - Rainfall')  # True-coming from Vensim
-    modelo.conectar(var_mds='Lc', mds_fuente=True, var_bf='Lc - Canal percolation')
-    modelo.conectar(var_mds='Ia CropA', mds_fuente=True, var_bf='IaA - Crop A field irrigation')
-    modelo.conectar(var_mds='Ia CropB', mds_fuente=True, var_bf='IaB - Crop B field irrigation')
-    modelo.conectar(var_mds='Gw', mds_fuente=True, var_bf='Gw - Groundwater extraction')
-    modelo.conectar(var_mds='EpA', mds_fuente=True, var_bf='EpA - Potential ET crop A')
-    modelo.conectar(var_mds='EpB', mds_fuente=True, var_bf='EpB - Potential ET crop B')
-    modelo.conectar(var_mds='Irrigation efficiency', mds_fuente=True, var_bf='FsA - Water storage efficiency crop A')
-    modelo.conectar(var_mds='Fw', mds_fuente=True, var_bf='Fw - Fraction well water to irrigation')  ##0 - 0.8
-    # 'Policy RH' = 1, Fw = 1, Policy Irrigation improvement = 1, Policy Canal lining=1, Capacity per tubewell =(100.8, 201.6),
-    return modelo
-
-
-def gen_geog():
-    Rechna_Doab = Geografía(nombre='Rechna Doab')
-
-    base_dir = os.path.join("D:\Thesis\pythonProject\Tinamit\\tinamit\Ejemplos\en\Ejemplo_SAHYSMOD", 'Shape_files')
-    Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir, 'Internal_Polygon.shp'), col_id="Polygon_ID")
-
-    Rechna_Doab.agregar_forma(os.path.join(base_dir, 'External_Polygon.shp'), color='#edf4da')
-    Rechna_Doab.agregar_forma(os.path.join(base_dir, 'RIVR.shp'), tipo='agua')
-    # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'Forst_polygon.shp'), tipo='bosque')
-    Rechna_Doab.agregar_forma(os.path.join(base_dir, 'CNL_Arc.shp'), tipo='agua', color='#1ba4c6', llenar=False)
-    # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'buildup_Polygon.shp'), tipo='ciudad')
-    # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'road.shp'), tipo='calle')
-
-    return Rechna_Doab
-
-
-devolver = ['Watertable depth Tinamit', 'Soil salinity Tinamit CropA']
-
-
-# %% Buchiana 1
-# %% Farida 2
-# %% Jhang 3
-# %% Chuharkana 4
 
 def _anlzr_simul(i, método, líms_paráms, mstr, mapa_paráms, ficticia, var_egr, f_simul_arch, dim, tipo_egr="promedio",
                  simulation=None, ops_método=None):
@@ -82,6 +27,7 @@ def _analy_by_file(i, método, líms_paráms, mapa_paráms, mstr_arch, simul_arc
 if __name__ == "__main__":
     import os
     import numpy as np
+
     '''
     Simul
     '''
@@ -136,69 +82,166 @@ if __name__ == "__main__":
     # for result in results:
     #     re = result.get()
     #     np.save(gaurdar + f'egr-{re[0]}', re[1])
-
-    '''
-    post analysis 
-    '''
-    from tinamit.Calib.ej.sens_análisis import verif_sens, gen_counted_behavior
-    from tinamit.Calib.ej.soil_class import p_soil_class
-
     '''
     map
     '''
-    from tinamit.Calib.ej.sens_análisis import map_sens, verif_sens, gen_alpha
+    from tinamit.Calib.ej.soil_class import p_soil_class
+    from tinamit.Calib.ej.sens_análisis import map_sens, verif_sens, gen_alpha, gen_counted_behavior
     from collections import Counter
 
-    paso_data = np.load("D:\Gaby\Tinamit\Dt\Fast\\anlzr\egr_paso\\").tolist()
+    paso_data = np.load("D:\Gaby\Tinamit\Dt\Fast\\anlzr\egr_paso\\egr-0.npy").tolist()
+    paso_arch = "D:\Gaby\Tinamit\Dt\Fast\\anlzr\egr_paso\\"
     pasos = \
-        verif_sens('fast', list(paso_data.keys())[0], mapa_paráms, p_soil_class, egr_arch=paso_data, si='Si', dim=215)
-    ['morris'][list(paso_data.keys())[0]]['mds_Watertable depth Tinamit']  # 9prms * 215polys
+        verif_sens('fast', list(paso_data.keys())[0], mapa_paráms, p_soil_class, egr_arch=paso_arch, si='Si', dim=215)[
+            'fast'][list(paso_data.keys())[0]]['mds_Watertable depth Tinamit']  # 9prms * 215polys
 
-    mean_data = np.load("D:\Gaby\Tinamit\Dt\Fast\\anlzr\egr_mean\\").tolist()
+    mean_data = np.load("D:\Gaby\Tinamit\Dt\Fast\\anlzr\egr_mean\\egr-0.npy").tolist()
+    mean_arch = "D:\Gaby\Tinamit\Dt\Fast\\anlzr\egr_mean\\"
     means = \
-        verif_sens('fast', list(paso_data.keys())[0], mapa_paráms, p_soil_class, egr_arch=mean_data, si='Si', dim=215)
-    ['morris'][list(paso_data.keys())[0]]['mds_Watertable depth Tinamit']
+        verif_sens('fast', list(mean_data.keys())[0], mapa_paráms, p_soil_class, egr_arch=mean_arch, si='Si', dim=215)[
+            'fast'][list(mean_data.keys())[0]]['mds_Watertable depth Tinamit']
 
-    behav_data = np.load("D:\Gaby\Tinamit\Dt\Fast\\anlzr\egr_behav\\").tolist()
+    behav_data = np.load("D:\Gaby\Tinamit\Dt\Fast\\anlzr\egr_behav\\egr-0.npy").tolist()
+    behav_arch = "D:\Gaby\Tinamit\Dt\Fast\\anlzr\egr_behav\\"
     behaviors = \
-        verif_sens('fast', list(paso_data.keys())[0], mapa_paráms, p_soil_class, egr_arch=behav_data, si='Si', dim=215)
-    ['morris'][list(paso_data.keys())[0]]['mds_Watertable depth Tinamit']
+        verif_sens('fast', list(behav_data.keys())[0], mapa_paráms, p_soil_class, egr_arch=behav_arch, si='Si',
+                   dim=215)['fast'][list(behav_data.keys())[0]]['mds_Watertable depth Tinamit']
 
     # paso
-    for prm, paso in pasos.items():
-        map_sens(gen_geog(), 'Morris', list(paso_data.keys())[0], prm,
-                 paso, 0.01, ids=[str(i) for i in range(1, 216)],
-                 path="D:\Gaby\Tinamit\Dt\Fast\map\paso\\")
+    # for prm, paso in pasos.items():
+    #     map_sens(gen_geog(), 'Fast', list(paso_data.keys())[0], prm,
+    #              paso, 0.01, ids=[str(i) for i in range(1, 216)],
+    #              path="D:\Gaby\Tinamit\Dt\Fast\map\paso\\test\\")
 
     # mean
-    for prmm, m_aray in means.items():
-        map_sens(gen_geog(), 'Morris', list(mean_data.keys())[0], prmm,
-                 m_aray, 0.1, ids=[str(i) for i in range(1, 216)],
-                 path="D:\Gaby\Tinamit\Dt\Fast\map\mean\\")
+    # for prmm, m_aray in means.items():
+    #     map_sens(gen_geog(), 'Fast', list(mean_data.keys())[0], prmm,
+    #              m_aray, 0.01, ids=[str(i) for i in range(1, 216)],
+    #              path="D:\Gaby\Tinamit\Dt\Fast\map\mean\\")
 
     # for spp
-    for patt, b_g in behaviors.items():
-        alpha = gen_alpha(no_ini, patt)  # ini/ no_ini
-        if Counter(alpha)[0] == 215:
-            alpha = np.zeros([215])
-        bpp_prm = b_g['bp_params']
-        gof_prm = b_g['gof']
-        for prm, bpprm in bpp_prm.items():
-            if prm == 'Ficticia':
-                alpha = np.zeros([215])
-            map_sens(gen_geog(), 'Morris', list(behav_data.keys())[0], prm,
-                     bpprm, 0.1, behav=patt, ids=[str(i) for i in range(1, 216)], alpha=alpha,
-                     path="D:\Gaby\Tinamit\Dt\Fast\map\\spp\\")  # non_ini
+    # for patt, b_g in behaviors.items():
+    #     alpha = gen_alpha(no_ini, patt)  # ini/ no_ini
+    #     if Counter(alpha)[0] == 215:
+    #         alpha = np.zeros([215])
+    #     bpp_prm = b_g['bp_params']
+    #     gof_prm = b_g['gof']
+    #     for prm, bpprm in bpp_prm.items():
+    #         # if prm == 'Ficticia':
+    #         #     alpha = np.zeros([215])
+    #         map_sens(gen_geog(), 'Fast', list(behav_data.keys())[0], prm,
+    #                  bpprm, 0.01, behav=patt, ids=[str(i) for i in range(1, 216)], alpha=alpha,
+    #                  path="D:\Gaby\Tinamit\Dt\Fast\map\\spp\\")
 
     # for Linear
-    patt = 'linear'
-    b_g = behaviors[patt]
-    alpha = 1  # ini/ no_ini
-    bpp_prm = b_g['bp_params']
-    gof_prm = b_g['gof']
-    for prm, bpprm in bpp_prm.items():
-        # if prm == 'Ficticia':
-        #     alpha = np.zeros([215])
-        map_sens(gen_geog(), 'Morris', list(behav_data.keys())[0], prm,
-                 bpprm, 0.1, behav=patt, ids=[str(i) for i in range(1, 216)], alpha=alpha,
-                 path="D:\Gaby\Tinamit\Dt\Fast\map\\spp\\linear\\")
+    # patt = 'linear'
+    # b_g = behaviors[patt]
+    # alpha = 1  # ini/ no_ini
+    # bpp_prm = b_g['bp_params']
+    # gof_prm = b_g['gof']
+    # for prm, bpprm in gof_prm.items():
+    #     # if prm == 'Ficticia':
+    #     #     alpha = np.zeros([215])
+    #     map_sens(gen_geog(), 'Fast', list(behav_data.keys())[0], prm,
+    #              bpprm, 0.01, behav=patt, ids=[str(i) for i in range(1, 216)], alpha=alpha,
+    #              path="D:\Gaby\Tinamit\Dt\Fast\map\\aic\\linear\\")
+
+    #test
+    # patt = 'spp_oscil_aten_log'
+    # b_g = behaviors[patt]
+    # alpha = gen_alpha(no_ini, patt)
+    # bpp_prm = b_g['bp_params']
+    # gof_prm = b_g['gof']
+    # for prm, bpprm in bpp_prm.items():
+    #     if prm != 'POH Kharif Tinamit':
+    #         continue
+    #     map_sens(gen_geog(), 'Fast', list(behav_data.keys())[0], prm,
+    #              bpprm, 0.01, behav=patt, ids=[str(i) for i in range(1, 216)], alpha=alpha,
+    #              path="D:\Gaby\Tinamit\Dt\Fast\map\\spp\\")
+
+    # final plot
+    archivo = "D:\Gaby\Tinamit\Dt\Fast\map\\final_plot\\"
+
+    col_labels = ['0', '5', '10', '15', '20', 'Mean']
+
+    col_labels.extend([f"{behav}_{bpp}" for behav in behaviors for bpp in behaviors[behav]['bp_params']['Kaq']])
+    col_labels.extend([f"{behav}_gof" for behav in behaviors])
+    sig_l = [f'n_{l + 1}' for l in range(6)]
+    sig_l.extend([f'b_{l + 1}' for l in range(len(col_labels))])
+
+    db_l = [f's_{l}' for l in range(20)]
+
+    col = col_labels.copy()
+    col[:6] = sig_l[:6]
+    sl = 0
+    dl = 0
+    for j in col[6:]:
+        if j[:3] == 'spp':
+            col[col.index(j)] = db_l[dl]
+            dl += 1
+        elif col.index(j) < len(col):
+            col[col.index(j)] = sig_l[sl + 6]
+            sl += 1
+
+    row_labels=['Ptq', 'Ptr', 'Kaq', 'Peq', 'Pex', 'POH, Summer', 'POH, Winter', 'CTW', 'Dummy']
+    for i in range(215):
+        data = np.empty([len(list(pasos)), len(col_labels)])
+        # paso
+        ps = [0, 1, 2, 3, 4]
+        for prmp, d_paso in pasos.items():
+            for p in ps:
+                data[list(pasos).index(prmp), ps.index(p)] = d_paso[f'paso_{p}'][i]
+
+    #     mean
+        for prmm, m_aray in means.items():
+            data[list(pasos).index(prmm), col_labels.index('Mean')] = m_aray[i]
+
+    #     behavior
+        for patt, d_bg in behaviors.items():
+            alpha = gen_alpha(no_ini, patt)
+            for pbpp, bpp in d_bg['bp_params'].items():
+                if Counter(alpha)[0] == 215: #or pbpp == 'Ficticia':  ###
+                    alpha = np.zeros([215])
+                for bppm, va in bpp.items():
+                    if alpha[i] == 0 and patt != 'linear':
+                        data[list(pasos).index(pbpp), col_labels.index(f'{patt}_{bppm}')] = 0
+                    else:
+                        data[list(pasos).index(pbpp), col_labels.index(f'{patt}_{bppm}')] = va[i]
+            for paic, aic in d_bg['gof'].items():
+                if alpha[i] == 0 and patt != 'linear':
+                    data[list(pasos).index(paic), col_labels.index(f'{patt}_gof')] = 0
+                else:
+                    data[list(pasos).index(paic), col_labels.index(f'{patt}_gof')] = aic['aic'][i]
+        if len(np.where(np.isnan(data))[1]) != 0:
+            data[np.where(np.isnan(data))] = 0
+        map_rank(row_labels=row_labels, col_labels=col, data=np.round(data, 2),
+                 title='Fast Sensitivity Ranking Results', y_label='Parameters',
+                 archivo=archivo + f'poly{i + 1}', fst_cut=0.01, snd_cut=10, maxi=np.round(data, 2).max(),
+                 cbarlabel="Fast Sensitivity Index", cmap="magma_r")
+
+        print(f'finish the {i}-th poly, yeah!')
+
+    #  for the 215 total plt
+    # data = np.empty([len(row_labels), len(col_labels)])
+    # # paso
+    # ps = [0, 1, 2, 3, 4]
+    # for prmp, d_paso in pasos.items():
+    #     for p in ps:
+    #         data[list(pasos).index(prmp), ps.index(p)] = max(d_paso[f'paso_{p}'])
+    #
+    # # mean
+    # for prmm, m_aray in means.items():
+    #     data[list(pasos).index(prmm), col_labels.index('Mean')] = max(m_aray)
+    #
+    # # behavior
+    # for patt, d_bg in behaviors.items():
+    #     for pbpp, bpp in d_bg['bp_params'].items():
+    #         for bppm, va in bpp.items():
+    #             data[list(pasos).index(pbpp), col_labels.index(f'{patt}_{bppm}')] = max(va)
+    #     for paic, aic in d_bg['gof'].items():
+    #         data[list(pasos).index(paic), col_labels.index(f'{patt}_gof')] = max(aic['aic'])
+    #
+    # map_rank(row_labels=row_labels, col_labels=col, data=np.round(data, 2),
+    #          title='Fast Sensitivity Ranking Results', y_label='Parameters',
+    #          archivo=archivo + f'all_poly', fst_cut=0.01, snd_cut=10, maxi=np.round(data, 2).max(),
+    #          cbarlabel="Fast Sensitivity Index", cmap="magma_r")
