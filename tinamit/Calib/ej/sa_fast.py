@@ -42,7 +42,7 @@ def gen_mod():
 
 def gen_geog():
     Rechna_Doab = Geografía(nombre='Rechna Doab')
-
+    #D:\Thesis\pythonProject\Tinamit\\tinamit\Ejemplos\en\Ejemplo_SAHYSMOD
     base_dir = os.path.join("D:\Thesis\pythonProject\Tinamit\\tinamit\Ejemplos\en\Ejemplo_SAHYSMOD", 'Shape_files')
     Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir, 'Internal_Polygon.shp'), col_id="Polygon_ID")
 
@@ -101,7 +101,7 @@ if __name__ == "__main__":
                             )
 
     # After finish the f_simul simulation SAlib for superposition (the best behavior for each poly)
-    from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims
+    from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims, map_rank
 
     f_simul_arch = 'D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul\\'
     fited_behav = "D:\Thesis\pythonProject\localuse\Dt\Fast\post_f_simul\\"
@@ -129,10 +129,7 @@ if __name__ == "__main__":
     '''
     from tinamit.Calib.ej.sens_análisis import map_sens, verif_sens
 
-    # simulation_data, var_egr = carg_simul_dt(os.path.abspath('D:\Thesis\pythonProject\localuse\Dt\Fast\simular\\'), 1,
-    #                   var_egr='mds_Soil salinity Tinamit CropA')
-    #
-    #
-    # map_sens(gen_geog(), 'fast', 'paso_0', 'SS',
-    #          simulation_data['1000'][var_egr].values, 0.1,
-    #          "D:\Thesis\pythonProject\localuse\Dt\Fast\map\\paso_")
+    # final plot
+    archivo = "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\final_plot\\"
+
+    col_labels = ['S_0', 'S_5', 'S_10', 'S_15', 'S_20', 'Mean']

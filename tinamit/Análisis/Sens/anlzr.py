@@ -3,7 +3,6 @@ import multiprocessing as mp
 import time
 from copy import deepcopy
 from datetime import datetime
-
 from xarray import Dataset
 
 from tinamit.Análisis.Sens.behavior import find_best_behavior
@@ -433,7 +432,7 @@ def format_simul(simulation, vr, tipo_egr, dim, método=None):
                 else:
                     f_simul[i] = np.average(val[vr].values)
             else:
-                f_simul[i]=np.average(val)
+                f_simul[i] = np.average(val)
 
     elif tipo_egr == "final":
         f_simul = np.empty(tmñ)
