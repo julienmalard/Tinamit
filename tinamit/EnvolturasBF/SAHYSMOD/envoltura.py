@@ -82,7 +82,7 @@ class ModeloSAHYSMOD(ModeloBloques):
         símismo.variables.clear()
 
         ingresos_no_estacionales = [
-            'Kr', 'CrA', 'CrB', 'CrU', 'Cr4', 'Hw', 'C1*', 'C2*', 'C3*', 'Cxf', 'Cxa', 'Cxb', 'Cqf'
+            'Kr', 'CrA', 'CrB', 'CrU', 'Hw', 'Cxf', 'Cxa', 'Cxb', 'Cqf'
         ]
 
         for nombre, dic in vars_SAHYSMOD.items():
@@ -124,7 +124,7 @@ class ModeloSAHYSMOD(ModeloBloques):
 
     def avanzar_modelo(símismo, n_ciclos):
 
-        símismo._escribir_archivo_ingr(n_ciclos=n_ciclos, dic_ingr=símismo.dic_ingr, archivo=símismo.arch_ingreso)
+        símismo._escribir_archivo_ingr(n_ciclos=n_ciclos, dic_ingr=símismo.test, archivo=símismo.arch_ingreso)
 
         # Limpiar archivos de egresos que podrían estar allí
         if os.path.isfile(símismo.arch_egreso):
