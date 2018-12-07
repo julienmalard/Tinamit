@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -5,12 +6,70 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 from matplotlib.colors import LinearSegmentedColormap
+import matplotlib.colors as colors
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from tinamit.Análisis.Sens.behavior import find_best_behavior
 from tinamit.Geog.Geog import _gen_clrbar_dic
+from tinamit.Calib.ej.info_paráms import mapa_paráms
+from tinamit.Calib.ej.soil_class import p_soil_class
+from tinamit.Calib.ej.info_analr import *
+from tinamit.Geog.Geog import Geografía, _hex_a_rva
+from tinamit.Conectado import Conectado
+from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
 
 import multiprocessing as mp
+
+
+def gen_mod():
+    # Create a coupled model instance
+    modelo = Conectado()
+
+    # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
+    modelo.estab_mds('../../../tinamit/Ejemplos/en/Ejemplo_SAHYSMOD/Vensim/Tinamit_Rechna.vpm')
+
+    modelo.estab_bf(Envoltura)
+    modelo.estab_conv_tiempo(mod_base='mds', conv=6)
+
+    # Couple models(Change variable names as needed)
+    modelo.conectar(var_mds='Soil salinity Tinamit CropA', mds_fuente=False, var_bf="CrA - Root zone salinity crop A")
+    modelo.conectar(var_mds='Soil salinity Tinamit CropB', mds_fuente=False, var_bf="CrB - Root zone salinity crop B")
+    modelo.conectar(var_mds='Area fraction Tinamit CropA', mds_fuente=False,
+                    var_bf="Area A - Seasonal fraction area crop A")
+    modelo.conectar(var_mds='Area fraction Tinamit CropB', mds_fuente=False,
+                    var_bf="Area B - Seasonal fraction area crop B")
+    modelo.conectar(var_mds='Watertable depth Tinamit', mds_fuente=False, var_bf="Dw - Groundwater depth")
+    modelo.conectar(var_mds='ECdw Tinamit', mds_fuente=False, var_bf='Cqf - Aquifer salinity')  ###
+    modelo.conectar(var_mds='Final Rainfall', mds_fuente=True, var_bf='Pp - Rainfall')  # True-coming from Vensim
+    modelo.conectar(var_mds='Lc', mds_fuente=True, var_bf='Lc - Canal percolation')
+    modelo.conectar(var_mds='Ia CropA', mds_fuente=True, var_bf='IaA - Crop A field irrigation')
+    modelo.conectar(var_mds='Ia CropB', mds_fuente=True, var_bf='IaB - Crop B field irrigation')
+    modelo.conectar(var_mds='Gw', mds_fuente=True, var_bf='Gw - Groundwater extraction')
+    modelo.conectar(var_mds='EpA', mds_fuente=True, var_bf='EpA - Potential ET crop A')
+    modelo.conectar(var_mds='EpB', mds_fuente=True, var_bf='EpB - Potential ET crop B')
+    modelo.conectar(var_mds='Irrigation efficiency', mds_fuente=True, var_bf='FsA - Water storage efficiency crop A')
+    modelo.conectar(var_mds='Fw', mds_fuente=True, var_bf='Fw - Fraction well water to irrigation')
+    # 'Policy RH' = 1, Fw = 1, Policy Irrigation improvement = 1, Policy Canal lining=1, Capacity per tubewell =(100.8, 201.6),
+    return modelo
+
+
+def gen_geog():
+    Rechna_Doab = Geografía(nombre='Rechna Doab')
+
+    base_dir = os.path.join("D:\Thesis\pythonProject\Tinamit\\tinamit\Ejemplos\en\Ejemplo_SAHYSMOD", 'Shape_files')
+    Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir, 'Internal_Polygon.shp'), col_id="Polygon_ID")
+
+    Rechna_Doab.agregar_forma(os.path.join(base_dir, 'External_Polygon.shp'), color='#edf4da')
+    Rechna_Doab.agregar_forma(os.path.join(base_dir, 'RIVR.shp'), tipo='agua')
+    # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'Forst_polygon.shp'), tipo='bosque')
+    Rechna_Doab.agregar_forma(os.path.join(base_dir, 'CNL_Arc.shp'), tipo='agua', color='#1ba4c6', llenar=False)
+    # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'buildup_Polygon.shp'), tipo='ciudad')
+    # Rechna_Doab.agregar_forma(os.path.join(base_dir, 'road.shp'), tipo='calle')
+
+    return Rechna_Doab
+
+
+devolver = ['Watertable depth Tinamit', 'Soil salinity Tinamit CropA']
 
 
 def _integrate_egr(egr_arch, dim, si, mapa_paráms, tipo_egr):
@@ -66,8 +125,8 @@ def _integrate_egr(egr_arch, dim, si, mapa_paráms, tipo_egr):
                                             d_bp_gof[bp_gof_name][:, 0]
                                     else:
                                         egr_tmp[tipo_egr][egr_var][p_name][b_g][si][para_name][bp_gof_name][dim] = \
-                                        d_bp_gof[
-                                            bp_gof_name]
+                                            d_bp_gof[
+                                                bp_gof_name]
 
     egr_tmp = {}
     egr0 = np.load(egr_arch + f'egr-{0}.npy').tolist()
@@ -219,7 +278,234 @@ def gen_alpha(fited_behav_arch, patt):
     return np.asarray([a for p, a in d_alpha.items()])
 
 
-def map_sens(geog, metodo, tipo_egr, para_name, data, midpoint, path, alpha=None, behav=None, paso=None, ids=None):
+def _read_dt_4_map(method):
+    method.capitalize()
+    if method == 'Morris':
+        pasos = \
+            verif_sens('morris', 'paso_tiempo', mapa_paráms, p_soil_class, egr=paso_data_mor, si='mu_star')['morris'][
+                'paso_tiempo']['mds_Watertable depth Tinamit']
+
+        means = \
+            verif_sens('morris', list(mean_data_mor.keys())[0], mapa_paráms, p_soil_class, egr=mean_data_mor,
+                       si='mu_star')[
+                'morris'][
+                list(mean_data_mor.keys())[0]]['mds_Watertable depth Tinamit']
+
+        behaviors = verif_sens('morris', list(behav_data_mor.keys())[0], mapa_paráms, p_soil_class, egr=behav_data_mor,
+                               si='mu_star')['morris'][list(behav_data_mor.keys())[0]]['mds_Watertable depth Tinamit']
+
+        no_ini = no_ini_mor
+
+        ps = [0, 5, 10, 15, 20]
+
+        return {'pasos': pasos, 'means': means, 'behaviors': behaviors, 'no_ini': no_ini, 'ps': ps}
+
+    else:
+        pasos = \
+            verif_sens('fast', list(paso_data_fast.keys())[0], mapa_paráms, p_soil_class, egr_arch=paso_arch_fast,
+                       si='Si',
+                       dim=215)[
+                'fast'][list(paso_data_fast.keys())[0]]['mds_Watertable depth Tinamit']  # 9prms * 215polys
+
+        means = \
+            verif_sens('fast', list(mean_data_fast.keys())[0], mapa_paráms, p_soil_class, egr_arch=mean_arch_fast,
+                       si='Si',
+                       dim=215)[
+                'fast'][list(mean_data_fast.keys())[0]]['mds_Watertable depth Tinamit']
+
+        behaviors = \
+            verif_sens('fast', list(behav_data_fast.keys())[0], mapa_paráms, p_soil_class, egr_arch=behav_arch_fast,
+                       si='Si',
+                       dim=215)['fast'][list(behav_data_fast.keys())[0]]['mds_Watertable depth Tinamit']
+
+        no_ini = no_ini_fast
+        ps = [0, 1, 2, 3, 4]
+
+        return {'pasos': pasos, 'means': means, 'behaviors': behaviors, 'no_ini': no_ini, 'ps': ps}
+
+
+def gen_row_col(behaviors):
+    col_labels = ['0', '5', '10', '15', '20', 'Mean']
+
+    col_labels.extend([f"{behav}_{bpp}" for behav in behaviors for bpp in behaviors[behav]['bp_params']['Kaq']])
+    col_labels.extend([f"{behav}_gof" for behav in behaviors])
+    sig_l = [f'n_{l + 1}' for l in range(6)]
+    sig_l.extend([f'b_{l + 1}' for l in range(len(col_labels))])
+
+    db_l = [f's_{l}' for l in range(20)]
+
+    col = col_labels.copy()
+    col[:6] = sig_l[:6]
+    sl = 0
+    dl = 0
+    for j in col[6:]:
+        if j[:3] == 'spp':
+            col[col.index(j)] = db_l[dl]
+            dl += 1
+        elif col.index(j) < len(col):
+            col[col.index(j)] = sig_l[sl + 6]
+            sl += 1
+    row_labels = ['Ptq', 'Ptr', 'Kaq', 'Peq', 'Pex', 'POH, Summer', 'POH, Winter', 'CTW', 'Dummy']
+
+    return row_labels, col, col_labels
+
+
+def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', param=None, fst_cut=0.1, snd_cut=8):
+    read_dt = _read_dt_4_map(method)
+
+    if measure == 'paso_tiempo':
+        for prm, paso in read_dt['pasos'].items():
+            map_sens(gen_geog(), method, 'paso_tiempo', prm,
+                     paso, fst_cut=fst_cut, snd_cut=snd_cut, ids=[str(i) for i in range(1, 216)],
+                     path=gaurd_arch)
+
+    elif measure == 'promedio':
+        for prmm, m_aray in read_dt['means'].items():
+            map_sens(gen_geog(), method, 'promedio', prmm,
+                     m_aray, fst_cut=fst_cut, snd_cut=snd_cut, ids=[str(i) for i in range(1, 216)],
+                     path=gaurd_arch)
+
+    elif measure == 'behavior_gof':
+        for patt, b_g in read_dt['behaviors'].items():
+            alpha = gen_alpha(read_dt['no_ini'], patt)
+            if Counter(alpha)[0] == 215:
+                alpha = np.zeros([215])
+            gof_prm = b_g['gof']
+            for prm, bpprm in gof_prm.items():
+                map_sens(gen_geog(), method, 'superposition', prm,
+                         bpprm, fst_cut=fst_cut, snd_cut=snd_cut, behav=patt, ids=[str(i) for i in range(1, 216)],
+                         alpha=alpha, path=gaurd_arch)
+
+    elif measure == 'behavior_param':
+        for patt, b_g in read_dt['behaviors'].items():
+            alpha = gen_alpha(read_dt['no_ini'], patt)
+            if Counter(alpha)[0] == 215:
+                alpha = np.zeros([215])
+            bpp_prm = b_g['bp_params']
+            for prm, bpprm in bpp_prm.items():
+                map_sens(gen_geog(), method, 'superposition', prm,
+                         bpprm, fst_cut=fst_cut, snd_cut=snd_cut, behav=patt, ids=[str(i) for i in range(1, 216)],
+                         alpha=alpha, path=gaurd_arch)
+
+    elif measure == 'test':
+        alpha = gen_alpha(read_dt['no_ini'], patt)
+        b_g = read_dt['behaviors'][patt]
+        bpp_prm = b_g['bp_params']
+        gof_prm = b_g['gof']
+        for prm, bpprm in bpp_prm.items():
+            if prm != param:
+                continue
+            map_sens(gen_geog(), method, 'superposition', prm,
+                     bpprm, fst_cut=fst_cut, snd_cut=snd_cut, behav=patt, ids=[str(i) for i in range(1, 216)],
+                     alpha=alpha, path=gaurd_arch)
+
+
+def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method):
+    read_dt = _read_dt_4_map(method)
+    r_c = gen_row_col(read_dt['behaviors'])
+
+    data = np.empty([len(r_c[0]), len(r_c[1])])
+
+    if rank_method == 'polygons':
+        for i in range(215):
+            # paso
+            for prmp, d_paso in read_dt['pasos'].items():
+                for p in read_dt['ps']:
+                    data[list(read_dt['pasos']).index(prmp), read_dt['ps'].index(p)] = d_paso[f'paso_{p}'][i]
+
+            # mean
+            for prmm, m_aray in read_dt['means'].items():
+                data[list(read_dt['pasos']).index(prmm), gen_row_col(read_dt['behaviors'])[1].index('Mean')] = m_aray[i]
+
+            # behavior
+            for patt, d_bg in read_dt['behaviors'].items():
+                alpha = gen_alpha(read_dt['no_ini'], patt)
+                for pbpp, bpp in d_bg['bp_params'].items():
+                    if Counter(alpha)[0] == 215 or pbpp == 'Ficticia':
+                        alpha = np.zeros([215])
+                    for bppm, va in bpp.items():
+                        if alpha[i] == 0 and patt != 'linear':
+                            data[list(read_dt['pasos']).index(pbpp), r_c[1].index(f'{patt}_{bppm}')] = 0
+                        else:
+                            data[list(read_dt['pasos']).index(pbpp), r_c[1].index(f'{patt}_{bppm}')] = va[i]
+                for paic, aic in d_bg['gof'].items():
+                    if alpha[i] == 0 and patt != 'linear':
+                        data[list(read_dt['pasos']).index(paic), r_c[1].index(f'{patt}_gof')] = 0
+                    else:
+                        data[list(read_dt['pasos']).index(paic), r_c[1].index(f'{patt}_gof')] = aic['aic'][i]
+
+            map_rank(row_labels=r_c[0], col_labels=r_c[2], data=np.round(data, 2),
+                     title=f'{method} Sensitivity Ranking Results', y_label='Parameters',
+                     archivo=rank_arch + f'poly{i+1}', fst_cut=fst_cut, snd_cut=snd_cut, maxi=np.round(data, 2).max(),
+                     cbarlabel=f"{method} Sensitivity Index", cmap="magma_r")
+            print(f'finish the {i}-th poly, yeah!')
+
+    if rank_method == 'num_poly_rank':
+        param_lst = list(read_dt['pasos'])
+        for p in read_dt['ps']:
+            dt = {prmp: max(d_paso[f'paso_{p}']) for prmp, d_paso in read_dt['pasos'].items()}
+            r = {key: rank for rank, key in enumerate(sorted(set(dt.values()), reverse=True), 1)}
+            n_dt = {k: r[v] if v > fst_cut else 0 for k, v in dt.items()}
+            for prmp, v in n_dt.items():
+                data[list(n_dt).index(prmp), read_dt['ps'].index(p)] = v
+
+        dt2 = {prmm: max(m_aray) for prmm, m_aray in read_dt['means'].items()}
+        r2 = {key: rank for rank, key in enumerate(sorted(set(dt2.values()), reverse=True), 1)}
+        n_dt2 = {k: r2[v] if v > fst_cut else 0 for k, v in dt2.items()}
+        for prmm, m_aray in n_dt2.items():
+            data[list(n_dt2).index(prmm), r_c[2].index('Mean')] = m_aray
+        col_ind = []
+        for patt, d_bg in read_dt['behaviors'].items():
+            for pbpp, bpp in d_bg['bp_params'].items():
+                for bppm, va in bpp.items():
+                    col_ind.append(r_c[2].index(f'{patt}_{bppm}'))
+                    data[param_lst.index(pbpp), r_c[2].index(f'{patt}_{bppm}')] = max(va)
+            for paic, aic in d_bg['gof'].items():
+                col_ind.append(r_c[2].index(f'{patt}_gof'))
+                data[param_lst.index(paic), r_c[2].index(f'{patt}_gof')] = max(aic['aic'])
+        lst = list(set(col_ind))
+        for c_i in lst:
+            dt = {para: data[:, c_i][i] for i, para in enumerate(param_lst)}
+            r = {key: rank for rank, key in enumerate(sorted(set(dt.values()), reverse=True), 1)}
+            n_dt = {k: r[v] if v > fst_cut else 0 for k, v in dt.items()}
+            for para, rk in n_dt.items():
+                data[param_lst.index(para), c_i] = rk
+
+        if len(np.where(np.isnan(data))[1]) != 0:
+            data[np.where(np.isnan(data))] = 0
+        cat_clr_bar = data.max()
+
+        map_rank(row_labels=r_c[0], col_labels=r_c[1], data=np.round(data, 2),
+                 title=f"{method} Sensitivity Ranking Map", y_label='Parameters',
+                 archivo=rank_arch + f'{rank_method}', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
+                 cbarlabel=f"{method} Sensitivity Rank", cmap="magma_r", cat_clr_bar=cat_clr_bar)
+
+    if rank_method == 'total_poly':
+        for prmp, d_paso in read_dt['pasos'].items():
+            for p in read_dt['ps']:
+                data[list(read_dt['pasos']).index(prmp), read_dt['ps'].index(p)] = max(d_paso[f'paso_{p}'])
+        # mean
+        for prmm, m_aray in read_dt['means'].items():
+            data[list(read_dt['pasos']).index(prmm), r_c[2].index('Mean')] = max(m_aray)
+
+        # behavior
+        for patt, d_bg in read_dt['behaviors'].items():
+            for pbpp, bpp in d_bg['bp_params'].items():
+                for bppm, va in bpp.items():
+                    data[list(read_dt['pasos']).index(pbpp), r_c[2].index(f'{patt}_{bppm}')] = max(va)
+            for paic, aic in d_bg['gof'].items():
+                data[list(read_dt['pasos']).index(paic), r_c[2].index(f'{patt}_gof')] = max(aic['aic'])
+
+        if len(np.where(np.isnan(data))[1]) != 0:
+            data[np.where(np.isnan(data))] = 0
+        map_rank(row_labels=r_c[0], col_labels=r_c[2], data=np.round(data, 2),
+                 title=f"{method} Sensitivity Ranking Results", y_label='Parameters',
+                 archivo=rank_arch + f'{rank_method}', fst_cut=fst_cut, snd_cut=snd_cut, maxi=np.round(data, 2).max(),
+                 cbarlabel=f"{method} Sensitivity Index", cmap="magma_r")
+
+
+def map_sens(geog, metodo, tipo_egr, para_name, data, fst_cut, path, snd_cut=None, alpha=None, behav=None, paso=None,
+             ids=None):
     vars_interés = {tipo_egr: {
         'col': ['#f8fef7', '#e7fde5', '#d6fcd2', '#c5fbc0', '#b4f9ad', '#b4f9ad', '#5ff352',
                 '#5395a0', '#4a8590', '#42767f', '#39666e', '#30565d', '#28474c', '#1f373c',
@@ -232,7 +518,8 @@ def map_sens(geog, metodo, tipo_egr, para_name, data, midpoint, path, alpha=None
     #                'red': ['#ff8000', '#ff8c1a', '#ff8000']}
 
     clr_bar_dic = {'green': ['#e6fff2', '#b3ffd9'],
-                   'blue': ['#80ff9f', '#80ff80', '#9fff80', '#bfff80', '#dfff80', '#ffff80', '#ffdf80', '#ff8080'], #'#ff8080']
+                   'blue': ['#80ff9f', '#80ff80', '#9fff80', '#bfff80', '#dfff80', '#ffff80', '#ffdf80', '#ff8080'],
+                   # '#ff8080']
                    'red': ['#ff0000', '#ff0000']}
 
     unid = f'{metodo} Sensitivity Index'
@@ -243,29 +530,29 @@ def map_sens(geog, metodo, tipo_egr, para_name, data, midpoint, path, alpha=None
         #                  unidades='Soil salinity level',
         #                  colores=d['col'], ids=ids)  # for azahr
 
-            # paso
+        # paso
         # ll = [0, 5, 10, 15, 20]
         # # ll = [0, 1, 2, 3, 4]
         # for i in ll:
         #     max_val = max(data[f'paso_{i}'])
-        #     if max_val > 11:
-        #         data[f'paso_{i}'][np.where(data[f'paso_{i}'] > 11)] = 11
-        #         max_val = 12
+        #     if max_val > snd_cut:
+        #         data[f'paso_{i}'][np.where(data[f'paso_{i}'] > snd_cut)] = snd_cut
+        #         max_val = snd_cut
         #     geog.dibujar(archivo=path + f'{i*5}-{para_name}', valores=data[f'paso_{i}'],
         #                  título=f"{metodo}-{para_name[: 5]}-Timestep-{i*5} to WTD",
         #                  unidades=unid, colores=d['col'], ids=ids, midpoint=midpoint, clr_bar_dic=clr_bar_dic,
         #                  escala_num=(0, max_val))
 
-            # mean val
+        # mean val
         # max_val = max(data)
-        # if max_val > 11:
-        #     data[np.where(data > 11)] = 11
-        #     max_val = 12
+        # if max_val > snd_cut:
+        #     data[np.where(data > snd_cut)] = snd_cut
+        #     max_val = snd_cut
         # geog.dibujar(archivo=path + f'mean-{para_name}', valores=data,
         #              título=f"{metodo[:2]}-{para_name}-to WTD-Mean", midpoint=midpoint, clr_bar_dic=clr_bar_dic,
         #              unidades=unid, colores=d['col'], ids=ids, escala_num=(0, max_val))
 
-            # beahv
+        # beahv
         for bpprm in data:  # "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\spp\\aic\\{bpprm}-{behav}-{para_name}" #f"D:\Thesis\pythonProject\localuse\Dt\Mor\map\spp\\bppprm\\bpprm-{behav}-{para_name}"
             # if bpprm != 'amplitude':
             #     continue
@@ -279,23 +566,27 @@ def map_sens(geog, metodo, tipo_egr, para_name, data, midpoint, path, alpha=None
             elif len(np.where(data[bpprm])[0][np.isin(np.where(data[bpprm]), np.where(alpha > 0))[0]]) == 0:
                 max_val = 0
             else:
-                max_val = max(data[bpprm][[np.where(data[bpprm])[0][np.isin(np.where(data[bpprm]), np.where(alpha > 0))[0]]]])
+                max_val = max(
+                    data[bpprm][[np.where(data[bpprm])[0][np.isin(np.where(data[bpprm]), np.where(alpha > 0))[0]]]])
                 # if max_val < max(data[bpprm]):
                 #     data[bpprm][np.where(data[bpprm] > max_val)[0]] = max_val
-            if max_val > 11:
-                data[bpprm][np.where(data[bpprm] > 11)] = 11
-                max_val = 12
+            if max_val > snd_cut:
+                data[bpprm][np.where(data[bpprm] > snd_cut)] = snd_cut
+                data[np.where(data < fst_cut)] = 0 - snd_cut * 0.1
+                max_val = snd_cut
+
             geog.dibujar(archivo=path + f"{metodo[:2]}-{para_name[: 5]}-{behav}-{bpprm}",  # midpoint=midpoint,
                          valores=data[bpprm],
                          título=f"{metodo[:2].capitalize()}-{para_name[0].capitalize()+para_name[1: 5]}-{behav[0].capitalize()+ behav[1:]}-{bpprm}",
-                         alpha=alpha, unidades=unid, colores=d['col'], ids=ids, midpoint=midpoint,
+                         alpha=alpha, unidades=unid, colores=d['col'], ids=ids, fst_cut=fst_cut + snd_cut * 0.1,
+                         snd_cut=snd_cut,
                          clr_bar_dic=clr_bar_dic,
                          escala_num=(0, max_val)
                          )
 
 
 def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_label, archivo, ax=None, cbar_kw={},
-             cbarlabel="Sensitivity Index", **kwargs):
+             cbarlabel="Sensitivity Index", cat_clr_bar=None, **kwargs):
     '''
 
     Parameters
@@ -343,38 +634,56 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
 
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("right", size="1.5%", pad=0.05)
-    # fig.colorbar(im, cax=cax)
 
-    # Plot the heatmap and # Create colorbar
-    if fst_cut < data.max() < snd_cut:
-        dic_c = _gen_clrbar_dic(fst_cut=fst_cut, snd_cut=None, maxi=maxi, first_set=clr_bar_dic['green'],
+    if cat_clr_bar is not None:
+        dic_c = _gen_clrbar_dic(fst_cut=fst_cut, snd_cut=snd_cut, trd_cut=None,
+                                maxi=data.max(),
+                                first_set=clr_bar_dic['green'],
                                 second_set=clr_bar_dic['blue'], third_set=clr_bar_dic['red'])
         mapa_color = LinearSegmentedColormap('mapa_color', dic_c)
         im = ax.imshow(data, mapa_color)
-        cbar = fig.colorbar(im, cax=cax, ticks=[0, fst_cut, data.max()])
-        # cbar = ax.figure.colorbar(im, ax=cax, ticks=[0, fst_cut, data.max()], **cbar_kw)
-        cbar.ax.set_yticklabels(['0', f'Screnning threshold, {fst_cut}', f'maximum val, {np.round(data.max(), 3)}'], fontsize=3)
 
-    elif data.max() > snd_cut:
+        norm = matplotlib.colors.BoundaryNorm(np.linspace(0, cat_clr_bar + 1, cat_clr_bar + 2), cat_clr_bar + 1)
+
+        cbar = fig.colorbar(im, cax=cax, ticks=[0, 8, 7, 6, 5, 4, 3, 2, 1])
+        cbar.ax.set_yticklabels(['0', '8', '7', '6', '5', '4', '3', '2', '1'], fontsize=6)
+
+    else:
         if data.max() > snd_cut:
             data[np.where(data > snd_cut)] = snd_cut + 0.1
-        dic_c = _gen_clrbar_dic(fst_cut=fst_cut, snd_cut=snd_cut-0.1, maxi=10.5, first_set=clr_bar_dic['green'],
-                                second_set=clr_bar_dic['blue'], third_set=clr_bar_dic['red'])
-        mapa_color = LinearSegmentedColormap('mapa_color', dic_c)
-        im = ax.imshow(data, mapa_color)
-        cbar = fig.colorbar(im, cax=cax, ticks=[0, fst_cut, snd_cut-0.1, 10.5])
-        cbar.ax.set_yticklabels(
-            ['0', f'Screnning threshold, {fst_cut}', '+ 10 High sensitivity zone', '+ 10 High sensitivity zone'],
-            fontsize=3)
+            data[np.where(data < fst_cut)] = 0 - snd_cut * 0.1
+            dic_c = _gen_clrbar_dic(fst_cut=fst_cut + snd_cut * 0.1, snd_cut=snd_cut - 0.1,
+                                    maxi=snd_cut + 0.1 + snd_cut * 0.1,
+                                    first_set=clr_bar_dic['green'],
+                                    second_set=clr_bar_dic['blue'], third_set=clr_bar_dic['red'])
+            mapa_color = LinearSegmentedColormap('mapa_color', dic_c)
+            im = ax.imshow(data, mapa_color)
 
-    elif data.max() < fst_cut:
-        dic_c = _gen_clrbar_dic(fst_cut=None, snd_cut=None, maxi=maxi, first_set=clr_bar_dic['green'],
-                                second_set=clr_bar_dic['blue'], third_set=clr_bar_dic['red'])
-        mapa_color = LinearSegmentedColormap('mapa_color', dic_c)
-        im = ax.imshow(data, mapa_color)
-        cbar = fig.colorbar(im, cax=cax, ticks=[0, data.max()])
-        # cbar = ax.figure.colorbar(im, ax=cax, ticks=[0, data.max()], **cbar_kw)
-        cbar.ax.set_yticklabels(['0', f'maximum val, {data.max()}'], fontsize=3)
+            cbar = fig.colorbar(im, cax=cax, ticks=[data.min(), fst_cut, snd_cut - 0.1])
+            cbar.ax.set_yticklabels(
+                ['0', f'Screnning threshold, {fst_cut}', f'+{snd_cut} High sensitivity zone'],
+                fontsize=3)
+
+        elif fst_cut < data.max() < snd_cut:
+            data[np.where(data < fst_cut)] = 0 - maxi * 0.1
+            dic_c = _gen_clrbar_dic(fst_cut=fst_cut + maxi * 0.1, snd_cut=None, maxi=maxi + maxi * 0.1,
+                                    first_set=clr_bar_dic['green'], second_set=clr_bar_dic['blue'],
+                                    third_set=clr_bar_dic['red'])
+            mapa_color = LinearSegmentedColormap('mapa_color', dic_c)
+            im = ax.imshow(data, mapa_color)
+            cbar = fig.colorbar(im, cax=cax, ticks=[data.min(), fst_cut, data.max()])
+            # cbar = ax.figure.colorbar(im, ax=cax, ticks=[0, fst_cut, data.max()], **cbar_kw)
+            cbar.ax.set_yticklabels(['0', f'Screnning threshold, {fst_cut}', f'maximum val, {np.round(data.max(), 3)}'],
+                                    fontsize=3)
+
+        elif data.max() < fst_cut:
+            dic_c = _gen_clrbar_dic(fst_cut=None, snd_cut=None, maxi=maxi, first_set=clr_bar_dic['green'],
+                                    second_set=clr_bar_dic['blue'], third_set=clr_bar_dic['red'])
+            mapa_color = LinearSegmentedColormap('mapa_color', dic_c)
+            im = ax.imshow(data, mapa_color)
+            cbar = fig.colorbar(im, cax=cax, ticks=[0, data.max()])
+            # cbar = ax.figure.colorbar(im, ax=cax, ticks=[0, data.max()], **cbar_kw)
+            cbar.ax.set_yticklabels(['0', f'maximum val, {data.max()}'], fontsize=3)
 
     cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom", fontsize=5)
     ax.tick_params(width=0.1)
@@ -403,12 +712,11 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
     ax.grid(which="minor", color="w", linestyle='-', linewidth=0.5)
     ax.tick_params(which="minor", bottom=False, left=False)
 
-    # escala_num = (np.nanmin(data), np.nanmax(data))
-    #
-    # vals_norm = (data - escala_num[0]) / (escala_num[1] - escala_num[0])
-    # norm = matplotlib.colors.Normalize(vmin=0, vmax=escala_num[-1])
     def func(x, pos):
-        return "{:.2f}".format(x).replace("10.10", "")
+        return "{:.2f}".format(x).replace("-0.80", "0").replace("8.10", "")
+
+    def func2(x):
+        return "{:}".format(x).replace("0", "")
 
     def _annotate_rankmap(fst_cut=fst_cut, snd_cut=snd_cut, im=im, valfmt=matplotlib.ticker.FuncFormatter(func),
                           txtclr=["white", "black", ''],
@@ -451,16 +759,26 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
 
         # Loop over the data and create a `Text` for each "pixel".
         # Change the text's color depending on the data.
-
         texts = []
-        for i in range(data.shape[0]):
-            for j in range(data.shape[1]):
-                kw.update(color=txtclr[fst_cut < im.norm(data[i, j])< snd_cut])
-                text = im.axes.text(j, i, valfmt(data[i, j], None), **kw)
-                texts.append(text)
+        if cat_clr_bar is None:
+            for i in range(data.shape[0]):
+                for j in range(data.shape[1]):
+                    kw.update(color=txtclr[fst_cut < im.norm(data[i, j]) < snd_cut])
+                    text = im.axes.text(j, i, valfmt(data[i, j], None), **kw)
+                    texts.append(text)
+        else:
+            for i in range(data.shape[0]):
+                for j in range(data.shape[1]):
+                    texts.append(
+                        ax.text(j, i, int(data[i, j]), ha="center", va="center", color=txtclr[0 < im.norm(data[i, j])],
+                                size=2))
+
         return texts
 
-    _annotate_rankmap(im=im, size=0.1)
+    if cat_clr_bar is None:
+        _annotate_rankmap(im=im, size=0.5)
+    else:
+        _annotate_rankmap(im=im, size=0.5, txtclr=["white", "black"], valfmt=matplotlib.ticker.FuncFormatter(func2))
     # matplotlib.ticker.FuncFormatter(
     #     "{:.2f}".format(data).replace("0.", ".").replace("0.00", "")))
     # Loop over data dimensions and create text annotations.

@@ -539,8 +539,11 @@ class Geografía(object):
                              .format(cód=cód, geog=símismo.nombre))
         return cód
 
+    def __str__(símismo):
+        return símismo.nombre
+
     def dibujar(símismo, archivo, valores=None, ids=None, alpha=1, título=None, unidades=None, colores=None,
-                escala_num=None, clr_bar_dic=None, midpoint=None):
+                escala_num=None, clr_bar_dic=None, fst_cut=None, snd_cut=None, trd_cut=None):
         """
         Dibuja la Geografía.
 
@@ -698,42 +701,42 @@ class Geografía(object):
 
                 return cpick, v_cols
 
-            if unidades is not None and midpoint is not None:
+            if unidades is not None and fst_cut is not None:
                 if np.round(escala_num[1], 3) == 0:
                     lst = list(escala_num)
                     lst[1] = 0
                     escala_num = tuple(lst)
-                if 10 > escala_num[1] > midpoint:
-                    d_clrs = _gen_d_mapacolores(colores, clr_bar_dic=clr_bar_dic, fst_cut=midpoint, snd_cut=None,
+                if snd_cut > escala_num[1] > fst_cut:
+                    d_clrs = _gen_d_mapacolores(colores, clr_bar_dic=clr_bar_dic, fst_cut=fst_cut, snd_cut=None,
                                                 maxi=escala_num[-1])
                     cbar = fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades,
-                                        ticks=[0, midpoint, escala_num[1]])
+                                        ticks=[0, fst_cut, escala_num[1]])
                     cbar.set_label(label=unidades, labelpad=-50, y=0.45)
-                    cbar.ax.set_yticklabels(['0', f'Screening Threshold, {midpoint}',
+                    cbar.ax.set_yticklabels(['0', f'Screening Threshold, {fst_cut}',
                                              f'maxi_val, {np.round(escala_num[1], 6)}'], fontsize=5)
 
-                if escala_num[1] > 10:
-                    d_clrs = _gen_d_mapacolores(colores, clr_bar_dic=clr_bar_dic, fst_cut=midpoint, snd_cut=10,
+                if escala_num[1] > snd_cut:
+                    d_clrs = _gen_d_mapacolores(colores, clr_bar_dic=clr_bar_dic, fst_cut=fst_cut, snd_cut=snd_cut,
                                                 maxi=escala_num[-1])
                     cbar = fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades,
-                                        ticks=[0, midpoint, 9.9, escala_num[1]])
+                                        ticks=[0, fst_cut, snd_cut-0.1, escala_num[1]])
                     cbar.set_label(label=unidades, labelpad=-50, y=0.45)
                     cbar.ax.set_yticklabels(
-                        ['0', f'Screnning Threshold, {midpoint}', '10',
+                        ['0', f'Screnning Threshold, {fst_cut}', snd_cut,
                          f'High sensitivity zone'], fontsize=5)
 
                 elif escala_num[1] == escala_num[0]:
                     d_clrs = _gen_d_mapacolores(colores=colores[:2], maxi=None)
                     fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades, ticks=[0])
 
-                elif escala_num[1] < midpoint:
+                elif escala_num[1] < fst_cut:
                     d_clrs = _gen_d_mapacolores(colores, clr_bar_dic=clr_bar_dic, fst_cut=None, snd_cut=None,
                                                 maxi=escala_num[-1])
                     cbar = fig.colorbar(_cpick(norm, d_clrs)[0], label=unidades,
-                                        ticks=[0, escala_num[1], midpoint])
+                                        ticks=[0, escala_num[1], fst_cut])
                     cbar.set_label(label=unidades, labelpad=-45, y=0.45)
                     cbar.ax.set_yticklabels(
-                        ['0', f'maxi_val, {np.round(escala_num[1], 3)}', f'Screening Threshold, {midpoint}'],
+                        ['0', f'maxi_val, {np.round(escala_num[1], 3)}', f'Screening Threshold, {fst_cut}'],
                         fontsize=6)
             else:
                 fig.colorbar(_cpick(norm, d_clrs=None)[0])
@@ -756,9 +759,6 @@ class Geografía(object):
             ejes.set_title(título)
 
         fig.savefig(archivo, dpi=500)
-
-    def __str__(símismo):
-        return símismo.nombre
 
     def en_región(símismo, cód_lugar, cód_región):
         """
@@ -931,7 +931,7 @@ def _hex_a_rva(hx):
     return tuple(int(hx.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4))
 
 
-def _gen_clrbar_dic(fst_cut, snd_cut, maxi, first_set, second_set, third_set):
+def _gen_clrbar_dic(fst_cut, snd_cut, trd_cut, maxi, first_set, second_set, third_set):
     red = []
     green = []
     blue = []
@@ -949,9 +949,6 @@ def _gen_clrbar_dic(fst_cut, snd_cut, maxi, first_set, second_set, third_set):
 
     elif snd_cut is None and fst_cut is not None:
         f_cut = fst_cut / maxi
-        # rn=1
-        # if 1-f_cut/1 < 0.1:
-        #     rn = 1
         for i in range(len(first_rva)):
             red.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][0] / 255, first_rva[i][0] / 255))
             green.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][1] / 255, first_rva[i][1] / 255))
@@ -983,12 +980,9 @@ def _gen_clrbar_dic(fst_cut, snd_cut, maxi, first_set, second_set, third_set):
                     (f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), second_rva[i][2] / 255,
                      second_rva[i][2] / 255))
 
-    else:
+    elif snd_cut is not None and trd_cut is None:
         f_cut = fst_cut / maxi
         s_cut = snd_cut / maxi
-        # rn=2
-        # if 1-s_cut/1 < 0.1:
-        #     rn = 2
         for i in range(len(first_rva)):
             red.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][0] / 255, first_rva[i][0] / 255))
             green.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][1] / 255, first_rva[i][1] / 255))
@@ -1039,6 +1033,61 @@ def _gen_clrbar_dic(fst_cut, snd_cut, maxi, first_set, second_set, third_set):
                     (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), third_rva[i][2] / 255,
                      third_rva[i][2] / 255))
 
+    elif trd_cut is not None:
+        cut = {i: i/maxi for i in range(trd_cut)}
+        f_cut = fst_cut / maxi
+        s_cut = snd_cut / maxi
+        for i in range(len(first_rva)):
+            red.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][0] / 255, first_rva[i][0] / 255))
+            green.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][1] / 255, first_rva[i][1] / 255))
+            blue.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][2] / 255, first_rva[i][2] / 255))
+            last_r = first_rva[i][0] / 255
+            last_g = first_rva[i][1] / 255
+            last_b = first_rva[i][2] / 255
+
+        for i in range(len(second_rva)):
+            if i == 0:
+                red.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), last_r,
+                            second_rva[i][0] / 255))
+                green.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), last_g,
+                              second_rva[i][1] / 255))
+                blue.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), last_b,
+                             second_rva[i][2] / 255))
+            else:
+
+                red.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), second_rva[i][0] / 255,
+                            second_rva[i][0] / 255))
+                green.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), second_rva[i][1] / 255,
+                              second_rva[i][1] / 255))
+                blue.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), second_rva[i][2] / 255,
+                             second_rva[i][2] / 255))
+                last_r = second_rva[i][0] / 255
+                last_g = second_rva[i][1] / 255
+                last_b = second_rva[i][2] / 255
+
+        for i in range(len(third_rva)):
+            if i == 0:
+                red.append(
+                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), last_r, third_rva[i][0] / 255))
+                green.append(
+                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), last_g, third_rva[i][1] / 255))
+                blue.append(
+                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), last_b, third_rva[i][2] / 255))
+            elif i == len(third_rva) - 1:
+                red.append((1, third_rva[i][0] / 255, third_rva[i][0] / 255))
+                green.append((1, third_rva[i][1] / 255, third_rva[i][1] / 255))
+                blue.append((1, third_rva[i][2] / 255, third_rva[i][2] / 255))
+            else:
+                red.append(
+                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), third_rva[i][0] / 255,
+                     third_rva[i][0] / 255))
+                green.append(
+                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), third_rva[i][1] / 255,
+                     third_rva[i][1] / 255))
+                blue.append(
+                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), third_rva[i][2] / 255,
+                     third_rva[i][2] / 255))
+
     return {
         'red': tuple(red),
         'green': tuple(green),
@@ -1069,7 +1118,7 @@ def _gen_d_mapacolores(colores, maxi, clr_bar_dic=None, fst_cut=None, snd_cut=No
                      (round(i / (n_colores - 1), 2), clrs_rva[i][2] / 255, clrs_rva[i][2] / 255) for i in
                      range(0, n_colores))}
     else:
-        dic_c = _gen_clrbar_dic(fst_cut=fst_cut, snd_cut=snd_cut, maxi=maxi, first_set=clr_bar_dic['green'],
+        dic_c = _gen_clrbar_dic(fst_cut=fst_cut, snd_cut=snd_cut, trd_cut=None, maxi=maxi, first_set=clr_bar_dic['green'],
                                 second_set=clr_bar_dic['blue'], third_set=clr_bar_dic['red'])
 
     return dic_c
