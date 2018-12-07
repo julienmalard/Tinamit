@@ -10,7 +10,7 @@ import matplotlib.colors as colors
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from tinamit.Análisis.Sens.behavior import find_best_behavior
-from tinamit.Geog.Geog import _gen_clrbar_dic
+from tinamit.Geog.Geog import _gen_clrbar_dic, _gen_d_mapacolores
 from tinamit.Calib.ej.info_paráms import mapa_paráms
 from tinamit.Calib.ej.soil_class import p_soil_class
 from tinamit.Calib.ej.info_analr import *
@@ -436,9 +436,42 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method):
 
             map_rank(row_labels=r_c[0], col_labels=r_c[2], data=np.round(data, 2),
                      title=f'{method} Sensitivity Ranking Results', y_label='Parameters',
-                     archivo=rank_arch + f'poly{i+1}', fst_cut=fst_cut, snd_cut=snd_cut, maxi=np.round(data, 2).max(),
+                     archivo=rank_arch + f'poly{i + 1}', fst_cut=fst_cut, snd_cut=snd_cut, maxi=np.round(data, 2).max(),
                      cbarlabel=f"{method} Sensitivity Index", cmap="magma_r")
             print(f'finish the {i}-th poly, yeah!')
+
+    elif rank_method == 'count_poly':
+        param_lst = list(read_dt['pasos'])
+        for p in read_dt['ps']:
+            n_dt = {prmp: len(d_paso[f'paso_{p}'][np.where(d_paso[f'paso_{p}'] > fst_cut)[0]]) / 215 for prmp, d_paso in
+                    read_dt['pasos'].items()}
+            for prmp, v in n_dt.items():
+                data[list(n_dt).index(prmp), read_dt['ps'].index(p)] = v
+
+        n_dt2 = {prmm: len(m_aray[np.where(m_aray > fst_cut)[0]]) / 215 for prmm, m_aray in read_dt['means'].items()}
+        for prmm, m_aray in n_dt2.items():
+            data[list(n_dt2).index(prmm), r_c[2].index('Mean')] = m_aray
+
+        col_ind = []
+        for patt, d_bg in read_dt['behaviors'].items():
+            for pbpp, bpp in d_bg['bp_params'].items():
+                for bppm, va in bpp.items():
+                    col_ind.append(r_c[2].index(f'{patt}_{bppm}'))
+                    data[param_lst.index(pbpp), r_c[2].index(f'{patt}_{bppm}')] = len(
+                        va[np.where(va > fst_cut)[0]]) / 215
+            for paic, aic in d_bg['gof'].items():
+                col_ind.append(r_c[2].index(f'{patt}_gof'))
+                data[param_lst.index(paic), r_c[2].index(f'{patt}_gof')] = len(
+                    aic['aic'][np.where(aic['aic'] > fst_cut)[0]]) / 215
+
+        if len(np.where(np.isnan(data))[1]) != 0:
+            data[np.where(np.isnan(data))] = 0
+        cat_clr_bar = data.max()
+
+        map_rank(row_labels=r_c[0], col_labels=r_c[1], data=np.round(data, 2),
+                 title=f"{method} Sensitivity occurence polygonal map", y_label='Parameters',
+                 archivo=rank_arch + f'{rank_method}', fst_cut=0.1, snd_cut=0.8, maxi=data.max(),
+                 cbarlabel=f"{method} Sensitivity Rank", cmap="magma_r", cat_clr_bar=cat_clr_bar, bin=5)
 
     if rank_method == 'num_poly_rank':
         param_lst = list(read_dt['pasos'])
@@ -478,7 +511,7 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method):
         map_rank(row_labels=r_c[0], col_labels=r_c[1], data=np.round(data, 2),
                  title=f"{method} Sensitivity Ranking Map", y_label='Parameters',
                  archivo=rank_arch + f'{rank_method}', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
-                 cbarlabel=f"{method} Sensitivity Rank", cmap="magma_r", cat_clr_bar=cat_clr_bar)
+                 cbarlabel=f"{method} Sensitivity Rank", cmap="magma_r", cat_clr_bar=cat_clr_bar, bin=9)
 
     if rank_method == 'total_poly':
         for prmp, d_paso in read_dt['pasos'].items():
@@ -577,7 +610,7 @@ def map_sens(geog, metodo, tipo_egr, para_name, data, fst_cut, path, snd_cut=Non
 
             geog.dibujar(archivo=path + f"{metodo[:2]}-{para_name[: 5]}-{behav}-{bpprm}",  # midpoint=midpoint,
                          valores=data[bpprm],
-                         título=f"{metodo[:2].capitalize()}-{para_name[0].capitalize()+para_name[1: 5]}-{behav[0].capitalize()+ behav[1:]}-{bpprm}",
+                         título=f"{metodo[:2].capitalize()}-{para_name[0].capitalize() + para_name[1: 5]}-{behav[0].capitalize() + behav[1:]}-{bpprm}",
                          alpha=alpha, unidades=unid, colores=d['col'], ids=ids, fst_cut=fst_cut + snd_cut * 0.1,
                          snd_cut=snd_cut,
                          clr_bar_dic=clr_bar_dic,
@@ -586,7 +619,7 @@ def map_sens(geog, metodo, tipo_egr, para_name, data, fst_cut, path, snd_cut=Non
 
 
 def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_label, archivo, ax=None, cbar_kw={},
-             cbarlabel="Sensitivity Index", cat_clr_bar=None, **kwargs):
+             cbarlabel="Sensitivity Index", cat_clr_bar=None, bin=None, **kwargs):
     '''
 
     Parameters
@@ -636,17 +669,23 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
     cax = divider.append_axes("right", size="1.5%", pad=0.05)
 
     if cat_clr_bar is not None:
-        dic_c = _gen_clrbar_dic(fst_cut=fst_cut, snd_cut=snd_cut, trd_cut=None,
-                                maxi=data.max(),
-                                first_set=clr_bar_dic['green'],
-                                second_set=clr_bar_dic['blue'], third_set=clr_bar_dic['red'])
-        mapa_color = LinearSegmentedColormap('mapa_color', dic_c)
+        if bin == 5:
+            dic_c = _gen_d_mapacolores(
+                ['#e6fff2', '#80ff9f', '#80ff80', '#9fff80', '#bfff80', '#dfff80', '#ffff80', '#ffdf80', '#ff8080'],
+                maxi=None)
+        elif bin == 9:
+            dic_c = _gen_d_mapacolores(
+                ['#e6fff2', '#ff8080', '#ffdf80', '#ffff80', '#dfff80', '#bfff80', '#9fff80', '#80ff80', '#80ff9f'],
+                maxi=None)
+
+        mapa_color = LinearSegmentedColormap('mapa_color', dic_c, N=bin)
         im = ax.imshow(data, mapa_color)
-
-        norm = matplotlib.colors.BoundaryNorm(np.linspace(0, cat_clr_bar + 1, cat_clr_bar + 2), cat_clr_bar + 1)
-
-        cbar = fig.colorbar(im, cax=cax, ticks=[0, 8, 7, 6, 5, 4, 3, 2, 1])
-        cbar.ax.set_yticklabels(['0', '8', '7', '6', '5', '4', '3', '2', '1'], fontsize=6)
+        if bin == 5:
+            cbar = fig.colorbar(im, cax=cax, ticks=[0, 0.2, 0.4, 0.6, 0.8, 1])
+            cbar.ax.set_yticklabels(['0', '~20%', '~40%', '~60%', '~80%', '~100%'], fontsize=6)
+        elif bin == 9:
+            cbar = fig.colorbar(im, cax=cax, ticks=[0, 8, 7, 6, 5, 4, 3, 2, 1])
+            cbar.ax.set_yticklabels(['0', '8', '7', '6', '5', '4', '3', '2', '1'], fontsize=6)
 
     else:
         if data.max() > snd_cut:
@@ -718,7 +757,7 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
     def func2(x):
         return "{:}".format(x).replace("0", "")
 
-    def _annotate_rankmap(fst_cut=fst_cut, snd_cut=snd_cut, im=im, valfmt=matplotlib.ticker.FuncFormatter(func),
+    def _annotate_rankmap(fst_cut=fst_cut, snd_cut=snd_cut, im=im, valfmt='{:.2f}',
                           txtclr=["white", "black", ''],
                           **textkw):
         """
@@ -764,14 +803,20 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
             for i in range(data.shape[0]):
                 for j in range(data.shape[1]):
                     kw.update(color=txtclr[fst_cut < im.norm(data[i, j]) < snd_cut])
-                    text = im.axes.text(j, i, valfmt(data[i, j], None), **kw)
+                    text = im.axes.text(j, i, matplotlib.ticker.FuncFormatter(func)(data[i, j], None), **kw)
                     texts.append(text)
-        else:
+        elif bin == 9:
             for i in range(data.shape[0]):
                 for j in range(data.shape[1]):
                     texts.append(
                         ax.text(j, i, int(data[i, j]), ha="center", va="center", color=txtclr[0 < im.norm(data[i, j])],
                                 size=2))
+        elif bin == 5:
+            for i in range(data.shape[0]):
+                for j in range(data.shape[1]):
+                    texts.append(
+                        ax.text(j, i, f"{np.round(float(data[i, j])*100, 2)}%", ha="center", va="center", color='black',
+                                size=1.5))
 
         return texts
 

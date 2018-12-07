@@ -62,4 +62,4 @@ if __name__ == "__main__":
     # gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', param=None, fst_cut=0.1, snd_cut=8)
 
     # final plot
-    gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'num_poly_rank')
+    gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'count_poly')
