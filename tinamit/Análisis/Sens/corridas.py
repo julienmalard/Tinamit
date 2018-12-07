@@ -1,11 +1,13 @@
 import os
 import re
+import time
 from datetime import datetime
 
 import numpy as np
 
 from tinamit.Análisis.Sens.muestr import cargar_mstr_paráms
 from tinamit.config import _
+from tinamit.cositas import guardar_json, cargar_json
 
 
 def gen_vals_inic(mstr, mapa_paráms):
@@ -20,22 +22,50 @@ def gen_vals_inic(mstr, mapa_paráms):
     else:
         iters = ej_mstr.keys()
 
+    # mapa_paráms_final = {}
+    # for p, mapa in mapa_paráms.items():
+    #     if isinstance(mapa, dict):
+    #         if len(mapa) > 1:
+    #             mapa_paráms_final.update({k: v for k, v in mapa['mapa'].items()})
+    #     else:
+    #         mapa_paráms_final.update({p: mapa})
+
+    # vals_inic = {í: {p: v[í] for p, v in mstr.items()
+    #                  if not any(re.match(r'{}(_[0-9]*)?$'.format(p2), p) for p2 in mapa_paráms_final) and p != 'Ficticia'
+    #                  }
+    #              for í in iters}
+
     vals_inic = {í: {p: v[í] for p, v in mstr.items()
-                     if not any(re.match(r'{}(_[0-9]*)?$'.format(p2), p) for p2 in mapa_paráms) and p != 'Ficticia'
+                     if
+                     not any(re.match(r'{}(_[0-9]*)?$'.format(p2), p) for p2 in mapa_paráms) and p != 'Ficticia'
                      }
                  for í in iters}
+
 
     for p, mapa in mapa_paráms.items():
         if isinstance(mapa, list):
             mapa = np.array(mapa)
+
         if isinstance(mapa, np.ndarray):
             for í in iters:
                 val_var = [
                     mstr[f'{p}_{í_p}'][í] for í_p in mapa_paráms[p]
                 ]
                 vals_inic[í][p] = np.array(val_var)
+
         elif isinstance(mapa, dict):
             transf = mapa['transf'].lower()
+            # if len(mapa['mapa'])>1:
+            #     for í in iters:
+            #         for var, mp_var in mapa['mapa'].items():
+            #             if transf == 'prom':
+            #                 val_var = [
+            #                     (mstr['{}_{}'.format(var, t_índ[0])][í] + mstr['{}_{}'.format(var, t_índ[1])][í]) / 2
+            #                     for t_índ in mp_var
+            #                 ]
+            #
+            #             vals_inic[í][var] = np.array(val_var)
+            # else:
             for í in iters:
                 for var, mp_var in mapa['mapa'].items():
                     if transf == 'prom':
