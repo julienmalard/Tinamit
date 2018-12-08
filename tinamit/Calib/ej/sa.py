@@ -2,7 +2,7 @@ from tinamit.Análisis.Sens.anlzr import analy_by_file
 from tinamit.Análisis.Sens.corridas import simul_sens
 from tinamit.Calib.ej.info_analr import *
 from tinamit.Calib.ej.info_paráms import mapa_paráms, líms_paráms
-from tinamit.Calib.ej.sens_análisis import gen_row_col, gen_geog_map, gen_rank_map
+from tinamit.Calib.ej.sens_análisis import gen_row_col, gen_geog_map, gen_rank_map, _gen_poly_dt_for_geog
 
 if __name__ == "__main__":
     import numpy as np
@@ -59,7 +59,10 @@ if __name__ == "__main__":
     '''
     Maping
     '''
-    gen_geog_map(geog_simul_pct_mor, measure='geog_simul_percent', method='Morris', param=None, fst_cut=0.1, snd_cut=8)
+    # _gen_poly_dt_for_geog('morris', geog_simul_pct_mor2, geog_simul_pct_mor)
+    # gen_geog_map(geog_simul_pct_mor + 'patt_sens_simul.npy', measure='geog_simul_percent', method='Morris', param=None,
+    #              fst_cut=0.1, snd_cut=None)
 
     # final plot
-    # gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'count_poly')
+    gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'total_poly')
+

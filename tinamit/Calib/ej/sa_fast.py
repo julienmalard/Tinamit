@@ -1,9 +1,9 @@
-from tinamit.Calib.ej.sa import gen_geog, gen_mod, devolver
 from tinamit.Análisis.Sens.corridas import *
+from tinamit.Calib.ej.info_analr import *
 from tinamit.Calib.ej.info_paráms import mapa_paráms, líms_paráms
 from tinamit.Calib.ej.soil_class import p_soil_class
 
-from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims, map_rank
+from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims, map_rank, gen_rank_map
 from tinamit.Conectado import Conectado
 from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
 from tinamit.Análisis.Sens.anlzr import anlzr_sens, analy_by_file, carg_simul_dt, anlzr_simul
@@ -105,3 +105,5 @@ if __name__ == "__main__":
     # map_sens(gen_geog(), 'fast', 'paso_0', 'SS',
     #          simulation_data['1000'][var_egr].values, 0.1,
     #          "D:\Thesis\pythonProject\localuse\Dt\Fast\map\\paso_")
+
+    gen_rank_map(rank_arch_fast, 'Fast', 0.01, 1, 'total_poly')
