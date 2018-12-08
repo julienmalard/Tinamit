@@ -59,7 +59,7 @@ if __name__ == "__main__":
     '''
     Maping
     '''
-    # gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', param=None, fst_cut=0.1, snd_cut=8)
+    gen_geog_map(geog_simul_pct_mor, measure='geog_simul_percent', method='Morris', param=None, fst_cut=0.1, snd_cut=8)
 
     # final plot
-    gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'count_poly')
+    # gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'count_poly')

@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 from matplotlib.colors import LinearSegmentedColormap
-import matplotlib.colors as colors
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from tinamit.Análisis.Sens.behavior import find_best_behavior
@@ -14,7 +13,7 @@ from tinamit.Geog.Geog import _gen_clrbar_dic, _gen_d_mapacolores
 from tinamit.Calib.ej.info_paráms import mapa_paráms
 from tinamit.Calib.ej.soil_class import p_soil_class
 from tinamit.Calib.ej.info_analr import *
-from tinamit.Geog.Geog import Geografía, _hex_a_rva
+from tinamit.Geog.Geog import Geografía
 from tinamit.Conectado import Conectado
 from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
 
@@ -70,6 +69,86 @@ def gen_geog():
 
 
 devolver = ['Watertable depth Tinamit', 'Soil salinity Tinamit CropA']
+
+
+def _gen_poly_dt_for_geog(method, d_fit_behav_arch, save_arch):
+    if method == 'morris':
+        d_fit_behav = np.load(d_fit_behav_arch).tolist()
+
+        fit_behav2 = {poly: {sam: v[0][0] for sam, v in samp.items()} for poly, samp in d_fit_behav.items()}
+        fit_behav = {poly: [] for poly in fit_behav2}
+        for poly, d_samp in fit_behav2.items():
+            fit_behav[poly].append(list(d_samp.values()))
+        fit_behav = {p: v[0] for p, v in fit_behav.items()}
+
+    elif method == 'fast':
+        pass
+
+    counted_all = []
+    for i, lst in fit_behav.items():
+        counted_all.extend(list(set(lst)))
+    counted_all = set(counted_all)
+
+    d_patt = {patt: {poly: [] for poly in range(215)} for patt in counted_all}
+    for patt in counted_all:
+        for p in range(215):
+            if patt in Counter(fit_behav[p]):
+                d_patt[patt][p].append(Counter(fit_behav[p])[patt] / 215)
+            else:
+                d_patt[patt][p].append(0)
+
+    patt_sens_simul = {patt: np.empty([215]) for patt in counted_all}
+    for patt, d_pcent in d_patt.items():
+        for p in range(215):
+            patt_sens_simul[patt][p] = d_pcent[p][0]
+
+    np.save(save_arch, d_patt)
+
+
+def _read_dt_4_map(method):
+    method.capitalize()
+    if method == 'Morris':
+        pasos = \
+            verif_sens('morris', 'paso_tiempo', mapa_paráms, p_soil_class, egr=paso_data_mor, si='mu_star')['morris'][
+                'paso_tiempo']['mds_Watertable depth Tinamit']
+
+        means = \
+            verif_sens('morris', list(mean_data_mor.keys())[0], mapa_paráms, p_soil_class, egr=mean_data_mor,
+                       si='mu_star')[
+                'morris'][
+                list(mean_data_mor.keys())[0]]['mds_Watertable depth Tinamit']
+
+        behaviors = verif_sens('morris', list(behav_data_mor.keys())[0], mapa_paráms, p_soil_class, egr=behav_data_mor,
+                               si='mu_star')['morris'][list(behav_data_mor.keys())[0]]['mds_Watertable depth Tinamit']
+
+        no_ini = no_ini_mor
+
+        ps = [0, 5, 10, 15, 20]
+
+        return {'pasos': pasos, 'means': means, 'behaviors': behaviors, 'no_ini': no_ini, 'ps': ps}
+
+    else:
+        pasos = \
+            verif_sens('fast', list(paso_data_fast.keys())[0], mapa_paráms, p_soil_class, egr_arch=paso_arch_fast,
+                       si='Si',
+                       dim=215)[
+                'fast'][list(paso_data_fast.keys())[0]]['mds_Watertable depth Tinamit']  # 9prms * 215polys
+
+        means = \
+            verif_sens('fast', list(mean_data_fast.keys())[0], mapa_paráms, p_soil_class, egr_arch=mean_arch_fast,
+                       si='Si',
+                       dim=215)[
+                'fast'][list(mean_data_fast.keys())[0]]['mds_Watertable depth Tinamit']
+
+        behaviors = \
+            verif_sens('fast', list(behav_data_fast.keys())[0], mapa_paráms, p_soil_class, egr_arch=behav_arch_fast,
+                       si='Si',
+                       dim=215)['fast'][list(behav_data_fast.keys())[0]]['mds_Watertable depth Tinamit']
+
+        no_ini = no_ini_fast
+        ps = [0, 1, 2, 3, 4]
+
+        return {'pasos': pasos, 'means': means, 'behaviors': behaviors, 'no_ini': no_ini, 'ps': ps}
 
 
 def _integrate_egr(egr_arch, dim, si, mapa_paráms, tipo_egr):
@@ -140,6 +219,40 @@ def _integrate_egr(egr_arch, dim, si, mapa_paráms, tipo_egr):
     return egr_tmp
 
 
+def _single_poly(samples, i, f_simul_arch, gaurdar):
+    fited_behav = {i: {j: {} for j in range(samples)}}
+    for j in range(samples):
+        print(f'this is {j}-th sample')
+        behav = np.load(f_simul_arch + f"f_simul_{j}.npy").tolist()
+        fited_behav[i][j] = find_best_behavior(behav, trans_shape=i)
+    if gaurdar is not None:
+        np.save(gaurdar + f'fit_beh_poly-{i}', fited_behav)
+
+
+def _compute_single(i, method, dim_arch, samples, f_simul_arch):
+    count_fited_behav_by_poly = []
+    if method == 'morris':
+        polynal_fited_behav = np.load(dim_arch).tolist()[i]
+    elif method == 'fast':
+        polynal_fited_behav = np.load(dim_arch + f'fit_beh_poly-{i}.npy').tolist()[i]
+
+    for j in range(samples):
+        count_fited_behav_by_poly.extend([key for key, val in polynal_fited_behav[j]])
+
+    count_fited_behav_by_poly = [k for k, v in Counter(count_fited_behav_by_poly).items() if
+                                 v / len(count_fited_behav_by_poly) > 0.1]
+    # fited_behav.update({i: count_fited_behav_by_poly})
+
+    aic_poly = {k: [] for k in count_fited_behav_by_poly}
+    for j in range(samples):
+        behav = np.load(f_simul_arch + f"f_simul_{j}.npy").tolist()
+        for k in count_fited_behav_by_poly:
+            aic_poly[k].append(behav[k]['gof']['aic'][0, i])
+        print(f'Processing sample-{j} for poly-{i}')
+    # aic_behav.update({i: {k: np.average(v) for k, v in aic_poly.items()}})
+    return i, count_fited_behav_by_poly, {k: np.average(v) for k, v in aic_poly.items()}
+
+
 def verif_sens(método, tipo_egr, mapa_paráms, p_soil_class, si, dim=None, egr=None, egr_arch=None):
     if método == 'fast':
         egr = _integrate_egr(egr_arch, dim, si, mapa_paráms, tipo_egr)
@@ -173,40 +286,6 @@ def verif_sens(método, tipo_egr, mapa_paráms, p_soil_class, si, dim=None, egr=
         raise Exception('Not defined type!')
 
     return final_sens
-
-
-def _single_poly(samples, i, f_simul_arch, gaurdar):
-    fited_behav = {i: {j: {} for j in range(samples)}}
-    for j in range(samples):
-        print(f'this is {j}-th sample')
-        behav = np.load(f_simul_arch + f"f_simul_{j}.npy").tolist()
-        fited_behav[i][j] = find_best_behavior(behav, trans_shape=i)
-    if gaurdar is not None:
-        np.save(gaurdar + f'fit_beh_poly-{i}', fited_behav)
-
-
-def _compute_single(i, method, dim_arch, samples, f_simul_arch):
-    count_fited_behav_by_poly = []
-    if method == 'morris':
-        polynal_fited_behav = np.load(dim_arch).tolist()[i]
-    elif method == 'fast':
-        polynal_fited_behav = np.load(dim_arch + f'fit_beh_poly-{i}.npy').tolist()[i]
-
-    for j in range(samples):
-        count_fited_behav_by_poly.extend([key for key, val in polynal_fited_behav[j]])
-
-    count_fited_behav_by_poly = [k for k, v in Counter(count_fited_behav_by_poly).items() if
-                                 v / len(count_fited_behav_by_poly) > 0.1]
-    # fited_behav.update({i: count_fited_behav_by_poly})
-
-    aic_poly = {k: [] for k in count_fited_behav_by_poly}
-    for j in range(samples):
-        behav = np.load(f_simul_arch + f"f_simul_{j}.npy").tolist()
-        for k in count_fited_behav_by_poly:
-            aic_poly[k].append(behav[k]['gof']['aic'][0, i])
-        print(f'Processing sample-{j} for poly-{i}')
-    # aic_behav.update({i: {k: np.average(v) for k, v in aic_poly.items()}})
-    return i, count_fited_behav_by_poly, {k: np.average(v) for k, v in aic_poly.items()}
 
 
 def analy_behav_by_dims(method, samples, dims, f_simul_arch, dim_arch=None, gaurdar=None):
@@ -278,52 +357,6 @@ def gen_alpha(fited_behav_arch, patt):
     return np.asarray([a for p, a in d_alpha.items()])
 
 
-def _read_dt_4_map(method):
-    method.capitalize()
-    if method == 'Morris':
-        pasos = \
-            verif_sens('morris', 'paso_tiempo', mapa_paráms, p_soil_class, egr=paso_data_mor, si='mu_star')['morris'][
-                'paso_tiempo']['mds_Watertable depth Tinamit']
-
-        means = \
-            verif_sens('morris', list(mean_data_mor.keys())[0], mapa_paráms, p_soil_class, egr=mean_data_mor,
-                       si='mu_star')[
-                'morris'][
-                list(mean_data_mor.keys())[0]]['mds_Watertable depth Tinamit']
-
-        behaviors = verif_sens('morris', list(behav_data_mor.keys())[0], mapa_paráms, p_soil_class, egr=behav_data_mor,
-                               si='mu_star')['morris'][list(behav_data_mor.keys())[0]]['mds_Watertable depth Tinamit']
-
-        no_ini = no_ini_mor
-
-        ps = [0, 5, 10, 15, 20]
-
-        return {'pasos': pasos, 'means': means, 'behaviors': behaviors, 'no_ini': no_ini, 'ps': ps}
-
-    else:
-        pasos = \
-            verif_sens('fast', list(paso_data_fast.keys())[0], mapa_paráms, p_soil_class, egr_arch=paso_arch_fast,
-                       si='Si',
-                       dim=215)[
-                'fast'][list(paso_data_fast.keys())[0]]['mds_Watertable depth Tinamit']  # 9prms * 215polys
-
-        means = \
-            verif_sens('fast', list(mean_data_fast.keys())[0], mapa_paráms, p_soil_class, egr_arch=mean_arch_fast,
-                       si='Si',
-                       dim=215)[
-                'fast'][list(mean_data_fast.keys())[0]]['mds_Watertable depth Tinamit']
-
-        behaviors = \
-            verif_sens('fast', list(behav_data_fast.keys())[0], mapa_paráms, p_soil_class, egr_arch=behav_arch_fast,
-                       si='Si',
-                       dim=215)['fast'][list(behav_data_fast.keys())[0]]['mds_Watertable depth Tinamit']
-
-        no_ini = no_ini_fast
-        ps = [0, 1, 2, 3, 4]
-
-        return {'pasos': pasos, 'means': means, 'behaviors': behaviors, 'no_ini': no_ini, 'ps': ps}
-
-
 def gen_row_col(behaviors):
     col_labels = ['0', '5', '10', '15', '20', 'Mean']
 
@@ -355,13 +388,13 @@ def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', 
 
     if measure == 'paso_tiempo':
         for prm, paso in read_dt['pasos'].items():
-            map_sens(gen_geog(), method, 'paso_tiempo', prm,
+            map_sens(gen_geog(), method, measure, prm,
                      paso, fst_cut=fst_cut, snd_cut=snd_cut, ids=[str(i) for i in range(1, 216)],
                      path=gaurd_arch)
 
     elif measure == 'promedio':
         for prmm, m_aray in read_dt['means'].items():
-            map_sens(gen_geog(), method, 'promedio', prmm,
+            map_sens(gen_geog(), method, measure, prmm,
                      m_aray, fst_cut=fst_cut, snd_cut=snd_cut, ids=[str(i) for i in range(1, 216)],
                      path=gaurd_arch)
 
@@ -372,7 +405,7 @@ def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', 
                 alpha = np.zeros([215])
             gof_prm = b_g['gof']
             for prm, bpprm in gof_prm.items():
-                map_sens(gen_geog(), method, 'superposition', prm,
+                map_sens(gen_geog(), method, measure, prm,
                          bpprm, fst_cut=fst_cut, snd_cut=snd_cut, behav=patt, ids=[str(i) for i in range(1, 216)],
                          alpha=alpha, path=gaurd_arch)
 
@@ -383,7 +416,7 @@ def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', 
                 alpha = np.zeros([215])
             bpp_prm = b_g['bp_params']
             for prm, bpprm in bpp_prm.items():
-                map_sens(gen_geog(), method, 'superposition', prm,
+                map_sens(gen_geog(), method, measure, prm,
                          bpprm, fst_cut=fst_cut, snd_cut=snd_cut, behav=patt, ids=[str(i) for i in range(1, 216)],
                          alpha=alpha, path=gaurd_arch)
 
@@ -395,9 +428,16 @@ def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', 
         for prm, bpprm in bpp_prm.items():
             if prm != param:
                 continue
-            map_sens(gen_geog(), method, 'superposition', prm,
+            map_sens(gen_geog(), method, measure, prm,
                      bpprm, fst_cut=fst_cut, snd_cut=snd_cut, behav=patt, ids=[str(i) for i in range(1, 216)],
                      alpha=alpha, path=gaurd_arch)
+
+    elif measure == 'geog_simul_percent':
+        geog_simul_percent = np.load(gaurd_arch + "patt_sens_simul.npy").tolist()
+        for patt, poly_aray in geog_simul_percent.items():
+            map_sens(gen_geog(), method, measure, 'a',
+                     poly_aray, fst_cut=0, behav=patt, ids=[str(i) for i in range(1, 216)],
+                     unid='% of sensitivity simulation data', path=geog_save_mor + 'measure')
 
 
 def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method):
@@ -537,84 +577,106 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method):
                  cbarlabel=f"{method} Sensitivity Index", cmap="magma_r")
 
 
-def map_sens(geog, metodo, tipo_egr, para_name, data, fst_cut, path, snd_cut=None, alpha=None, behav=None, paso=None,
-             ids=None):
-    vars_interés = {tipo_egr: {
+def map_sens(geog, metodo, measure, para_name, data, fst_cut, path, snd_cut=None, alpha=None, behav=None, paso=None,
+             ids=None, unid=None):
+    metodo = metodo.capitalize()
+    vars_interés = {measure: {
         'col': ['#f8fef7', '#e7fde5', '#d6fcd2', '#c5fbc0', '#b4f9ad', '#b4f9ad', '#5ff352',
                 '#5395a0', '#4a8590', '#42767f', '#39666e', '#30565d', '#28474c', '#1f373c',
                 '#ffe6e6', '#ffcccc', '#ffb3b3', '#ff9999', '#ff8080', '#ff2f2f', '#ff0808'
                 ],
         'escala_núm': [min(data), max(data)]}}
 
-    # clr_bar_dic = {'green': ['#e6fff2', '#80ffbf'] , # '#33ff99', '#00cc66', '#006633'],
-    #                'blue': ['#80dfff', '#00bfff', '#1ac6ff', '#00ace6', '#007399'],
-    #                'red': ['#ff8000', '#ff8c1a', '#ff8000']}
-
     clr_bar_dic = {'green': ['#e6fff2', '#b3ffd9'],
                    'blue': ['#80ff9f', '#80ff80', '#9fff80', '#bfff80', '#dfff80', '#ffff80', '#ffdf80', '#ff8080'],
-                   # '#ff8080']
                    'red': ['#ff0000', '#ff0000']}
-
-    unid = f'{metodo} Sensitivity Index'
+    if unid is None:
+        unid = f'{metodo} Sensitivity Index'
 
     for v, d in vars_interés.items():
-        # for j in [0, 5, 15, 20]:
-        #     geog.dibujar(archivo=path + f'old-{j}', valores=data[j], título=f'Soil salinity old paso-{j}',
-        #                  unidades='Soil salinity level',
-        #                  colores=d['col'], ids=ids)  # for azahr
+        if measure == 'paso_tiempo':
+            if metodo == 'morris':
+                ll = [0, 5, 10, 15, 20]
+            elif metodo == 'fast':
+                ll = [0, 1, 2, 3, 4]
+            for i in ll:
+                max_val = max(data[f'paso_{i}'])
+                if max_val > snd_cut:
+                    data[f'paso_{i}'][np.where(data[f'paso_{i}'] > snd_cut)] = snd_cut
+                    max_val = snd_cut
+                geog.dibujar(archivo=path + f'{i*5}-{para_name}', valores=data[f'paso_{i}'],
+                             título=f"{metodo}-{para_name[: 5]}-Timestep-{i*5} to WTD",
+                             unidades=unid, colores=d['col'], ids=ids, fst_cut=fst_cut, snd_cut=snd_cut,
+                             clr_bar_dic=clr_bar_dic, escala_num=(0, max_val))
 
-        # paso
-        # ll = [0, 5, 10, 15, 20]
-        # # ll = [0, 1, 2, 3, 4]
-        # for i in ll:
-        #     max_val = max(data[f'paso_{i}'])
-        #     if max_val > snd_cut:
-        #         data[f'paso_{i}'][np.where(data[f'paso_{i}'] > snd_cut)] = snd_cut
-        #         max_val = snd_cut
-        #     geog.dibujar(archivo=path + f'{i*5}-{para_name}', valores=data[f'paso_{i}'],
-        #                  título=f"{metodo}-{para_name[: 5]}-Timestep-{i*5} to WTD",
-        #                  unidades=unid, colores=d['col'], ids=ids, midpoint=midpoint, clr_bar_dic=clr_bar_dic,
-        #                  escala_num=(0, max_val))
-
-        # mean val
-        # max_val = max(data)
-        # if max_val > snd_cut:
-        #     data[np.where(data > snd_cut)] = snd_cut
-        #     max_val = snd_cut
-        # geog.dibujar(archivo=path + f'mean-{para_name}', valores=data,
-        #              título=f"{metodo[:2]}-{para_name}-to WTD-Mean", midpoint=midpoint, clr_bar_dic=clr_bar_dic,
-        #              unidades=unid, colores=d['col'], ids=ids, escala_num=(0, max_val))
-
-        # beahv
-        for bpprm in data:  # "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\spp\\aic\\{bpprm}-{behav}-{para_name}" #f"D:\Thesis\pythonProject\localuse\Dt\Mor\map\spp\\bppprm\\bpprm-{behav}-{para_name}"
-            # if bpprm != 'amplitude':
-            #     continue
-            # new_alpha = np.zeros([215])
-            # new_alpha[np.where(data[bpprm])[0][np.isin(np.where(data[bpprm]), np.where(alpha > 0))[0]]] = 1
-            if np.round(max(data[bpprm]), 4) == 0:
-                max_val = 0
-            # elif behav == 'linear':
-            #     alpha = 1
-            #     max_val = max(data[bpprm])
-            elif len(np.where(data[bpprm])[0][np.isin(np.where(data[bpprm]), np.where(alpha > 0))[0]]) == 0:
-                max_val = 0
-            else:
-                max_val = max(
-                    data[bpprm][[np.where(data[bpprm])[0][np.isin(np.where(data[bpprm]), np.where(alpha > 0))[0]]]])
-                # if max_val < max(data[bpprm]):
-                #     data[bpprm][np.where(data[bpprm] > max_val)[0]] = max_val
+        elif measure == 'promedio':
+            max_val = max(data)
             if max_val > snd_cut:
-                data[bpprm][np.where(data[bpprm] > snd_cut)] = snd_cut
-                data[np.where(data < fst_cut)] = 0 - snd_cut * 0.1
+                data[np.where(data > snd_cut)] = snd_cut
                 max_val = snd_cut
+            geog.dibujar(archivo=path + f'mean-{para_name}', valores=data,
+                         título=f"{metodo[:2]}-{para_name}-to WTD-Mean", fst_cut=fst_cut, snd_cut=snd_cut,
+                         clr_bar_dic=clr_bar_dic, unidades=unid, colores=d['col'], ids=ids, escala_num=(0, max_val))
 
-            geog.dibujar(archivo=path + f"{metodo[:2]}-{para_name[: 5]}-{behav}-{bpprm}",  # midpoint=midpoint,
-                         valores=data[bpprm],
-                         título=f"{metodo[:2].capitalize()}-{para_name[0].capitalize() + para_name[1: 5]}-{behav[0].capitalize() + behav[1:]}-{bpprm}",
-                         alpha=alpha, unidades=unid, colores=d['col'], ids=ids, fst_cut=fst_cut + snd_cut * 0.1,
-                         snd_cut=snd_cut,
-                         clr_bar_dic=clr_bar_dic,
-                         escala_num=(0, max_val)
+        elif measure == 'behavior_gof' or measure == 'behavior_param':
+            for bpprm in data:
+                if np.round(max(data[bpprm]), 4) == 0:
+                    max_val = 0
+
+                elif len(np.where(data[bpprm])[0][np.isin(np.where(data[bpprm]), np.where(alpha > 0))[0]]) == 0:
+                    max_val = 0
+                else:
+                    max_val = max(
+                        data[bpprm][[np.where(data[bpprm])[0][np.isin(np.where(data[bpprm]), np.where(alpha > 0))[0]]]])
+                if max_val > snd_cut:
+                    data[bpprm][np.where(data[bpprm] > snd_cut)] = snd_cut
+                    data[np.where(data < fst_cut)] = 0 - snd_cut * 0.1
+                    max_val = snd_cut
+
+                geog.dibujar(archivo=path + f"{metodo[:2]}-{para_name[: 5]}-{behav}",
+                             valores=data[bpprm],
+                             título=f"{metodo[:2]}-{para_name.capitalize()[:5]}-{behav.capitalize()}-{bpprm}",
+                             alpha=alpha, unidades=unid, colores=d['col'], ids=ids, fst_cut=fst_cut + snd_cut * 0.1,
+                             snd_cut=snd_cut, clr_bar_dic=clr_bar_dic, escala_num=(0, max_val)
+                             )
+
+        elif measure == 'test':
+            for bpprm in data:
+                # if bpprm != 'amplitude':
+                #     continue
+                # new_alpha = np.zeros([215])
+                # new_alpha[np.where(data[bpprm])[0][np.isin(np.where(data[bpprm]), np.where(alpha > 0))[0]]] = 1
+                if np.round(max(data[bpprm]), 4) == 0:
+                    max_val = 0
+                # elif behav == 'linear':
+                #     alpha = 1
+                #     max_val = max(data[bpprm])
+                elif len(np.where(data[bpprm])[0][np.isin(np.where(data[bpprm]), np.where(alpha > 0))[0]]) == 0:
+                    max_val = 0
+                else:
+                    max_val = max(
+                        data[bpprm][[np.where(data[bpprm])[0][np.isin(np.where(data[bpprm]), np.where(alpha > 0))[0]]]])
+                    # if max_val < max(data[bpprm]):
+                    #     data[bpprm][np.where(data[bpprm] > max_val)[0]] = max_val
+                if max_val > snd_cut:
+                    data[bpprm][np.where(data[bpprm] > snd_cut)] = snd_cut
+                    data[np.where(data < fst_cut)] = 0 - snd_cut * 0.1
+                    max_val = snd_cut
+
+                geog.dibujar(archivo=path + f"{metodo[:2]}-{para_name[: 5]}-{behav}-{bpprm}",  # fst_cut=fst_cut,
+                             valores=data[bpprm],
+                             título=f"{metodo[:2].capitalize()}-{para_name[0].capitalize() + para_name[1: 5]}-{behav[0].capitalize() + behav[1:]}-{bpprm}",
+                             alpha=alpha, unidades=unid, colores=d['col'], ids=ids, fst_cut=fst_cut + snd_cut * 0.1,
+                             snd_cut=snd_cut,
+                             clr_bar_dic=clr_bar_dic,
+                             escala_num=(0, max_val)
+                             )
+
+        elif measure == 'geog_simul_percent':
+            geog.dibujar(archivo=path + f"{metodo}-{behav}",
+                         valores=data,
+                         título=f"{metodo}-{behav.capitalize()}",
+                         unidades=unid, colores=d['col'], ids=ids, fst_cut=None, escala_num=(0, 1), n_bin=10
                          )
 
 

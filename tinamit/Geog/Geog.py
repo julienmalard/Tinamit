@@ -543,7 +543,7 @@ class Geografía(object):
         return símismo.nombre
 
     def dibujar(símismo, archivo, valores=None, ids=None, alpha=1, título=None, unidades=None, colores=None,
-                escala_num=None, clr_bar_dic=None, fst_cut=None, snd_cut=None, trd_cut=None):
+                escala_num=None, clr_bar_dic=None, fst_cut=None, snd_cut=None, n_bin=None):
         """
         Dibuja la Geografía.
 
@@ -675,9 +675,9 @@ class Geografía(object):
             def _cpick(norm, d_clrs=None, colores=colores):
                 if d_clrs is None:
                     d_clrs = _gen_d_mapacolores(colores, maxi=None)
-                    mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs)
+                    mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs, N=n_bin)
                 else:
-                    mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs)
+                    mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs, N=n_bin)
 
                 v_cols = mapa_color(vals_norm)
                 v_cols[np.isnan(vals_norm)] = 1
@@ -738,6 +738,11 @@ class Geografía(object):
                     cbar.ax.set_yticklabels(
                         ['0', f'maxi_val, {np.round(escala_num[1], 3)}', f'Screening Threshold, {fst_cut}'],
                         fontsize=6)
+            elif n_bin is not None:
+                cbar = fig.colorbar(_cpick(norm, d_clrs=None)[0], label=unidades,
+                                    ticks=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
+                cbar.ax.set_yticklabels(['0', '10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '90%', '100%'],
+                                        fontsize=6)
             else:
                 fig.colorbar(_cpick(norm, d_clrs=None)[0])
 
@@ -931,7 +936,7 @@ def _hex_a_rva(hx):
     return tuple(int(hx.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4))
 
 
-def _gen_clrbar_dic(fst_cut, snd_cut, trd_cut, maxi, first_set, second_set, third_set):
+def _gen_clrbar_dic(fst_cut, snd_cut, maxi, first_set, second_set, third_set):
     red = []
     green = []
     blue = []
@@ -980,7 +985,7 @@ def _gen_clrbar_dic(fst_cut, snd_cut, trd_cut, maxi, first_set, second_set, thir
                     (f_cut + (i) * (1 - f_cut) / (len(second_rva) - 1), second_rva[i][2] / 255,
                      second_rva[i][2] / 255))
 
-    elif snd_cut is not None and trd_cut is None:
+    elif snd_cut is not None:
         f_cut = fst_cut / maxi
         s_cut = snd_cut / maxi
         for i in range(len(first_rva)):
@@ -1033,61 +1038,6 @@ def _gen_clrbar_dic(fst_cut, snd_cut, trd_cut, maxi, first_set, second_set, thir
                     (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), third_rva[i][2] / 255,
                      third_rva[i][2] / 255))
 
-    elif trd_cut is not None:
-        cut = {i: i/maxi for i in range(trd_cut)}
-        f_cut = fst_cut / maxi
-        s_cut = snd_cut / maxi
-        for i in range(len(first_rva)):
-            red.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][0] / 255, first_rva[i][0] / 255))
-            green.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][1] / 255, first_rva[i][1] / 255))
-            blue.append(((i) * f_cut / (len(first_rva) - 1), first_rva[i][2] / 255, first_rva[i][2] / 255))
-            last_r = first_rva[i][0] / 255
-            last_g = first_rva[i][1] / 255
-            last_b = first_rva[i][2] / 255
-
-        for i in range(len(second_rva)):
-            if i == 0:
-                red.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), last_r,
-                            second_rva[i][0] / 255))
-                green.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), last_g,
-                              second_rva[i][1] / 255))
-                blue.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), last_b,
-                             second_rva[i][2] / 255))
-            else:
-
-                red.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), second_rva[i][0] / 255,
-                            second_rva[i][0] / 255))
-                green.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), second_rva[i][1] / 255,
-                              second_rva[i][1] / 255))
-                blue.append((f_cut + (i) * (s_cut - f_cut) / (len(second_rva) - 1), second_rva[i][2] / 255,
-                             second_rva[i][2] / 255))
-                last_r = second_rva[i][0] / 255
-                last_g = second_rva[i][1] / 255
-                last_b = second_rva[i][2] / 255
-
-        for i in range(len(third_rva)):
-            if i == 0:
-                red.append(
-                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), last_r, third_rva[i][0] / 255))
-                green.append(
-                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), last_g, third_rva[i][1] / 255))
-                blue.append(
-                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), last_b, third_rva[i][2] / 255))
-            elif i == len(third_rva) - 1:
-                red.append((1, third_rva[i][0] / 255, third_rva[i][0] / 255))
-                green.append((1, third_rva[i][1] / 255, third_rva[i][1] / 255))
-                blue.append((1, third_rva[i][2] / 255, third_rva[i][2] / 255))
-            else:
-                red.append(
-                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), third_rva[i][0] / 255,
-                     third_rva[i][0] / 255))
-                green.append(
-                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), third_rva[i][1] / 255,
-                     third_rva[i][1] / 255))
-                blue.append(
-                    (s_cut + (i) * (1 - s_cut) / (len(third_rva) - 1), third_rva[i][2] / 255,
-                     third_rva[i][2] / 255))
-
     return {
         'red': tuple(red),
         'green': tuple(green),
@@ -1108,7 +1058,7 @@ def _gen_d_mapacolores(colores, maxi, clr_bar_dic=None, fst_cut=None, snd_cut=No
     clrs_rva = [_hex_a_rva(x) for x in colores]
     n_colores = len(colores)
 
-    if maxi is None:
+    if maxi is None or fst_cut is None:
         dic_c = {'red': tuple((round(i / (n_colores - 1), 2), clrs_rva[i][0] / 255, clrs_rva[i][0] / 255) for i in
                               range(0, n_colores)),
                  'green': tuple(
@@ -1118,7 +1068,7 @@ def _gen_d_mapacolores(colores, maxi, clr_bar_dic=None, fst_cut=None, snd_cut=No
                      (round(i / (n_colores - 1), 2), clrs_rva[i][2] / 255, clrs_rva[i][2] / 255) for i in
                      range(0, n_colores))}
     else:
-        dic_c = _gen_clrbar_dic(fst_cut=fst_cut, snd_cut=snd_cut, trd_cut=None, maxi=maxi, first_set=clr_bar_dic['green'],
+        dic_c = _gen_clrbar_dic(fst_cut=fst_cut, snd_cut=snd_cut, maxi=maxi, first_set=clr_bar_dic['green'],
                                 second_set=clr_bar_dic['blue'], third_set=clr_bar_dic['red'])
 
     return dic_c
