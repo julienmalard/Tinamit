@@ -107,7 +107,7 @@ def _gen_poly_dt_for_geog(method, d_fit_behav_arch, save_arch):
     np.save(save_arch + f'patt_sens_simul', patt_sens_simul)
 
 
-def _read_dt_4_map(method):
+def _read_dt_4_map(method, si=None):
     method.capitalize()
     if method == 'Morris':
         pasos = \
@@ -130,9 +130,11 @@ def _read_dt_4_map(method):
         return {'pasos': pasos, 'means': means, 'behaviors': behaviors, 'no_ini': no_ini, 'ps': ps}
 
     else:
+        if si is None:
+            si = 'Si'
         pasos = \
             verif_sens('fast', list(paso_data_fast.keys())[0], mapa_paráms, p_soil_class, egr_arch=paso_arch_fast,
-                       si='Si',
+                       si=si,
                        dim=215)[
                 'fast'][list(paso_data_fast.keys())[0]]['mds_Watertable depth Tinamit']  # 9prms * 215polys
         for param, d_paso in pasos.items():
@@ -141,7 +143,7 @@ def _read_dt_4_map(method):
 
         means = \
             verif_sens('fast', list(mean_data_fast.keys())[0], mapa_paráms, p_soil_class, egr_arch=mean_arch_fast,
-                       si='Si',
+                       si=si,
                        dim=215)[
                 'fast'][list(mean_data_fast.keys())[0]]['mds_Watertable depth Tinamit']
         for param in means:
@@ -149,7 +151,7 @@ def _read_dt_4_map(method):
 
         behaviors = \
             verif_sens('fast', list(behav_data_fast.keys())[0], mapa_paráms, p_soil_class, egr_arch=behav_arch_fast,
-                       si='Si',
+                       si=si,
                        dim=215)['fast'][list(behav_data_fast.keys())[0]]['mds_Watertable depth Tinamit']
 
         no_ini = no_ini_fast
@@ -385,8 +387,8 @@ def gen_row_col(behaviors, method):
     return row_labels, col, col_labels, row
 
 
-def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', param=None, fst_cut=0.1, snd_cut=8):
-    read_dt = _read_dt_4_map(method)
+def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', param=None, fst_cut=0.1, snd_cut=8, si=None):
+    read_dt = _read_dt_4_map(method, si=si)
 
     if measure == 'paso_tiempo':
         for prm, paso in read_dt['pasos'].items():
@@ -442,8 +444,8 @@ def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', 
                      unid='% of sensitivity simulation data', path=geog_save_mor + f'measure')
 
 
-def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method):
-    read_dt = _read_dt_4_map(method)
+def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None):
+    read_dt = _read_dt_4_map(method, si=si)
     r_c = gen_row_col(read_dt['behaviors'], method)
 
     data = np.empty([len(r_c[0]), len(r_c[1])])
