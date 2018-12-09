@@ -82,7 +82,7 @@ class ModeloSAHYSMOD(ModeloBloques):
         símismo.variables.clear()
 
         ingresos_no_estacionales = [
-            'Kr', 'CrA', 'CrB', 'CrU', 'Hw', 'Cxf', 'Cxa', 'Cxb', 'Cqf'
+            'Kr', 'CrA', 'CrB', 'CrU', 'Cr4', 'Hw', 'C1*', 'C2*', 'C3*', 'Cxf', 'Cxa', 'Cxb', 'Cqf'
         ]
 
         for nombre, dic in vars_SAHYSMOD.items():
@@ -253,7 +253,7 @@ class ModeloSAHYSMOD(ModeloBloques):
             nombre_var = códs_a_vars[c]
             dic_final[nombre_var] = dic_ingr[llave]
 
-        por_bloques = símismo._vars_por_bloques()
+        por_bloques = símismo._vars_por_bloques(solamente = 'ingr')
 
         for c in vars_egreso_SAHYSMOD:
 
