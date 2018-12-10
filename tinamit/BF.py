@@ -447,6 +447,7 @@ class ModeloImpaciente(ModeloBF):
         símismo.ciclo = None
         símismo.test = None
         símismo.tmñ_ciclo = None
+        símismo.arch_ingreso = None
         símismo.matrs_egr = {}
         símismo.matrs_ingr = {}
         símismo.proces_ingrs = {}
@@ -485,7 +486,6 @@ class ModeloImpaciente(ModeloBF):
 
         for var, val in dic_inic.items():
             if var in subciclo:
-
                 if var in subciclo_ingr:
                     símismo.matrs_ingr[var] = val.copy()
                     dic_inic[var] = val[0]
@@ -582,6 +582,7 @@ class ModeloImpaciente(ModeloBF):
                 dic_ingr[var] = símismo.matrs_ingr[var]
             else:
                 dic_ingr[var] = símismo.obt_val_actual_var(var)
+
         símismo.test = dic_ingr
         símismo._escribir_archivo_ingr(n_ciclos=n_ciclos, dic_ingr=dic_ingr, archivo=archivo)
 
