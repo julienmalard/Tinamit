@@ -82,8 +82,8 @@ if __name__ == "__main__":
     '''
 
     # _gen_poly_dt_for_geog('fast', fit_beh_poly_fast, geog_simul_pct_fast, 120000)
-    gen_geog_map(geog_simul_pct_fast, measure='behavior_param', method='Fast', param=None,
-                 fst_cut=0.01, snd_cut=1)
+    # gen_geog_map(geog_simul_pct_fast, measure='behavior_param', method='Fast', param=None,
+    #              fst_cut=0.01, snd_cut=1)
 
     '''
     map
@@ -96,4 +96,4 @@ if __name__ == "__main__":
     #          simulation_data['1000'][var_egr].values, 0.1,
     #          "D:\Thesis\pythonProject\localuse\Dt\Fast\map\\paso_")
 
-    # gen_rank_map(rank_arch_fast, 'Fast', 0.01, 1, 'polygons')
+    gen_rank_map(rank_arch_fast, 'Fast', 0.01, 1, 'num_poly_rank')

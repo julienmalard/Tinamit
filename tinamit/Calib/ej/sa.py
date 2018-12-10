@@ -64,5 +64,5 @@ if __name__ == "__main__":
     #              fst_cut=0.1, snd_cut=8)
 
     # final plot
-    gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'num_poly_rank_n')
+    gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'num_poly_rank')
 

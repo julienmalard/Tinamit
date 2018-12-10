@@ -538,13 +538,13 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None):
     elif rank_method == 'num_poly_rank':
         for p in read_dt['ps']:
             dt = {prmp: max(d_paso[f'paso_{p}']) for prmp, d_paso in read_dt['pasos'].items()}
-            r = {key: rank for rank, key in enumerate(sorted(set(dt.values()), reverse=True), 1)}
+            r = {key: rank for rank, key in enumerate(sorted(set(dt.values()), reverse=False), 1)}
             n_dt = {k: r[v] if v > fst_cut else 0 for k, v in dt.items()}
             for prmp, v in n_dt.items():
                 data[r_c[3].index(prmp), r_c[2].index(p)] = v
 
         dt2 = {prmm: max(m_aray) for prmm, m_aray in read_dt['means'].items()}
-        r2 = {key: rank for rank, key in enumerate(sorted(set(dt2.values()), reverse=True), 1)}
+        r2 = {key: rank for rank, key in enumerate(sorted(set(dt2.values()), reverse=False), 1)}
         n_dt2 = {k: r2[v] if v > fst_cut else 0 for k, v in dt2.items()}
         for prmm, m_aray in n_dt2.items():
             data[r_c[3].index(prmm), r_c[2].index('Mean')] = m_aray
@@ -560,7 +560,7 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None):
         lst = list(set(col_ind))
         for c_i in lst:
             dt = {para: data[:, c_i][i] for i, para in enumerate(r_c[3])}
-            r = {key: rank for rank, key in enumerate(sorted(set(dt.values()), reverse=True), 1)}
+            r = {key: rank for rank, key in enumerate(sorted(set(dt.values()), reverse=False), 1)}
             n_dt = {k: r[v] if v > fst_cut else 0 for k, v in dt.items()}
             for para, rk in n_dt.items():
                 data[r_c[3].index(para), c_i] = rk
@@ -599,7 +599,7 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None):
         map_rank(row_labels=r_c[0], col_labels=col, data=np.round(data, 2),
                  title=f"Sensitivity Ranking Map", y_label='Parameters',
                  archivo=rank_arch + f'{rank_method}', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
-                 cbarlabel=f"Sensitivity Rank", cmap="magma_r", bin=data.max() + 1, rank_method=rank_method)
+                 cbarlabel=f"Sensitivity Ranking Order", cmap="magma_r", bin=data.max() + 1, rank_method=rank_method)
 
     elif rank_method == 'total_poly':
         for prmp, d_paso in read_dt['pasos'].items():
@@ -787,7 +787,7 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
     if bin is not None:
         if rank_method == 'num_poly_rank' or rank_method ==  'num_poly_rank_n':
             dic_c = _gen_d_mapacolores(
-                ['#e6fff2', '#ff8080', '#ffdf80', '#ffff80', '#dfff80', '#bfff80', '#9fff80', '#80ff80', '#b3ffd7'],
+                ['#e6fff2', '#b3ffd7', '#80ff80', '#9fff80', '#bfff80', '#dfff80', '#ffff80', '#ffdf80', '#ff8080'],
                 maxi=None)
         elif rank_method == 'count_poly':
             dic_c = _gen_d_mapacolores(
@@ -803,11 +803,11 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
                 ['0', '~10%', '~20%', '~30%', '~40%', '~50%', '~60%', '~70%', '~80%', '~90%', '~100%'],
                 fontsize=5)
         elif rank_method == 'num_poly_rank':
-            cbar = fig.colorbar(im, cax=cax, ticks=[0, 8, 7, 6, 5, 4, 3, 2, 1])
-            cbar.ax.set_yticklabels(['0', '8', '7', '6', '5', '4', '3', '2', '1'], fontsize=6)
+            cbar = fig.colorbar(im, cax=cax, ticks=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+            cbar.ax.set_yticklabels(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], fontsize=6)
         elif rank_method == 'num_poly_rank_n':
             cbar = fig.colorbar(im, cax=cax, ticks=[0, 6, 5, 4, 3, 2, 1])
-            cbar.ax.set_yticklabels(['0', '6', '5', '4', '3', '2', '1'], fontsize=6)
+            cbar.ax.set_yticklabels(['0', '1', '2', '3', '4', '5', '6'], fontsize=6)
 
     else:
         if data.max() > snd_cut:
@@ -846,9 +846,9 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
             # cbar = ax.figure.colorbar(im, ax=cax, ticks=[0, data.max()], **cbar_kw)
             cbar.ax.set_yticklabels(['0', f'maximum val, {data.max()}'], fontsize=3)
 
-    cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom", fontsize=7)
-    ax.tick_params(width=0.1)
-    cbar.ax.tick_params(width=0.1)
+    cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom",fontsize=7) # fontsize=15)
+    ax.tick_params(width=0.1) # (width=1)
+    cbar.ax.tick_params(width=0.1)# (width=1) #(width=0.1)
 
     # We want to show all ticks...
     ax.set_xticks(np.arange(data.shape[1]))
@@ -961,8 +961,9 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
     #     "{:.2f}".format(data).replace("0.", ".").replace("0.00", "")))
     # Loop over data dimensions and create text annotations.
 
-    ax.set_title(title, fontsize=10, y=1.5)
-    ax.set_ylabel(y_label, fontsize=10)
+    ax.set_title(title,fontsize = 10, y = 1.5) #fontsize=20, y=1.1)
+    ax.set_ylabel(y_label, fontsize=10) #fontsize=20)
+
     # plt.title(title, y=1.5)
 
     fig.tight_layout(h_pad=1)
