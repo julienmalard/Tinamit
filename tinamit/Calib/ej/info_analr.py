@@ -21,6 +21,10 @@ no_ini_fast = "D:\Gaby\Tinamit\Dt\Fast\guardar_po_fsim\\fited_behav.npy"
 paso_data_fast = np.load("D:\Gaby\Tinamit\Dt\Fast\\anlzr\egr_paso\\egr-0.npy").tolist()
 paso_arch_fast = "D:\Gaby\Tinamit\Dt\Fast\\anlzr\egr_paso\\"
 
+fit_beh_poly_fast = "D:\Gaby\Tinamit\Dt\Fast\\f_simul_post\\"
+
+geog_simul_pct_fast = "D:\Gaby\Tinamit\Dt\Fast\map\\"
+
 mean_data_fast = np.load("D:\Gaby\Tinamit\Dt\Fast\\anlzr\\egr_mean\\egr-0.npy").tolist()
 mean_arch_fast = "D:\Gaby\Tinamit\Dt\Fast\\anlzr\\egr_mean\\"
 

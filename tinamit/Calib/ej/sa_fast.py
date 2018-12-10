@@ -3,7 +3,8 @@ from tinamit.Calib.ej.info_analr import *
 from tinamit.Calib.ej.info_paráms import mapa_paráms, líms_paráms
 from tinamit.Calib.ej.soil_class import p_soil_class
 
-from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims, map_rank, gen_rank_map
+from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims, map_rank, gen_rank_map, _gen_poly_dt_for_geog, \
+    gen_geog_map
 from tinamit.Conectado import Conectado
 from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
 from tinamit.Análisis.Sens.anlzr import anlzr_sens, analy_by_file, carg_simul_dt, anlzr_simul
@@ -55,9 +56,6 @@ if __name__ == "__main__":
     # # After finish the f_simul simulation SAlib for superposition (the best behavior for each poly)
     from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims, map_rank
 
-    f_simul_arch = 'D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul\\'
-    fited_behav = "D:\Thesis\pythonProject\localuse\Dt\Fast\post_f_simul\\"
-
     # analy_behav_by_dims('fast', 120000, 215, f_simul_arch, gaurdar=fited_behav, dim_arch=fited_behav)
     #
     # gen_counted_behavior(fited_behav + 'fited_behav.npy', gaurdar=fited_behav)
@@ -82,22 +80,14 @@ if __name__ == "__main__":
     '''
     post analysis 
     '''
-    from tinamit.Calib.ej.sens_análisis import verif_sens, gen_counted_behavior
-    from tinamit.Calib.ej.soil_class import p_soil_class
-    from tinamit.Calib.ej.sens_análisis import map_sens, verif_sens, gen_alpha, gen_counted_behavior
-    from collections import Counter
 
-    paso_data = np.load("D:\Gaby\Tinamit\Dt\Fast\\anlzr\egr_paso\\egr-0.npy").tolist()
-    paso_arch = "D:\Gaby\Tinamit\Dt\Fast\\anlzr\egr_paso\\"
-    pasos = \
-        verif_sens('fast', list(paso_data.keys())[0], mapa_paráms, p_soil_class, egr_arch=paso_arch, si='Si', dim=215)[
-            'fast'][list(paso_data.keys())[0]]['mds_Watertable depth Tinamit']  # 9prms * 215polys
+    # _gen_poly_dt_for_geog('fast', fit_beh_poly_fast, geog_simul_pct_fast, 120000)
+    gen_geog_map(geog_simul_pct_fast, measure='behavior_param', method='Fast', param=None,
+                 fst_cut=0.01, snd_cut=1)
 
     '''
     map
     '''
-    from tinamit.Calib.ej.sens_análisis import map_sens, verif_sens
-
     # simulation_data, var_egr = carg_simul_dt(os.path.abspath('D:\Thesis\pythonProject\localuse\Dt\Fast\simular\\'), 1,
     #                   var_egr='mds_Soil salinity Tinamit CropA')
     #
@@ -106,4 +96,4 @@ if __name__ == "__main__":
     #          simulation_data['1000'][var_egr].values, 0.1,
     #          "D:\Thesis\pythonProject\localuse\Dt\Fast\map\\paso_")
 
-    gen_rank_map(rank_arch_fast, 'Fast', 0.01, 1, 'total_poly')
+    # gen_rank_map(rank_arch_fast, 'Fast', 0.01, 1, 'polygons')

@@ -72,7 +72,7 @@ def gen_geog():
 devolver = ['Watertable depth Tinamit', 'Soil salinity Tinamit CropA']
 
 
-def _gen_poly_dt_for_geog(method, d_fit_behav_arch, save_arch):
+def _gen_poly_dt_for_geog(method, d_fit_behav_arch, save_arch, num_sam):
     if method == 'morris':
         d_fit_behav = np.load(d_fit_behav_arch).tolist()
 
@@ -82,27 +82,39 @@ def _gen_poly_dt_for_geog(method, d_fit_behav_arch, save_arch):
             fit_behav[poly].append(list(d_samp.values()))
         fit_behav = {p: v[0] for p, v in fit_behav.items()}
 
+        counted_all = []
+        counted_all2 = {}
+        for i, lst in fit_behav.items():
+            counted_all.extend(list(set(lst)))
+            counted_all2[i] = Counter(lst)
+        counted_all = set(counted_all)
+
+        counted_all2 = set(
+            [patt for i in range(num_sam) for patt, ct in counted_all2[i].items() if ct / num_sam > 0.1])
+        d_patt = {patt: {poly: 0 for poly in range(215)} for patt in counted_all}
+        for patt in counted_all:
+            for p in range(215):
+                d_patt[patt][p] = Counter(fit_behav[p])[patt] / num_sam
+
+        patt_sens_simul = {patt: np.empty([215]) for patt in counted_all}
+        for patt, d_pcent in d_patt.items():
+            for p in range(215):
+                patt_sens_simul[patt][p] = d_pcent[p]
+
     elif method == 'fast':
-        pass
+        counted_all = []
+        fit_behav = {p: {} for p in range(215)}
+        for i in range(215):
+            print(f'Processing poly {i}')
+            poly_behav = np.load(d_fit_behav_arch + f'fit_beh_poly-{i}.npy').tolist()[i]
+            for patt, ct in Counter([d_lt[0][0] for d_lt in poly_behav.values()]).items():
+                counted_all.append(patt)
+                fit_behav[i][patt] = ct / num_sam
 
-    counted_all = []
-    counted_all2 = {}
-    for i, lst in fit_behav.items():
-        counted_all.extend(list(set(lst)))
-        counted_all2[i] = Counter(lst)
-    counted_all = set(counted_all)
-
-    counted_all2 = set(
-        [patt for i in range(215) for patt, ct in counted_all2[i].items() if ct / 625 > 0.1])
-    d_patt = {patt: {poly: 0 for poly in range(215)} for patt in counted_all}
-    for patt in counted_all:
-        for p in range(215):
-            d_patt[patt][p] = Counter(fit_behav[p])[patt] / 215
-
-    patt_sens_simul = {patt: np.empty([215]) for patt in counted_all}
-    for patt, d_pcent in d_patt.items():
-        for p in range(215):
-            patt_sens_simul[patt][p] = d_pcent[p]
+        patt_sens_simul = {patt: np.empty([215]) for patt in counted_all}
+        for p, d_pcent in fit_behav.items():
+            for patt, pct in d_pcent.items():
+                patt_sens_simul[patt][p] = pct
 
     np.save(save_arch + f'patt_sens_simul', patt_sens_simul)
 
@@ -367,7 +379,7 @@ def gen_alpha(fited_behav_arch, patt):
 
 
 def gen_row_col(behaviors, method):
-    if method =='Morris':
+    if method == 'Morris':
         col_labels = [0, 5, 10, 15, 20, 'Mean']
     else:
         col_labels = [0, 1, 2, 3, 4, 'Mean']
@@ -389,15 +401,18 @@ def gen_row_col(behaviors, method):
 
 def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', param=None, fst_cut=0.1, snd_cut=8, si=None):
     read_dt = _read_dt_4_map(method, si=si)
+    para_labels = {prm: gen_row_col(read_dt['behaviors'], method)[0][i] for i, prm in enumerate(read_dt['pasos'])}
 
     if measure == 'paso_tiempo':
         for prm, paso in read_dt['pasos'].items():
+            prm = para_labels[prm]
             map_sens(gen_geog(), method, measure, prm,
                      paso, fst_cut=fst_cut, snd_cut=snd_cut, ids=[str(i) for i in range(1, 216)],
                      path=gaurd_arch)
 
     elif measure == 'promedio':
         for prmm, m_aray in read_dt['means'].items():
+            prmm = para_labels[prmm]
             map_sens(gen_geog(), method, measure, prmm,
                      m_aray, fst_cut=fst_cut, snd_cut=snd_cut, ids=[str(i) for i in range(1, 216)],
                      path=gaurd_arch)
@@ -409,6 +424,7 @@ def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', 
                 alpha = np.zeros([215])
             gof_prm = b_g['gof']
             for prm, bpprm in gof_prm.items():
+                prm = para_labels[prm]
                 map_sens(gen_geog(), method, measure, prm,
                          bpprm, fst_cut=fst_cut, snd_cut=snd_cut, behav=patt, ids=[str(i) for i in range(1, 216)],
                          alpha=alpha, path=gaurd_arch)
@@ -420,6 +436,7 @@ def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', 
                 alpha = np.zeros([215])
             bpp_prm = b_g['bp_params']
             for prm, bpprm in bpp_prm.items():
+                prm = para_labels[prm]
                 map_sens(gen_geog(), method, measure, prm,
                          bpprm, fst_cut=fst_cut, snd_cut=snd_cut, behav=patt, ids=[str(i) for i in range(1, 216)],
                          alpha=alpha, path=gaurd_arch)
@@ -437,11 +454,11 @@ def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', 
                      alpha=alpha, path=gaurd_arch)
 
     elif measure == 'geog_simul_percent':
-        geog_simul_percent = np.load(gaurd_arch).tolist()
+        geog_simul_percent = np.load(gaurd_arch+'patt_sens_simul.npy').tolist()
         for patt, poly_aray in geog_simul_percent.items():
             map_sens(gen_geog(), method, measure, 'a',
                      poly_aray, fst_cut=0, behav=patt, ids=[str(i) for i in range(1, 216)],
-                     unid='% of sensitivity simulation data', path=geog_save_mor + f'measure')
+                     unid='% of sensitivity simulation data', path=gaurd_arch )
 
 
 def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None):
@@ -459,7 +476,7 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None):
 
             # mean
             for prmm, m_aray in read_dt['means'].items():
-                data[r_c[3].index(prmm),r_c[2].index('Mean')] = m_aray[i]
+                data[r_c[3].index(prmm), r_c[2].index('Mean')] = m_aray[i]
 
             # behavior
             for patt, d_bg in read_dt['behaviors'].items():
@@ -518,7 +535,7 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None):
                  archivo=rank_arch + f'{rank_method}', fst_cut=fst_cut, snd_cut=1, maxi=data.max(),
                  cbarlabel=f"{method} % of polygonal occurance Rank", cmap="magma_r", bin=10, rank_method=rank_method)
 
-    if rank_method == 'num_poly_rank':
+    elif rank_method == 'num_poly_rank':
         for p in read_dt['ps']:
             dt = {prmp: max(d_paso[f'paso_{p}']) for prmp, d_paso in read_dt['pasos'].items()}
             r = {key: rank for rank, key in enumerate(sorted(set(dt.values()), reverse=True), 1)}
@@ -556,7 +573,35 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None):
                  archivo=rank_arch + f'{rank_method}', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
                  cbarlabel=f"{method} Sensitivity Rank", cmap="magma_r", bin=data.max() + 1, rank_method=rank_method)
 
-    if rank_method == 'total_poly':
+    elif rank_method == 'num_poly_rank_n':
+        data = np.empty([len(r_c[0]), 12])
+        read_dt_mo = _read_dt_4_map('Morris')
+        read_dt_fa = _read_dt_4_map('Fast')
+        r_c_mo = gen_row_col(read_dt['behaviors'], 'Morris')
+        r_c_fa = gen_row_col(read_dt['behaviors'], 'Fast')
+        col = r_c_mo[1][:6]*2
+        for p in read_dt_mo['ps']:
+            dt = {prmp: max(d_paso[f'paso_{p}']) for prmp, d_paso in read_dt_mo['pasos'].items()}
+            r = {key: rank for rank, key in enumerate(sorted(set(dt.values()), reverse=True), 1)}
+            n_dt = {k: r[v] if v > 0.1 else 0 for k, v in dt.items()}
+            for prmp, v in n_dt.items():
+                data[r_c_mo[3].index(prmp), r_c_mo[2].index(p)] = v
+        for p in read_dt_fa['ps']:
+            dt = {prmp: max(d_paso[f'paso_{p}']) for prmp, d_paso in read_dt_fa['pasos'].items()}
+            r = {key: rank for rank, key in enumerate(sorted(set(dt.values()), reverse=True), 1)}
+            n_dt = {k: r[v] if v > 0.01 else 0 for k, v in dt.items()}
+            for prmp, v in n_dt.items():
+                data[r_c_mo[3].index(prmp), r_c_fa[2].index(p)+6] = v
+
+        if len(np.where(np.isnan(data))[1]) != 0:
+            data[np.where(np.isnan(data))] = 0
+
+        map_rank(row_labels=r_c[0], col_labels=col, data=np.round(data, 2),
+                 title=f"Sensitivity Ranking Map", y_label='Parameters',
+                 archivo=rank_arch + f'{rank_method}', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
+                 cbarlabel=f"Sensitivity Rank", cmap="magma_r", bin=data.max() + 1, rank_method=rank_method)
+
+    elif rank_method == 'total_poly':
         for prmp, d_paso in read_dt['pasos'].items():
             for p in read_dt['ps']:
                 data[r_c[3].index(prmp), r_c[2].index(p)] = max(d_paso[f'paso_{p}'])
@@ -598,17 +643,21 @@ def map_sens(geog, metodo, measure, para_name, data, fst_cut, path, snd_cut=None
 
     for v, d in vars_interés.items():
         if measure == 'paso_tiempo':
-            if metodo == 'morris':
+            if metodo == 'Morris':
                 ll = [0, 5, 10, 15, 20]
-            elif metodo == 'fast':
+            elif metodo == 'Fast':
                 ll = [0, 1, 2, 3, 4]
             for i in ll:
                 max_val = max(data[f'paso_{i}'])
                 if max_val > snd_cut:
                     data[f'paso_{i}'][np.where(data[f'paso_{i}'] > snd_cut)] = snd_cut
                     max_val = snd_cut
-                geog.dibujar(archivo=path + f'{i * 5}-{para_name}', valores=data[f'paso_{i}'],
-                             título=f"{metodo}-{para_name[: 5]}-Timestep-{i * 5} to WTD",
+                # geog.dibujar(archivo=path + f'{i}-{para_name}', valores=data[f'paso_{i}'],
+                #              título=f"{metodo}-{para_name}-Timestep-{i} to WTD",
+                #              unidades=unid, colores=d['col'], ids=ids, fst_cut=fst_cut, snd_cut=snd_cut,
+                #              clr_bar_dic=clr_bar_dic, escala_num=(0, max_val))
+                geog.dibujar(archivo=path + f'{i*5}-{para_name}', valores=data[f'paso_{i}'],
+                             título=f"{metodo}-{para_name}-Timestep-{i*5} to WTD",
                              unidades=unid, colores=d['col'], ids=ids, fst_cut=fst_cut, snd_cut=snd_cut,
                              clr_bar_dic=clr_bar_dic, escala_num=(0, max_val))
 
@@ -618,7 +667,7 @@ def map_sens(geog, metodo, measure, para_name, data, fst_cut, path, snd_cut=None
                 data[np.where(data > snd_cut)] = snd_cut
                 max_val = snd_cut
             geog.dibujar(archivo=path + f'mean-{para_name}', valores=data,
-                         título=f"{metodo[:2]}-{para_name}-to WTD-Mean", fst_cut=fst_cut, snd_cut=snd_cut,
+                         título=f"{metodo}-{para_name}-to WTD-Mean", fst_cut=fst_cut, snd_cut=snd_cut,
                          clr_bar_dic=clr_bar_dic, unidades=unid, colores=d['col'], ids=ids, escala_num=(0, max_val))
 
         elif measure == 'behavior_gof' or measure == 'behavior_param':
@@ -633,13 +682,16 @@ def map_sens(geog, metodo, measure, para_name, data, fst_cut, path, snd_cut=None
                         data[bpprm][[np.where(data[bpprm])[0][np.isin(np.where(data[bpprm]), np.where(alpha > 0))[0]]]])
                 if max_val > snd_cut:
                     data[bpprm][np.where(data[bpprm] > snd_cut)] = snd_cut
-                    data[np.where(data < fst_cut)] = 0 - snd_cut * 0.1
-                    max_val = snd_cut
+                    data[bpprm][np.where(data[bpprm] < fst_cut)] = 0 - snd_cut * 0.1
+                    fst_cut = fst_cut + snd_cut * 0.1
+                    snd_cut = snd_cut - 0.1
+                    max_val = snd_cut + 0.1 + snd_cut * 0.1
 
-                geog.dibujar(archivo=path + f"{metodo[:2]}-{para_name[: 5]}-{behav}",
+
+                geog.dibujar(archivo=path + f"{metodo}-{para_name}-{behav}-{bpprm}",
                              valores=data[bpprm],
-                             título=f"{metodo[:2]}-{para_name.capitalize()[:5]}-{behav.capitalize()}-{bpprm}",
-                             alpha=alpha, unidades=unid, colores=d['col'], ids=ids, fst_cut=fst_cut + snd_cut * 0.1,
+                             título=f"{metodo}-{para_name}-{behav.capitalize()}-{bpprm}",
+                             alpha=alpha, unidades=unid, colores=d['col'], ids=ids, fst_cut=fst_cut,
                              snd_cut=snd_cut, clr_bar_dic=clr_bar_dic, escala_num=(0, max_val)
                              )
 
@@ -733,7 +785,7 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
     cax = divider.append_axes("right", size="1.5%", pad=0.05)
 
     if bin is not None:
-        if rank_method == 'num_poly_rank':
+        if rank_method == 'num_poly_rank' or rank_method ==  'num_poly_rank_n':
             dic_c = _gen_d_mapacolores(
                 ['#e6fff2', '#ff8080', '#ffdf80', '#ffff80', '#dfff80', '#bfff80', '#9fff80', '#80ff80', '#b3ffd7'],
                 maxi=None)
@@ -753,6 +805,9 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
         elif rank_method == 'num_poly_rank':
             cbar = fig.colorbar(im, cax=cax, ticks=[0, 8, 7, 6, 5, 4, 3, 2, 1])
             cbar.ax.set_yticklabels(['0', '8', '7', '6', '5', '4', '3', '2', '1'], fontsize=6)
+        elif rank_method == 'num_poly_rank_n':
+            cbar = fig.colorbar(im, cax=cax, ticks=[0, 6, 5, 4, 3, 2, 1])
+            cbar.ax.set_yticklabels(['0', '6', '5', '4', '3', '2', '1'], fontsize=6)
 
     else:
         if data.max() > snd_cut:
@@ -799,8 +854,12 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
     ax.set_xticks(np.arange(data.shape[1]))
     ax.set_yticks(np.arange(data.shape[0]))
     # ... and label them with the respective list entries.
-    ax.set_xticklabels(col_labels, fontsize=3)
-    ax.set_yticklabels(row_labels, fontsize=4)
+    if rank_method == 'num_poly_rank_n':
+        ax.set_xticklabels(col_labels, fontsize=10)
+        ax.set_yticklabels(row_labels, fontsize=10)
+    else:
+        ax.set_xticklabels(col_labels, fontsize=3)
+        ax.set_yticklabels(row_labels, fontsize=4)
 
     # Let the horizontal axes labeling appear on top.
     ax.tick_params(top=True, bottom=False, labeltop=True, labelbottom=False)
@@ -872,13 +931,19 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
                     kw.update(color=txtclr[fst_cut < im.norm(data[i, j]) < snd_cut])
                     text = im.axes.text(j, i, matplotlib.ticker.FuncFormatter(func)(data[i, j], None), **kw)
                     texts.append(text)
-        if rank_method == 'num_poly_rank':
+        if rank_method == 'num_poly_rank' :
             for i in range(data.shape[0]):
                 for j in range(data.shape[1]):
                     texts.append(
                         ax.text(j, i, int(data[i, j]), ha="center", va="center", color=txtclr[0 < im.norm(data[i, j])],
                                 size=2))
-        if rank_method == 'count_poly':
+        elif rank_method == 'num_poly_rank_n':
+            for i in range(data.shape[0]):
+                for j in range(data.shape[1]):
+                    texts.append(
+                        ax.text(j, i, int(data[i, j]), ha="center", va="center", color=txtclr[0 < im.norm(data[i, j])],
+                                size=6))
+        elif rank_method == 'count_poly':
             for i in range(data.shape[0]):
                 for j in range(data.shape[1]):
                     texts.append(
@@ -897,7 +962,7 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
     # Loop over data dimensions and create text annotations.
 
     ax.set_title(title, fontsize=10, y=1.5)
-    ax.set_ylabel(y_label, fontsize=7)
+    ax.set_ylabel(y_label, fontsize=10)
     # plt.title(title, y=1.5)
 
     fig.tight_layout(h_pad=1)

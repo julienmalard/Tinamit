@@ -677,7 +677,7 @@ class Geografía(object):
                     d_clrs = _gen_d_mapacolores(colores, maxi=None)
                     mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs, N=n_bin)
                 else:
-                    mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs, N=n_bin)
+                    mapa_color = colors.LinearSegmentedColormap('mapa_color', d_clrs)
 
                 v_cols = mapa_color(vals_norm)
                 v_cols[np.isnan(vals_norm)] = 1
@@ -722,7 +722,7 @@ class Geografía(object):
                                         ticks=[0, fst_cut, snd_cut-0.1, escala_num[1]])
                     cbar.set_label(label=unidades, labelpad=-50, y=0.45)
                     cbar.ax.set_yticklabels(
-                        ['0', f'Screnning Threshold, {fst_cut}', snd_cut,
+                        ['0', f'Screnning Threshold, 0.1', '+8',
                          f'High sensitivity zone'], fontsize=5)
 
                 elif escala_num[1] == escala_num[0]:
@@ -1058,7 +1058,7 @@ def _gen_d_mapacolores(colores, maxi, clr_bar_dic=None, fst_cut=None, snd_cut=No
     clrs_rva = [_hex_a_rva(x) for x in colores]
     n_colores = len(colores)
 
-    if maxi is None or fst_cut is None:
+    if clr_bar_dic is None:
         dic_c = {'red': tuple((round(i / (n_colores - 1), 2), clrs_rva[i][0] / 255, clrs_rva[i][0] / 255) for i in
                               range(0, n_colores)),
                  'green': tuple(

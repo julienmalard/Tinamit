@@ -60,9 +60,9 @@ if __name__ == "__main__":
     Maping
     '''
     # _gen_poly_dt_for_geog('morris', geog_simul_pct_mor2, geog_simul_pct_mor)
-    # gen_geog_map(geog_simul_pct_mor + 'patt_sens_simul.npy', measure='geog_simul_percent', method='Morris', param=None,
-    #              fst_cut=0.1, snd_cut=None)
+    # gen_geog_map(geog_save_mor, measure='behavior_param', method='Morris', param=None,
+    #              fst_cut=0.1, snd_cut=8)
 
     # final plot
-    gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'total_poly')
+    gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'num_poly_rank_n')
 
