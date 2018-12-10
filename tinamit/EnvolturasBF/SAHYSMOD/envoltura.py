@@ -253,13 +253,13 @@ class ModeloSAHYSMOD(ModeloBloques):
             nombre_var = códs_a_vars[c]
             dic_final[nombre_var] = dic_ingr[llave]
 
-        por_bloques = símismo._vars_por_bloques()
+        por_bloques = símismo._vars_por_bloques(solamente = 'ingr')
 
         for c in vars_egreso_SAHYSMOD:
 
             nombre_var = códs_a_vars[c]
-            if nombre_var not in dic_final:
-                if nombre_var in por_bloques:
+            if nombre_var not in dic_final:     # if it is output variable only
+                if nombre_var in por_bloques:   # if it is not ciclo
                     tmñ = (símismo.n_estaciones, símismo.n_polí)
                 else:
                     tmñ = símismo.n_polí
