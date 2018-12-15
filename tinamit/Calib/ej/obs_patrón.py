@@ -11,7 +11,7 @@ def read_obs_data(file_name, sheet_name=None):
     obs_data = {}
     for row in res.values:
         obs_data[row[1]] = row[2:]
-    return res.columns[3:], obs_data
+    return res.columns[2:len(res.columns) - 1], obs_data
 
 def split_obs_data(obs_data):
     split_data = {}
