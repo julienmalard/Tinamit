@@ -1,10 +1,10 @@
 import os
-import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
 from collections import Counter
-
+from sklearn.cluster import KMeans
+import scipy.cluster.hierarchy as sch
 from matplotlib.colors import LinearSegmentedColormap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -355,6 +355,53 @@ def analy_behav_by_dims(method, samples, dims, f_simul_arch, dim_arch=None, gaur
             np.save(gaurdar + 'aic_behav', aic_behav)
 
 
+def clustering(points, n_cls):
+    kmeans = KMeans(n_clusters=n_cls)
+    # fit kmeans object to data
+    kmeans.fit(points)
+    # print location of clusters learned by kmeans object
+    location_clusters = kmeans.cluster_centers_
+    # save new clusters for chart
+    y_km = kmeans.fit_predict(points)
+    km_cls = np.empty([points.shape[0], points.shape[1]])
+    d_cls = {cls: len(np.where(y_km == cls)[0]) for cls in range(n_cls)}
+    d_km = {}
+    km_lst = []
+    ct = 0
+    for cls in range(n_cls):
+        km_lst.extend(np.where(y_km == cls)[0])
+        d_km[cls] = np.where(y_km == cls)[0]
+        for j in range(d_cls[cls]):
+            km_cls[j + ct, :] = points[np.where(y_km == cls)[0][j], :]
+        ct += d_cls[cls]
+    km_lst = np.asarray(km_lst)
+
+    # plt.scatter(points[y_km == 0, 0], points[y_km == 0, 1], s=100, c='red')
+    # plt.scatter(points[y_km == 1, 0], points[y_km == 1, 1], s=100, c='black')
+    # plt.scatter(points[y_km == 2, 0], points[y_km == 2, 1], s=100, c='blue')
+    # plt.scatter(points[y_km == 3, 0], points[y_km == 3, 1], s=100, c='cyan')
+
+    # create dendrogram
+    # dendrogram = sch.dendrogram(sch.linkage(points, method='ward')) #plot the tree
+    new_order = sch.dendrogram(sch.linkage(points, method='ward'))['leaves']
+    n_points = np.empty([points.shape[0], points.shape[1]])
+    for i in range(points.shape[0]):
+        n_points[i, :] = points[new_order[i], :]
+
+    return {'n_points': n_points, 'new_order': new_order, 'km_lst': km_lst, 'km_cls': km_cls, 'y_km': y_km, 'd_km': d_km}
+    # create clusters
+    # hc = AgglomerativeClustering(n_clusters=n_cls, affinity='euclidean', linkage='ward')
+    # # save clusters for chart
+    # y_hc = hc.fit_predict(points)
+    #
+    # plt.scatter(points[y_hc == 0, 0], points[y_hc == 0, 1], s=100, c='red')
+    # plt.scatter(points[y_hc == 1, 0], points[y_hc == 1, 1], s=100, c='black')
+    # plt.scatter(points[y_hc == 2, 0], points[y_hc == 2, 1], s=100, c='blue')
+    # plt.scatter(points[y_hc == 3, 0], points[y_hc == 3, 1], s=100, c='cyan')
+    # plt.scatter(points[y_hc == 4, 0], points[y_hc == 4, 1], s=100, c='yellow')
+    # plt.scatter(points[y_hc == 5, 0], points[y_hc == 5, 1], s=100, c='green')
+
+
 def gen_counted_behavior(fited_behav_arch, gaurdar=None):
     fited_behaviors = np.load(fited_behav_arch).tolist()
     counted_all_behaviors = []
@@ -390,8 +437,8 @@ def gen_row_col(behaviors, method):
     col_labels.extend(sorted(col_l, key=lambda word: (word[0], word)))
 
     col = ['N1', 'N2', 'N3', 'N4', 'N5', 'N6']
-    col.extend([f'S{i}' for i in range(1, 19)])
-    col.extend([f'D{i}' for i in range(1, 32)])
+    col.extend([f'S{i}' for i in range(1, 32)])
+    col.extend([f'D{i}' for i in range(1, 19)])
 
     row = [p for p in behaviors['log']['bp_params']]
     row_labels = ['Ptq', 'Ptr', 'Kaq', 'Peq', 'Pex', 'POH, Summer', 'POH, Winter', 'CTW', 'Dummy']
@@ -399,7 +446,8 @@ def gen_row_col(behaviors, method):
     return row_labels, col, col_labels, row
 
 
-def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', param=None, fst_cut=0.1, snd_cut=8, si=None):
+def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', param=None, fst_cut=0.1, snd_cut=8,
+                 si=None):
     read_dt = _read_dt_4_map(method, si=si)
     para_labels = {prm: gen_row_col(read_dt['behaviors'], method)[0][i] for i, prm in enumerate(read_dt['pasos'])}
 
@@ -454,14 +502,14 @@ def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', 
                      alpha=alpha, path=gaurd_arch)
 
     elif measure == 'geog_simul_percent':
-        geog_simul_percent = np.load(gaurd_arch+'patt_sens_simul.npy').tolist()
+        geog_simul_percent = np.load(gaurd_arch + 'patt_sens_simul.npy').tolist()
         for patt, poly_aray in geog_simul_percent.items():
             map_sens(gen_geog(), method, measure, 'a',
                      poly_aray, fst_cut=0, behav=patt, ids=[str(i) for i in range(1, 216)],
-                     unid='% of sensitivity simulation data', path=gaurd_arch )
+                     unid='% of sensitivity simulation data', path=gaurd_arch)
 
 
-def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None):
+def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None, cluster=False, cls=None):
     read_dt = _read_dt_4_map(method, si=si)
     r_c = gen_row_col(read_dt['behaviors'], method)
 
@@ -568,10 +616,41 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None):
         if len(np.where(np.isnan(data))[1]) != 0:
             data[np.where(np.isnan(data))] = 0
 
-        map_rank(row_labels=r_c[0], col_labels=r_c[1], data=np.round(data, 2),
-                 title=f"{method} Sensitivity Ranking Map", y_label='Parameters',
-                 archivo=rank_arch + f'{rank_method}', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
-                 cbarlabel=f"{method} Sensitivity Rank", cmap="magma_r", bin=data.max() + 1, rank_method=rank_method)
+        if cluster is False:
+            map_rank(row_labels=r_c[0], col_labels=r_c[1], data=np.round(data, 2),
+                     title=f"{method} Sensitivity Ranking Map", y_label='Parameters',
+                     archivo=rank_arch + f'{rank_method}', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
+                     cbarlabel=f"{method} Sensitivity Rank", cmap="magma_r", bin=data.max() + 1,
+                     rank_method=rank_method)
+        else:
+            points = np.transpose(data[:, 1:])
+            cluster = clustering(points, cls)
+            cls_col_n_od = ['N1']
+            cls_col_km = ['N1']
+            data_new_od = np.transpose(cluster['n_points'])
+            data_km = np.transpose(cluster['km_cls'])
+            for j in range(len(r_c[1]) - 1):
+                cls_col_n_od.append(r_c[1][cluster['new_order'][j]+1])
+                cls_col_km.append(r_c[1][cluster['km_lst'][j]+1])
+            data_new_od = np.concatenate((data[:, 0].reshape(9, 1), data_new_od), axis=1)
+            data_km = np.concatenate((data[:, 0].reshape(9, 1), data_km), axis=1)
+            for cl in range(cls):
+                print(cl+1, [r_c[2][i+1] for i in cluster['d_km'][cl]])
+                print(cl+1, [r_c[1][i+1] for i in cluster['d_km'][cl]])
+
+            print('new order: ', [r_c[1][i + 1] for i in cluster['new_order']])
+            print('new order: ', [r_c[2][i + 1] for i in cluster['new_order']])
+
+            map_rank(row_labels=r_c[0], col_labels=cls_col_n_od, data=np.round(data_new_od, 2),
+                     title=f"{method} Classified Clustering Map", y_label='Parameters',
+                     archivo=rank_arch + 'new_order', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
+                     cbarlabel=f"{method} Sensitivity Rank", cmap="magma_r", bin=data.max() + 1,
+                     rank_method=rank_method)
+            map_rank(row_labels=r_c[0], col_labels=cls_col_km, data=np.round(data_km, 2),
+                     title=f"{method} K-Mean-{cls} Clustering Map", y_label='Parameters',
+                     archivo=rank_arch + f'k-mean-{cls}', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
+                     cbarlabel=f"{method} Sensitivity Rank", cmap="magma_r", bin=data.max() + 1,
+                     rank_method=rank_method)
 
     elif rank_method == 'num_poly_rank_n':
         data = np.empty([len(r_c[0]), 12])
@@ -579,7 +658,7 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None):
         read_dt_fa = _read_dt_4_map('Fast')
         r_c_mo = gen_row_col(read_dt['behaviors'], 'Morris')
         r_c_fa = gen_row_col(read_dt['behaviors'], 'Fast')
-        col = r_c_mo[1][:6]*2
+        col = r_c_mo[1][:6] * 2
         for p in read_dt_mo['ps']:
             dt = {prmp: max(d_paso[f'paso_{p}']) for prmp, d_paso in read_dt_mo['pasos'].items()}
             r = {key: rank for rank, key in enumerate(sorted(set(dt.values()), reverse=True), 1)}
@@ -591,7 +670,7 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None):
             r = {key: rank for rank, key in enumerate(sorted(set(dt.values()), reverse=True), 1)}
             n_dt = {k: r[v] if v > 0.01 else 0 for k, v in dt.items()}
             for prmp, v in n_dt.items():
-                data[r_c_mo[3].index(prmp), r_c_fa[2].index(p)+6] = v
+                data[r_c_mo[3].index(prmp), r_c_fa[2].index(p) + 6] = v
 
         if len(np.where(np.isnan(data))[1]) != 0:
             data[np.where(np.isnan(data))] = 0
@@ -686,7 +765,6 @@ def map_sens(geog, metodo, measure, para_name, data, fst_cut, path, snd_cut=None
                     fst_cut = fst_cut + snd_cut * 0.1
                     snd_cut = snd_cut - 0.1
                     max_val = snd_cut + 0.1 + snd_cut * 0.1
-
 
                 geog.dibujar(archivo=path + f"{metodo}-{para_name}-{behav}-{bpprm}",
                              valores=data[bpprm],
@@ -785,7 +863,7 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
     cax = divider.append_axes("right", size="1.5%", pad=0.05)
 
     if bin is not None:
-        if rank_method == 'num_poly_rank' or rank_method ==  'num_poly_rank_n':
+        if rank_method == 'num_poly_rank' or rank_method == 'num_poly_rank_n':
             dic_c = _gen_d_mapacolores(
                 ['#e6fff2', '#b3ffd7', '#80ff80', '#9fff80', '#bfff80', '#dfff80', '#ffff80', '#ffdf80', '#ff8080'],
                 maxi=None)
@@ -846,9 +924,9 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
             # cbar = ax.figure.colorbar(im, ax=cax, ticks=[0, data.max()], **cbar_kw)
             cbar.ax.set_yticklabels(['0', f'maximum val, {data.max()}'], fontsize=3)
 
-    cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom",fontsize=7) # fontsize=15)
-    ax.tick_params(width=0.1) # (width=1)
-    cbar.ax.tick_params(width=0.1)# (width=1) #(width=0.1)
+    cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom", fontsize=7)  # fontsize=15)
+    ax.tick_params(width=0.1)  # (width=1)
+    cbar.ax.tick_params(width=0.1)  # (width=1) #(width=0.1)
 
     # We want to show all ticks...
     ax.set_xticks(np.arange(data.shape[1]))
@@ -931,7 +1009,7 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
                     kw.update(color=txtclr[fst_cut < im.norm(data[i, j]) < snd_cut])
                     text = im.axes.text(j, i, matplotlib.ticker.FuncFormatter(func)(data[i, j], None), **kw)
                     texts.append(text)
-        if rank_method == 'num_poly_rank' :
+        if rank_method == 'num_poly_rank':
             for i in range(data.shape[0]):
                 for j in range(data.shape[1]):
                     texts.append(
@@ -961,11 +1039,11 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
     #     "{:.2f}".format(data).replace("0.", ".").replace("0.00", "")))
     # Loop over data dimensions and create text annotations.
 
-    ax.set_title(title,fontsize = 10, y = 1.5) #fontsize=20, y=1.1)
-    ax.set_ylabel(y_label, fontsize=10) #fontsize=20)
+    ax.set_title(title, fontsize=10, y=1.5)  # fontsize=20, y=1.1)
+    ax.set_ylabel(y_label, fontsize=10)  # fontsize=20)
 
     # plt.title(title, y=1.5)
 
     fig.tight_layout(h_pad=1)
-    fig.savefig(archivo, dpi=1000)
+    fig.savefig(archivo, dpi=1500)
     plt.close()

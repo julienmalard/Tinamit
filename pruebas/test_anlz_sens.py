@@ -8,9 +8,8 @@ from pruebas.recursos.BF.prueba_forma import ModeloLinear, ModeloExpo, ModeloLog
 from pruebas.recursos.mod_prueba_sens import ModeloPrueba
 from tinamit.Análisis.Sens.corridas import gen_vals_inic, gen_índices_grupos, simul_sens, simul_sens_por_grupo, \
     buscar_simuls_faltan, simul_faltan
-from tinamit.Análisis.Sens.muestr import muestrear_paráms, guardar_mstr_paráms, cargar_mstr_paráms, gen_problema
+from tinamit.Análisis.Sens.muestr import muestrear_paráms, guardar_mstr_paráms, cargar_mstr_paráms
 from tinamit.Análisis.Sens.anlzr import anlzr_sens
-from SALib.analyze import morris, fast
 
 métodos = ['morris', 'fast']
 
@@ -472,7 +471,6 @@ class Test_Análisis(unittest.TestCase):
                     símismo.assertLessEqual(mu_star['Ficticia']['phi'], 0.1)
 
             elif m == 'fast':
-                continue
                 with símismo.subTest(método='fast'):
                     res = anlzr_sens(mod, método='fast', num_samples=195, mapa_paráms=None, líms_paráms=líms_paráms,
                                      t_final=5, var_egr=['y'],
@@ -511,7 +509,6 @@ class Test_Análisis(unittest.TestCase):
                     símismo.assertLessEqual(mu_star['Ficticia']['phi'], 0.1)
 
             elif m == 'fast':
-                continue
                 with símismo.subTest(método='fast'):
                     res = anlzr_sens(mod, método='fast', num_samples=195, mapa_paráms=None, líms_paráms=líms_paráms,
                                      t_final=5, var_egr=['y'],
@@ -535,7 +532,6 @@ class Test_Análisis(unittest.TestCase):
         for m in métodos:
             if m == 'morris':
                 with símismo.subTest(método='morris'):
-                    continue
                     res = anlzr_sens(mod, método=m, num_samples=100, mapa_paráms=None, líms_paráms=líms_paráms,
                                      t_final=5, var_egr=['y'], ops_método={'num_levels': 4, 'grid_jump': 2},
                                      tipo_egr="ocilación")
@@ -587,7 +583,6 @@ class Test_Análisis(unittest.TestCase):
         for m in métodos:
             if m == 'morris':
                 with símismo.subTest(método='morris'):
-                    continue
                     res = anlzr_sens(mod, método=m, num_samples=100, mapa_paráms=None, líms_paráms=líms_paráms,
                                      t_final=5, var_egr=['y'], ops_método={'num_levels': 4, 'grid_jump': 2},
                                      tipo_egr="ocilación_aten")
@@ -633,13 +628,3 @@ class Test_Análisis(unittest.TestCase):
             else:
                 raise NotImplementedError
 
-
-    @unittest.skip
-    def test_sens_forma(símismo):
-        raise NotImplementedError
-
-    def test_sens_trasiciones(símismo):
-        raise NotImplementedError
-
-    def test_ficticia_análisis_sens(símismo):
-        raise NotImplementedError

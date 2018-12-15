@@ -2,7 +2,8 @@ from tinamit.Análisis.Sens.anlzr import analy_by_file
 from tinamit.Análisis.Sens.corridas import simul_sens
 from tinamit.Calib.ej.info_analr import *
 from tinamit.Calib.ej.info_paráms import mapa_paráms, líms_paráms
-from tinamit.Calib.ej.sens_análisis import gen_row_col, gen_geog_map, gen_rank_map, _gen_poly_dt_for_geog
+from tinamit.Calib.ej.sens_análisis import gen_row_col, gen_geog_map, gen_rank_map, _gen_poly_dt_for_geog, \
+    _read_dt_4_map
 
 if __name__ == "__main__":
     import numpy as np
@@ -64,5 +65,6 @@ if __name__ == "__main__":
     #              fst_cut=0.1, snd_cut=8)
 
     # final plot
-    gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'num_poly_rank')
+    gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'num_poly_rank', cluster=True, cls=6)
 
+    # _read_dt_4_map('Morris')

@@ -4,7 +4,7 @@ from tinamit.Calib.ej.info_paráms import mapa_paráms, líms_paráms
 from tinamit.Calib.ej.soil_class import p_soil_class
 
 from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims, map_rank, gen_rank_map, _gen_poly_dt_for_geog, \
-    gen_geog_map
+    gen_geog_map, _read_dt_4_map
 from tinamit.Conectado import Conectado
 from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
 from tinamit.Análisis.Sens.anlzr import anlzr_sens, analy_by_file, carg_simul_dt, anlzr_simul
@@ -53,33 +53,11 @@ if __name__ == "__main__":
     '''
     analysis
     '''
-    # # After finish the f_simul simulation SAlib for superposition (the best behavior for each poly)
-    from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims, map_rank
 
-    # analy_behav_by_dims('fast', 120000, 215, f_simul_arch, gaurdar=fited_behav, dim_arch=fited_behav)
-    #
-    # gen_counted_behavior(fited_behav + 'fited_behav.npy', gaurdar=fited_behav)
-    #
-    # egr = anlzr_simul('fast', líms_paráms, mstr_fa, mapa_paráms, ficticia=True, var_egr='mds_Watertable depth Tinamit',
-    #                   dim=215, tipo_egr="superposition",
-    #                   f_simul_arch={
-    #                       'arch': "D:\Thesis\pythonProject\localuse\Dt\Fast\\f_simul",
-    #                       'num_sample': 120000,
-    #                       'counted_behaviors': fited_behav + 'counted_all_behaviors.npy'}
-    #                   )
-
-    # Paso, Mean
-    #     results.append(pool.apply_async(_analy_by_file, args=(
-    #         dim, 'fast', líms_paráms, mapa_paráms, "D:\Gaby\Tinamit\Dt\Fast\sampled_dt\\muestra_fast_23params.json",
-    #         {'arch_simular': direc, 'num_samples': 120000}, 'mds_Watertable depth Tinamit', None, 'promedio', True, #promedio, paso_tiempo
-    #         None, dim)))
     #
     # for result in results:
     #     re = result.get()
     #     np.save(gaurdar + f'egr-{re[0]}', re[1])
-    '''
-    post analysis 
-    '''
 
     # _gen_poly_dt_for_geog('fast', fit_beh_poly_fast, geog_simul_pct_fast, 120000)
     # gen_geog_map(geog_simul_pct_fast, measure='behavior_param', method='Fast', param=None,
@@ -96,4 +74,5 @@ if __name__ == "__main__":
     #          simulation_data['1000'][var_egr].values, 0.1,
     #          "D:\Thesis\pythonProject\localuse\Dt\Fast\map\\paso_")
 
-    gen_rank_map(rank_arch_fast, 'Fast', 0.01, 1, 'num_poly_rank')
+    gen_rank_map(geog_save_fast, 'Fast', 0.01, 1, 'num_poly_rank', cluster=True, cls=6)
+    # _read_dt_4_map('Fast')
