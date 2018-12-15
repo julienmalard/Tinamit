@@ -3,7 +3,8 @@ import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
 
-file_name = "D:\Gaby\organized obs values.xlsx"
+file_name = "D:\Thesis\data\organized obs values.xlsx"
+
 
 def read_obs_data(file_name, sheet_name=None):
     res = pd.read_excel(file_name, sheet_name=sheet_name)
@@ -11,7 +12,8 @@ def read_obs_data(file_name, sheet_name=None):
     obs_data = {}
     for row in res.values:
         obs_data[row[1]] = row[2:]
-    return res.columns[2:len(res.columns) - 1], obs_data
+    return res.columns[2:len(res.columns)], obs_data
+
 
 def split_obs_data(obs_data):
     split_data = {}
@@ -33,6 +35,7 @@ def interpolate_data(points, kind, length):
 
     return interpolated_data
 
+
 def interp_all_data(split_data, kind, length):
     int_all_data = {}
     for key, val in split_data.items():
@@ -41,6 +44,7 @@ def interp_all_data(split_data, kind, length):
 
     return int_all_data
 
+
 def write_excel(data, columns, file):
     with pd.ExcelWriter(file,
                         engine='xlsxwriter') as writer:
@@ -48,12 +52,13 @@ def write_excel(data, columns, file):
             df = pd.DataFrame(data=list(val.values()), columns=columns)
             df.to_excel(writer, kind)
 
+
 res = read_obs_data(file_name, "Final")
-split_data= split_obs_data(res[1])
+split_data = split_obs_data(res[1])
 kinds = ["previous", "nearest", "next"]
 kinds_in_d = {}
 for kind in kinds:
-    kinds_in_d[kind] = interp_all_data(split_data, kind, 60)
+    kinds_in_d[kind] = interp_all_data(split_data, kind, 61)
 
-write_excel(kinds_in_d, list(res[0]), "D:\Gaby\interpolated.xlsx")
+write_excel(kinds_in_d, list(res[0]), "D:\Thesis\data\interpolated.xlsx")
 print()
