@@ -74,5 +74,5 @@ if __name__ == "__main__":
     #          simulation_data['1000'][var_egr].values, 0.1,
     #          "D:\Thesis\pythonProject\localuse\Dt\Fast\map\\paso_")
 
-    gen_rank_map(geog_save_fast, 'Fast', 0.01, 1, 'num_poly_rank', cluster=True, cls=6)
+    gen_rank_map(geog_save_fast, 'Fast', 0.01, 1, 'num_poly_rank') #, cluster=True, cls=6)
     # _read_dt_4_map('Fast')

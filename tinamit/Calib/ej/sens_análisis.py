@@ -617,10 +617,13 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None, clus
             data[np.where(np.isnan(data))] = 0
 
         if cluster is False:
-            map_rank(row_labels=r_c[0], col_labels=r_c[1], data=np.round(data, 2),
-                     title=f"{method} Sensitivity Ranking Map", y_label='Parameters',
+            col = [i + 1 for i in range(6)]
+            col.extend([i + 1 for i in range(31)])
+            col.extend([i + 1 for i in range(18)])
+            map_rank(row_labels=r_c[0], col_labels=col, data=np.round(data, 2),
+                     title=None, y_label=None, dpi=1800,
                      archivo=rank_arch + f'{rank_method}', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
-                     cbarlabel=f"{method} Sensitivity Rank", cmap="magma_r", bin=data.max() + 1,
+                     cbarlabel=None, cmap="magma_r", bin=data.max() + 1,
                      rank_method=rank_method)
         else:
             points = np.transpose(data[:, 1:])
@@ -642,12 +645,12 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None, clus
             print('new order: ', [r_c[2][i + 1] for i in cluster['new_order']])
 
             map_rank(row_labels=r_c[0], col_labels=cls_col_n_od, data=np.round(data_new_od, 2),
-                     title=f"{method} Classified Clustering Map", y_label='Parameters',
+                     title=None, y_label=None, dpi=1500,
                      archivo=rank_arch + 'new_order', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
-                     cbarlabel=f"{method} Sensitivity Rank", cmap="magma_r", bin=data.max() + 1,
+                     cbarlabel=None, cmap="magma_r", bin=data.max() + 1,
                      rank_method=rank_method)
             map_rank(row_labels=r_c[0], col_labels=cls_col_km, data=np.round(data_km, 2),
-                     title=f"{method} K-Mean-{cls} Clustering Map", y_label='Parameters',
+                     title=f"{method} K-Mean-{cls} Clustering Map", y_label='Parameters', dpi=500,
                      archivo=rank_arch + f'k-mean-{cls}', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
                      cbarlabel=f"{method} Sensitivity Rank", cmap="magma_r", bin=data.max() + 1,
                      rank_method=rank_method)
@@ -812,8 +815,8 @@ def map_sens(geog, metodo, measure, para_name, data, fst_cut, path, snd_cut=None
                          )
 
 
-def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_label, archivo, ax=None, cbar_kw={},
-             cbarlabel="Sensitivity Index", bin=None, rank_method=None, **kwargs):
+def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_label, archivo,cbarlabel,
+             ax=None, dpi=1000, cbar_kw={}, bin=None, rank_method=None, **kwargs):
     '''
 
     Parameters
@@ -860,7 +863,10 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
                    'red': ['#ff0000', '#ff0000']}
 
     divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", size="1.5%", pad=0.05)
+    if cbarlabel is not None:
+        cax = divider.append_axes("right", size="1.5%", pad=0.05)
+    else:
+        cax = divider.append_axes("bottom", size="10%", pad=0.05)
 
     if bin is not None:
         if rank_method == 'num_poly_rank' or rank_method == 'num_poly_rank_n':
@@ -881,7 +887,7 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
                 ['0', '~10%', '~20%', '~30%', '~40%', '~50%', '~60%', '~70%', '~80%', '~90%', '~100%'],
                 fontsize=5)
         elif rank_method == 'num_poly_rank':
-            cbar = fig.colorbar(im, cax=cax, ticks=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+            cbar = fig.colorbar(im, cax=cax, ticks=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], orientation="horizontal")
             cbar.ax.set_yticklabels(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], fontsize=6)
         elif rank_method == 'num_poly_rank_n':
             cbar = fig.colorbar(im, cax=cax, ticks=[0, 6, 5, 4, 3, 2, 1])
@@ -924,7 +930,8 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
             # cbar = ax.figure.colorbar(im, ax=cax, ticks=[0, data.max()], **cbar_kw)
             cbar.ax.set_yticklabels(['0', f'maximum val, {data.max()}'], fontsize=3)
 
-    cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom", fontsize=7)  # fontsize=15)
+    if cbarlabel is not None:
+        cbar.ax.set_ylabel(cbarlabel, rotation=0, va="bottom", fontsize=7)  # fontsize=15)
     ax.tick_params(width=0.1)  # (width=1)
     cbar.ax.tick_params(width=0.1)  # (width=1) #(width=0.1)
 
@@ -936,7 +943,7 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
         ax.set_xticklabels(col_labels, fontsize=10)
         ax.set_yticklabels(row_labels, fontsize=10)
     else:
-        ax.set_xticklabels(col_labels, fontsize=3)
+        ax.set_xticklabels(col_labels, fontsize=4)
         ax.set_yticklabels(row_labels, fontsize=4)
 
     # Let the horizontal axes labeling appear on top.
@@ -1038,12 +1045,11 @@ def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_labe
     # matplotlib.ticker.FuncFormatter(
     #     "{:.2f}".format(data).replace("0.", ".").replace("0.00", "")))
     # Loop over data dimensions and create text annotations.
-
-    ax.set_title(title, fontsize=10, y=1.5)  # fontsize=20, y=1.1)
-    ax.set_ylabel(y_label, fontsize=10)  # fontsize=20)
-
-    # plt.title(title, y=1.5)
+    if title is not None:
+        ax.set_title(title, fontsize=10, y=1.5)  # fontsize=20, y=1.1)
+    if y_label is not None:
+        ax.set_ylabel(y_label, fontsize=10)  # fontsize=20)
 
     fig.tight_layout(h_pad=1)
-    fig.savefig(archivo, dpi=1500)
+    fig.savefig(archivo, dpi=dpi)
     plt.close()
