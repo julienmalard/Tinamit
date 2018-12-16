@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
+from tinamit.Análisis.Sens.behavior import superposition, find_best_behavior
 
 file_name = "D:\Gaby\organized obs values.xlsx"
 
@@ -48,12 +49,24 @@ def write_excel(data, columns, file):
             df = pd.DataFrame(data=list(val.values()), columns=columns)
             df.to_excel(writer, kind)
 
-res = read_obs_data(file_name, "Final")
-split_data= split_obs_data(res[1])
-kinds = ["previous", "nearest", "next"]
-kinds_in_d = {}
-for kind in kinds:
-    kinds_in_d[kind] = interp_all_data(split_data, kind, 60)
+def compute_superposition(interploated_data):
+    best_behaviors = {}
+    for poly, data in interploated_data.items():
+        print(f"Polygon {poly} is under processing!")
+        re = superposition(range(len(data)), data)
+        best_behaviors[poly] = find_best_behavior(re[0])
+    return best_behaviors
 
-write_excel(kinds_in_d, list(res[0]), "D:\Gaby\interpolated.xlsx")
-print()
+if __name__ == '__main__':
+
+    res = read_obs_data(file_name, "Final")
+    split_data= split_obs_data(res[1])
+    kinds = ["previous", "nearest", "next"]
+    kinds_in_d = {}
+    for kind in kinds:
+        kinds_in_d[kind] = interp_all_data(split_data, kind, 60)
+
+    # write_excel(kinds_in_d, list(res[0]), "D:\Gaby\interpolated.xlsx")
+    compute_superposition(kinds_in_d['previous'])
+
+    print()
