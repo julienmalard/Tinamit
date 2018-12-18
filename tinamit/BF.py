@@ -445,7 +445,6 @@ class ModeloImpaciente(ModeloBF):
     def __init__(símismo, archivo=None, nombre='modeloBF'):
         símismo.paso_en_ciclo = None
         símismo.ciclo = None
-        símismo.test = None
         símismo.tmñ_ciclo = None
         símismo.arch_ingreso = None
         símismo.matrs_egr = {}
@@ -582,7 +581,7 @@ class ModeloImpaciente(ModeloBF):
                 dic_ingr[var] = símismo.matrs_ingr[var]
             else:
                 dic_ingr[var] = símismo.obt_val_actual_var(var)
-        símismo.test=dic_ingr
+
         símismo._escribir_archivo_ingr(n_ciclos=n_ciclos, dic_ingr=dic_ingr, archivo=archivo)
 
     def _vars_subciclo(símismo, solamente=None):
