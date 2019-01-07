@@ -245,7 +245,7 @@ def _single_poly(samples, i, f_simul_arch, gaurdar):
     for j in range(samples):
         print(f'this is {j}-th sample')
         behav = np.load(f_simul_arch + f"f_simul_{j}.npy").tolist()
-        fited_behav[i][j] = find_best_behavior(behav, trans_shape=i)
+        fited_behav[i][j] = find_best_behavior(behav, trans_shape=i)[0]
     if gaurdar is not None:
         np.save(gaurdar + f'fit_beh_poly-{i}', fited_behav)
 
@@ -317,7 +317,7 @@ def analy_behav_by_dims(method, samples, dims, f_simul_arch, dim_arch=None, gaur
                 print(f'this is {j}-th sample')
                 behav = np.load(f_simul_arch + f"f_simul_{j}.npy").tolist()
                 for i in range(dims):
-                    fited_behav[i][j] = find_best_behavior(behav, trans_shape=i)
+                    fited_behav[i][j] = find_best_behavior(behav, trans_shape=i)[0]
                     print(f'processing {i} poly')
             if gaurdar is not None:
                 np.save(gaurdar + 'fited_behav', fited_behav)
@@ -645,7 +645,7 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None, clus
             print('new order: ', [r_c[2][i + 1] for i in cluster['new_order']])
 
             map_rank(row_labels=r_c[0], col_labels=cls_col_n_od, data=np.round(data_new_od, 2),
-                     title=None, y_label=None, dpi=1500,
+                     title=None, y_label=None, dpi=500,
                      archivo=rank_arch + 'new_order', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
                      cbarlabel=None, cmap="magma_r", bin=data.max() + 1,
                      rank_method=rank_method)

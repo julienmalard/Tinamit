@@ -2,9 +2,9 @@
 import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
-from tinamit.Análisis.Sens.behavior import superposition, find_best_behavior
+import matplotlib.pyplot as plt
+from tinamit.Análisis.Sens.behavior import superposition, find_best_behavior, predict
 
-file_name = "D:\Gaby\organized obs values.xlsx"
 
 def read_obs_data(file_name, sheet_name=None):
     res = pd.read_excel(file_name, sheet_name=sheet_name)
@@ -54,19 +54,27 @@ def compute_superposition(interploated_data):
     for poly, data in interploated_data.items():
         print(f"Polygon {poly} is under processing!")
         re = superposition(range(len(data)), data)
-        best_behaviors[poly] = find_best_behavior(re[0])
+        best_behaviors[poly] = find_best_behavior(re[0])[0]
     return best_behaviors
 
-if __name__ == '__main__':
+def plot_pattern(interploated_data, path):
+    fited_behaviors={poly: [] for poly in interploated_data}
+    for poly, data in interploated_data.items():
+        print(f"Polygon {poly} is under processing!")
+        plt.plot(data)
+        re = superposition(range(len(data)), data)
+        gof_dict = find_best_behavior(re[0])[1]
+        fited_behaviors[poly].append(gof_dict[0])
+        m = 1
+        while m < len(gof_dict):
+            if gof_dict[m][1] - gof_dict[0][1] > 10:
+                break
+            else:
+                fited_behaviors[poly].append(gof_dict[m])
+            m += 1
+        for tup_patt in fited_behaviors[poly]:
+            plt.plot(predict(range(len(data)), re[0][tup_patt[0]]['bp_params'], tup_patt[0]))
+        plt.savefig(path+f'{poly}-{fited_behaviors[poly][0][0]}')
+        plt.close()
 
-    res = read_obs_data(file_name, "Final")
-    split_data= split_obs_data(res[1])
-    kinds = ["previous", "nearest", "next"]
-    kinds_in_d = {}
-    for kind in kinds:
-        kinds_in_d[kind] = interp_all_data(split_data, kind, 60)
-
-    # write_excel(kinds_in_d, list(res[0]), "D:\Gaby\interpolated.xlsx")
-    compute_superposition(kinds_in_d['previous'])
-
-    print()
+    return fited_behaviors

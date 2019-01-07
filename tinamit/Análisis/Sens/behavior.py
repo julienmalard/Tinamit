@@ -163,7 +163,7 @@ def find_best_behavior(all_beh_dt, trans_shape=None):
             fited_behaviors.append(gof_dict[m])
         m += 1
 
-    return fited_behaviors
+    return fited_behaviors, gof_dict
 
 
 def superposition(x_data, y_data):
@@ -186,10 +186,22 @@ def superposition(x_data, y_data):
 
         b_param.update({behavior: behaviors_aics[behavior]})
 
-        osci['bp_params'].update(
-            {k + "_1": v for k, v in behaviors_aics[behavior]['bp_params'].items()})
-        osci_atan['bp_params'].update(
-            {k + "_1": v for k, v in behaviors_aics[behavior]['bp_params'].items()})
+        if 'constant' in behaviors_aics[behavior]['bp_params']:
+            osci['bp_params']['constant'] = behaviors_aics[behavior]['bp_params']['constant'] + osci['bp_params'][
+                'constant']
+            osci_atan['bp_params']['constant'] = behaviors_aics[behavior]['bp_params']['constant'] + osci_atan['bp_params'][
+                'constant']
+
+            osci['bp_params'].update(
+                {k + "_1": v for k, v in behaviors_aics[behavior]['bp_params'].items() if k != 'constant'})
+            osci_atan['bp_params'].update(
+                {k + "_1": v for k, v in behaviors_aics[behavior]['bp_params'].items() if k != 'constant'})
+        else:
+            osci['bp_params'].update(
+                {k + "_1": v for k, v in behaviors_aics[behavior]['bp_params'].items()})
+            osci_atan['bp_params'].update(
+                {k + "_1": v for k, v in behaviors_aics[behavior]['bp_params'].items()})
+
         b_param.update({f'spp_oscil_{behavior}':
                             {'bp_params': osci['bp_params'],
                              'gof': {'aic': spp_osci_aic}}})

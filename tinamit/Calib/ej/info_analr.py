@@ -40,19 +40,21 @@ paso_data_mor = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr
 
 mean_data_mor = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_promedio.npy").tolist()
 
-behav_data_mor = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_spp_no_ini.npy").tolist()
+behav_data_mor = np.load(
+    "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_spp_no_ini.npy").tolist()
+
+behav_const_dt = "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_no_ini\\fsim_const\\"
 
 geog_save_mor = "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\"
 geog_simul_pct_mor = "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\"
 
-#fast
-no_ini_fast ="D:\Thesis\pythonProject\localuse\Dt\Fast\post_f_simul\\fited_behav.npy"
+# fast
+no_ini_fast = "D:\Thesis\pythonProject\localuse\Dt\Fast\post_f_simul\\fited_behav.npy"
 paso_data_fast = np.load("D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\egr_paso\\egr-0.npy").tolist()
 paso_arch_fast = "D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\egr_paso\\"
 
 mean_data_fast = np.load("D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\\egr_mean\\egr-0.npy").tolist()
 mean_arch_fast = "D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\\egr_mean\\"
-
 
 behav_data_fast = np.load("D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\\egr_behav\\egr-0.npy").tolist()
 behav_arch_fast = "D:\Thesis\pythonProject\localuse\Dt\Fast\\anlzr\\egr_behav\\"

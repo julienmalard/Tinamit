@@ -108,7 +108,7 @@ def behav_proc_from_file(simul_arch, var_egr=None, tipo_egr=None, dim=None, guar
     pool = mp.Pool(processes=4)
 
     count = 1
-    start = 432
+    start = 0
     end = 625  # simul_arch['num_samples']
     for i in range(start, end):
         simulation, var_egr = carg_simul_dt(simul_arch['arch_simular'], i,
@@ -543,7 +543,7 @@ def uni_behav_anlzr(tipo_egr, val, vr, sam_ind, bf_simul, dim, len_simulation, c
         if len(all_beh_dt):  # 215*21/7
             fited_behaviors = []
             for d_beh in all_beh_dt:
-                fited_behaviors.append(find_best_behavior(d_beh)[0])
+                fited_behaviors.append(find_best_behavior(d_beh)[0][0])
 
             counted_behaviors = Counter([k for k, v in fited_behaviors])
             counted_all_behaviors.extend(list(counted_behaviors.keys()))

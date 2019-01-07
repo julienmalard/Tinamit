@@ -1,4 +1,4 @@
-from tinamit.Análisis.Sens.anlzr import analy_by_file
+from tinamit.Análisis.Sens.anlzr import analy_by_file, behav_proc_from_file
 from tinamit.Análisis.Sens.corridas import simul_sens
 from tinamit.Calib.ej.info_analr import *
 from tinamit.Calib.ej.info_paráms import mapa_paráms, líms_paráms
@@ -31,8 +31,8 @@ if __name__ == "__main__":
     #
     # np.save(guardar, egr)
 
-    # behav_proc_from_file(simul_arch={'arch_simular': direc, 'num_samples': 625}, tipo_egr='superposition', dim=214,
-    #                      var_egr='mds_Watertable depth Tinamit', guardar=guardar)
+    behav_proc_from_file(simul_arch={'arch_simular': simu_guar_arch_mor, 'num_samples': 625}, tipo_egr='superposition', dim=214,
+                         var_egr='mds_Watertable depth Tinamit', guardar=behav_const_dt)
 
     '''
     post_processing Anlzr 
@@ -65,6 +65,6 @@ if __name__ == "__main__":
     #              fst_cut=0.1, snd_cut=8)
 
     # final plot
-    gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'num_poly_rank') #, cluster=True, cls=6)
+    # gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'num_poly_rank') #, cluster=True, cls=6)
 
     # _read_dt_4_map('Morris')
