@@ -443,7 +443,6 @@ def gen_row_col(behaviors, method):
     row = [p for p in behaviors['log']['bp_params']]
     row_labels = ['Ptq', 'Ptr', 'Kaq', 'Peq', 'Pex', 'POH, Summer', 'POH, Winter', 'CTW', 'Dummy']
 
-    print(col_labels)
     return row_labels, col, col_labels, row
 
 
