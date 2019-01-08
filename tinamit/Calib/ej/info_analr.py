@@ -33,7 +33,7 @@ import numpy as np
 
 # morris
 simu_guar_arch_mor = "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\simular\\625_mor"
-rank_arch_mor = "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\final_plot\\"
+rank_arch_mor = "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\final_plot\\cor_cont\\"
 no_ini_mor = "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_no_ini\\fited_behav_noini.npy"
 
 paso_data_mor = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_paso.npy").tolist()
@@ -42,6 +42,11 @@ mean_data_mor = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr
 
 behav_data_mor = np.load(
     "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_spp_no_ini.npy").tolist()
+
+behav_cont_data_mor = np.load(
+    "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_spp_const.npy").tolist()
+
+behav_correct_const_dt = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\behav_correct_cont_dt.npy").tolist()
 
 behav_const_dt = "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_no_ini\\fsim_const\\"
 

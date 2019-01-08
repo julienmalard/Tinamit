@@ -8,9 +8,6 @@ from tinamit.Calib.ej.sens_análisis import analy_behav_by_dims, map_rank, gen_r
 from tinamit.Conectado import Conectado
 from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
 from tinamit.Análisis.Sens.anlzr import anlzr_sens, analy_by_file, carg_simul_dt, anlzr_simul
-from tinamit.Geog import Geografía
-import multiprocessing as mp
-import time
 
 
 def _anlzr_simul(i, método, líms_paráms, mstr, mapa_paráms, ficticia, var_egr, f_simul_arch, dim, tipo_egr="promedio",
@@ -54,7 +51,6 @@ if __name__ == "__main__":
     analysis
     '''
 
-    #
     # for result in results:
     #     re = result.get()
     #     np.save(gaurdar + f'egr-{re[0]}', re[1])
@@ -62,6 +58,7 @@ if __name__ == "__main__":
     # _gen_poly_dt_for_geog('fast', fit_beh_poly_fast, geog_simul_pct_fast, 120000)
     # gen_geog_map(geog_simul_pct_fast, measure='behavior_param', method='Fast', param=None,
     #              fst_cut=0.01, snd_cut=1)
+
 
     '''
     map

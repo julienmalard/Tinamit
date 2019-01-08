@@ -132,8 +132,8 @@ def _read_dt_4_map(method, si=None):
                 'morris'][
                 list(mean_data_mor.keys())[0]]['mds_Watertable depth Tinamit']
 
-        behaviors = verif_sens('morris', list(behav_data_mor.keys())[0], mapa_paráms, p_soil_class, egr=behav_data_mor,
-                               si='mu_star')['morris'][list(behav_data_mor.keys())[0]]['mds_Watertable depth Tinamit']
+        behaviors = verif_sens('morris', list(behav_correct_const_dt.keys())[0], mapa_paráms, p_soil_class, egr=behav_correct_const_dt,
+                               si='mu_star')['morris'][list(behav_correct_const_dt.keys())[0]]['mds_Watertable depth Tinamit']
 
         no_ini = no_ini_mor
 
@@ -438,11 +438,12 @@ def gen_row_col(behaviors, method):
 
     col = ['N1', 'N2', 'N3', 'N4', 'N5', 'N6']
     col.extend([f'S{i}' for i in range(1, 32)])
-    col.extend([f'D{i}' for i in range(1, 19)])
+    col.extend([f'D{i}' for i in range(1, 17)])
 
     row = [p for p in behaviors['log']['bp_params']]
     row_labels = ['Ptq', 'Ptr', 'Kaq', 'Peq', 'Pex', 'POH, Summer', 'POH, Winter', 'CTW', 'Dummy']
 
+    print(col_labels)
     return row_labels, col, col_labels, row
 
 
