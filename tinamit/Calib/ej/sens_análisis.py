@@ -132,8 +132,10 @@ def _read_dt_4_map(method, si=None):
                 'morris'][
                 list(mean_data_mor.keys())[0]]['mds_Watertable depth Tinamit']
 
-        behaviors = verif_sens('morris', list(behav_correct_const_dt.keys())[0], mapa_paráms, p_soil_class, egr=behav_correct_const_dt,
-                               si='mu_star')['morris'][list(behav_correct_const_dt.keys())[0]]['mds_Watertable depth Tinamit']
+        behaviors = verif_sens('morris', list(behav_correct_const_dt.keys())[0], mapa_paráms, p_soil_class,
+                               egr=behav_correct_const_dt,
+                               si='mu_star')['morris'][list(behav_correct_const_dt.keys())[0]][
+            'mds_Watertable depth Tinamit']
 
         no_ini = no_ini_mor
 
@@ -274,6 +276,29 @@ def _compute_single(i, method, dim_arch, samples, f_simul_arch):
     return i, count_fited_behav_by_poly, {k: np.average(v) for k, v in aic_poly.items()}
 
 
+def merge_dict(method, merg1, merg2, save_path):
+    if method == 'morris':
+        merg1['superposition']['mds_Watertable depth Tinamit']['spp_oscil_aten_inverso'] = \
+            merg2['superposition']['mds_Watertable depth Tinamit']['spp_oscil_aten_inverso']
+
+        merg1['superposition']['mds_Watertable depth Tinamit']['spp_oscil_aten_log'] = \
+            merg2['superposition']['mds_Watertable depth Tinamit']['spp_oscil_aten_log']
+
+        np.save(save_path, merg1)
+    elif method == 'fast':
+        for i in range(215):
+            m1 = np.load(merg1 + f'egr-{i}').tolist()
+            m2 = np.load(merg2 + f'fa_cont_egr-{i}').tolist()
+
+            m1['superposition']['mds_Watertable depth Tinamit']['spp_oscil_aten_inverso'] = \
+                m2['superposition']['mds_Watertable depth Tinamit']['spp_oscil_aten_inverso']
+
+            m1['superposition']['mds_Watertable depth Tinamit']['spp_oscil_aten_log'] = \
+                m2['superposition']['mds_Watertable depth Tinamit']['spp_oscil_aten_log']
+
+            np.save(save_path + f'fa_egr_comp-{i}', m1)
+
+
 def verif_sens(método, tipo_egr, mapa_paráms, p_soil_class, si, dim=None, egr=None, egr_arch=None):
     if método == 'fast':
         egr = _integrate_egr(egr_arch, dim, si, mapa_paráms, tipo_egr)
@@ -376,30 +401,14 @@ def clustering(points, n_cls):
         ct += d_cls[cls]
     km_lst = np.asarray(km_lst)
 
-    # plt.scatter(points[y_km == 0, 0], points[y_km == 0, 1], s=100, c='red')
-    # plt.scatter(points[y_km == 1, 0], points[y_km == 1, 1], s=100, c='black')
-    # plt.scatter(points[y_km == 2, 0], points[y_km == 2, 1], s=100, c='blue')
-    # plt.scatter(points[y_km == 3, 0], points[y_km == 3, 1], s=100, c='cyan')
-
     # create dendrogram
-    # dendrogram = sch.dendrogram(sch.linkage(points, method='ward')) #plot the tree
     new_order = sch.dendrogram(sch.linkage(points, method='ward'))['leaves']
     n_points = np.empty([points.shape[0], points.shape[1]])
     for i in range(points.shape[0]):
         n_points[i, :] = points[new_order[i], :]
 
-    return {'n_points': n_points, 'new_order': new_order, 'km_lst': km_lst, 'km_cls': km_cls, 'y_km': y_km, 'd_km': d_km}
-    # create clusters
-    # hc = AgglomerativeClustering(n_clusters=n_cls, affinity='euclidean', linkage='ward')
-    # # save clusters for chart
-    # y_hc = hc.fit_predict(points)
-    #
-    # plt.scatter(points[y_hc == 0, 0], points[y_hc == 0, 1], s=100, c='red')
-    # plt.scatter(points[y_hc == 1, 0], points[y_hc == 1, 1], s=100, c='black')
-    # plt.scatter(points[y_hc == 2, 0], points[y_hc == 2, 1], s=100, c='blue')
-    # plt.scatter(points[y_hc == 3, 0], points[y_hc == 3, 1], s=100, c='cyan')
-    # plt.scatter(points[y_hc == 4, 0], points[y_hc == 4, 1], s=100, c='yellow')
-    # plt.scatter(points[y_hc == 5, 0], points[y_hc == 5, 1], s=100, c='green')
+    return {'n_points': n_points, 'new_order': new_order, 'km_lst': km_lst, 'km_cls': km_cls, 'y_km': y_km,
+            'd_km': d_km}
 
 
 def gen_counted_behavior(fited_behav_arch, gaurdar=None):
@@ -432,18 +441,28 @@ def gen_row_col(behaviors, method):
         col_labels = [0, 1, 2, 3, 4, 'Mean']
 
     col_l = []
-    col_l.extend([f"{behav}_{bpp}" for behav in behaviors for bpp in behaviors[behav]['bp_params']['Kaq']])
     col_l.extend([f"{behav}_gof" for behav in behaviors])
     col_labels.extend(sorted(col_l, key=lambda word: (word[0], word)))
 
-    col = ['N1', 'N2', 'N3', 'N4', 'N5', 'N6']
-    col.extend([f'S{i}' for i in range(1, 32)])
-    col.extend([f'D{i}' for i in range(1, 17)])
+    col_l.extend([f"{behav}_{bpp}" for behav in behaviors for bpp in behaviors[behav]['bp_params']['Kaq']])
+    col_labels.extend(sorted([pt for pt in col_l if not pt.endswith('_gof')], key=lambda word: (word[0], word)))
+
+    gof = [pt for pt in col_l if pt.endswith('_gof')]
+    spp = [pt for pt in col_l if pt.startswith('spp')]
+
+    col = [f'n{i}' for i in range(1, 7)]
+    col.extend([f'S{i}' for i in range(1, len(col_l) - len(spp))])
+    col.extend([f'D{i}' for i in range(1, len(spp))])
+
+    col_new = col[:6]
+    col_new.extend([f'a{i}' for i in range(1, len(gof)+1)])
+    col_new.extend([f'b{i}' for i in range(1, len(col_l) - len(gof) - len(spp) + 1)])
+    col_new.extend([f'c{i}' for i in range(1, len(spp)+1)])
 
     row = [p for p in behaviors['log']['bp_params']]
     row_labels = ['Ptq', 'Ptr', 'Kaq', 'Peq', 'Pex', 'POH, Summer', 'POH, Winter', 'CTW', 'Dummy']
 
-    return row_labels, col, col_labels, row
+    return row_labels, col, col_labels, row, col_new
 
 
 def gen_geog_map(gaurd_arch, measure='paso_tiempo', patt=None, method='Morris', param=None, fst_cut=0.1, snd_cut=8,
@@ -513,7 +532,7 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None, clus
     read_dt = _read_dt_4_map(method, si=si)
     r_c = gen_row_col(read_dt['behaviors'], method)
 
-    data = np.empty([len(r_c[0]), len(r_c[1])])
+    data = np.empty([len(r_c[0]), len(r_c[4])])
 
     if rank_method == 'polygons':
         for i in range(215):
@@ -617,10 +636,7 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None, clus
             data[np.where(np.isnan(data))] = 0
 
         if cluster is False:
-            col = [i + 1 for i in range(6)]
-            col.extend([i + 1 for i in range(31)])
-            col.extend([i + 1 for i in range(18)])
-            map_rank(row_labels=r_c[0], col_labels=col, data=np.round(data, 2),
+            map_rank(row_labels=r_c[0], col_labels=[i[1:] for i in r_c[4]], data=np.round(data, 2),
                      title=None, y_label=None, dpi=1800,
                      archivo=rank_arch + f'{rank_method}', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
                      cbarlabel=None, cmap="magma_r", bin=data.max() + 1,
@@ -632,25 +648,25 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None, clus
             cls_col_km = ['N1']
             data_new_od = np.transpose(cluster['n_points'])
             data_km = np.transpose(cluster['km_cls'])
-            for j in range(len(r_c[1]) - 1):
-                cls_col_n_od.append(r_c[1][cluster['new_order'][j]+1])
-                cls_col_km.append(r_c[1][cluster['km_lst'][j]+1])
+            for j in range(len(r_c[4]) - 1):
+                cls_col_n_od.append(r_c[4][cluster['new_order'][j] + 1])
+                cls_col_km.append(r_c[4][cluster['km_lst'][j] + 1])
             data_new_od = np.concatenate((data[:, 0].reshape(9, 1), data_new_od), axis=1)
             data_km = np.concatenate((data[:, 0].reshape(9, 1), data_km), axis=1)
             for cl in range(cls):
-                print(cl+1, [r_c[2][i+1] for i in cluster['d_km'][cl]])
-                print(cl+1, [r_c[1][i+1] for i in cluster['d_km'][cl]])
+                print(cl + 1, [r_c[2][i + 1] for i in cluster['d_km'][cl]])
+                print(cl + 1, [r_c[4][i + 1] for i in cluster['d_km'][cl]])
 
-            print('new order: ', [r_c[1][i + 1] for i in cluster['new_order']])
+            print('new order: ', [r_c[4][i + 1] for i in cluster['new_order']])
             print('new order: ', [r_c[2][i + 1] for i in cluster['new_order']])
 
             map_rank(row_labels=r_c[0], col_labels=cls_col_n_od, data=np.round(data_new_od, 2),
-                     title=None, y_label=None, dpi=500,
+                     title=None, y_label=None, dpi=1000,
                      archivo=rank_arch + 'new_order', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
                      cbarlabel=None, cmap="magma_r", bin=data.max() + 1,
                      rank_method=rank_method)
             map_rank(row_labels=r_c[0], col_labels=cls_col_km, data=np.round(data_km, 2),
-                     title=f"{method} K-Mean-{cls} Clustering Map", y_label='Parameters', dpi=500,
+                     title=f"{method} K-Mean-{cls} Clustering Map", y_label='Parameters', dpi=1000,
                      archivo=rank_arch + f'k-mean-{cls}', fst_cut=1, snd_cut=data.max(), maxi=data.max(),
                      cbarlabel=f"{method} Sensitivity Rank", cmap="magma_r", bin=data.max() + 1,
                      rank_method=rank_method)
@@ -701,7 +717,7 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None, clus
 
         if len(np.where(np.isnan(data))[1]) != 0:
             data[np.where(np.isnan(data))] = 0
-        map_rank(row_labels=r_c[0], col_labels=r_c[1], data=np.round(data, 2),
+        map_rank(row_labels=r_c[0], col_labels=r_c[4], data=np.round(data, 2),
                  title=f"{method} Sensitivity Ranking Results", y_label='Parameters',
                  archivo=rank_arch + f'{rank_method}', fst_cut=fst_cut, snd_cut=snd_cut, maxi=np.round(data, 2).max(),
                  cbarlabel=f"{method} Sensitivity Index", cmap="magma_r")
@@ -815,7 +831,7 @@ def map_sens(geog, metodo, measure, para_name, data, fst_cut, path, snd_cut=None
                          )
 
 
-def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_label, archivo,cbarlabel,
+def map_rank(fst_cut, snd_cut, maxi, row_labels, col_labels, data, title, y_label, archivo, cbarlabel,
              ax=None, dpi=1000, cbar_kw={}, bin=None, rank_method=None, **kwargs):
     '''
 

@@ -33,7 +33,7 @@ import numpy as np
 
 # morris
 simu_guar_arch_mor = "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\simular\\625_mor"
-rank_arch_mor = "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\final_plot\\cor_cont\\"
+rank_arch_mor = "D:\Thesis\pythonProject\localuse\Dt\Mor\map\\final_plot\\"
 no_ini_mor = "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_no_ini\\fited_behav_noini.npy"
 
 paso_data_mor = np.load("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_paso.npy").tolist()

@@ -26,15 +26,3 @@ from tinamit.Calib.ej.info_analr import *
 #         'counted_behaviors': "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_no_ini\\fsim_const\\count_all.npy"},
 #                   dim=215, tipo_egr="superposition", simulation=None, ops_método=None)
 # np.save("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_spp_const", egr)
-
-
-def merge_dict(merg1, merg2, save_path):
-    merg1['superposition']['mds_Watertable depth Tinamit']['spp_oscil_aten_inverso'] = \
-        merg2['superposition']['mds_Watertable depth Tinamit']['spp_oscil_aten_inverso']
-
-    merg1['superposition']['mds_Watertable depth Tinamit']['spp_oscil_aten_log'] = \
-    merg2['superposition']['mds_Watertable depth Tinamit']['spp_oscil_aten_log']
-
-    np.save(save_path, merg1)
-
-merge_dict(merg1=behav_data_mor, merg2=behav_cont_data_mor, save_path=behav_const_dt + 'behav_correct_cont_dt')

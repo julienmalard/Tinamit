@@ -3,7 +3,7 @@ from tinamit.Análisis.Sens.corridas import simul_sens
 from tinamit.Calib.ej.info_analr import *
 from tinamit.Calib.ej.info_paráms import mapa_paráms, líms_paráms
 from tinamit.Calib.ej.sens_análisis import gen_row_col, gen_geog_map, gen_rank_map, _gen_poly_dt_for_geog, \
-    _read_dt_4_map
+    _read_dt_4_map, merge_dict
 
 if __name__ == "__main__":
     import numpy as np
@@ -80,6 +80,8 @@ if __name__ == "__main__":
     #                   dim=215, tipo_egr="superposition", simulation=None, ops_método=None)
     # np.save("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_spp_const", egr)
 
+    # merge_dict(merg1=behav_data_mor, merg2=behav_cont_data_mor, save_path=behav_const_dt + 'behav_correct_cont_dt')
+
     '''
     Maping
     '''
@@ -88,6 +90,6 @@ if __name__ == "__main__":
     #              fst_cut=0.1, snd_cut=8)
 
     # final plot
-    gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'num_poly_rank') #, cluster=True, cls=6)
+    gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'num_poly_rank', cluster=True, cls=6)
 
     # _read_dt_4_map('Morris')
