@@ -17,4 +17,3 @@ spotpy
 xarray
 chardet
 pysd
-git+git://github.com/julienmalard/taqdir.git@master
