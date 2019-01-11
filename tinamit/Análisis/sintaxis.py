@@ -696,14 +696,14 @@ class Ecuación(object):
             ).convertir(símismo.árbol)
 
             if binario:
-                pm.Bernoulli(name='Y_obs', p=mu, observed=obs_y.values)
+                pm.Bernoulli(name='Y_obs', logit_p=mu, observed=obs_y.values)
 
             else:
-                sigma = pm.HalfNormal(name='sigma', sd=1)
+                sigma = pm.HalfNormal(name='sigma', sd=obs_y.values.std())
                 theta = pm.Normal(name='theta', sd=1)
-                beta = pm.Normal(name='beta', sd=1)
+                beta = pm.HalfNormal(name='beta', sd=1/obs_y.values.std())
                 pm.Normal(name='Y_obs', mu=mu,
-                          sd=sigma * pm.math.abs_(mu),
+                          sd=sigma , #* (beta*pm.math.abs_(mu) + 1),
                           observed=obs_y.values)
 
         return modelo

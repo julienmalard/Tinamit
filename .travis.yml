@@ -1,22 +1,27 @@
 language: python
 python:
-  - "3.6"
-
+- '3.6'
 os:
-  - linux
-
+- linux
 install:
-  - pip install --upgrade pip setuptools wheel
-  - pip install -r reqs.txt
-  - pip install coveralls codecov
-  - python setup.py sdist bdist_wheel
-  - pip install tinamit --no-index --find-links=./dist
-
+- pip install --upgrade pip setuptools wheel
+- pip install -r reqs.txt
+- pip install coveralls codecov
+- python setup.py sdist bdist_wheel
+- pip install tinamit --no-index --find-links=./dist
 script:
-  - rm -r tinamit
-  - cd pruebas
-  - nosetests --with-coverage --cover-package=tinamit
-
+- rm -r tinamit
+- cd pruebas
+- nosetests --with-coverage --cover-package=tinamit
 after_success:
-  - coveralls --rcfile=.coveragerc
-  - codecov
+- coveralls --rcfile=.coveragerc
+- codecov
+deploy:
+  provider: pypi
+  user: julien.malard
+  password:
+    secure: B4rOmJIMAOhRx9OMQMApoRcnaytHQsQSMqhdBheoxO4h7xF2WZGBzQf/Z1nAF258Dwx4tmlc9GHcKy3awFChYJiO9qDbbyTa4hs7MviWjDmtO11EmylPOwOd3GDGVJLMojOZDhnCNOgfpzJ0W+Ypl74akSsIEn3NOObSQNBMUNU9zMBQT/gwD3f3klWdO5DUDUungqvp1XPJ9Dq55BdweJ0JgM9iIJ129rml95UCafUNKmXe3EuUqfJh1GQtBaniWuwUBnLGTrzZ2egk2bmwmcupsWnnCbCc+0RfdJ3/o0y4+PxQ0hCxp+BKKYxwdrqyIJZ+u0adibVX1l+Bggdp7254vTj0EYtDVXdiC1kx6yyZUFONhDBusvdnVV8SBx8wYwTggu/Lb8nyQr7j6qgoKKrSik19LkWSmrXMJKBas9FXX7KGRVL0JAzrV0y91yOKHfhaQa/9MjHtffSbZoXLAFkhisyZlgFWHLw+MRnWmnH4NXZ6WdmIStE7DA3N/7OhxguXOQb+8zB4r/b7GTH4bil7JIqAZPfc0O1BC9N5jeKKSFimOoumjRWBbdvva4iawysIwZ/VepjnhGfcCkha+eewpDq4uYpCVHE1YAOZpZWyNo0u2BvrWLEOb1ft3Xvev6qx9ebX8brxmsl2xfetGdzQNLyYPCmvjSoeMNb0SWE=
+  distributions: sdist bdist_wheel
+  skip_existing: true
+  on:
+    tags: true
