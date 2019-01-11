@@ -1,6 +1,7 @@
 import os
 import unittest
 
+from pruebas.recursos.BF.prueba_forma import ModeloLogistic
 from pruebas.test_mds import limpiar_mds
 from tinamit.EnvolturasMDS import generar_mds
 from tinamit.Geog import Geografía
@@ -29,7 +30,7 @@ class Test_CalibModelo(unittest.TestCase):
         cls.mod = generar_mds(arch_mds)
 
         cls.datos = cls.mod.simular(
-            t_final=100,
+            t_final=20,
             vals_inic=cls.paráms,
             vars_interés=['Individuos Suceptibles', 'Individuos Infectados', 'Individuos Resistentes']
         )
@@ -56,7 +57,7 @@ class Test_CalibModeloEspacial(unittest.TestCase):
         mod.geog = Geografía('prueba', archivo=arch_csv_geog)
         mod.cargar_calibs(cls.paráms)
         cls.datos = mod.simular_en(
-            t_final=100, en=['708', '1010'],
+            t_final=20, en=['708', '1010'],
             vars_interés=['Individuos Suceptibles', 'Individuos Infectados', 'Individuos Resistentes']
         )
         mod.borrar_calibs()
@@ -72,3 +73,28 @@ class Test_CalibModeloEspacial(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         limpiar_mds()
+
+class Test_CalibModelo(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.paráms = {
+            'A': 5,
+            'B': 2,
+            'C': 4,
+        }
+        cls.mod = ModeloLogistic()
+
+        cls.datos = cls.mod.simular(
+            t_final=20,
+            vals_inic=cls.paráms,
+            vars_interés=['A', 'B', 'C']
+        )
+
+    def test_calibrar_validar(símismo):
+        símismo.mod.calibrar(
+            paráms=list(símismo.paráms),
+            líms_paráms= {'A': (3, 10), 'B': (0.5, 2), 'C': (3, 5)},
+            bd=símismo.datos
+        )
+        símismo.assertTrue(símismo.mod.validar(bd=símismo.datos)['éxito'])
+

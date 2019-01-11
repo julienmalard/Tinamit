@@ -448,16 +448,17 @@ def gen_row_col(behaviors, method):
     col_labels.extend(sorted([pt for pt in col_l if not pt.endswith('_gof')], key=lambda word: (word[0], word)))
 
     gof = [pt for pt in col_l if pt.endswith('_gof')]
+    spp_gof = [pt for pt in col_l if pt.startswith('spp') and pt.endswith('_gof')]
     spp = [pt for pt in col_l if pt.startswith('spp')]
 
     col = [f'n{i}' for i in range(1, 7)]
-    col.extend([f'S{i}' for i in range(1, len(col_l) - len(spp))])
-    col.extend([f'D{i}' for i in range(1, len(spp))])
+    col.extend([f'S{i}' for i in range(1, len(col_l) - len(spp)+1)])
+    col.extend([f'D{i}' for i in range(1, len(spp)+1)])
 
     col_new = col[:6]
     col_new.extend([f'a{i}' for i in range(1, len(gof)+1)])
-    col_new.extend([f'b{i}' for i in range(1, len(col_l) - len(gof) - len(spp) + 1)])
-    col_new.extend([f'c{i}' for i in range(1, len(spp)+1)])
+    col_new.extend([f'b{i}' for i in range(1, len(col_l) - len(gof) - len(spp) + len(spp_gof) +1)])
+    col_new.extend([f'c{i}' for i in range(1, len(spp) - len(spp_gof) + 1)])
 
     row = [p for p in behaviors['log']['bp_params']]
     row_labels = ['Ptq', 'Ptr', 'Kaq', 'Peq', 'Pex', 'POH, Summer', 'POH, Winter', 'CTW', 'Dummy']
