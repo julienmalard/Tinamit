@@ -2,6 +2,7 @@ import inspect
 import math as mat
 import os
 import sys
+import traceback
 import unittest
 from copy import deepcopy as copiar_profundo
 from importlib import import_module as importar_mod
@@ -57,19 +58,25 @@ class EnvolturaBF(Modelo):
             módulo = importar_mod(os.path.splitext(nombre_mod)[0])
 
             candidatos = inspect.getmembers(módulo, inspect.isclass)
+            errores = {}
             cands_final = {}
             for nmb, obj in candidatos:
                 if callable(obj):
+                    # noinspection PyBroadException
                     try:
                         obj = obj()
-                    except BaseException:
-                        continue
+                    except NotImplementedError:
+                        pass
+                    except Exception:
+                        errores[nmb] = traceback.format_exc()
                 if isinstance(obj, ModeloBF):
                     cands_final[nmb] = obj
 
             if len(cands_final) == 0:
-                raise AttributeError(_('El fuente especificado ("{}") no contiene subclase de "ModeloBF".')
-                                     .format(modelo))
+                raise AttributeError(_(
+                    'El fuente especificado ("{}") no contiene subclase de "ModeloBF" utilizable. '
+                    '\nErrores encontrados:{}'
+                ).format(modelo, ''.join(['\n\n\t{}: \n{}'.format(nmb, e) for nmb, e in errores.items()])))
             elif len(cands_final) == 1:
                 símismo.modelo = cands_final[list(cands_final)[0]]
             else:
@@ -78,10 +85,10 @@ class EnvolturaBF(Modelo):
                 except KeyError:
                     elegido = list(cands_final)[0]
                     símismo.modelo = elegido
-                    avisar(_('Había más que una instancia de "ModeloBF" en el fuente "{}", '
-                             'y ninguna se llamaba "Envoltura". Tomaremos "{}" como la envoltura '
-                             'y esperaremos que funcione. Si no te parece, asegúrate que la definición de clase u el'
-                             'objeto correcto se llame "Envoltura".').format(modelo, elegido))
+                    avisar(_('\nHabía más que una instancia de "ModeloBF" en el fuente "{}", '
+                             '\ny ninguna se llamaba "Envoltura". Tomaremos "{}" como la envoltura '
+                             '\ny esperaremos que funcione. Si no te parece, asegúrate que la definición de clase u el'
+                             '\nobjeto correcto se llame "Envoltura".').format(modelo, elegido))
 
         else:
             if callable(modelo):
@@ -439,6 +446,7 @@ class ModeloImpaciente(ModeloBF):
         símismo.paso_en_ciclo = None
         símismo.ciclo = None
         símismo.tmñ_ciclo = None
+        símismo.arch_ingreso = None
         símismo.matrs_egr = {}
         símismo.matrs_ingr = {}
         símismo.proces_ingrs = {}
@@ -477,7 +485,6 @@ class ModeloImpaciente(ModeloBF):
 
         for var, val in dic_inic.items():
             if var in subciclo:
-
                 if var in subciclo_ingr:
                     símismo.matrs_ingr[var] = val.copy()
                     dic_inic[var] = val[0]
@@ -559,7 +566,7 @@ class ModeloImpaciente(ModeloBF):
         """
 
         if archivo is None:
-            archivo = símismo.archivo
+            archivo = símismo.arch_ingreso
 
         # Procesar los ingresos
         if símismo.ciclo != -1:
@@ -567,7 +574,7 @@ class ModeloImpaciente(ModeloBF):
 
         dic_ingr = {}
 
-        ingr_por_pasito = símismo._vars_por_pasito(solamente='ingr')
+        ingr_por_pasito = símismo._vars_subciclo(solamente='ingr')
 
         for var in símismo.ingresos():
             if var in ingr_por_pasito:

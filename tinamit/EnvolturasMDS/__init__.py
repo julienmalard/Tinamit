@@ -1,4 +1,5 @@
 import os
+import traceback
 
 from tinamit.EnvolturasMDS.PySD import ModeloPySD
 from tinamit.EnvolturasMDS.Vensim import ModeloVensim
@@ -58,14 +59,19 @@ def generar_mds(archivo, motor=None):
             raise ValueError(_('No encontramos envoltura potencial para modelos de tipo "{}".').format(ext))
 
         for env in motores_potenciales:
+            # noinspection PyBroadException
             try:
                 mod = env(archivo)  # type: EnvolturaMDS
                 if mod.instalado():
                     return mod
                 else:
                     errores[env.__name__] = 'Programa no instalado.'
-            except BaseException as e:
-                errores[env.__name__] = e
+            except Exception:
+                errores[env.__name__] = traceback.format_exc()
 
-        raise ValueError(_('El modelo "{}" no se pudo leer. Intentamos las envolturas siguientes, pero no funcionaron:'
-                           '{}').format(archivo, ''.join(['\n\t{}: {}'.format(env, e) for env, e in errores.items()])))
+        raise ValueError(
+            _('\n\nEl modelo'
+              '\n\t"{}"'
+              '\nno se pudo leer. Intentamos las envolturas siguientes, pero no funcionaron:{}'
+              ).format(archivo, ''.join(['\n\n\t{}: \n{}'.format(env, e) for env, e in errores.items()]))
+        )
