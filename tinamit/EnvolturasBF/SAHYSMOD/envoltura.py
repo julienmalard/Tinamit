@@ -322,7 +322,7 @@ def leer_arch_egr(archivo, n_est, n_p, n_años):
                                 val = -1
                             else:
                                 try:
-                                    val = float(val)
+                                    val = float(val.replace(',','.'))
                                 except ValueError:
                                     raise ValueError(
                                         _('El variable "{}" no se pudo leer del egreso SAHYSMOD').format(var_egr)
