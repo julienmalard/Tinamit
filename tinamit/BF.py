@@ -117,6 +117,10 @@ class EnvolturaBF(Modelo):
 
         return símismo.modelo.unidad_tiempo()
 
+    def cambiar_vals(símismo, valores):
+        símismo.modelo.cambiar_vals(valores)
+        super().cambiar_vals(valores)
+
     def _inic_dic_vars(símismo):
         """
         No necesario porque el diccionario de variables está conectado con él del submodelo, que se inicializa
@@ -515,9 +519,11 @@ class ModeloImpaciente(ModeloBF):
         super().iniciar_modelo(n_pasos=n_pasos, t_final=t_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
     def cambiar_vals(símismo, valores):
-
+        paso = símismo.paso_en_ciclo
+        if paso == -1:
+            paso = slice(None)
         for var, val in valores.items():
-            símismo.matrs_ingr[var][símismo.paso_en_ciclo] = val
+            símismo.matrs_ingr[var][paso] = val
 
         super().cambiar_vals(valores)
 
