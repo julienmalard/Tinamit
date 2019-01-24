@@ -15,7 +15,8 @@ mapa_paráms = {
     'Kaq': {
         'transf': 'prom',
         'mapa': {
-            'Kaq1 - Horizontal hydraulic conductivity 1': gen_mapa_kaq(0, all_soil_class, p_neighbors), #average(self, upper)
+            'Kaq1 - Horizontal hydraulic conductivity 1': gen_mapa_kaq(0, all_soil_class, p_neighbors),
+            # average(self, upper)
             'Kaq2 - Horizontal hydraulic conductivity 2': gen_mapa_kaq(1, all_soil_class, p_neighbors),
             'Kaq3 - Horizontal hydraulic conductivity 3': gen_mapa_kaq(2, all_soil_class, p_neighbors),
             'Kaq4 - Horizontal hydraulic conductivity 4': gen_mapa_kaq(3, all_soil_class, p_neighbors)
@@ -24,7 +25,6 @@ mapa_paráms = {
     'Peq - Aquifer effective porosity': np.array(p_soil_class),
     'Pex - Transition zone effective porosity': np.array(p_soil_class)
 }
-
 
 líms_paráms = {
     'Ptq - Aquifer total pore space': [(0.368, 0.506), (0.368, 0.551), (0.374, 0.500), (0.375, 0.551)],
@@ -37,5 +37,27 @@ líms_paráms = {
     'Capacity per tubewell': (100.8, 201.6),
 }
 
+calib_mapa_paráms = {'Kaq': {
+    'transf': 'prom',
+    'mapa': {
+        'Kaq1 - Horizontal hydraulic conductivity 1': gen_mapa_kaq(0, all_soil_class, p_neighbors),
+        # average(self, upper)
+        'Kaq2 - Horizontal hydraulic conductivity 2': gen_mapa_kaq(1, all_soil_class, p_neighbors),
+        'Kaq3 - Horizontal hydraulic conductivity 3': gen_mapa_kaq(2, all_soil_class, p_neighbors),
+        'Kaq4 - Horizontal hydraulic conductivity 4': gen_mapa_kaq(3, all_soil_class, p_neighbors)
+        }
+    },
+    'Peq - Aquifer effective porosity': np.array(p_soil_class),
+    'Pex - Transition zone effective porosity': np.array(p_soil_class)
+}
+
+calib_líms_paráms = {'Kaq': [(26, 103), (26, 120), (26, 158), (26, 52)],
+                     'Peq - Aquifer effective porosity': [(0.1, 0.33)] * 4,
+                     'Pex - Transition zone effective porosity': [(0.01, 0.33)] * 4,
+                     'POH Kharif Tinamit': (355, 450),
+                     'POH rabi Tinamit': (235, 300),
+                     'Capacity per tubewell': (100.8, 201.6),
+                     }
+
 # 'Gw - Groundwater extraction': [(0.08, 0.35)]
-#GW6, Per
+# GW6, Per

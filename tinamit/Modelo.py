@@ -15,7 +15,7 @@ from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
 import tinamit.Geog.Geog as Geog
-from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
+from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod, _conv_xr
 from tinamit.Análisis.Datos import obt_fecha_ft, gen_SuperBD, jsonificar, numpyficar, SuperBD
 from tinamit.Análisis.Sens.muestr import muestrear_paráms
 from tinamit.Análisis.Valids import validar_resultados
@@ -1771,7 +1771,8 @@ class Modelo(object):
 
         símismo.calibs.update(dic)
 
-    def calibrar(símismo, paráms, bd, líms_paráms=None, vars_obs=None, n_iter=500, método='mle'):
+    def calibrar(símismo, paráms, bd, líms_paráms=None, vars_obs=None, n_iter=100, método='mle', tipo_proc=None,
+                 mapa_paráms=None, final_líms_paráms=None, obj_func='NSE'):
 
         if vars_obs is None:
             l_vars = None
@@ -1782,30 +1783,30 @@ class Modelo(object):
 
         if líms_paráms is None:
             líms_paráms = {}
-        for p in paráms:
-            if p not in líms_paráms:
-                líms_paráms[p] = símismo.obt_lims_var(p)
-        líms_paráms = {ll: v for ll, v in líms_paráms.items() if ll in paráms}
+        if final_líms_paráms is None:
+            for p in paráms:
+                if p not in líms_paráms:
+                    líms_paráms[p] = símismo.obt_lims_var(p)
+            líms_paráms = {ll: v for ll, v in líms_paráms.items() if ll in paráms}
 
         if isinstance(bd, dict) and all(isinstance(v, xr.Dataset) for v in bd.values()):
             for lg in bd:
                 calibrador = CalibradorMod(símismo)
                 d_calibs = calibrador.calibrar(
-                    paráms=paráms, bd=bd[lg], líms_paráms=líms_paráms, método=método, n_iter=n_iter, vars_obs=l_vars
-                )
+                    paráms=paráms, bd=bd[lg], líms_paráms=líms_paráms, método=método, n_iter=n_iter, vars_obs=l_vars,
+                    tipo_proc=tipo_proc, mapa_paráms=mapa_paráms, obj_func=obj_func)
                 for var in d_calibs:
                     if var not in símismo.calibs:
                         símismo.calibs[var] = {}
                     símismo.calibs[var][lg] = d_calibs[var]
-
         else:
             calibrador = CalibradorMod(símismo)
             d_calibs = calibrador.calibrar(
-                paráms=paráms, bd=bd, líms_paráms=líms_paráms, método=método, n_iter=n_iter, vars_obs=l_vars
-            )
+                paráms=paráms, bd=bd, líms_paráms=líms_paráms, método=método, n_iter=n_iter, vars_obs=l_vars,
+                tipo_proc=tipo_proc, mapa_paráms=mapa_paráms, final_líms_paráms=final_líms_paráms, obj_func=obj_func)
             símismo.calibs.update(d_calibs)
 
-    def validar(símismo, bd, var=None, t_final=None, corresp_vars=None):
+    def validar(símismo, bd, var=None, t_final=None, corresp_vars=None, tipo_proc=None):
         if isinstance(bd, dict) and all(isinstance(v, xr.Dataset) for v in bd.values()):
             res = {}
             for lg in bd:
@@ -1814,11 +1815,17 @@ class Modelo(object):
                 res[lg] = vld
             res['éxito'] = all(d['éxito'] for d in res.values())
             return res
-        else:
-            bd = gen_SuperBD(bd)
-            return símismo._validar(bd=bd, var=var, t_final=t_final, corresp_vars=corresp_vars)
 
-    def _validar(símismo, bd, var, t_final, corresp_vars, lg=None):
+        elif isinstance(bd, xr.Dataset):
+            bd = gen_SuperBD(bd)
+        else:
+            bd = _conv_xr(bd, var)
+            t_final = len(bd['n'])
+            t_inic = bd['n'].values[0]
+
+        return símismo._validar(bd=bd, var=var, t_final=t_final, corresp_vars=corresp_vars, tipo_proc=tipo_proc)
+
+    def _validar(símismo, bd, var, t_final, corresp_vars, tipo_proc, lg=None):
         if corresp_vars is None:
             corresp_vars = {}
 
@@ -1830,14 +1837,22 @@ class Modelo(object):
         else:
             l_vars = var
         l_vars = [símismo.valid_var(v) for v in l_vars]
-        obs = bd.obt_datos(l_vars)[l_vars]
+
+        if isinstance(bd, xr.Dataset) and tipo_proc is not None:
+            obs = bd.obt_datos(l_vars, interpolar=False)[l_vars]
+        elif tipo_proc is None:
+            obs = bd.obt_datos(l_vars)[l_vars]
+        else:
+            obs = bd
+
         if t_final is None:
             t_final = len(obs['n']) - 1
         if lg is None:
-            d_vals_prms = {p: d_p['dist'] for p, d_p in símismo.calibs.items()}
+            d_vals_prms = {p: d_p['dist'] for p, d_p in símismo.calibs.items()} #{'A': ndaray(100), 'B'...}
         else:
             d_vals_prms = {p: d_p[lg]['dist'] for p, d_p in símismo.calibs.items()}
-        n_vals = len(list(d_vals_prms.values())[0])
+
+        n_vals = len(list(d_vals_prms.values())[0]) #100
         vals_inic = [{p: v[í] for p, v in d_vals_prms.items()} for í in range(n_vals)]
         res_simul = símismo.simular_grupo(
             t_final, vals_inic=vals_inic, vars_interés=l_vars, combinar=False, paralelo=False

@@ -10,7 +10,9 @@ import xarray as xr
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
 from tinamit.Análisis.Datos import BDtexto, gen_SuperBD, SuperBD
+from tinamit.Análisis.Sens.behavior import aic
 from tinamit.Análisis.sintaxis import Ecuación
+from tinamit.Calib.ej.obs_patrón import compute_superposition
 from tinamit.config import _
 
 try:
@@ -537,26 +539,44 @@ class CalibradorMod(object):
         """
         símismo.mod = mod
 
-    def calibrar(símismo, paráms, líms_paráms, bd, método, vars_obs, n_iter, corresp_vars=None):
+    def calibrar(símismo, paráms, líms_paráms, bd, método, vars_obs, n_iter, corresp_vars=None, tipo_proc=None,
+                 mapa_paráms=None, final_líms_paráms=None, obj_func='AIC'):
 
         método = método.lower()
         mod = símismo.mod
-        bd = gen_SuperBD(bd)
+        if isinstance(bd, xr.Dataset):
+            b_d = gen_SuperBD(bd)
+            t_inic = None
+        else:
+            obs = _conv_xr(bd, vars_obs)
+            t_final = len(obs['n'])
+            t_inic = obs['n'].values[0]
 
         if corresp_vars is None:
             corresp_vars = {}
 
         if vars_obs is None:
-            vars_obs = list(bd.variables)
+            vars_obs = list(b_d.variables)
         vars_obs = [corresp_vars[v] if v in corresp_vars else v for v in vars_obs]
-        obs = bd.obt_datos(vars_obs, tipo='datos')[vars_obs]
+
+        if isinstance(bd, xr.Dataset) and tipo_proc is not None:
+            obs = b_d.obt_datos(vars_obs, tipo='datos', interpolar=False)[vars_obs]
+            t_final = len(obs['n']) - 1
+        elif tipo_proc is None:
+            obs = b_d.obt_datos(vars_obs, tipo='datos')[vars_obs]
+            t_final = len(obs['n']) - 1
 
         if método in _algs_spotpy:
 
             temp = tempfile.NamedTemporaryFile('w', encoding='UTF-8', prefix='CalibTinamït_')
-
-            mod_spotpy = ModSpotPy(mod=mod, líms_paráms=líms_paráms, obs=obs)
-            muestreador = _algs_spotpy[método](mod_spotpy, dbname=temp.name, dbformat='csv')
+            if tipo_proc is None:
+                mod_spotpy = ModSpotPy(mod=mod, líms_paráms=líms_paráms, obs=obs)
+            else:
+                mod_spotpy = PatrónProc(mod=mod, líms_paráms=líms_paráms, obs=obs, tipo_proc=tipo_proc,
+                                        mapa_paráms=mapa_paráms, comp_final_líms=final_líms_paráms,
+                                        obj_func=obj_func, t_final=t_final, t_inic=t_inic
+                                        )
+            muestreador = _algs_spotpy[método](mod_spotpy, dbname=temp.name, dbformat='csv', save_sim=False)
             if método == 'dream':
                 muestreador.sample(repetitions=2000 + n_iter, runs_after_convergence=n_iter)
             else:
@@ -564,7 +584,7 @@ class CalibradorMod(object):
             egr_spotpy = BDtexto(temp.name + '.csv')
 
             cols_prm = [c for c in egr_spotpy.obt_nombres_cols() if c.startswith('par')]
-            trzs = egr_spotpy.obt_datos(cols_prm)
+            trzs = egr_spotpy.obt_datos(cols_prm)  # TODO: modify trzs = {'name_para': ndarray(100,)}
             probs = egr_spotpy.obt_datos('like1')['like1']
 
             if os.path.isfile(temp.name + '.csv'):
@@ -582,10 +602,10 @@ class CalibradorMod(object):
             pesos = (probs - rango_prob[0]) / (rango_prob[1] - rango_prob[0])
 
             res = {}
-            for p in paráms:
-                col_p = ('par' + p).replace(' ', '_')
+            for i, p in enumerate(paráms):
+                col_p = 'par' + str(i)
                 res[p] = {'dist': trzs[col_p], 'val': _calc_máx_trz(trzs[col_p]), 'peso': pesos}
-
+                # calculate the maxi distribution of the simulation results, and the weights
             return res
 
         else:
@@ -698,6 +718,24 @@ def _calc_máx_trz(trz):
 
     except BaseException:
         return np.nan
+
+
+def _conv_xr(datos, vars_obs):  # datos[0] time; datos[1] dict{obspoly: ndarray}
+    if isinstance(datos, tuple):
+        matriz_vacía = np.empty([len(list(datos[1].values())[0]), len(datos[1])])  # 60, 38
+    else:
+        raise TypeError(_("Por favor agregue o seleccione el tipo correcto de los datos observados."))
+
+    for poly, data in datos[1].items():
+        matriz_vacía[:, list(datos[1]).index(poly)] = np.asarray(datos[1][poly])
+
+    return xr.Dataset(
+        data_vars={vars_obs[0]: (('n', 'x0'), matriz_vacía)},
+        coords={'n': datos[0],
+                'x0': np.asarray(list(datos[1])),
+                'tiempo': np.asarray(range(len(list(datos[0])))),
+                }
+    )
 
 
 def _optimizar(func, líms_paráms, obs_x, obs_y, inic=None, **ops):
@@ -833,7 +871,7 @@ class ModSpotPy(object):
         """
 
         símismo.paráms = [
-            spotpy.parameter.Uniform(re.sub('\W|^(?=\d)', '_', p), low=d[0], high=d[1], optguess=(d[0] + d[1]) / 2)
+            spotpy.parameter.Uniform(str(list(líms_paráms).index(p)), low=d[0], high=d[1], optguess=(d[0] + d[1]) / 2)
             for p, d in líms_paráms.items()
         ]
         símismo.nombres_paráms = list(líms_paráms)
@@ -841,9 +879,9 @@ class ModSpotPy(object):
         símismo.vars_interés = sorted(list(obs.data_vars))
         símismo.t_final = len(obs['n']) - 1
 
-        símismo.mu_obs = símismo._aplastar(obs.mean())
-        símismo.sg_obs = símismo._aplastar(obs.std())
-        símismo.obs_norm = símismo._aplastar((obs - obs.mean()) / obs.std())
+        símismo.mu_obs = símismo._aplastar(obs.mean())  # nparrar(3,) -> 1; obs=xr.Dtset(21,3)
+        símismo.sg_obs = símismo._aplastar(obs.std())  # nparrar(3,) -> 1
+        símismo.obs_norm = símismo._aplastar((obs - obs.mean()) / obs.std())  # ??? (63,)
 
     def parameters(símismo):
         return spotpy.parameter.generate(símismo.paráms)
@@ -852,16 +890,16 @@ class ModSpotPy(object):
         res = símismo.mod.simular(
             t_final=símismo.t_final, vars_interés=símismo.vars_interés, vals_inic=dict(zip(símismo.nombres_paráms, x))
         )
-        m_res = np.array([res[v].values for v in símismo.vars_interés]).T
+        m_res = np.array([res[v].values for v in símismo.vars_interés]).T  # Transpose the array shape why?
 
-        return ((m_res - símismo.mu_obs) / símismo.sg_obs).T.ravel()
+        return ((m_res - símismo.mu_obs) / símismo.sg_obs).T.ravel()  # (63,) 1*21*3 -> 3*21 -> flatten (??)
 
     def evaluation(símismo):
         return símismo.obs_norm
 
     def objectivefunction(símismo, simulation, evaluation, params=None):
         # like = spotpy.likelihoods.gaussianLikelihoodMeasErrorOut(evaluation,simulation)
-        like = spotpy.objectivefunctions.nashsutcliffe(evaluation, simulation)
+        like = spotpy.objectivefunctions.nashsutcliffe(evaluation, simulation)  # should be ave()
 
         return like
 
@@ -870,3 +908,125 @@ class ModSpotPy(object):
             return np.array([datos[v].values.ravel() for v in símismo.vars_interés]).ravel()
         elif isinstance(datos, dict):
             return np.array([datos[v].ravel() for v in sorted(datos)]).ravel()
+
+
+class PatrónProc(object):
+    def __init__(símismo, mod, líms_paráms, obs, tipo_proc, mapa_paráms, comp_final_líms, obj_func, t_final,
+                 t_inic):
+        símismo.paráms = [
+            spotpy.parameter.Uniform(str(list(comp_final_líms).index(p)), low=d[0], high=d[1],
+                                     optguess=(d[0] + d[1]) / 2)
+            for p, d in comp_final_líms.items()
+        ]
+        símismo.mapa_paráms = mapa_paráms
+        símismo.líms_paráms = líms_paráms
+        símismo.final_líms_paráms = comp_final_líms
+        símismo.obj_func = obj_func
+        símismo.mod = mod
+        símismo.vars_interés = sorted(list(obs.data_vars))
+        símismo.t_inic = t_inic
+        símismo.t_final = t_final
+        símismo.tipo_proc = tipo_proc
+        símismo.obs = obs
+        símismo.mu_obs, símismo.sg_obs, símismo.obs_norm = símismo._aplastar(obs)
+
+        # símismo.vals_inic = símismo._gen_val_inic()
+
+    def parameters(símismo):
+        return spotpy.parameter.generate(símismo.paráms)
+
+    def simulation(símismo, x):
+        res = símismo.mod.simular(
+            t_final=símismo.t_final, vars_interés=símismo.vars_interés, t_inic=símismo.t_inic, paso=1,
+            vals_inic=símismo._gen_val_inic(x, símismo.mapa_paráms, símismo.líms_paráms, símismo.final_líms_paráms)
+        )
+        m_res = np.array([res[v].values for v in símismo.vars_interés][0])  # 62*38//
+
+        return ((m_res - símismo.mu_obs) / símismo.sg_obs).T  # 62*38 -> 38*62//6*26
+
+    def evaluation(símismo):
+        return símismo._patro_proces(símismo.tipo_proc, símismo.obs, símismo.obs_norm)  # 1*21*38//1*1*38
+
+    def objectivefunction(símismo, simulation, evaluation, params=None):
+        # like = spotpy.likelihoods.gaussianLikelihoodMeasErrorOut(evaluation,simulation)
+        # like = spotpy.objectivefunctions.nashsutcliffe(evaluation, simulation)
+        gof = símismo._gen_gof(símismo.tipo_proc, simulation, evaluation, símismo.obj_func)
+
+        return gof
+
+    def _aplastar(símismo, datos):
+        npoly = datos['x0'].values
+        if isinstance(datos, xr.Dataset):
+            dato = np.asarray([datos[v].values for v in símismo.vars_interés][0])  # 61*38
+            mu = np.array([np.nanmean(dato[:, p]) for p in list((range(len(npoly))))])  # 215
+            sg = np.array([np.nanstd(dato[:, p]) for p in list((range(len(npoly))))])  # 215
+
+            norm = np.array([((dato[:, p] - mu[p]) / sg[p]) for p in list((range(len(npoly))))])  # 38*61
+            return mu, sg, norm
+
+    def _gen_val_inic(símismo, x, mapa_paráms, líms_paráms, final_líms_paráms):
+        if isinstance(x, np.ndarray):
+            vals_inic = {p: x[list(final_líms_paráms).index(p)] for p in líms_paráms if p in final_líms_paráms}
+        else:
+            raise TypeError(f"simulation results {x} must be the type of np.ndarray")
+
+        for p, mapa in mapa_paráms.items():
+            if isinstance(mapa, list):
+                mapa = np.array(mapa)
+
+            if isinstance(mapa, np.ndarray):
+                vals_inic[p] = np.empty(len(mapa))
+                for i, cof in enumerate(mapa):
+                    vals_inic[p][i] = x[list(final_líms_paráms).index(f'{p}_{cof}')]
+
+            elif isinstance(mapa, dict):
+                transf = mapa['transf'].lower()
+                for var, mp_var in mapa['mapa'].items():
+                    vals_inic[var] = np.empty(len(mp_var))
+                    if transf == 'prom':
+                        for i, t_índ in enumerate(mp_var):
+                            vals_inic[var][i] = (x[list(final_líms_paráms).index(f'{p}_{t_índ[0]}')] +
+                                                 x[list(final_líms_paráms).index(f'{p}_{t_índ[1]}')]) / 2
+                    else:
+                        raise ValueError(_('Transformación "{}" no reconocida.').format(transf))
+
+        return vals_inic
+
+    def _patro_proces(símismo, tipo_proc, obs, norm_obs):
+        if tipo_proc == 'multidim':  # {var: nparray[61, 38]}
+            return norm_obs  # nparray[38, 61]
+        elif tipo_proc == 'patrón':
+            d_patron = compute_superposition(obs, norm_obs)[1]
+            matriz_vacía = np.empty([obs[símismo.vars_interés[0]].values.shape[0], len(d_patron)])  # 61, 38
+            length_params = []
+            for poly, d_data in d_patron.items():
+                matriz_vacía[:, list(d_patron).index(poly)] = np.asarray(d_patron[poly]['y_pred'])
+                length_params.append(len(list(d_data.values())[0]['bp_params']))
+
+            return (matriz_vacía.T, length_params)  # (nparray 38*61, [list of the length of the bp_params])
+
+    def _gen_gof(símismo, tipo_proc, sim=None, eval=None, obj_func=None):
+        if obj_func == 'NSE':
+            if tipo_proc == 'multidim':
+                return nse(eval, sim)
+            elif tipo_proc == 'patrón':
+                return nse(eval[0], sim)
+        elif obj_func == 'AIC':
+            if tipo_proc == 'multidim':
+                raise TypeError(_(f"{obj_func} no puede procesar el tipo {tipo_proc}"))
+            elif tipo_proc == 'patrón':
+                len_obs_poly = np.empty([len(eval[0])])
+                for i, poly in enumerate(sim):
+                    len_obs_poly[i] = -aic(eval[1][i], eval[0][i], poly)
+                return np.nanmean(len_obs_poly)
+
+
+def nse(obs, sim):
+    s, e = np.array(sim), np.array(obs)
+    # s,e=simulation,evaluation
+    mean_observed = np.nanmean(e)
+    # compute numerator and denominator
+    numerator = np.nansum((e - s) ** 2)
+    denominator = np.nansum((e - mean_observed) ** 2)
+    # compute coefficient
+    return 1 - (numerator / denominator)

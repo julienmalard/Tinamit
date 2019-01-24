@@ -13,6 +13,7 @@ from tinamit.cositas import guardar_json, cargar_json
 def gen_vals_inic(mstr, mapa_paráms):
     if mapa_paráms is None:
         mapa_paráms = {}
+
     ej_mstr = list(mstr.values())[0]
 
     if isinstance(ej_mstr, np.ndarray):
@@ -40,7 +41,6 @@ def gen_vals_inic(mstr, mapa_paráms):
                      not any(re.match(r'{}(_[0-9]*)?$'.format(p2), p) for p2 in mapa_paráms) and p != 'Ficticia'
                      }
                  for í in iters}
-
 
     for p, mapa in mapa_paráms.items():
         if isinstance(mapa, list):
@@ -128,7 +128,8 @@ def simul_sens(mod, mstr_paráms, mapa_paráms, var_egr, t_final, guardar=True, 
     res_corridas = mod.simular_grupo(
         t_final=t_final, vals_inic=vals_inic, vars_interés=var_egr, paralelo=paralelo, guardar=guardar
     )
-    print(f"Simulation elapse {datetime.strptime(datetime.now().strftime('%H:%M:%S'), FMT) - datetime.strptime(start_time, FMT)}")
+    print(
+        f"Simulation elapse {datetime.strptime(datetime.now().strftime('%H:%M:%S'), FMT) - datetime.strptime(start_time, FMT)}")
     return res_corridas
 
 

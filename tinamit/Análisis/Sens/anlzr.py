@@ -208,7 +208,7 @@ def carg_fsimul_data(f_simul_path, num_sample=None, counted_behaviors=None, dim=
 
     counted_all = np.load(counted_behaviors).tolist()
 
-    sam_patt = {patt: np.load(f"{f_simul_path}_{0}.npy").tolist()[patt] for patt in counted_all}
+    sam_patt = {patt: np.load(f"{f_simul_path}_0.npy").tolist()[patt] for patt in counted_all}
     sample_patt = _gen_d_patt(num_sample, counted_all, sam_patt)
 
     for j in range(num_sample):
@@ -233,7 +233,7 @@ def _gen_d_patt(num_sample, counted_behaviors, sam_patt):
     for behav in counted_behaviors:
         for bpp, d in sam_patt[behav]['bp_params'].items():
             if num_sample < 10000:
-                sam_patt[behav]['bp_params'][bpp] = np.empty([num_sample, d.shape[1]])
+                sam_patt[behav]['bp_params'][bpp] = np.empty([num_sample, d.shape[1]]) #625*215
             else:
                 sam_patt[behav]['bp_params'][bpp] = np.empty([num_sample, 1])
         for gof, d in sam_patt[behav]['gof'].items():

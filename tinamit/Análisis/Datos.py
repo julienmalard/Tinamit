@@ -114,7 +114,7 @@ class Datos(object):
 
         # Agregar una columna con el nombre de la base de datos y el lugar o lugares de observación
         bd = xr.Dataset({
-            x: ('n', v) if len(v.shape) == 1 else (('n', *tuple('x' + str(i) for i in range(v.shape[1:]))), v)
+            x: ('n', v) if len(v.shape) == 1 else (('n', *tuple('x' + str(i) for i in range(v[0, :].ndim))), v)
             for x, v in datos.items()
         })
         bd.coords['bd'] = ('n', [símismo.nombre] * símismo.bd.n_obs)
@@ -943,7 +943,7 @@ class SuperBD(object):
 
             # Calcular el promedio de los valores de observaciones por categoría y por fecha
             proms_fecha = bd_categ.groupby('tiempo').mean()  # type: xr.Dataset
-            n_obs = len(proms_fecha['tiempo'])
+            n_obs = len(proms_fecha['tiempo']) #26
             bd_temp = xr.Dataset({v: ('n', proms_fecha[v]) for v in list(proms_fecha.variables)})
             bd_temp[interpol_en] = ('n', [c] * n_obs)
             bd_temp['bd'] = ('n', ['interpolado'] * n_obs)
@@ -1281,7 +1281,7 @@ class BD(object):
         if isinstance(fuente, str) and not os.path.isfile(fuente):
             raise FileNotFoundError(_('El fuente "{}" no existe.').format(fuente))
 
-        símismo.n_obs = símismo.calc_n_obs()
+        símismo.n_obs = símismo.calc_n_obs() #100(t_final or samples)//1534
 
     def obt_nombres_cols(símismo):
         """
@@ -1304,9 +1304,9 @@ class BD(object):
         """
 
         if not isinstance(cols, list):
-            cols = [cols]
+            cols = [cols] # cols = ['y']
 
-        datos = símismo._obt_datos(cols)
+        datos = símismo._obt_datos(cols) # dict{'y': ndarray[26*6]}
         for var, val in datos.items():
             val[np.isin(val, símismo.cód_vacío)] = np.nan
             datos[var] = val.astype(float)
@@ -1417,13 +1417,13 @@ class BDtexto(BD):
         :rtype: int
         """
         with open(símismo.fuente, encoding=símismo.codif) as d:
-            n_filas = sum(1 for f in d if len(f)) - 1  # Sustrayemos la primera fila
+            n_filas = sum(1 for f in d if len(f)) - 1  # Sustraemos la primera fila
 
         return n_filas
 
     def _obt_datos(símismo, cols):
 
-        m_datos = np.empty((len(cols), símismo.n_obs))
+        m_datos = np.empty((len(cols), símismo.n_obs)) # 6*100
 
         with open(símismo.fuente, encoding=símismo.codif) as d:
             lector = csv.DictReader(d)

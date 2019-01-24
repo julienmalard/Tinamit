@@ -25,7 +25,7 @@ def gen_mod():
     modelo = Conectado()
 
     # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
-    modelo.estab_mds('../../../tinamit/Ejemplos/en/Ejemplo_SAHYSMOD/Vensim/Tinamit_Rechna.vpm')
+    modelo.estab_mds('../../../Ejemplos/en/Ejemplo_SAHYSMOD/Vensim/Tinamit_Rechna.vpm')
 
     modelo.estab_bf(Envoltura)
     modelo.estab_conv_tiempo(mod_base='mds', conv=6)
@@ -329,7 +329,7 @@ def verif_sens(método, tipo_egr, mapa_paráms, p_soil_class, si, dim=None, egr=
                                                    for para, val in p_val[si].items()}
                                           for p_name, p_val in egr[tipo_egr].items()}}}
     else:
-        raise Exception('Not defined type!')
+        raise Exception('The type is not defined !')
 
     return final_sens
 

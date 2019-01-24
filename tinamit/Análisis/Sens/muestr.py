@@ -40,7 +40,7 @@ def muestrear_paráms(líms_paráms, método, mapa_paráms=None, ops_método=Non
         mstr = morris.sample(problema, **ops)
 
     elif método == 'fast':
-        ops = {'N': 65} #10000
+        ops = {'N': 65}  # 10000
         ops.update(ops_método)
         mstr = fast_sampler.sample(problema, **ops)
     else:

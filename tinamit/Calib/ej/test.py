@@ -1,7 +1,9 @@
 from tinamit.Análisis.Sens.anlzr import anlzr_simul
+from tinamit.Análisis.Sens.corridas import gen_vals_inic
 from tinamit.Calib.ej.sens_análisis import *
 from tinamit.Calib.ej.info_paráms import *
 from tinamit.Calib.ej.info_analr import *
+from tinamit.Análisis.Sens.muestr import gen_problema, muestrear_paráms
 
 # def process_constant(data):
 #     data['bp_params']['constant'] = np.add(data['bp_params']['constant'], data['bp_params']['constant_1'])
@@ -26,3 +28,11 @@ from tinamit.Calib.ej.info_analr import *
 #         'counted_behaviors': "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_no_ini\\fsim_const\\count_all.npy"},
 #                   dim=215, tipo_egr="superposition", simulation=None, ops_método=None)
 # np.save("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_spp_const", egr)
+
+mstr = muestrear_paráms(calib_líms_paráms, método='morris', mapa_paráms=calib_mapa_paráms, ficticia=False)
+gen_vals_inic(mstr, mapa_paráms)
+
+calib_mapa_paráms
+
+gen_problema(líms_paráms=calib_líms_paráms, mapa_paráms=calib_mapa_paráms, ficticia=False)
+
