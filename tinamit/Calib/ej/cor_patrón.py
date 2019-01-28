@@ -1,13 +1,16 @@
 from tinamit.Calib.ej.obs_patrón import read_obs_csv, read_obs_data
 
 # file_name = "D:\Thesis\data\organized obs values.xlsx"
-file_name_csv = "D:\Thesis\data\\obs.csv"
+calib_file_csv = "D:\Thesis\data\\calib_poly.csv"
+valid_file_csv = "D:\Thesis\data\\valid_poly.csv"
 
 # res = read_obs_data(file_name, sheet_name='Sheet4')
 
 # res = read_obs_data(file_name, sheet_name='Sheet4')
 
-res = read_obs_csv(file_name_csv)
+calib_obs = read_obs_csv(calib_file_csv)
+valid_obs = read_obs_csv(valid_file_csv)
+
 # for obs_p, ts in res[1].items():
 #     ts[np.where(ts == 'None')] = np.nan
 

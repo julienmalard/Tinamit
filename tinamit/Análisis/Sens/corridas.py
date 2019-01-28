@@ -1,13 +1,11 @@
 import os
 import re
-import time
 from datetime import datetime
 
 import numpy as np
 
 from tinamit.Análisis.Sens.muestr import cargar_mstr_paráms
 from tinamit.config import _
-from tinamit.cositas import guardar_json, cargar_json
 
 
 def gen_vals_inic(mstr, mapa_paráms):

@@ -1,5 +1,4 @@
 import os
-import re
 import tempfile
 from warnings import warn as avisar
 
@@ -539,13 +538,13 @@ class CalibradorMod(object):
         """
         símismo.mod = mod
 
-    def calibrar(símismo, paráms, líms_paráms, bd, método, vars_obs, n_iter, corresp_vars=None, tipo_proc=None,
+    def calibrar(símismo, paráms, líms_paráms, bd, método, vars_obs, n_iter, guardar, corresp_vars=None, tipo_proc=None,
                  mapa_paráms=None, final_líms_paráms=None, obj_func='AIC'):
 
         método = método.lower()
         mod = símismo.mod
         if isinstance(bd, xr.Dataset):
-            b_d = gen_SuperBD(bd)
+            obs = gen_SuperBD(bd)
             t_inic = None
         else:
             obs = _conv_xr(bd, vars_obs)
@@ -556,16 +555,18 @@ class CalibradorMod(object):
             corresp_vars = {}
 
         if vars_obs is None:
-            vars_obs = list(b_d.variables)
+            vars_obs = list(obs.variables)
         vars_obs = [corresp_vars[v] if v in corresp_vars else v for v in vars_obs]
 
         if isinstance(bd, xr.Dataset) and tipo_proc is not None:
-            obs = b_d.obt_datos(vars_obs, tipo='datos', interpolar=False)[vars_obs]
+            obs = obs.obt_datos(vars_obs, tipo='datos', interpolar=False)[vars_obs]
             t_final = len(obs['n']) - 1
         elif tipo_proc is None:
-            obs = b_d.obt_datos(vars_obs, tipo='datos')[vars_obs]
+            obs = obs.obt_datos(vars_obs, tipo='datos')[vars_obs]
             t_final = len(obs['n']) - 1
 
+        if tipo_proc is not None:
+            par_spotpy = {k: str(i) for i, (k, v) in enumerate(final_líms_paráms.items())}
         if método in _algs_spotpy:
 
             temp = tempfile.NamedTemporaryFile('w', encoding='UTF-8', prefix='CalibTinamït_')
@@ -594,20 +595,44 @@ class CalibradorMod(object):
                 trzs = trzs[-n_iter:]
                 probs = probs[-n_iter:]
             elif método != 'mcmc':
-                buenas = (probs >= 0.80)
+                buenas = (probs >= np.min(np.sort(probs)[int(len(probs) * 0.8):]))
                 trzs = {p: trzs[p][buenas] for p in cols_prm}
-                probs = probs[buenas]
+                probs = probs[buenas]  # like values
 
             rango_prob = (probs.min(), probs.max())
-            pesos = (probs - rango_prob[0]) / (rango_prob[1] - rango_prob[0])
+            pesos = (probs - rango_prob[0]) / (
+                    rango_prob[1] - rango_prob[0])  # for those > 0.8 like, weight distribution
 
             res = {}
-            for i, p in enumerate(paráms):
-                col_p = 'par' + str(i)
-                res[p] = {'dist': trzs[col_p], 'val': _calc_máx_trz(trzs[col_p]), 'peso': pesos}
+            if tipo_proc is None:
+                for i, p in enumerate(paráms):
+                    col_p = 'par' + str(i)
+                    res[p] = {'dist': trzs[col_p], 'val': _calc_máx_trz(trzs[col_p]), 'peso': pesos}
                 # calculate the maxi distribution of the simulation results, and the weights
-            return res
-
+            else:
+                for i in range(len(list(trzs.values())[0])):
+                    x = np.asarray([val[i] for val in list(trzs.values())])
+                    val_inic = gen_val_inic(x, mapa_paráms, líms_paráms, final_líms_paráms)
+                    for k, val in val_inic.items():
+                        if k in res:
+                            res[k]['dist'].append(val)
+                        else:
+                            res[k] = {'dist': [val], 'val': [], 'peso': pesos, 'máx_prob': rango_prob[1]}
+                for k, v in res.items():
+                    if isinstance(líms_paráms[k], tuple):
+                        res[k]['val'].append(_calc_máx_trz(trzs['par' + par_spotpy[k]]))
+                    elif isinstance(líms_paráms[k], list):
+                        res[k]['val'].extend(
+                            [_calc_máx_trz(trzs['par' + par_spotpy[f'{k}_{str(i)}']]) for i in
+                             range(len(líms_paráms[k]))])
+                    else:
+                        for p, mapa in mapa_paráms.items():
+                            if isinstance(mapa, dict):
+                                res[k]['val'].extend(_calc_máx_trz(trzs['par' + par_spotpy[f'{p}_{str(i)}']]) for i in
+                                                     range(len(líms_paráms[p])))
+            if guardar:
+                return np.save(guardar, res)
+            return res  # 100*215 (100*6) # dist: 6*100, val:6, peso: 6*100
         else:
             raise ValueError(_('Método de calibración "{}" no reconocido.').format(método))
 
@@ -928,97 +953,123 @@ class PatrónProc(object):
         símismo.t_final = t_final
         símismo.tipo_proc = tipo_proc
         símismo.obs = obs
-        símismo.mu_obs, símismo.sg_obs, símismo.obs_norm = símismo._aplastar(obs)
-
-        # símismo.vals_inic = símismo._gen_val_inic()
+        símismo.mu_obs, símismo.sg_obs, símismo.obs_norm = aplastar(obs, símismo.vars_interés)
 
     def parameters(símismo):
         return spotpy.parameter.generate(símismo.paráms)
 
     def simulation(símismo, x):
         res = símismo.mod.simular(
-            t_final=símismo.t_final, vars_interés=símismo.vars_interés, t_inic=símismo.t_inic, paso=1,
-            vals_inic=símismo._gen_val_inic(x, símismo.mapa_paráms, símismo.líms_paráms, símismo.final_líms_paráms)
+            t_final=símismo.t_final, vars_interés=símismo.vars_interés[0], t_inic=símismo.t_inic,
+            vals_inic=gen_val_inic(x, símismo.mapa_paráms, símismo.líms_paráms, símismo.final_líms_paráms)
         )
-        m_res = np.array([res[v].values for v in símismo.vars_interés][0])  # 62*38//
 
-        return ((m_res - símismo.mu_obs) / símismo.sg_obs).T  # 62*38 -> 38*62//6*26
+        m_res = np.array([res[v].values for v in símismo.vars_interés][0])  # 62*215
+        if m_res.shape[1] != símismo.obs['x0'].values.size:
+            n_res = np.empty([len(m_res), símismo.obs['x0'].values.size])
+            for ind, v in enumerate([int(i) for i in símismo.obs['x0'].values]):
+                n_res[:, ind] = m_res[:, v]
+        else:
+            n_res = m_res
+        return ((n_res - símismo.mu_obs) / símismo.sg_obs).T  # 62*38 -> 38*62//6*26
 
     def evaluation(símismo):
-        return símismo._patro_proces(símismo.tipo_proc, símismo.obs, símismo.obs_norm)  # 1*21*38//1*1*38
+        return patro_proces(símismo.tipo_proc, símismo.obs, símismo.obs_norm,
+                            símismo.vars_interés)  # multidim: 6*21//21*38//1*1*38
 
     def objectivefunction(símismo, simulation, evaluation, params=None):
         # like = spotpy.likelihoods.gaussianLikelihoodMeasErrorOut(evaluation,simulation)
         # like = spotpy.objectivefunctions.nashsutcliffe(evaluation, simulation)
-        gof = símismo._gen_gof(símismo.tipo_proc, simulation, evaluation, símismo.obj_func)
+        gof = gen_gof(símismo.tipo_proc, simulation, evaluation, símismo.obj_func)
 
         return gof
 
-    def _aplastar(símismo, datos):
-        npoly = datos['x0'].values
-        if isinstance(datos, xr.Dataset):
-            dato = np.asarray([datos[v].values for v in símismo.vars_interés][0])  # 61*38
-            mu = np.array([np.nanmean(dato[:, p]) for p in list((range(len(npoly))))])  # 215
-            sg = np.array([np.nanstd(dato[:, p]) for p in list((range(len(npoly))))])  # 215
 
-            norm = np.array([((dato[:, p] - mu[p]) / sg[p]) for p in list((range(len(npoly))))])  # 38*61
-            return mu, sg, norm
+def patro_proces(tipo_proc, obs, norm_obs, vars_interés):
+    if tipo_proc == 'multidim':  # {var: nparray[61, 38]}
+        return norm_obs  # nparray[38, 61]
+    elif tipo_proc == 'patrón':
+        d_patron = compute_superposition(obs, norm_obs)[1]
+        matriz_vacía = np.empty([obs[vars_interés[0]].values.shape[0], len(d_patron)])  # 61, 38
+        length_params = []
+        for poly, d_data in d_patron.items():
+            matriz_vacía[:, list(d_patron).index(poly)] = np.asarray(d_patron[poly]['y_pred'])
+            length_params.append(len(list(d_data.values())[0]['bp_params']))
 
-    def _gen_val_inic(símismo, x, mapa_paráms, líms_paráms, final_líms_paráms):
-        if isinstance(x, np.ndarray):
-            vals_inic = {p: x[list(final_líms_paráms).index(p)] for p in líms_paráms if p in final_líms_paráms}
-        else:
-            raise TypeError(f"simulation results {x} must be the type of np.ndarray")
+        return (matriz_vacía.T, length_params)  # (nparray 38*61, [list of the length of the bp_params])
 
-        for p, mapa in mapa_paráms.items():
-            if isinstance(mapa, list):
-                mapa = np.array(mapa)
 
-            if isinstance(mapa, np.ndarray):
-                vals_inic[p] = np.empty(len(mapa))
-                for i, cof in enumerate(mapa):
-                    vals_inic[p][i] = x[list(final_líms_paráms).index(f'{p}_{cof}')]
+def aplastar(datos, vars_interés):
+    npoly = datos['x0'].values
+    if isinstance(datos, xr.Dataset):
+        dato = np.asarray([datos[v].values for v in vars_interés][0])  # 61*38
+        mu = np.array([np.nanmean(dato[:, p]) for p in list((range(len(npoly))))])  # 215
+        sg = np.array([np.nanstd(dato[:, p]) for p in list((range(len(npoly))))])  # 215
 
-            elif isinstance(mapa, dict):
-                transf = mapa['transf'].lower()
-                for var, mp_var in mapa['mapa'].items():
-                    vals_inic[var] = np.empty(len(mp_var))
-                    if transf == 'prom':
-                        for i, t_índ in enumerate(mp_var):
-                            vals_inic[var][i] = (x[list(final_líms_paráms).index(f'{p}_{t_índ[0]}')] +
-                                                 x[list(final_líms_paráms).index(f'{p}_{t_índ[1]}')]) / 2
-                    else:
-                        raise ValueError(_('Transformación "{}" no reconocida.').format(transf))
+        norm = np.array([((dato[:, p] - mu[p]) / sg[p]) for p in list((range(len(npoly))))])  # 38*61
+        return mu, sg, norm
 
-        return vals_inic
 
-    def _patro_proces(símismo, tipo_proc, obs, norm_obs):
-        if tipo_proc == 'multidim':  # {var: nparray[61, 38]}
-            return norm_obs  # nparray[38, 61]
-        elif tipo_proc == 'patrón':
-            d_patron = compute_superposition(obs, norm_obs)[1]
-            matriz_vacía = np.empty([obs[símismo.vars_interés[0]].values.shape[0], len(d_patron)])  # 61, 38
-            length_params = []
-            for poly, d_data in d_patron.items():
-                matriz_vacía[:, list(d_patron).index(poly)] = np.asarray(d_patron[poly]['y_pred'])
-                length_params.append(len(list(d_data.values())[0]['bp_params']))
+def gen_val_inic(x, mapa_paráms, líms_paráms, final_líms_paráms):
+    if isinstance(x, np.ndarray):
+        vals_inic = {p: np.array(x[list(final_líms_paráms).index(p)]) for p in líms_paráms if p in final_líms_paráms}
+    else:
+        raise TypeError(f"simulation results {x} must be the type of np.ndarray")
 
-            return (matriz_vacía.T, length_params)  # (nparray 38*61, [list of the length of the bp_params])
+    for p, mapa in mapa_paráms.items():
+        if isinstance(mapa, list):
+            mapa = np.array(mapa)
 
-    def _gen_gof(símismo, tipo_proc, sim=None, eval=None, obj_func=None):
-        if obj_func == 'NSE':
-            if tipo_proc == 'multidim':
+        if isinstance(mapa, np.ndarray):
+            vals_inic[p] = np.empty(len(mapa))
+            for i, cof in enumerate(mapa):
+                vals_inic[p][i] = x[list(final_líms_paráms).index(f'{p}_{cof}')]
+
+        elif isinstance(mapa, dict):
+            transf = mapa['transf'].lower()
+            for var, mp_var in mapa['mapa'].items():
+                vals_inic[var] = np.empty(len(mp_var))
+                if transf == 'prom':
+                    for i, t_índ in enumerate(mp_var):
+                        vals_inic[var][i] = (x[list(final_líms_paráms).index(f'{p}_{t_índ[0]}')] +
+                                             x[list(final_líms_paráms).index(f'{p}_{t_índ[1]}')]) / 2
+                else:
+                    raise ValueError(_('Transformación "{}" no reconocida.').format(transf))
+
+    return vals_inic
+
+
+def gen_gof(tipo_proc, sim=None, eval=None, obj_func=None):
+    if obj_func == 'NSE':
+        if tipo_proc == 'multidim':
+            if eval.shape == sim.shape:
                 return nse(eval, sim)
-            elif tipo_proc == 'patrón':
+            else:
+                return np.array([nse(eval, sim[i, :]) for i in range(len(sim))])
+        elif tipo_proc == 'patrón':
                 return nse(eval[0], sim)
-        elif obj_func == 'AIC':
-            if tipo_proc == 'multidim':
-                raise TypeError(_(f"{obj_func} no puede procesar el tipo {tipo_proc}"))
-            elif tipo_proc == 'patrón':
+    elif obj_func == 'AIC':
+        if tipo_proc == 'multidim':
+            raise TypeError(_(f"{obj_func} no puede procesar el tipo {tipo_proc}"))
+        elif tipo_proc == 'patrón':
+            if eval[0].shape == sim.shape:
                 len_obs_poly = np.empty([len(eval[0])])
                 for i, poly in enumerate(sim):
                     len_obs_poly[i] = -aic(eval[1][i], eval[0][i], poly)
                 return np.nanmean(len_obs_poly)
+            else:
+                len_valid_sim = np.empty([len(sim), len(eval[1])])
+                for i, poly_aray in enumerate(sim):
+                    for j, poly in enumerate(poly_aray):
+                        len_valid_sim[i, j] = -aic(eval[1][j], eval[0][j], poly)
+
+                return np.nanmean(len_valid_sim, axis=1)
+
+            '''
+            {'min': np.array([np.min(len_valid_sim[:, i]) for i in range(len(len_valid_sim[1]))]),
+            'max':np.array([np.max(len_valid_sim[:, i]) for i in range(len(len_valid_sim[1]))]),
+            'prom': np.array([np.mean(len_valid_sim[:, i]) for i in range(len(len_valid_sim[1]))])}
+            '''
 
 
 def nse(obs, sim):

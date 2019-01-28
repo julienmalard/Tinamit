@@ -1,7 +1,6 @@
 ## obeserved data detection ##
 import pandas as pd
 import numpy as np
-import xarray as xr
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 from tinamit.Análisis.Sens.behavior import superposition, find_best_behavior, predict
@@ -12,6 +11,8 @@ def read_obs_csv(file_name):
 
     obs_data = {}
     for row in res.values:
+        # if np.isnan(row[1]):
+        #     continue
         obs_data[row[1]] = row[2:]
     return res.columns[2:len(res.columns)], obs_data
 

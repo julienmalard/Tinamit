@@ -13,14 +13,14 @@ base_dir = os.path.dirname(os.path.realpath(__file__))
 Rechna_Doab = Geografía(nombre='Rechna Doab')
 
 base_dir_shp = os.path.join(base_dir, 'Shape_files')
-Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir_shp, 'Internal_Polygon.shp'), col_orden='Polygon_ID')
+Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir_shp, 'Internal_Polygon.shp'), col_id='Polygon_ID')
 
 Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'External_Polygon.shp'), color='#edf4da')
 Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'RIVR.shp'), tipo='agua')
 Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'CNL_Arc.shp'), tipo='agua', llenar=False)
-Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'Forst_polygon.shp'), tipo='bosque')
-Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'buildup_Polygon.shp'), tipo='ciudad')
-Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'road.shp'), tipo='calle')
+# Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'Forst_polygon.shp'), tipo='bosque')
+# Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'buildup_Polygon.shp'), tipo='ciudad')
+# Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'road.shp'), tipo='calle')
 
 # 1. Simple runs
 runs_simple = {'CWU': {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,

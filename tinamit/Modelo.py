@@ -4,6 +4,7 @@ import math
 import os
 import pickle
 import re
+from datetime import datetime
 from copy import deepcopy as copiar_profundo
 from multiprocessing import Pool as Reserva
 from warnings import warn as avisar
@@ -247,9 +248,10 @@ class Modelo(object):
 
             if isinstance(t_final, int):
                 n_pasos = int(math.ceil(t_final / paso))
-                t_final = t_inic + deltarelativo(
-                    **{dic_trad_tiempo[unid_ref_tiempo]: n_pasos}
-                )  # type: ft.date
+                t_final = t_final
+                # t_final = t_inic + deltarelativo(
+                #     **{dic_trad_tiempo[unid_ref_tiempo]: n_pasos}
+                # )  # type: ft.date
             else:
                 if t_inic >= t_final:
                     t_inic, t_final = t_final, t_inic
@@ -259,14 +261,14 @@ class Modelo(object):
                     plazo = dlt.years + (not dlt.months == dlt.days == 0)
                 elif unid_ref_tiempo == 'mes':
                     dlt = deltarelativo(t_final, t_inic)
-                    plazo = dlt.years * 12 + dlt.months + (not dlt.days == 0)
+                    plazo = int(dlt.years * 12/símismo._conv_unid_tiempo['factor'] + dlt.months + (not dlt.days == 0) + 1)
                 elif unid_ref_tiempo == 'día':
                     plazo = (t_final - t_inic).days
                 else:
                     raise ValueError
                 n_pasos = math.ceil(plazo / paso)
 
-            delta_fecha = deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: paso})
+            delta_fecha = deltarelativo(**{dic_trad_tiempo[unid_ref_tiempo]: símismo._conv_unid_tiempo['factor']})
 
         else:
             raise TypeError(_('t_inic debe ser fecha o número entero, no "{}".').format(type(t_inic)))
@@ -1771,8 +1773,8 @@ class Modelo(object):
 
         símismo.calibs.update(dic)
 
-    def calibrar(símismo, paráms, bd, líms_paráms=None, vars_obs=None, n_iter=100, método='mle', tipo_proc=None,
-                 mapa_paráms=None, final_líms_paráms=None, obj_func='NSE'):
+    def calibrar(símismo, paráms, bd, líms_paráms=None, vars_obs=None, n_iter=50, método='mle', tipo_proc=None,
+                 mapa_paráms=None, final_líms_paráms=None, obj_func='NSE', guardar=None):
 
         if vars_obs is None:
             l_vars = None
@@ -1794,7 +1796,7 @@ class Modelo(object):
                 calibrador = CalibradorMod(símismo)
                 d_calibs = calibrador.calibrar(
                     paráms=paráms, bd=bd[lg], líms_paráms=líms_paráms, método=método, n_iter=n_iter, vars_obs=l_vars,
-                    tipo_proc=tipo_proc, mapa_paráms=mapa_paráms, obj_func=obj_func)
+                    tipo_proc=tipo_proc, guardar=guardar)
                 for var in d_calibs:
                     if var not in símismo.calibs:
                         símismo.calibs[var] = {}
@@ -1803,29 +1805,33 @@ class Modelo(object):
             calibrador = CalibradorMod(símismo)
             d_calibs = calibrador.calibrar(
                 paráms=paráms, bd=bd, líms_paráms=líms_paráms, método=método, n_iter=n_iter, vars_obs=l_vars,
-                tipo_proc=tipo_proc, mapa_paráms=mapa_paráms, final_líms_paráms=final_líms_paráms, obj_func=obj_func)
+                tipo_proc=tipo_proc, mapa_paráms=mapa_paráms, final_líms_paráms=final_líms_paráms, obj_func=obj_func,
+                guardar=guardar)
             símismo.calibs.update(d_calibs)
 
-    def validar(símismo, bd, var=None, t_final=None, corresp_vars=None, tipo_proc=None):
+    def validar(símismo, bd, var=None, t_final=None, corresp_vars=None, tipo_proc=None, guardar=None, obj_func=None):
         if isinstance(bd, dict) and all(isinstance(v, xr.Dataset) for v in bd.values()):
             res = {}
             for lg in bd:
                 bd_lg = gen_SuperBD(bd[lg])
-                vld = símismo._validar(bd=bd_lg, var=var, t_final=t_final, corresp_vars=corresp_vars, lg=lg)
+                vld = símismo._validar(bd=bd_lg, var=var, t_final=t_final, corresp_vars=corresp_vars, lg=lg,
+                                       tipo_proc=None, t_inic=None, guardar=guardar, obj_func=obj_func)
                 res[lg] = vld
             res['éxito'] = all(d['éxito'] for d in res.values())
             return res
 
         elif isinstance(bd, xr.Dataset):
             bd = gen_SuperBD(bd)
+            t_inic = None
         else:
             bd = _conv_xr(bd, var)
             t_final = len(bd['n'])
             t_inic = bd['n'].values[0]
 
-        return símismo._validar(bd=bd, var=var, t_final=t_final, corresp_vars=corresp_vars, tipo_proc=tipo_proc)
+        return símismo._validar(bd=bd, var=var, t_final=t_final, corresp_vars=corresp_vars, tipo_proc=tipo_proc,
+                                t_inic=t_inic, guardar=guardar, obj_func=obj_func)
 
-    def _validar(símismo, bd, var, t_final, corresp_vars, tipo_proc, lg=None):
+    def _validar(símismo, bd, var, t_final, corresp_vars, tipo_proc, t_inic, guardar, obj_func, lg=None):
         if corresp_vars is None:
             corresp_vars = {}
 
@@ -1838,7 +1844,7 @@ class Modelo(object):
             l_vars = var
         l_vars = [símismo.valid_var(v) for v in l_vars]
 
-        if isinstance(bd, xr.Dataset) and tipo_proc is not None:
+        if not isinstance(bd, xr.Dataset) and tipo_proc is not None:
             obs = bd.obt_datos(l_vars, interpolar=False)[l_vars]
         elif tipo_proc is None:
             obs = bd.obt_datos(l_vars)[l_vars]
@@ -1848,19 +1854,32 @@ class Modelo(object):
         if t_final is None:
             t_final = len(obs['n']) - 1
         if lg is None:
-            d_vals_prms = {p: d_p['dist'] for p, d_p in símismo.calibs.items()} #{'A': ndaray(100), 'B'...}
+            d_vals_prms = {p: d_p['dist'] for p, d_p in símismo.calibs.items()}  # {'A': ndaray(100), 'B'...}
+            máx_prob = [d_p['máx_prob'] for p, d_p in símismo.calibs.items()][0]
         else:
             d_vals_prms = {p: d_p[lg]['dist'] for p, d_p in símismo.calibs.items()}
 
-        n_vals = len(list(d_vals_prms.values())[0]) #100
+        n_vals = len(list(d_vals_prms.values())[0])
+
         vals_inic = [{p: v[í] for p, v in d_vals_prms.items()} for í in range(n_vals)]
+        start_time = datetime.now().strftime("%H:%M:%S")
+        FMT = '%H:%M:%S'
+        print(f"Inicializando simulación de validación {start_time} ")
         res_simul = símismo.simular_grupo(
-            t_final, vals_inic=vals_inic, vars_interés=l_vars, combinar=False, paralelo=False
+            t_final, vals_inic=vals_inic, vars_interés=l_vars, combinar=False, paralelo=False, t_inic=t_inic
         )
+        print(
+            f"La simulación de validación transcurre {datetime.strptime(datetime.now().strftime('%H:%M:%S'), FMT) - datetime.strptime(start_time, FMT)}")
 
-        matrs_simul = {vr: np.array([d[vr].values for d in res_simul.values()]) for vr in l_vars}
+        matrs_simul = {vr: np.array([d[vr].values for d in res_simul.values()]) for vr in l_vars}  # {param: 100*21*6}//
+        if tipo_proc is None:
+            resultados = validar_resultados(obs=obs, matrs_simul=matrs_simul, tipo_proc=tipo_proc)
+        else:
+            resultados = validar_resultados(obs=obs, matrs_simul=matrs_simul, tipo_proc=tipo_proc,
+                                            máx_prob=máx_prob, obj_func=obj_func)
+        if guardar:
+            np.save(guardar, resultados)
 
-        resultados = validar_resultados(obs=obs, matrs_simul=matrs_simul)
         return resultados
 
     @classmethod

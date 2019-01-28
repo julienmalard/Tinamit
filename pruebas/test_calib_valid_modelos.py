@@ -60,7 +60,7 @@ class Test_CalibModeloEspacial(unittest.TestCase):
         mod.geog = Geografía('prueba', archivo=arch_csv_geog)
         mod.cargar_calibs(cls.paráms)
         cls.datos = mod.simular_en(
-            t_final=25, en=['708', '1010'],
+            t_final=50, en=['708', '1010'],
             vars_interés=['Individuos Suceptibles', 'Individuos Infectados', 'Individuos Resistentes']
         )
         mod.borrar_calibs()
@@ -81,13 +81,6 @@ class Test_CalibModeloEspacial(unittest.TestCase):
 class Test_CalibMultidim(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # cls.paráms = {
-        #     'A': np.arange(1, 7),
-        #     'B': 0.3 * np.arange(1, 7),
-        #     'C': np.arange(1, 7)
-        # }
-        # cls.líms_paráms = {'A': (3, 10), 'B': (0.5, 2), 'C': (3, 5)}
-
         cls.paráms = {
             'A': np.arange(3, 5, 0.39),
             'B': np.arange(1, 2, 0.19),
@@ -101,13 +94,11 @@ class Test_CalibMultidim(unittest.TestCase):
         }
 
         cls.mapa_paráms = {'A': [0, 0, 0, 1, 1, 1], 'B': [1, 0, 1, 0, 1, 0], 'C': [1, 1, 1, 0, 0, 0]}
-
         cls.mod = ModeloLogisticCalib()
         cls.mod.geog = Geografía('prueba', archivo=arch_csv_geog)
-        cls.mod.cargar_calibs(cls.paráms)
 
         cls.datos = cls.mod.simular(
-            t_final=25,
+            t_final=20,
             vals_inic=cls.paráms,
             vars_interés=['y']
         )
@@ -116,22 +107,21 @@ class Test_CalibMultidim(unittest.TestCase):
         líms_paráms_final = \
             gen_problema(líms_paráms=símismo.líms_paráms, mapa_paráms=símismo.mapa_paráms, ficticia=False)[1]
 
-        símismo.mod.calibrar(paráms=list(símismo.paráms), bd=símismo.datos, líms_paráms=símismo.líms_paráms,
-                             mapa_paráms=símismo.mapa_paráms, tipo_proc='multidim', final_líms_paráms=líms_paráms_final)
+        símismo.mod.calibrar(paráms=list(líms_paráms_final), bd=símismo.datos, líms_paráms=símismo.líms_paráms,
+                             mapa_paráms=símismo.mapa_paráms, tipo_proc='multidim', final_líms_paráms=líms_paráms_final,
+                             obj_func='NSE')
 
-        valid = símismo.mod.validar(
-            bd=símismo.datos,
-            var=['y']
-        )
+        valid = símismo.mod.validar(bd=símismo.datos, var=['y'], tipo_proc='multidim')
         símismo.assertTrue(valid['éxito'])
 
     def test_patron_calibrar_validar(símismo):
         líms_paráms_final = \
             gen_problema(líms_paráms=símismo.líms_paráms, mapa_paráms=símismo.mapa_paráms, ficticia=False)[1]
 
-        símismo.mod.calibrar(paráms=list(símismo.paráms), bd=símismo.datos, líms_paráms=símismo.líms_paráms,
+        símismo.mod.calibrar(paráms=list(líms_paráms_final), bd=símismo.datos, líms_paráms=símismo.líms_paráms,
                              mapa_paráms=símismo.mapa_paráms, tipo_proc='patrón', final_líms_paráms=líms_paráms_final,
                              obj_func='AIC')
 
-        valid = símismo.mod.validar(bd=símismo.datos, var=['y'])
-        símismo.assertTrue(valid['éxito'])
+        valid = símismo.mod.validar(bd=símismo.datos, var=['y'], tipo_proc='patrón', obj_func='NSE')
+        símismo.assertTrue(valid['éxito_nse'])
+        # símismo.assertTrue(valid['éxito_aic'])

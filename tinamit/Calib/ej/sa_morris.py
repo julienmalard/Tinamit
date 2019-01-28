@@ -1,9 +1,10 @@
 from tinamit.Análisis.Sens.anlzr import analy_by_file, behav_proc_from_file, anlzr_simul
 from tinamit.Análisis.Sens.corridas import simul_sens
+from tinamit.Análisis.Sens.muestr import cargar_mstr_paráms
 from tinamit.Calib.ej.info_analr import *
 from tinamit.Calib.ej.info_paráms import mapa_paráms, líms_paráms
 from tinamit.Calib.ej.sens_análisis import gen_row_col, gen_geog_map, gen_rank_map, _gen_poly_dt_for_geog, \
-    _read_dt_4_map, merge_dict
+    _read_dt_4_map, merge_dict, gen_mod
 
 if __name__ == "__main__":
     import numpy as np
@@ -11,10 +12,11 @@ if __name__ == "__main__":
     '''
     Simul
     '''
-    # simul_sens(
-    #     gen_mod(), mstr_paráms=mstr_morris, mapa_paráms=mapa_paráms, var_egr=devolver, t_final=20, guardar=simu_guar_arch,
-    #     índices_mstrs=None, paralelo=True
-    # )
+    mstr_paráms = cargar_mstr_paráms("D:\Thesis\pythonProject\localuse\Dt\Mor\sampled data\\muestra_morris.json")
+    simul_sens(
+        gen_mod(), mstr_paráms=mstr_paráms, mapa_paráms=mapa_paráms, var_egr='mds_Watertable depth Tinamit', t_final=20, guardar=simu_guar_arch_mor,
+        índices_mstrs=None, paralelo=True
+    )
 
     '''
     Anlzr

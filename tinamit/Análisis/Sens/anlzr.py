@@ -233,7 +233,7 @@ def _gen_d_patt(num_sample, counted_behaviors, sam_patt):
     for behav in counted_behaviors:
         for bpp, d in sam_patt[behav]['bp_params'].items():
             if num_sample < 10000:
-                sam_patt[behav]['bp_params'][bpp] = np.empty([num_sample, d.shape[1]]) #625*215
+                sam_patt[behav]['bp_params'][bpp] = np.empty([num_sample, d.shape[1]])  # 625*215
             else:
                 sam_patt[behav]['bp_params'][bpp] = np.empty([num_sample, 1])
         for gof, d in sam_patt[behav]['gof'].items():
@@ -588,7 +588,7 @@ def carg_simul_dt(arch_simular, num_samples, var_egr=None, dim=None, tipo_egr=No
                 print(f'Loading sample the-{i}th')
                 simulation_data.update(
                     {str(i): np.average(Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{i}')))
-                             [var_egr].values[2:, dim])})
+                                        [var_egr].values[2:, dim])})
         elif tipo_egr == 'paso_tiempo':
             if método == 'morris':
                 simulation_data.update(

@@ -530,10 +530,13 @@ class SuperConectado(Modelo):
                 vals_inic_mod = vals_inic[nmbr]
             except KeyError:
                 vals_inic_mod = {}
+            if not len(símismo.conv_tiempo):
+                símismo.estab_conv_tiempo(mod_base=símismo.mod_base_tiempo, conv=6)
             conv_tiempo = símismo.conv_tiempo[nmbr]
             mod.iniciar_modelo(
                 tiempo_final=tiempo_final * conv_tiempo, nombre_corrida=nombre_corrida, vals_inic=vals_inic_mod
             )  # Iniciar el modelo
+
 
     def especificar_var_saliendo(símismo, var):
 
