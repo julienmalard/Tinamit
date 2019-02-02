@@ -6,7 +6,7 @@ import scipy.stats as estad
 from tinamit.Análisis.Calibs import aplastar, patro_proces, gen_gof
 
 
-def validar_resultados(obs, matrs_simul, tol=0.75, tipo_proc=None, máx_prob=None, obj_func=None):
+def validar_resultados(obs, matrs_simul, tol=0.65, tipo_proc=None, máx_prob=None, obj_func=None):
     """
 
     Parameters
@@ -54,19 +54,24 @@ def validar_resultados(obs, matrs_simul, tol=0.75, tipo_proc=None, máx_prob=Non
         sims_norm_T = {vr: np.array([sims_norm[vr][d, :].T for d in range(len(sims_norm[vr]))]) for vr in
                        l_vars}  # {'y': 100*6*21}
         if obj_func == 'AIC':
-            obj_func = ['AIC', 'NSE']
-            # eval (matriz_vacía.T, length_params), #6*21, []
+            # for vr in l_vars:
+            #     eval_p, k_p = patro_proces(tipo_proc, obs, obs_norm[vr], l_vars)
+            #     egr = {'vars': {vr:
+            #                         {obj: gen_gof(tipo_proc, sim=sims_norm_T[vr], obj_func=obj, eval=obs_norm[vr],
+            #                                       len_bparam=k_p) if obj == 'AIC'
+            #                         else gen_gof('multidim', sim=sims_norm_T[vr], obj_func=obj,
+            #                                            eval=obs_norm[vr]) for obj in ['AIC', 'NSE']}}} # 100*62*38
             egr = {
                 'vars': {vr:
                              {obj:
                                   gen_gof(tipo_proc, sim=sims_norm_T[vr], obj_func=obj,
                                           eval=patro_proces(tipo_proc, obs, obs_norm[vr], l_vars)) if obj == 'AIC'
                                   else gen_gof('multidim', sim=sims_norm_T[vr], obj_func=obj, eval=obs_norm[vr])
-                              for obj in obj_func}
+                              for obj in ['AIC', 'NSE']}
                          for vr in l_vars}
-            }  # 100*62*38
+            }
+
             egr['éxito_nse'] = all(v >= tol for vr in l_vars for v in egr['vars'][vr]['NSE'])
-            # egr['éxito_aic'] = all((egr['vars'][vr]['AIC'] - máx_prob) >= 2 for vr in l_vars)
             egr['éxito_aic'] = all((np.max(egr['vars'][vr]['AIC']) - máx_prob) >= 2 for vr in l_vars)
         else:
             egr = {

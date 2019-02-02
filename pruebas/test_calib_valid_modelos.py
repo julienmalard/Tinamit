@@ -102,26 +102,43 @@ class Test_CalibMultidim(unittest.TestCase):
             vals_inic=cls.paráms,
             vars_interés=['y']
         )
+        cls.método = [
+                        'mcmc',
+                        'sceua',
+                        'rope',
+                        'abc',
+                        'fscabc',
+                        'mle',
+                        'demcz',
+                        'dream',
+        ]
 
     def test_multidim_calibrar_validar(símismo):
         líms_paráms_final = \
             gen_problema(líms_paráms=símismo.líms_paráms, mapa_paráms=símismo.mapa_paráms, ficticia=False)[1]
+        guardar = "D:\Thesis\pythonProject\localuse\Dt\Calib\\test_multidim\\"
+        for m in símismo.método:
+            símismo.mod.calibrar(paráms=list(líms_paráms_final), bd=símismo.datos, líms_paráms=símismo.líms_paráms,
+                                 mapa_paráms=símismo.mapa_paráms, tipo_proc='multidim',
+                                 final_líms_paráms=líms_paráms_final,
+                                 obj_func='NSE', método=m, guardar=guardar + f'calib-{m}')
 
-        símismo.mod.calibrar(paráms=list(líms_paráms_final), bd=símismo.datos, líms_paráms=símismo.líms_paráms,
-                             mapa_paráms=símismo.mapa_paráms, tipo_proc='multidim', final_líms_paráms=líms_paráms_final,
-                             obj_func='NSE')
-
-        valid = símismo.mod.validar(bd=símismo.datos, var=['y'], tipo_proc='multidim')
-        símismo.assertTrue(valid['éxito'])
+            # lg = np.load(guardar + f'calib-{m}.npy').tolist()
+            valid = símismo.mod.validar(bd=símismo.datos, var=['y'], tipo_proc='multidim',
+                                        guardar=guardar + f'valid-{m}', lg=None)
+            símismo.assertTrue(valid['éxito'])
 
     def test_patron_calibrar_validar(símismo):
+        guardar = "D:\Thesis\pythonProject\localuse\Dt\Calib\\test_patron\\"
         líms_paráms_final = \
             gen_problema(líms_paráms=símismo.líms_paráms, mapa_paráms=símismo.mapa_paráms, ficticia=False)[1]
-
-        símismo.mod.calibrar(paráms=list(líms_paráms_final), bd=símismo.datos, líms_paráms=símismo.líms_paráms,
-                             mapa_paráms=símismo.mapa_paráms, tipo_proc='patrón', final_líms_paráms=líms_paráms_final,
-                             obj_func='AIC')
-
-        valid = símismo.mod.validar(bd=símismo.datos, var=['y'], tipo_proc='patrón', obj_func='NSE')
-        símismo.assertTrue(valid['éxito_nse'])
+        for m in símismo.método:
+            símismo.mod.calibrar(paráms=list(líms_paráms_final), bd=símismo.datos, líms_paráms=símismo.líms_paráms,
+                                 mapa_paráms=símismo.mapa_paráms, tipo_proc='patrón',
+                                 final_líms_paráms=líms_paráms_final,
+                                 obj_func='AIC', guardar=guardar + f'calib-{m}', método=m)
+                # lg = np.load(guardar + f'calib-{m}.npy').tolist()
+            valid = símismo.mod.validar(bd=símismo.datos, var=['y'], tipo_proc='patrón', obj_func='AIC',
+                                        guardar=guardar + f'valid-{m}', lg=None)
+            símismo.assertTrue(valid['éxito_nse'])
         # símismo.assertTrue(valid['éxito_aic'])

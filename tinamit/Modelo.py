@@ -1773,9 +1773,9 @@ class Modelo(object):
 
         símismo.calibs.update(dic)
 
-    def calibrar(símismo, paráms, bd, líms_paráms=None, vars_obs=None, n_iter=50, método='mle', tipo_proc=None,
+    def calibrar(símismo, paráms, bd, líms_paráms=None, vars_obs=None, n_iter=100, método='mle', tipo_proc=None,
                  mapa_paráms=None, final_líms_paráms=None, obj_func='NSE', guardar=None):
-
+        obj_func = obj_func.upper()
         if vars_obs is None:
             l_vars = None
         elif isinstance(vars_obs, str):
@@ -1809,7 +1809,10 @@ class Modelo(object):
                 guardar=guardar)
             símismo.calibs.update(d_calibs)
 
-    def validar(símismo, bd, var=None, t_final=None, corresp_vars=None, tipo_proc=None, guardar=None, obj_func=None):
+    def validar(símismo, bd, var=None, t_final=None, corresp_vars=None, tipo_proc=None, guardar=None, obj_func=None,
+                lg=None):
+        if obj_func is not None:
+            obj_func = obj_func.upper()
         if isinstance(bd, dict) and all(isinstance(v, xr.Dataset) for v in bd.values()):
             res = {}
             for lg in bd:
@@ -1829,9 +1832,9 @@ class Modelo(object):
             t_inic = bd['n'].values[0]
 
         return símismo._validar(bd=bd, var=var, t_final=t_final, corresp_vars=corresp_vars, tipo_proc=tipo_proc,
-                                t_inic=t_inic, guardar=guardar, obj_func=obj_func)
+                                t_inic=t_inic, guardar=guardar, obj_func=obj_func, lg=lg)
 
-    def _validar(símismo, bd, var, t_final, corresp_vars, tipo_proc, t_inic, guardar, obj_func, lg=None):
+    def _validar(símismo, bd, var, t_final, corresp_vars, tipo_proc, t_inic, guardar, obj_func, lg):
         if corresp_vars is None:
             corresp_vars = {}
 
@@ -1857,7 +1860,8 @@ class Modelo(object):
             d_vals_prms = {p: d_p['dist'] for p, d_p in símismo.calibs.items()}  # {'A': ndaray(100), 'B'...}
             máx_prob = [d_p['máx_prob'] for p, d_p in símismo.calibs.items()][0]
         else:
-            d_vals_prms = {p: d_p[lg]['dist'] for p, d_p in símismo.calibs.items()}
+            d_vals_prms = {p: d_p['dist'] for p, d_p in lg.items()}  # {'A': ndaray(100), 'B'...}
+            máx_prob = [d_p['máx_prob'] for p, d_p in lg.items()][0]
 
         n_vals = len(list(d_vals_prms.values())[0])
 
@@ -1881,6 +1885,7 @@ class Modelo(object):
             np.save(guardar, resultados)
 
         return resultados
+
 
     @classmethod
     def _obt_val_config(cls, llave, cond=None, mnsj_error='', respaldo=None):

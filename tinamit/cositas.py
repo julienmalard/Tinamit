@@ -4,6 +4,7 @@ import shutil
 import tempfile
 
 from chardet import UniversalDetector
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 def detectar_codif(archivo, máx_líneas=None, cortar=None):
@@ -111,7 +112,7 @@ def guardar_json(obj, arch):
     with tempfile.NamedTemporaryFile('w', encoding='UTF-8', delete=False) as temp:
         # Escribimos primero a un fuente temporario para evitar de corrumpir nuestro fuente principal si el programa
         # se interrumpe durante la operación.
-        json.dump(obj, temp, ensure_ascii=False, sort_keys=True, indent=2)
+        json.dump(obj, temp, ensure_ascii=False, sort_keys=True, indent=2, cls=DjangoJSONEncoder)
 
         # Crear el directorio, si necesario
         direc = os.path.split(arch)[0]
