@@ -55,7 +55,8 @@ def validar_resultados(obs, matrs_simul, tol=0.65, tipo_proc=None, máx_prob=Non
         egr['éxito'] = all(v >= tol for vr in l_vars for v in egr['vars'][vr]['ens'])
         return egr
     else:
-        sims_norm_T = {vr: np.array([sims_norm[vr][d, :].T for d in range(len(sims_norm[vr]))]) for vr in l_vars}  # {'y': 100*6*21}
+        sims_norm_T = {vr: np.array([sims_norm[vr][d, :].T for d in range(len(sims_norm[vr]))]) for vr in
+                       l_vars}  # {'y': 100*6*21}
         if obj_func == 'AIC':
             egr = {
                 'vars': {vr:
@@ -69,6 +70,8 @@ def validar_resultados(obs, matrs_simul, tol=0.65, tipo_proc=None, máx_prob=Non
 
             egr['éxito_nse'] = all(v >= tol for vr in l_vars for v in egr['vars'][vr]['NSE'])
             egr['éxito_aic'] = all((v - máx_prob) > 2 for vr in l_vars for v in egr['vars'][vr]['AIC'])
+            prom = np.array([v for vr in l_vars for v in egr['vars'][vr]['AIC']]).mean()
+            egr['diff_aic'] = prom, máx_prob, prom - máx_prob
         else:
             egr = {
                 'vars': {vr:

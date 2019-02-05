@@ -21,9 +21,9 @@ mod = gen_mod()
 método = [
     # 'mle',
     # 'demcz',
-    'dream',
-    'mcmc',
-    'sceua',
+    # 'sceua',
+    # 'dream',
+    # 'mcmc',
     'rope',
     'abc',
     'fscabc',
