@@ -33,7 +33,11 @@ def validar_resultados(obs, matrs_simul, tol=0.65, tipo_proc=None, máx_prob=Non
     else:
         mu_obs_matr, sg_obs_matr, obs_norm = aplastar(obs, l_vars)  # 6, 6, 6*21, obs_norm: dict {'y': 6*21}
         obs_norm = {va: obs_norm for va in l_vars}  # 63, 21*6, [nparray[38, 61]]
-        sims_norm = {vr: (matrs - mu_obs_matr) / sg_obs_matr for vr, matrs in matrs_simul.items()}  # {'y': 100*21*6}
+        sims_norm = {vr: np.empty(matrs_simul[vr].shape) for vr in l_vars}
+        for vr, matrs in matrs_simul.items():
+            for i in range(len(matrs)):
+                sims_norm[vr][i] = (matrs[i] - mu_obs_matr) / sg_obs_matr
+        # sims_norm = {vr: (matrs - mu_obs_matr) / sg_obs_matr for vr, matrs in matrs_simul.items()}  # {'y': 100*21*6}
 
     if tipo_proc is None:
         egr = {
@@ -51,16 +55,8 @@ def validar_resultados(obs, matrs_simul, tol=0.65, tipo_proc=None, máx_prob=Non
         egr['éxito'] = all(v >= tol for vr in l_vars for v in egr['vars'][vr]['ens'])
         return egr
     else:
-        sims_norm_T = {vr: np.array([sims_norm[vr][d, :].T for d in range(len(sims_norm[vr]))]) for vr in
-                       l_vars}  # {'y': 100*6*21}
+        sims_norm_T = {vr: np.array([sims_norm[vr][d, :].T for d in range(len(sims_norm[vr]))]) for vr in l_vars}  # {'y': 100*6*21}
         if obj_func == 'AIC':
-            # for vr in l_vars:
-            #     eval_p, k_p = patro_proces(tipo_proc, obs, obs_norm[vr], l_vars)
-            #     egr = {'vars': {vr:
-            #                         {obj: gen_gof(tipo_proc, sim=sims_norm_T[vr], obj_func=obj, eval=obs_norm[vr],
-            #                                       len_bparam=k_p) if obj == 'AIC'
-            #                         else gen_gof('multidim', sim=sims_norm_T[vr], obj_func=obj,
-            #                                            eval=obs_norm[vr]) for obj in ['AIC', 'NSE']}}} # 100*62*38
             egr = {
                 'vars': {vr:
                              {obj:
@@ -72,7 +68,7 @@ def validar_resultados(obs, matrs_simul, tol=0.65, tipo_proc=None, máx_prob=Non
             }
 
             egr['éxito_nse'] = all(v >= tol for vr in l_vars for v in egr['vars'][vr]['NSE'])
-            egr['éxito_aic'] = all((np.max(egr['vars'][vr]['AIC']) - máx_prob) >= 2 for vr in l_vars)
+            egr['éxito_aic'] = all((v - máx_prob) > 2 for vr in l_vars for v in egr['vars'][vr]['AIC'])
         else:
             egr = {
                 'vars': {vr:

@@ -64,15 +64,16 @@ def write_excel(data, columns, file):
             df.to_excel(writer, kind)
 
 
-def compute_superposition(interploated_data, norm_obs):
+def compute_superposition(interploated_data, norm_obs=None):
     best_behaviors = {}
     d_calib = {}
     d_numero = {}
     if isinstance(interploated_data, dict):
         for poly, data in interploated_data.items():
+            data = np.asarray([i for i in data])
             d_numero[poly] = np.asarray(data)
             print(f"Behavior Detecting of Polygon {poly} !")
-            re = superposition(range(len(data)), data)[0]
+            re = superposition(np.asarray(range(len(data))), data)[0]
             best_behav = find_best_behavior(re)[0]
             best_behaviors[poly] = best_behav
             y_pred = np.asarray(
@@ -97,6 +98,7 @@ def compute_superposition(interploated_data, norm_obs):
 def plot_pattern(interploated_data, path):
     fited_behaviors = {poly: [] for poly in interploated_data}
     for poly, data in interploated_data.items():
+        data = np.asarray([i for i in data])
         print(f"Polygon {poly} is under processing!")
         plt.plot(data)
         re = superposition(range(len(data)), data)[0]
@@ -110,8 +112,29 @@ def plot_pattern(interploated_data, path):
                 fited_behaviors[poly].append(gof_dict[m])
             m += 1
         for tup_patt in fited_behaviors[poly]:
-            plt.plot(predict(range(len(data)), re[0][tup_patt[0]]['bp_params'], tup_patt[0]))
+            plt.plot(predict(range(len(data)), re[tup_patt[0]]['bp_params'], tup_patt[0]))
         plt.savefig(path + f'{poly}-{fited_behaviors[poly][0][0]}')
         plt.close()
 
     return fited_behaviors
+
+
+def plot_obs_best_fit(res, gaur_arch, inplt_arch=None):
+    if inplt_arch is not None:
+        split_data = split_obs_data(res[1])
+        kinds = ["previous", "nearest", "next"]
+        kinds_in_d = {}
+        for kind in kinds:
+            kinds_in_d[kind] = interp_all_data(split_data, kind, 41)
+        print(kinds_in_d['previous'])
+        write_excel(kinds_in_d, list(res[0]), inplt_arch)
+        bd = kinds_in_d['previous']
+    else:
+        bd = res[1]
+    best_behaviors, d_calib, d_numero = compute_superposition(bd)
+
+    np.save("D:\Thesis\pythonProject\localuse\Dt\Calib\\best_behaviors", best_behaviors)
+    np.save("D:\Thesis\pythonProject\localuse\Dt\Calib\\d_calib", d_calib)
+    fited_behaviors = plot_pattern(bd, path=gaur_arch)
+
+    print(fited_behaviors)

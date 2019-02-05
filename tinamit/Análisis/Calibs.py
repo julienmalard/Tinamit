@@ -585,7 +585,7 @@ class CalibradorMod(object):
 
             if final_líms_paráms is not None and método in ['dream', 'demcz', 'sceua']:
                 if método == 'dream':
-                    muestreador.sample(repetitions=2000 + n_iter, runs_after_convergence=n_iter,
+                    muestreador.sample(repetitions= n_iter, runs_after_convergence=n_iter, #repetitions= 2000+n_iter
                                        nChains=len(final_líms_paráms))
                 elif método == 'sceua':
                     muestreador.sample(n_iter, ngs=len(final_líms_paráms)*3)
@@ -596,7 +596,7 @@ class CalibradorMod(object):
             egr_spotpy = BDtexto(temp.name + '.csv')
 
             cols_prm = [c for c in egr_spotpy.obt_nombres_cols() if c.startswith('par')]
-            trzs = egr_spotpy.obt_datos(cols_prm)  # TODO: modify trzs = {'name_para': ndarray(100,)}
+            trzs = egr_spotpy.obt_datos(cols_prm)
             probs = egr_spotpy.obt_datos('like1')['like1']
 
             if os.path.isfile(temp.name + '.csv'):
@@ -643,12 +643,13 @@ class CalibradorMod(object):
                         else:
                             res[k] = {'dist': [val], 'val': [], 'peso': pesos, 'máx_prob': rango_prob[1]}
                 for k, v in res.items():
-                    if isinstance(líms_paráms[k], tuple):
-                        res[k]['val'].append(_calc_máx_trz(trzs['par' + par_spotpy[k]]))
-                    elif isinstance(líms_paráms[k], list):
-                        res[k]['val'].extend(
-                            [_calc_máx_trz(trzs['par' + par_spotpy[f'{k}_{str(i)}']]) for i in
-                             range(len(líms_paráms[k]))])
+                    if k in líms_paráms:
+                        if isinstance(líms_paráms[k], tuple):
+                            res[k]['val'].append(_calc_máx_trz(trzs['par' + par_spotpy[k]]))
+                        elif isinstance(líms_paráms[k], list):
+                            res[k]['val'].extend(
+                                [_calc_máx_trz(trzs['par' + par_spotpy[f'{k}_{str(i)}']]) for i in
+                                 range(len(líms_paráms[k]))])
                     else:
                         for p, mapa in mapa_paráms.items():
                             if isinstance(mapa, dict):
@@ -986,8 +987,8 @@ class PatrónProc(object):
         return spotpy.parameter.generate(símismo.paráms)
 
     def simulation(símismo, x):
-        res = símismo.mod.simular(
-            t_final=símismo.t_final, vars_interés=símismo.vars_interés[0], t_inic=símismo.t_inic,
+        res = símismo.mod.simular_grupo(
+            t_final=símismo.t_final, vars_interés=símismo.vars_interés[0], t_inic=símismo.t_inic, combinar=False,
             vals_inic=gen_val_inic(x, símismo.mapa_paráms, símismo.líms_paráms, símismo.final_líms_paráms)
         )
 
@@ -997,7 +998,7 @@ class PatrónProc(object):
                 m_res = m_res[:-1, :]
                 n_res = np.empty([len(m_res), símismo.obs['x0'].values.size])
                 for ind, v in enumerate([int(i) for i in símismo.obs['x0'].values]):
-                    n_res[:, ind] = m_res[:, v]
+                    n_res[:, ind] = m_res[:, v-1]
             else:
                 raise ValueError(" ")
         else:
