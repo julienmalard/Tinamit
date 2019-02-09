@@ -5,6 +5,7 @@ import os
 import pickle
 import re
 from datetime import datetime
+from xarray import Dataset
 from copy import deepcopy as copiar_profundo
 from multiprocessing import Pool as Reserva
 from warnings import warn as avisar
@@ -261,7 +262,8 @@ class Modelo(object):
                     plazo = dlt.years + (not dlt.months == dlt.days == 0)
                 elif unid_ref_tiempo == 'mes':
                     dlt = deltarelativo(t_final, t_inic)
-                    plazo = int(dlt.years * 12/símismo._conv_unid_tiempo['factor'] + dlt.months + (not dlt.days == 0) + 1)
+                    plazo = int(
+                        dlt.years * 12 / símismo._conv_unid_tiempo['factor'] + dlt.months + (not dlt.days == 0) + 1)
                 elif unid_ref_tiempo == 'día':
                     plazo = (t_final - t_inic).days
                 else:
@@ -1774,7 +1776,7 @@ class Modelo(object):
         símismo.calibs.update(dic)
 
     def calibrar(símismo, paráms, bd, líms_paráms=None, vars_obs=None, n_iter=10, método='mle', tipo_proc=None,
-                 mapa_paráms=None, final_líms_paráms=None, obj_func='NSE', guardar=None, parallel=False):
+                 mapa_paráms=None, final_líms_paráms=None, obj_func='NSE', guardar=False, guar_sim=None, egr_spotpy=None):
         obj_func = obj_func.upper()
         if vars_obs is None:
             l_vars = None
@@ -1796,7 +1798,7 @@ class Modelo(object):
                 calibrador = CalibradorMod(símismo)
                 d_calibs = calibrador.calibrar(
                     paráms=paráms, bd=bd[lg], líms_paráms=líms_paráms, método=método, n_iter=n_iter, vars_obs=l_vars,
-                    tipo_proc=tipo_proc, guardar=guardar)
+                    tipo_proc=tipo_proc, guardar=guardar, guar_sim=guar_sim)
                 for var in d_calibs:
                     if var not in símismo.calibs:
                         símismo.calibs[var] = {}
@@ -1806,11 +1808,11 @@ class Modelo(object):
             d_calibs = calibrador.calibrar(
                 paráms=paráms, bd=bd, líms_paráms=líms_paráms, método=método, n_iter=n_iter, vars_obs=l_vars,
                 tipo_proc=tipo_proc, mapa_paráms=mapa_paráms, final_líms_paráms=final_líms_paráms, obj_func=obj_func,
-                guardar=guardar)
+                guardar=guardar, guar_sim=guar_sim, egr_spotpy=egr_spotpy)
             símismo.calibs.update(d_calibs)
 
-    def validar(símismo, bd, var=None, t_final=None, corresp_vars=None, tipo_proc=None, guardar=None, obj_func=None,
-                lg=None, paralelo=False):
+    def validar(símismo, bd, var=None, t_final=None, corresp_vars=None, tipo_proc=None, guardar=False, obj_func=None,
+                lg=None, paralelo=False, valid_sim=False):
         if obj_func is not None:
             obj_func = obj_func.upper()
         if var is None:
@@ -1823,7 +1825,8 @@ class Modelo(object):
             for lg in bd:
                 bd_lg = gen_SuperBD(bd[lg])
                 vld = símismo._validar(bd=bd_lg, var=var, t_final=t_final, corresp_vars=corresp_vars, lg=lg,
-                                       tipo_proc=None, t_inic=None, guardar=guardar, obj_func=obj_func, paralelo=paralelo)
+                                       tipo_proc=None, t_inic=None, guardar=guardar, obj_func=obj_func,
+                                       paralelo=paralelo, valid_sim=valid_sim)
                 res[lg] = vld
             res['éxito'] = all(d['éxito'] for d in res.values())
             return res
@@ -1837,9 +1840,11 @@ class Modelo(object):
             t_inic = bd['n'].values[0]
 
         return símismo._validar(bd=bd, var=var, t_final=t_final, corresp_vars=corresp_vars, tipo_proc=tipo_proc,
-                                t_inic=t_inic, guardar=guardar, obj_func=obj_func, lg=lg, paralelo=paralelo)
+                                t_inic=t_inic, guardar=guardar, obj_func=obj_func, lg=lg, paralelo=paralelo,
+                                valid_sim=valid_sim)
 
-    def _validar(símismo, bd, var, t_final, corresp_vars, tipo_proc, t_inic, guardar, obj_func, lg, paralelo):
+    def _validar(símismo, bd, var, t_final, corresp_vars, tipo_proc, t_inic, guardar, obj_func, lg, paralelo,
+                 valid_sim):
         if corresp_vars is None:
             corresp_vars = {}
 
@@ -1865,33 +1870,48 @@ class Modelo(object):
             d_vals_prms = {p: d_p['dist'] for p, d_p in símismo.calibs.items()}  # {'A': ndaray(100), 'B'...}
             máx_prob = [d_p['máx_prob'] for p, d_p in símismo.calibs.items()][0]
         else:
-            d_vals_prms = {p: d_p['dist'] for p, d_p in lg.items()}  # {'A': ndaray(100), 'B'...}
-            máx_prob = [d_p['máx_prob'] for p, d_p in lg.items()][0]
+            d_vals_prms = {p: d_p['dist'] for p, d_p in lg.items() if
+                           isinstance(d_p, dict)}  # {'A': ndaray(100), 'B'...}
+            máx_prob = lg['máx_prob']
 
         n_vals = len(list(d_vals_prms.values())[0])
 
-        vals_inic = [{p: v[í] for p, v in d_vals_prms.items()} for í in range(n_vals)]
-        start_time = datetime.now().strftime("%H:%M:%S")
-        FMT = '%H:%M:%S'
-        print(f"Inicializando simulación de validación {start_time} ")
-        res_simul = símismo.simular_grupo(
-            t_final, vals_inic=vals_inic, vars_interés=l_vars, combinar=False, paralelo=paralelo, t_inic=t_inic
-        )
-        print(
-            f"La simulación de validación transcurre {datetime.strptime(datetime.now().strftime('%H:%M:%S'), FMT) - datetime.strptime(start_time, FMT)}")
+        if valid_sim is not None:
+            m_res = np.empty([n_vals, *np.asarray([Dataset.from_dict(cargar_json(os.path.join(valid_sim, f'{0}')))[vr].values
+                     for vr in l_vars][0]).shape])
+            for i, v in enumerate(lg['buenas']):
+                m_res[i, :] = np.asarray([Dataset.from_dict(cargar_json(os.path.join(valid_sim, f'{v}')))[vr].values
+                     for vr in l_vars][0])
 
-        m_res = np.array([[d[vr].values for d in res_simul.values()] for vr in l_vars])[0]  # 5*62*215
-        if m_res.shape[2] != obs['x0'].values.size:
-            if m_res.shape[1] != obs['n'].values.size:
-                m_res = m_res[:,:-1, :]
-                n_res = np.empty([len(m_res), obs['n'].values.size, obs['x0'].values.size]) #[no.sim*19polys] 20*61*19
+        else:
+            vals_inic = [{p: v[í] for p, v in d_vals_prms.items()} for í in range(n_vals)]
+            start_time = datetime.now().strftime("%H:%M:%S")
+            FMT = '%H:%M:%S'
+            print(f"Inicializando simulación de validación {start_time} ")
+            res_simul = símismo.simular_grupo(
+                t_final, vals_inic=vals_inic, vars_interés=l_vars, combinar=False, paralelo=paralelo, t_inic=t_inic
+            )
+            print(
+                f"La simulación de validación transcurre {datetime.strptime(datetime.now().strftime('%H:%M:%S'), FMT) - datetime.strptime(start_time, FMT)}")
+
+            m_res = np.array([[d[vr].values for d in res_simul.values()] for vr in l_vars])[0]  # 5*62*215
+
+        if m_res.shape[2] != obs['x0'].values.size: #215
+            if m_res.shape[1] != obs['n'].values.size: #41/42
+                for i in range(n_vals):
+                    if np.min(m_res) == 0:
+                        m_res[i, :] = np.delete(m_res[i, :], 1, 0)
+                    else:
+                        m_res[i, :] = m_res[i, 1:, :]
+                n_res = np.empty([len(m_res), obs['n'].values.size, obs['x0'].values.size])  # [no.sim*19polys] 20*61*19
                 for ind, v in enumerate([int(i) for i in obs['x0'].values]):
-                    n_res[:,:, ind] = m_res[:,:, v-1]
+                    n_res[:, :, ind] = m_res[:, :, v - 1]
 
             matrs_simul = {vr: n_res for vr in l_vars}
 
         else:
-            matrs_simul = {vr: np.array([d[vr].values for d in res_simul.values()]) for vr in l_vars}  # {param: 100*21*6}// 5*62*215
+            matrs_simul = {vr: np.array([d[vr].values for d in res_simul.values()]) for vr in
+                           l_vars}  # {param: 100*21*6}// 5*62*215
 
         if tipo_proc is None:
             resultados = validar_resultados(obs=obs, matrs_simul=matrs_simul, tipo_proc=tipo_proc)
@@ -1902,7 +1922,6 @@ class Modelo(object):
             np.save(guardar, resultados)
 
         return resultados
-
 
     @classmethod
     def _obt_val_config(cls, llave, cond=None, mnsj_error='', respaldo=None):

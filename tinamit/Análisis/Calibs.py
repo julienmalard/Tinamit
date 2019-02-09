@@ -8,6 +8,7 @@ import spotpy
 import xarray as xr
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
+
 from tinamit.Análisis.Datos import BDtexto, gen_SuperBD, SuperBD
 from tinamit.Análisis.Sens.behavior import aic
 from tinamit.Análisis.sintaxis import Ecuación
@@ -539,7 +540,7 @@ class CalibradorMod(object):
         símismo.mod = mod
 
     def calibrar(símismo, paráms, líms_paráms, bd, método, vars_obs, n_iter, guardar, corresp_vars=None, tipo_proc=None,
-                 mapa_paráms=None, final_líms_paráms=None, obj_func='AIC'):
+                 mapa_paráms=None, final_líms_paráms=None, obj_func='AIC', guar_sim=False, egr_spotpy=False):
 
         método = método.lower()
         mod = símismo.mod
@@ -567,48 +568,54 @@ class CalibradorMod(object):
 
         if tipo_proc is not None:
             par_spotpy = {k: str(i) for i, (k, v) in enumerate(final_líms_paráms.items())}
-        if método in _algs_spotpy:
 
-            temp = tempfile.NamedTemporaryFile('w', encoding='UTF-8', prefix='CalibTinamït_')
-            if tipo_proc is None:
-                mod_spotpy = ModSpotPy(mod=mod, líms_paráms=líms_paráms, obs=obs)
+        if not egr_spotpy:
+            if método in _algs_spotpy:
+                temp = tempfile.NamedTemporaryFile('w', encoding='UTF-8', prefix='CalibTinamït_')
+                if tipo_proc is None:
+                    mod_spotpy = ModSpotPy(mod=mod, líms_paráms=líms_paráms, obs=obs)
+                else:
+                    mod_spotpy = PatrónProc(mod=mod, líms_paráms=líms_paráms, obs=obs, tipo_proc=tipo_proc,
+                                            mapa_paráms=mapa_paráms, comp_final_líms=final_líms_paráms,
+                                            obj_func=obj_func, t_final=t_final, t_inic=t_inic, guar_sim=guar_sim
+                                            )
+                if método in ['dream', 'mcmc', 'sceua']:
+                    muestreador = _algs_spotpy[método](mod_spotpy, dbname=temp.name, dbformat='csv', save_sim=False,
+                                                       alt_objfun=None)
+                else:
+                    muestreador = _algs_spotpy[método](mod_spotpy, dbname=temp.name, dbformat='csv', save_sim=False)
+
+                if final_líms_paráms is not None and método in ['dream', 'demcz', 'sceua']:
+                    if método == 'dream':
+                        muestreador.sample(repetitions=n_iter, runs_after_convergence=n_iter,  # repetitions= 2000+n_iter
+                                           nChains=len(final_líms_paráms))
+                    elif método == 'sceua':
+                        muestreador.sample(n_iter, ngs=len(final_líms_paráms) * 3)
+                    elif método == 'demcz':
+                        muestreador.sample(n_iter, nChains=len(final_líms_paráms) * 2)
+                else:
+                    muestreador.sample(n_iter)
+
+                egr_spotpy = BDtexto(temp.name + '.csv')
             else:
-                mod_spotpy = PatrónProc(mod=mod, líms_paráms=líms_paráms, obs=obs, tipo_proc=tipo_proc,
-                                        mapa_paráms=mapa_paráms, comp_final_líms=final_líms_paráms,
-                                        obj_func=obj_func, t_final=t_final, t_inic=t_inic
-                                        )
-            if método in ['dream', 'mcmc', 'sceua']:
-                muestreador = _algs_spotpy[método](mod_spotpy, dbname=temp.name, dbformat='csv', save_sim=False,
-                                                   alt_objfun=None)
-            else:
-                muestreador = _algs_spotpy[método](mod_spotpy, dbname=temp.name, dbformat='csv', save_sim=False)
+                raise ValueError(_('Método de calibración "{}" no reconocido.').format(método))
+        else:
+            egr_spotpy = BDtexto(egr_spotpy)
 
-            if final_líms_paráms is not None and método in ['dream', 'demcz', 'sceua']:
-                if método == 'dream':
-                    muestreador.sample(repetitions= n_iter, runs_after_convergence=n_iter, #repetitions= 2000+n_iter
-                                       nChains=len(final_líms_paráms))
-                elif método == 'sceua':
-                    muestreador.sample(n_iter, ngs=len(final_líms_paráms)*3)
-                elif método == 'demcz':
-                    muestreador.sample(n_iter, nChains=len(final_líms_paráms)*2)
-            else:
-                muestreador.sample(n_iter)
-            egr_spotpy = BDtexto(temp.name + '.csv')
+        cols_prm = [c for c in egr_spotpy.obt_nombres_cols() if c.startswith('par')]
+        trzs = egr_spotpy.obt_datos(cols_prm)
+        probs = egr_spotpy.obt_datos('like1')['like1']
 
-            cols_prm = [c for c in egr_spotpy.obt_nombres_cols() if c.startswith('par')]
-            trzs = egr_spotpy.obt_datos(cols_prm)
-            probs = egr_spotpy.obt_datos('like1')['like1']
+        # if os.path.isfile(temp.name + '.csv'):
+        #     os.remove(temp.name + '.csv')
 
-            if os.path.isfile(temp.name + '.csv'):
-                os.remove(temp.name + '.csv')
-
-            if isinstance(trzs, dict):
-                buenas = (probs >= np.min(np.sort(probs)[int(len(probs) * 0.8):]))
-                trzs = {p: trzs[p][buenas] for p in cols_prm}
-                probs = probs[buenas]  # like values
-            else:
-                trzs = trzs[-n_iter:]
-                probs = probs[-n_iter:]
+        if isinstance(trzs, dict):
+            buenas = (probs >= np.min(np.sort(probs)[int(len(probs) * 0.8):]))
+            trzs = {p: trzs[p][buenas] for p in cols_prm}
+            probs = probs[buenas]  # like values
+        else:
+            trzs = trzs[-n_iter:]
+            probs = probs[-n_iter:]
 
             # if método == 'dream':
             #     if isinstance(trzs, dict):
@@ -623,43 +630,40 @@ class CalibradorMod(object):
             #     trzs = {p: trzs[p][buenas] for p in cols_prm}
             #     probs = probs[buenas]  # like values
 
-            rango_prob = (probs.min(), probs.max())
-            pesos = (probs - rango_prob[0]) / (
-                    rango_prob[1] - rango_prob[0])  # for those > 0.8 like, weight distribution
+        rango_prob = (probs.min(), probs.max())
+        pesos = (probs - rango_prob[0]) / (rango_prob[1] - rango_prob[0])  # those > 0.8 like, weight distribution
 
-            res = {}
-            if tipo_proc is None:
-                for i, p in enumerate(paráms):
-                    col_p = 'par' + str(i)
-                    res[p] = {'dist': trzs[col_p], 'val': _calc_máx_trz(trzs[col_p]), 'peso': pesos}
-                # calculate the maxi distribution of the simulation results, and the weights
-            else:
-                for i in range(len(list(trzs.values())[0])):
-                    x = np.asarray([val[i] for val in list(trzs.values())])
-                    val_inic = gen_val_inic(x, mapa_paráms, líms_paráms, final_líms_paráms)
-                    for k, val in val_inic.items():
-                        if k in res:
-                            res[k]['dist'].append(val)
-                        else:
-                            res[k] = {'dist': [val], 'val': [], 'peso': pesos, 'máx_prob': rango_prob[1]}
-                for k, v in res.items():
-                    if k in líms_paráms:
-                        if isinstance(líms_paráms[k], tuple):
-                            res[k]['val'].append(_calc_máx_trz(trzs['par' + par_spotpy[k]]))
-                        elif isinstance(líms_paráms[k], list):
-                            res[k]['val'].extend(
-                                [_calc_máx_trz(trzs['par' + par_spotpy[f'{k}_{str(i)}']]) for i in
-                                 range(len(líms_paráms[k]))])
-                    else:
-                        for p, mapa in mapa_paráms.items():
-                            if isinstance(mapa, dict):
-                                res[k]['val'].extend(_calc_máx_trz(trzs['par' + par_spotpy[f'{p}_{str(i)}']]) for i in
-                                                     range(len(líms_paráms[p])))
-            if guardar:
-                np.save(guardar, res)
-            return res  # 100*215 (100*6) # dist: 6*100, val:6, peso: 6*100
+        res = {'buenas': np.where(buenas)[0], 'peso': pesos, 'máx_prob': rango_prob[1]}
+        if tipo_proc is None:
+            for i, p in enumerate(paráms):
+                col_p = 'par' + str(i)
+                res[p] = {'dist': trzs[col_p], 'val': _calc_máx_trz(trzs[col_p])}
+            # calculate the maxi distribution of the simulation results, and the weights
         else:
-            raise ValueError(_('Método de calibración "{}" no reconocido.').format(método))
+            for i in range(len(list(trzs.values())[0])):
+                x = np.asarray([val[i] for val in list(trzs.values())])
+                val_inic = gen_val_inic(x, mapa_paráms, líms_paráms, final_líms_paráms)
+                for k, val in val_inic.items():
+                    if k in res:
+                        res[k]['dist'].append(val)
+                    else:
+                        res[k] = {'dist': [val], 'val': []}
+            for k, v in res.items():
+                if k in líms_paráms:
+                    if isinstance(líms_paráms[k], tuple):
+                        res[k]['val'].append(_calc_máx_trz(trzs['par' + par_spotpy[k]]))
+                    elif isinstance(líms_paráms[k], list):
+                        res[k]['val'].extend(
+                            [_calc_máx_trz(trzs['par' + par_spotpy[f'{k}_{str(i)}']]) for i in
+                             range(len(líms_paráms[k]))])
+                elif isinstance(v, dict):
+                    for p, mapa in mapa_paráms.items():
+                        if isinstance(mapa, dict):
+                            res[k]['val'].extend(_calc_máx_trz(trzs['par' + par_spotpy[f'{p}_{str(i)}']]) for i in
+                                                 range(len(líms_paráms[p])))
+        if guardar:
+            np.save(guardar, res)
+        return res  # 100*215 (100*6) # dist: 6*100, val:6, peso: 6*100
 
 
 # Unas funciones auxiliares
@@ -961,8 +965,10 @@ class ModSpotPy(object):
 
 
 class PatrónProc(object):
+    itr = 0
+
     def __init__(símismo, mod, líms_paráms, obs, tipo_proc, mapa_paráms, comp_final_líms, obj_func, t_final,
-                 t_inic):
+                 t_inic, guar_sim):
         símismo.paráms = [
             spotpy.parameter.Uniform(str(list(comp_final_líms).index(p)), low=d[0], high=d[1],
                                      optguess=(d[0] + d[1]) / 2)
@@ -973,6 +979,7 @@ class PatrónProc(object):
         símismo.final_líms_paráms = comp_final_líms
         símismo.obj_func = obj_func
         símismo.mod = mod
+        símismo.guar_sim = guar_sim
         símismo.vars_interés = sorted(list(obs.data_vars))
         símismo.t_inic = t_inic
         símismo.t_final = t_final
@@ -987,18 +994,24 @@ class PatrónProc(object):
         return spotpy.parameter.generate(símismo.paráms)
 
     def simulation(símismo, x):
-        res = símismo.mod.simular_grupo(
-            t_final=símismo.t_final, vars_interés=símismo.vars_interés[0], t_inic=símismo.t_inic, combinar=False,
-            vals_inic=gen_val_inic(x, símismo.mapa_paráms, símismo.líms_paráms, símismo.final_líms_paráms)
-        )
+        vals_inic = {PatrónProc.itr:
+                         gen_val_inic(x, símismo.mapa_paráms, símismo.líms_paráms, símismo.final_líms_paráms)}
 
-        m_res = np.array([res[v].values for v in símismo.vars_interés][0])  # 62*215
+        res = símismo.mod.simular_grupo(vars_interés=símismo.vars_interés[0], t_final= 41, #símismo.t_final,
+                                        vals_inic=vals_inic, guardar=símismo.guar_sim)
+
+        PatrónProc.itr += 1
+
+        if isinstance(res, dict):
+            m_res = np.array([list(res.values())[0][v] for v in símismo.vars_interés][0])  # 42*215
+        else:
+            m_res = np.array([res[v].values for v in símismo.vars_interés][0])  # 62*215
         if m_res.shape[1] != símismo.obs['x0'].values.size:
             if m_res.shape[0] != símismo.obs['n'].values.size:
                 m_res = m_res[:-1, :]
                 n_res = np.empty([len(m_res), símismo.obs['x0'].values.size])
                 for ind, v in enumerate([int(i) for i in símismo.obs['x0'].values]):
-                    n_res[:, ind] = m_res[:, v-1]
+                    n_res[:, ind] = m_res[:, v - 1]
             else:
                 raise ValueError(" ")
         else:
@@ -1086,9 +1099,9 @@ def gen_gof(tipo_proc, sim=None, eval=None, obj_func=None, len_bparam=None):
             else:
                 len_bparam = eval[1]
                 eval = eval[0]
-                len_valid_sim = np.empty([len(sim), len(len_bparam)]) # 20*poly6
-                for i, poly_aray in enumerate(sim): #i=[1, 20], pa=[6*21]
-                    for j, poly in enumerate(poly_aray): #j=1, 6; poly [21]
+                len_valid_sim = np.empty([len(sim), len(len_bparam)])  # 20*poly6
+                for i, poly_aray in enumerate(sim):  # i=[1, 20], pa=[6*21]
+                    for j, poly in enumerate(poly_aray):  # j=1, 6; poly [21]
                         len_valid_sim[i, j] = -aic(len_bparam[j], eval[j], poly)
                 return np.nanmean(len_valid_sim, axis=1)
 
