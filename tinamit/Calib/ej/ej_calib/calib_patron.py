@@ -4,8 +4,8 @@ from tinamit.Análisis.Sens.muestr import gen_problema
 from tinamit.Calib.ej.info_paráms import calib_líms_paráms, calib_mapa_paráms
 from tinamit.Calib.ej.cor_patrón import calib_obs_90, valid_obs_90, calib_obs_80, valid_obs_80
 
-guardar = "D:\Thesis\pythonProject\localuse\Dt\Calib\\run_real\\"
-guardar_sim = "D:\Thesis\pythonProject\localuse\Dt\Calib\\simular\\"
+guardar = "D:\Thesis\pythonProject\localuse\Dt\Calib\\cali_res\\reverse_obs\\"
+fscabc_sim = "D:\Thesis\pythonProject\localuse\Dt\Calib\\simular\\reverse_obs\\"
 test = "D:\Thesis\pythonProject\localuse\Dt\Calib\\test_pgsdm\\"
 FSCABC = "C:\\Users\\gis_user\\AppData\\Local\\Temp\\CalibTinamït_42bbykc6.csv"
 # load original parameter names for the model simulation
@@ -46,17 +46,15 @@ method = ['dream', 'fscabc']
 if __name__ == "__main__":
     for m in method:
         if m == 'fscabc':
-            Calib_res = mod.calibrar(paráms=list(líms_paráms_final), bd=calib_obs_90, líms_paráms=calib_líms_paráms,
+            Calib_res = mod.calibrar(paráms=list(líms_paráms_final), bd=valid_obs_90, líms_paráms=calib_líms_paráms,
                                      vars_obs='mds_Watertable depth Tinamit', final_líms_paráms=líms_paráms_final[0],
                                      mapa_paráms=calib_mapa_paráms, tipo_proc='patrón', obj_func='AIC',
-                                     guardar=guardar + f'calib_pat-{m}', método=m, n_iter=500, guar_sim=guardar_sim, egr_spotpy=FSCABC)
-if __name__ == "__main__":
-    for m in método:
-        if m == 'mle':
-            #         Calib_res = mod.calibrar(paráms=list(líms_paráms_final), bd=calib_obs_90, líms_paráms=calib_líms_paráms,
-            #                                  vars_obs='mds_Watertable depth Tinamit', final_líms_paráms=líms_paráms_final[0],
-            #                                  mapa_paráms=calib_mapa_paráms, tipo_proc='patrón', obj_func='AIC',
-            #                                  guardar=guardar + f'calib_pat-{m}', método=m)
-            lg = np.load(test + f'calib_pat-{m}.npy').tolist()
-            mod.validar(bd=valid_obs_80, var='mds_Watertable depth Tinamit', tipo_proc='patrón', obj_func='AIC',
-                        guardar=test + f'valid_pat-{m}', lg=lg, paralelo=True, valid_sim="")
+                                     guardar=guardar + f'calib_pat-{m}', método=m, n_iter=500, guar_sim=fscabc_sim
+                                     )
+
+# if __name__ == "__main__":
+#     for m in method:
+#         if m == 'fscabc':
+#             lg = np.load(guardar + f'calib_pat-{m}.npy').tolist()
+#             mod.validar(bd=valid_obs_90, var='mds_Watertable depth Tinamit', tipo_proc='patrón', obj_func='AIC',
+#                         guardar=guardar + f'valid_all-{m}', lg=lg, paralelo=True, valid_sim=fscabc_sim, n_sim=144)

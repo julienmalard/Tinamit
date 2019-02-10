@@ -71,7 +71,7 @@ def validar_resultados(obs, matrs_simul, tol=0.65, tipo_proc=None, máx_prob=Non
             egr['éxito_nse'] = all(v >= tol for vr in l_vars for v in egr['vars'][vr]['NSE'])
             egr['éxito_aic'] = all((v - máx_prob) > 2 for vr in l_vars for v in egr['vars'][vr]['AIC'])
             prom = np.array([v for vr in l_vars for v in egr['vars'][vr]['AIC']]).mean()
-            egr['diff_aic'] = prom, máx_prob, prom - máx_prob
+            egr['diff_aic'] = {'valid_prom':prom, 'calib_máx_prob': máx_prob, 'diff': prom - máx_prob}
         else:
             egr = {
                 'vars': {vr:

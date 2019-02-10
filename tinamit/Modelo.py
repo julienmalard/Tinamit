@@ -1812,7 +1812,7 @@ class Modelo(object):
             símismo.calibs.update(d_calibs)
 
     def validar(símismo, bd, var=None, t_final=None, corresp_vars=None, tipo_proc=None, guardar=False, obj_func=None,
-                lg=None, paralelo=False, valid_sim=False):
+                lg=None, paralelo=False, valid_sim=False, n_sim=None):
         if obj_func is not None:
             obj_func = obj_func.upper()
         if var is None:
@@ -1826,7 +1826,7 @@ class Modelo(object):
                 bd_lg = gen_SuperBD(bd[lg])
                 vld = símismo._validar(bd=bd_lg, var=var, t_final=t_final, corresp_vars=corresp_vars, lg=lg,
                                        tipo_proc=None, t_inic=None, guardar=guardar, obj_func=obj_func,
-                                       paralelo=paralelo, valid_sim=valid_sim)
+                                       paralelo=paralelo, valid_sim=valid_sim, n_sim=n_sim)
                 res[lg] = vld
             res['éxito'] = all(d['éxito'] for d in res.values())
             return res
@@ -1841,10 +1841,10 @@ class Modelo(object):
 
         return símismo._validar(bd=bd, var=var, t_final=t_final, corresp_vars=corresp_vars, tipo_proc=tipo_proc,
                                 t_inic=t_inic, guardar=guardar, obj_func=obj_func, lg=lg, paralelo=paralelo,
-                                valid_sim=valid_sim)
+                                valid_sim=valid_sim, n_sim=n_sim)
 
     def _validar(símismo, bd, var, t_final, corresp_vars, tipo_proc, t_inic, guardar, obj_func, lg, paralelo,
-                 valid_sim):
+                 valid_sim, n_sim):
         if corresp_vars is None:
             corresp_vars = {}
 
@@ -1870,18 +1870,26 @@ class Modelo(object):
             d_vals_prms = {p: d_p['dist'] for p, d_p in símismo.calibs.items()}  # {'A': ndaray(100), 'B'...}
             máx_prob = [d_p['máx_prob'] for p, d_p in símismo.calibs.items()][0]
         else:
-            d_vals_prms = {p: d_p['dist'] for p, d_p in lg.items() if
-                           isinstance(d_p, dict)}  # {'A': ndaray(100), 'B'...}
+            d_vals_prms = {p: d_p['dist'] for p, d_p in lg.items() if isinstance(d_p, dict)}  # {'A': ndaray(100), 'B'...}
             máx_prob = lg['máx_prob']
 
         n_vals = len(list(d_vals_prms.values())[0])
 
         if valid_sim is not None:
-            m_res = np.empty([n_vals, *np.asarray([Dataset.from_dict(cargar_json(os.path.join(valid_sim, f'{0}')))[vr].values
-                     for vr in l_vars][0]).shape])
-            for i, v in enumerate(lg['buenas']):
-                m_res[i, :] = np.asarray([Dataset.from_dict(cargar_json(os.path.join(valid_sim, f'{v}')))[vr].values
-                     for vr in l_vars][0])
+            if n_sim is not None:
+                m_res =  np.empty(
+                    [n_sim, *np.asarray([Dataset.from_dict(cargar_json(os.path.join(valid_sim, f'{0}')))[vr].values
+                                          for vr in l_vars][0]).shape])  # 29*42*215
+                for i in range(n_sim):
+                    m_res[i, :] = np.asarray([Dataset.from_dict(cargar_json(os.path.join(valid_sim, f'{i}')))[vr].values
+                         for vr in l_vars][0])
+            else:
+                m_res = np.empty(
+                    [n_vals, *np.asarray([Dataset.from_dict(cargar_json(os.path.join(valid_sim, f'{0}')))[vr].values
+                                          for vr in l_vars][0]).shape])  # 29*42*215
+                for i, v in enumerate(lg['buenas']):
+                    m_res[i, :] = np.asarray([Dataset.from_dict(cargar_json(os.path.join(valid_sim, f'{v}')))[vr].values
+                         for vr in l_vars][0])
 
         else:
             vals_inic = [{p: v[í] for p, v in d_vals_prms.items()} for í in range(n_vals)]
@@ -1896,16 +1904,17 @@ class Modelo(object):
 
             m_res = np.array([[d[vr].values for d in res_simul.values()] for vr in l_vars])[0]  # 5*62*215
 
-        if m_res.shape[2] != obs['x0'].values.size: #215
-            if m_res.shape[1] != obs['n'].values.size: #41/42
-                for i in range(n_vals):
-                    if np.min(m_res) == 0:
-                        m_res[i, :] = np.delete(m_res[i, :], 1, 0)
+        if m_res.shape[2] != obs['x0'].values.size: #215 !=19
+            mm_res = np.empty([len(m_res), obs['n'].values.size, m_res.shape[2]]) #29,41,215
+            if m_res.shape[1] != obs['n'].values.size: #41!=42
+                for i in range(len(m_res)):
+                    if all(m_res[i, 1, :] == 0):
+                        mm_res[i, :] = np.delete(m_res[i, :], 1, 0)
                     else:
-                        m_res[i, :] = m_res[i, 1:, :]
-                n_res = np.empty([len(m_res), obs['n'].values.size, obs['x0'].values.size])  # [no.sim*19polys] 20*61*19
-                for ind, v in enumerate([int(i) for i in obs['x0'].values]):
-                    n_res[:, :, ind] = m_res[:, :, v - 1]
+                        mm_res[i, :] = m_res[i, 1:]
+                n_res = np.empty([len(m_res), obs['n'].values.size, obs['x0'].values.size])  #19*41*19
+                for ind, v in enumerate([int(i) for i in obs['x0'].values]): #215
+                    n_res[:, :, ind] = mm_res[:, :, v - 1]
 
             matrs_simul = {vr: n_res for vr in l_vars}
 

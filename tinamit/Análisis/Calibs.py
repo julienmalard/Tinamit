@@ -612,10 +612,10 @@ class CalibradorMod(object):
         if isinstance(trzs, dict):
             buenas = (probs >= np.min(np.sort(probs)[int(len(probs) * 0.8):]))
             trzs = {p: trzs[p][buenas] for p in cols_prm}
-            probs = probs[buenas]  # like values
+            prob = probs[buenas]  # like values
         else:
             trzs = trzs[-n_iter:]
-            probs = probs[-n_iter:]
+            prob = probs[-n_iter:]
 
             # if método == 'dream':
             #     if isinstance(trzs, dict):
@@ -630,10 +630,10 @@ class CalibradorMod(object):
             #     trzs = {p: trzs[p][buenas] for p in cols_prm}
             #     probs = probs[buenas]  # like values
 
-        rango_prob = (probs.min(), probs.max())
-        pesos = (probs - rango_prob[0]) / (rango_prob[1] - rango_prob[0])  # those > 0.8 like, weight distribution
+        rango_prob = (prob.min(), prob.max())
+        pesos = (prob - rango_prob[0]) / (rango_prob[1] - rango_prob[0])  # those > 0.8 like, weight distribution
 
-        res = {'buenas': np.where(buenas)[0], 'peso': pesos, 'máx_prob': rango_prob[1]}
+        res = {'buenas': np.where(buenas)[0], 'peso': pesos, 'máx_prob': rango_prob[1], 'prob': probs}
         if tipo_proc is None:
             for i, p in enumerate(paráms):
                 col_p = 'par' + str(i)
@@ -1007,11 +1007,15 @@ class PatrónProc(object):
         else:
             m_res = np.array([res[v].values for v in símismo.vars_interés][0])  # 62*215
         if m_res.shape[1] != símismo.obs['x0'].values.size:
+            mm_res = np.empty([símismo.obs['n'].values.size, m_res.shape[1]])
             if m_res.shape[0] != símismo.obs['n'].values.size:
-                m_res = m_res[:-1, :]
-                n_res = np.empty([len(m_res), símismo.obs['x0'].values.size])
+                if all(m_res[1, :] == 0):
+                    mm_res = np.delete(m_res, 1, 0)
+                else:
+                    mm_res = m_res[1:, :]
+                n_res = np.empty([len(mm_res), símismo.obs['x0'].values.size])
                 for ind, v in enumerate([int(i) for i in símismo.obs['x0'].values]):
-                    n_res[:, ind] = m_res[:, v - 1]
+                    n_res[:, ind] = mm_res[:, v - 1]
             else:
                 raise ValueError(" ")
         else:
