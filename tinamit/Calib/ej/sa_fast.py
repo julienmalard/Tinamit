@@ -50,10 +50,28 @@ if __name__ == "__main__":
     '''
     analysis
     '''
-
+    # results = _analy_by_file(i, 'fast', líms_paráms, sampled_fast, mapa_paráms, var_egr='mds_Watertable depth Tinamit',ficticia=True,
+    #                  dim=215, tipo_egr='superposition', f_simul_arch={
+    #         'arch': "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_no_ini\\fsim_const\\f_simul_cont",
+    #         'num_sample': 625,
+    #         'counted_behaviors': "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_no_ini\\fsim_const\\count_all.npy"},)
+    #
     # for result in results:
     #     re = result.get()
-    #     np.save(gaurdar + f'egr-{re[0]}', re[1])
+    #     np.save(behav_arch_fast + f'egr-{re[0]}', re[1])
+
+
+
+    # egr = anlzr_simul('morris', líms_paráms,
+    #                   "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\sampled_data\\muestra_morris_625.json",
+    #                   mapa_paráms, ficticia=True, var_egr='mds_Watertable depth Tinamit', f_simul_arch={
+    #         'arch': "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_no_ini\\fsim_const\\f_simul_cont",
+    #         'num_sample': 625,
+    #         'counted_behaviors': "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_no_ini\\fsim_const\\count_all.npy"},
+    #                   dim=215, tipo_egr="superposition", simulation=None, ops_método=None)
+    # np.save("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_spp_const", egr)
+
+    # merge_dict(merg1=behav_data_mor, merg2=behav_cont_data_mor, save_path=behav_const_dt + 'behav_correct_cont_dt')
 
     # _gen_poly_dt_for_geog('fast', fit_beh_poly_fast, geog_simul_pct_fast, 120000)
     # gen_geog_map(geog_simul_pct_fast, measure='behavior_param', method='Fast', param=None,
@@ -71,5 +89,5 @@ if __name__ == "__main__":
     #          simulation_data['1000'][var_egr].values, 0.1,
     #          "D:\Thesis\pythonProject\localuse\Dt\Fast\map\\paso_")
 
-    gen_rank_map(geog_save_fast, 'Fast', 0.01, 1, 'num_poly_rank') #, cluster=True, cls=6)
+    gen_rank_map(geog_save_fast, 'Fast', 0.01, 1, 'num_poly_rank', cluster=True, cls=6)
     # _read_dt_4_map('Fast')

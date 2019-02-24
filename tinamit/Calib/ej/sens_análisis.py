@@ -288,6 +288,7 @@ def merge_dict(method, merg1, merg2, save_path):
             merg2['superposition']['mds_Watertable depth Tinamit']['spp_oscil_aten_log']
 
         np.save(save_path, merg1)
+
     elif method == 'fast':
         for i in range(215):
             m1 = np.load(merg1 + f'egr-{i}').tolist()
@@ -466,6 +467,8 @@ def gen_row_col(behaviors, method):
     row = [p for p in behaviors['log']['bp_params']]
     row_labels = ['Ptq', 'Ptr', 'Kaq', 'Peq', 'Pex', 'POH, Summer', 'POH, Winter', 'CTW', 'Dummy']
 
+    print(col_new)
+    print(col_labels)
     return row_labels, col, col_labels, row, col_new
 
 
@@ -648,8 +651,8 @@ def gen_rank_map(rank_arch, method, fst_cut, snd_cut, rank_method, si=None, clus
         else:
             points = np.transpose(data[:, 1:])
             cluster = clustering(points, cls)
-            cls_col_n_od = ['N1']
-            cls_col_km = ['N1']
+            cls_col_n_od = ['a1']
+            cls_col_km = ['a1']
             data_new_od = np.transpose(cluster['n_points'])
             data_km = np.transpose(cluster['km_cls'])
             for j in range(len(r_c[4]) - 1):

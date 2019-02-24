@@ -12,11 +12,11 @@ if __name__ == "__main__":
     '''
     Simul
     '''
-    mstr_paráms = cargar_mstr_paráms("D:\Thesis\pythonProject\localuse\Dt\Mor\sampled data\\muestra_morris.json")
-    simul_sens(
-        gen_mod(), mstr_paráms=mstr_paráms, mapa_paráms=mapa_paráms, var_egr='mds_Watertable depth Tinamit', t_final=20, guardar=simu_guar_arch_mor,
-        índices_mstrs=None, paralelo=True
-    )
+    # mstr_paráms = cargar_mstr_paráms("D:\Thesis\pythonProject\localuse\Dt\Mor\sampled data\\muestra_morris.json")
+    # simul_sens(
+    #     gen_mod(), mstr_paráms=mstr_paráms, mapa_paráms=mapa_paráms, var_egr='mds_Watertable depth Tinamit', t_final=20, guardar=simu_guar_arch_mor,
+    #     índices_mstrs=None, paralelo=True
+    # )
 
     '''
     Anlzr
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     #         'counted_behaviors': "D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\f_simul\\f_simul_no_ini\\fsim_const\\count_all.npy"},
     #                   dim=215, tipo_egr="superposition", simulation=None, ops_método=None)
     # np.save("D:\Thesis\pythonProject\localuse\Dt\Mor\Mor_home\\anlzr\\625\\mor_625_spp_const", egr)
-
+    #
     # merge_dict(merg1=behav_data_mor, merg2=behav_cont_data_mor, save_path=behav_const_dt + 'behav_correct_cont_dt')
 
     '''
@@ -92,6 +92,6 @@ if __name__ == "__main__":
     #              fst_cut=0.1, snd_cut=8)
 
     # final plot
-    gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'num_poly_rank') #, cluster=True, cls=6)
+    gen_rank_map(rank_arch_mor, 'Morris', 0.1, 8, 'num_poly_rank', cluster=True, cls=6)
 
     # _read_dt_4_map('Morris')

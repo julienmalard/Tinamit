@@ -64,7 +64,7 @@ def write_excel(data, columns, file):
             df.to_excel(writer, kind)
 
 
-def compute_superposition(interploated_data, norm_obs=None):
+def compute_patron(interploated_data, norm_obs=None):
     best_behaviors = {}
     d_calib = {}
     d_numero = {}
@@ -91,7 +91,7 @@ def compute_superposition(interploated_data, norm_obs=None):
                 y_pred = np.asarray(
                     predict(np.array(range(len(data))), re[best_behav[0][0]]['bp_params'], best_behav[0][0]))
                 d_calib[p] = {best_behav[0][0]: re[best_behav[0][0]], 'y_pred': y_pred}
-
+        np.save("D:\Thesis\pythonProject\localuse\Dt\Calib\coa\\obs_dt", d_calib)
     return best_behaviors, d_calib, d_numero
 
 
@@ -131,7 +131,7 @@ def plot_obs_best_fit(res, gaur_arch, inplt_arch=None):
         bd = kinds_in_d['previous']
     else:
         bd = res[1]
-    best_behaviors, d_calib, d_numero = compute_superposition(bd)
+    best_behaviors, d_calib, d_numero = compute_patron(bd)
 
     np.save("D:\Thesis\pythonProject\localuse\Dt\Calib\\best_behaviors", best_behaviors)
     np.save("D:\Thesis\pythonProject\localuse\Dt\Calib\\d_calib", d_calib)

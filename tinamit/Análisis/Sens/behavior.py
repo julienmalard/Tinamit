@@ -176,7 +176,7 @@ def simple_shape(x_data=None, y_data=None, tipo_egr='linear', gof=False):
     return b_params
 
 
-def forma(x_data, y_data):
+def forma(x_data, y_data, valid=None):
     behaviors_aics = {'linear': {},
                       'exponencial': {},
                       'logístico': {},
@@ -184,11 +184,15 @@ def forma(x_data, y_data):
                       'log': {},
                       'oscilación': {},
                       'oscilación_aten': {}}
+    if valid is not None:
+        del behaviors_aics['oscilación']
+        del behaviors_aics['oscilación_aten']
 
     for behavior in behaviors_aics.keys():
         behaviors_aics[behavior] = simple_shape(x_data, y_data, behavior, gof=True)
 
     return behaviors_aics
+
 
 
 def find_best_behavior(all_beh_dt, trans_shape=None):

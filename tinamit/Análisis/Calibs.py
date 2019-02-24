@@ -12,7 +12,7 @@ from scipy.stats import gaussian_kde
 from tinamit.Análisis.Datos import BDtexto, gen_SuperBD, SuperBD
 from tinamit.Análisis.Sens.behavior import aic
 from tinamit.Análisis.sintaxis import Ecuación
-from tinamit.Calib.ej.obs_patrón import compute_superposition
+from tinamit.Calib.ej.obs_patrón import compute_patron
 from tinamit.config import _
 
 try:
@@ -617,19 +617,6 @@ class CalibradorMod(object):
             trzs = trzs[-n_iter:]
             prob = probs[-n_iter:]
 
-            # if método == 'dream':
-            #     if isinstance(trzs, dict):
-            #         buenas = (probs >= np.min(np.sort(probs)[int(len(probs) * 0.8):]))
-            #         trzs = {p: trzs[p][buenas] for p in cols_prm}
-            #         probs = probs[buenas]  # like values
-            #     else:
-            #         trzs = trzs[-n_iter:]
-            #         probs = probs[-n_iter:]
-            # elif método != 'mcmc':
-            #     buenas = (probs >= np.min(np.sort(probs)[int(len(probs) * 0.8):]))
-            #     trzs = {p: trzs[p][buenas] for p in cols_prm}
-            #     probs = probs[buenas]  # like values
-
         rango_prob = (prob.min(), prob.max())
         pesos = (prob - rango_prob[0]) / (rango_prob[1] - rango_prob[0])  # those > 0.8 like, weight distribution
 
@@ -1036,7 +1023,7 @@ def patro_proces(tipo_proc, obs, norm_obs, vars_interés):
     if tipo_proc == 'multidim':  # {var: nparray[61, 38]}
         return norm_obs, 0  # nparray[38, 61]
     elif tipo_proc == 'patrón':
-        d_patron = compute_superposition(obs, norm_obs)[1]
+        d_patron = compute_patron(obs, norm_obs)[1]
         matriz_vacía = np.empty([obs[vars_interés[0]].values.shape[0], len(d_patron)])  # 61, 38
         length_params = []
         for poly, d_data in d_patron.items():
@@ -1097,16 +1084,16 @@ def gen_gof(tipo_proc, sim=None, eval=None, obj_func=None, len_bparam=None):
         elif tipo_proc == 'patrón':
             if not isinstance(eval, tuple):
                 len_obs_poly = np.empty([len(eval)])
-                for i, poly in enumerate(sim):
-                    len_obs_poly[i] = -aic(len_bparam[i], eval[i], poly)
+                for i, y_sim in enumerate(sim):
+                    len_obs_poly[i] = -aic(len_bparam[i], eval[i], y_sim)
                 return np.nanmean(len_obs_poly)
             else:
                 len_bparam = eval[1]
                 eval = eval[0]
                 len_valid_sim = np.empty([len(sim), len(len_bparam)])  # 20*poly6
                 for i, poly_aray in enumerate(sim):  # i=[1, 20], pa=[6*21]
-                    for j, poly in enumerate(poly_aray):  # j=1, 6; poly [21]
-                        len_valid_sim[i, j] = -aic(len_bparam[j], eval[j], poly)
+                    for j, y_sim in enumerate(poly_aray):  # j=1, 6; poly [21]
+                        len_valid_sim[i, j] = -aic(len_bparam[j], eval[j], y_sim)
                 return np.nanmean(len_valid_sim, axis=1)
 
 

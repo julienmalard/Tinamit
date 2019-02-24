@@ -43,18 +43,18 @@ parallel_método = [
 ]
 method = ['dream', 'fscabc']
 
-if __name__ == "__main__":
-    for m in method:
-        if m == 'fscabc':
-            Calib_res = mod.calibrar(paráms=list(líms_paráms_final), bd=valid_obs_90, líms_paráms=calib_líms_paráms,
-                                     vars_obs='mds_Watertable depth Tinamit', final_líms_paráms=líms_paráms_final[0],
-                                     mapa_paráms=calib_mapa_paráms, tipo_proc='patrón', obj_func='AIC',
-                                     guardar=guardar + f'calib_pat-{m}', método=m, n_iter=500, guar_sim=fscabc_sim
-                                     )
-
 # if __name__ == "__main__":
 #     for m in method:
 #         if m == 'fscabc':
-#             lg = np.load(guardar + f'calib_pat-{m}.npy').tolist()
-#             mod.validar(bd=valid_obs_90, var='mds_Watertable depth Tinamit', tipo_proc='patrón', obj_func='AIC',
-#                         guardar=guardar + f'valid_all-{m}', lg=lg, paralelo=True, valid_sim=fscabc_sim, n_sim=144)
+#             Calib_res = mod.calibrar(paráms=list(líms_paráms_final), bd=valid_obs_90, líms_paráms=calib_líms_paráms,
+#                                      vars_obs='mds_Watertable depth Tinamit', final_líms_paráms=líms_paráms_final[0],
+#                                      mapa_paráms=calib_mapa_paráms, tipo_proc='patrón', obj_func='AIC',
+#                                      guardar=guardar + f'calib_pat-{m}', método=m, n_iter=500, guar_sim=fscabc_sim
+#                                      )
+
+if __name__ == "__main__":
+    for m in method:
+        if m == 'fscabc':
+            lg = np.load(guardar + f'calib_pat-{m}.npy').tolist()
+            mod.validar(bd=calib_obs_90, var='mds_Watertable depth Tinamit', tipo_proc='patrón', obj_func='AIC',
+                        guardar=guardar + f'valid_reverse-{m}', lg=lg, paralelo=True, valid_sim=fscabc_sim, n_sim=624)

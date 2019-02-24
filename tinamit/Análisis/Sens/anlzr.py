@@ -590,6 +590,7 @@ def carg_simul_dt(arch_simular, num_samples, var_egr=None, dim=None, tipo_egr=No
                     {str(i): np.average(Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{i}')))
                                         [var_egr].values[2:, dim])})
         elif tipo_egr == 'paso_tiempo':
+            método=método.lower()
             if método == 'morris':
                 simulation_data.update(
                     {str(i): Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{i}')))
@@ -603,6 +604,6 @@ def carg_simul_dt(arch_simular, num_samples, var_egr=None, dim=None, tipo_egr=No
                         indices)})
 
     if var_egr is None:
-        var_egr = [list(list(simulation_data.values())[0].data_vars.variables.mapping)[1]]  # [0] - soil salinity, 1 wtd
+        var_egr = list(Dataset.from_dict(cargar_json(os.path.join(arch_simular, f'{0}'))))[1]  # [0] - soil salinity, 1 wtd
 
     return simulation_data, var_egr

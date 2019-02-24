@@ -1927,6 +1927,14 @@ class Modelo(object):
         else:
             resultados = validar_resultados(obs=obs, matrs_simul=matrs_simul, tipo_proc=tipo_proc,
                                             máx_prob=máx_prob, obj_func=obj_func)
+
+        if n_sim:
+            for vr in l_vars:
+                probs = resultados['vars'][vr]['AIC']
+                buenas = (probs >= np.min(np.sort(probs)[int(len(probs) * 0.8):]))
+                resultados['ind_top_valid'] = np.where(buenas)[0]
+                resultados['top_valid'] = probs[buenas]
+
         if guardar:
             np.save(guardar, resultados)
 
