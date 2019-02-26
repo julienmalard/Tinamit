@@ -12,7 +12,7 @@ import shapefile as sf
 from matplotlib import cm
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
-#from تقدیر.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
+from تقدیر.ذرائع.مشاہدات import دن_مشا, مہنہ_مشا, سال_مشا
 from تقدیر.مقام import مقام
 
 from tinamit.config import _

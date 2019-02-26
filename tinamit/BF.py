@@ -519,13 +519,17 @@ class ModeloImpaciente(ModeloBF):
         super().iniciar_modelo(n_pasos=n_pasos, t_final=t_final, nombre_corrida=nombre_corrida, vals_inic=vals_inic)
 
     def cambiar_vals(símismo, valores):
-        paso = símismo.paso_en_ciclo
-        if paso == -1:
-            paso = slice(None)
+        paso = símismo._obt_paso()
         for var, val in valores.items():
             símismo.matrs_ingr[var][paso] = val
 
         super().cambiar_vals(valores)
+
+    def _obt_paso(símismo):
+        paso = símismo.ciclo
+        if paso == -1:
+            paso = slice(None)
+        return paso
 
     def procesar_ingr_modelo(símismo):
         for var, proc in símismo.proces_ingrs.items():
@@ -893,6 +897,13 @@ class ModeloBloques(ModeloImpaciente):
 
         raise ValueError(símismo.paso_en_ciclo)
 
+    def _obt_paso(símismo):
+        if símismo.paso_en_ciclo == -1:
+            paso = slice(None)
+        else:
+            paso = símismo.bloque_actual()
+        return paso
+
     def _vars_subciclo(símismo, solamente=None):
         return símismo._vars_por_pasito(solamente) + símismo._vars_por_bloques(solamente)
 
@@ -908,7 +919,7 @@ class ModeloBloques(ModeloImpaciente):
     def _act_vals_clima(símismo, f_0, f_1, lugar):
 
         # Solamante hay que cambiar los datos si es el principio de un nuevo ciclo.
-        if símismo.ciclo == 0 and símismo.paso_en_ciclo == 0:
+        if símismo.paso_en_ciclo == 0:
 
             # La lista de variables climáticos
             vars_clima = list(símismo.vars_clima)
