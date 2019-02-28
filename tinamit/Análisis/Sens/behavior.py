@@ -176,7 +176,7 @@ def simple_shape(x_data=None, y_data=None, tipo_egr='linear', gof=False):
     return b_params
 
 
-def forma(x_data, y_data, valid=None):
+def forma(x_data, y_data):
     behaviors_aics = {'linear': {},
                       'exponencial': {},
                       'logístico': {},
@@ -184,15 +184,11 @@ def forma(x_data, y_data, valid=None):
                       'log': {},
                       'oscilación': {},
                       'oscilación_aten': {}}
-    if valid is not None:
-        del behaviors_aics['oscilación']
-        del behaviors_aics['oscilación_aten']
 
     for behavior in behaviors_aics.keys():
         behaviors_aics[behavior] = simple_shape(x_data, y_data, behavior, gof=True)
 
     return behaviors_aics
-
 
 
 def find_best_behavior(all_beh_dt, trans_shape=None):
@@ -243,8 +239,6 @@ def superposition(x_data, y_data):
             spp_osci_aic_atan = np.nan
         else:
             spp_osci_aic_atan = aic(len(y_predict), y_spp_osci_atan, y_data)
-        # spp_osci_aic = aic(len(y_predict), y_spp_osci, y_data)
-        # spp_osci_aic_atan = aic(len(y_predict), y_spp_osci_atan, y_data)
         b_param.update({behavior: behaviors_aics[behavior]})
 
         if 'constant' in behaviors_aics[behavior]['bp_params']:

@@ -1019,17 +1019,20 @@ class PatrónProc(object):
         return gof
 
 
-def patro_proces(tipo_proc, obs, norm_obs, vars_interés):
+def patro_proces(tipo_proc, obs, norm_obs, vars_interés=None, valid=False):
     if tipo_proc == 'multidim':  # {var: nparray[61, 38]}
         return norm_obs, 0  # nparray[38, 61]
     elif tipo_proc == 'patrón':
-        d_patron = compute_patron(obs, norm_obs)[1]
-        matriz_vacía = np.empty([obs[vars_interés[0]].values.shape[0], len(d_patron)])  # 61, 38
-        length_params = []
-        for poly, d_data in d_patron.items():
-            matriz_vacía[:, list(d_patron).index(poly)] = np.asarray(d_patron[poly]['y_pred'])
-            length_params.append(len(list(d_data.values())[0]['bp_params']))
-        return matriz_vacía.T, length_params  # (nparray 38*61, [list of the length of the bp_params])
+        d_patron = compute_patron(obs, norm_obs, valid=valid)[1]
+        if valid is True:
+            return d_patron
+        else:
+            matriz_vacía = np.empty([obs[vars_interés[0]].values.shape[0], len(d_patron)])  # 61, 38
+            length_params = []
+            for poly, d_data in d_patron.items():
+                matriz_vacía[:, list(d_patron).index(poly)] = np.asarray(d_patron[poly]['y_pred'])
+                length_params.append(len(list(d_data.values())[0]['bp_params']))
+            return matriz_vacía.T, length_params  # (nparray 38*61, [list of the length of the bp_params])
 
 
 def aplastar(datos, vars_interés):

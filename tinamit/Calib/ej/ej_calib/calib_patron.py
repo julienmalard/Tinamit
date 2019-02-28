@@ -4,10 +4,11 @@ from tinamit.Análisis.Sens.muestr import gen_problema
 from tinamit.Calib.ej.info_paráms import calib_líms_paráms, calib_mapa_paráms
 from tinamit.Calib.ej.cor_patrón import calib_obs_90, valid_obs_90, calib_obs_80, valid_obs_80
 
-guardar = "D:\Thesis\pythonProject\localuse\Dt\Calib\\cali_res\\reverse_obs\\"
-fscabc_sim = "D:\Thesis\pythonProject\localuse\Dt\Calib\\simular\\reverse_obs\\"
-test = "D:\Thesis\pythonProject\localuse\Dt\Calib\\test_pgsdm\\"
-FSCABC = "C:\\Users\\gis_user\\AppData\\Local\\Temp\\CalibTinamït_42bbykc6.csv"
+guardar = "D:\Thesis\pythonProject\localuse\Dt\Calib\\cali_res\\old\\"
+fscabc_sim = "D:\Thesis\pythonProject\localuse\Dt\Calib\\simular\\fscabc\\"
+plot = "D:\Thesis\pythonProject\localuse\Dt\Calib\plot\Calib\\"
+# test = "D:\Thesis\pythonProject\localuse\Dt\Calib\\test_pgsdm\\"
+# FSCABC = "C:\\Users\\gis_user\\AppData\\Local\\Temp\\CalibTinamït_42bbykc6.csv"
 # load original parameter names for the model simulation
 líms_paráms_final = []
 líms_paráms_final.append(gen_problema(líms_paráms=calib_líms_paráms, mapa_paráms=calib_mapa_paráms, ficticia=False)[1])
@@ -56,5 +57,5 @@ if __name__ == "__main__":
     for m in method:
         if m == 'fscabc':
             lg = np.load(guardar + f'calib_pat-{m}.npy').tolist()
-            mod.validar(bd=calib_obs_90, var='mds_Watertable depth Tinamit', tipo_proc='patrón', obj_func='AIC',
-                        guardar=guardar + f'valid_reverse-{m}', lg=lg, paralelo=True, valid_sim=fscabc_sim, n_sim=624)
+            mod.validar(bd=calib_obs_90, var='mds_Watertable depth Tinamit', tipo_proc='patrón', obj_func='multi_behavior_tests',
+                        guardar=guardar + f'valid_old-{m}', lg=lg, paralelo=True, valid_sim=fscabc_sim, n_sim=5, save_plot=plot)

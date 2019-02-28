@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
-from tinamit.Análisis.Sens.behavior import superposition, find_best_behavior, predict
+from tinamit.Análisis.Sens.behavior import superposition, find_best_behavior, predict, forma
 
 
 def read_obs_csv(file_name):
@@ -64,7 +64,7 @@ def write_excel(data, columns, file):
             df.to_excel(writer, kind)
 
 
-def compute_patron(interploated_data, norm_obs=None):
+def compute_patron(interploated_data, norm_obs=None, valid=False):
     best_behaviors = {}
     d_calib = {}
     d_numero = {}
@@ -85,13 +85,15 @@ def compute_patron(interploated_data, norm_obs=None):
             data = norm_obs.T
             for i, p in enumerate(interploated_data['x0'].values):
                 print(f"Behavior Detecting of Polygon {p} !")
-                re = superposition(np.arange(len(data[:, i])), data[:, i])[0]
+                if valid is True:
+                    re = forma(np.arange(len(data[:, i])), data[:, i])
+                else:
+                    re = superposition(np.arange(len(data[:, i])), data[:, i])[0]
                 best_behav = find_best_behavior(re)[0]
                 best_behaviors[p] = best_behav[0]
                 y_pred = np.asarray(
                     predict(np.array(range(len(data))), re[best_behav[0][0]]['bp_params'], best_behav[0][0]))
                 d_calib[p] = {best_behav[0][0]: re[best_behav[0][0]], 'y_pred': y_pred}
-        np.save("D:\Thesis\pythonProject\localuse\Dt\Calib\coa\\obs_dt", d_calib)
     return best_behaviors, d_calib, d_numero
 
 
