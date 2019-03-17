@@ -1,8 +1,8 @@
-from tinamit.Análisis.Sens.anlzr import analy_by_file, behav_proc_from_file, anlzr_simul
-from tinamit.Análisis.Sens.corridas import simul_sens
-from tinamit.Análisis.Sens.muestr import cargar_mstr_paráms
+# from tinamit.Análisis.Sens.anlzr import analy_by_file, behav_proc_from_file, anlzr_simul
+# from tinamit.Análisis.Sens.corridas import simul_sens
+# from tinamit.Análisis.Sens.muestr import cargar_mstr_paráms
+# from tinamit.Calib.ej.info_paráms import mapa_paráms, líms_paráms
 from tinamit.Calib.ej.info_analr import *
-from tinamit.Calib.ej.info_paráms import mapa_paráms, líms_paráms
 from tinamit.Calib.ej.sens_análisis import gen_row_col, gen_geog_map, gen_rank_map, _gen_poly_dt_for_geog, \
     _read_dt_4_map, merge_dict, gen_mod
 

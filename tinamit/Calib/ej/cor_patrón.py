@@ -1,19 +1,28 @@
 from tinamit.Calib.ej.obs_patrón import read_obs_csv, read_obs_data, plot_pattern
 
 # file_name = "D:\Thesis\data\organized obs values.xlsx"
-calib_file_csv = "D:\Thesis\data\\calib_poly.csv"
-valid_file_csv = "D:\Thesis\data\\valid_poly.csv"
+# calib_file_csv = "D:\Thesis\data\\calib_poly.csv"
+# valid_file_csv = "D:\Thesis\data\\valid_poly.csv"
 
-calib = "D:\Thesis\data\\calib.csv"
-valid = "D:\Thesis\data\\valid.csv"
+# calib = "D:\Thesis\data\\cluster_calib.csv"
+# valid = "D:\Thesis\data\\cluster_valid.csv"
+
+calib = "D:\Thesis\data\\old\\calib.csv"
+valid = "D:\Thesis\data\\old\\valid.csv"
+
+total = "D:\Thesis\data\\total_obs.csv"
 # res = read_obs_data(file_name, sheet_name='Sheet4')
 
 # res = read_obs_data(file_name, sheet_name='Sheet4')
-calib_obs_90 = read_obs_csv(calib)
-valid_obs_90 = read_obs_csv(valid)
+cluster_calib = read_obs_csv(calib)
+cluster_valid = read_obs_csv(valid)
+# obs_90_all = read_obs_csv(total)
 
-calib_obs_80 = read_obs_csv(calib_file_csv)
-valid_obs_80 = read_obs_csv(valid_file_csv)
+ori_calib = read_obs_csv(calib)
+ori_valid = read_obs_csv(valid)
+
+# calib_obs_80 = read_obs_csv(calib_file_csv)
+# valid_obs_80 = read_obs_csv(valid_file_csv)
 
 # calib_obs = read_obs_data(calib, sheet_name='Sheet1')
 # valid_obs = read_obs_data(valid, sheet_name='Sheet1')

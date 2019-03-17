@@ -10,7 +10,7 @@ from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
 
 from tinamit.Análisis.Datos import BDtexto, gen_SuperBD, SuperBD
-from tinamit.Análisis.Sens.behavior import aic
+from tinamit.Análisis.Sens.behavior import aic, compute_rmse, nse
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.Calib.ej.obs_patrón import compute_patron
 from tinamit.config import _
@@ -1015,18 +1015,28 @@ class PatrónProc(object):
     def objectivefunction(símismo, simulation, evaluation, params=None):
         # like = spotpy.likelihoods.gaussianLikelihoodMeasErrorOut(evaluation,simulation)
         # like = spotpy.objectivefunctions.nashsutcliffe(evaluation, simulation)
-        gof = gen_gof(símismo.tipo_proc, simulation, evaluation, símismo.obj_func, símismo.len_bparam)
+        gof = gen_gof(símismo.tipo_proc, simulation, evaluation, símismo.obj_func, símismo.len_bparam, obs=símismo.obs, valid ='point-pattern')
         return gof
 
 
-def patro_proces(tipo_proc, obs, norm_obs, vars_interés=None, valid=False):
+def patro_proces(tipo_proc, obs, norm_obs, vars_interés=None, valid=None):
     if tipo_proc == 'multidim':  # {var: nparray[61, 38]}
         return norm_obs, 0  # nparray[38, 61]
     elif tipo_proc == 'patrón':
-        d_patron = compute_patron(obs, norm_obs, valid=valid)[1]
-        if valid is True:
-            return d_patron
+        if valid == 'valid_multi_tests':
+            return compute_patron(obs, norm_obs, valid=valid)[1]
+        elif valid == 'valid_others_s':
+            return compute_patron(obs, norm_obs, valid=valid)[1]
+        elif valid == 'valid_others_o':
+            d_patron = compute_patron(obs, norm_obs, valid=valid)[1]
+            length_params = []
+            for poly, d_data in d_patron.items():
+                length_params.append(len(list(d_data.values())[0]['bp_params']))
+            return d_patron, length_params
+        elif valid == 'coeff_linear':
+            return compute_patron(obs, norm_obs, valid=valid)[1]
         else:
+            d_patron = compute_patron(obs, norm_obs, valid=valid)[1]
             matriz_vacía = np.empty([obs[vars_interés[0]].values.shape[0], len(d_patron)])  # 61, 38
             length_params = []
             for poly, d_data in d_patron.items():
@@ -1075,37 +1085,41 @@ def gen_val_inic(x, mapa_paráms, líms_paráms, final_líms_paráms):
     return vals_inic
 
 
-def gen_gof(tipo_proc, sim=None, eval=None, obj_func=None, len_bparam=None):
-    if obj_func == 'NSE':
-        if eval.shape == sim.shape:
-            return nse(eval, sim)
-        else:
-            return np.array([nse(eval, sim[i, :]) for i in range(len(sim))])
-    elif obj_func == 'AIC':
-        if tipo_proc == 'multidim':
-            raise TypeError(_(f"{obj_func} no puede procesar el tipo {tipo_proc}"))
-        elif tipo_proc == 'patrón':
-            if not isinstance(eval, tuple):
-                len_obs_poly = np.empty([len(eval)])
-                for i, y_sim in enumerate(sim):
-                    len_obs_poly[i] = -aic(len_bparam[i], eval[i], y_sim)
-                return np.nanmean(len_obs_poly)
-            else:
-                len_bparam = eval[1]
-                eval = eval[0]
-                len_valid_sim = np.empty([len(sim), len(len_bparam)])  # 20*poly6
-                for i, poly_aray in enumerate(sim):  # i=[1, 20], pa=[6*21]
-                    for j, y_sim in enumerate(poly_aray):  # j=1, 6; poly [21]
+def gen_gof(tipo_proc, sim=None, eval=None, obj_func=None, len_bparam=None, valid=None, obs=None):
+    if tipo_proc == 'patrón':
+        if valid == 'pattern-pattern':
+            len_obs_poly = np.empty([len(eval)])
+            for i, y_sim in enumerate(sim):
+                if obj_func == 'AIC':
+                    t_sim = patro_proces(tipo_proc, obs, sim, valid="valid_others_s")
+                    # patro_proces(tipo_proc, eval, sim[vr][n, :].T, vars_interés=None, valid=None)
+                    len_obs_poly[i] = -aic(len_bparam[i], eval[i], t_sim[list(t_sim)[i]]['y_pred'])
+            return np.nanmean(len_obs_poly)
+        elif valid == 'point-pattern':
+            len_valid_sim = np.empty([len(len_bparam)])  # 20*poly6
+            for i, y_sim in enumerate(sim):  # i=[1, 20], pa=[6*21]  # j=1, 6; poly [21]
+                if obj_func == 'AIC':
+                    len_valid_sim[i] = -aic(len_bparam[i], eval[i], y_sim)
+            return np.nanmean(len_valid_sim)
+        elif valid == 'point-pattern_valid':
+            len_valid_sim = np.empty([len(sim), len(len_bparam)])  # 144runs, 13polys
+            for i, poly_aray in enumerate(sim):  # i=[1, 20], pa=[6*21]
+                for j, y_sim in enumerate(poly_aray):  # j=1, 6; poly [21]
+                    if obj_func == 'AIC':
                         len_valid_sim[i, j] = -aic(len_bparam[j], eval[j], y_sim)
-                return np.nanmean(len_valid_sim, axis=1)
+            return np.nanmean(len_valid_sim, axis=1)
 
 
-def nse(obs, sim):
-    s, e = np.array(sim), np.array(obs)
-    # s,e=simulation,evaluation
-    mean_observed = np.nanmean(e)
-    # compute numerator and denominator
-    numerator = np.nansum((e - s) ** 2)
-    denominator = np.nansum((e - mean_observed) ** 2)
-    # compute coefficient
-    return 1 - (numerator / denominator)
+    elif tipo_proc == 'multidim':
+        if eval.shape == sim.shape:
+            if obj_func == 'NSE':
+                return nse(eval, sim)
+            elif obj_func == 'rmse':
+                return  compute_rmse(eval, sim)
+        else:
+            if obj_func == 'NSE':
+                return np.array([nse(eval, sim[i, :]) for i in range(len(sim))])
+            elif obj_func == 'rmse':
+                return  np.array([compute_rmse(eval, sim[i, :]) for i in range(len(sim))])
+            elif obj_func == 'AIC':
+                return np.asarray([-aic(len_bparam[i], eval[i], sim[list(sim)[i]]['y_pred'])for i in range(len(sim))])

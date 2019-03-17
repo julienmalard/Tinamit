@@ -1,5 +1,7 @@
 import numpy as np
 from scipy import optimize
+from numpy import ones, kron, mean, eye, hstack, dot, tile
+from numpy.linalg import pinv
 
 
 def predict(x_data, parameters, pattern):
@@ -116,9 +118,9 @@ def simple_shape(x_data=None, y_data=None, tipo_egr='linear', gof=False):
     if tipo_egr == 'linear':
         params = optimize.minimize(f_opt, x0=[1, 1], method='Nelder-Mead',
                                    args=(x_data, norm_y_data, linear)).x
-        b_params = {'bp_params': de_normalize(params, y_data, tipo_egr)}
+        b_params = {'bp_params': de_standardize(params, y_data, tipo_egr)}
         # slope, intercept, r_value, p_value, std_err = estad.linregress(x_data, norm_y_data)
-        # b_params = {'bp_params': de_normalize(np.asarray([slope, intercept]), y_data, tipo_egr)}
+        # b_params = {'bp_params': de_standardize(np.asarray([slope, intercept]), y_data, tipo_egr)}
         if gof:
             b_params.update({'gof': {'aic': aic(len(b_params['bp_params']),
                                                 linear(np.asarray(list(b_params['bp_params'].values())), x_data),
@@ -126,7 +128,7 @@ def simple_shape(x_data=None, y_data=None, tipo_egr='linear', gof=False):
     elif tipo_egr == 'exponencial':
         params = optimize.minimize(f_opt, x0=[0.1, 1.1, 0], method='Powell',
                                    args=(x_data, norm_y_data, exponencial)).x
-        b_params = {'bp_params': de_normalize(params, y_data, tipo_egr)}
+        b_params = {'bp_params': de_standardize(params, y_data, tipo_egr)}
         if gof:
             b_params.update({'gof': {'aic': aic(len(b_params['bp_params']),
                                                 exponencial(np.asarray(list(b_params['bp_params'].values())), x_data),
@@ -134,21 +136,21 @@ def simple_shape(x_data=None, y_data=None, tipo_egr='linear', gof=False):
     elif tipo_egr == 'logístico':
         params = optimize.minimize(f_opt, x0=[5.0, 0.85, 3.0, 0], method='Powell',
                                    args=(x_data, norm_y_data, logístico)).x
-        b_params = {'bp_params': de_normalize(params, y_data, tipo_egr)}
+        b_params = {'bp_params': de_standardize(params, y_data, tipo_egr)}
         if gof:
             b_params.update({'gof': {'aic': aic(len(b_params['bp_params']),
                                                 logístico(np.asarray(list(b_params['bp_params'].values())), x_data),
                                                 y_data)}})
     elif tipo_egr == 'inverso':
         params = optimize.minimize(f_opt, x0=[3.0, 0.4, 0], method='Nelder-Mead', args=(x_data, norm_y_data, inverso)).x
-        b_params = {'bp_params': de_normalize(params, y_data, tipo_egr)}
+        b_params = {'bp_params': de_standardize(params, y_data, tipo_egr)}
         if gof:
             b_params.update({'gof': {'aic': aic(len(b_params['bp_params']),
                                                 inverso(np.asarray(list(b_params['bp_params'].values())), x_data),
                                                 y_data)}})
     elif tipo_egr == 'log':
         params = optimize.minimize(f_opt, x0=[0.3, 0.1, 0], method='Nelder-Mead', args=(x_data, norm_y_data, log)).x
-        b_params = {'bp_params': de_normalize(params, y_data, tipo_egr)}
+        b_params = {'bp_params': de_standardize(params, y_data, tipo_egr)}
         if gof:
             b_params.update({'gof': {'aic': aic(len(b_params['bp_params']),
                                                 log(np.asarray(list(b_params['bp_params'].values())), x_data),
@@ -156,7 +158,7 @@ def simple_shape(x_data=None, y_data=None, tipo_egr='linear', gof=False):
     elif tipo_egr == 'oscilación':
         params = optimize.minimize(f_opt, x0=[2, 1.35, 0, 0], method='Powell',  # for wtd 7, 1.6, 0, 0
                                    args=(x_data, norm_y_data, oscilación)).x
-        b_params = {'bp_params': de_normalize(params, y_data, tipo_egr)}
+        b_params = {'bp_params': de_standardize(params, y_data, tipo_egr)}
         if gof:
             b_params.update({'gof': {'aic': aic(len(b_params['bp_params']),
                                                 oscilación(np.asarray(list(b_params['bp_params'].values())), x_data),
@@ -165,7 +167,7 @@ def simple_shape(x_data=None, y_data=None, tipo_egr='linear', gof=False):
         # x0 assignment is very tricky, the period (3rd arg should always>= real period)
         params = optimize.minimize(f_opt, x0=[0.1, 2, 2, 0, 0], method='SLSQP',  # 0.1, 1, 2, 0.01, 0, SLSQP, Powell
                                    args=(x_data, norm_y_data, oscilación_aten)).x
-        b_params = {'bp_params': de_normalize(params, y_data, tipo_egr)}
+        b_params = {'bp_params': de_standardize(params, y_data, tipo_egr)}
         if gof:
             b_params.update({'gof': {'aic': aic(len(b_params['bp_params']),
                                                 oscilación_aten(np.asarray(list(b_params['bp_params'].values())),
@@ -268,7 +270,7 @@ def superposition(x_data, y_data):
     return b_param, behaviors_aics
 
 
-def de_normalize(norm_b_param, y_data, tipo_egr):
+def de_standardize(norm_b_param, y_data, tipo_egr):
     if tipo_egr == 'linear':
         return {'slope': norm_b_param[0] * np.nanstd(y_data),
                 'intercept': norm_b_param[1] * np.nanstd(y_data) + np.nanmean(y_data)}
@@ -309,6 +311,15 @@ def compute_gof(y_predict, y_obs):
 def compute_rmse(y_predict, y_obs):
     return np.sqrt(np.nanmean(((y_predict - y_obs) ** 2)))
 
+def nse(obs, sim):
+    s, e = np.array(sim), np.array(obs)
+    # s,e=simulation,evaluation
+    mean_observed = np.nanmean(e)
+    # compute numerator and denominator
+    numerator = np.nansum((e - s) ** 2)
+    denominator = np.nansum((e - mean_observed) ** 2)
+    # compute coefficient
+    return 1 - (numerator / denominator)
 
 # def compute_rmse(y_predict, y_obs):
 #     if not isinstance(y_predict, np.ndarray):
@@ -374,3 +385,55 @@ def bic(y_predict, y_obs):
     sse = np.nansum(resid ** 2)
     # no = number of observations
     return no * np.log(np.exp(sse / no)) + np * np.log(np.exp(no))
+
+def ICC_rep_anova(Y):
+    '''
+    Calculate Calculate intraclass correlation coefficient for model validation
+    Code coppied from nipype algorithms.icc
+    https://github.com/nipy/nipype/blob/master/nipype/algorithms/icc.py
+    '''
+
+    [nb_subjects, nb_conditions] = Y.shape
+    dfc = nb_conditions - 1
+    dfe = (nb_subjects - 1) * dfc
+    dfr = nb_subjects - 1
+
+    # Compute the repeated measure effect
+    # ------------------------------------
+
+    # Sum Square Total
+    mean_Y = mean(Y)
+    SST = ((Y - mean_Y)**2).sum()
+
+    # create the design matrix for the different levels
+    x = kron(eye(nb_conditions), ones((nb_subjects, 1)))  # sessions
+    x0 = tile(eye(nb_subjects), (nb_conditions, 1))  # subjects
+    X = hstack([x, x0])
+
+    # Sum Square Error
+    predicted_Y = dot(dot(dot(X, pinv(dot(X.T, X))), X.T), Y.flatten('F'))
+    residuals = Y.flatten('F') - predicted_Y
+    SSE = (residuals**2).sum()
+
+    residuals.shape = Y.shape
+
+    MSE = SSE / dfe
+
+    # Sum square session effect - between colums/sessions
+    SSC = ((mean(Y, 0) - mean_Y)**2).sum() * nb_subjects
+    MSC = SSC / dfc / nb_subjects
+
+    session_effect_F = MSC / MSE
+
+    # Sum Square subject effect - between rows/subjects
+    SSR = SST - SSC - SSE
+    MSR = SSR / dfr
+
+    # ICC(3,1) = (mean square subjeT - mean square error) /
+    #            (mean square subjeT + (k-1)*-mean square error)
+    ICC = (MSR - MSE) / (MSR + dfc * MSE)
+
+    e_var = MSE  # variance of error
+    r_var = (MSR - MSE) / nb_conditions  # variance between subjects
+
+    return ICC, r_var, e_var, session_effect_F, dfc, dfe

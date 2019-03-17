@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
-from tinamit.Análisis.Sens.behavior import superposition, find_best_behavior, predict, forma
+from tinamit.Análisis.Sens.behavior import superposition, find_best_behavior, predict, forma, simple_shape
 
 
 def read_obs_csv(file_name):
@@ -85,15 +85,21 @@ def compute_patron(interploated_data, norm_obs=None, valid=False):
             data = norm_obs.T
             for i, p in enumerate(interploated_data['x0'].values):
                 print(f"Behavior Detecting of Polygon {p} !")
-                if valid is True:
+                if valid == 'valid_multi_tests':
                     re = forma(np.arange(len(data[:, i])), data[:, i])
+                elif valid == 'coeff_linear':
+                    re = {}
+                    re['linear'] = simple_shape(np.arange(len(data[:, i])), data[:, i], 'linear', gof=True)
                 else:
                     re = superposition(np.arange(len(data[:, i])), data[:, i])[0]
-                best_behav = find_best_behavior(re)[0]
-                best_behaviors[p] = best_behav[0]
-                y_pred = np.asarray(
-                    predict(np.array(range(len(data))), re[best_behav[0][0]]['bp_params'], best_behav[0][0]))
-                d_calib[p] = {best_behav[0][0]: re[best_behav[0][0]], 'y_pred': y_pred}
+                if valid == 'coeff_linear':
+                    d_calib[p] = re
+                else:
+                    best_behav = find_best_behavior(re)[0]
+                    best_behaviors[p] = best_behav[0]
+                    y_pred = np.asarray(
+                        predict(np.array(range(len(data))), re[best_behav[0][0]]['bp_params'], best_behav[0][0]))
+                    d_calib[p] = {best_behav[0][0]: re[best_behav[0][0]], 'y_pred': y_pred}
     return best_behaviors, d_calib, d_numero
 
 

@@ -25,7 +25,8 @@ def gen_mod():
     modelo = Conectado()
 
     # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
-    modelo.estab_mds('D:\Thesis\pythonProject\Tinamit\\tinamit\\Ejemplos\en\Ejemplo_SAHYSMOD\\Vensim\\Tinamit_Rechna.vpm')
+    modelo.estab_mds(
+        'D:\Thesis\pythonProject\Tinamit\\tinamit\\Ejemplos\en\Ejemplo_SAHYSMOD\\Vensim\\Tinamit_Rechna.vpm')
 
     modelo.estab_bf(Envoltura)
     modelo.estab_conv_tiempo(mod_base='mds', conv=6)
@@ -384,7 +385,7 @@ def analy_behav_by_dims(method, samples, dims, f_simul_arch, dim_arch=None, gaur
             np.save(gaurdar + 'aic_behav', aic_behav)
 
 
-def clustering(points, n_cls):
+def clustering(points, n_cls, valid=False):
     kmeans = KMeans(n_clusters=n_cls)
     # fit kmeans object to data
     kmeans.fit(points)
@@ -405,14 +406,17 @@ def clustering(points, n_cls):
         ct += d_cls[cls]
     km_lst = np.asarray(km_lst)
 
-    # create dendrogram
-    new_order = sch.dendrogram(sch.linkage(points, method='ward'))['leaves']
-    n_points = np.empty([points.shape[0], points.shape[1]])
-    for i in range(points.shape[0]):
-        n_points[i, :] = points[new_order[i], :]
+    if valid is False:
+        # create dendrogram
+        new_order = sch.dendrogram(sch.linkage(points, method='ward'))['leaves']
+        n_points = np.empty([points.shape[0], points.shape[1]])
+        for i in range(points.shape[0]):
+            n_points[i, :] = points[new_order[i], :]
 
-    return {'n_points': n_points, 'new_order': new_order, 'km_lst': km_lst, 'km_cls': km_cls, 'y_km': y_km,
-            'd_km': d_km}
+        return {'n_points': n_points, 'new_order': new_order, 'km_lst': km_lst, 'km_cls': km_cls, 'y_km': y_km,
+                'd_km': d_km}
+    else:
+        return {'km_lst': km_lst, 'km_cls': km_cls, 'y_km': y_km, 'd_km': d_km}
 
 
 def gen_counted_behavior(fited_behav_arch, gaurdar=None):
@@ -456,12 +460,12 @@ def gen_row_col(behaviors, method):
     spp = [pt for pt in col_l if pt.startswith('spp')]
 
     col = [f'n{i}' for i in range(1, 7)]
-    col.extend([f'S{i}' for i in range(1, len(col_l) - len(spp)+1)])
-    col.extend([f'D{i}' for i in range(1, len(spp)+1)])
+    col.extend([f'S{i}' for i in range(1, len(col_l) - len(spp) + 1)])
+    col.extend([f'D{i}' for i in range(1, len(spp) + 1)])
 
     col_new = col[:6]
-    col_new.extend([f'a{i}' for i in range(1, len(gof)+1)])
-    col_new.extend([f'b{i}' for i in range(1, len(col_l) - len(gof) - len(spp) + len(spp_gof) +1)])
+    col_new.extend([f'a{i}' for i in range(1, len(gof) + 1)])
+    col_new.extend([f'b{i}' for i in range(1, len(col_l) - len(gof) - len(spp) + len(spp_gof) + 1)])
     col_new.extend([f'c{i}' for i in range(1, len(spp) - len(spp_gof) + 1)])
 
     row = [p for p in behaviors['log']['bp_params']]

@@ -135,5 +135,4 @@ class Test_CalibMultidim(unittest.TestCase):
                                  obj_func='AIC', método=m)
             valid = símismo.mod.validar(bd=símismo.datos, var=['y'], tipo_proc='patrón', obj_func='AIC',
                                         lg=None)
-            símismo.assertTrue(valid['éxito_nse'])
-        # símismo.assertTrue(valid['éxito_aic'])
+            símismo.assertTrue(valid['éxito_aic'])

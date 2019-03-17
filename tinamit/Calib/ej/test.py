@@ -4,7 +4,7 @@
 # from tinamit.Calib.ej.info_paráms import *
 # from tinamit.Calib.ej.info_analr import *
 # from tinamit.Análisis.Sens.muestr import gen_problema, muestrear_paráms
-
+# from pandas.plotting import lag_plot
 
 # def process_constant(data):
 #     data['bp_params']['constant'] = np.add(data['bp_params']['constant'], data['bp_params']['constant_1'])
@@ -38,14 +38,18 @@
 # # dream_calib = np.load(ga + 'calib_reverse-dream.npy').tolist()
 # # dream_valid = np.load(ga + 'valid_reverse-dream.npy').tolist()
 # print("")
-import pandas as pd
-from tinamit.Análisis.Sens.anlzr import carg_simul_dt
-from tinamit.Calib.ej.obs_patrón import read_obs_csv
+# from tinamit.Análisis.Sens.anlzr import carg_simul_dt
+# from tinamit.Calib.ej.obs_patrón import read_obs_csv
+# gard_sim = "D:\Thesis\pythonProject\localuse\Dt\Calib\simular\\fscabc\\"
+# data = read_obs_csv("D:\Thesis\data\\total_obs.csv")
+import operator
 from matplotlib import pyplot
-from pandas.plotting import lag_plot
+import numpy as np
 
-gard_sim = "D:\Thesis\pythonProject\localuse\Dt\Calib\simular\\fscabc\\"
-data = read_obs_csv("D:\Thesis\data\\total_obs.csv")
+
+
+vr = 'mds_Watertable depth Tinamit'
+
 
 # d_sample = carg_simul_dt(gard_sim, 144, var_egr='mds_Watertable depth Tinamit', dim=1, tipo_egr='paso_tiempo', método='Morris')
 # poly = [poly-1 for poly in data[1]]
@@ -57,9 +61,7 @@ data = read_obs_csv("D:\Thesis\data\\total_obs.csv")
 #         sim_series = pd.Series(vec[:, p], index=data[0])
 #         lag_plot(sim_series)
 #     pyplot.savefig(f"D:\Thesis\pythonProject\localuse\Dt\Calib\plot\Calib\\abc\\sim_{sam}")
-for poly in data[1]:
-    obs_series = pd.Series(data[1][poly], index=data[0])
-    lag_plot(obs_series)
-pyplot.savefig("D:\Thesis\pythonProject\localuse\Dt\Calib\plot\Calib\\abc\\obs_dt")
-
-
+# for poly in data[1]:
+#     obs_series = pd.Series(data[1][poly], index=data[0])
+#     lag_plot(obs_series)
+# pyplot.savefig("D:\Thesis\pythonProject\localuse\Dt\Calib\plot\Calib\\abc\\obs_dt")
