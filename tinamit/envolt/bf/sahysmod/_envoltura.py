@@ -57,26 +57,6 @@ class ModeloSAHYSMOD(ModeloBloques):
     def _gen_vars(símismo):
         return VariablesSAHYSMOD()
 
-    def _inic_dic_vars(símismo):
-
-        símismo.variables.clear()
-
-        ingresos_no_estacionales = [
-            'Kr', 'CrA', 'CrB', 'CrU', 'Cr4', 'Hw', 'C1*', 'C2*', 'C3*', 'Cxf', 'Cxa', 'Cxb', 'Cqf'
-        ]
-
-        for nombre, dic in vars_SAHYSMOD.items():
-            cód = vars_SAHYSMOD[nombre]['cód']
-
-            if cód[-1] == '#':
-                if cód[:-1] in ingresos_no_estacionales:
-                    por = 'bloque-egr'
-                else:
-                    por = 'bloque'
-            else:
-                por = 'ciclo'
-
-
     def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
 
         # Crear un diccionario de trabajo específico a esta corrida.
