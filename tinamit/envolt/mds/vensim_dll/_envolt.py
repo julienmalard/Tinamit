@@ -6,11 +6,13 @@ from ._vars import VarAuxiliarVensim
 
 class EnvolturaVensimDLL(EnvolturaMDS):
     def _gen_vars(símismo):
+        mod = símismo.mod
+
         l_vars = []
 
-        vars_y_tipos = {v: obt_atrib_var(símismo.mod, v, cód_attrib=14).lower() for v in obt_vars(símismo.mod)}
+        vars_y_tipos = {v: obt_atrib_var(mod, v, cód_attrib=14).lower() for v in obt_vars(mod)}
 
-        editables = obt_editables(símismo.mod)
+        editables = obt_editables(mod)
 
         omitir = [
             'Data', 'Constraint', 'Lookup', 'Group', 'Subscript Range', 'Test Input', 'Time Base',
@@ -25,21 +27,20 @@ class EnvolturaVensimDLL(EnvolturaMDS):
                 continue
 
             # Sacar los límites del variable
-            líms = (obt_atrib_var(símismo.mod, var, cód_attrib=11), obt_atrib_var(símismo.mod, var, cód_attrib=12))
+            líms = (obt_atrib_var(mod, var, cód_attrib=11), obt_atrib_var(mod, var, cód_attrib=12))
             líms = tuple(float(lm) if lm != '' else None for lm in líms)
 
             # Leer la descripción del variable.
-            info = obt_atrib_var(símismo.mod, var, 2)
+            info = obt_atrib_var(mod, var, 2)
 
             # Sacar sus unidades
-            unid = obt_atrib_var(símismo.mod, var, cód_attrib=1)
+            unid = obt_atrib_var(mod, var, cód_attrib=1)
 
             # Leer la ecuación del variable, sus hijos y sus parientes directamente de Vensim
-            ec = obt_atrib_var(símismo.mod, var, 3)
-            hijos = [v for v in obt_atrib_var(símismo.mod, var, 5) if v in vars_y_tipos]
-            parientes = [v for v in obt_atrib_var(símismo.mod, var, 4) if v in vars_y_tipos]
+            ec = obt_atrib_var(mod, var, 3)
+            hijos = [v for v in obt_atrib_var(mod, var, 5) if v in vars_y_tipos]
+            parientes = [v for v in obt_atrib_var(mod, var, 4) if v in vars_y_tipos]
 
-            # Guardamos los variables constantes en una lista.
             if tipo_var == 'constant' or (tipo_var == 'auxiliar' and not len(parientes)):
                 var = VarConstante(var, unid=unid, ec=ec, hijos=hijos, parientes=parientes, líms=líms, info=info)
             elif tipo_var == 'level':
@@ -55,7 +56,7 @@ class EnvolturaVensimDLL(EnvolturaMDS):
                 raise ValueError(tipo_var)
 
             # Sacar las dimensiones del variable
-            subs = obt_atrib_var(símismo.mod, var, cód_attrib=9)
+            subs = obt_atrib_var(mod, var, cód_attrib=9)
 
             if len(subs):
                 dims = (len(subs),)  # Para hacer: permitir más de 1 dimensión

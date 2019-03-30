@@ -19,7 +19,6 @@ class ModeloPySD(EnvolturaMDS):
     def __init__(símismo, archivo, nombre='mds'):
 
         símismo.tipo_mod = None
-        símismo._conv_nombres = {}
         símismo.tiempo_final = None
         símismo.cont_simul = False
         símismo.paso_act = 0
@@ -53,8 +52,6 @@ class ModeloPySD(EnvolturaMDS):
                 return pysd.read_vensim(archivo) if ext == '.mdl' else pysd.read_xmile(archivo)
 
     def _inic_dic_vars(símismo):
-        símismo.variables.clear()
-        símismo._conv_nombres.clear()
 
         internos = ['FINAL TIME', 'TIME STEP', 'SAVEPER', 'INITIAL TIME']
         for i, f in símismo.mod.doc().iterrows():
@@ -138,28 +135,8 @@ class ModeloPySD(EnvolturaMDS):
                 d_p = símismo.variables[p]
                 d_p['hijos'].append(v)
 
-    def unidad_tiempo(símismo):
-
-        if símismo.tipo_mod == '.mdl':
-            docs = símismo.mod.doc()
-            unid_tiempo = docs.loc[docs['Real Name'] == 'TIME STEP', 'Unit'].values[0]
-
-        else:
-            with open(símismo.mod.py_model_file, 'r', encoding='UTF-8') as d:
-                f = d.readline()
-                while f != 'def time_step():\n':
-                    f = d.readline()
-                while not f.strip().startswith('Units:'):
-                    f = d.readline()
-                unid_tiempo = f.split(':')[1].strip()
-
-        return unid_tiempo
-
     def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
 
-        # Poner los variables y el tiempo a sus valores iniciales
-        símismo.mod.reload()
-        símismo.mod.initialize()
 
         símismo.cont_simul = False
         símismo.tiempo_final = n_pasos
