@@ -10,6 +10,7 @@ import regex
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.MDS import EnvolturaMDS
 from tinamit.config import _
+from tinamit.cositas import arch_más_recién
 
 try:
     import pymc3 as pm
@@ -88,7 +89,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
             if dll is not None:
                 # Únicamente recrear el archivo .vpm si necesario
-                if not os.path.isfile(nmbr + '.vpm') or (os.path.getmtime(nmbr + '.vpm') < os.path.getmtime(archivo)):
+                if not os.path.isfile(nmbr + '.vpm') or arch_más_recién(archivo, nmbr + '.vpm'):
                     símismo.publicar_modelo(dll=dll)
                 archivo = nmbr + '.vpm'
 
@@ -126,137 +127,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         Inicializamos el diccionario de variables del modelo Vensim.
         """
 
-        # Primero, verificamos el tamañano de memoria necesario para guardar una lista de los nombres de los variables.
-        variables = []
-        for t in [1, 2, 4, 5, 12]:
-            mem = ctypes.create_string_buffer(0)  # Crear una memoria intermedia
-
-            # Verificar el tamaño necesario
-            tamaño_nec = cmd_vensim(func=símismo.mod.vensim_get_varnames,
-                                    args=['*', t, mem, 0],
-                                    mensaje_error=_('Error obteniendo eñ tamaño de los variables Vensim.'),
-                                    val_error=-1, devolver=True
-                                    )
-
-            mem = ctypes.create_string_buffer(tamaño_nec)  # Una memoria intermedia con el tamaño apropiado
-
-            # Guardar y decodar los nombres de los variables.
-            cmd_vensim(func=símismo.mod.vensim_get_varnames,
-                       args=['*', t, mem, tamaño_nec],
-                       mensaje_error=_('Error obteniendo los nombres de los variables de Vensim.'),
-                       val_error=-1
-                       )
-            variables += [
-                x for x in mem.raw.decode().split('\x00')
-                if x and x not in ['FINAL TIME', 'TIME STEP', 'INITIAL TIME', 'SAVEPER', 'Time']
-            ]
-
-        # Para guardar los nombres de variables editables (se debe hacer aquí y no por `tipo_var` porque Vensim
-        # los reporta como de tipo `Auxiliary`.
-        cmd_vensim(func=símismo.mod.vensim_get_varnames,
-                   args=['*', 12, mem, tamaño_nec],
-                   mensaje_error=_('Error obteniendo los nombres de los variables editables ("Gaming") de '
-                                   'VENSIM.'),
-                   val_error=-1
-                   )
-
-        símismo.editables = [x for x in mem.raw.decode().split('\x00') if x]
-
-        for var in variables:
-            # Para cada variable...
-
-            # Sacar sus unidades
-            unidades = símismo._obt_atrib_var(var, cód_attrib=1)
-
-            # Verificar el tipo_mod del variable
-            tipo_var = símismo._obt_atrib_var(var, cód_attrib=14)
-
-            # Guardamos los variables constantes en una lista.
-            if tipo_var == 'Constant':
-                tipo_var = 'constante'
-            elif tipo_var == 'Level':
-                tipo_var = 'nivel'
-            elif tipo_var == 'Auxiliary':
-                tipo_var = 'auxiliar'
-            elif tipo_var == 'Initial':
-                tipo_var = 'inicial'
-            elif tipo_var in [
-                'Data', 'Constraint', 'Lookup', 'Group', 'Subscript Range', 'Test Input', 'Time Base',
-                'Subscript Constant'
-            ]:
-                # No incluir los variables de verificación (pruebas de modelo) Vensim, de subscriptos, de datos, etc.
-                continue
-            else:
-                raise ValueError(tipo_var)
-
-            # Sacar las dimensiones del variable
-            subs = símismo._obt_atrib_var(var, cód_attrib=9)
-
-            if len(subs):
-                dims = (len(subs),)  # Para hacer: soporte para más que 1 dimensión
-                nombres_subs = subs
-            else:
-                dims = (1,)
-                nombres_subs = None
-
-            # Sacar los límites del variable
-            rango = (símismo._obt_atrib_var(var, cód_attrib=11), símismo._obt_atrib_var(var, cód_attrib=12))
-            rango = tuple(float(lm) if lm != '' else None for lm in rango)
-
-            # Leer la descripción del variable.
-            info = símismo._obt_atrib_var(var, 2)
-
-            # Leer la ecuación del variable, sus hijos y sus parientes directamente de Vensim
-            ec = símismo._obt_atrib_var(var, 3)
-            hijos = símismo._obt_atrib_var(var, 5)
-            parientes = símismo._obt_atrib_var(var, 4)
-
-            if tipo_var == 'auxiliar' and not len(parientes):
-                tipo_var = 'constante'
-
-            ingreso = tipo_var in ['constante', 'inicial']
-
-            # Actualizar el diccionario de variables.
-            # Para cada variable, creamos un diccionario especial, con su valor y unidades. Puede ser un variable
-            # de ingreso si es de tipo_mod editable ("Gaming"), y puede ser un variable de egreso si no es un valor
-            # constante.
-            dic_var = {'val': None if dims == (1,) else np.zeros(dims),  # Se llenarán los valores ahorita
-                       'unidades': unidades,
-                       'subscriptos': nombres_subs,
-                       'ec': ec,
-                       'hijos': hijos,
-                       'parientes': parientes,
-                       'tipo': tipo_var,
-                       'ingreso': ingreso,
-                       'egreso': tipo_var not in ['constante', 'inicial'],
-                       'líms': rango,
-                       'info': info}
-
-            # Guardar el diccionario del variable en el diccionario general de variables.
-            símismo.variables[var] = dic_var
-
-        # Convertir los auxiliares parientes de niveles a flujos
-        nivs = símismo.niveles()
-        for nv in nivs:
-            ec = Ecuación(símismo.obt_ec_var(nv), dialecto='vensim')
-            args = ec.sacar_args_func('INTEG')
-            if args is None:
-                continue
-            else:
-                args_integ, args_inic = args
-
-            # Identificar variables iniciales
-            if args_inic in símismo.variables:
-                símismo.variables[args_inic]['tipo'] = 'inicial'
-
-            flujos = [v for v in Ecuación(args_integ, dialecto='vensim').variables() if v in símismo.variables]
-            for flj in flujos:
-                símismo.variables[flj]['tipo'] = 'flujo'
-
-        for var, d_var in símismo.variables.items():
-            d_var['hijos'] = [h for h in d_var['hijos'] if h in símismo.variables]
-            d_var['parientes'] = [p for p in d_var['parientes'] if p in símismo.variables]
-
         # Aplicar los variables iniciales
         símismo._leer_vals_de_vensim()
 
@@ -286,9 +156,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         return unidades
 
     def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
-        """
-        Acciones necesarias para iniciar el modelo Vensim.
-        """
 
         # En Vensim, tenemos que incializar los valores de variables constantes antes de empezar la simulación.
         símismo.cambiar_vals({var: val for var, val in vals_inic.items() if var not in símismo.editables})
@@ -485,55 +352,7 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                              val_error=-1, devolver=True)
         return int(estatus)
 
-    def _obt_atrib_var(símismo, var, cód_attrib, mns_error=None):
-        """
 
-        :param var:
-        :type var: str
-        :param cód_attrib:
-        :type cód_attrib: int
-        :param mns_error:
-        :type mns_error: str
-        :return:
-        :rtype:
-        """
-
-        if cód_attrib in [4, 5, 6, 7, 8, 9, 10]:
-            lista = True
-        elif cód_attrib in [1, 2, 3, 11, 12, 13, 14]:
-            lista = False
-        else:
-            raise ValueError(_('Código "{}" no reconocido para la comanda Vensim de obtener atributos de variables.')
-                             .format(cód_attrib))
-
-        if mns_error is None:
-            l_atrs = [_('las unidades'), _('la descipción'), _('la ecuación'), _('las causas'), _('las consecuencias'),
-                      _('la causas iniciales'), _('las causas activas'), _('los subscriptos'),
-                      _('las combinaciones de subscriptos'), _('los subscriptos de gráfico'), _('el mínimo'),
-                      _('el máximo'), _('el rango'), _('el tipo_mod')]
-            mns_error1 = _('Error leyendo el tamaño de memoria para obtener {} del variable "{}" en Vensim') \
-                .format(l_atrs[cód_attrib - 1], var)
-            mns_error2 = _('Error leyendo {} del variable "{}" en Vensim.').format(l_atrs[cód_attrib - 1], var)
-        else:
-            mns_error1 = mns_error2 = mns_error
-
-        mem = ctypes.create_string_buffer(10)
-        tmñ = cmd_vensim(func=símismo.mod.vensim_get_varattrib,
-                         args=[var, cód_attrib, mem, 0],
-                         mensaje_error=mns_error1,
-                         val_error=-1,
-                         devolver=True)
-
-        mem = ctypes.create_string_buffer(tmñ)
-        cmd_vensim(func=símismo.mod.vensim_get_varattrib,
-                   args=[var, cód_attrib, mem, tmñ],
-                   mensaje_error=mns_error2,
-                   val_error=-1)
-
-        if lista:
-            return [x for x in mem.raw.decode().split('\x00') if x]
-        else:
-            return mem.value.decode()
 
     def paralelizable(símismo):
         """
@@ -647,66 +466,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
     def editable(símismo):
         return símismo.instalado() and símismo.tipo_mod == '.mdl'
-
-
-def cmd_vensim(func, args, mensaje_error=None, val_error=None, devolver=False):  # pragma: sin cobertura
-    """
-    Esta función sirve para llamar todo tipo_mod de comanda Vensim.
-
-    :param func: La función DLL a llamar.
-    :type func: callable
-
-    :param args: Los argumento a pasar a la función. Si no hay, usar una lista vacía.
-    :type args: list | str
-
-    :param mensaje_error: El mensaje de error para mostrar si hay un error en la comanda.
-    :type mensaje_error: str
-
-    :param val_error: Un valor de regreso Vensim que indica un error para esta función. Si se deja ``None``, todos
-      valores que no son 1 se considerarán como erróneas.
-    :type val_error: int
-
-    :param devolver: Si se debe devolver el valor devuelto por Vensim o no.
-    :type devolver: bool
-
-    """
-
-    # Asegurarse que args es una lista
-    if type(args) is not list:
-        args = [args]
-
-    # Encodar en bytes todos los argumentos de texto.
-    for n, a in enumerate(args):
-        if type(a) is str:
-            args[n] = a.encode()
-
-    # Llamar la función Vensim y guardar el resultado.
-    try:
-        resultado = func(*args)
-    except OSError:
-        try:
-            resultado = func(*args)
-        except OSError as e:
-            raise OSError(e)
-
-    # Verificar su hubo un error.
-    if val_error is None:
-        error = (resultado != 1)
-    else:
-        error = (resultado == val_error)
-
-    # Si hubo un error, avisar el usuario.
-    if error:
-        if mensaje_error is None:
-            mensaje_error = _('Error con la comanda Vensim.')
-
-        mensaje_error += _(' Código de error {}.').format(resultado)
-
-        raise OSError(mensaje_error)
-
-    # Devolver el valor devuelto por la función Vensim, si aplica.
-    if devolver:
-        return resultado
 
 
 def gen_archivo_mdl(archivo_plantilla, d_vars):

@@ -37,16 +37,6 @@ class EnvolturaMDS(Modelo):
         if símismo.instalado():
             super().__init__(nombre=nombre)
 
-    def niveles(símismo):
-        return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'nivel']
-
-    def flujos(símismo):
-        return [var for var, d_var in símismo.variables.items() if 'tipo' in d_var and d_var['tipo'] == 'flujo']
-
-    def auxiliares(símismo):
-        return [var for var, d_var in símismo.variables.items() if
-                'tipo' in d_var and d_var['tipo'] == 'auxiliar']
-
     def hijos(símismo, var):
         var = símismo.valid_var(var)
         return símismo.variables[var]['hijos']
@@ -54,9 +44,6 @@ class EnvolturaMDS(Modelo):
     def parientes(símismo, var):
         var = símismo.valid_var(var)
         return símismo.variables[var]['parientes']
-
-    def paráms(símismo):
-        return símismo.constantes()
 
     def editable(símismo):
         return False

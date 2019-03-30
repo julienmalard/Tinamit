@@ -53,7 +53,6 @@ class Modelo(object):
         símismo.nombre = nombre
 
         símismo.variables = VariablesMod(símismo._gen_vars())
-        símismo._inic_vars()  # Iniciar los variables.
         símismo._reinic_vals()
 
         # Para calibraciones

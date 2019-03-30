@@ -1,3 +1,6 @@
+from tinamit.config import _
+
+
 class VariablesMod(object):
     def __init__(símismo, variables):
         símismo.variables = {v: v.nombre for v in variables}
@@ -21,6 +24,8 @@ class VariablesMod(object):
 
 class Variable(object):
     def __init__(símismo, nombre, unid, ingr, egr, líms=None, info=''):
+        if not (ingr or egr):
+            raise ValueError(_('Si no es variable ingreso, debe ser egreso.'))
         símismo.nombre = nombre
         símismo.unid = unid
         símismo.ingr = ingr

@@ -98,6 +98,10 @@ def verificar_dirección_arch(archivo):
     return dir_completa
 
 
+def arch_más_recién(arch1, arch2):
+    return os.path.getmtime(arch1) > os.path.getmtime(arch2)
+
+
 def guardar_json(obj, arch):
     """
     Guarda un fuente json, sin riesgo de corrumpir el fuente si se interrumpe el programa mientras escribía al disco.
