@@ -11,7 +11,7 @@ dir_local = os.path.split(os.path.realpath(__file__))[0]
 
 dir_base, pq = os.path.split(os.path.realpath(os.path.split(dir_tinamit)[0]))
 
-dir_fuente = os.path.join(dir_base, pq, 'local', '_fuente')
+dir_fuente = os.path.join(dir_base, pq, '_local', '_fuente')
 lengs_ya = [x for x in os.listdir(dir_fuente) if os.path.isdir(os.path.join(dir_fuente, x))]
 lengs_nuevas = lenguas.difference(lengs_ya)
 lenguas.update(lengs_ya)

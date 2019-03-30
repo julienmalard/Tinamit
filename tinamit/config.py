@@ -103,7 +103,7 @@ def _resolver_conf_anidado(llave, crear=False):
 
 
 # Funciones fáciles para opciones de lenguas.
-_dir_local = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'local', '_fuente')
+_dir_local = os.path.join(os.path.abspath(os.path.dirname(__file__)), '_local', '_fuente')
 
 lengua = obt_val_config('leng')
 lengs_aux = obt_val_config('lengs_aux')

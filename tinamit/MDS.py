@@ -3,7 +3,7 @@ import tempfile
 
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.cositas import guardar_archivo
-from tinamit.Modelo import Modelo
+from tinamit.mod.modelo import Modelo
 from tinamit.config import _
 
 

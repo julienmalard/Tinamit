@@ -7,10 +7,9 @@ import numpy as np
 import pkg_resources
 
 from tinamit.BF import ModeloBloques
-from tinamit.EnvolturasBF.SAHYSMOD.variables import vars_SAHYSMOD, códs_a_vars, vars_ingreso_SAHYSMOD, \
-    vars_egreso_SAHYSMOD
+from ._vars import VariablesSAHYSMOD
 from tinamit.config import _
-from ._sahysmodIE import leer_info_dic_paráms, escribir_desde_dic_paráms
+from ._ingr_egr import leer_info_dic_paráms, escribir_desde_dic_paráms
 
 
 class ModeloSAHYSMOD(ModeloBloques):
@@ -18,26 +17,12 @@ class ModeloSAHYSMOD(ModeloBloques):
     Envoltura para modelos SAHYSMOD.
     """
 
-    @classmethod
-    def refs_prb_avanzar(cls):
-        raise NotImplementedError
-
     leng_orig = 'en'  # La lengua de los nombres y descripción de los variables (y NO la del código aquí)
 
-    @classmethod
-    def refs_prb_leer_egr(cls):
-        prb_arch_egr = pkg_resources.resource_filename(__name__, 'recursos/prb_egresos.out')
-        dic_prb_egr = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_egr.json')
-        raise NotImplementedError
-        return prb_arch_egr, dic_prb_egr
-
-    @classmethod
-    def refs_prb_vals_inic(cls):
-        prb_datos_inic = pkg_resources.resource_filename(__name__, 'recursos/prb_datos_inic.inp')
-        dic_prb_datos_inic = pkg_resources.resource_filename(__name__, 'recursos/dic_prb_datos_inic.json')
-        return prb_datos_inic, dic_prb_datos_inic
-
     def __init__(símismo, datos_iniciales, exe_sahysmod=None, nombre='SAHYSMOD'):
+
+        # Inicializar la clase pariente.
+        super().__init__(nombre=nombre, archivo=datos_iniciales)
 
         # Necesario para paralelismo
         símismo.argsinic = (datos_iniciales, exe_sahysmod, nombre)
@@ -53,16 +38,8 @@ class ModeloSAHYSMOD(ModeloBloques):
         símismo.datos_inic = datos_iniciales
         símismo.direc_base = os.path.split(datos_iniciales)[0]
 
-        símismo.arch_egreso = símismo.arch_ingreso = None
-
         # Estableceremos el directorio para escribir y leer ingresos y egresos según el nombre de la corrida más tarde
-        símismo.direc_trabajo = None  # type: str
-
-        # Estableceremos la comanda SAHYSMOD más tarde también
-        símismo.comanda = None
-
-        # Inicializar la clase pariente.
-        super().__init__(nombre=nombre, archivo=datos_iniciales)
+        símismo.direc_trabajo = ''
 
         # Buscar la ubicación del modelo SAHYSMOD.
         símismo.exe_SAHYSMOD = símismo._obt_val_config(
@@ -76,6 +53,9 @@ class ModeloSAHYSMOD(ModeloBloques):
 
         # Establecer los variables climáticos.
         símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total', conv=0.001)
+
+    def _gen_vars(símismo):
+        return VariablesSAHYSMOD()
 
     def _inic_dic_vars(símismo):
 
@@ -96,15 +76,6 @@ class ModeloSAHYSMOD(ModeloBloques):
             else:
                 por = 'ciclo'
 
-            símismo.variables[nombre] = {
-                'val': None,
-                'unidades': dic['unids'],
-                'ingreso': dic['ingr'],
-                'egreso': dic['egr'],
-                'líms': dic['líms'] if 'líms' in dic else (None, None),
-                'info': '',
-                'por': por
-            }
 
     def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
 
@@ -115,10 +86,6 @@ class ModeloSAHYSMOD(ModeloBloques):
         os.makedirs(símismo.direc_trabajo)
         símismo.arch_egreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.out')
         símismo.arch_ingreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.inp')
-
-        # Generar la comanda de corrida (para después)
-        args = dict(SAHYSMOD=símismo.exe_SAHYSMOD, ingreso=símismo.arch_ingreso, egreso=símismo.arch_egreso)
-        símismo.comanda = '"{SAHYSMOD}" "{ingreso}" "{egreso}"'.format(**args)
 
         super().iniciar_modelo(n_pasos, t_final, nombre_corrida, vals_inic)
 
@@ -131,7 +98,9 @@ class ModeloSAHYSMOD(ModeloBloques):
             os.remove(símismo.arch_egreso)
 
         # Correr la comanda desde la línea de comanda
-        run(símismo.comanda, cwd=símismo.direc_trabajo)
+        args = dict(SAHYSMOD=símismo.exe_SAHYSMOD, ingreso=símismo.arch_ingreso, egreso=símismo.arch_egreso)
+        comanda = '"{SAHYSMOD}" "{ingreso}" "{egreso}"'.format(**args)
+        run(comanda, cwd=símismo.direc_trabajo)
 
         # Verificar que SAHYSMOD generó egresos.
         if not os.path.isfile(símismo.arch_egreso):
@@ -209,7 +178,7 @@ class ModeloSAHYSMOD(ModeloBloques):
 
         # Copiar datos desde el diccionario de ingresos
         for var, val in dic_ingr.items():
-            var_cód = vars_SAHYSMOD[var]['cód']
+            var_cód = símismo.variables.c
             llave = var_cód.replace('#', '').upper()
 
             símismo.dic_ingr[llave] = val

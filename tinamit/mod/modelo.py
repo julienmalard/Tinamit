@@ -21,6 +21,7 @@ from tinamit.Análisis.Valids import validar_resultados
 from tinamit.Unidades.conv import convertir
 from tinamit.config import _, obt_val_config
 from tinamit.cositas import detectar_codif, valid_nombre_arch, guardar_json, cargar_json
+from tinamit.mod.var import VariablesMod, Variable
 
 
 class Modelo(object):
@@ -48,30 +49,15 @@ class Modelo(object):
 
         """
 
-        # El nombre del modelo (sirve como una referencia a este modelo en el modelo conectado).
-        símismo.nombre = _valid_nombre_mod(nombre)
+        # El nombre del modelo
+        símismo.nombre = nombre
 
-        # El diccionario de variables necesita la forma siguiente. Se llena con la función símismo._inic_dic_vars().
-        # {var1: {'val': 13, 'unidades': cm, 'ingreso': True, 'egreso': True},
-        #  var2: {...},
-        #  ...}
-        símismo.variables = {}
-        símismo._inic_dic_vars()  # Iniciar los variables.
-        símismo._verificar_dic_vars()
+        símismo.variables = VariablesMod(símismo._gen_vars())
+        símismo._inic_vars()  # Iniciar los variables.
         símismo._reinic_vals()
 
         # Para calibraciones
-        símismo.calibs = {}
-        símismo.info_calibs = {'calibs': {}, 'micro calibs': {}}
-
-        # Memorio de valores de variables (para leer los resultados más rápidamente después de una simulación).
-        símismo.mem_vars = None  # type: xr.Dataset
-
-        # Referencia hacia el nombre de la corrida activa.
-        símismo.corrida_activa = None
-
-        # Una referncia para acordarse si los valores de los variables en el diccionario de variables están actualizados
-        símismo.vals_actualizadas = False
+        símismo.calibs = NotImplemented
 
         # Listas de los nombres de los variables que sirven de conexión con otro modelo o con datos externos.
         símismo.vars_saliendo = set()
@@ -80,12 +66,12 @@ class Modelo(object):
         # Para guardar variables climáticos
         símismo.vars_clima = {}  # Formato: {var1: {'nombre_extrn': nombre_oficial, 'combin': 'prom' | 'total'}, ...}
 
-        # Para manejar conversiones entre unidades de tiempo.
-        símismo._conv_unid_tiempo = {}
-
-    def _inic_dic_vars(símismo):
+    def _gen_vars(símismo):
         """
-        Esta función debe poblar el diccionario de variables del modelo.
+
+        Returns
+        -------
+        list[Variable]
 
         """
 
@@ -2190,28 +2176,3 @@ def _gen_dic_ops_corridas(nombre_corrida, combinar, tipos_ops, opciones):
                               'de texto.'))
 
     return corridas
-
-
-def _valid_nombre_mod(nombre):
-    """
-    No se puede incluir nombres de modelos con "_" en el nombre (podría corrumpir el manejo de variables en
-    modelos jerarquizados).
-
-    Parameters
-    ----------
-    nombre : str
-        El nombre propuesto para el modelo.
-
-    Returns
-    -------
-    str:
-        Un nombre aceptable.
-    """
-
-    if "_" in nombre:
-        avisar(_('No se pueden emplear nombres de modelos con "_", así que no puedes nombrar tu modelo "{}".\n'
-                 'Sino, causaría problemas de conexión de variables por una razón muy compleja y oscura.\n'
-                 'Vamos a renombrar tu modelo "{}". Lo siento.').format(nombre, nombre.replace('_', '.')))
-        nombre = nombre.replace('_', '.')
-
-    return nombre

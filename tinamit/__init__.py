@@ -1,6 +1,6 @@
 from pkg_resources import resource_filename
 from . import config
-from .Modelo import Modelo
+from tinamit.mod.modelo import Modelo
 from .Conectado import Conectado
 from . import EnvolturasMDS
 from . import EnvolturasBF

@@ -23,7 +23,7 @@ versión = leer(os.path.join('tinamit', 'versión.txt'))
 
 # Leer la lista de idiomas para traducción del código. (Esto NO incluye traducciones de la documentación. Estas
 # se manejan a parte.)
-dir_local = os.path.join('tinamit', 'local')
+dir_local = os.path.join('tinamit', '_local')
 dir_fuente = os.path.join(dir_local, '_fuente')
 dir_constr = os.path.join(dir_local, '_constr')
 

@@ -114,7 +114,7 @@ if __name__ == '__main__':
     else:
         # Climate change runs
         location = Lugar(lat=32.178207, long=73.217391, elev=217)
-        location.observar_mensuales((os.path.join(base_dir, 'مشاہدہ بارش.csv')), meses='مہینہ', años='سال',
+        location.observar((os.path.join(base_dir, 'مشاہدہ بارش.csv')), meses='مہینہ', años='سال',
                                     cols_datos={'Precipitación': 'بارش (ملیمیٹر)',
                                                 'Temperatura mínima': 'درجہ_حرارت_کم',
                                                 'Temperatura máxima': 'درجہ_حرارت_زیادہ'

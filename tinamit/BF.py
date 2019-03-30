@@ -13,7 +13,7 @@ import numpy.testing as npt
 import xarray as xr
 from dateutil.relativedelta import relativedelta as deltarelativo
 
-from tinamit.Modelo import Modelo
+from tinamit.mod.modelo import Modelo
 from tinamit.config import _
 from tinamit.config import guardar_json
 from tinamit.cositas import cargar_json
@@ -106,59 +106,6 @@ class EnvolturaBF(Modelo):
         símismo.vars_clima = símismo.modelo.vars_clima
         símismo.archivo = símismo.modelo.archivo
 
-    def unidad_tiempo(símismo):
-        """
-        Esta función debe devolver la unidad de tiempo empleada por el modelo.
-
-        :return: La unidad de tiempo (p. ejemplo, 'meses', 'مہینہ', etc.
-        :rtype: str
-
-        """
-
-        return símismo.modelo.unidad_tiempo()
-
-    def _inic_dic_vars(símismo):
-        """
-        No necesario porque el diccionario de variables está conectado con él del submodelo, que se inicializa
-        al instanciarse el submodelo.
-
-        """
-        pass
-
-    def _cambiar_vals_modelo_externo(símismo, valores):
-        """
-        Esta función cambia el valor de variables en el modelo.
-
-        :param valores: Un diccionario de variables y valores para cambiar.
-        :type valores: dict
-
-        """
-        símismo.modelo._cambiar_vals_modelo_externo(valores=valores)
-
-    def _incrementar(símismo, paso, guardar_cada=None):
-        """
-        Esta función avanza el modelo por un periodo de tiempo especificado en `paso`.
-
-        :param paso: El paso.
-        :type paso: int
-
-        """
-
-        símismo.modelo.incrementar(paso=paso)
-
-    def _leer_vals(símismo):
-        """
-        Esta función lee los valores del modelo y los escribe en el diccionario interno de variables.
-
-        """
-        símismo.modelo.leer_vals()
-
-    def _vals_inic(símismo):
-        """
-        Inecesario porque :meth:`ModeloBF.iniciar_modelo` del modelo externo inicializará los variables.
-        """
-        return {}
-
     def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
         """
         Inicializa el modelo biofísico interno, incluyendo la inicialización de variables.
@@ -174,23 +121,6 @@ class EnvolturaBF(Modelo):
         símismo.cambiar_vals(vals_inic)
 
         super().iniciar_modelo(n_pasos, t_final, nombre_corrida, vals_inic)
-
-    def cerrar_modelo(símismo):
-        """
-        Cierre el modelo interno.
-        """
-
-        símismo.modelo.cerrar_modelo()
-
-    def paralelizable(símismo):
-        """
-        Un modelo BF es paralelizable si su modelo externo lo es.
-
-        :return: La paralelizabilidad del modelo externo.
-        :rtype: bool
-        """
-
-        return símismo.modelo.paralelizable()
 
     def __getinitargs__(símismo):
         return símismo.modelo,

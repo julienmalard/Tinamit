@@ -10,7 +10,7 @@ from tinamit.BF import EnvolturaBF, ModeloBF
 from tinamit.EnvolturasMDS import generar_mds
 from tinamit.Geog.Geog import Lugar
 from tinamit.MDS import EnvolturaMDS
-from tinamit.Modelo import Modelo
+from tinamit.mod.modelo import Modelo
 from tinamit.Unidades.conv import convertir
 from tinamit.config import _
 
@@ -64,7 +64,7 @@ class SuperConectado(Modelo):
         y simular juntos.
 
         :param modelo: El modelo para agregar.
-        :type modelo: tinamit.Modelo.Modelo
+        :type modelo: tinamit.modelo.Modelo
 
         """
 
