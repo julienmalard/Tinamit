@@ -1,32 +1,16 @@
 from datetime import datetime, date, timedelta
 
 
-class Tiempo(object):
-    def __init__(símismo, n_días, f_inic=None, paso=1):
-        símismo._f_inic = _gen_fecha(f_inic)
-        símismo._día = 0
-        símismo.paso = paso
-        símismo._n_días = n_días
+class EjeTiempo(object):
+    def __init__(símismo, t_inic, n_pasos, paso, unid_paso, paso_guardar=None):
+        símismo.t_inic = t_inic
 
-    def n_pasos(símismo):
-        return len(símismo.eje)
+        símismo.paso = paso
+        símismo.n_pasos = n_pasos
+        símismo.unid_paso = unid_paso
+        símismo.paso_guardar = paso_guardar
 
     def avanzar(símismo):
-        símismo._día += símismo.paso
-        return símismo._día <= símismo._n_días
-
-    def fecha(símismo):
-        if símismo._f_inic is not None:
-            return símismo._f_inic + timedelta(days=símismo._día)
-
-    def día(símismo):
-        return símismo._día
-
-    def reinic(símismo):
-        símismo._día = 0
-
-    def __len__(símismo):
-        return len(símismo.eje)
 
 
 def _gen_fecha(f):

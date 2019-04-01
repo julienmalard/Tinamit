@@ -18,15 +18,6 @@ except ImportError:  # pragma: sin cobertura
     pm = None
 
 
-def crear_dll_vensim(archivo):  # pragma: sin cobertura
-
-    if sys.platform[:3] != 'win':
-        raise OSError(_('Desafortunadamente, el dll de Vensim únicamente funciona en Windows.'))
-
-    try:
-        return ctypes.WinDLL(archivo)
-    except OSError:
-        raise OSError(_('Archivo "{}" erróneo para el DLL de Vensim DSS.').format(archivo))
 
 
 _mnsj_falta_dll = _('Esta computadora no cuenta con el DLL de Vensim DSS.')
@@ -77,22 +68,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
 
         return {}
 
-    def unidad_tiempo(símismo):
-        """
-        Aquí, sacamos las unidades de tiempo del modelo Vensim.
-
-        :return: Las unidades de tiempo.
-        :rtype: str
-
-        """
-
-        # Leer las unidades de tiempo
-        unidades = símismo._obt_atrib_var(
-            var='TIME STEP', cód_attrib=1,
-            mns_error=_('Error obteniendo la unidad de tiempo para el modelo Vensim.')
-        )
-
-        return unidades
 
     def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
 
@@ -243,65 +218,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
                     # Guardar en el diccionario interno.
                     matr_val[n] = val  # Para hacer: opciones de dimensiones múltiples
 
-    def cerrar_modelo(símismo):
-        """
-        Cierre la simulación Vensim.
-        """
-
-        # Necesario para guardar los últimos valores de los variables conectados. (Muy incómodo, yo sé.)
-        if símismo.paso != 1:
-            cmd_vensim(func=símismo.mod.vensim_command,
-                       args="GAME>GAMEINTERVAL|%i" % 1,
-                       mensaje_error=_('Error estableciendo el paso de Vensim.'))
-        cmd_vensim(func=símismo.mod.vensim_command,
-                   args="GAME>GAMEON",
-                   mensaje_error=_('Error terminando la simulación Vensim.'))
-
-        # ¡Por fin! Llamar la comanda para terminar la simulación.
-        cmd_vensim(func=símismo.mod.vensim_command,
-                   args="GAME>ENDGAME",
-                   mensaje_error=_('Error terminando la simulación Vensim.'))
-
-        #
-        símismo._vdf_a_csv()
-
-    def verificar_vensim(símismo):
-        """
-        Esta función regresa el estatus de Vensim. Es particularmente útil para desboguear (no tiene uso en las
-        otras funciones de esta clase, y se incluye como ayuda a la programadora.)
-
-        :return: Código de estatus Vensim:
-            | 0 = Vensim está listo
-            | 1 = Vensim está en una simulación activa
-            | 2 = Vensim está en una simulación, pero no está respondiendo
-            | 3 = Malas noticias
-            | 4 = Error de memoria
-            | 5 = Vensim está en modo de juego
-            | 6 = Memoria no libre. Llamar vensim_command() debería de arreglarlo.
-            | 16 += ver documentación de Vensim para vensim_check_status() en la sección de DLL (Suplemento DSS)
-        :rtype: int
-
-        """
-
-        # Obtener el estatus.
-        estatus = cmd_vensim(func=símismo.mod.vensim_check_status,
-                             args=[],
-                             mensaje_error=_('Error verificando el estatus de Vensim. De verdad, la cosa '
-                                             'te va muy mal.'),
-                             val_error=-1, devolver=True)
-        return int(estatus)
-
-
-
-    def paralelizable(símismo):
-        """
-        Modelos en Vensim sí deberían ser paralelizables.
-
-        :return:
-        :rtype:
-        """
-        return True
-
     def leer_arch_resultados(símismo, archivo, var=None, col_tiempo='Time'):
         """
         Esta función no lee los archivos directamente, pero los convierte en el formato .csv para que se puedan leer
@@ -345,63 +261,11 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         # Delegar la lectura de archivos .csv a la clase pariente
         return super().leer_arch_resultados(archivo=archivo, var=var, col_tiempo=col_tiempo)
 
-    def _vdf_a_csv(símismo, archivo_vdf=None, archivo_csv=None):
 
-        if archivo_csv is None:
-            archivo_csv = archivo_vdf
-
-        # En Vensim, "!" quiere decir la corrida activa
-        archivo_vdf = archivo_vdf or '!'
-        archivo_csv = archivo_csv or '!'
-
-        # Necesitas el dll de Vensim para que funcione
-        if símismo.mod is None:
-            raise OSError(_mnsj_falta_dll)
-
-        # Vensim hace la conversión para nosotr@s
-        símismo.mod.vensim_command(
-            'MENU>VDF2CSV|{archVDF}|{archCSV}'.format(
-                archVDF=archivo_vdf + '.vdf', archCSV=archivo_csv + '.csv'
-            ).encode()
-        )
-
-        # Re-aplicar la corrida activa
-        if archivo_csv == '!':
-            archivo_csv = símismo.corrida_activa
-
-        # Leer el csv
-        with open(archivo_csv + '.csv', 'r', encoding='UTF-8') as d:
-            lect = csv.reader(d)
-
-            # Cortar el último paso de simulación. Tinamït siempre corre simulaciones de Vensim para 1 paso adicional
-            # para permitir que valores de variables conectados se puedan actualizar.
-            # Para que queda claro: esto es por culpa de un error en Vensim, no es culpa mía.
-            filas = [f[:-1] if len(f) > 2 else f for f in lect]
-
-        # Hay que abrir el archivo de nuevo para re-escribir sobre el contenido existente-
-        with open(archivo_csv + '.csv', 'w', encoding='UTF-8', newline='') as d:
-            escr = csv.writer(d)
-            escr.writerows(filas)
 
     def _generar_archivo_mod(símismo):
 
         gen_archivo_mdl(archivo_plantilla=símismo.archivo, d_vars=símismo.variables)
-
-    def publicar_modelo(símismo, dll=None):  # pragma: sin cobertura
-
-        if dll is None:
-            dll = símismo.mod
-
-        if símismo.tipo_mod != '.mdl':
-            raise ValueError(_('Solamente se pueden publicar a .vpm los modelos de formato .mdl'))
-
-        cmd_vensim(dll.vensim_command, 'SPECIAL>LOADMODEL|%s' % símismo.archivo)
-
-        archivo_frm = os.path.join(os.path.split(os.path.dirname(__file__))[0], 'Vensim.frm')
-        cmd_vensim(dll.vensim_command, ('FILE>PUBLISH|%s' % archivo_frm))
-
-    def instalado(símismo):
-        return símismo.mod is not None
 
     def editable(símismo):
         return símismo.instalado() and símismo.tipo_mod == '.mdl'

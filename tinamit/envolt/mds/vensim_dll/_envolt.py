@@ -1,6 +1,6 @@
 from tinamit.envolt.mds import EnvolturaMDS, VarNivel, VarConstante, VariablesMDS, \
     VarInic
-from ._funcs import obt_atrib_var, obt_vars, obt_editables, gen_mod_vensim
+from ._funcs import obt_atrib_var, obt_vars, obt_editables, gen_mod_vensim, obt_unid_tiempo
 from ._vars import VarAuxiliarVensim
 
 
@@ -9,6 +9,31 @@ class EnvolturaVensimDLL(EnvolturaMDS):
     def __init__(símismo, archivo, nombre='mds'):
         símismo.mod = gen_mod_vensim(archivo)
         super().__init__(nombre)
+
+    def unidad_tiempo(símismo):
+        return obt_unid_tiempo(símismo.mod)
+
+    def cerrar_modelo(símismo):
+        """
+        Cierre la simulación Vensim.
+        """
+
+        # Necesario para guardar los últimos valores de los variables conectados. (Muy incómodo, yo sé.)
+        if símismo.paso != 1:
+            cmd_vensim(func=símismo.mod.vensim_command,
+                       args="GAME>GAMEINTERVAL|%i" % 1,
+                       mensaje_error=_('Error estableciendo el paso de Vensim.'))
+        cmd_vensim(func=símismo.mod.vensim_command,
+                   args="GAME>GAMEON",
+                   mensaje_error=_('Error terminando la simulación Vensim.'))
+
+        # ¡Por fin! Llamar la comanda para terminar la simulación.
+        cmd_vensim(func=símismo.mod.vensim_command,
+                   args="GAME>ENDGAME",
+                   mensaje_error=_('Error terminando la simulación Vensim.'))
+
+        #
+        vdf_a_csv(símismo.mod)
 
     def _gen_vars(símismo):
         mod = símismo.mod

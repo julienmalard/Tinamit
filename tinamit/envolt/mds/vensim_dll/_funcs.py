@@ -1,51 +1,43 @@
+import csv
 import ctypes
+import os
+import sys
 
-from tinamit.config import _
+from tinamit.config import _, obt_val_config
+from tinamit.cositas import arch_más_recién
 
 
 def gen_mod_vensim(archivo):
-    try:
-        dll_vensim = ops_mód['dll_Vensim']
-    except KeyError:
-        dll_vensim = None
+    if sys.platform[:3] != 'win':
+        raise OSError(_('Desafortunadamente, el DLL de Vensim funciona únicamente en Windows.'))
 
-    # Llamar el DLL de Vensim.
-    if dll_vensim is None:
-        lugares_probables = [
+    try:
+        arch_dll_vensim = obt_val_config(['Vensim', 'dll'])
+    except KeyError:
+        arch_dll_vensim = None
+
+    # Buscar el DLL de Vensim, si necesario.
+    if arch_dll_vensim is None:
+        probables = [
             'C:\\Windows\\System32\\vendll32.dll',
             'C:\\Windows\\SysWOW64\\vendll32.dll'
         ]
-        arch_dll_vensim = símismo._obt_val_config(
-            llave='dll_Vensim', cond=os.path.isfile, respaldo=lugares_probables
-        )
-        if arch_dll_vensim is None:
-            dll = None
-        else:
-            dll = crear_dll_vensim(arch_dll_vensim)
-    else:
-        dll = crear_dll_vensim(dll_vensim)
+        arch_dll_vensim = next(a for a in probables if os.path.isfile(a))
+
+    dll = ctypes.WinDLL(arch_dll_vensim)
 
     nmbr, ext = os.path.splitext(archivo)
     if ext == '.mdl':
-        símismo.tipo_mod = '.mdl'
 
-        if dll is not None:
-            # Únicamente recrear el archivo .vpm si necesario
-            if not os.path.isfile(nmbr + '.vpm') or arch_más_recién(archivo, nmbr + '.vpm'):
-                símismo.publicar_modelo(dll=dll)
-            archivo = nmbr + '.vpm'
+        # Únicamente recrear el archivo .vpm si necesario
+        if not os.path.isfile(nmbr + '.vpm') or arch_más_recién(archivo, nmbr + '.vpm'):
+            publicar_modelo(mod=dll, archivo=archivo)
+        archivo = nmbr + '.vpm'
 
-    elif ext == '.vpm':
-        símismo.tipo_mod = '.vpm'
-
-    else:
+    elif ext != '.vpm':
         raise ValueError(
-            _('Vensim no sabe leer modelos del formato "{}". Debes darle un modelo ".mdl" o ".vpm".')
-                .format(ext)
+            _('Vensim no sabe leer modelos del formato "{}". Debes darle un modelo ".mdl" o ".vpm".').format(ext)
         )
-
-    if dll is None:
-        return
 
     # Inicializar Vensim
     cmd_vensim(func=dll.vensim_command,
@@ -65,17 +57,53 @@ def gen_mod_vensim(archivo):
     return dll
 
 
+def verificar_vensim(símismo):
+    """
+    Esta función regresa el estatus de Vensim. Es particularmente útil para desboguear (no tiene uso en las
+    otras funciones de esta clase, y se incluye como ayuda a la programadora.)
+
+    :return: Código de estatus Vensim:
+        | 0 = Vensim está listo
+        | 1 = Vensim está en una simulación activa
+        | 2 = Vensim está en una simulación, pero no está respondiendo
+        | 3 = Malas noticias
+        | 4 = Error de memoria
+        | 5 = Vensim está en modo de juego
+        | 6 = Memoria no libre. Llamar vensim_command() debería de arreglarlo.
+        | 16 += ver documentación de Vensim para vensim_check_status() en la sección de DLL (Suplemento DSS)
+    :rtype: int
+
+    """
+
+    # Obtener el estatus.
+    estatus = cmd_vensim(func=símismo.mod.vensim_check_status,
+                         args=[],
+                         mensaje_error=_('Error verificando el estatus de Vensim. De verdad, la cosa '
+                                         'te va muy mal.'),
+                         val_error=-1)
+    return int(estatus)
+
+
+def publicar_modelo(mod, archivo):  # pragma: sin cobertura
+
+    cmd_vensim(mod.vensim_command, 'SPECIAL>LOADMODEL|%s' % archivo)
+
+    archivo_frm = os.path.join(os.path.split(os.path.dirname(__file__))[0], 'Vensim.frm')
+    cmd_vensim(mod.vensim_command, ('FILE>PUBLISH|%s' % archivo_frm))
+
+
 def obt_vars(mod):
     l_nombres = []
     for t in [1, 2, 4, 5, 12]:
         mem = ctypes.create_string_buffer(0)  # Crear una memoria intermedia
 
         # Verificar el tamaño necesario
-        tamaño_nec = cmd_vensim(func=mod.vensim_get_varnames,
-                                args=['*', t, mem, 0],
-                                mensaje_error=_('Error obteniendo eñ tamaño de los variables Vensim.'),
-                                val_error=-1, devolver=True
-                                )
+        tamaño_nec = cmd_vensim(
+            func=mod.vensim_get_varnames,
+            args=['*', t, mem, 0],
+            mensaje_error=_('Error obteniendo eñ tamaño de los variables Vensim.'),
+            val_error=-1
+        )
 
         mem = ctypes.create_string_buffer(tamaño_nec)  # Una memoria intermedia con el tamaño apropiado
 
@@ -93,17 +121,17 @@ def obt_vars(mod):
 
 
 def obt_editables(mod):
-
     # Para obtener los nombres de variables editables (se debe hacer así y no por `tipo_var` porque Vensim
     # los reporta como de tipo `Auxiliary`.
     mem = ctypes.create_string_buffer(0)  # Crear una memoria intermedia
 
     # Verificar el tamaño necesario
-    tamaño_nec = cmd_vensim(func=mod.vensim_get_varnames,
-                            args=['*', 12, mem, 0],
-                            mensaje_error=_('Error obteniendo eñ tamaño de los variables Vensim.'),
-                            val_error=-1, devolver=True
-                            )
+    tamaño_nec = cmd_vensim(
+        func=mod.vensim_get_varnames,
+        args=['*', 12, mem, 0],
+        mensaje_error=_('Error obteniendo eñ tamaño de los variables Vensim.'),
+        val_error=-1
+    )
 
     mem = ctypes.create_string_buffer(tamaño_nec)  # Una memoria intermedia con el tamaño apropiado
 
@@ -116,6 +144,48 @@ def obt_editables(mod):
     )
 
     return [x for x in mem.raw.decode().split('\x00') if x]
+
+
+def obt_unid_tiempo(mod):
+    return obt_atrib_var(
+        mod, var='TIME STEP', cód_attrib=1,
+        mns_error=_('Error obteniendo la unidad de tiempo para el modelo Vensim.')
+    )
+
+
+def vdf_a_csv(mod, archivo_vdf=None, archivo_csv=None):
+
+    if archivo_csv is None:
+        archivo_csv = archivo_vdf
+
+    # En Vensim, "!" quiere decir la corrida activa
+    archivo_vdf = archivo_vdf or '!'
+    archivo_csv = archivo_csv or '!'
+
+    # Vensim hace la conversión para nosotr@s
+    mod.vensim_command(
+        'MENU>VDF2CSV|{archVDF}|{archCSV}'.format(
+            archVDF=archivo_vdf + '.vdf', archCSV=archivo_csv + '.csv'
+        ).encode()
+    )
+
+    # Re-aplicar la corrida activa
+    if archivo_csv == '!':
+        archivo_csv = corrida_activa
+
+    # Leer el csv
+    with open(archivo_csv + '.csv', 'r', encoding='UTF-8') as d:
+        lect = csv.reader(d)
+
+        # Cortar el último paso de simulación. Tinamït siempre corre simulaciones de Vensim para 1 paso adicional
+        # para permitir que valores de variables conectados se puedan actualizar.
+        # Para que quede claro: esto es por culpa de un error en Vensim, no es culpa nuestra.
+        filas = [f[:-1] if len(f) > 2 else f for f in lect]
+
+    # Hay que abrir el archivo de nuevo para re-escribir sobre el contenido existente-
+    with open(archivo_csv + '.csv', 'w', encoding='UTF-8', newline='') as d:
+        escr = csv.writer(d)
+        escr.writerows(filas)
 
 
 def obt_atrib_var(mod, var, cód_attrib, mns_error=None):
@@ -139,11 +209,12 @@ def obt_atrib_var(mod, var, cód_attrib, mns_error=None):
         mns_error1 = mns_error2 = mns_error
 
     mem = ctypes.create_string_buffer(10)
-    tmñ = cmd_vensim(func=mod.vensim_get_varattrib,
-                     args=[var, cód_attrib, mem, 0],
-                     mensaje_error=mns_error1,
-                     val_error=-1,
-                     devolver=True)
+    tmñ = cmd_vensim(
+        func=mod.vensim_get_varattrib,
+        args=[var, cód_attrib, mem, 0],
+        mensaje_error=mns_error1,
+        val_error=-1,
+    )
 
     mem = ctypes.create_string_buffer(tmñ)
     cmd_vensim(func=mod.vensim_get_varattrib,
@@ -157,26 +228,26 @@ def obt_atrib_var(mod, var, cód_attrib, mns_error=None):
         return mem.value.decode()
 
 
-def cmd_vensim(func, args, mensaje_error=None, val_error=None, devolver=False):  # pragma: sin cobertura
+def cmd_vensim(func, args, mensaje_error=None, val_error=None):  # pragma: sin cobertura
     """
     Esta función sirve para llamar todo tipo_mod de comanda Vensim.
 
-    :param func: La función DLL a llamar.
-    :type func: callable
+    Parameters
+    ----------
+    func: callable
+        La función DLL a llamar.
+    args: list | str
+        Los argumento a pasar a la función. Si no hay, usar una lista vacía.
+    mensaje_error: str
+        El mensaje de error para mostrar si hay un error en la comanda.
+    val_error: int
+        Un valor de regreso Vensim que indica un error para esta función. Si se deja ``None``, todos
+        valores que no son 1 se considerarán como erróneas.
 
-    :param args: Los argumento a pasar a la función. Si no hay, usar una lista vacía.
-    :type args: list | str
-
-    :param mensaje_error: El mensaje de error para mostrar si hay un error en la comanda.
-    :type mensaje_error: str
-
-    :param val_error: Un valor de regreso Vensim que indica un error para esta función. Si se deja ``None``, todos
-      valores que no son 1 se considerarán como erróneas.
-    :type val_error: int
-
-    :param devolver: Si se debe devolver el valor devuelto por Vensim o no.
-    :type devolver: bool
-
+    Returns
+    -------
+    int
+        El código devuelto por Vensim.
     """
 
     # Asegurarse que args es una lista
@@ -212,6 +283,5 @@ def cmd_vensim(func, args, mensaje_error=None, val_error=None, devolver=False): 
 
         raise OSError(mensaje_error)
 
-    # Devolver el valor devuelto por la función Vensim, si aplica.
-    if devolver:
-        return resultado
+    # Devolver el valor devuelto por la función Vensim
+    return resultado
