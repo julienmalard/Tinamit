@@ -1,6 +1,6 @@
 from tinamit.envolt.mds import EnvolturaMDS, VarNivel, VarConstante, VariablesMDS, \
     VarInic
-from ._funcs import obt_atrib_var, obt_vars, obt_editables, gen_mod_vensim, obt_unid_tiempo
+from ._funcs import obt_atrib_var, obt_vars, obt_editables, gen_mod_vensim, obt_unid_tiempo, cerrar_vensim, vdf_a_csv
 from ._vars import VarAuxiliarVensim
 
 
@@ -18,19 +18,7 @@ class EnvolturaVensimDLL(EnvolturaMDS):
         Cierre la simulación Vensim.
         """
 
-        # Necesario para guardar los últimos valores de los variables conectados. (Muy incómodo, yo sé.)
-        if símismo.paso != 1:
-            cmd_vensim(func=símismo.mod.vensim_command,
-                       args="GAME>GAMEINTERVAL|%i" % 1,
-                       mensaje_error=_('Error estableciendo el paso de Vensim.'))
-        cmd_vensim(func=símismo.mod.vensim_command,
-                   args="GAME>GAMEON",
-                   mensaje_error=_('Error terminando la simulación Vensim.'))
-
-        # ¡Por fin! Llamar la comanda para terminar la simulación.
-        cmd_vensim(func=símismo.mod.vensim_command,
-                   args="GAME>ENDGAME",
-                   mensaje_error=_('Error terminando la simulación Vensim.'))
+        cerrar_vensim(símismo.mod, paso)
 
         #
         vdf_a_csv(símismo.mod)

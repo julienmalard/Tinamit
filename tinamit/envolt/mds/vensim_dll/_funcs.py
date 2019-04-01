@@ -188,6 +188,22 @@ def vdf_a_csv(mod, archivo_vdf=None, archivo_csv=None):
         escr.writerows(filas)
 
 
+def cerrar_vensim(mod, paso):
+    # Necesario para guardar los últimos valores de los variables conectados. (Muy incómodo, yo sé.)
+    if paso != 1:
+        cmd_vensim(func=mod.vensim_command,
+                   args="GAME>GAMEINTERVAL|%i" % 1,
+                   mensaje_error=_('Error estableciendo el paso de Vensim.'))
+    cmd_vensim(func=mod.vensim_command,
+               args="GAME>GAMEON",
+               mensaje_error=_('Error terminando la simulación Vensim.'))
+
+    # ¡Por fin! Llamar la comanda para terminar la simulación.
+    cmd_vensim(func=mod.vensim_command,
+               args="GAME>ENDGAME",
+               mensaje_error=_('Error terminando la simulación Vensim.'))
+
+
 def obt_atrib_var(mod, var, cód_attrib, mns_error=None):
     if cód_attrib in [4, 5, 6, 7, 8, 9, 10]:
         lista = True

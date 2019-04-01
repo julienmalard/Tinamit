@@ -13,6 +13,7 @@ class EjeTiempo(object):
     def avanzar(símismo):
 
 
+
 def _gen_fecha(f):
     if f is None:
         return
