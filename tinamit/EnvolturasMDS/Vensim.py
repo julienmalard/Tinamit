@@ -61,67 +61,6 @@ class ModeloVensim(EnvolturaMDS):  # pragma: sin cobertura
         # Inicializar ModeloVensim como una EnvolturasMDS.
         super().__init__(archivo=archivo, nombre=nombre, ops_mód={'dll_Vensim': dll_vensim})
 
-    def _generar_mod(símismo, archivo, **ops_mód):
-        try:
-            dll_vensim = ops_mód['dll_Vensim']
-        except KeyError:
-            dll_vensim = None
-
-        # Llamar el DLL de Vensim.
-        if dll_vensim is None:
-            lugares_probables = [
-                'C:\\Windows\\System32\\vendll32.dll',
-                'C:\\Windows\\SysWOW64\\vendll32.dll'
-            ]
-            arch_dll_vensim = símismo._obt_val_config(
-                llave='dll_Vensim', cond=os.path.isfile, respaldo=lugares_probables
-            )
-            if arch_dll_vensim is None:
-                dll = None
-            else:
-                dll = crear_dll_vensim(arch_dll_vensim)
-        else:
-            dll = crear_dll_vensim(dll_vensim)
-
-        nmbr, ext = os.path.splitext(archivo)
-        if ext == '.mdl':
-            símismo.tipo_mod = '.mdl'
-
-            if dll is not None:
-                # Únicamente recrear el archivo .vpm si necesario
-                if not os.path.isfile(nmbr + '.vpm') or arch_más_recién(archivo, nmbr + '.vpm'):
-                    símismo.publicar_modelo(dll=dll)
-                archivo = nmbr + '.vpm'
-
-        elif ext == '.vpm':
-            símismo.tipo_mod = '.vpm'
-
-        else:
-            raise ValueError(
-                _('Vensim no sabe leer modelos del formato "{}". Debes darle un modelo ".mdl" o ".vpm".')
-                    .format(ext)
-            )
-
-        if dll is None:
-            return
-
-        # Inicializar Vensim
-        cmd_vensim(func=dll.vensim_command,
-                   args=[''],
-                   mensaje_error=_('Error iniciando Vensim.'))
-
-        # Cargar el modelo
-        cmd_vensim(func=dll.vensim_command,
-                   args='SPECIAL>LOADMODEL|%s' % archivo,
-                   mensaje_error=_('Error cargando el modelo de Vensim.'))
-
-        # Parámetros estéticos de ejecución.
-        cmd_vensim(func=dll.vensim_be_quiet, args=[2],
-                   mensaje_error=_('Error en la comanda "vensim_be_quiet".'),
-                   val_error=-1)
-
-        return dll
-
     def _inic_dic_vars(símismo):
         """
         Inicializamos el diccionario de variables del modelo Vensim.

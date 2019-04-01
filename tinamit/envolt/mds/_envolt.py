@@ -2,4 +2,9 @@ from tinamit import Modelo
 
 
 class EnvolturaMDS(Modelo):
-    pass
+
+    ext = []
+
+    def __init__(símismo, nombre='mds'):
+        super().__init__(nombre)
+

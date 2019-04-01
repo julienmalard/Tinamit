@@ -1,11 +1,29 @@
 from ast import literal_eval
 
 from tinamit.Análisis.sintaxis import Ecuación
-from tinamit.envolt.mds import EnvolturaMDS, VariablesMDS
-from ._vars import VarPySDAuxiliar, VarPySDNivel, VarPySDConstante
+from tinamit.envolt.mds import EnvolturaMDS
+from ._funcs import gen_mod_pysd, obt_paso_mod_pysd
+from ._vars import VarPySDAuxiliar, VarPySDNivel, VarPySDConstante, VariablesPySD
 
 
 class EnvolturaPySD(EnvolturaMDS):
+
+    def __init__(símismo, archivo, nombre='mds'):
+
+        símismo.mod = gen_mod_pysd(archivo)
+        símismo.archivo = archivo
+
+        super().__init__(nombre=nombre)
+
+    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
+
+        # Poner los variables y el tiempo a sus valores iniciales
+        símismo.mod.reload()
+        símismo.mod.initialize()
+
+    def cerrar_modelo(símismo):
+        pass
+
     def _gen_vars(símismo):
         l_vars = []
 
@@ -26,46 +44,45 @@ class EnvolturaPySD(EnvolturaMDS):
 
             try:
                 getattr(símismo.mod.components, 'integ_' + nombre_py)
-                var = VarPySDNivel(
-                    nombre, nombre_py=nombre_py, unid=unid, ec=ec, hijos=hijos, parientes=parientes,
-                    líms=líms, info=info
-                )
+                nivel = True
 
             except AttributeError:
-                if len(parientes):
-                    var = VarPySDAuxiliar(
-                        nombre, nombre_py=nombre_py, unid=unid, ec=ec, hijos=hijos, parientes=parientes,
-                        líms=líms, info=info
-                    )
-                else:
-                    var = VarPySDConstante(
-                        nombre, nombre_py=nombre_py, unid=unid, ec=ec, hijos=hijos, parientes=parientes,
-                        líms=líms, info=info
-                    )
+                nivel = False
+            if nivel:
+                var = VarPySDNivel(
+                    nombre, nombre_py=nombre_py, unid=unid, ec=ec, parientes=parientes, líms=líms, info=info
+                )
+            elif len(parientes):
+                var = VarPySDAuxiliar(
+                    nombre, nombre_py=nombre_py, unid=unid, ec=ec, parientes=parientes, líms=líms, info=info
+                )
+            else:
+                var = VarPySDConstante(
+                    nombre, nombre_py=nombre_py, unid=unid, ec=ec, parientes=parientes, líms=líms, info=info
+                )
 
             l_vars.append(var)
 
-        return VariablesMDS(l_vars)
-
-    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
-
-        # Poner los variables y el tiempo a sus valores iniciales
-        símismo.mod.reload()
-        símismo.mod.initialize()
+        return VariablesPySD(l_vars)
 
 
 class EnvolturaPySDMDL(EnvolturaPySD):
+    ext = ['.mdl']
+
     def unidad_tiempo(símismo):
         docs = símismo.mod.doc()
         return docs.loc[docs['Real Name'] == 'TIME STEP', 'Unit'].values[0]
 
 
 class EnvolturaPySDXMILE(EnvolturaPySD):
+    ext = ['.xmile', '.xml']
+
     def unidad_tiempo(símismo):
-        with open(símismo.mod.py_model_file, 'r', encoding='UTF-8') as d:
-            f = d.readline()
-            while f != 'def time_step():\n':
-                f = d.readline()
-            while not f.strip().startswith('Units:'):
-                f = d.readline()
-        return f.split(':')[1].strip()
+        return obt_paso_mod_pysd(símismo.archivo)
+
+
+class EnvolturaPySDPy(EnvolturaPySD):
+    ext = '.py'
+
+    def unidad_tiempo(símismo):
+        return obt_paso_mod_pysd(símismo.archivo)

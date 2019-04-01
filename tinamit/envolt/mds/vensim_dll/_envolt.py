@@ -1,10 +1,15 @@
 from tinamit.envolt.mds import EnvolturaMDS, VarNivel, VarConstante, VariablesMDS, \
     VarInic
-from ._funcs import obt_atrib_var, obt_vars, obt_editables
+from ._funcs import obt_atrib_var, obt_vars, obt_editables, gen_mod_vensim
 from ._vars import VarAuxiliarVensim
 
 
 class EnvolturaVensimDLL(EnvolturaMDS):
+
+    def __init__(símismo, archivo, nombre='mds'):
+        símismo.mod = gen_mod_vensim(archivo)
+        super().__init__(nombre)
+
     def _gen_vars(símismo):
         mod = símismo.mod
 
@@ -38,20 +43,19 @@ class EnvolturaVensimDLL(EnvolturaMDS):
 
             # Leer la ecuación del variable, sus hijos y sus parientes directamente de Vensim
             ec = obt_atrib_var(mod, var, 3)
-            hijos = [v for v in obt_atrib_var(mod, var, 5) if v in vars_y_tipos]
             parientes = [v for v in obt_atrib_var(mod, var, 4) if v in vars_y_tipos]
 
             if tipo_var == 'constant' or (tipo_var == 'auxiliar' and not len(parientes)):
-                var = VarConstante(var, unid=unid, ec=ec, hijos=hijos, parientes=parientes, líms=líms, info=info)
+                var = VarConstante(var, unid=unid, ec=ec, parientes=parientes, líms=líms, info=info)
             elif tipo_var == 'level':
-                var = VarNivel(var, unid=unid, ec=ec, hijos=hijos, parientes=parientes, líms=líms, info=info)
+                var = VarNivel(var, unid=unid, ec=ec, parientes=parientes, líms=líms, info=info)
             elif tipo_var == 'auxiliary':
                 var = VarAuxiliarVensim(
-                    var, editable=var in editables, ec=ec, hijos=hijos, parientes=parientes, unid=unid,
+                    var, editable=var in editables, ec=ec, parientes=parientes, unid=unid,
                     líms=líms, info=info
                 )
             elif tipo_var == 'initial':
-                var = VarInic(var, unid=unid, ec=ec, hijos=hijos, parientes=parientes, líms=líms, info=info)
+                var = VarInic(var, unid=unid, ec=ec, parientes=parientes, líms=líms, info=info)
             else:
                 raise ValueError(tipo_var)
 

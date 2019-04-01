@@ -1,13 +1,6 @@
-import os
-import xml.etree.ElementTree as ET
-from ast import literal_eval
-
 import numpy as np
-import regex
 import xarray as xr
 
-import pysd
-from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.EnvolturasMDS.Vensim import gen_archivo_mdl
 from tinamit.MDS import EnvolturaMDS
 from tinamit.config import _
@@ -27,116 +20,7 @@ class ModeloPySD(EnvolturaMDS):
 
         super().__init__(archivo, nombre=nombre)
 
-    def _generar_mod(símismo, archivo, **ops_mód):
-        nmbr, ext = os.path.splitext(archivo)
-
-        if ext == '.py':  # Modelos PySD ya traducidos
-            símismo.tipo_mod = '.py'
-            return pysd.load(archivo)
-
-        else:
-            if ext == '.mdl':
-                símismo.tipo_mod = '.mdl'
-            elif ext in ['.xmile', '.xml']:
-                símismo.tipo_mod = '.xmile'
-            else:
-                raise ValueError(
-                    _('PySD no sabe leer modelos del formato "{}". Debes darle un modelo ".py", ".mdl" o ".xmile".')
-                        .format(ext)
-                )
-
-            # Únicamente recrear el archivo .py si necesario
-            if os.path.isfile(nmbr + '.py') and (os.path.getmtime(nmbr + '.py') > os.path.getmtime(archivo)):
-                return pysd.load(nmbr + '.py')
-            else:
-                return pysd.read_vensim(archivo) if ext == '.mdl' else pysd.read_xmile(archivo)
-
-    def _inic_dic_vars(símismo):
-
-        internos = ['FINAL TIME', 'TIME STEP', 'SAVEPER', 'INITIAL TIME']
-        for i, f in símismo.mod.doc().iterrows():
-
-            if f['Type'] == 'lookup':
-                continue
-
-            nombre = f['Real Name']
-            if nombre not in internos:
-                nombre_py = f['Py Name']
-                unidades = f['Unit']
-                líms = literal_eval(f['Lims'])
-                ec = f['Eqn']
-                obj_ec = Ecuación(ec)
-                var_juego = obj_ec.sacar_args_func('GAME') is not None
-
-                if símismo.tipo_mod == '.mdl':
-                    if regex.match(r'INTEG *\(', ec):
-                        tipo = 'nivel'
-                    else:
-                        tipo = 'auxiliar'  # cambiaremos el resto después
-                else:
-                    try:
-                        getattr(símismo.mod.components, 'integ_' + nombre_py)
-                        tipo = 'nivel'
-                    except AttributeError:
-                        tipo = 'auxiliar'
-
-                parientes = {v for v in obj_ec.variables() if v not in internos}
-
-                if tipo == 'auxiliar' and not len(parientes):
-                    tipo = 'constante'
-
-                símismo.variables[nombre] = {
-                    'val': getattr(símismo.mod.components, nombre_py)(),
-                    'unidades': unidades,
-                    'ec': ec,
-                    'hijos': [],
-                    'parientes': parientes,
-                    'líms': líms,
-                    'info': f['Comment'],
-                    'tipo': tipo,
-                    'ingreso': True,
-                    'egreso': not var_juego
-                }
-
-                símismo._conv_nombres[nombre] = nombre_py
-
-        # Aplicar los otros tipos de variables
-        for niv in símismo.niveles():
-            ec = Ecuación(símismo.obt_ec_var(niv), dialecto='vensim')
-            if símismo.tipo_mod == '.mdl':
-                args_integ, args_inic = ec.sacar_args_func('INTEG')  # Analizar la función INTEG de VENSIM
-
-                # Identificar variables iniciales
-                if args_inic in símismo.variables:
-                    símismo.variables[args_inic]['tipo'] = 'inicial'
-
-                # Los flujos, por definición, son los otros parientes de los niveles.
-                flujos = [v for v in Ecuación(args_integ, dialecto='vensim').variables() if
-                          v not in internos]
-            else:
-                flujos = ec.variables()
-
-            for flujo in flujos:
-                # Para cada nivel en el modelo...
-                símismo.variables[flujo]['tipo'] = 'flujo'
-
-        # Detectar los variables iniciales de XMILE
-        if símismo.tipo_mod == '.xmile':
-            for nv in ET.parse(símismo.archivo).getroot().iter('{http://www.systemdynamics.org/XMILE}stock'):
-                inic = nv.find('{http://www.systemdynamics.org/XMILE}eqn').text
-
-                if inic in símismo.variables:
-                    símismo.variables[inic]['tipo'] = 'inicial'
-                    símismo.variables[nv.attrib['name']]['parientes'].add(inic)
-
-        # Aplicar parientes a hijos
-        for v, d_v in símismo.variables.items():
-            for p in d_v['parientes']:
-                d_p = símismo.variables[p]
-                d_p['hijos'].append(v)
-
     def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
-
 
         símismo.cont_simul = False
         símismo.tiempo_final = n_pasos
@@ -193,9 +77,6 @@ class ModeloPySD(EnvolturaMDS):
         else:
             l_vars = var
         return xr.Dataset({v: ('n', símismo._res_recién[v].values) for v in l_vars})
-
-    def cerrar_modelo(símismo):
-        pass
 
     def _generar_archivo_mod(símismo):
         if símismo.tipo_mod == '.mdl':
