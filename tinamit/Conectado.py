@@ -644,29 +644,6 @@ class SuperConectado(Modelo):
 
         """
 
-        # Verificar parámetros
-        if modelo_recip is None and var_recip is not None:
-            avisar(_('`var_recip` sin `modelo_recip` será ignorado en la función '
-                     '`SuperConectado.desconectar_vars()`.'))
-
-        # Verificar los nombres de modelos
-        modelo_fuente = símismo._verificar_nombre_submodelo(modelo_fuente)
-        modelo_recip = símismo._verificar_nombre_submodelo(modelo_recip)
-
-        # Buscar la conexión correspondiente...
-        for n, conex in enumerate(símismo.conexiones):
-            # Para cada conexión existente...
-            if conex['modelo_fuente'] == modelo_fuente and conex['var_fuente'] == var_fuente:
-                # Si el modelo y variable fuente corresponden...
-
-                # Identificar si el modelo recipiente corresponde también.
-                if modelo_recip is None:
-                    símismo.conexiones.pop(n)
-                else:
-                    if modelo_recip == conex['modelo_recip']:
-                        if var_recip is None or var_recip == conex['var_recip']:
-                            símismo.conexiones.pop(n)
-
     def _verificar_nombre_submodelo(símismo, modelo):
         if modelo is None:
             return
@@ -863,56 +840,6 @@ class Conectado(SuperConectado):
         # Y guardamos la referencia rápida.
         símismo.bf = modelo_bf
 
-    def conectar(símismo, var_mds, var_bf, mds_fuente, conv=None):
-        """
-        Una función para conectar variables entre el modelo biofísico y el modelo DS.
-
-        :param var_mds: El nombre del variable en el modelo DS.
-        :type var_mds: str
-
-        :param var_bf: El nombre del variable correspondiente en el modelo biofísico.
-        :type var_bf: str
-
-        :param mds_fuente: Si ``True``, el modelo DS es el modelo fuente para la conexión. Sino, será el modelo
-          biofísico.
-        :type mds_fuente: bool
-
-        :param conv: El factor de conversión entre los variables.
-        :type conv: float
-
-        """
-
-        # Establecer los variables y modelos fuentes y recipientes.
-        if mds_fuente:
-            modelo_fuente = símismo.mds.nombre
-            var_fuente = var_mds
-
-            modelo_recip = símismo.bf.nombre
-            var_recip = var_bf
-
-        else:
-            modelo_fuente = símismo.bf.nombre
-            var_fuente = var_bf
-
-            modelo_recip = símismo.mds.nombre
-            var_recip = var_mds
-
-        # Llamar la función apropiada de la clase superior.
-        símismo.conectar_vars(var_fuente=var_fuente, modelo_fuente=modelo_fuente,
-                              var_recip=var_recip, modelo_recip=modelo_recip, conv=conv)
-
-    def desconectar(símismo, var_mds):
-        """
-        Esta función deshacer una conexión entre el modelo biofísico y el modelo DS. Se especifica la conexión por
-        el nombre del variable en el modelo DS.
-
-        :param var_mds: El nombre del variable conectado en el modelo DS.
-        :type var_mds: str
-
-        """
-
-        # Llamar la función apropiada de la clase superior.
-        símismo.desconectar_vars(var_fuente=var_mds, modelo_fuente='mds')
 
     def __getinitargs__(símismo):
         return tuple()
