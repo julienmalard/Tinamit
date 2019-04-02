@@ -14,7 +14,7 @@ import xarray as xr
 from dateutil.relativedelta import relativedelta as deltarelativo
 from lxml import etree as arbole
 
-import tinamit.Geog.Geog as Geog
+import tinamit.Geog_.Geog as Geog
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
 from tinamit.Análisis.Datos import obt_fecha_ft, gen_SuperBD, jsonificar, numpyficar, SuperBD
 from tinamit.Análisis.Valids import validar_resultados
@@ -28,15 +28,11 @@ class Modelo(object):
     """
     Todas las cosas en Tinamit son instancias de `Modelo`, que sea un modelo de dinámicas de los sistemas, un modelo de
     cultivos o de suelos o de clima, o un modelo conectado.
-    Cada tipo_mod de modelo se representa por subclases específicas. Por eso, la gran mayoría de los métodos definidos
+    Cada tipo de modelo se representa por subclases específicas. Por eso, la gran mayoría de los métodos definidos
     aquí se implementan de manera independiente en cada subclase de `Modelo`.
     """
 
     leng_orig = 'es'
-
-    # Si el modelo puede combinar pasos mientras simula.
-    combin_pasos = False
-    dialecto_ec = 'vensim'
 
     def __init__(símismo, nombre):
         """
@@ -55,16 +51,6 @@ class Modelo(object):
         símismo.variables = VariablesMod(símismo._gen_vars())
         símismo._reinic_vals()
 
-        # Para calibraciones
-        símismo.calibs = NotImplemented
-
-        # Listas de los nombres de los variables que sirven de conexión con otro modelo o con datos externos.
-        símismo.vars_saliendo = set()
-        símismo.vars_entrando = set()
-
-        # Para guardar variables climáticos
-        símismo.vars_clima = {}  # Formato: {var1: {'nombre_extrn': nombre_oficial, 'combin': 'prom' | 'total'}, ...}
-
     def _gen_vars(símismo):
         """
 
@@ -75,24 +61,6 @@ class Modelo(object):
         """
 
         raise NotImplementedError
-
-    def _verificar_dic_vars(símismo, reqs=None):
-
-        requísitos = ['unidades', 'líms', 'ingreso', 'egreso']
-        if reqs is not None:
-            requísitos += reqs
-
-        for var, d_var in símismo.variables.items():
-
-            if 'val' not in d_var:
-                d_var['val'] = None
-
-            faltan = [r for r in requísitos if r not in d_var]
-            if len(faltan):
-                raise ValueError(
-                    _('Al variable "{var}" le falta los atributos siguientes: {atr}')
-                        .format(var=var, atr=', '.join(faltan))
-                )
 
     def unidad_tiempo(símismo):
         """
@@ -106,28 +74,52 @@ class Modelo(object):
 
         raise NotImplementedError
 
-    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
+    def simular(símismo, eje_tiempo, vals_inic=None, vals_extern=None):
+        extern = gen_vals_extern(vals_inic, vals_extern)
+
+        símismo.iniciar_modelo(eje_tiempo, extern)
+        res = símismo.correr(eje_tiempo)
+        símismo.cerrar()
+
+        return res
+
+    def simular_grupo(símismo, eje_tiempo):
+        pass
+
+    def iniciar_modelo(símismo, eje_tiempo, extern, nombre_corrida):
+        pass
+
+    def correr(símismo, eje_tiempo):
+        while eje_tiempo.avanzar():
+            símismo.incrementar()
+        return símismo.variables.resultados()
+
+    def incrementar(símismo):
+        raise NotImplementedError
+
+    def cerrar(símismo):
         """
-        Esta función llama cualquier acción necesaria para preparar el modelo para la simulación. Esto incluye aplicar
-        valores iniciales. En general es muy fácil y se hace simplemente con "símismo.cambiar_vals(vals_inic)",
-        pero para unos modelos (como Vensim) es un poco más delicado así que los dejamos a ti para implementar.
+        Esta función debe tomar las acciones necesarias para terminar la simulación y cerrar el modelo, si aplica.
+        Si no aplica, usar ``pass``.
+        """
+        raise NotImplementedError
 
-        :param n_pasos:
-        :type n_pasos: int
+    @classmethod
+    def instalado(cls):
+        """
+        Si tu modelo depiende en una instalación de otro programa externo a Tinamït, puedes reimplementar esta función
+        para devolver ``True`` si el modelo está instalado y ``False`` sino.
 
-        :param nombre_corrida: El nombre de la corrida (generalmente para guardar resultados).
-        :type nombre_corrida: str
-
+        Returns
+        -------
+        bool
+            Si el modelo está instalado completamente o no.
         """
 
-        # Establecer la corrida actual
-        símismo.corrida_activa = nombre_corrida
+        return True
 
-        # Reestablecer valores iniciales
-        símismo._reinic_vals()
-
-        # Actualizar valores iniciales en el diccionario interno
-        símismo._act_vals_dic_var(vals_inic)
+    def __str__(símismo):
+        return símismo.nombre
 
     def _reinic_vals(símismo):
         vals_inic = símismo._vals_inic()
@@ -491,7 +483,7 @@ class Modelo(object):
             símismo.incrementar(paso=n_iter * paso, guardar_cada=paso)
 
             # Después de la simulación, cerramos el modelo.
-            símismo.cerrar_modelo()
+            símismo.cerrar()
 
             # Leer los resultados
             res = símismo.leer_arch_resultados(archivo=nombre_corrida, var=vars_interés)
@@ -545,7 +537,7 @@ class Modelo(object):
                 mem_vars[v][-1] = símismo.obt_val_actual_var(v)
 
             # Después de la simulación, cerramos el modelo.
-            símismo.cerrar_modelo()
+            símismo.cerrar()
 
         if vars_interés is not None:
             return copiar_profundo(símismo.mem_vars)
@@ -854,25 +846,6 @@ class Modelo(object):
         else:
             raise ValueError(_('Formato de resultados "{}" no reconocido.').format(frmt))
 
-    def _incrementar(símismo, paso, guardar_cada=None):
-        """
-        Esta función debe avanzar el modelo por un periodo de tiempo especificado.
-
-        Parameters
-        ----------
-        paso : int
-            El paso.
-        guardar_cada : int
-            El paso para guardar resultados.
-
-        """
-
-        raise NotImplementedError
-
-    def incrementar(símismo, paso, guardar_cada=None):
-        símismo.vals_actualizadas = False
-        símismo._incrementar(paso=paso, guardar_cada=guardar_cada)
-
     def leer_vals(símismo):
 
         if not símismo.vals_actualizadas:
@@ -961,13 +934,6 @@ class Modelo(object):
 
         """
 
-        raise NotImplementedError
-
-    def cerrar_modelo(símismo):
-        """
-        Esta función debe tomar las acciones necesarias para terminar la simulación y cerrar el modelo, si aplica.
-        Si no aplica, usar ``pass``.
-        """
         raise NotImplementedError
 
     def _act_vals_clima(símismo, f_0, f_1, lugar):
@@ -1115,43 +1081,6 @@ class Modelo(object):
                                'si lo escrbiste bien.')  # Sí, lo "escrbí" así por propósito. :)
                              .format(var, símismo))
 
-    def obt_info_var(símismo, var):
-        """
-        Devuelve la documentación de un variable.
-
-        Parameters
-        ----------
-        var : str
-            El nombre del variable.
-
-        Returns
-        -------
-        str
-            La documentación del variable.
-
-        """
-
-        var = símismo.valid_var(var)
-        return símismo.variables[var]['info']
-
-    def obt_unidades_var(símismo, var):
-        """
-        Devuelve las unidades de un variable.
-
-        Parameters
-        ----------
-        var : str
-            El nombre del variable.
-
-        Returns
-        -------
-        str
-            Las unidades del variable.
-
-        """
-        var = símismo.valid_var(var)
-        return símismo.variables[var]['unidades']
-
     def obt_val_actual_var(símismo, var):
         """
         Devuelve el valor actual de un variable.
@@ -1189,85 +1118,6 @@ class Modelo(object):
 
         var = símismo.valid_var(var)
         return símismo.variables[var]['líms']
-
-    def obt_dims_var(símismo, var):
-        """
-        Devuelve las dimensiones de un variable.
-
-        Parameters
-        ----------
-        var : str
-            El nombre del variable.
-
-        Returns
-        -------
-        tuple
-            Las dimensiones del variable.
-
-        """
-
-        var = símismo.valid_var(var)
-        val = símismo.variables[var]['val']
-        if isinstance(val, np.ndarray):
-            return val.shape
-        else:
-            return (1,)
-
-    def obt_ec_var(símismo, var):
-        """
-        Devuelve la ecuación de un variable.
-
-        Parameters
-        ----------
-        var : str
-            El nombre del variable.
-
-        Returns
-        -------
-        str | None
-            La ecuación del variable. Si no tiene ecuación, devuelve ``None``.
-
-        """
-
-        var = símismo.valid_var(var)
-        try:
-            return símismo.variables[var]['ec']
-        except KeyError:
-            return
-
-    def egresos(símismo):
-        """
-        Devuelve los variables egresos del modelo.
-
-        Returns
-        -------
-        list[str]
-            Una lista de los variables egresos.
-
-        """
-
-        return [v for v, d_v in símismo.variables.items() if d_v['egreso']]
-
-    def ingresos(símismo):
-        """
-        Devuelve los variables ingresos del modelo.
-
-        Returns
-        -------
-        list[str]
-            Una lista de los variables ingresos.
-
-        """
-
-        return [v for v, d_v in símismo.variables.items() if d_v['ingreso']]
-
-    def constantes(símismo):
-        return [var for var, d_var in símismo.variables.items() if
-                'tipo' in d_var and d_var['tipo'] == 'constante']
-
-    def iniciales(símismo):
-        return [var for var, d_var in símismo.variables.items() if
-                'tipo' in d_var and d_var['tipo'] == 'inicial']
 
     def paráms(símismo):
         """
@@ -1416,19 +1266,6 @@ class Modelo(object):
         """
 
         return False
-
-    def instalado(símismo):
-        """
-        Si tu modelo depiende en una instalación de otro programa externo a Tinamït, puedes reimplementar esta función
-        para devolver ``True`` si el modelo está instalado y ``False`` sino.
-
-        Returns
-        -------
-        bool
-            Si el modelo está instalado completamente o no.
-        """
-
-        return True
 
     def actualizar_trads(símismo, auto_llenar=True):
         raíz = arbole.Element('xliff', version='1.2')
@@ -1900,9 +1737,6 @@ class Modelo(object):
 
         # Obtener el valor de configuración.
         return obt_val_config(llave=llave, cond=cond, mnsj_err=mnsj_error, respaldo=respaldo)
-
-    def __str__(símismo):
-        return símismo.nombre
 
     def __getinitargs__(símismo):
         return símismo.nombre,

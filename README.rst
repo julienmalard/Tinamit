@@ -26,7 +26,7 @@ Tinamit
 =======
 Programa para conectar modelos socioeconómicos (dinámicas de los sistemas) con modelos biofísicos.
 
-Tinamit permite la conexión rápida, flexible y reproducible de modelos con:
+Tinamït permite la conexión rápida, flexible y reproducible de modelos con:
 
 * Un interfaz (IGU) para los que no quieren escribir código.
 * Un libreria (IPA) para las que sí.

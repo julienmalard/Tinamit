@@ -24,7 +24,7 @@ msgstr ""
 #: of tinamit.BF.ClaseModeloBF:1
 msgid ""
 "Se debe desarrollar una subclase de esta clase para cada tipo modelo "
-"biofísico que se quiere volver compatible con Tinamit."
+"biofísico que se quiere volver compatible con Tinamït."
 msgstr ""
 
 #: of tinamit.BF.ClaseModeloBF._cambiar_vals_modelo_interno

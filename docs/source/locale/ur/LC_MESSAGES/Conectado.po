@@ -121,7 +121,7 @@ msgstr ""
 #: of tinamit.Conectado.SuperConectado._cambiar_vals_modelo_interno:5
 msgid ""
 "con el nombre del submodelo en en cual se ubica (separados con un ``_``),"
-" para que Tinamit sepa en cuál submodelo se ubica cada variable."
+" para que Tinamït sepa en cuál submodelo se ubica cada variable."
 msgstr ""
 
 #: of tinamit.Conectado.SuperConectado.cerrar_modelo:1
@@ -167,7 +167,7 @@ msgstr ""
 #: of tinamit.Conectado.SuperConectado.estab_conv_tiempo:1
 msgid ""
 "Esta función establece la conversión de tiempo entre los dos modelos "
-"(útil para unidades que Tinamit no reconoce)."
+"(útil para unidades que Tinamït no reconoce)."
 msgstr ""
 
 #: of tinamit.Conectado.SuperConectado.estab_conv_tiempo:4

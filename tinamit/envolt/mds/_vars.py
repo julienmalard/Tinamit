@@ -19,36 +19,36 @@ class VariablesMDS(VariablesMod):
 
 
 class VarMDS(Variable):
-    def __init__(símismo, nombre, unid, ingr, egr, ec, parientes, líms=None, info=''):
-        super().__init__(nombre, unid, ingr=ingr, egr=egr, líms=líms, info=info)
+    def __init__(símismo, nombre, unid, ingr, egr, ec, parientes, dims, líms=None, info=''):
+        super().__init__(nombre, unid, ingr=ingr, egr=egr, dims=dims, líms=líms, info=info)
 
         símismo.ec = ec
         símismo.parientes = parientes
 
 
 class VarConstante(VarMDS):
-    def __init__(símismo, nombre, unid, ec, parientes, líms=None, info=''):
+    def __init__(símismo, nombre, unid, ec, parientes, dims, líms=None, info=''):
         super().__init__(
-            nombre, unid, ec=ec, parientes=parientes, líms=líms, info=info, ingr=True, egr=False
+            nombre, unid, ec=ec, parientes=parientes, dims=dims, líms=líms, info=info, ingr=True, egr=False
         )
 
 
 class VarInic(VarMDS):
-    def __init__(símismo, nombre, unid, ec, parientes, líms=None, info=''):
+    def __init__(símismo, nombre, unid, ec, parientes, dims, líms=None, info=''):
         super().__init__(
-            nombre, unid, ec=ec, parientes=parientes, líms=líms, info=info, ingr=True, egr=False
+            nombre, unid, ec=ec, parientes=parientes, dims=dims, líms=líms, info=info, ingr=True, egr=False
         )
 
 
 class VarNivel(VarMDS):
-    def __init__(símismo, nombre, unid, ec, parientes, líms=None, info=''):
+    def __init__(símismo, nombre, unid, ec, parientes, dims, líms=None, info=''):
         super().__init__(
-            nombre, unid, ec=ec, parientes=parientes, líms=líms, info=info, ingr=False, egr=True
+            nombre, unid, ec=ec, parientes=parientes, dims=dims, líms=líms, info=info, ingr=False, egr=True
         )
 
 
 class VarAuxiliar(VarMDS):
-    def __init__(símismo, nombre, unid, ec, parientes, líms=None, info=''):
+    def __init__(símismo, nombre, unid, ec, parientes, dims, líms=None, info=''):
         super().__init__(
-            nombre, unid, ec=ec, parientes=parientes, líms=líms, info=info, ingr=True, egr=True
+            nombre, unid, ec=ec, parientes=parientes, dims=dims, líms=líms, info=info, ingr=True, egr=True
         )

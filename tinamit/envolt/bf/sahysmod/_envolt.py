@@ -21,6 +21,9 @@ class ModeloSAHYSMOD(ModeloBloques):
 
     def __init__(símismo, datos_iniciales, exe_sahysmod=None, nombre='SAHYSMOD'):
 
+        símismo.n_estaciones = 1
+        símismo.dur_estaciones = [12]
+
         # Inicializar la clase pariente.
         super().__init__(nombre=nombre, archivo=datos_iniciales)
 
@@ -55,7 +58,42 @@ class ModeloSAHYSMOD(ModeloBloques):
         símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total', conv=0.001)
 
     def _gen_vars(símismo):
-        return VariablesSAHYSMOD()
+        # Leer el fuente de ingreso
+        dic_ingr = leer_info_dic_paráms(archivo_fnt=símismo.archivo)
+        # Asegurar únicamente un año de simulación, por el momento (para hacer: ¿necesario?).
+        dic_ingr['NY'] = 1
+
+        # Guardar el número de estaciones y de polígonos
+        símismo.n_estaciones = int(dic_ingr['NS'])
+        símismo.dur_estaciones = [int(float(x)) for x in dic_ingr['TS']]  # La duración de las estaciones (en meses)
+        n_polí = int(dic_ingr['NN_IN'])
+
+        # Asegurars que el número de estaciones es igual al número de duraciones de estaciones.
+        if símismo.n_estaciones != len(símismo.dur_estaciones):
+            raise ValueError(_('Error en el fuente de datos iniciales SAHYSMOD: el número de duraciones de estaciones'
+                               'especificadas no corresponde al número de estaciones especificadas (líneas 3 y 4).'))
+
+        # Formatear el diccionario final
+        dic_final = {}
+        for c in vars_ingreso_SAHYSMOD:
+            llave = c.upper().replace('#', '')
+
+            nombre_var = códs_a_vars[c]
+            dic_final[nombre_var] = dic_ingr[llave]
+
+        por_bloques = símismo._vars_por_bloques()
+
+        for c in vars_egreso_SAHYSMOD:
+
+            nombre_var = códs_a_vars[c]
+            if nombre_var not in dic_final:
+                if nombre_var in por_bloques:
+                    tmñ = (símismo.n_estaciones, símismo.n_polí)
+                else:
+                    tmñ = símismo.n_polí
+                dic_final[nombre_var] = np.zeros(tmñ)
+
+        return VariablesSAHYSMOD(dims=(n_polí,))
 
     def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
 
@@ -87,7 +125,7 @@ class ModeloSAHYSMOD(ModeloBloques):
             raise FileNotFoundError(_('El modelo SAHYSMOD no genero egreso. Esto probablemente quiere decir que '
                                       'tuvo problema. ¡Diviértete! :)'))
 
-    def cerrar_modelo(símismo):
+    def cerrar(símismo):
 
         for f in os.listdir(símismo.direc_trabajo):
             if re.match('Name(0|[0-9]{2})$', f):
@@ -171,62 +209,6 @@ class ModeloSAHYSMOD(ModeloBloques):
         # Y finalmente, escribir el fuente de valores de ingreso
         escribir_desde_dic_paráms(dic_paráms=símismo.dic_ingr, archivo_obj=archivo)
 
-    def _gen_dic_vals_inic(símismo, archivo=None):
-
-        if archivo is None:
-            archivo = símismo.datos_inic
-
-        # Leer el fuente de ingreso
-        dic_ingr = leer_info_dic_paráms(archivo_fnt=archivo)
-        símismo.dic_ingr.clear()
-        símismo.dic_ingr.update(dic_ingr)  # Guardar valores para escribir el fuente de valores iniciales en el futuro
-
-        # Guardar el número de estaciones y de polígonos
-        símismo.n_estaciones = int(dic_ingr['NS'])
-        símismo.dur_estaciones = [int(float(x)) for x in dic_ingr['TS']]  # La duración de las estaciones (en meses)
-        símismo.n_polí = int(dic_ingr['NN_IN'])
-
-        # Asegurar únicamente un año de simulación.
-        dic_ingr['NY'] = 1
-
-        # Asegurars que el número de estaciones es igual al número de duraciones de estaciones.
-        if símismo.n_estaciones != len(símismo.dur_estaciones):
-            raise ValueError(_('Error en el fuente de datos iniciales SAHYSMOD: el número de duraciones de estaciones'
-                               'especificadas no corresponde al número de estaciones especificadas (líneas 3 y 4).'))
-
-        # Formatear el diccionario final
-        dic_final = {}
-        for c in vars_ingreso_SAHYSMOD:
-            llave = c.upper().replace('#', '')
-
-            nombre_var = códs_a_vars[c]
-            dic_final[nombre_var] = dic_ingr[llave]
-
-        por_bloques = símismo._vars_por_bloques()
-
-        for c in vars_egreso_SAHYSMOD:
-
-            nombre_var = códs_a_vars[c]
-            if nombre_var not in dic_final:
-                if nombre_var in por_bloques:
-                    tmñ = (símismo.n_estaciones, símismo.n_polí)
-                else:
-                    tmñ = símismo.n_polí
-                dic_final[nombre_var] = np.zeros(tmñ)
-
-        return dic_final
-
-    def paralelizable(símismo):
-        """
-        El modelo SAHYSMOD sí es paralelizable si las corridas tienen nombres distintos.
-
-        Returns
-        -------
-        bool
-            Verdadero
-        """
-
-        return True
 
     def instalado(símismo):
         return símismo.exe_SAHYSMOD is not None

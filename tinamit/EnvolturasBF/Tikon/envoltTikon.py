@@ -27,5 +27,5 @@ class ModeloTikon(ModeloDeterminado):  # pragma: sin cobertura
     def avanzar_modelo(símismo):
         pass
 
-    def cerrar_modelo(símismo):
+    def cerrar(símismo):
         pass

@@ -11,8 +11,7 @@ from tinamit.cositas import cargar_json, guardar_json
 _dir_config = resource_filename('tinamit', 'config.json')
 _config_base = {
     'leng': 'es',
-    'lengs_aux': [],
-    'envolturas': {}
+    'lengs_aux': []
 }
 
 

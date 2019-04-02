@@ -184,7 +184,7 @@ class Lugar(مقام):
 
     def devolver_datos(símismo, vars_clima, f_inic, f_final):
         """
-        Esta función devuelve datos ya calculados por :func:`~tinamit.Geog.Geog.Lugar.prep_datos`.
+        Esta función devuelve datos ya calculados por :func:`~tinamit.Geog_.Geog_.Lugar.prep_datos`.
 
         :param vars_clima: Una lista de variables climáticos de interés.
         :type vars_clima: list[str] | str
@@ -262,20 +262,13 @@ class Geografía(object):
     Esta clase representa la geografía de un lugar.
     """
 
-    def __init__(símismo, nombre, archivo=None):
-
-        símismo.nombre = nombre
-        símismo.formas_reg = {}
-        símismo.formas = {}
+    def __init__(símismo):
 
         símismo.orden_jerárquico = []
         símismo.info_geog = {}
         símismo.cód_a_lugar = {}
 
         símismo.escalas = []
-
-        if archivo is not None:
-            símismo.espec_estruct_geog(archivo)
 
     def agregar_forma(símismo, archivo, nombre=None, tipo=None, alpha=None, color=None, llenar=None):
         if nombre is None:
@@ -338,88 +331,8 @@ class Geografía(object):
 
         col_cód = col_cód.lower()
 
-        codif_csv = detectar_codif(archivo)
-        with open(archivo, newline='', encoding=codif_csv) as d:
-
-            l = csv.DictReader(d)  # El lector de csv
-
-            # Guardar la primera fila como nombres de columnas
-            cols = [x.lower().strip() for x in l.fieldnames]
-
-            if col_cód not in cols:
-                raise ValueError(_('La columna de código de región especificada ({}) no concuerda con los nombres de '
-                                   'columnas del fuente ({}).').format(col_cód, ', '.join(cols)))
-
-            doc = [OrderedDict((ll.lower().strip(), v.strip()) for ll, v in f.items()) for f in l]
-
-        # Inferir el orden de la jerarquía
-        órden = []
-
-        escalas = [x for x in cols if x != col_cód]
-        símismo.escalas.extend(escalas)
-
-        símismo.info_geog.update({esc: [] for esc in escalas})
-
-        coescalas = []
-        for f in doc:
-            coescalas_f = {ll for ll, v in f.items() if len(v) and ll in escalas}
-            if not any(x == coescalas_f for x in coescalas):
-                coescalas.append(coescalas_f)
-
-        coescalas.sort(key=lambda x: len(x))
-
-        while len(coescalas):
-            siguientes = {x.pop() for x in coescalas if len(x) == 1}
-            if not len(siguientes):
-                raise ValueError(_('Parece que hay un error con el fuente de información regional.'))
-            órden.append(sorted(list(siguientes)) if len(siguientes) > 1 else siguientes.pop())
-            for cn in coescalas.copy():
-                cn.difference_update(siguientes)
-                if not len(cn):
-                    coescalas.remove(cn)
-
-        símismo.orden_jerárquico.extend(órden)
-
-        for f in doc:
-            cód = f[col_cód]
-            escala = None
-            for esc in órden[::-1]:
-                if isinstance(esc, str):
-                    if len(f[esc]):
-                        escala = esc
-                else:
-                    for nv_ig in esc:
-                        if len(f[nv_ig]):
-                            escala = nv_ig
-                if escala is not None:
-                    break
-
-            nombre = f[escala]
-
-            símismo.cód_a_lugar[cód] = {
-                'escala': escala,
-                'nombre': nombre,
-                'en': {ll: v for ll, v in f.items() if ll in escalas and len(v) and ll != escala}
-            }
-            símismo.info_geog[escala].append(cód)
-
-        for cód, dic in símismo.cód_a_lugar.items():
-            for esc, lg_en in dic['en'].items():
-                if lg_en not in símismo.cód_a_lugar:
-                    dic['en'][esc] = símismo.nombre_a_cód(nombre=lg_en, escala=esc)
 
     def obt_lugares_en(símismo, en=None, escala=None):
-        """
-
-        Parameters
-        ----------
-        en : str | int
-        escala : str
-
-        Returns
-        -------
-
-        """
 
         en = símismo._validar_código_lugar(en)
         if escala is None and en is not None:

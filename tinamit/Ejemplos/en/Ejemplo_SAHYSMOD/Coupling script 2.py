@@ -2,7 +2,7 @@ import os
 
 from tinamit.Conectado import Conectado
 from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
-from tinamit.Geog.Geog import Lugar, Geografía
+from tinamit.Geog_.Geog import Lugar, Geografía
 
 if __name__ == '__main__':
     use_simple = True

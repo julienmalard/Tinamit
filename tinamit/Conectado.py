@@ -8,7 +8,7 @@ import numpy as np
 
 from tinamit.BF import EnvolturaBF, ModeloBF
 from tinamit.EnvolturasMDS import generar_mds
-from tinamit.Geog.Geog import Lugar
+from tinamit.Geog_.Geog import Lugar
 from tinamit.MDS import EnvolturaMDS
 from tinamit.mod.modelo import Modelo
 from tinamit.Unidades.conv import convertir
@@ -20,98 +20,6 @@ class SuperConectado(Modelo):
     Esta clase representa el más alto nivel posible de modelo conectado. Tiene la función muy útil de poder conectar
     instancias de sí misma, así permitiendo la conexión de números arbitrarios de modelos.
     """
-
-    def __init__(símismo, nombre="SuperConectado", modelos=None):
-        """
-        El nombre automático para este modelo es "SuperConectado". Si vas a conectar más que un modelo
-        :class:`.SuperConectado` en un modelo jerárquico, asegúrate de darle un nombre distinto al menos a un de ellos.
-
-        Parameters
-        ----------
-        nombre : str
-            El nombre del modelo :class:`.SuperConectado`.
-        modelos : list[Modelos]
-            Lista opcional de submodelos para conectar de una vez.
-
-        """
-
-        # Un diccionario de los modelos que se van a conectar en este modelo. Tiene la forma general
-        # {'nombre_modelo': objecto_modelo,
-        #  'nombre_modelo_2': objecto_modelo_2}
-        símismo.modelos = {}  # type: dict[str, Modelo]
-
-        # Una lista de las conexiones entre los modelos.
-        símismo.conexiones = []
-
-        # Un diccionario para aceder rápidamente a las conexiones.
-        símismo.conex_rápida = {}
-
-        # Un diccionario para guardar la conversión de tiempo entre los submodelos.
-        símismo.conv_tiempo_mods = {}
-        símismo.conv_tiempo_dudoso = False
-
-        # Inicializamos el SuperConectado como todos los Modelos.
-        super().__init__(nombre=nombre)
-
-        # Agregar submodelos, si habían
-        if modelos is not None:
-            for m in modelos:
-                símismo.agregar_modelo(m)
-
-    def agregar_modelo(símismo, modelo):
-        """
-        Esta función agrega un modelo al SuperConectado. Una vez que dos modelos estén agregados, se pueden conectar
-        y simular juntos.
-
-        :param modelo: El modelo para agregar.
-        :type modelo: tinamit.modelo.Modelo
-
-        """
-
-        # Si ya se conectó otro modelo con el mismo nombre, avisarlo al usuario.
-        if modelo.nombre in símismo.modelos:
-            avisar(_('El modelo {} ya existe. El nuevo modelo reemplazará el modelo anterior.').format(modelo.nombre))
-
-        # Agregar el nuevo modelo al diccionario de modelos.
-        símismo.modelos[modelo.nombre] = modelo
-
-        # Ahora, tenemos que agregar los variables del modelo agregado al diccionaro de variables de este modelo
-        # también. Se prefija el nombre del modelo al nombre de su variable para evitar posibilidades de nombres
-        # desduplicados.
-        for var in modelo.variables:
-            nombre_var = '{mod}_{var}'.format(var=var, mod=modelo.nombre)
-            símismo.variables[nombre_var] = modelo.variables[var]
-
-        # Actualizar la unidad de tiempo del modelo
-        símismo.unidad_tiempo()
-
-    def desconectar_modelo(símismo, modelo):
-        if isinstance(modelo, Modelo):
-            modelo = modelo.nombre
-
-        try:
-            símismo.modelos.pop(modelo)
-        except KeyError:
-            raise ValueError(_('El modelo "{}" no estaba conectado.').format(modelo))
-
-        for var in símismo.variables:
-            if var.startswith(modelo + '_'):
-                símismo.variables.pop(var)
-        for conex in símismo.conexiones.copy():
-            if conex['modelo_fuente'] == modelo or conex['modelo_recip'] == modelo:
-                símismo.conexiones.remove(conex)
-
-        símismo.unidad_tiempo()
-
-    def _inic_dic_vars(símismo):
-        """
-        Esta función no es necesaria, porque :func:`~tinamit.Conectado.Conectado.agregar_modelo` ya conecta el
-        diccionario de variables del :class:`SuperConectado` con los diccionarios de los submodelos (que ya
-        fueron inicializados al instanciarse).
-
-        """
-
-        pass
 
     def unidad_tiempo(símismo):
         """
@@ -240,16 +148,6 @@ class SuperConectado(Modelo):
             for c in símismo.conexiones:
                 if c['modelo_fuente'] == mod and c['var_fuente'] == var:
                     símismo.modelos[c['modelo_recip']].cambiar_vals(valores={c['var_recip']: val * c['conv']})
-
-    def paralelizable(símismo):
-        """
-        Un modelo :class:`SuperConectado` es paralelizable si todos sus submodelos lo son.
-
-        :return: Si todos los submodelos de este modelo son paralelizables.
-        :rtype: bool
-        """
-
-        return all(mod.paralelizable() for mod in símismo.modelos.values())
 
     def simular(símismo, t_final=None, t_inic=None, paso=1, nombre_corrida='Corrida Tinamït',
                 vals_inic=None, vals_extern=None, bd=None, lugar_clima=None, clima=None, vars_interés=None):
@@ -530,120 +428,6 @@ class SuperConectado(Modelo):
             else:
                 símismo.modelos[mod].vars_entrando.add(var_mod)
 
-    def cerrar_modelo(símismo):
-        """
-        Termina la simulación.
-        """
-
-        # No hay nada que hacer para el SuperConectado, pero podemos cerrar los submodelos.
-        for mod in símismo.modelos.values():
-            mod.cerrar_modelo()
-
-    def conectar_vars(símismo, var_fuente, modelo_fuente, var_recip, modelo_recip, conv=None):
-        """
-        Conecta variables entre los submodelos.
-
-        :param var_fuente: El variable fuente de la conexión.
-        :type var_fuente: str
-
-        :param modelo_fuente: El nombre del modelo fuente.
-        :type modelo_fuente: str | Modelo
-
-        :param var_recip: El variable recipiente de la conexión.
-        :type var_recip: str
-
-        :param modelo_recip: El nombre del modelo recipiente.
-        :type modelo_recip: str | Modelo
-
-        :param conv: La conversión entre las unidades de los modelos. En el caso ``None``, se intentará adivinar la
-        conversión con el módulo `~tinamit.Unidades`.
-
-        :type conv: float | int
-
-        """
-
-        # Verificar que todos los modelos existan.
-        modelo_fuente = símismo._verificar_nombre_submodelo(modelo_fuente)
-        modelo_recip = símismo._verificar_nombre_submodelo(modelo_recip)
-
-        # Verificar que todos los variables existan.
-        for v, m in [(var_fuente, modelo_fuente), (var_recip, modelo_recip)]:
-            mod = símismo.modelos[m]
-            if v not in mod.variables:
-                raise ValueError(_('El variable "{}" no existe en el modelo "{}".').format(v, m))
-
-        # Y también asegurarse de que el variable no haya sido conectado como variable recipiente ya.
-        if any(x['var_recip'] == var_recip and x['modelo_recip'] == modelo_recip for x in símismo.conexiones):
-            avisar(_('El variable "{}" del modelo "{}" ya está conectado como variable recipiente. '
-                     'Borraremos la conexión anterior.').format(var_recip, modelo_recip))
-
-        # Identificar los nombres de los variables fuente y recipiente, tanto como sus unidades, dimensiones y límites.
-        unid_fuente = símismo.modelos[modelo_fuente].obt_unidades_var(var_fuente)
-        unid_recip = símismo.modelos[modelo_recip].obt_unidades_var(var_recip)
-
-        dims_fuente = símismo.modelos[modelo_fuente].obt_dims_var(var_fuente)
-        dims_recip = símismo.modelos[modelo_recip].obt_dims_var(var_recip)
-
-        líms_fuente = símismo.modelos[modelo_fuente].obt_lims_var(var_fuente)
-        líms_recip = símismo.modelos[modelo_recip].obt_lims_var(var_recip)
-
-        # Verificar que las dimensiones sean compatibles
-        if dims_fuente != dims_recip:
-            raise ValueError(_('Las dimensiones de los dos variables ({}: {}; {}: {}) no son compatibles.')
-                             .format(var_fuente, dims_fuente, var_recip, dims_recip))
-
-        # Verificar que los límites sean compatibles
-        if (líms_recip[0] is not None) and (líms_fuente[0] is None or líms_recip[0] > líms_fuente[0]):
-            avisar(_('Pensamos bien avisarte que el límite inferior ({l_r}) del variable recipiente "{v_r}" '
-                     'queda superior al límite inferior ({l_f}) del variable fuente "{v_f}" de la conexión.'
-                     ).format(v_r=var_recip, v_f=var_fuente, l_r=líms_recip[0], l_f=líms_fuente[0]))
-        if (líms_recip[1] is not None) and (líms_fuente[1] is None or líms_recip[1] < líms_fuente[1]):
-            avisar(_('Pensamos bien avisarte que el límite superior ({l_r}) del variable recipiente "{v_r}" '
-                     'queda inferior al límite superior ({l_f}) del variable fuente "{v_f}" de la conexión.'
-                     ).format(v_r=var_recip, v_f=var_fuente, l_r=líms_recip[1], l_f=líms_fuente[1]))
-
-        if conv is None:
-            # Si no se especificó factor de conversión...
-
-            # Intentar hacer una conversión automática.
-            try:
-                conv = convertir(de=unid_fuente, a=unid_recip)
-            except ValueError:
-                # Si eso no funcionó, suponer una conversión de 1.
-                avisar(_('No se pudo identificar una conversión automática para las unidades de los variables '
-                         '"{}" (unidades: {}) y "{}" (unidades: {}). Se está suponiendo un factor de conversión de 1.')
-                       .format(var_fuente, unid_fuente, var_recip, unid_recip))
-                conv = 1
-
-        # Crear el diccionario de conexión.
-        dic_conex = {'modelo_fuente': modelo_fuente,
-                     'modelo_recip': modelo_recip,
-                     'var_fuente': var_fuente,
-                     'var_recip': var_recip,
-                     'conv': conv
-                     }
-
-        # Agregar el diccionario de conexión a la lista de conexiones.
-        símismo.conexiones.append(dic_conex)
-
-    def desconectar_vars(símismo, var_fuente, modelo_fuente, modelo_recip=None, var_recip=None):
-        """
-        Esta función desconecta variables.
-
-        Parameters
-        ----------
-        var_fuente : str
-             El variable fuente de la conexión.
-        modelo_fuente : str | Modelo
-            El modelo fuente de la conexión.
-        modelo_recip : str | Modelo
-            El modelo recipiente. Si no se especifica, se quitarán todas conexiones con el variable y modelo fuente.
-        var_recip : str
-            El variable recipiente. Si no se especifica, se quitarán todas conexiones con el variable y modelo fuente
-            y el modelo recipiente especificado. Sin efecto si `modelo_recip` es ``None``.
-
-        """
-
     def _verificar_nombre_submodelo(símismo, modelo):
         if modelo is None:
             return
@@ -775,71 +559,6 @@ class Conectado(SuperConectado):
     Esta clase representa un tipo_mod especial de modelo :class:`~tinamit.Conectado.SuperConectado`: la conexión entre un
     modelo biofísico y un modelo DS.
     """
-
-    def __init__(símismo, bf=None, mds=None, nombre='Conectado'):
-        """
-        Inicializar el modelo :mod:`~tinamit.Conectado.Conectado`.
-        """
-
-        # Referencias rápidas a los submodelos.
-        símismo.mds = None  # type: EnvolturaMDS
-        símismo.bf = None  # type: EnvolturaBF
-
-        # Inicializar este como su clase superior.
-        super().__init__(nombre=nombre)
-
-        # Conectar los submodelos, si ya se especificaron.
-        if bf is not None:
-            símismo.estab_bf(bf)
-        if mds is not None:
-            símismo.estab_mds(mds)
-
-    def estab_mds(símismo, archivo_mds):
-        """
-        Establecemos el modelo de dinámicas de los sistemas (:class:`~tinamit.EnvolturasMDS.EnvolturasMDS`).
-
-        :param archivo_mds: El fuente del modelo DS, o el modelo sí mismo.
-        :type archivo_mds: str | EnvolturaMDS
-
-        """
-
-        # Generamos un objeto de modelo DS.
-        if isinstance(archivo_mds, str):
-            modelo_mds = generar_mds(archivo=archivo_mds)
-        elif isinstance(archivo_mds, EnvolturaMDS):
-            modelo_mds = archivo_mds
-        else:
-            raise TypeError(_('Debes dar o un modelo DS, o la dirección hacia el fuente de uno.'))
-
-        # Conectamos el modelo DS.
-        símismo.agregar_modelo(modelo=modelo_mds)
-
-        # Y hacemos la referencia rápida.
-        símismo.mds = modelo_mds
-
-    def estab_bf(símismo, bf):
-        """
-        Establece el modelo biofísico (:class:`~tinamit.BF.EnvolturasBF`).
-
-        :param bf: El fuente con la clase del modelo biofísico. **Debe** ser un fuente de Python.
-        :type bf: str | EnvolturaBF | ModeloBF
-
-        """
-
-        # Creamos una instancia de la Envoltura BF con este modelo.
-        if isinstance(bf, str) or isinstance(bf, ModeloBF) or callable(bf):
-            modelo_bf = EnvolturaBF(modelo=bf)
-        elif isinstance(bf, EnvolturaBF):
-            modelo_bf = bf
-        else:
-            raise TypeError(_('Debes dar o un modelo BF, o la dirección hacia el fuente de uno.'))
-
-        # Conectamos el modelo biofísico.
-        símismo.agregar_modelo(modelo=modelo_bf)
-
-        # Y guardamos la referencia rápida.
-        símismo.bf = modelo_bf
-
 
     def __getinitargs__(símismo):
         return tuple()

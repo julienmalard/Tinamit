@@ -10,7 +10,7 @@ from pruebas.test_mds import limpiar_mds
 from tinamit.Análisis.Calibs import CalibradorEc
 from tinamit.Análisis.Datos import MicroDatos, SuperBD
 from tinamit.EnvolturasMDS.PySD import ModeloPySD
-from tinamit.Geog.Geog import Geografía
+from tinamit.Geog_.Geog import Geografía
 
 try:
     import pymc3 as pm

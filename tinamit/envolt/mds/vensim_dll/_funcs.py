@@ -1,6 +1,7 @@
 import csv
 import ctypes
 import os
+import struct
 import sys
 
 from tinamit.config import _, obt_val_config
@@ -153,8 +154,20 @@ def obt_unid_tiempo(mod):
     )
 
 
-def vdf_a_csv(mod, archivo_vdf=None, archivo_csv=None):
+def obt_val_var(mod, var):
+    # Una memoria
+    mem_inter = ctypes.create_string_buffer(4)
 
+    # Leer el valor del variable
+    cmd_vensim(func=mod.vensim_get_val,
+               args=[str(var), mem_inter],
+               mensaje_error=_('Error con Vensim para leer variable "{}".').format(var))
+
+    # Decodar
+    return struct.unpack('f', mem_inter)[0]
+
+
+def vdf_a_csv(mod, archivo_vdf=None, archivo_csv=None):
     if archivo_csv is None:
         archivo_csv = archivo_vdf
 

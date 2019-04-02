@@ -1,4 +1,5 @@
 from tinamit import Modelo
+from tinamit.envolt.bf import gen_bf
 from tinamit.envolt.mds import gen_mds
 from ._conex import Conex, ConexionesVars
 from ._vars import VariablesConectado
@@ -12,7 +13,6 @@ class SuperConectado(Modelo):
         super().__init__(nombre=nombre)
 
     def conectar_vars(símismo, var_fuente, modelo_fuente, var_recip, modelo_recip, conv=None):
-
         símismo.conexiones.agregar(
             Conex(var_fuente, modelo_fuente, var_recip, modelo_recip, conv=conv)
         )
@@ -20,14 +20,22 @@ class SuperConectado(Modelo):
     def desconectar_vars(símismo, var_fuente, modelo_fuente, modelo_recip=None, var_recip=None):
         símismo.conexiones.quitar(var_fuente, modelo_fuente, modelo_recip, var_recip)
 
+    def cerrar(símismo):
+        for m in símismo.modelos:
+            m.cerrar()
+
+    def paralelizable(símismo):
+        return all(m.paralizable for m in símismo.modelos)
+
     def _gen_vars(símismo):
-        return VariablesConectado([v for m in símismo.modelos for v in m.variables])
+        return VariablesConectado(símismo.modelos)
 
 
 class Conectado(SuperConectado):
 
     def __init__(símismo, bf, mds, nombre='conectado'):
-        símismo.bf = bf
+
+        símismo.bf = gen_bf(bf)
         símismo.mds = gen_mds(mds) if isinstance(mds, str) else mds
 
         super().__init__([bf, mds], nombre=nombre)
@@ -76,3 +84,14 @@ class Conectado(SuperConectado):
 
         # Llamar la función apropiada de la clase superior.
         símismo.desconectar_vars(var_fuente=var_mds, modelo_fuente=símismo.mds)
+
+
+class ModelosConectados(object):
+    def __init__(símismo, modelos):
+        símismo._modelos = {str(m): m for m in modelos}
+        if len(símismo._modelos) != len(modelos):
+            raise ValueError(_('Los modelos conectados deben todos tener nombres distintos.'))
+
+    def __iter__(símismo):
+        for m in símismo._modelos.values():
+            yield m

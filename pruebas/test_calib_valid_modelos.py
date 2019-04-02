@@ -3,7 +3,7 @@ import unittest
 
 from pruebas.test_mds import limpiar_mds
 from tinamit.EnvolturasMDS import generar_mds
-from tinamit.Geog import Geografía
+from tinamit.Geog_ import Geografía
 
 dir_act = os.path.split(__file__)[0]
 arch_mds = os.path.join(dir_act, 'recursos/MDS/mod_enferm.mdl')

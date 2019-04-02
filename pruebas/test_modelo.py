@@ -8,8 +8,8 @@ from pruebas.recursos.BF.prueba_bf import ModeloPrueba
 from pruebas.test_geog import arch_clim_diario
 from pruebas.test_geog import arch_csv_geog
 from pruebas.test_mds import limpiar_mds
-from tinamit.Geog import Geografía
-from tinamit.Geog import Lugar
+from tinamit.Geog_ import Geografía
+from tinamit.Geog_ import Lugar
 
 
 class Test_SimularGrupo(unittest.TestCase):

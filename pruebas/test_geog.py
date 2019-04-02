@@ -5,7 +5,7 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 
-from tinamit.Geog.Geog import Geografía, Lugar
+from tinamit.Geog_.Geog import Geografía, Lugar
 
 dir_act = os.path.split(__file__)[0]
 arch_csv_geog = os.path.join(dir_act, 'recursos/datos/prueba_geog.csv')

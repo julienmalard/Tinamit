@@ -20,7 +20,7 @@ class ModeloPrueba(ModeloBF):
     def _leer_vals(símismo):
         pass
 
-    def cerrar_modelo(símismo):
+    def cerrar(símismo):
         pass
 
     def unidad_tiempo(símismo):

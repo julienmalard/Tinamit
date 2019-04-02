@@ -21,7 +21,7 @@ class EnvolturaPySD(EnvolturaMDS):
         símismo.mod.reload()
         símismo.mod.initialize()
 
-    def cerrar_modelo(símismo):
+    def cerrar(símismo):
         pass
 
     def _gen_vars(símismo):

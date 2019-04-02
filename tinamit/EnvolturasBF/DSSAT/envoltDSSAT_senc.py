@@ -77,7 +77,7 @@ class EnvoltDSSAT(ModeloBF):  # pragma: sin cobertura
 
         os.remove(símismo.dic_egr)
 
-    def cerrar_modelo(símismo):
+    def cerrar(símismo):
         pass
 
     def unidad_tiempo(símismo):

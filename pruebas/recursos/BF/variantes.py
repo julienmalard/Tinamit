@@ -40,7 +40,7 @@ class EjBloques(ModeloBloques):
 
         return dic_inic
 
-    def cerrar_modelo(símismo):
+    def cerrar(símismo):
         pass
 
     def unidad_tiempo(símismo):
@@ -129,7 +129,7 @@ class EjDeterminado(ModeloDeterminado):
             if vr in por_pasito else -1 for vr in símismo.variables
         }
 
-    def cerrar_modelo(símismo):
+    def cerrar(símismo):
         pass
 
     def unidad_tiempo(símismo):
@@ -209,7 +209,7 @@ class EjIndeterminado(ModeloIndeterminado):
             vr: -1 if vr == 'ciclo' else 0 for vr in símismo.variables
         }
 
-    def cerrar_modelo(símismo):
+    def cerrar(símismo):
         pass
 
     def unidad_tiempo(símismo):

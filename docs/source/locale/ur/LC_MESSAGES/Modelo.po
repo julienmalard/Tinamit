@@ -23,7 +23,7 @@ msgstr ""
 
 #: of tinamit.Modelo.Modelo:1
 msgid ""
-"Todas las cosas en Tinamit son instancias de Modelo, que sea un modelo de"
+"Todas las cosas en Tinamït son instancias de Modelo, que sea un modelo de"
 " dinámicas de los sistemas, un modelo de cultivos o de suelos o de clima,"
 " o un modelo conectado. Cada tipo de modelo se representa por subclases "
 "específicas. Por eso, la gran mayoría de los métodos definidos aquí se "

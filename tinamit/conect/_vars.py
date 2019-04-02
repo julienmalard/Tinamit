@@ -3,7 +3,9 @@ from tinamit.mod import Variable, VariablesMod
 
 class VariablesConectado(VariablesMod):
 
-    pass
+    def __init__(símismo, modelos):
+        variables = [v for m in modelos for v in m.variables]
+        super().__init__(variables)
 
 
 class VarConectado(Variable):

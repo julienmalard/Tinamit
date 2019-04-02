@@ -1,11 +1,6 @@
-import inspect
 import math as mat
-import os
-import sys
-import traceback
 import unittest
 from copy import deepcopy as copiar_profundo
-from importlib import import_module as importar_mod
 from warnings import warn as avisar
 
 import numpy as np
@@ -13,10 +8,10 @@ import numpy.testing as npt
 import xarray as xr
 from dateutil.relativedelta import relativedelta as deltarelativo
 
-from tinamit.mod.modelo import Modelo
 from tinamit.config import _
 from tinamit.config import guardar_json
 from tinamit.cositas import cargar_json
+from tinamit.mod.modelo import Modelo
 
 
 class EnvolturaBF(Modelo):
@@ -44,68 +39,6 @@ class EnvolturaBF(Modelo):
         # dinámicas con los variables sel modelo externo.
         símismo._estab_mod_extern(modelo)
 
-    def _estab_mod_extern(símismo, modelo):
-        if isinstance(modelo, str):
-
-            if not os.path.isfile(modelo):
-                raise ValueError(_('El archivo "{}" no existe... :(').format(modelo))
-
-            if os.path.splitext(modelo)[1] != '.py':
-                raise ValueError(_('El archivo "{}" no parece ser un archivo Python.').format(modelo))
-
-            dir_mod, nombre_mod = os.path.split(modelo)
-            sys.path.append(dir_mod)
-            módulo = importar_mod(os.path.splitext(nombre_mod)[0])
-
-            candidatos = inspect.getmembers(módulo, inspect.isclass)
-            errores = {}
-            cands_final = {}
-            for nmb, obj in candidatos:
-                if callable(obj):
-                    # noinspection PyBroadException
-                    try:
-                        obj = obj()
-                    except NotImplementedError:
-                        pass
-                    except Exception:
-                        errores[nmb] = traceback.format_exc()
-                if isinstance(obj, ModeloBF):
-                    cands_final[nmb] = obj
-
-            if len(cands_final) == 0:
-                raise AttributeError(_(
-                    'El fuente especificado ("{}") no contiene subclase de "ModeloBF" utilizable. '
-                    '\nErrores encontrados:{}'
-                ).format(modelo, ''.join(['\n\n\t{}: \n{}'.format(nmb, e) for nmb, e in errores.items()])))
-            elif len(cands_final) == 1:
-                símismo.modelo = cands_final[list(cands_final)[0]]
-            else:
-                try:
-                    símismo.modelo = cands_final['Envoltura']
-                except KeyError:
-                    elegido = list(cands_final)[0]
-                    símismo.modelo = elegido
-                    avisar(_('\nHabía más que una instancia de "ModeloBF" en el fuente "{}", '
-                             '\ny ninguna se llamaba "Envoltura". Tomaremos "{}" como la envoltura '
-                             '\ny esperaremos que funcione. Si no te parece, asegúrate que la definición de clase u el'
-                             '\nobjeto correcto se llame "Envoltura".').format(modelo, elegido))
-
-        else:
-            if callable(modelo):
-                modelo = modelo()
-
-            if isinstance(modelo, ModeloBF):
-                símismo.modelo = modelo
-            else:
-                raise TypeError(_('El parámetro "modelo" debe ser o una instancia o subclase de "ModeloBF", o un '
-                                  'fuente Python que contiene uno.'))
-
-        # Crear el vínculo
-        símismo.variables = símismo.modelo.variables
-        símismo.vars_saliendo = símismo.modelo.vars_saliendo
-        símismo.vars_clima = símismo.modelo.vars_clima
-        símismo.archivo = símismo.modelo.archivo
-
     def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
         """
         Inicializa el modelo biofísico interno, incluyendo la inicialización de variables.
@@ -129,7 +62,7 @@ class EnvolturaBF(Modelo):
 class ModeloBF(Modelo):
     """
     Se debe desarrollar una subclase de esta clase para cada tipo_mod modelo biofísico que se quiere volver compatible
-    con Tinamit.
+    con Tinamït.
     """
 
     def __init__(símismo, archivo=None, nombre='modeloBF'):
@@ -185,7 +118,7 @@ class ModeloBF(Modelo):
 
         super().iniciar_modelo(n_pasos, t_final, nombre_corrida, vals_inic)
 
-    def cerrar_modelo(símismo):
+    def cerrar(símismo):
         """
         Esta función debe cerrar la simulación. No se aplica a todos los modelos biofísicos (en ese caso, usar ``pass``
         ).
@@ -532,7 +465,7 @@ class ModeloImpaciente(ModeloBF):
     def leer_egr_modelo(símismo, n_ciclos, archivo=None):
         raise NotImplementedError
 
-    def cerrar_modelo(símismo):
+    def cerrar(símismo):
         raise NotImplementedError
 
     def obt_tmñ_ciclo(símismo):
@@ -649,7 +582,7 @@ class ModeloIndeterminado(ModeloImpaciente):
     def mandar_modelo(símismo):
         raise NotImplementedError
 
-    def cerrar_modelo(símismo):
+    def cerrar(símismo):
         raise NotImplementedError
 
 
@@ -731,7 +664,7 @@ class ModeloDeterminado(ModeloImpaciente):
     def avanzar_modelo(símismo, n_ciclos):
         raise NotImplementedError
 
-    def cerrar_modelo(símismo):
+    def cerrar(símismo):
         raise NotImplementedError
 
 
@@ -885,7 +818,7 @@ class ModeloBloques(ModeloImpaciente):
     def _escribir_archivo_ingr(símismo, n_ciclos, dic_ingr, archivo):
         raise NotImplementedError
 
-    def cerrar_modelo(símismo):
+    def cerrar(símismo):
         raise NotImplementedError
 
     def unidad_tiempo(símismo):
