@@ -1,18 +1,18 @@
 from pkg_resources import resource_filename
-from . import config
+
 from tinamit.mod.modelo import Modelo
-from .Conectado import Conectado
 from . import EnvolturasMDS
-from . import EnvolturasBF
+from .Conectado import Conectado
+from .config import conf, conf_mods, trads
 
 # Cosas básicas
-__author__ = 'Julien Malard'
+__autor__ = 'Julien Malard'
 
-__notes__ = 'Contacto: julien.malard@mail.mcgill.ca'
+__correo__ = 'Contacto: julien.malard@mail.mcgill.ca'
 
 with open(resource_filename('tinamit', 'versión.txt')) as _archivo_versión:
     __versión__ = _archivo_versión.read().strip()
 
 __version__ = __versión__
 
-__all__ = ['config', 'Modelo', 'Conectado', 'EnvolturasBF', 'EnvolturasMDS']
+__all__ = ['config', 'Modelo', 'Conectado', 'EnvolturasMDS']

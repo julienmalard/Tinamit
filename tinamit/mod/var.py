@@ -43,6 +43,7 @@ class Variable(object):
         símismo.info = info
 
         símismo.val = np.zeros(dims)
+
         símismo._val_inic = np.zeros(dims)
 
     def estab_val_inic(símismo, val):

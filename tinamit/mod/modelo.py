@@ -19,7 +19,7 @@ from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
 from tinamit.Análisis.Datos import obt_fecha_ft, gen_SuperBD, jsonificar, numpyficar, SuperBD
 from tinamit.Análisis.Valids import validar_resultados
 from tinamit.Unidades.conv import convertir
-from tinamit.config import _, obt_val_config
+from tinamit.config import _, obt_val_config, conf_mods
 from tinamit.cositas import detectar_codif, valid_nombre_arch, guardar_json, cargar_json
 from tinamit.mod.var import VariablesMod, Variable
 
@@ -103,6 +103,32 @@ class Modelo(object):
         Si no aplica, usar ``pass``.
         """
         raise NotImplementedError
+
+    @classmethod
+    def obt_conf(cls, llave, auto=None, cond=None, mnsj_err=None):
+
+        auto = auto or []
+        if isinstance(auto, str):
+            auto = [auto]
+
+        try:
+            op = conf_mods[cls.__name__][llave]
+            if cond is None or cond(op):
+                return op
+        except KeyError:
+            pass
+
+        for op in auto:
+            if cond is None or cond(op):
+                conf_mods[cls.__name__][llave] = op
+                return op
+
+        if mnsj_err:
+            avisar(mnsj_err)
+
+    @classmethod
+    def estab_conf(cls, llave, valor):
+        conf_mods['envolt'][cls.__name__][llave] = valor
 
     @classmethod
     def instalado(cls):

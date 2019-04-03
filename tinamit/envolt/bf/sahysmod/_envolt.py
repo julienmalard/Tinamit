@@ -4,12 +4,11 @@ import shutil
 from subprocess import run
 
 import numpy as np
-import pkg_resources
 
 from tinamit.BF import ModeloBloques
-from ._vars import VariablesSAHYSMOD
 from tinamit.config import _
 from ._ingr_egr import leer_info_dic_paráms, escribir_desde_dic_paráms
+from ._vars import VariablesSAHYSMOD
 
 
 class ModeloSAHYSMOD(ModeloBloques):
@@ -19,39 +18,29 @@ class ModeloSAHYSMOD(ModeloBloques):
 
     leng_orig = 'en'  # La lengua de los nombres y descripción de los variables (y NO la del código aquí)
 
-    def __init__(símismo, datos_iniciales, exe_sahysmod=None, nombre='SAHYSMOD'):
+    def __init__(símismo, archivo, nombre='SAHYSMOD'):
 
         símismo.n_estaciones = 1
         símismo.dur_estaciones = [12]
 
         # Inicializar la clase pariente.
-        super().__init__(nombre=nombre, archivo=datos_iniciales)
+        super().__init__(nombre=nombre)
 
         # Necesario para paralelismo
-        símismo.argsinic = (datos_iniciales, exe_sahysmod, nombre)
-
-        # Número de polígonos internos
-        símismo.n_polí = None
+        símismo.argsinic = (archivo, nombre)
 
         # Directorio vacío para guardar datos de ingresos después
         símismo.dic_ingr = {}
 
-        # Poner el directorio de trabajo (donde escribiremos los egresos del modelo), y acordarse de dónde se ubican
-        # los datos iniciales.
-        símismo.datos_inic = datos_iniciales
-        símismo.direc_base = os.path.split(datos_iniciales)[0]
-
-        # Estableceremos el directorio para escribir y leer ingresos y egresos según el nombre de la corrida más tarde
-        símismo.direc_trabajo = ''
-
         # Buscar la ubicación del modelo SAHYSMOD.
-        símismo.exe_SAHYSMOD = símismo._obt_val_config(
-            'exe_SAHYSMOD',
+        símismo.exe_SAHYSMOD = símismo.obt_conf(
+            'exe',
             cond=os.path.isfile,
-            mnsj_error=_(
+            mnsj_err=_(
                 'Debes especificar la ubicación del ejecutable SAHYSMOD, p. ej.'
-                '\n\t"C:\\Camino\\hacia\\mi\\SAHYSMODConsole.exe"'
-                '\npara poder hacer simulaciones con modelos SAHYSMOD.')
+                '\n\tEnvolturaSAHYDMOD.estab_conf("exe", "C:\\Camino\\hacia\\mi\\SAHYSMODConsole.exe")'
+                '\npara poder hacer simulaciones con modelos SAHYSMOD.'
+            )
         )
 
         # Establecer los variables climáticos.
@@ -183,6 +172,10 @@ class ModeloSAHYSMOD(ModeloBloques):
         # Devolver el diccionario final
         return dic_final
 
+    @classmethod
+    def instalado(cls):
+        return cls.obt_conf('exe') is not None
+
     def unidad_tiempo(símismo):
         return 'mes'
 
@@ -208,10 +201,6 @@ class ModeloSAHYSMOD(ModeloBloques):
 
         # Y finalmente, escribir el fuente de valores de ingreso
         escribir_desde_dic_paráms(dic_paráms=símismo.dic_ingr, archivo_obj=archivo)
-
-
-    def instalado(símismo):
-        return símismo.exe_SAHYSMOD is not None
 
     def __getinitargs__(símismo):
         return símismo.argsinic

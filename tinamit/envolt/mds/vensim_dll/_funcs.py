@@ -2,37 +2,18 @@ import csv
 import ctypes
 import os
 import struct
-import sys
 
-from tinamit.config import _, obt_val_config
+from tinamit.config import _
 from tinamit.cositas import arch_más_recién
 
 
-def gen_mod_vensim(archivo):
-    if sys.platform[:3] != 'win':
-        raise OSError(_('Desafortunadamente, el DLL de Vensim funciona únicamente en Windows.'))
-
-    try:
-        arch_dll_vensim = obt_val_config(['Vensim', 'dll'])
-    except KeyError:
-        arch_dll_vensim = None
-
-    # Buscar el DLL de Vensim, si necesario.
-    if arch_dll_vensim is None:
-        probables = [
-            'C:\\Windows\\System32\\vendll32.dll',
-            'C:\\Windows\\SysWOW64\\vendll32.dll'
-        ]
-        arch_dll_vensim = next(a for a in probables if os.path.isfile(a))
-
-    dll = ctypes.WinDLL(arch_dll_vensim)
-
+def cargar_mod_vensim(mod, archivo):
     nmbr, ext = os.path.splitext(archivo)
     if ext == '.mdl':
 
         # Únicamente recrear el archivo .vpm si necesario
         if not os.path.isfile(nmbr + '.vpm') or arch_más_recién(archivo, nmbr + '.vpm'):
-            publicar_modelo(mod=dll, archivo=archivo)
+            publicar_modelo(mod=mod, archivo=archivo)
         archivo = nmbr + '.vpm'
 
     elif ext != '.vpm':
@@ -41,21 +22,21 @@ def gen_mod_vensim(archivo):
         )
 
     # Inicializar Vensim
-    cmd_vensim(func=dll.vensim_command,
+    cmd_vensim(func=mod.vensim_command,
                args=[''],
                mensaje_error=_('Error iniciando Vensim.'))
 
     # Cargar el modelo
-    cmd_vensim(func=dll.vensim_command,
+    cmd_vensim(func=mod.vensim_command,
                args='SPECIAL>LOADMODEL|%s' % archivo,
                mensaje_error=_('Error cargando el modelo de Vensim.'))
 
     # Parámetros estéticos de ejecución.
-    cmd_vensim(func=dll.vensim_be_quiet, args=[2],
+    cmd_vensim(func=mod.vensim_be_quiet, args=[2],
                mensaje_error=_('Error en la comanda "vensim_be_quiet".'),
                val_error=-1)
 
-    return dll
+    return mod
 
 
 def verificar_vensim(símismo):

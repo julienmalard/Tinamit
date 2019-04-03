@@ -1,8 +1,12 @@
-from tinamit.envolt.mds import EnvolturaMDS, VarNivel, VarConstante, VariablesMDS, \
-    VarInic
+import ctypes
+import os
+import sys
+from warnings import warn as avisar
+
+from tinamit.envolt.mds import EnvolturaMDS, VarNivel, VarConstante, VariablesMDS, VarInic
 from tinamit.mod import Variable
-from ._funcs import obt_atrib_var, obt_vars, obt_editables, gen_mod_vensim, obt_unid_tiempo, cerrar_vensim, vdf_a_csv, \
-    obt_val_var
+from ._funcs import obt_atrib_var, obt_vars, obt_editables, cargar_mod_vensim, obt_unid_tiempo, cerrar_vensim, \
+    vdf_a_csv, obt_val_var
 from ._vars import VarAuxiliarVensim
 
 
@@ -14,7 +18,7 @@ class EnvolturaVensimDLL(EnvolturaMDS):
     """
 
     def __init__(símismo, archivo, nombre='mds'):
-        símismo.mod = gen_mod_vensim(archivo)
+        símismo.mod = cargar_mod_vensim(ctypes.WinDLL(_obt_dll_vensim()), archivo)
         super().__init__(nombre)
 
     def unidad_tiempo(símismo):
@@ -74,6 +78,10 @@ class EnvolturaVensimDLL(EnvolturaMDS):
 
         #
         vdf_a_csv(símismo.mod)
+
+    @classmethod
+    def instalado(cls):
+        return _obt_dll_vensim() is not None
 
     def _gen_vars(símismo):
         mod = símismo.mod
@@ -160,3 +168,22 @@ class EnvolturaVensimDLL(EnvolturaMDS):
 
                     # Guardar en el diccionario interno.
                     matr_val[n] = val  # Para hacer: opciones de dimensiones múltiples
+
+
+def _obt_dll_vensim():
+    if sys.platform[:3] != 'win':
+        avisar(_('Desafortunadamente, el DLL de Vensim funciona únicamente en Windows.'))
+        return False
+
+    return EnvolturaVensimDLL.obt_conf(
+        'dll', auto=[
+            'C:/Windows/System32/vendll32.dll',
+            'C:/Windows/SysWOW64/vendll32.dll'
+        ], cond=os.path.isfile,
+        mnsj_err=_(
+            'Debes instalar Vensim DSS en tu computadora y, si todavía aparece este mensaje,'
+            '\nespecificar la ubicación del dll manualmente, p. ej.'
+            '\n\tEnvolturaVensimDLL.estab_conf("dll", "C:/Camino/raro/para/vendll32.dll")'
+            '\npara poder hacer simulaciones con Vensim DSS.'
+        )
+    )

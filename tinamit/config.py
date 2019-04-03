@@ -7,148 +7,139 @@ from pkg_resources import resource_filename
 
 from tinamit.cositas import cargar_json, guardar_json
 
+
 # Código para manejar configuraciones de Tinamït
-_dir_config = resource_filename('tinamit', 'config.json')
-_config_base = {
-    'leng': 'es',
-    'lengs_aux': []
-}
+class OpsConfig(object):
+    def __init__(símismo, valores=None):
+        símismo.valores = {ll: OpsConfig(v) if isinstance(v, dict) else v for ll, v in valores or {}}
 
+    def a_dic(símismo):
+        return {ll: v.a_dic() if isinstance(v, OpsConfig) else v for ll, v in símismo.valores.items()}
 
-def _guardar_conf():
-    guardar_json(_configs, _dir_config)
-
-
-try:
-    _configs = cargar_json(_dir_config)
-    for c, v_c in _config_base.items():  # pragma: sin cobertura
-        if c not in _configs:
-            _configs[c] = v_c
-        elif not isinstance(_configs[c], type(v_c)):
-            _configs[c] = v_c
-except (FileNotFoundError, json.decoder.JSONDecodeError, PermissionError):
-    _configs = _config_base.copy()
-try:
-    _guardar_conf()
-except PermissionError:
-    pass
-
-
-def obt_val_config(llave, cond=None, mnsj_err=None, respaldo=None):
-    if not isinstance(respaldo, list):
-        respaldo = [respaldo]
-
-    try:
-        conf, ll = _resolver_conf_anidado(llave)
-        val = conf[ll]
-
-        if cond is None:
-            return val
+    def borrar(símismo, llave):
+        if isinstance(llave, str):
+            símismo.valores.pop(llave)
+        elif len(llave) == 1:
+            símismo.valores.pop(llave[0])
         else:
-            if cond(val):
-                return val
-            else:
-                for a in respaldo:
-                    if a is not None and cond(a):
-                        return a
-                if mnsj_err is not None:
-                    avisar(mnsj_err)
-                return
+            símismo.valores[llave[0]].borrar(llave[1:])
 
-    except KeyError:
-        val = None
-        if cond is None:
-            val = respaldo[0]
+    def __contains__(símismo, itema):
+        return itema in símismo.valores
+
+    def __getitem__(símismo, itema):
+        if isinstance(itema, str):
+            return símismo.valores[itema]
+        elif len(itema) == 1:
+            return símismo.valores[itema[0]]
         else:
-            for a in respaldo:
-                if a is not None and cond(a):
-                    val = a
-        if val is None and mnsj_err is not None:
-            avisar(mnsj_err)
-        return val
+            return símismo.valores[itema[0]][itema[1:]]
+
+    def __setitem__(símismo, llave, valor):
+        if isinstance(llave, str):
+            símismo.valores[llave] = valor
+        elif len(llave) == 1:
+            símismo.valores[llave[0]] = valor
+        else:
+            if not llave[0] in símismo:
+                símismo.valores[llave[0]] = OpsConfig()
+            símismo.valores[llave[0]][llave[1:]] = valor
 
 
-def poner_val_config(llave, val):
-    conf, ll = _resolver_conf_anidado(llave, crear=True)
-    conf[ll] = val
-    _guardar_conf()
+class Config(OpsConfig):
+
+    def __init__(símismo, archivo, auto=None):
+        auto = auto or {}
+
+        símismo.archivo = archivo
+        símismo.val_auto = auto.copy()
+
+        try:
+            val_arch = cargar_json(archivo)
+        except (FileNotFoundError, json.decoder.JSONDecodeError, PermissionError):
+            val_arch = {}
+
+        auto.update(val_arch)
+
+        super().__init__(auto)
+
+        símismo.guardar()
+
+    def reinic(símismo):
+        símismo.valores = OpsConfig(símismo.val_auto)
+        símismo.guardar()
+
+    def borrar(símismo, llave):
+        super().borrar(llave)
+        símismo.guardar()
+
+    def guardar(símismo):
+        try:
+            guardar_json(símismo.a_dic(), símismo.archivo)
+        except PermissionError:
+            avisar(_('No se pudo guardar la configuración.'))
+
+    def __setitem__(símismo, llave, valor):
+        super().__setitem__(llave, valor)
+        símismo.guardar()
 
 
-def borrar_var_config(llave):
-    try:
-        conf, ll = _resolver_conf_anidado(llave)
-        conf.pop(ll)
-    except KeyError:
-        raise KeyError(_('La llave "{}" no existía en la configuración.').format(llave))
-    _guardar_conf()
+class Trads(object):
+    AUX = 'aux'
+    PRINC = 'principal'
+    DOMINIO = 'leng'
+
+    def __init__(símismo, dir_local):
+        símismo.dir_local = dir_local
+        símismo._conf = conf[Trads.DOMINIO]
+
+        símismo._trads = símismo._regen_trads()
+
+    def idioma(símismo):
+        return símismo._conf[Trads.PRINC]
+
+    def auxiliares(símismo):
+        return símismo._conf[Trads.AUX]
+
+    def cambiar_idioma(símismo, idioma):
+        símismo._conf[Trads.PRINC] = idioma
+        if idioma in símismo.auxiliares():
+            símismo.auxiliares().pop(idioma)  # aprovechamos del enlace dinámico
+
+        símismo._trads = símismo._regen_trads()
+
+    def cambiar_aux(símismo, aux):
+        if isinstance(aux, str):
+            aux = [aux]
+
+        principal = símismo.idioma()
+        aux = [i for i in aux if i != principal]
+        símismo._conf[Trads.AUX] = aux
+
+        símismo._trads = símismo._regen_trads()
+
+    def trad(símismo, texto):
+        return símismo._trads.gettext(texto)
+
+    def _regen_trads(símismo):
+        return gettext.translation(
+            __name__, localedir=símismo.dir_local, fallback=True,
+            languages=[símismo.idioma()] + símismo.auxiliares()
+        )
 
 
-def limpiar_config():  # pragma: sin cobertura
-    _configs.clear()
-    _configs.update(_config_base)
-    _guardar_conf()
+conf = Config(
+    resource_filename('tinamit', 'config.json'),
+    auto={
+        Trads.DOMINIO: {Trads.PRINC: 'cak', Trads.AUX: ['es']},
+        'envolt': {}
+    }
+)
 
+conf_mods = conf['envolt']
 
-def _resolver_conf_anidado(llave, crear=False):
-    if not isinstance(llave, list):
-        llave = [llave]
-    conf = _configs
-    for ll in llave[:-1]:
-        if crear and ll not in conf or not isinstance(conf[ll], dict):
-            conf[ll] = {}
-        conf = conf[ll]
+trads = Trads(
+    dir_local=os.path.join(os.path.abspath(os.path.dirname(__file__)), '_local', '_fuente')
+)
 
-    return conf, llave[-1]
-
-
-# Funciones fáciles para opciones de lenguas.
-_dir_local = os.path.join(os.path.abspath(os.path.dirname(__file__)), '_local', '_fuente')
-
-lengua = obt_val_config('leng')
-lengs_aux = obt_val_config('lengs_aux')
-
-_dic_trads = {'leng': lengua,
-              'otras': lengs_aux,
-              'trads': gettext.translation(__name__, _dir_local, fallback=True, languages=[lengua] + lengs_aux)}
-
-
-def cambiar_lengua(leng, auxiliares=None, temp=False):
-    """
-
-    Parameters
-    ----------
-    leng : str
-        La lengua en la cual quieres recibir los mensajes de Tinamït.
-    auxiliares : list[str] | str
-        Otras lenguas para emplear, si tu lengua no está disponible.
-    temp : bool
-        Si el cambio es temporario (esta sesión) o el nuevo normal.
-
-    """
-
-    if auxiliares is not None and not isinstance(auxiliares, list):
-        auxiliares = [auxiliares]
-
-    if not temp:
-        poner_val_config('leng', leng)
-        if auxiliares is not None:
-            poner_val_config('lengs_aux', auxiliares)
-    if auxiliares is None:
-        auxiliares = obt_val_config('lengs_aux')
-
-    if _dic_trads['leng'] != leng or _dic_trads['otras'] != auxiliares:
-        _dic_trads['trads'] = gettext.translation(__name__, _dir_local, fallback=True, languages=[leng] + auxiliares)
-
-
-def _(tx):
-    """
-
-    Parameters
-    ----------
-    tx :
-
-    Returns
-    -------
-    str
-    """
-    return _dic_trads['trads'].gettext(tx)
+_ = trads.trad
