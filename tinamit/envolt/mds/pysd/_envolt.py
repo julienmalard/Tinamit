@@ -7,6 +7,7 @@ from ._vars import VarPySDAuxiliar, VarPySDNivel, VarPySDConstante, VariablesPyS
 
 
 class EnvolturaPySD(EnvolturaMDS):
+    ext = None
 
     def __init__(símismo, archivo, nombre='mds'):
 

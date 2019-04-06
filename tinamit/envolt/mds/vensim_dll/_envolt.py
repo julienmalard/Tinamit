@@ -141,6 +141,8 @@ class EnvolturaVensimDLL(EnvolturaMDS):
 
             l_vars.append(var)
 
+        símismo.editables =
+
         return VariablesMDS(l_vars)
 
     def _leer_vals_de_vensim(símismo, l_vars=None):

@@ -70,7 +70,7 @@ def publicar_modelo(mod, archivo):  # pragma: sin cobertura
 
     cmd_vensim(mod.vensim_command, 'SPECIAL>LOADMODEL|%s' % archivo)
 
-    archivo_frm = os.path.join(os.path.split(os.path.dirname(__file__))[0], 'Vensim.frm')
+    archivo_frm = os.path.join(os.path.split(os.path.dirname(__file__))[0], 'VENSIM.frm')
     cmd_vensim(mod.vensim_command, ('FILE>PUBLISH|%s' % archivo_frm))
 
 

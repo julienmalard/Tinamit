@@ -20,9 +20,6 @@ class ModeloSAHYSMOD(ModeloBloques):
 
     def __init__(símismo, archivo, nombre='SAHYSMOD'):
 
-        símismo.n_estaciones = 1
-        símismo.dur_estaciones = [12]
-
         # Inicializar la clase pariente.
         super().__init__(nombre=nombre)
 
@@ -59,30 +56,12 @@ class ModeloSAHYSMOD(ModeloBloques):
 
         # Asegurars que el número de estaciones es igual al número de duraciones de estaciones.
         if símismo.n_estaciones != len(símismo.dur_estaciones):
-            raise ValueError(_('Error en el fuente de datos iniciales SAHYSMOD: el número de duraciones de estaciones'
-                               'especificadas no corresponde al número de estaciones especificadas (líneas 3 y 4).'))
+            raise ValueError(
+                _('Error en el fuente de datos iniciales SAHYSMOD: el número de duraciones de estaciones'
+                               'especificadas no corresponde al número de estaciones especificadas (líneas 3 y 4).')
+            )
 
-        # Formatear el diccionario final
-        dic_final = {}
-        for c in vars_ingreso_SAHYSMOD:
-            llave = c.upper().replace('#', '')
-
-            nombre_var = códs_a_vars[c]
-            dic_final[nombre_var] = dic_ingr[llave]
-
-        por_bloques = símismo._vars_por_bloques()
-
-        for c in vars_egreso_SAHYSMOD:
-
-            nombre_var = códs_a_vars[c]
-            if nombre_var not in dic_final:
-                if nombre_var in por_bloques:
-                    tmñ = (símismo.n_estaciones, símismo.n_polí)
-                else:
-                    tmñ = símismo.n_polí
-                dic_final[nombre_var] = np.zeros(tmñ)
-
-        return VariablesSAHYSMOD(dims=(n_polí,))
+        return VariablesSAHYSMOD(dims=(n_polí,), símismo.n_estaciones)
 
     def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
 

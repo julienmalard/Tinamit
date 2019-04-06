@@ -15,6 +15,7 @@ def gen_mod_pysd(archivo):
 
 
 def obt_paso_mod_pysd(archivo):
+    # Inelegante, seguro, pero por el momento inevitable con PySD
     with open(archivo, 'r', encoding='UTF-8') as d:
         f = d.readline()
         while f != 'def time_step():\n':
