@@ -11,7 +11,7 @@ from pruebas.test_mds import generar_modelos_prueba, limpiar_mds
 from tinamit.BF import EnvolturaBF
 from tinamit.Conectado import Conectado, SuperConectado
 from tinamit.EnvolturasMDS import ModeloPySD, generar_mds
-from tinamit.Unidades import trads
+from tinamit.unids import trads
 
 dir_act = os.path.split(__file__)[0]
 arch_bf = os.path.join(dir_act, 'recursos/BF/prueba_bf.py')

@@ -9,7 +9,7 @@ except ImportError:
 from . import Arte as Art
 from . import Botones as Bt
 from . import Formatos as Fm
-from tinamit.Interfaz.Formatos import gen_formato as gf
+from tinamit.interfaz.Formatos import gen_formato as gf
 
 
 class ListaItemas(tk.Frame):

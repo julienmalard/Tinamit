@@ -3,11 +3,12 @@ import os
 import sys
 from warnings import warn as avisar
 
-from tinamit.envolt.mds import EnvolturaMDS, VarNivel, VarConstante, VariablesMDS, VarInic
+import numpy as np
+
+from tinamit.envolt.mds import EnvolturaMDS, VarNivel, VarConstante, VariablesMDS, VarInic, VarAuxiliar
 from tinamit.mod import Variable
-from ._funcs import obt_atrib_var, obt_vars, obt_editables, cargar_mod_vensim, obt_unid_tiempo, cerrar_vensim, \
-    vdf_a_csv, obt_val_var
-from ._vars import VarAuxiliarVensim
+from . import _funcs as f
+from ._vars import VarAuxEditable
 
 
 class EnvolturaVensimDLL(EnvolturaMDS):
@@ -18,79 +19,96 @@ class EnvolturaVensimDLL(EnvolturaMDS):
     """
 
     def __init__(símismo, archivo, nombre='mds'):
-        símismo.mod = cargar_mod_vensim(ctypes.WinDLL(_obt_dll_vensim()), archivo)
+        símismo.mod = f.cargar_mod_vensim(ctypes.WinDLL(_obt_dll_vensim()), archivo)
+        símismo.paso = f.obt_paso_inicial(símismo.mod)
         super().__init__(nombre)
 
     def unidad_tiempo(símismo):
-        return obt_unid_tiempo(símismo.mod)
+        return f.obt_unid_tiempo(símismo.mod)
 
-    def iniciar_modelo(símismo, eje_tiempo, extern, nombre_corrida):
-        # En Vensim, tenemos que incializar los valores de variables constantes antes de empezar la simulación.
-        símismo.cambiar_vals({var: val for var, val in vals_inic.items() if var not in símismo.editables})
+    def iniciar_modelo(símismo, corrida):
 
-        # Establecer el nombre de la corrida.
-        cmd_vensim(func=símismo.mod.vensim_command,
-                   args="SIMULATE>RUNNAME|%s" % nombre_corrida,
-                   mensaje_error=_('Error iniciando la corrida Vensim.'))
+        eje_tiempo = corrida.eje_tiempo
+        # En Vensim, tenemos que incializar los valores de variables no editables antes de empezar la simulación.
+        símismo.variables.cambiar_vals(
+            {var: val for var, val in corrida.vals_inic() if not isinstance(var, VarAuxEditable)}
+        )
 
-        # Establecer el tiempo final.
-        cmd_vensim(func=símismo.mod.vensim_command,
-                   args='SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', n_pasos + 1),
-                   mensaje_error=_('Error estableciendo el tiempo final para Vensim.'))
-
-        # Iniciar la simulación en modo juego ("Game"). Esto permitirá la actualización de los valores de los variables
-        # a través de la simulación.
-        cmd_vensim(func=símismo.mod.vensim_command,
-                   args="MENU>GAME",
-                   mensaje_error=_('Error inicializando el juego Vensim.'))
-
-        # Es ABSOLUTAMENTE necesario establecer el intervalo del juego aquí. Sino, no reinicializa el paso
-        # correctamente entre varias corridas (aún modelos) distintas.
-        cmd_vensim(func=símismo.mod.vensim_command,
-                   args="GAME>GAMEINTERVAL|%i" % símismo.paso,
-                   mensaje_error=_('Error estableciendo el paso de Vensim.'))
+        f.inic_modelo(símismo.mod, paso=eje_tiempo.paso, n_pasos=eje_tiempo.n_pasos, nombre_corrida=str(corrida))
 
         # Aplicar los valores iniciales de variables editables
-        símismo.cambiar_vals({var: val for var, val in vals_inic.items() if var in símismo.editables})
+        símismo.variables.cambiar_vals(
+            {var: val for var, val in corrida.vals_inic() if isinstance(var, VarAuxEditable)}
+        )
 
-        # Reinicializar el diccionario interno también.
+        # Debe venir después de `f.inic_modelo()` sino no obtenemos datos para los variables
         símismo._leer_vals_de_vensim()
 
-    def incrementar(símismo):
+    def incrementar(símismo, corrida):
 
         # Establecer el paso.
-        if paso != símismo.paso:
-            cmd_vensim(func=símismo.mod.vensim_command,
-                       args="GAME>GAMEINTERVAL|%i" % paso,
-                       mensaje_error=_('Error estableciendo el paso de Vensim.'))
-            símismo.paso = paso
+        if corrida != símismo.paso:
+            f.estab_paso(símismo.mod, corrida)
+            símismo.paso = corrida
 
-        # Avanzar el modelo.
-        cmd_vensim(func=símismo.mod.vensim_command,
-                   args="GAME>GAMEON", mensaje_error=_('Error para incrementar Vensim.'))
+        f.avanzar_modelo(símismo.mod)
+        símismo._leer_vals_de_vensim(corrida.resultados.vars_interés)
+
+    def cambiar_vals(símismo, valores):
+        super().cambiar_vals(valores)
+
+        for var, val in valores.items():
+            # Para cada variable para cambiar...
+
+            if símismo.variables[var].dims == (1,):
+                # Si el variable no tiene dimensiones (subscriptos)...
+
+                # Actualizar el valor en el modelo Vensim.
+                if not np.isnan(val):
+                    f.cambiar_val(símismo.mod, var, val)
+
+            else:
+                # Para hacer: opciones de dimensiones múltiples
+                # La lista de subscriptos
+                subs = símismo.variables[var].subs
+
+                if isinstance(val, np.ndarray) and val.shape:
+                    matr = val
+                else:
+                    matr = np.empty(len(subs))
+                    matr[:] = val
+
+                for n, s in enumerate(subs):
+                    var_s = var + s
+                    val_s = matr[n]
+                    if not np.isnan(val_s):
+                        f.cambiar_val(símismo.mod, var_s, val_s)
 
     def cerrar(símismo):
         """
         Cierre la simulación Vensim.
         """
 
-        cerrar_vensim(símismo.mod, paso)
+        f.cerrar_vensim(símismo.mod)
 
         #
-        vdf_a_csv(símismo.mod)
+        f.vdf_a_csv(símismo.mod)
 
     @classmethod
     def instalado(cls):
         return _obt_dll_vensim() is not None
+
+    def paralelizable(símismo):
+        return True
 
     def _gen_vars(símismo):
         mod = símismo.mod
 
         l_vars = []
 
-        vars_y_tipos = {v: obt_atrib_var(mod, v, cód_attrib=14).lower() for v in obt_vars(mod)}
+        vars_y_tipos = {v: f.obt_atrib_var(mod, v, cód_attrib=14).lower() for v in f.obt_vars(mod)}
 
-        editables = obt_editables(mod)
+        editables = f.obt_editables(mod)
 
         omitir = [
             'Data', 'Constraint', 'Lookup', 'Group', 'Subscript Range', 'Test Input', 'Time Base',
@@ -105,68 +123,64 @@ class EnvolturaVensimDLL(EnvolturaMDS):
                 continue
 
             # Sacar los límites del variable
-            líms = (obt_atrib_var(mod, var, cód_attrib=11), obt_atrib_var(mod, var, cód_attrib=12))
+            líms = (f.obt_atrib_var(mod, var, cód_attrib=11), f.obt_atrib_var(mod, var, cód_attrib=12))
             líms = tuple(float(lm) if lm != '' else None for lm in líms)
 
             # Leer la descripción del variable.
-            info = obt_atrib_var(mod, var, 2)
+            info = f.obt_atrib_var(mod, var, 2)
 
             # Sacar sus unidades
-            unid = obt_atrib_var(mod, var, cód_attrib=1)
+            unid = f.obt_atrib_var(mod, var, cód_attrib=1)
 
             # Sacar las dimensiones del variable
-            subs = obt_atrib_var(mod, var, cód_attrib=9)
+            subs = f.obt_atrib_var(mod, var, cód_attrib=9)
             if len(subs):
                 dims = (len(subs),)  # Para hacer: permitir más de 1 dimensión
             else:
                 dims = (1,)
 
             # Leer la ecuación del variable, sus hijos y sus parientes directamente de Vensim
-            ec = obt_atrib_var(mod, var, 3)
-            parientes = [v for v in obt_atrib_var(mod, var, 4) if v in vars_y_tipos]
+            ec = f.obt_atrib_var(mod, var, 3)
+            parientes = [v for v in f.obt_atrib_var(mod, var, 4) if v in vars_y_tipos]
 
             if tipo_var == 'constant' or (tipo_var == 'auxiliar' and not len(parientes)):
-                var = VarConstante(var, unid=unid, ec=ec, parientes=parientes, dims=dims, líms=líms, info=info)
+                cls = VarConstante
             elif tipo_var == 'level':
-                var = VarNivel(var, unid=unid, ec=ec, parientes=parientes, dims=dims, líms=líms, info=info)
+                cls = VarNivel
             elif tipo_var == 'auxiliary':
-                var = VarAuxiliarVensim(
-                    var, editable=var in editables, ec=ec, parientes=parientes, unid=unid,
-                    dims=dims, líms=líms, info=info
-                )
+                cls = VarAuxEditable if var in editables else VarAuxiliar
             elif tipo_var == 'initial':
-                var = VarInic(var, unid=unid, ec=ec, parientes=parientes, dims=dims, líms=líms, info=info)
+                cls = VarInic
             else:
                 raise ValueError(tipo_var)
 
-            l_vars.append(var)
-
-        símismo.editables =
+            l_vars.append(cls(var, unid=unid, ec=ec, subs=subs, parientes=parientes, dims=dims, líms=líms, info=info))
 
         return VariablesMDS(l_vars)
 
     def _leer_vals_de_vensim(símismo, l_vars=None):
         if isinstance(l_vars, Variable):
             l_vars = [l_vars]
+        elif l_vars is None:
+            l_vars = símismo.variables
 
-        # para hacer
         for v in l_vars:
             if v.dims == (1,):
                 # Si el variable no tiene dimensiones (subscriptos)...
 
                 # Leer su valor.
-                val = obt_val_var(símismo.mod, v)
+                val = f.obt_val_var(símismo.mod, v)
 
                 # Guardar en el diccionario interno.
                 símismo._act_vals_dic_var({v: val})
 
             else:
                 matr_val = v.val
-                for n, s in enumerate(símismo.variables[v]['subscriptos']):
+                for n, s in enumerate(símismo.variables[v].subs):
                     var_s = str(v) + s
 
                     # Leer su valor.
-                    val = obt_val_var(símismo.mod, var_s)
+                    val = f.obt_val_var(símismo.mod, var_s)
 
                     # Guardar en el diccionario interno.
                     matr_val[n] = val  # Para hacer: opciones de dimensiones múltiples

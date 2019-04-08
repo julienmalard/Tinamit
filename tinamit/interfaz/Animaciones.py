@@ -1,7 +1,7 @@
 import math as mat
 import time
 
-from tinamit.Interfaz.Formatos import gen_formato as gf
+from tinamit.interfaz.Formatos import gen_formato as gf
 
 
 def intercambiar(actual, nuevo, dirección):

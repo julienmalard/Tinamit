@@ -18,10 +18,11 @@ import tinamit.Geog_.Geog as Geog
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
 from tinamit.Análisis.Datos import obt_fecha_ft, gen_SuperBD, jsonificar, numpyficar, SuperBD
 from tinamit.Análisis.Valids import validar_resultados
-from tinamit.Unidades.conv import convertir
-from tinamit.config import _, obt_val_config, conf_mods
+from tinamit.unids.conv import convertir
+from tinamit.config import _, conf_mods
 from tinamit.cositas import detectar_codif, valid_nombre_arch, guardar_json, cargar_json
-from tinamit.mod.var import VariablesMod, Variable
+from .corrida import Corrida
+from .var import VariablesMod, Variable
 
 
 class Modelo(object):
@@ -74,10 +75,11 @@ class Modelo(object):
 
         raise NotImplementedError
 
-    def simular(símismo, eje_tiempo, vals_inic=None, vals_extern=None):
+    def simular(símismo, eje_tiempo, nombre_corrida='Tinamït', vals_inic=None, vals_extern=None):
         extern = gen_vals_extern(vals_inic, vals_extern)
+        corrida = Corrida(nombre_corrida, eje_tiempo, extern)
 
-        símismo.iniciar_modelo(eje_tiempo, extern)
+        símismo.iniciar_modelo(corrida)
         res = símismo.correr(eje_tiempo)
         símismo.cerrar()
 
@@ -86,15 +88,15 @@ class Modelo(object):
     def simular_grupo(símismo, eje_tiempo):
         pass
 
-    def iniciar_modelo(símismo, eje_tiempo, extern, nombre_corrida):
-        pass
+    def iniciar_modelo(símismo, corrida):
+        raise NotImplementedError
 
-    def correr(símismo, eje_tiempo):
-        while eje_tiempo.avanzar():
-            símismo.incrementar()
-        return símismo.variables.resultados()
+    def correr(símismo, corrida):
+        while corrida.eje_tiempo.avanzar():
+            símismo.incrementar(, corrida.eje_tiempo.pasos_avanzados()
+        return corrida.resultados()
 
-    def incrementar(símismo):
+    def incrementar(símismo, corrida):
         raise NotImplementedError
 
     def cerrar(símismo):
@@ -103,6 +105,21 @@ class Modelo(object):
         Si no aplica, usar ``pass``.
         """
         raise NotImplementedError
+
+    def cambiar_vals(símismo, valores):
+        """
+        Esta función cambia el valor de uno o más variables del modelo.
+
+        Parameters
+        ----------
+        valores : dict
+            Un diccionario de variables y sus valores para cambiar.
+
+
+        """
+
+        # Cambia primero el valor en el diccionario interno del Modelo
+        símismo.cambiar_vals(valores=valores)
 
     @classmethod
     def obt_conf(cls, llave, auto=None, cond=None, mnsj_err=None):
@@ -146,78 +163,6 @@ class Modelo(object):
 
     def __str__(símismo):
         return símismo.nombre
-
-    def _reinic_vals(símismo):
-        vals_inic = símismo._vals_inic()
-        símismo._act_vals_dic_var(vals_inic)
-
-        vars_vacíos = [v for v in símismo.variables if símismo.obt_val_actual_var(v) is None]
-        if len(vars_vacíos):
-            raise ValueError(
-                _('No se inicializó valor para los variables siguientes: {}.').format(', '.join(vars_vacíos))
-            )
-
-    def _vals_inic(símismo):
-        raise NotImplementedError
-
-    def _act_vals_dic_var(símismo, valores):
-        """
-        Actualiza los valores en el diccionar de variables. Es importante emplear esta función y no poner el valor
-        manualmente para evitar errores súbtiles en las simulaciones.
-
-        Parameters
-        ----------
-        valores : dict[str, np.ndarray | float | int]
-            Un diccionario de variables y de sus nuevos valores.
-
-        """
-
-        # Para cara variable y valor...
-        for var, val in valores.items():
-
-            val_antes = símismo.variables[var]['val']
-
-            if val_antes is None:
-                # Si no existía valor antes, poner el nuevo valor sin pregunta (pero hacemos copias de matrices
-                # en caso que la matriz original se pueda modificar en otro lugar).
-                símismo.variables[var]['val'] = val.copy() if isinstance(val, np.ndarray) else val
-
-            elif isinstance(val_antes, np.ndarray):
-                # Si es matriz, tenemos que cambiar sus valores sin crear nueva matriz.
-
-                if isinstance(val, np.ndarray):
-                    existen = np.invert(np.isnan(val))  # No cambiamos nuevos valores que faltan
-                    val_antes[existen] = val[existen]
-                else:
-                    val_antes[:] = val
-
-            else:
-                # Si no es matriz, podemos cambiar el valor directamente.
-                if not np.isnan(val):  # Evitar cambiar si no existe el nuevo valor.
-                    símismo.variables[var]['val'] = val
-
-    def _unid_tiempo_python(símismo):
-        unid_ref_tiempo = ref_final = símismo.unidad_tiempo()
-        factor = 1
-        for u in ['año', 'mes', 'día']:
-            try:
-                d_conv = símismo._conv_unid_tiempo[unid_ref_tiempo]
-                factor = convertir(de=d_conv['ref'], a=u, val=d_conv['factor'])
-                ref_final = u
-                if factor == d_conv['factor']:
-                    break
-            except (KeyError, ValueError):
-                try:
-                    factor = convertir(de=unid_ref_tiempo, a=u)
-                    ref_final = u
-                    if factor == 1:
-                        break
-                except ValueError:
-                    pass
-        if ref_final not in ['año', 'mes', 'día']:
-            raise ValueError(_('La unidad de tiempo "{}" no se pudo convertir a años, meses o días.')
-                             .format(unid_ref_tiempo))
-        return ref_final, factor
 
     def _procesar_rango_tiempos(símismo, t_inic, t_final, paso):
 
@@ -506,7 +451,7 @@ class Modelo(object):
         if clima is None and símismo.combin_pasos and vals_extern is None:
 
             # Correr todos los pasos de una vez
-            símismo.incrementar(paso=n_iter * paso, guardar_cada=paso)
+            símismo.incrementar(,
 
             # Después de la simulación, cerramos el modelo.
             símismo.cerrar()
@@ -551,7 +496,7 @@ class Modelo(object):
                     mem_vars[var][i] = símismo.obt_val_actual_var(var)
 
                 # Incrementar el modelo
-                símismo.incrementar(paso)
+                símismo.incrementar(, paso
 
                 # Guardar valores de variables de interés
                 if len(vars_interés):
@@ -872,22 +817,6 @@ class Modelo(object):
         else:
             raise ValueError(_('Formato de resultados "{}" no reconocido.').format(frmt))
 
-    def leer_vals(símismo):
-
-        if not símismo.vals_actualizadas:
-            símismo._leer_vals()
-
-            símismo.vals_actualizadas = True
-
-    def _leer_vals(símismo):
-        """
-        Esta función debe leer los valores del modelo y escribirlos en el diccionario interno de variables. Se
-        implementa frequentement con modelos externos de cuyos egresos hay que leer los resultados de una corrida.
-
-        """
-
-        raise NotImplementedError
-
     def conectar_var_clima(símismo, var, var_clima, conv, combin=None):
         """
         Conecta un variable climático.
@@ -930,37 +859,7 @@ class Modelo(object):
 
         """
 
-        símismo.vars_clima.pop(var)
-
-    def cambiar_vals(símismo, valores):
-        """
-        Esta función cambia el valor de uno o más variables del modelo.
-
-        Parameters
-        ----------
-        valores : dict
-            Un diccionario de variables y sus valores para cambiar.
-
-
-        """
-
-        # Cambia primero el valor en el diccionario interno del Modelo
-        símismo._act_vals_dic_var(valores=valores)
-
-        # Cambiar, si necesario, los valores de los variables en el modelo externo
-        símismo._cambiar_vals_modelo_externo(valores=valores)
-
-    def _cambiar_vals_modelo_externo(símismo, valores):
-        """
-        Esta función debe cambiar el valor de variables en el modelo externo, si aplica.
-        Parameters
-        ----------
-        valores : dict
-            Un diccionario de variables y sus valores para cambiar.
-
-        """
-
-        raise NotImplementedError
+        símismo.vars_clima.pop(var)r
 
     def _act_vals_clima(símismo, f_0, f_1, lugar):
         """
@@ -1012,27 +911,6 @@ class Modelo(object):
 
             # Aplicar el cambio
             símismo.cambiar_vals(valores={var: datos[var_clima] * conv})
-
-    def estab_conv_unid_tiempo(símismo, unid_ref, unid=None, factor=1):
-        """
-        Establece, manualmente, el factor de conversión para convertir la unidad de tiempo del modelo a unidades
-        reconocidas por Tinamït. Únicamente necesario si Tinamït no logra inferir este factor por sí mismo.
-
-        Parameters
-        ----------
-        unid_ref : str
-            La unidad de referencia.
-        unid : str
-            La unidad para convertir a la unidad de referencia. Dejar como ``None`` para utilizar la unidad de tiempo
-            del modelo.
-        factor : float | int
-            El factor de conversión entre la unidad del modelo y la de referencia.
-        """
-
-        if unid is None:
-            unid = símismo.unidad_tiempo()
-
-        símismo._conv_unid_tiempo[unid] = {'ref': unid_ref, 'factor': factor}
 
     def dibujar_mapa(símismo, var, geog, directorio, corrida=None, i_paso=None, colores=None, escala=None):
         """

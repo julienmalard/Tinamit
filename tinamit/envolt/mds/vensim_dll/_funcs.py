@@ -39,6 +39,56 @@ def cargar_mod_vensim(mod, archivo):
     return mod
 
 
+def inic_modelo(mod, paso, n_pasos, nombre_corrida):
+    # Establecer el nombre de la corrida.
+    cmd_vensim(func=mod.vensim_command,
+               args="SIMULATE>RUNNAME|%s" % nombre_corrida,
+               mensaje_error=_('Error iniciando la corrida Vensim.'))
+
+    # Establecer el tiempo final.
+    cmd_vensim(func=mod.vensim_command,
+               args='SIMULATE>SETVAL|%s = %i' % ('FINAL TIME', n_pasos + 1),
+               mensaje_error=_('Error estableciendo el tiempo final para Vensim.'))
+
+    # Iniciar la simulación en modo juego ("Game"). Esto permitirá la actualización de los valores de los variables
+    # a través de la simulación.
+    cmd_vensim(func=mod.vensim_command,
+               args="MENU>GAME",
+               mensaje_error=_('Error inicializando el juego Vensim.'))
+
+    # Es ABSOLUTAMENTE necesario establecer el intervalo del juego aquí. Sino, no reinicializa el paso
+    # correctamente entre varias corridas (aún modelos) distintas.
+    cmd_vensim(func=mod.vensim_command,
+               args="GAME>GAMEINTERVAL|%i" % paso,
+               mensaje_error=_('Error estableciendo el paso de Vensim.'))
+
+
+def avanzar_modelo(mod):
+    # Avanzar el modelo.
+    cmd_vensim(func=mod.vensim_command,
+               args="GAME>GAMEON", mensaje_error=_('Error en incrementar Vensim.'))
+
+
+def estab_paso(mod, paso):
+    cmd_vensim(func=mod.vensim_command,
+               args="GAME>GAMEINTERVAL|%i" % paso,
+               mensaje_error=_('Error estableciendo el paso de Vensim.'))
+
+
+def obt_paso_inicial(mod):
+    # para hacer: verificar
+    try:
+        return obt_val_var(mod, 'Game Interval')
+    except ValueError:
+        return obt_val_var(mod, 'TIME STEP')
+
+
+def cambiar_val(mod, var, val):
+    cmd_vensim(func=mod.vensim_command,
+               args='SIMULATE>SETVAL|%s = %f' % (var, val),
+               mensaje_error=_('Error cambiando el variable %s.') % var)
+
+
 def verificar_vensim(símismo):
     """
     Esta función regresa el estatus de Vensim. Es particularmente útil para desboguear (no tiene uso en las
@@ -157,7 +207,8 @@ def vdf_a_csv(mod, archivo_vdf=None, archivo_csv=None):
     archivo_csv = archivo_csv or '!'
 
     # Vensim hace la conversión para nosotr@s
-    mod.vensim_command(
+    cmd_vensim(
+        mod.vensim_command,
         'MENU>VDF2CSV|{archVDF}|{archCSV}'.format(
             archVDF=archivo_vdf + '.vdf', archCSV=archivo_csv + '.csv'
         ).encode()
@@ -167,27 +218,21 @@ def vdf_a_csv(mod, archivo_vdf=None, archivo_csv=None):
     if archivo_csv == '!':
         archivo_csv = corrida_activa
 
-    # Leer el csv
+    # Cortar el último paso de simulación. Tinamït siempre corre simulaciones de Vensim para 1 paso adicional
+    # para permitir que valores de variables conectados se puedan actualizar.
+    # Para que quede claro: esto es por culpa de un error en Vensim, no es culpa nuestra.
     with open(archivo_csv + '.csv', 'r', encoding='UTF-8') as d:
-        lect = csv.reader(d)
-
-        # Cortar el último paso de simulación. Tinamït siempre corre simulaciones de Vensim para 1 paso adicional
-        # para permitir que valores de variables conectados se puedan actualizar.
-        # Para que quede claro: esto es por culpa de un error en Vensim, no es culpa nuestra.
-        filas = [f[:-1] if len(f) > 2 else f for f in lect]
+        filas = [f[:-1] if len(f) > 2 else f for f in csv.reader(d)]
 
     # Hay que abrir el archivo de nuevo para re-escribir sobre el contenido existente-
     with open(archivo_csv + '.csv', 'w', encoding='UTF-8', newline='') as d:
-        escr = csv.writer(d)
-        escr.writerows(filas)
+        csv.writer(d).writerows(filas)
 
 
-def cerrar_vensim(mod, paso):
+def cerrar_vensim(mod):
     # Necesario para guardar los últimos valores de los variables conectados. (Muy incómodo, yo sé.)
-    if paso != 1:
-        cmd_vensim(func=mod.vensim_command,
-                   args="GAME>GAMEINTERVAL|%i" % 1,
-                   mensaje_error=_('Error estableciendo el paso de Vensim.'))
+    estab_paso(mod, 1)  # justo acaso
+
     cmd_vensim(func=mod.vensim_command,
                args="GAME>GAMEON",
                mensaje_error=_('Error terminando la simulación Vensim.'))
@@ -291,7 +336,7 @@ def cmd_vensim(func, args, mensaje_error=None, val_error=None):  # pragma: sin c
 
         mensaje_error += _(' Código de error {}.').format(resultado)
 
-        raise OSError(mensaje_error)
+        raise ValueError(mensaje_error)
 
     # Devolver el valor devuelto por la función Vensim
     return resultado

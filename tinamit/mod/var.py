@@ -42,7 +42,7 @@ class Variable(object):
         símismo.líms = líms
         símismo.info = info
 
-        símismo.val = np.zeros(dims)
+        símismo._val = np.zeros(dims)
 
         símismo._val_inic = np.zeros(dims)
 
@@ -53,4 +53,12 @@ class Variable(object):
         símismo.val[:] = símismo._val_inic
 
     def poner_val(símismo, val):
-        símismo.val[:] = val
+
+        if isinstance(val, np.ndarray):
+            existen = np.invert(np.isnan(val))  # No cambiamos nuevos valores que faltan
+            símismo._val[existen] = val[existen]
+        elif not np.isnan(val):
+            símismo._val[:] = val
+
+    def obt_val(símismo):
+        return símismo._val  # para disuadir modificaciones directas a `símismo.val`

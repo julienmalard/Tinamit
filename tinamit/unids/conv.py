@@ -1,8 +1,8 @@
 import pint
 import regex as re
 
-from tinamit.Unidades import regu, C_, trad_unid
-from tinamit.Unidades.trads import buscar_singular
+from tinamit.unids import regu, C_, trad_unid
+from tinamit.unids.trads import buscar_singular
 from tinamit.config import _
 
 

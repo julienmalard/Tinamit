@@ -9,8 +9,8 @@ from tinamit.config import _
 from tinamit.cositas import guardar_json, cargar_json
 from . import regu
 
-_archivo_trads = pkg_resources.resource_filename('tinamit.Unidades', 'trads_unids.json')
-_archivo_pluriales = pkg_resources.resource_filename('tinamit.Unidades', 'pluriales.json')
+_archivo_trads = pkg_resources.resource_filename('tinamit.unids', 'trads_unids.json')
+_archivo_pluriales = pkg_resources.resource_filename('tinamit.unids', 'pluriales.json')
 
 l_dic_trads = None
 
@@ -51,7 +51,7 @@ def act_arch_trads(l_d_t):
     # Todas las unidades ya en nuestro diccionario que podrían estar en Pint también.
     unids_doc = {d['en']['pr'].lower() for d in l_d_t if 'en' in d}
 
-    # Unidades en Pint pero no en nuestro diccionario
+    # unids en Pint pero no en nuestro diccionario
     unids_faltan = c_unids.difference(unids_doc)
 
     # Lenguas ya incluidas en nuestro diccionario

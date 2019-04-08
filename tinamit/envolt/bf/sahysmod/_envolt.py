@@ -155,6 +155,9 @@ class ModeloSAHYSMOD(ModeloBloques):
     def instalado(cls):
         return cls.obt_conf('exe') is not None
 
+    def paralelizable(símismo):
+        return True
+
     def unidad_tiempo(símismo):
         return 'mes'
 

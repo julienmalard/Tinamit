@@ -7,8 +7,8 @@ from tinamit.cositas import guardar_json, cargar_json
 
 class Diccionario(object):
     def __init__(símismo):
-        símismo.direc = pkg_resources.resource_filename('tinamit.Interfaz', 'Trads.json')
-        símismo.arch_config = pkg_resources.resource_filename('tinamit.Interfaz', 'Config.json')
+        símismo.direc = pkg_resources.resource_filename('tinamit.interfaz', 'Trads.json')
+        símismo.arch_config = pkg_resources.resource_filename('tinamit.interfaz', 'Config.json')
 
         símismo.estándar = 'Español'
         símismo.config = None

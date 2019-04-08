@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from tinamit.Interfaz import Formatos as Fms
+from tinamit.interfaz import Formatos as Fms
 
 
 class ConecciónVar(object):
