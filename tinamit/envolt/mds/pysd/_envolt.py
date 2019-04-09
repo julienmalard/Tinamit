@@ -33,6 +33,8 @@ class EnvolturaPySD(EnvolturaMDS):
         for var in símismo.variables:
             var.poner_val(getattr(símismo.mod.components, var.nombre_py)())
 
+        super().iniciar_modelo(corrida)
+
     def incrementar(símismo, corrida):
         n_pasos = corrida.eje_tiempo.pasos_avanzados(símismo.unidad_tiempo())
 

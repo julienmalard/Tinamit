@@ -15,6 +15,10 @@ class VariablesMod(object):
     def egresos(símismo):
         return [v for v in símismo.variables if v.egr]
 
+    def cambiar_vals(símismo, valores):
+        for vr, vl in valores.items():
+            símismo[vr].poner_val(vl)
+
     def __getitem__(símismo, itema):
         if itema in símismo:
             return símismo.variables[str(itema)]
@@ -50,7 +54,7 @@ class Variable(object):
         símismo._val_inic = val
 
     def reinic(símismo):
-        símismo.val[:] = símismo._val_inic
+        símismo._val[:] = símismo._val_inic
 
     def poner_val(símismo, val):
 
@@ -61,4 +65,4 @@ class Variable(object):
             símismo._val[:] = val
 
     def obt_val(símismo):
-        return símismo._val  # para disuadir modificaciones directas a `símismo.val`
+        return símismo._val  # para disuadir modificaciones directas a `símismo._val`

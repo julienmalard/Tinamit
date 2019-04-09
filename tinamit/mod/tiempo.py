@@ -37,6 +37,8 @@ class EjeTiempo(object):
         return False
 
     def _obt_fact_conv(símismo, unid):
+
+        # Evitar buscar la misma unidad 2 veces porque la búsqueda puede ser lenta.
         try:
             return símismo._convs[unid]
         except KeyError:

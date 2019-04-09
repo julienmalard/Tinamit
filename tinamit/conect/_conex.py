@@ -1,7 +1,7 @@
 from warnings import warn as avisar
 
 from tinamit.unids.conv import convertir
-
+from tinamit.config import _
 
 class ConexionesVars(object):
     def __init__(símismo):
@@ -31,6 +31,9 @@ class ConexionesVars(object):
 
 class Conex(object):
     def __init__(símismo, var_fuente, modelo_fuente, var_recip, modelo_recip, conv):
+
+        if modelo_recip is modelo_recip:
+            raise ValueError(_('Los modelos de variables conectados deben ser distintos'))
 
         símismo.var_fuente = var_fuente
         símismo.modelo_fuente = modelo_fuente

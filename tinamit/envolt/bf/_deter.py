@@ -1,36 +1,42 @@
-from ._impac import ModeloImpaciente
 import math as mat
+
+from ._impac import ModeloImpaciente
+
 
 class ModeloDeterminado(ModeloImpaciente):
 
     def incrementar(símismo, corrida):
         # Para simplificar el código un poco.
-        i = símismo.paso_en_ciclo
+        p = símismo.paso_en_ciclo
+        n_pasos = corrida.eje_tiempo.pasos_avanzados(símismo.unidad_tiempo())
+        í = corrida.eje_tiempo.í
 
         # Aplicar el incremento de paso
-        avanzar = i == símismo.ciclo == -1  # para hacer
-        i += corrida
-        avanzar = avanzar or (i // símismo.tmñ_ciclo > 0)
-        i %= símismo.tmñ_ciclo
+        p_después = (p + n_pasos) % símismo.tmñ_ciclo
 
         # Guardar el pasito actual para la próxima vez.
-        símismo.paso_en_ciclo = i
+        símismo.paso_en_ciclo = p_después
+
+        # Actualizar el paso en los variables
+        símismo.variables.act_paso(símismo.paso_en_ciclo)
 
         # Si hay que avanzar el modelo externo, lanzar una su simulación aquí.
-        if avanzar:
+        if p == 0 or (p_después < p and (p_después >= 1)):
             # El número de ciclos para simular
-            c = mat.ceil(corrida / símismo.tmñ_ciclo)  # type: int
+            c = mat.ceil(n_pasos / símismo.tmñ_ciclo)  # type: int
             símismo.ciclo += c
-
-            # Escribir los archivos de ingreso
-            símismo.escribir_ingr(n_ciclos=c)
 
             # Avanzar la simulación
             símismo.avanzar_modelo(n_ciclos=c)
 
-            # Leer los egresos del modelo
-            símismo.procesar_egr_modelo(n_ciclos=c)
+    def avanzar_modelo(símismo, n_ciclos):
+        raise NotImplementedError
 
-        # Apuntar el diccionario interno de los valores al valor de este paso del ciclo
-        símismo._act_vals_dic_var({var: matr[i] for var, matr in símismo.matrs_egr.items()})
+    def unidad_tiempo(símismo):
+        raise NotImplementedError
 
+    def cerrar(símismo):
+        raise NotImplementedError
+
+    def _gen_vars(símismo):
+        raise NotImplementedError

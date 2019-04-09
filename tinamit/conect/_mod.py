@@ -18,7 +18,31 @@ class SuperConectado(Modelo):
     instancias de sí misma, así permitiendo la conexión de números arbitrarios de modelos anidados.
     """
 
+    def __init__(símismo, modelos, nombre='superconectado'):
+        símismo.modelos = ModelosConectados(modelos)
+        símismo.conexiones = ConexionesVars()
+        super().__init__(nombre=nombre)
+
+    def conectar_vars(símismo, var_fuente, var_recip, modelo_fuente=None, modelo_recip=None, conv=None):
+        modelo_fuente = modelo_fuente or símismo._mod_de_var(var_fuente)
+        modelo_recip = modelo_recip or símismo._mod_de_var(var_recip)
+
+        símismo.conexiones.agregar(
+            Conex(var_fuente, modelo_fuente, var_recip, modelo_recip, conv=conv)
+        )
+
+    def desconectar_vars(símismo, var_fuente, modelo_fuente, modelo_recip=None, var_recip=None):
+        símismo.conexiones.quitar(var_fuente, modelo_fuente, modelo_recip, var_recip)
+
+    def cerrar(símismo):
+        for m in símismo.modelos:
+            m.cerrar()
+
+    def paralelizable(símismo):
+        return all(m.paralelizable() for m in símismo.modelos)
+
     def unidad_tiempo(símismo):
+
         unids = list({m.unidad_tiempo() for m in símismo.modelos})
         factores_conv = [1]
         factores_conv[0] = 1
@@ -43,6 +67,8 @@ class SuperConectado(Modelo):
             m.iniciar_modelo(corrida)
 
         símismo._intercambiar_vars()
+
+        super().iniciar_modelo(corrida)
 
     def incrementar(símismo, corrida):
         def incr_mod(mod, d, corr):
@@ -82,33 +108,16 @@ class SuperConectado(Modelo):
         for mod in símismo.modelos:
             mod.cambiar_vals({vr: vl for vr, vl in valores if vr in mod})
 
+    def _mod_de_var(símismo, var):
+        return next(m for m in símismo.modelos if var in m)
+
     def _intercambiar_vars(símismo):
-        for c in símismo.conexiones:
+        for c in símismo.conexiones:  # para hacer: por modelo para conexión más rápida
             val_fuente = c.var_fuente.obt_val()
             conv = c.conv
 
             var_recip = c.mod_recip.variables[c.var_recip]
             c.mod_recip.cambiar_vals({var_recip: val_fuente * conv})
-
-    def __init__(símismo, modelos, nombre='superconectado'):
-        símismo.modelos = ModelosConectados(modelos)
-        símismo.conexiones = ConexionesVars()
-        super().__init__(nombre=nombre)
-
-    def conectar_vars(símismo, var_fuente, modelo_fuente, var_recip, modelo_recip, conv=None):
-        símismo.conexiones.agregar(
-            Conex(var_fuente, modelo_fuente, var_recip, modelo_recip, conv=conv)
-        )
-
-    def desconectar_vars(símismo, var_fuente, modelo_fuente, modelo_recip=None, var_recip=None):
-        símismo.conexiones.quitar(var_fuente, modelo_fuente, modelo_recip, var_recip)
-
-    def cerrar(símismo):
-        for m in símismo.modelos:
-            m.cerrar()
-
-    def paralelizable(símismo):
-        return all(m.paralelizable() for m in símismo.modelos)
 
     def _gen_vars(símismo):
         return VariablesConectado(símismo.modelos)

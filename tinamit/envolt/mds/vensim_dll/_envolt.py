@@ -44,6 +44,8 @@ class EnvolturaVensimDLL(EnvolturaMDS):
         # Debe venir después de `f.inic_modelo()` sino no obtenemos datos para los variables
         símismo._leer_vals_de_vensim()
 
+        super().iniciar_modelo(corrida)
+
     def incrementar(símismo, corrida):
 
         # Establecer el paso.
@@ -172,7 +174,7 @@ class EnvolturaVensimDLL(EnvolturaMDS):
                 val = f.obt_val_var(símismo.mod, v)
 
                 # Guardar en el diccionario interno.
-                símismo._act_vals_dic_var({v: val})
+                símismo.variables.cambiar_vals({v: val})
 
             else:
                 matr_val = v.val

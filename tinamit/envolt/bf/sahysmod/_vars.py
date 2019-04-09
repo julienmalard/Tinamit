@@ -1,4 +1,4 @@
-from tinamit.envolt.bf import VariablesModBloques, VarBloqueIngr, VarBloqueEgr, VarBloque
+from tinamit.envolt.bf import VariablesModBloques, VarBloque
 from tinamit.mod.var import Variable
 
 
@@ -6,14 +6,7 @@ class VarSAHYSMOD(Variable):
     def __init__(símismo, nombre, cód, unid, ingr, egr, dims, líms=None, info=''):
         símismo.cód = cód
         super().__init__(nombre, unid=unid, ingr=ingr, egr=egr, dims=dims, líms=líms, info=info)
-
-
-class VarIngrBloqSAHYSMOD(VarSAHYSMOD, VarBloqueIngr):
-    pass
-
-
-class VarEgrBloqSAHYSMOD(VarSAHYSMOD, VarBloqueEgr):
-    pass
+        x
 
 
 class VarBloqSAHYSMOD(VarSAHYSMOD, VarBloque):
