@@ -19,6 +19,10 @@ class VariablesMod(object):
         for vr, vl in valores.items():
             símismo[vr].poner_val(vl)
 
+    def reinic(símismo):
+        for v in símismo:
+            v.reinic()
+
     def __getitem__(símismo, itema):
         if itema in símismo:
             return símismo.variables[str(itema)]

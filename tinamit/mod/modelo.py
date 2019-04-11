@@ -85,6 +85,7 @@ class Modelo(object):
         pass
 
     def iniciar_modelo(símismo, corrida):
+        símismo.variables.reinic()
         símismo.variables.resultados.actualizar()
 
     def correr(símismo, corrida):

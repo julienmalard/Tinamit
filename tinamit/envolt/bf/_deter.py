@@ -9,7 +9,6 @@ class ModeloDeterminado(ModeloImpaciente):
         # Para simplificar el código un poco.
         p = símismo.paso_en_ciclo
         n_pasos = corrida.eje_tiempo.pasos_avanzados(símismo.unidad_tiempo())
-        í = corrida.eje_tiempo.í
 
         # Aplicar el incremento de paso
         p_después = (p + n_pasos) % símismo.tmñ_ciclo
@@ -24,7 +23,6 @@ class ModeloDeterminado(ModeloImpaciente):
         if p == 0 or (p_después < p and (p_después >= 1)):
             # El número de ciclos para simular
             c = mat.ceil(n_pasos / símismo.tmñ_ciclo)  # type: int
-            símismo.ciclo += c
 
             # Avanzar la simulación
             símismo.avanzar_modelo(n_ciclos=c)

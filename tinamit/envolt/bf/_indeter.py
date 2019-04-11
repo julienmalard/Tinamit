@@ -4,29 +4,35 @@ from ._impac import ModeloImpaciente
 class ModeloIndeterminado(ModeloImpaciente):
     def incrementar(símismo, corrida):
         # Para simplificar el código un poco.
-        i = símismo.paso_en_ciclo
+        p = símismo.paso_en_ciclo
+        n_pasos = corrida.eje_tiempo.pasos_avanzados(símismo.unidad_tiempo())
 
         # Aplicar el incremento de paso
-        i += int(paso)
-        while i >= símismo.tmñ_ciclo:
+        p += n_pasos
 
-            # Escribir el archivo de ingresos
-            símismo.escribir_ingr(n_ciclos=1)
+        # Guardar el pasito actual para la próxima vez.
+        símismo.paso_en_ciclo = p
 
-            símismo.ciclo += 1
-            i -= símismo.tmñ_ciclo
+        # Actualizar el paso en los variables
+        símismo.variables.act_paso(símismo.paso_en_ciclo)
 
+        # Si hay que avanzar el modelo externo, lanzar una su simulación aquí.
+        while p >= símismo.tmñ_ciclo:
+
+            p -= símismo.tmñ_ciclo
+
+            # Avanzar la simulación
             símismo.tmñ_ciclo = símismo.mandar_modelo()
 
-            if i <= símismo.tmñ_ciclo:
-                # Leer los egresos del modelo
-                símismo.procesar_egr_modelo(n_ciclos=1)
-                for ll in símismo.dic_ingr:
-                    símismo.dic_ingr[ll] = None
+    def unidad_tiempo(símismo):
+        raise NotImplementedError
 
-                    # Guardar el pasito actual para la próxima vez.
-        símismo.paso_en_ciclo = i
+    def cerrar(símismo):
+        raise NotImplementedError
 
-        # Apuntar el diccionario interno de los valores al valor de este paso del ciclo
-        símismo._act_vals_dic_var({var: matr[i] for var, matr in símismo.matrs_egr.items()})
+    def _gen_vars(símismo):
+        raise NotImplementedError
+
+    def mandar_modelo(símismo):
+        raise NotImplementedError
 

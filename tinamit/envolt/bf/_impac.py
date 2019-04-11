@@ -6,7 +6,6 @@ class ModeloImpaciente(EnvolturaBF):
 
     def __init__(símismo, nombre='bf'):
         símismo.paso_en_ciclo = 0
-        símismo.ciclo = 0
         símismo.tmñ_ciclo = 1
 
         super().__init__(nombre)
@@ -21,63 +20,46 @@ class ModeloImpaciente(EnvolturaBF):
         raise NotImplementedError
 
     def iniciar_modelo(símismo, corrida):
-        símismo.paso_en_ciclo = símismo.ciclo = 0
+        símismo.paso_en_ciclo = 0
         super().iniciar_modelo(corrida)
 
     def incrementar(símismo, corrida):
-        pass
+        raise NotImplementedError
 
 
 class VariablesModImpaciente(VariablesMod):
     def vars_ciclo(símismo):
         return [v for v in símismo if isinstance(v, VarCiclo)]
 
-    def vars_ciclo_ingr(símismo):
-        return [v for v in símismo if isinstance(v, VarCicloIngr)]
-
-    def vars_ciclo_egr(símismo):
-        return [v for v in símismo if isinstance(v, VarCicloEgr)]
-
     def act_paso(símismo, paso):
-        for v in símismo:
-            if isinstance(v, PlantillaVarCiclo)):
-                v.act_paso(paso=paso)
-
-
-class PlantillaVarCiclo(Variable):
-
-    def __init__(símismo, nombre, unid, ingr, egr, dims=(1,), líms=None, info=''):
-        super().__init__(nombre, unid, ingr, egr, dims, líms, info)
-        símismo.paso = 0
-
-    def act_paso(símismo, paso):
-        raise NotImplementedError
-
-
-class VarCicloIngr(PlantillaVarCiclo):
-
-    def __init__(símismo, nombre, unid, ingr, egr, dims=(1,), líms=None, info=''):
-        símismo._matr_ingr_paso =
-        super().__init__(nombre, unid, ingr, egr, dims, líms, info)
-
-    def poner_val(símismo, val):
-        símismo._matr_ingr_paso[símismo.paso] = val
-        super().poner_val(val)
-
-    def act_paso(símismo, paso):
-        símismo.paso = paso
-        super().poner_val(símismo._matr_ingr_paso[paso])
-
-
-class VarCicloEgr(PlantillaVarCiclo):
-
-
-    def obt_val(símismo):
-        return símismo._matr_egr_paso[símismo.paso]
+        for v in símismo.vars_ciclo():
+            v.act_paso(paso=paso)
 
 
 class VarCiclo(Variable):
+
     def __init__(símismo, nombre, unid, ingr, egr, dims=(1,), líms=None, info=''):
-        símismo._matr_egr_paso =
         super().__init__(nombre, unid, ingr, egr, dims, líms, info)
+        símismo._matr_paso = None
+        símismo.paso = 0
+
+    def poner_val(símismo, val):
+        símismo._matr_paso[símismo.paso] = val
+        super().poner_val(val)
+
+    def poner_vals_ciclo(símismo, val):
+        símismo._matr_paso[:] = val
+
+    def obt_vals_ciclo(símismo):
+        return símismo._matr_paso[símismo.paso]
+
+    def act_paso(símismo, paso):
+        símismo.paso = paso
+        super().poner_val(símismo._matr_paso[paso])
+
+    def reinic(símismo):
+        símismo.paso = 0
+        super().reinic()
+
+
 

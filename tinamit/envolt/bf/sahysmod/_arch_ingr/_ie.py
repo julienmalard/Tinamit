@@ -27,7 +27,7 @@ SOFTWARE.
 
 # !/bin/python
 
-# _ingr_egr.py
+# _ie.py
 
 import os
 import sys
@@ -35,7 +35,7 @@ import sys
 import numpy as np
 from pkg_resources import resource_filename
 
-from tinamit.envolt.bf.sahysmod import _anlzd_sntct
+from tinamit.envolt.bf.sahysmod._arch_ingr import _anlzd_sntct
 
 PLANTILLACSV = resource_filename(__name__, 'recursos/sahysmod.csv.tmpl')
 PLANTILLAINP = resource_filename(__name__, 'recursos/sahysmod.inp.tmpl')

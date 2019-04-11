@@ -33,20 +33,25 @@ class VariablesModBloques(VariablesModImpaciente):
 
     def act_paso(símismo, paso):
         b = next(i for i, s in enumerate(símismo.tmñ_bloques_cum) if paso < s)
-        for v in símismo:
-            if isinstance(v, VarBloque):
+        for v in símismo.vars_bloque():
                 v.act_paso(bloque=b)
-        super().act_paso()
+        super().act_paso(paso)
 
     def vars_bloque(símismo):
         return [v for v in símismo if isinstance(v, VarBloque)]
 
 class VarBloque(Variable):
+
+    def __init__(símismo, nombre, unid, ingr, egr, dims=(1,), líms=None, info=''):
+        super().__init__(nombre, unid, ingr, egr, dims, líms, info)
+
     def poner_val(símismo, val):
 
 
     def obt_val(símismo):
 
+
     def act_paso(símismo, bloque):
 
+    def reinic(símismo):
 

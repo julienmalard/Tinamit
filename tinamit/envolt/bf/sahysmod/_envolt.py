@@ -1,13 +1,15 @@
 import os
 import re
 import shutil
+import tempfile
 from subprocess import run
 
 import numpy as np
 
-from tinamit.BF import ModeloBloques
 from tinamit.config import _
-from ._ingr_egr import leer_info_dic_paráms, escribir_desde_dic_paráms
+from tinamit.envolt.bf import ModeloBloques
+from ._arch_egr import leer_arch_egr
+from ._arch_ingr import leer_info_dic_paráms, escribir_desde_dic_paráms
 from ._vars import VariablesSAHYSMOD
 
 
@@ -23,8 +25,7 @@ class ModeloSAHYSMOD(ModeloBloques):
         # Inicializar la clase pariente.
         super().__init__(nombre=nombre)
 
-        # Necesario para paralelismo
-        símismo.argsinic = (archivo, nombre)
+        símismo.direc_trabajo = ''
 
         # Directorio vacío para guardar datos de ingresos después
         símismo.dic_ingr = {}
@@ -58,40 +59,42 @@ class ModeloSAHYSMOD(ModeloBloques):
         if símismo.n_estaciones != len(símismo.dur_estaciones):
             raise ValueError(
                 _('Error en el fuente de datos iniciales SAHYSMOD: el número de duraciones de estaciones'
-                               'especificadas no corresponde al número de estaciones especificadas (líneas 3 y 4).')
+                  'especificadas no corresponde al número de estaciones especificadas (líneas 3 y 4).')
             )
 
         return VariablesSAHYSMOD(dims=(n_polí,), símismo.n_estaciones)
 
-    def iniciar_modelo(símismo, n_pasos, t_final, nombre_corrida, vals_inic):
+    def iniciar_modelo(símismo, corrida):
 
         # Crear un diccionario de trabajo específico a esta corrida.
-        símismo.direc_trabajo = os.path.join(símismo.direc_base, '_temp', nombre_corrida)
-        if os.path.isdir(símismo.direc_trabajo):
-            shutil.rmtree(símismo.direc_trabajo)
-        os.makedirs(símismo.direc_trabajo)
-        símismo.arch_egreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.out')
-        símismo.arch_ingreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.inp')
+        símismo.direc_trabajo = tempfile.mkdtemp(str(corrida))
 
-        super().iniciar_modelo(n_pasos, t_final, nombre_corrida, vals_inic)
+        super().iniciar_modelo(corrida)
 
     def avanzar_modelo(símismo, n_ciclos):
+        arch_egreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.out')
+        arch_ingreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.inp')
 
-        símismo._escribir_archivo_ingr(n_ciclos=n_ciclos, dic_ingr=símismo.dic_ingr, archivo=símismo.arch_ingreso)
+        símismo._escribir_archivo_ingr(n_ciclos=n_ciclos, dic_ingr=símismo.dic_ingr, archivo=arch_ingreso)
 
         # Limpiar archivos de egresos que podrían estar allí
-        if os.path.isfile(símismo.arch_egreso):
-            os.remove(símismo.arch_egreso)
+        if os.path.isfile(arch_egreso):
+            os.remove(arch_egreso)
 
         # Correr la comanda desde la línea de comanda
-        args = dict(SAHYSMOD=símismo.exe_SAHYSMOD, ingreso=símismo.arch_ingreso, egreso=símismo.arch_egreso)
-        comanda = '"{SAHYSMOD}" "{ingreso}" "{egreso}"'.format(**args)
+        comanda = '"{SAHYSMOD}" "{ingreso}" "{egreso}"'.format(
+            SAHYSMOD=símismo.exe_SAHYSMOD, ingreso=arch_ingreso, egreso=arch_egreso
+        )
         run(comanda, cwd=símismo.direc_trabajo)
 
         # Verificar que SAHYSMOD generó egresos.
-        if not os.path.isfile(símismo.arch_egreso):
-            raise FileNotFoundError(_('El modelo SAHYSMOD no genero egreso. Esto probablemente quiere decir que '
-                                      'tuvo problema. ¡Diviértete! :)'))
+        if not os.path.isfile(arch_egreso):
+            raise FileNotFoundError(
+                _('El modelo SAHYSMOD no genero egreso. Esto probablemente quiere decir que tuvo problema. '
+                  '¡Diviértete! :)')
+            )
+
+        símismo.leer_egr_modelo(n_ciclos=n_ciclos)
 
     def cerrar(símismo):
 
@@ -99,11 +102,14 @@ class ModeloSAHYSMOD(ModeloBloques):
             if re.match('Name(0|[0-9]{2})$', f):
                 os.remove(f)
 
-    def leer_egr_modelo(símismo, n_ciclos, archivo=None):
-        archivo = archivo or símismo.arch_egreso
+        shutil.rmtree(símismo.direc_trabajo)
 
-        dic_egr = leer_arch_egr(archivo=archivo, n_est=símismo.n_estaciones, n_p=símismo.n_polí,
-                                n_años=n_ciclos)
+    def leer_egr_modelo(símismo, n_ciclos):
+        archivo = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.out')
+
+        dic_egr = leer_arch_egr(
+            archivo=archivo, n_est=símismo.n_estaciones, n_p=símismo.n_polí, n_años=n_ciclos
+        )
 
         for cr in ['CrA#', 'CrB#', 'CrU#', 'Cr4#', 'A#', 'B#', 'U#']:
             dic_egr[cr][dic_egr[cr] == -1] = 0
@@ -146,10 +152,9 @@ class ModeloSAHYSMOD(ModeloBloques):
                 dic_egr[cr][mask] = salin_suelo[mask]
 
         # Convertir códigos de variables a nombres de variables
-        dic_final = {códs_a_vars[c]: v for c, v in dic_egr.items()}
+        for c, v in dic_egr.items():
+            símismo.variables.cód_a_var[c].poner_val(v)
 
-        # Devolver el diccionario final
-        return dic_final
 
     @classmethod
     def instalado(cls):
@@ -183,54 +188,3 @@ class ModeloSAHYSMOD(ModeloBloques):
 
         # Y finalmente, escribir el fuente de valores de ingreso
         escribir_desde_dic_paráms(dic_paráms=símismo.dic_ingr, archivo_obj=archivo)
-
-    def __getinitargs__(símismo):
-        return símismo.argsinic
-
-
-def leer_arch_egr(archivo, n_est, n_p, n_años):
-    """
-    :return: eje 0 = estación, eje 1 = polígono. -1 = valor que falta
-    :rtype: dict[str, np.ndarray]
-    """
-
-    dic_datos = dict([(k, np.empty((n_est, n_p))) for k in vars_egreso_SAHYSMOD])
-    for k, v in dic_datos.items():
-        v[:] = -1
-
-    with open(archivo, 'r') as d:
-        l = ''
-        while 'YEAR:      %i' % n_años not in l:
-            l = d.readline()
-        for est in range(n_est):
-            for estación_polí in range(n_p):  # Leer el egreso de las estaciones del último año
-
-                polí = []
-                while re.match(' #', l) is None:
-                    polí.append(l)
-                    l = d.readline()
-
-                l = d.readline()  # Avanzar una línea más para la próxima estación
-
-                for cód in vars_egreso_SAHYSMOD:
-                    var_egr = cód.replace('#', '').replace('*', '\*')
-
-                    for línea in polí:
-
-                        línea += ' '
-                        m = re.search(' %s += +([^ ]*)' % var_egr, línea)
-
-                        if m:
-                            val = m.groups()[0]
-                            if val == '-':
-                                val = -1
-                            else:
-                                try:
-                                    val = float(val)
-                                except ValueError:
-                                    raise ValueError(
-                                        _('El variable "{}" no se pudo leer del egreso SAHYSMOD').format(var_egr)
-                                    )
-                            dic_datos[cód][(est, estación_polí)] = val
-                            break
-    return dic_datos

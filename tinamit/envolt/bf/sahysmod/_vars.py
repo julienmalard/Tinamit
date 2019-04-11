@@ -6,7 +6,6 @@ class VarSAHYSMOD(Variable):
     def __init__(símismo, nombre, cód, unid, ingr, egr, dims, líms=None, info=''):
         símismo.cód = cód
         super().__init__(nombre, unid=unid, ingr=ingr, egr=egr, dims=dims, líms=líms, info=info)
-        x
 
 
 class VarBloqSAHYSMOD(VarSAHYSMOD, VarBloque):
@@ -14,14 +13,14 @@ class VarBloqSAHYSMOD(VarSAHYSMOD, VarBloque):
 
 
 class VariablesSAHYSMOD(VariablesModBloques):
-    def __init__(símismo, dims):
-        super().__init__(_vars_sahysmod(dims))
+    def __init__(símismo, dims, tmñ_bloques):
+        super().__init__(_vars_sahysmod(dims), tmñ_bloques=tmñ_bloques)
 
     def var_a_cód(símismo, var):
-        return símismo[str(var)].cód
+        return símismo[var].cód
 
     def cód_a_var(símismo, cód):
-        return next(v for v in símismo if v.cód == cód)
+        return next(v for v in símismo if v.cód.strip('#') == cód.strip('#'))
 
 
 # Un diccionario de variables SAHYSMOD. Ver la documentación SAHYSMOD para más detalles.
@@ -76,7 +75,7 @@ def _vars_sahysmod(dims):
         VarSAHYSMOD('Ksc2 - Semi-confined aquifer 2?', cód='Ksc2', unid='Dmnl', ingr=True, egr=False, dims=dims),
         VarSAHYSMOD('Ksc3 - Semi-confined aquifer 3?', cód='Ksc3', unid='Dmnl', ingr=True, egr=False, dims=dims),
         VarSAHYSMOD('Ksc4 - Semi-confined aquifer 4?', cód='Ksc4', unid='Dmnl', ingr=True, egr=False, dims=dims),
-        VarIngrBloqSAHYSMOD('Kr - Land use key', cód='Kr#', unid='Dmnl', ingr=True, egr=True, dims=dims),
+        VarBloqSAHYSMOD('Kr - Land use key', cód='Kr#', unid='Dmnl', ingr=True, egr=True, dims=dims),
         VarSAHYSMOD('Kvert - Vertical hydraulic conductivity semi-confined', cód='Kvert', unid='m/day', ingr=True,
                     egr=False, dims=dims),
         VarBloqSAHYSMOD('Lc - Canal percolation', cód='Lc#', unid='m3/season/m2', ingr=True, egr=False, dims=dims),
@@ -149,7 +148,7 @@ def _vars_sahysmod(dims):
         VarBloqSAHYSMOD('Gb - Subsurface drainage below drains', cód='Gb#', unid='m3/season/m2', ingr=False, egr=True,
                         dims=dims),
         VarBloqSAHYSMOD('Dw - Groundwater depth', cód='Dw#', unid='m', ingr=False, egr=True, dims=dims),
-        VarIngrBloqSAHYSMOD('Hw - Water table elevation', cód='Hw#', unid='m', ingr=True, egr=True, dims=dims),
+        VarBloqSAHYSMOD('Hw - Water table elevation', cód='Hw#', unid='m', ingr=True, egr=True, dims=dims),
         VarBloqSAHYSMOD('Hq - Subsoil hydraulic head', cód='Hq#', unid='m', ingr=False, egr=True, dims=dims),
         VarBloqSAHYSMOD('Sto - Water table storage', cód='Sto#', unid='m', ingr=False, egr=True, dims=dims),
         VarBloqSAHYSMOD('Zs - Surface water salt', cód='Zs#', unid='m*dS/m', ingr=False, egr=True, dims=dims),
@@ -161,30 +160,30 @@ def _vars_sahysmod(dims):
                         dims=dims),
         VarBloqSAHYSMOD('Uc - Fraction permanently non-irrigated', cód='Uc#', unid='Dmnl', ingr=False, egr=True,
                         dims=dims),
-        VarIngrBloqSAHYSMOD('CrA - Root zone salinity crop A', cód='CrA#', unid='dS / m', ingr=True, egr=True,
+        VarBloqSAHYSMOD('CrA - Root zone salinity crop A', cód='CrA#', unid='dS / m', ingr=True, egr=True,
                             dims=dims),
-        VarIngrBloqSAHYSMOD('CrB - Root zone salinity crop B', cód='CrB#', unid='dS / m', ingr=True, egr=True,
+        VarBloqSAHYSMOD('CrB - Root zone salinity crop B', cód='CrB#', unid='dS / m', ingr=True, egr=True,
                             dims=dims),
-        VarIngrBloqSAHYSMOD('CrU - Root zone salinity non-irrigated', cód='CrU#', unid='dS / m', ingr=True, egr=True,
+        VarBloqSAHYSMOD('CrU - Root zone salinity non-irrigated', cód='CrU#', unid='dS / m', ingr=True, egr=True,
                             dims=dims),
-        VarIngrBloqSAHYSMOD('Cr4 - Fully rotated land irrigated root zone salinity', cód='Cr4#', unid='dS / m',
+        VarBloqSAHYSMOD('Cr4 - Fully rotated land irrigated root zone salinity', cód='Cr4#', unid='dS / m',
                             ingr=False, egr=True, dims=dims),
-        VarIngrBloqSAHYSMOD('C1 - Key 1 non-permanently irrigated root zone salinity', cód='C1*#', unid='dS / m',
+        VarBloqSAHYSMOD('C1 - Key 1 non-permanently irrigated root zone salinity', cód='C1*#', unid='dS / m',
                             ingr=False, egr=True, dims=dims),
-        VarIngrBloqSAHYSMOD('C2 - Key 2 non-permanently irrigated root zone salinity', cód='C2*#', unid='dS / m',
+        VarBloqSAHYSMOD('C2 - Key 2 non-permanently irrigated root zone salinity', cód='C2*#', unid='dS / m',
                             ingr=False, egr=True, dims=dims),
-        VarIngrBloqSAHYSMOD('C3 - Key 3 non-permanently irrigated root zone salinity', cód='C3*#', unid='dS / m',
+        VarBloqSAHYSMOD('C3 - Key 3 non-permanently irrigated root zone salinity', cód='C3*#', unid='dS / m',
                             ingr=False,
                             egr=True, dims=dims),
-        VarIngrBloqSAHYSMOD('Cxf - Transition zone salinity', cód='Cxf#', unid='dS / m', ingr=True, egr=True,
+        VarBloqSAHYSMOD('Cxf - Transition zone salinity', cód='Cxf#', unid='dS / m', ingr=True, egr=True,
                             dims=dims),
-        VarIngrBloqSAHYSMOD('Cxa - Transition zone above-drain salinity', cód='Cxa#', unid='dS / m', ingr=True,
+        VarBloqSAHYSMOD('Cxa - Transition zone above-drain salinity', cód='Cxa#', unid='dS / m', ingr=True,
                             egr=True, dims=dims),
-        VarIngrBloqSAHYSMOD('Cxb - Transition zone below-drain salinity', cód='Cxb#', unid='dS / m', ingr=True,
+        VarBloqSAHYSMOD('Cxb - Transition zone below-drain salinity', cód='Cxb#', unid='dS / m', ingr=True,
                             egr=True, dims=dims),
         VarBloqSAHYSMOD('Cti - Transition zone incoming salinity', cód='Cti#', unid='dS / m', ingr=False, egr=True,
                         dims=dims),
-        VarIngrBloqSAHYSMOD('Cqf - Aquifer salinity', cód='Cqf#', unid='dS / m', ingr=True, egr=True, dims=dims),
+        VarBloqSAHYSMOD('Cqf - Aquifer salinity', cód='Cqf#', unid='dS / m', ingr=True, egr=True, dims=dims),
         VarBloqSAHYSMOD('Cd - Drainage salinity', cód='Cd#', unid='ds / m', ingr=False, egr=True, dims=dims),
         VarBloqSAHYSMOD('Cw - Well water salinity', cód='Cw#', unid='ds / m', ingr=False, egr=True, dims=dims)
     ]
