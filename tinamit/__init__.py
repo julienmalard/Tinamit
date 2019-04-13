@@ -1,8 +1,7 @@
 from pkg_resources import resource_filename
 
-from tinamit.mod.modelo import Modelo
-from . import EnvolturasMDS
-from .Conectado import Conectado
+from .mod.modelo import Modelo
+from .envolt import bf, mds
 from .config import conf, conf_mods, trads
 
 # Cosas básicas
@@ -14,5 +13,3 @@ with open(resource_filename('tinamit', 'versión.txt')) as _archivo_versión:
     __versión__ = _archivo_versión.read().strip()
 
 __version__ = __versión__
-
-__all__ = ['config', 'Modelo', 'Conectado', 'EnvolturasMDS']

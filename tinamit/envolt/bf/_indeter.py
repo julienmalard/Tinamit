@@ -30,9 +30,6 @@ class ModeloIndeterminado(ModeloImpaciente):
     def cerrar(símismo):
         raise NotImplementedError
 
-    def _gen_vars(símismo):
-        raise NotImplementedError
-
     def mandar_modelo(símismo):
         raise NotImplementedError
 

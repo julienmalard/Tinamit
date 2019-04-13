@@ -5,6 +5,6 @@ class EnvolturaMDS(Modelo):
 
     ext = []
 
-    def __init__(símismo, nombre='mds'):
-        super().__init__(nombre)
+    def __init__(símismo, variables, nombre='mds'):
+        super().__init__(variables, nombre)
 

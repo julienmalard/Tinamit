@@ -3,9 +3,9 @@ import os
 import sys
 import traceback
 from importlib import import_module as importar_mod
-
-from tinamit.envolt.bf import EnvolturaBF
 from warnings import warn as avisar
+
+from ._envolt import EnvolturaBF
 
 
 def gen_bf(mod):
@@ -60,10 +60,11 @@ def _extraer_de_archivo(archivo):
         return potenciales['Envoltura']
     elif potenciales:
         elegida = list(potenciales.values())[0]
-        avisar(_('\nHabía más de una instancia de "ModeloBF" en el fuente \n\t{}'
-                 '\n...y ninguna se llamaba "Envoltura". Tomaremos "{}" como la envoltura '
-                 '\ny esperaremos que funcione. Si no te parece, asegúrate que la definición de clase u el'
-                 '\nobjeto correcto se llame "Envoltura".').format(modelo, elegido))
+        avisar(_('\nHabía más de una instancia de "EnvolturaBF" en el fuente'
+                 '\n\t{}'
+                 '\n...y ninguna se llamaba "Envoltura". Tomaremos "{}" como la envoltura'
+                 '\ny esperaremos que funcione. Si no te parece, asegúrate que la definición de clase o el'
+                 '\nobjeto correcto se llame "Envoltura".').format(archivo, elegida))
         return elegida
 
     raise AttributeError(_(

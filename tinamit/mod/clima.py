@@ -21,18 +21,16 @@ class Clima(object):
     def variables(símismo):
         return {v for v in símismo._lugar.متاغیرات()}
 
+
 class EnvoltClima(EnvolturaBF):
 
     def __init__(símismo, clima):
         símismo.clima = clima
         símismo.datos = None
-        super().__init__(nombre='clima')
-
-    def _gen_vars(símismo):
-
-        return VariablesMod(
+        variables = VariablesMod(
             [Variable(v, unid=, ingr=False, egr=True) for v in símismo.clima.variables()]
         )
+        super().__init__(variables=variables, nombre='clima')
 
     def iniciar_modelo(símismo, corrida):
         símismo.datos = símismo.clima.obt_datos()

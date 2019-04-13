@@ -11,7 +11,8 @@ from tinamit.cositas import cargar_json, guardar_json
 # Código para manejar configuraciones de Tinamït
 class OpsConfig(object):
     def __init__(símismo, valores=None):
-        símismo.valores = {ll: OpsConfig(v) if isinstance(v, dict) else v for ll, v in valores or {}}
+        valores = valores or {}
+        símismo.valores = {ll: OpsConfig(v) if isinstance(v, dict) else v for ll, v in valores.items()}
 
     def a_dic(símismo):
         return {ll: v.a_dic() if isinstance(v, OpsConfig) else v for ll, v in símismo.valores.items()}

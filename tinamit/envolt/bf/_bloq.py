@@ -7,8 +7,8 @@ from ._impac import VariablesModImpaciente
 
 class ModeloBloques(ModeloDeterminado):
 
-    def __init__(símismo, nombre='bf'):
-        super().__init__(nombre)
+    def __init__(símismo, variables, nombre='bf'):
+        super().__init__(variables=variables, nombre=nombre)
         símismo.tmñ_bloques = None
 
     def unidad_tiempo(símismo):
@@ -18,9 +18,6 @@ class ModeloBloques(ModeloDeterminado):
         raise NotImplementedError
 
     def cerrar(símismo):
-        raise NotImplementedError
-
-    def _gen_vars(símismo):
         raise NotImplementedError
 
 

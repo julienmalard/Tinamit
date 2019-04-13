@@ -35,6 +35,3 @@ class ModeloDeterminado(ModeloImpaciente):
 
     def cerrar(símismo):
         raise NotImplementedError
-
-    def _gen_vars(símismo):
-        raise NotImplementedError

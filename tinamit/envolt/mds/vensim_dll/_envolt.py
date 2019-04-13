@@ -21,7 +21,8 @@ class EnvolturaVensimDLL(EnvolturaMDS):
     def __init__(símismo, archivo, nombre='mds'):
         símismo.mod = f.cargar_mod_vensim(ctypes.WinDLL(_obt_dll_vensim()), archivo)
         símismo.paso = f.obt_paso_inicial(símismo.mod)
-        super().__init__(nombre)
+        vars_ = _gen_vars(símismo.mod)
+        super().__init__(vars_, nombre)
 
     def unidad_tiempo(símismo):
         return f.obt_unid_tiempo(símismo.mod)
@@ -103,63 +104,6 @@ class EnvolturaVensimDLL(EnvolturaMDS):
     def paralelizable(símismo):
         return True
 
-    def _gen_vars(símismo):
-        mod = símismo.mod
-
-        l_vars = []
-
-        vars_y_tipos = {v: f.obt_atrib_var(mod, v, cód_attrib=14).lower() for v in f.obt_vars(mod)}
-
-        editables = f.obt_editables(mod)
-
-        omitir = [
-            'Data', 'Constraint', 'Lookup', 'Group', 'Subscript Range', 'Test Input', 'Time Base',
-            'Subscript Constant'
-        ]
-
-        for var, tipo_var in vars_y_tipos:
-            # Para cada variable...
-
-            # No incluir los variables de verificación (pruebas de modelo) Vensim, de subscriptos, de datos, etc.
-            if tipo_var in omitir:
-                continue
-
-            # Sacar los límites del variable
-            líms = (f.obt_atrib_var(mod, var, cód_attrib=11), f.obt_atrib_var(mod, var, cód_attrib=12))
-            líms = tuple(float(lm) if lm != '' else None for lm in líms)
-
-            # Leer la descripción del variable.
-            info = f.obt_atrib_var(mod, var, 2)
-
-            # Sacar sus unidades
-            unid = f.obt_atrib_var(mod, var, cód_attrib=1)
-
-            # Sacar las dimensiones del variable
-            subs = f.obt_atrib_var(mod, var, cód_attrib=9)
-            if len(subs):
-                dims = (len(subs),)  # Para hacer: permitir más de 1 dimensión
-            else:
-                dims = (1,)
-
-            # Leer la ecuación del variable, sus hijos y sus parientes directamente de Vensim
-            ec = f.obt_atrib_var(mod, var, 3)
-            parientes = [v for v in f.obt_atrib_var(mod, var, 4) if v in vars_y_tipos]
-
-            if tipo_var == 'constant' or (tipo_var == 'auxiliar' and not len(parientes)):
-                cls = VarConstante
-            elif tipo_var == 'level':
-                cls = VarNivel
-            elif tipo_var == 'auxiliary':
-                cls = VarAuxEditable if var in editables else VarAuxiliar
-            elif tipo_var == 'initial':
-                cls = VarInic
-            else:
-                raise ValueError(tipo_var)
-
-            l_vars.append(cls(var, unid=unid, ec=ec, subs=subs, parientes=parientes, dims=dims, líms=líms, info=info))
-
-        return VariablesMDS(l_vars)
-
     def _leer_vals_de_vensim(símismo, l_vars=None):
         if isinstance(l_vars, Variable):
             l_vars = [l_vars]
@@ -205,3 +149,58 @@ def _obt_dll_vensim():
             '\npara poder hacer simulaciones con Vensim DSS.'
         )
     )
+
+def _gen_vars(mod):
+    l_vars = []
+
+    vars_y_tipos = {v: f.obt_atrib_var(mod, v, cód_attrib=14).lower() for v in f.obt_vars(mod)}
+
+    editables = f.obt_editables(mod)
+
+    omitir = [
+        'Data', 'Constraint', 'Lookup', 'Group', 'Subscript Range', 'Test Input', 'Time Base',
+        'Subscript Constant'
+    ]
+
+    for var, tipo_var in vars_y_tipos:
+        # Para cada variable...
+
+        # No incluir los variables de verificación (pruebas de modelo) Vensim, de subscriptos, de datos, etc.
+        if tipo_var in omitir:
+            continue
+
+        # Sacar los límites del variable
+        líms = (f.obt_atrib_var(mod, var, cód_attrib=11), f.obt_atrib_var(mod, var, cód_attrib=12))
+        líms = tuple(float(lm) if lm != '' else None for lm in líms)
+
+        # Leer la descripción del variable.
+        info = f.obt_atrib_var(mod, var, 2)
+
+        # Sacar sus unidades
+        unid = f.obt_atrib_var(mod, var, cód_attrib=1)
+
+        # Sacar las dimensiones del variable
+        subs = f.obt_atrib_var(mod, var, cód_attrib=9)
+        if len(subs):
+            dims = (len(subs),)  # Para hacer: permitir más de 1 dimensión
+        else:
+            dims = (1,)
+
+        # Leer la ecuación del variable, sus hijos y sus parientes directamente de Vensim
+        ec = f.obt_atrib_var(mod, var, 3)
+        parientes = [v for v in f.obt_atrib_var(mod, var, 4) if v in vars_y_tipos]
+
+        if tipo_var == 'constant' or (tipo_var == 'auxiliar' and not len(parientes)):
+            cls = VarConstante
+        elif tipo_var == 'level':
+            cls = VarNivel
+        elif tipo_var == 'auxiliary':
+            cls = VarAuxEditable if var in editables else VarAuxiliar
+        elif tipo_var == 'initial':
+            cls = VarInic
+        else:
+            raise ValueError(tipo_var)
+
+        l_vars.append(cls(var, unid=unid, ec=ec, subs=subs, parientes=parientes, dims=dims, líms=líms, info=info))
+
+    return VariablesMDS(l_vars)

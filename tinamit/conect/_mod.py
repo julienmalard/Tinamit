@@ -21,7 +21,8 @@ class SuperConectado(Modelo):
     def __init__(símismo, modelos, nombre='superconectado'):
         símismo.modelos = ModelosConectados(modelos)
         símismo.conexiones = ConexionesVars()
-        super().__init__(nombre=nombre)
+
+        super().__init__(variables=VariablesConectado(símismo.modelos), nombre=nombre)
 
     def conectar_vars(símismo, var_fuente, var_recip, modelo_fuente=None, modelo_recip=None, conv=None):
         modelo_fuente = modelo_fuente or símismo._mod_de_var(var_fuente)
@@ -118,9 +119,6 @@ class SuperConectado(Modelo):
 
             var_recip = c.mod_recip.variables[c.var_recip]
             c.mod_recip.cambiar_vals({var_recip: val_fuente * conv})
-
-    def _gen_vars(símismo):
-        return VariablesConectado(símismo.modelos)
 
 
 class Conectado(SuperConectado):

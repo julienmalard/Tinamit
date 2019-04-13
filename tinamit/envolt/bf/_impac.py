@@ -4,19 +4,16 @@ from ._envolt import EnvolturaBF
 
 class ModeloImpaciente(EnvolturaBF):
 
-    def __init__(símismo, nombre='bf'):
+    def __init__(símismo, variables, nombre='bf'):
         símismo.paso_en_ciclo = 0
         símismo.tmñ_ciclo = 1
 
-        super().__init__(nombre)
+        super().__init__(variables, nombre)
 
     def unidad_tiempo(símismo):
         raise NotImplementedError
 
     def cerrar(símismo):
-        raise NotImplementedError
-
-    def _gen_vars(símismo):
         raise NotImplementedError
 
     def iniciar_modelo(símismo, corrida):

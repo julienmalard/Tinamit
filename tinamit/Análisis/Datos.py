@@ -9,7 +9,7 @@ import xarray as xr
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
 
-from tinamit.Análisis.Números import tx_a_núm
+from எண்ணிக்கை import எண்ணுக்கு as எ
 from tinamit.config import _
 from tinamit.cositas import detectar_codif, guardar_json, cargar_json
 
@@ -1496,7 +1496,7 @@ class BDtexto(BD):
         with open(símismo.fuente, encoding=símismo.codif) as d:
             lector = csv.DictReader(d)
             for n_f, f in enumerate(lector):
-                m_datos[:, n_f] = [tx_a_núm(f[c].strip()) if f[c].strip() not in símismo.cód_vacío else np.nan for c in
+                m_datos[:, n_f] = [எ(f[c].strip()) if f[c].strip() not in símismo.cód_vacío else np.nan for c in
                                    cols]
 
         return {c: m_datos[i] for i, c in enumerate(cols)}

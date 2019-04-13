@@ -18,7 +18,7 @@ class EnvolturaPySD(EnvolturaMDS):
         símismo.cont_simul = False
         símismo.paso_act = 0
 
-        super().__init__(nombre=nombre)
+        super().__init__(variables=_gen_vars(símismo.mod), nombre=nombre)
 
     def iniciar_modelo(símismo, corrida):
 
@@ -55,7 +55,6 @@ class EnvolturaPySD(EnvolturaMDS):
         símismo.incrementar(, corrida.eje_tiempo.n_pasos()
         # para hacer
 
-
         símismo._res_recién[v].values
         return corrida.resultados()
 
@@ -66,48 +65,7 @@ class EnvolturaPySD(EnvolturaMDS):
         pass
 
     def paralelizable(símismo):
-        True
-
-    def _gen_vars(símismo):
-        l_vars = []
-
-        internos = ['FINAL TIME', 'TIME STEP', 'SAVEPER', 'INITIAL TIME']
-        for i, f in símismo.mod.doc().iterrows():
-
-            nombre = f['Real Name']
-            if f['Type'] == 'lookup' or nombre in internos:
-                continue
-
-            nombre_py = f['Py Name']
-            unid = f['Unit']
-            líms = literal_eval(f['Lims'])
-            ec = f['Eqn']
-            info = f['Comment']
-            obj_ec = Ecuación(ec)
-            parientes = {v for v in obj_ec.variables() if v not in internos}
-
-            try:
-                getattr(símismo.mod.components, 'integ_' + nombre_py)
-                nivel = True
-
-            except AttributeError:
-                nivel = False
-            if nivel:
-                var = VarPySDNivel(
-                    nombre, nombre_py=nombre_py, unid=unid, ec=ec, parientes=parientes, líms=líms, info=info
-                )
-            elif len(parientes):
-                var = VarPySDAuxiliar(
-                    nombre, nombre_py=nombre_py, unid=unid, ec=ec, parientes=parientes, líms=líms, info=info
-                )
-            else:
-                var = VarPySDConstante(
-                    nombre, nombre_py=nombre_py, unid=unid, ec=ec, parientes=parientes, líms=líms, info=info
-                )
-
-            l_vars.append(var)
-
-        return VariablesPySD(l_vars)
+        return True
 
     def _leer_vals_de_pysd(símismo, l_vars):
         for v in l_vars:
@@ -134,3 +92,45 @@ class EnvolturaPySDPy(EnvolturaPySD):
 
     def unidad_tiempo(símismo):
         return obt_paso_mod_pysd(símismo.archivo)
+
+
+def _gen_vars(mod):
+    l_vars = []
+
+    internos = ['FINAL TIME', 'TIME STEP', 'SAVEPER', 'INITIAL TIME']
+    for i, f in mod.doc().iterrows():
+
+        nombre = f['Real Name']
+        if f['Type'] == 'lookup' or nombre in internos:
+            continue
+
+        nombre_py = f['Py Name']
+        unid = f['Unit']
+        líms = literal_eval(f['Lims'])
+        ec = f['Eqn']
+        info = f['Comment']
+        obj_ec = Ecuación(ec)
+        parientes = {v for v in obj_ec.variables() if v not in internos}
+
+        try:
+            getattr(mod.components, 'integ_' + nombre_py)
+            nivel = True
+
+        except AttributeError:
+            nivel = False
+        if nivel:
+            var = VarPySDNivel(
+                nombre, nombre_py=nombre_py, unid=unid, ec=ec, parientes=parientes, líms=líms, info=info
+            )
+        elif len(parientes):
+            var = VarPySDAuxiliar(
+                nombre, nombre_py=nombre_py, unid=unid, ec=ec, parientes=parientes, líms=líms, info=info
+            )
+        else:
+            var = VarPySDConstante(
+                nombre, nombre_py=nombre_py, unid=unid, ec=ec, parientes=parientes, líms=líms, info=info
+            )
+
+        l_vars.append(var)
+
+    return VariablesPySD(l_vars)

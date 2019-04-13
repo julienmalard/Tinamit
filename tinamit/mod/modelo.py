@@ -7,16 +7,16 @@ from warnings import warn as avisar
 
 import numpy as np
 import pandas as pd
-import tinamit.Geog_.Geog as Geog
 import xarray as xr
+
+import tinamit.Geog_.Geog as Geog
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
 from tinamit.Análisis.Datos import gen_SuperBD, jsonificar, numpyficar, SuperBD
 from tinamit.Análisis.Valids import validar_resultados
 from tinamit.config import _, conf_mods
 from tinamit.cositas import valid_nombre_arch, guardar_json, cargar_json
-
 from .corrida import Corrida
-from .var import VariablesMod, Variable
+from .var import VariablesMod
 
 
 class Modelo(object):
@@ -29,32 +29,21 @@ class Modelo(object):
 
     leng_orig = 'es'
 
-    def __init__(símismo, nombre):
+    def __init__(símismo, variables, nombre):
         """
         La función de inicialización de todos modelos, conectados o no.
 
         Parameters
         ----------
+        variables : VariablesMod
+            Los variables del modelo.
         nombre : str
             El nombre del modelo.
 
         """
 
-        # El nombre del modelo
         símismo.nombre = nombre
-
-        símismo.variables = VariablesMod(símismo._gen_vars())
-
-    def _gen_vars(símismo):
-        """
-
-        Returns
-        -------
-        list[Variable]
-
-        """
-
-        raise NotImplementedError
+        símismo.variables = variables
 
     def unidad_tiempo(símismo):
         """
@@ -166,6 +155,23 @@ class Modelo(object):
         """
 
         return True
+
+    def paralelizable(símismo):
+        """
+        Indica si el modelo actual se puede paralelizar de manera segura o no. Si implementas una subclase
+        paralelizable, reimplementar esta función para devolver ``True``.
+        ¿No sabes si es paralelizable tu modelo?
+        Si el modelo se puede paralelizar (con corridas de nombres distintos) sin encontrar dificultades
+        técnicas (sin riesgo que las corridas paralelas terminen escribiendo en los mismos archivos de egreso),
+        entonces sí es paralelizable tu modelo.
+
+        Returns
+        -------
+        bool:
+            Si el modelo es paralelizable o no.
+        """
+
+        return False
 
     def __str__(símismo):
         return símismo.nombre
@@ -470,60 +476,6 @@ class Modelo(object):
 
         return resultados
 
-    def guardar_resultados(símismo, res=None, nombre=None, frmt='json', l_vars=None):
-        """
-
-        Parameters
-        ----------
-        res: xr.Dataset
-        nombre: str
-        frmt: strr
-        l_vars: list[str] | str
-
-        Returns
-        -------
-
-        """
-        if res is None:
-            res = símismo.mem_vars
-        if nombre is None:
-            nombre = símismo.corrida_activa
-        if l_vars is None:
-            l_vars = list(res.data_vars)
-        elif isinstance(l_vars, str):
-            l_vars = [l_vars]
-        else:
-            l_vars = l_vars
-
-        faltan = [x for x in l_vars if x not in res]
-        if len(faltan):
-            raise ValueError(_('Los variables siguientes no existen en los datos:'
-                               '\n{}').format(', '.join(faltan)))
-
-        if frmt[0] != '.':
-            frmt = '.' + frmt
-        arch = valid_nombre_arch(nombre + frmt)
-        if frmt == '.json':
-            contenido = res[l_vars].to_dict()
-            guardar_json(contenido, arch=arch)
-
-        elif frmt == '.csv':
-
-            with open(arch, 'w', encoding='UTF-8', newline='') as a:
-                escr = csv.writer(a)
-
-                escr.writerow(['tiempo'] + res['tiempo'].values.tolist())
-                for var in l_vars:
-                    vals = res[var].values
-                    if len(vals.shape) == 1:
-                        escr.writerow([var] + vals.tolist())
-                    else:
-                        for í in range(vals.shape[1]):
-                            escr.writerow(['{}[{}]'.format(var, í)] + vals[:, í].tolist())
-
-        else:
-            raise ValueError(_('Formato de resultados "{}" no reconocido.').format(frmt))
-
     def conectar_var_clima(símismo, var, var_clima, conv, combin=None):
         """
         Conecta un variable climático.
@@ -618,23 +570,6 @@ class Modelo(object):
 
             # Aplicar el cambio
             símismo.cambiar_vals(valores={var: datos[var_clima] * conv})
-
-    def paralelizable(símismo):
-        """
-        Indica si el modelo actual se puede paralelizar de manera segura o no. Si implementas una subclase
-        paralelizable, reimplementar esta función para devolver ``True``.
-        ¿No sabes si es paralelizable tu modelo?
-        Si el modelo se puede paralelizar (con corridas de nombres distintos) sin encontrar dificultades
-        técnicas (sin riesgo que las corridas paralelas terminen escribiendo en los mismos archivos de egreso),
-        entonces sí es paralelizable tu modelo.
-
-        Returns
-        -------
-        bool:
-            Si el modelo es paralelizable o no.
-        """
-
-        return False
 
     def especificar_micro_calib(símismo, var, método=None, paráms=None, líms_paráms=None, tipo=None,
                                 escala=None, ops_método=None, ec=None, binario=False):
@@ -1106,11 +1041,6 @@ def _gen_dic_ops_corridas(nombre_corrida, combinar, tipos_ops, opciones):
     # Crear el diccionario de corridas
     if combinar:
         # Si estamos combinando las opciones...
-
-        # El nombre de corrida no puede ser una lista si estamos combinando las opciones
-        if isinstance(nombre_corrida, list):
-            raise TypeError(_('No puedes especificar una lista de nombres de corridas si estás'
-                              ' simulando todas las combinaciones posibles de las opciones.'))
 
         # El número de corridas es el producto del número de valores por opción.
         n_corridas = int(np.prod(l_n_ops))
