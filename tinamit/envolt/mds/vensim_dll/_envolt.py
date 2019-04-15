@@ -4,11 +4,13 @@ import sys
 from warnings import warn as avisar
 
 import numpy as np
-
-from tinamit.envolt.mds import EnvolturaMDS, VarNivel, VarConstante, VariablesMDS, VarInic, VarAuxiliar
+from tinamit.config import _
 from tinamit.mod import Variable
+
 from . import _funcs as f
 from ._vars import VarAuxEditable
+from .._envolt import EnvolturaMDS
+from .._vars import VarNivel, VarConstante, VariablesMDS, VarInic, VarAuxiliar
 
 
 class EnvolturaVensimDLL(EnvolturaMDS):
@@ -149,6 +151,7 @@ def _obt_dll_vensim():
             '\npara poder hacer simulaciones con Vensim DSS.'
         )
     )
+
 
 def _gen_vars(mod):
     l_vars = []

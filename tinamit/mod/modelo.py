@@ -1,21 +1,22 @@
-import csv
 import datetime as ft
 import pickle
-from copy import deepcopy as copiar_profundo
 from multiprocessing import Pool as Reserva
 from warnings import warn as avisar
 
 import numpy as np
 import pandas as pd
-import xarray as xr
-
 import tinamit.Geog_.Geog as Geog
+import xarray as xr
 from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
 from tinamit.Análisis.Datos import gen_SuperBD, jsonificar, numpyficar, SuperBD
 from tinamit.Análisis.Valids import validar_resultados
 from tinamit.config import _, conf_mods
-from tinamit.cositas import valid_nombre_arch, guardar_json, cargar_json
+from tinamit.cositas import guardar_json, cargar_json
+
 from .corrida import Corrida
+from .extern import gen_vals_extern
+from .res import ResultadosGrupo
+from .tiempo import EjeTiempo
 from .var import VariablesMod
 
 
@@ -27,7 +28,7 @@ class Modelo(object):
     aquí se implementan de manera independiente en cada subclase de `Modelo`.
     """
 
-    leng_orig = 'es'
+    idioma_orig = 'es'  # Cambiar en tu modelo si el idioma de sus variables, etc. no es el castellano
 
     def __init__(símismo, variables, nombre):
         """
@@ -60,29 +61,64 @@ class Modelo(object):
     def simular(símismo, t, nombre_corrida='Tinamït', vals_inic=None, vals_extern=None, clima=None, vals_interés=None):
         vars_interés = vals_interés or símismo.variables
 
+        # Vensim tiene un problema raro con nombres de corridas con '.'
+        nombre_corrida = nombre_corrida.replace('.', '_')
+
         corrida = Corrida(
-            nombre_corrida, eje_tiempo=gen_eje_tiempo(t), extern=gen_vals_extern(vals_inic, vals_extern)
+            nombre_corrida, eje_tiempo=EjeTiempo(t, símismo.unidad_tiempo()),
+            extern=gen_vals_extern(vals_inic, vals_extern, clima),
+            vars_interés=vars_interés
         )
 
         símismo.iniciar_modelo(corrida)
-        res = símismo.correr(corrida)
+        símismo.correr(corrida)
         símismo.cerrar()
 
-        return res
+        return corrida.resultados
 
-    def simular_grupo(símismo, t, nombre_corrida='Tinamït', vals_inic=None, vals_extern=None):
-        pass
+    def simular_grupo(símismo, ops_grupo, paralelo=False):
+
+        if paralelo and not símismo.paralelizable():
+            avisar(_(
+                '\nEl modelo no se identifica como paralelizable. Para evitar el riesgo'
+                '\nde errores de paralelización, correremos las corridas como simulaciones secuenciales '
+                '\nnormales. '
+                '\nSi tu modelo sí es paralelizable, crear un método nombrado `.paralelizable()` '
+                '\nque devuelve ``True`` en tu clase de modelo para activar la paralelización.'
+            ))
+            paralelo = False
+
+        res_grupo = ResultadosGrupo()
+        if paralelo:
+            l_trabajos = []
+            copia_mod = pickle.dumps(símismo)  # Una copia de este modelo.
+
+            # Crear la lista de información necesaria para las simulaciones en paralelo...
+            for ops in ops_grupo:
+                l_trabajos.append((copia_mod, ops))
+
+            # Hacer las corridas en paralelo
+            with Reserva() as r:
+                res_paralelo = r.map(_correr_modelo, l_trabajos)
+            for res in res_paralelo:
+                res_grupo[str(res)] = res
+
+        else:
+
+            for ops in ops_grupo:
+                res = símismo.simular(**ops)
+                res_grupo[res.nombre] = res
+
+        return res_grupo
 
     def iniciar_modelo(símismo, corrida):
         símismo.variables.reinic()
-        símismo.variables.resultados.actualizar()
+        corrida.resultados.actualizar()
 
     def correr(símismo, corrida):
         while corrida.eje_tiempo.avanzar():
             símismo.incrementar(corrida)
-            if corrida.eje_tiempo.t_guardar():
-                símismo.variables.resultados.actualizar()
-        return símismo.variables.resultados()
+            corrida.actualizar_res()
 
     def incrementar(símismo, corrida):
         raise NotImplementedError
@@ -176,6 +212,8 @@ class Modelo(object):
     def __str__(símismo):
         return símismo.nombre
 
+    # para hacer:
+
     def _procesar_vars_extern(símismo, vars_inic, vars_extern, bd, t_inic, t_final, lg=None):
         """
 
@@ -266,215 +304,6 @@ class Modelo(object):
                         vals_inic[vr] = datos[0]
 
         return vals_inic, vals_extern
-
-    def simular(
-            símismo, bd=None, lugar_clima=None, clima=None, vars_interés=None
-    ):
-
-        def _act_vals_externos(t):
-            # Actualizar variables de clima, si necesario
-            if clima is not None:
-                símismo._act_vals_clima(t, mem_vars['tiempo'][i + 1], lugar=lugar_clima)
-
-            # Aplicar valores externos
-            if vals_extern is not None:
-                # Únicamente aplicar nuevos valores si tenemos valores para este punto de la simulación
-                if np.isin(t, vals_extern['tiempo'].values):
-                    vals_ahora = vals_extern.where(vals_extern['tiempo'] == t, drop=True)
-                    nuevas = {
-                        vr: vals_ahora[vr].values[0]
-                        if vals_ahora[vr].values.shape == (1,) else vals_ahora[vr].values
-                        for vr in vals_extern.data_vars
-                    }
-                    símismo.cambiar_vals(nuevas)
-
-    def simular_grupo(
-            símismo, t_final, t_inic=None, paso=1, nombre_corrida='', vals_inic=None, vals_extern=None, bd=None,
-            lugar_clima=None, clima=None, combinar=True, paralelo=None, vars_interés=None, guardar=False
-    ):
-        """
-        Correr grupos de simulación. Puede ser mucho más fácil que de efectuar las corridas manualmente.
-
-        Parameters
-        ----------
-        t_final : list | dict | ft.date | ft.datetime | str | int
-            El tiempo final de la simulación. Puede ser en formato de fecha o numérico. Si no se especifica,
-            se inferirá de `vars_extern`.
-        t_inic : list | dict | ft.date | ft.datetime | str | int
-            El tiempo inicial de la simulación. Puede ser en formato de fecha o numérico. Si no se especifica,
-            se inferirá de `vars_extern`.
-        paso : list | dict | int
-            El paso para la simulación.
-        nombre_corrida : list | str
-            El nombre de la corrida.
-        vals_inic : list | dict | str | list | pd.DataFrame | xr.Dataset
-            Valores iniciales para variables. Si es de tipo_mod ``str`` o ``list``, se tomarán los valores de `bd`.
-        vals_extern : list | dict | str | list | pd.DataFrame | xr.Dataset
-            Valores externos que hay que actualizar a través de la simulación (no necesariamente iniciales).
-            Si es de tipo_mod ``str`` o ``list``, se tomarán los valores de `bd`.
-        bd : SuperBD | dict | str | pd.DataFrame | xr.Dataset
-            Una base de datos opcional. Si se especifica, se empleará para obtener los valores de variables iniciales
-            y externos.
-        lugar_clima : list | dict | Geog.Lugar
-            El lugar para simulaciones con clima.
-        clima : list | dict | str | float | int
-            El escenario climático.
-        combinar : bool
-            Si hay que hacer todas las combinaciones posibles de las opciones.
-        paralelo : bool
-            Si paralelizamos las corridas para ganar tiempo (con modelos rápidos, pierdes en vez de ganar).
-            Si es ``None``, Tinamït adivinará si es mejor paralelizar o no.
-        vars_interés : str | list[str]
-            Los variables de interés en los resultados.
-        guardar : bool
-            Si hay que guardar los resultados automáticamente en un archivo externo.
-
-        Returns
-        -------
-        dict[str, xr.Dataset]
-            Los resultados de las simulaciones.
-
-        """
-
-        # Formatear los nombres de variables a devolver.
-        if vars_interés is not None:
-            if isinstance(vars_interés, str):
-                vars_interés = [vars_interés]
-            vars_interés = [símismo.valid_var(v) for v in vars_interés]
-
-        # Poner las opciones de simulación en un diccionario.
-        opciones = {'paso': paso, 't_inic': t_inic, 'lugar_clima': lugar_clima, 'vals_inic': vals_inic,
-                    'vals_extern': vals_extern, 'clima': clima, 't_final': t_final}
-
-        # Entender el tipo_mod de opciones (lista, diccionario, o valor único)
-        tipos_ops = {
-            nmb: dict if isinstance(op, dict) else list if isinstance(op, list) else 'val'
-            for nmb, op in opciones.items()
-        }
-
-        # Una excepción para "vals_inic" y "vals_extern":
-        # si es un diccionario con nombres de variables como llaves, es valor único;
-        # si tiene nombres de corridas como llaves y diccionarios de variables como valores, es de tipo_mod diccionario.
-        for op in ['vals_inic', 'vals_extern']:
-            op_inic = opciones[op]
-            if isinstance(op_inic, list):
-                tipos_ops[op] = list if len(op_inic) else 'val'
-            elif isinstance(op_inic, dict):
-                if all(isinstance(v, (dict, xr.Dataset, pd.DataFrame)) or v is None for v in op_inic.values()):
-                    tipos_ops[op] = dict if len(op_inic) else 'val'
-                elif not any(isinstance(v, (dict, xr.Dataset, pd.DataFrame) or v is None) for v in op_inic.values()):
-                    tipos_ops[op] = 'val'
-                else:
-                    raise ValueError(_('Error en `{op}`.').format(op=op))
-
-        # Generaremos el diccionario de corridas:
-        corridas = _gen_dic_ops_corridas(
-            nombre_corrida=nombre_corrida, combinar=combinar, tipos_ops=tipos_ops, opciones=opciones
-        )
-
-        # Validar los nombres y evitar un problema con nombres de corridas con '.' en Vensim
-        mapa_nombres = {corr: valid_nombre_arch(corr.replace('.', '_')) for corr in corridas}
-        for ant, nv in mapa_nombres.items():
-            corridas[nv] = corridas.pop(ant)
-
-        # Ahora, hacemos las simulaciones
-        resultados = {}  # El diccionario de resultados
-
-        # Verificar si vale la pena hacer corridas paralelas o no
-        if paralelo is None:
-            antes = ft.datetime.now()
-            corr0 = list(corridas)[0]
-            d_corr0 = corridas.pop(corr0)
-
-            d_corr0['vars_interés'] = vars_interés
-
-            # Después, simular el modelo.
-            res = símismo.simular(**d_corr0, nombre_corrida=corr0)
-
-            if res is not None:
-                resultados[mapa_nombres[corr0]] = res
-
-            tiempo_simul = (ft.datetime.now() - antes).total_seconds()
-            paralelo = tiempo_simul > 15
-
-        # Efectuar las corridas
-        if paralelo and símismo.paralelizable():
-            # ...si el modelo y todos sus submodelos son paralelizables...
-
-            # Este código un poco ridículo queda necesario para la paralelización en Windows. Si no estuviera aquí,
-            # el programa se travaría para siempre a este punto.
-
-            # Un variable MUY largo, que NO DEBE EXISTIR en cualquier otra parte del programa. Por eso tomamos un
-            # nombre de variable muy, muy largo que estoy seguro no encontraremos en otro lugar.
-            global ejecutando_simulación_paralela_por_primera_vez
-
-            # Si no existía antes, es la primera vez que estamos ejecutando este código
-            if 'ejecutando_simulación_paralela_por_primera_vez' not in globals():
-                ejecutando_simulación_paralela_por_primera_vez = True
-
-            # Si no es la primera vez, no querremos correr la simulación. (Sino, creerá ramas infinitas del proceso
-            # Python).
-            if not ejecutando_simulación_paralela_por_primera_vez:
-                avisar(_('Parece que estés corriendo simulaciones en paralelo en Windows o alguna cosa parecida '
-                         '\nsin poner tu código principal en "if __name__ == "__main__"". Probablemente funcionará'
-                         '\nel código de todo modo, pero de verdad no es buena idea.'))
-                return
-
-            # Si era la primera vez, ahora ya no lo es.
-            ejecutando_simulación_paralela_por_primera_vez = False
-
-            # Empezar las simulaciones en paralelo
-            l_trabajos = []  # type: list[tuple]
-
-            copia_mod = pickle.dumps(símismo)  # Una copia de este modelo.
-
-            # Crear la lista de información necesaria para las simulaciones en paralelo...
-            for corr, d_prms_corr in corridas.items():
-                d_args = {ll: copiar_profundo(v) for ll, v in d_prms_corr.items()}
-                d_args['nombre_corrida'] = corr
-                d_args['vars_interés'] = vars_interés
-                d_args['bd'] = bd
-
-                l_trabajos.append((copia_mod, d_args))
-
-            # Hacer las corridas en paralelo
-            with Reserva() as r:
-                res_paralelo = r.map(_correr_modelo, l_trabajos)
-
-            # Ya terminamos la parte difícil. Desde ahora, sí permitiremos otras ejecuciones de esta función.
-            ejecutando_simulación_paralela_por_primera_vez = True
-
-            # Formatear los resultados, si hay.
-            if res_paralelo is not None:
-                resultados.update(
-                    {mapa_nombres[corr]: res for corr, res in zip(corridas, res_paralelo)}
-                )
-
-        else:
-            # Sino simplemente correrlas una tras otra con `Modelo.simular()`
-            if paralelo:
-                avisar(_('\nNo todos los submodelos del modelo conectado "{}" son paralelizable. Para evitar el riesgo'
-                         '\nde errores de paralelización, correremos las corridas como simulaciones secuenciales '
-                         '\nnormales. '
-                         '\nSi tus modelos sí son paralelizables, crear un método nombrado `.paralelizable()` '
-                         '\nque devuelve ``True`` en tu clase de modelo para activar la paralelización.'
-                         ).format(símismo.nombre))
-
-            # Para cada corrida...
-            for corr, d_prms_corr in corridas.items():
-                d_prms_corr['vars_interés'] = vars_interés
-
-                # Después, simular el modelo.
-                res = símismo.simular(**d_prms_corr, bd=bd, nombre_corrida=corr)
-
-                if res is not None:
-                    resultados[mapa_nombres[corr]] = res
-
-        if guardar:
-            for corr, res in resultados:
-                símismo.guardar_resultados(res=res, nombre=corr)
-
-        return resultados
 
     def conectar_var_clima(símismo, var, var_clima, conv, combin=None):
         """
@@ -1000,224 +829,3 @@ def _correr_modelo(x):
 
     # Después, simular el modelo y devolver los resultados, si hay.
     return mod.simular(**d_args)
-
-
-def _gen_dic_ops_corridas(nombre_corrida, combinar, tipos_ops, opciones):
-    """
-    Genera un diccionario de corridas con sus opciones.
-
-    Parameters
-    ----------
-    nombre_corrida : str
-        El nombre de base de la corrida.
-    combinar : bool
-        Si hay que hacer todas las permutaciones posibles de las opciones.
-    tipos_ops : dict
-        Un diccionario especificando si cada opción está en formato de lista, diccionario, o valor.
-    opciones : dict
-        El diccionario de las opciones para las corridas.
-
-    Returns
-    -------
-    dict[str, dict]
-        El diccionario formateado correctamente.
-
-    """
-
-    # Una matriz con el número de valores distintos para cada opción, guardando únicamente las opciones con valores
-    # múltiples.
-    l_n_ops = np.array(
-        [
-            len(v) for ll, v in opciones.items()  # El número de opciones
-            if tipos_ops[ll] in [list, dict]  # Si no es de valor único
-        ]
-    )
-    # Una lista con el nombre de cada opción (p. ej., "paso", etc.) con valores múltiples.
-    l_nmbs_ops_var = [
-        ll for ll, v in opciones.items()  # El nombre de la opción
-        if tipos_ops[ll] in [list, dict]  # Si no es de valor único
-    ]
-
-    # Crear el diccionario de corridas
-    if combinar:
-        # Si estamos combinando las opciones...
-
-        # El número de corridas es el producto del número de valores por opción.
-        n_corridas = int(np.prod(l_n_ops))
-
-        dic_ops = {}  # Un diccionario de nombres de simulación y sus opciones de corrida
-
-        # Poblar el diccionario de opciones iniciales
-        ops = {}  # Las opciones iniciales
-        nombre = []  # Una lista que se convertirá en el nombre de la opción
-        for ll, op in opciones.items():
-            # Para cada opción...
-
-            if tipos_ops[ll] == 'val':
-                # Si no hay valores múltiples, su único valor será su valor permanente.
-                ops[ll] = op
-
-            else:
-                # Pero si tenemos valores múltiples, damos el primero de la lista o diccionario para empezar.
-                if tipos_ops[ll] == dict:
-                    # Si es un diccionario...
-
-                    # Tomar el nombre de la primera corrida especificada en el diccionario
-                    id_op = list(op)[0]
-
-                    # ...y el valor para esta corrida
-                    ops[ll] = op[id_op]
-
-                    # Guardar el nombre también.
-                    nombre.append(id_op)
-
-                else:
-                    # Si es una lista...
-
-                    ops[ll] = op[0]  # Empezar con el primer valor de la lista
-
-                    # Convertir el índice del valor a un nombre para las corridas
-                    nombre.append(f'{ll}0')
-
-        # Una matriz con el número cumulativo de combinaciones de opciones
-        l_n_ops_cum = np.roll(l_n_ops.cumprod(), 1)  # Pasamos el número final al principio
-        if len(l_n_ops_cum):
-            l_n_ops_cum[0] = 1  # ... y reemplazamos el número ahora inicial con ``1``.
-        else:
-            l_n_ops_cum = [1]  # ... si no tenemos combinaciones que hacer, darle ``1``
-
-        # Crear la lista de diccionarios de opciones para cada corrida.
-        for í_c in range(n_corridas):
-            # Para cada corrida...
-
-            # Calcular el índice del valor actual para cada opción que tiene valores múltiples
-            í_ops = [int(np.floor(í_c / l_n_ops_cum[n]) % l_n_ops[n]) for n in range(l_n_ops.shape[0])]
-
-            # Para cada opción...
-            for í_op, n in enumerate(í_ops):
-
-                # Sacamos el nombre de la opción actual
-                nmbr_op = l_nmbs_ops_var[í_op]
-                op = opciones[nmbr_op]  # El valor de la opción
-
-                # Aplicar los cambios al diccionario transitorio de opciones
-                if tipos_ops[nmbr_op] == list:
-                    # Si la opción está en formato de lista...
-
-                    # Guardar su valor
-                    ops[nmbr_op] = op[n]
-
-                    # Y cambiar su nombre
-                    nombre[í_op] = f'{nmbr_op}{n}'
-
-                elif tipos_ops[nmbr_op] == dict:
-                    # Sino, es un diccionario
-
-                    # Guardar nu nombre y valor
-                    id_op = list(op)[n]
-                    ops[nmbr_op] = op[id_op]
-                    nombre[í_op] = str(id_op)
-
-                else:
-                    raise TypeError(_('Tipo de variable "{}" erróneo. Debería ser imposible llegar hasta este '
-                                      'error.'.format(type(op))))
-
-            # Concatenar el nombre y guardar una copia del diccionario transitorio de opciones.
-            dic_ops[' '.join(nombre)] = ops.copy()
-
-        # Formatear las corridas con sus nombres de corridas.
-        corridas = {
-            '{}{}'.format(nombre_corrida + ('_' if nombre_corrida and ll else ''), ll): ops
-            for ll, ops in dic_ops.items()
-        }  # type: dict[str, dict]
-
-        # Y, por fin, si solamente tenemos una corrida que hacer, asegurarse que tenga un nombre.
-        if len(corridas) == 1 and list(corridas)[0] == '':
-            corridas['Corrida Tinamït'] = corridas.pop('')
-
-    else:
-        # Si no estamos haciendo todas las combinaciones posibles de opciones, es un poco más fácil.
-
-        # Asegurarse de que todas las opciones múltiples sean o diccionarios, o listas
-        if any(t is dict for t in tipos_ops.values()):
-            if any(t is list for t in tipos_ops.values()):
-                raise TypeError(
-                    _('Si no estás haciendo combinaciones, no puedes combinar diccionarios con listas.'))
-            frmt = dict
-        elif any(t is list for t in tipos_ops.values()):
-            frmt = list
-        else:
-            frmt = 'val'
-
-        if frmt is dict:
-            # Verificar que las llaves sean consistentes
-            lls_dics = next((op.keys() for nmb, op in opciones.items() if tipos_ops[nmb] == dict), None)  # Las llaves
-            for nmb, op in opciones.items():
-                # Asegurarse que las llaves de esta opción sean iguales al estándar.
-                if tipos_ops[nmb] == dict and op.keys() != lls_dics:
-                    raise ValueError(_('Las llaves de diccionario de cada opción deben ser iguales.'))
-
-        # Asegurarse de que todas las opciones tengan el mismo número de opciones.
-        tmñs_únicos = np.unique(l_n_ops)
-        if tmñs_únicos.size == 0:
-            n_corridas = 1
-        elif tmñs_únicos.size == 1:
-            n_corridas = tmñs_únicos[0]  # El número de corridas
-        else:
-            raise ValueError(_('Si `combinar` == ``False``, todas las opciones en forma de lista o diccionario '
-                               'deben tener el mismo número de opciones.'))
-
-        # Preparar la lista de nombres de corridas
-        if isinstance(nombre_corrida, str):
-            # Si el nombre especificado para la corrida queda en formato texto...
-
-            # ...tenemos que agregarle algo para distinguir entre las varias corridas.
-            if frmt is dict:
-                # Si hay diccionarios de opciones con nombres de corridas, utilizar éstas.
-                l_nombres = next(list(opciones[nmb]) for nmb, t in tipos_ops.items() if t is dict)
-
-                # Generar el diccionario de nombres de corridas con sus valores de simulación correspondientes.
-                corridas = {
-                    (nombre_corrida + ('_' if len(nombre_corrida) else '')) + nmb_corr:
-                        {
-                            ll: op[nmb_corr] if tipos_ops[ll] is dict else op for ll, op in opciones.items()
-                        }
-                    for nmb_corr in l_nombres
-                }
-            else:
-                # Sino, las daremos nombres según números consecutivos
-                corridas = {
-                    (nombre_corrida + ('_' if len(nombre_corrida) else '')) + str(i):
-                        {
-                            nmb: op[i] if tipos_ops[nmb] is list else op for nmb, op in opciones.items()
-                        }
-                    for i in range(n_corridas)
-                }
-
-        elif isinstance(nombre_corrida, list):
-            # Si tenemos una lista de nombres de corridas...
-
-            # Asegurarse que tenga el tamaño necesario
-            if len(nombre_corrida) != n_corridas:
-                raise ValueError(
-                    _('Una lista de nombres de corrida debe tener el mismo número de nombres ("{}") que hay '
-                      'valores de opciones en la simulación ("{}").').format(len(nombre_corrida), n_corridas)
-                )
-
-            if frmt is dict:
-                raise ValueError(
-                    _('No puedes especificar una lista de nombres de corridas si tienes opciones en '
-                      'formato de diccionario.')
-                )
-
-            # Generar el diccionario de corridas
-            corridas = {
-                nmb: {ll: op[i] if tipos_ops[ll] is list else op for ll, op in opciones.items()}
-                for i, nmb in enumerate(nombre_corrida)
-            }
-
-        else:
-            raise TypeError(_('El nombre de corrida debe ser o una cadena de texto, o una lista de cadenas '
-                              'de texto.'))
-
-    return corridas

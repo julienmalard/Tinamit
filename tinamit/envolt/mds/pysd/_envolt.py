@@ -1,7 +1,7 @@
 from ast import literal_eval
 
 from tinamit.Análisis.sintaxis import Ecuación
-from tinamit.envolt.mds import EnvolturaMDS
+from .._envolt import EnvolturaMDS
 from ._funcs import gen_mod_pysd, obt_paso_mod_pysd
 from ._vars import VarPySDAuxiliar, VarPySDNivel, VarPySDConstante, VariablesPySD
 
@@ -52,7 +52,7 @@ class EnvolturaPySD(EnvolturaMDS):
         símismo.vars_para_cambiar.clear()
 
     def correr(símismo, corrida):
-        símismo.incrementar(, corrida.eje_tiempo.n_pasos()
+        símismo.incrementar(corrida.eje_tiempo.n_pasos())
         # para hacer
 
         símismo._res_recién[v].values

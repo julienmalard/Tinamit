@@ -1,4 +1,4 @@
-from tinamit.envolt.mds import VarConstante, VarAuxiliar, VarNivel, VarMDS, VariablesMDS
+from .._vars import VarConstante, VarAuxiliar, VarNivel, VarMDS, VariablesMDS
 
 
 class VariablesPySD(VariablesMDS):

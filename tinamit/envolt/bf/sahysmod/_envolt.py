@@ -16,7 +16,7 @@ class ModeloSAHYSMOD(ModeloBloques):
     Envoltura para modelos SAHYSMOD.
     """
 
-    leng_orig = 'en'  # La lengua de los nombres y descripción de los variables (y NO la del código aquí)
+    idioma_orig = 'en'  # La lengua de los nombres y descripción de los variables (y NO la del código aquí)
 
     def __init__(símismo, archivo, nombre='SAHYSMOD'):
 
@@ -56,7 +56,7 @@ class ModeloSAHYSMOD(ModeloBloques):
         variables = VariablesSAHYSMOD(dims=(n_polí,), tmñ_bloques=dur_estaciones)
 
         # Inicializar la clase pariente.
-        super().__init__(variables=variables, nombre=nombre)
+        super().__init__(tmñ_bloques, variables=variables, nombre=nombre)
 
         # Establecer los variables climáticos.
         símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total', conv=0.001)

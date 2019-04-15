@@ -1,4 +1,4 @@
-from tinamit.envolt.mds import VarAuxiliar
+from .._vars import VarAuxiliar
 
 
 class VarAuxEditable(VarAuxiliar):

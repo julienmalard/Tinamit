@@ -18,7 +18,6 @@ class ModeloIndeterminado(ModeloImpaciente):
 
         # Si hay que avanzar el modelo externo, lanzar una su simulación aquí.
         while p >= símismo.tmñ_ciclo:
-
             p -= símismo.tmñ_ciclo
 
             # Avanzar la simulación
@@ -32,4 +31,3 @@ class ModeloIndeterminado(ModeloImpaciente):
 
     def mandar_modelo(símismo):
         raise NotImplementedError
-

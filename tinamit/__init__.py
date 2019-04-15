@@ -1,8 +1,7 @@
 from pkg_resources import resource_filename
 
-from .mod.modelo import Modelo
-from .envolt import bf, mds
 from .config import conf, conf_mods, trads
+from .envolt import bf, mds
 
 # Cosas básicas
 __autor__ = 'Julien Malard'

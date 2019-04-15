@@ -5,8 +5,8 @@ from collections import Counter
 import numpy as np
 import numpy.testing as npt
 
-from pruebas.recursos.BF.prueba_bf import ModeloPrueba
-from pruebas.recursos.BF.variantes import EjBloques, EjDeterminado, EjIndeterminado
+from pruebas.recursos.bf.prueba_bf import ModeloPrueba
+from pruebas.recursos.bf.variantes import EjBloques, EjDeterminado, EjIndeterminado
 from pruebas.test_mds import generar_modelos_prueba, limpiar_mds
 from tinamit.BF import EnvolturaBF
 from tinamit.Conectado import Conectado, SuperConectado
@@ -14,9 +14,9 @@ from tinamit.EnvolturasMDS import ModeloPySD, generar_mds
 from tinamit.unids import trads
 
 dir_act = os.path.split(__file__)[0]
-arch_bf = os.path.join(dir_act, 'recursos/BF/prueba_bf.py')
-arch_mds = os.path.join(dir_act, 'recursos/MDS/prueba_senc.mdl')
-arch_mod_vacío = os.path.join(dir_act, 'recursos/MDS/prueba_vacía.mdl')
+arch_bf = os.path.join(dir_act, 'recursos/bf/prueba_mod.py')
+arch_mds = os.path.join(dir_act, 'recursos/mds/prueba_senc.mdl')
+arch_mod_vacío = os.path.join(dir_act, 'recursos/mds/prueba_vacía.mdl')
 
 
 # Comprobar Conectado

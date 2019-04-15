@@ -6,24 +6,24 @@ import numpy as np
 from numpy import testing as npt
 
 import tinamit.EnvolturasBF
-from pruebas.recursos.BF.prueba_bf import ModeloPrueba
+from pruebas.recursos.bf.prueba_bf import ModeloPrueba
 from tinamit.BF import EnvolturaBF
 from tinamit.BF import ModeloImpaciente
 
 dir_act = os.path.split(__file__)[0]
-arch_bf = os.path.join(dir_act, 'recursos/BF/prueba_bf.py')
-arch_bf_flexible = os.path.join(dir_act, 'recursos/BF/modelo_flexible.py')
+arch_bf = os.path.join(dir_act, 'recursos/bf/prueba_mod.py')
+arch_bf_flexible = os.path.join(dir_act, 'recursos/bf/modelo_flexible.py')
 
 
-# Comprobar que el modelo BF de prueba corre corectamente
+# Comprobar que el modelo bf de prueba corre corectamente
 class Test_ModeloSenc(unittest.TestCase):
     """
-    Verifica el funcionamiento de los programas de MDS.
+    Verifica el funcionamiento de los programas de mds.
     """
 
     @classmethod
     def setUpClass(cls):
-        # Generar la Envoltura BF
+        # Generar la Envoltura bf
         cls.envltmodelo = EnvolturaBF(arch_bf)
 
         # Información sobre los variables del modelo de prueba
@@ -92,20 +92,20 @@ class Test_ModeloSenc(unittest.TestCase):
         símismo.assertNotIn('_', mod.nombre)
 
 
-# Comprobar que la EnvolturasBF pueda leer el modelo BF de prueba en todas las formas posibles para cargar un modelo BF.
+# Comprobar que la EnvolturasBF pueda leer el modelo bf de prueba en todas las formas posibles para cargar un modelo bf.
 class Test_CrearEnvolturaBF(unittest.TestCase):
     def test_crear_desde_archivo(símismo):
-        # Comprobar creación de la envoltura desde un fuente que contiene un modelo BF.
+        # Comprobar creación de la envoltura desde un fuente que contiene un modelo bf.
         envlt = EnvolturaBF(arch_bf)
         símismo.assertIsInstance(envlt, EnvolturaBF)
 
     def test_crear_desde_clase(símismo):
-        # Comprobar creación de la envoltura desde una clase de modelo BF.
+        # Comprobar creación de la envoltura desde una clase de modelo bf.
         envlt = EnvolturaBF(ModeloPrueba)
         símismo.assertIsInstance(envlt, EnvolturaBF)
 
     def test_crear_desde_modelobf(símismo):
-        # Comprobar creación de la envoltura directamente desde un modelo BF.
+        # Comprobar creación de la envoltura directamente desde un modelo bf.
         modelo_bf = ModeloPrueba()
         envlt = EnvolturaBF(modelo_bf)
         símismo.assertIsInstance(envlt, EnvolturaBF)

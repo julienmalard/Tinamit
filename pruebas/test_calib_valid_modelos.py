@@ -6,7 +6,7 @@ from tinamit.EnvolturasMDS import generar_mds
 from tinamit.Geog_ import Geografía
 
 dir_act = os.path.split(__file__)[0]
-arch_mds = os.path.join(dir_act, 'recursos/MDS/mod_enferm.mdl')
+arch_mds = os.path.join(dir_act, 'recursos/mds/mod_enferm.mdl')
 arch_csv_geog = os.path.join(dir_act, 'recursos/datos/prueba_geog.csv')
 
 líms_paráms = {

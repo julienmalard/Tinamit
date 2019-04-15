@@ -5,13 +5,16 @@ from tinamit.unids.conv import convertir
 
 
 class EjeTiempo(object):
-    def __init__(símismo, t_inic, n_pasos, tmñ_paso, unid_paso, paso_guardar=None):
-        símismo.t_inic = t_inic if isinstance(t_inic, int) else _gen_fecha(t_inic)
+    def __init__(símismo, t, unid_paso):
+        if not isinstance(t, EspecTiempo):
+            t = EspecTiempo(t)
 
-        símismo.tmñ_paso = tmñ_paso
-        símismo.n_pasos = n_pasos
+        símismo.t_inic = t.t_inic
+        símismo.tmñ_paso = t.tmñ_paso
+        símismo.n_pasos = t.n_pasos
+        símismo.paso_guardar = t.paso_guardar
+
         símismo.unid_paso = unid_paso
-        símismo.paso_guardar = paso_guardar
 
         símismo._convs = {}
 
@@ -21,6 +24,9 @@ class EjeTiempo(object):
         if isinstance(símismo.t_inic, int):
             return None
         return símismo.t_inic + timedelta(**{_a_unid_python(símismo.unid_paso): símismo.í})
+
+    def t_guardar(símismo):
+        return not (símismo.í % símismo.paso_guardar)
 
     def pasos_avanzados(símismo, unid=None):
         if unid:
@@ -45,6 +51,18 @@ class EjeTiempo(object):
             fact = convertir(de=símismo.unid_paso, a=unid, val=1)
             símismo._convs[unid] = fact
             return fact
+
+    def __len__(símismo):
+        return símismo.n_pasos + 1
+
+
+class EspecTiempo(object):
+    def __init__(símismo, n_pasos, t_inic=0, tmñ_paso=1, paso_guardar=None):
+        símismo.t_inic = t_inic if isinstance(t_inic, int) else _gen_fecha(t_inic)
+
+        símismo.tmñ_paso = tmñ_paso
+        símismo.n_pasos = n_pasos
+        símismo.paso_guardar = paso_guardar or tmñ_paso
 
 
 def _gen_fecha(f):

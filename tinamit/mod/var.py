@@ -5,7 +5,7 @@ from tinamit.config import _
 
 class VariablesMod(object):
     def __init__(símismo, variables):
-        símismo.variables = {v: v.nombre for v in variables}
+        símismo.variables = {v.nombre: v for v in variables}
         if len(símismo.variables) != len(variables):
             raise ValueError(_('Los variables de un modelo deben todos tener nombre distinto.'))
 
@@ -52,14 +52,6 @@ class Variable(object):
 
         símismo._val = np.zeros(dims)
 
-        símismo._val_inic = np.zeros(dims)
-
-    def estab_val_inic(símismo, val):
-        símismo._val_inic = val
-
-    def reinic(símismo):
-        símismo._val[:] = símismo._val_inic
-
     def poner_val(símismo, val):
 
         if isinstance(val, np.ndarray):
@@ -70,3 +62,9 @@ class Variable(object):
 
     def obt_val(símismo):
         return símismo._val  # para disuadir modificaciones directas a `símismo._val`
+
+    def reinic(símismo):
+        símismo._val[:] = 0
+
+    def __str__(símismo):
+        return símismo.nombre

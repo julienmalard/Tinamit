@@ -4,15 +4,13 @@ import unittest
 import numpy.testing as npt
 import xarray.testing as xrt
 
-from tinamit.EnvolturasMDS import ModeloVensim, ModeloPySD, ModeloVensimMdl, generar_mds
-from tinamit.MDS import EnvolturaMDS
+from tinamit.envolt.mds import EnvolturaVensimDLL, EnvolturaPySD, EnvolturaMDS, gen_mds
 
 # Los tipos de modelos DS que queremos comprobar.
 tipos_modelos = {
-    'mdlVensim': {'envlt': ModeloVensimMdl, 'prueba': 'recursos/MDS/prueba_senc.mdl'},
-    'PySDVensim': {'envlt': ModeloPySD, 'prueba': 'recursos/MDS/prueba_senc.mdl'},
-    'PySD_XMILE': {'envlt': ModeloPySD, 'prueba': 'recursos/MDS/prueba_senc_.xmile'},
-    'dllVensim': {'envlt': ModeloVensim, 'prueba': 'recursos/MDS/prueba_senc.vpm'}
+    'PySDVensim': {'envlt': EnvolturaPySD, 'prueba': 'recursos/mds/prueba_senc.mdl'},
+    'PySD_XMILE': {'envlt': EnvolturaPySD, 'prueba': 'recursos/mds/prueba_senc_.xmile'},
+    'dllVensim': {'envlt': EnvolturaVensimDLL, 'prueba': 'recursos/mds/prueba_senc.vpm'}
 }
 
 # Agregar la ubicación del fuente actual
@@ -33,7 +31,7 @@ def generar_modelos_prueba():
 
 class Test_ModeloSenc(unittest.TestCase):
     """
-    Verifica el funcionamiento de los programas de MDS.
+    Verifica el funcionamiento de los programas de mds.
     """
 
     @classmethod
@@ -200,7 +198,7 @@ class Test_ModeloSenc(unittest.TestCase):
 
 class Test_OpcionesSimul(unittest.TestCase):
     """
-    Verifica el funcionamiento de las simulaciones de de MDS.
+    Verifica el funcionamiento de las simulaciones de de mds.
     """
 
     @classmethod
@@ -248,7 +246,7 @@ class Test_GenerarMDS(unittest.TestCase):
                     mod = generar_mds(d['prueba'])  # Generar el modelo
                     símismo.assertIsInstance(mod, EnvolturaMDS)
                 except ValueError:
-                    # No hay problema si el MDS no se pudo leer en la computadora actual. De pronto no estaba instalado.
+                    # No hay problema si el mds no se pudo leer en la computadora actual. De pronto no estaba instalado.
                     pass
 
     def test_generación_auto_mds_con_error_extensión(símismo):
@@ -257,7 +255,7 @@ class Test_GenerarMDS(unittest.TestCase):
         """
 
         with símismo.assertRaises(ValueError):
-            generar_mds('recursos/MDS/Modelo con extensión no reconocida.வணக்கம்')
+            generar_mds('recursos/mds/Modelo con extensión no reconocida.வணக்கம்')
 
     def test_generación_auto_mds_con_motor_especificado(símismo):
         """
@@ -279,7 +277,7 @@ class Test_GenerarMDS(unittest.TestCase):
             generar_mds('Yo no existo.mdl')
 
 
-def limpiar_mds(direc='./recursos/MDS'):
+def limpiar_mds(direc='./recursos/mds'):
     """
     Limpiamos todos los documentos temporarios generados por los programas de modelos DS.
     """
