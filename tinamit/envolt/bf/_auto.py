@@ -5,6 +5,7 @@ import traceback
 from importlib import import_module as importar_mod
 from warnings import warn as avisar
 
+from tinamit.config import _
 from ._envolt import EnvolturaBF
 
 
@@ -44,7 +45,7 @@ def _extraer_de_archivo(archivo):
 
     potenciales = {}
     errores = {}
-    for nmb, cls in clases:
+    for nmb, cls in clases.items():
         # noinspection PyBroadException
         try:
             potenciales[nmb] = cls()
@@ -59,13 +60,13 @@ def _extraer_de_archivo(archivo):
     elif 'Envoltura' in potenciales:
         return potenciales['Envoltura']
     elif potenciales:
-        elegida = list(potenciales.values())[0]
+        nmb_elegida = list(potenciales)[0]
         avisar(_('\nHabía más de una instancia de "EnvolturaBF" en el fuente'
                  '\n\t{}'
                  '\n...y ninguna se llamaba "Envoltura". Tomaremos "{}" como la envoltura'
                  '\ny esperaremos que funcione. Si no te parece, asegúrate que la definición de clase o el'
-                 '\nobjeto correcto se llame "Envoltura".').format(archivo, elegida))
-        return elegida
+                 '\nobjeto correcto se llame "Envoltura".').format(archivo, nmb_elegida))
+        return potenciales[nmb_elegida]
 
     raise AttributeError(_(
         'El archivo especificado: \n\t{}\nno contiene subclase o instancia de "EnvolturaBF" utilizable. '

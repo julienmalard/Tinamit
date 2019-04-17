@@ -1,29 +1,23 @@
 import csv
 
 import numpy as np
+import xarray as xr
+
 from tinamit.config import _
 from tinamit.cositas import valid_nombre_arch, guardar_json
-
 from .var import Variable
 
 
-class ResultadosGrupo(object):
-    def __init__(símismo):
-        símismo._corridas = {}
-
-    def __getitem__(símismo, itema):
-        return símismo._corridas[itema]
-
-    def __setitem__(símismo, llave, valor):
-        símismo._corridas[llave] = valor
+class ResultadosGrupo(dict):
+    pass
 
 
 class ResultadosSimul(object):
 
-    def __init__(símismo, nombre, eje_tiempo, variables):
+    def __init__(símismo, nombre, t, variables):
         símismo.nombre = nombre
-        símismo.eje_tiempo = eje_tiempo
-        símismo._res_vars = {str(v): ResultadosVar(v, eje_tiempo) for v in variables}
+        símismo.t = t
+        símismo.res_vars = {str(v): ResultadosVar(v, t) for v in variables}
 
     def actualizar(símismo):
         for v in símismo:
@@ -49,7 +43,7 @@ class ResultadosSimul(object):
             with open(arch, 'w', encoding='UTF-8', newline='') as a:
                 escr = csv.writer(a)
 
-                escr.writerow([_('tiempo')] + símismo.eje_tiempo)
+                escr.writerow([_('tiempo')] + símismo.t)
                 for var in l_vars:
                     vals = símismo[var].values
                     if len(vals.shape) == 1:
@@ -62,28 +56,39 @@ class ResultadosSimul(object):
             raise ValueError(_('Formato de resultados "{}" no reconocido.').format(frmt))
 
     def a_dic(símismo):
-        return {v: r.a_dic() for v, r in símismo._res_vars.items()}
+        return {v: r.a_dic() for v, r in símismo.res_vars.items()}
 
     def __str__(símismo):
         return str(símismo.nombre)
 
     def __iter__(símismo):
-        for v in símismo._res_vars.values():
+        for v in símismo.res_vars.values():
             yield v
 
     def __getitem__(símismo, itema):
-        return símismo._res_vars[str(itema)]
+        return símismo.res_vars[str(itema)]
+
+    def __eq__(símismo, otro):
+        return símismo.res_vars == otro.res_vars
 
 
 class ResultadosVar(object):
-    def __init__(símismo, var, eje_tiempo):
+    def __init__(símismo, var, t):
         símismo.var = var
-        símismo.eje_tiempo = eje_tiempo
+        símismo.t = t
 
-        símismo._vals = np.zeros((len(eje_tiempo), *símismo.var.dims))
+        dims = símismo.var.base.dims
+        matr = np.zeros((len(t), *dims))
+        símismo.vals = xr.DataArray(
+            matr, coords={_('tiempo'): símismo.t.eje()},
+            dims=[_('tiempo'), *('x_' + str(i) for i in range(len(dims)))]
+        )
 
     def actualizar(símismo):
-        símismo._vals[símismo.eje_tiempo.í] = símismo.var.obt_val()
+        símismo.vals[símismo.t.í // símismo.t.paso_guardar] = símismo.var.obt_val()
 
     def __str__(símismo):
         return str(símismo.var)
+
+    def __eq__(símismo, otro):
+        return símismo.vals.equals(otro.vals)

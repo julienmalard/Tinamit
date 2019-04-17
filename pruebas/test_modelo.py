@@ -4,68 +4,81 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import pandas.testing as pdt
+
 from pruebas.recursos.mod.prueba_mod import ModeloPrueba
+from tinamit.config import trads
 from tinamit.mod import EspecTiempo
-from tinamit.mod import OpsCorridaGrupo, OpsCorridaGrupoSenc
+from tinamit.mod import OpsCorridaGrupoCombin, OpsCorridaGrupo
+
+_ = trads.trad
 
 
 class TestSimular(unittest.TestCase):
     def test_simular_t_int(símismo):
         mod = ModeloPrueba()
-        res = mod.simular(t=10)['Aleatorio'].vals
-        npt.assert_equal(res, np.arange(11))
+        res = mod.simular(t=10)['Escala']
+        npt.assert_equal(res.vals, np.arange(11).reshape((11, 1)))
 
     def test_simular_t_fecha(símismo):
-        mod = ModeloPrueba()
-        res = mod.simular(t=EspecTiempo(10, '2001-01-01'))['Aleatorio']
-        pdt.assert_index_equal(res.eje_tiempo, pd.period_range('2001-01-01', periods=11))
+        mod = ModeloPrueba(unid_tiempo='días')
+        res = mod.simular(t=EspecTiempo(10, '2001-01-01'))['Escala']
+        pdt.assert_index_equal(
+            res.vals.indexes[_('tiempo')], pd.period_range('2001-01-01', periods=11), check_names=False
+        )
 
     def test_paso(símismo):
         mod = ModeloPrueba()
-        res = mod.simular(t=EspecTiempo(10, tmñ_paso=2))['Aleatorio']
-        npt.assert_equal(res.vals, np.arange(21, step=2))
-        npt.assert_equal(res.eje_tiempo, np.arange(21, step=2))
+        res = mod.simular(t=EspecTiempo(10, tmñ_paso=2))['Escala']
+        npt.assert_equal(res.vals, np.arange(21, step=2).reshape((11, 1)))
+        npt.assert_equal(res.vals.indexes[_('tiempo')], np.arange(21, step=2))
+
+    def test_guardar_cada(símismo):
+        mod = ModeloPrueba()
+        res = mod.simular(t=EspecTiempo(10, paso_guardar=2))['Escala']
+        npt.assert_equal(res.vals, np.arange(11, step=2).reshape((6, 1)))
+        npt.assert_equal(res.t.eje(), np.arange(11, step=2))
+
+    def test_guardar_cada_con_fecha(símismo):
+        mod = ModeloPrueba(unid_tiempo='días')
+        res = mod.simular(t=EspecTiempo(10, '2001-01-01', paso_guardar=2))['Escala']
+        npt.assert_equal(res.vals, np.arange(11, step=2).reshape((6, 1)))
+        pdt.assert_index_equal(
+            res.vals.indexes[_('tiempo')], pd.period_range('2001-01-01', periods=6, freq='2D'), check_names=False
+        )
 
 
 class TestSimularGrupo(unittest.TestCase):
 
     def test_simular_grupo(símismo):
-        ops = OpsCorridaGrupo()
-        vals_inic = [{'Lluvia': 1}, {'Lluvia': 2}]
-        tiempo_final = [100, 200]
-        res = símismo.mod.simular_grupo(
-            t_final=tiempo_final, vals_inic=vals_inic, vars_interés=['Lluvia'], combinar=False,
-            nombre_corrida=['1', '2']
-        )
-        símismo.assertEqual(len(res), 2)
+        vals_inic = [{'Escala': 1}, {'Escala': 2}]
+        mod = ModeloPrueba()
+        ops = OpsCorridaGrupo(5, vals_inic=vals_inic)
+        res = mod.simular_grupo(ops)
+        for corr, vl in zip(res.values(), vals_inic):
+            símismo.assertEqual(corr['Escala'].vals[0], vl['Escala'])
 
-    def test_simular_grupo_senc(símismo):
-        ops = OpsCorridaGrupoSenc(t=10, nombre_corrida=[])
-        res = ModeloPrueba().simular_grupo(
-            t_final=100, vals_inic=[{'Lluvia': 4}, {'Lluvia': 5}], vars_interés=['Lluvia']
-        )
-        símismo.assertSetEqual({'vals_inic0', 'vals_inic1'}, set(res))
+    def test_simular_grupo_combin(símismo):
+        mod = ModeloPrueba()
+        ops = OpsCorridaGrupoCombin([5, 6], vals_inic=[{'Escala': 1}, {'Escala': 2}])
+        res = mod.simular_grupo(ops)
+        símismo.assertEqual(len(res), 4)
 
-    def test_simular_grupo_senc_tmñ_erróneo(símismo):
-        raise NotImplementedError
+    def test_simular_grupo_tmñ_erróneo(símismo):
+        with símismo.assertRaises(ValueError):
+            OpsCorridaGrupo([5, 6, 7], vals_inic=[{'Escala': 1}, {'Escala': 2}])
 
     def test_simular_paralelo(símismo):
-        raise NotImplementedError
-
-    def test_simular_grupo_con_prefijo_nombre(símismo):
-        res = símismo.mod.simular_grupo(
-            t_final=100, vals_inic=[{'Lluvia': 1}, {'Lluvia': 2}],
-            nombre_corrida='pre'
-        )
-        símismo.assertTrue(all(x.startswith('pre') for x in res))
-
+        mod = ModeloPrueba()
+        ops = OpsCorridaGrupoCombin(5, vals_inic=[{'Escala': 1}, {'Escala': 2}])
+        sin_paralelo = mod.simular_grupo(ops)
+        con_paralelo = mod.simular_grupo(ops, paralelo=True)
+        símismo.assertEqual(sin_paralelo, con_paralelo)
 
     def test_simular_grupo_con_lista_nombres(símismo):
+        mod = ModeloPrueba()
         nombres = ['corrida 1', 'corrida 2']
-        res = símismo.mod.simular_grupo(
-            t_final=100, vals_inic=[{'Lluvia': 1}, {'Lluvia': 2}],
-            nombre_corrida=nombres, combinar=False
-        )
+        ops = OpsCorridaGrupo(5, vals_inic=[{'Escala': 1}, {'Escala': 2}], nombre=nombres)
+        res = mod.simular_grupo(ops)
         símismo.assertSetEqual(set(nombres), set(res))
 
 
@@ -174,10 +187,6 @@ class TestSimulConDatos(unittest.TestCase):
         )
         npt.assert_array_equal(res['Lluvia'].values, símismo.datos['Vacío'][:11])
 
-    @classmethod
-    def tearDownClass(cls):
-        limpiar_mds()
-
 
 class TestSimulConDatosGeog(unittest.TestCase):
     @classmethod
@@ -220,17 +229,3 @@ class TestSimulConDatosGeog(unittest.TestCase):
     def test_simular_en_lugar_con_escala_sin_geog(símismo):
         with símismo.assertRaises(ValueError):
             símismo.mod.simular_en(t_final=10, en='7', escala='municipio', bd=símismo.datos, vars_interés='Vacío')
-
-
-def _verificar_resultados(var, res, datos, rango_t):
-    rango_t[0] = rango_t[0] or datos['tiempo'][0]
-    rango_t[1] = rango_t[1] or datos['tiempo'][-1] + 1
-
-    # noinspection PyTypeChecker
-    if isinstance(rango_t[0], str):
-        npt.assert_array_equal(res['tiempo'], np.arange(*rango_t, dtype='datetime64'))
-    else:
-        npt.assert_array_equal(res['tiempo'], np.arange(*rango_t))
-    npt.assert_array_equal(
-        res[var], datos[var][np.isin(datos['tiempo'], res['tiempo'].values)]
-    )

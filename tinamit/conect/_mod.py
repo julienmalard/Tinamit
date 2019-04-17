@@ -1,9 +1,10 @@
+import asyncio
 import threading
 from warnings import warn as avisar
 
 import numpy as np
 
-from tinamit import Modelo
+from tinamit.mod import Modelo
 from tinamit.config import _
 from tinamit.envolt.bf import gen_bf
 from tinamit.envolt.mds import gen_mds
@@ -64,12 +65,12 @@ class SuperConectado(Modelo):
         return next(u for u, c in zip(unids, factores_conv) if c == 1)
 
     def iniciar_modelo(símismo, corrida):
+        super().iniciar_modelo(corrida)  # para hacer: ¿necesario?
+
         for m in símismo.modelos:
             m.iniciar_modelo(corrida)
 
         símismo._intercambiar_vars()
-
-        super().iniciar_modelo(corrida)
 
     def incrementar(símismo, corrida):
         def incr_mod(mod, d, corr):

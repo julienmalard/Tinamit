@@ -6,17 +6,13 @@ from warnings import warn as avisar
 import numpy as np
 import pandas as pd
 import tinamit.Geog_.Geog as Geog
-import xarray as xr
-from tinamit.Análisis.Calibs import CalibradorEc, CalibradorMod
-from tinamit.Análisis.Datos import gen_SuperBD, jsonificar, numpyficar, SuperBD
-from tinamit.Análisis.Valids import validar_resultados
 from tinamit.config import _, conf_mods
 from tinamit.cositas import guardar_json, cargar_json
 
 from .corrida import Corrida
 from .extern import gen_vals_extern
 from .res import ResultadosGrupo
-from .tiempo import EjeTiempo
+from .tiempo import EspecTiempo
 from .var import VariablesMod
 
 
@@ -58,15 +54,19 @@ class Modelo(object):
 
         raise NotImplementedError
 
-    def simular(símismo, t, nombre_corrida='Tinamït', vals_inic=None, vals_extern=None, clima=None, vals_interés=None):
-        vars_interés = vals_interés or símismo.variables
+    def simular(símismo, t, nombre='Tinamït', vals_inic=None, vals_extern=None, clima=None, vars_interés=None):
+        if not isinstance(t, EspecTiempo):
+            t = EspecTiempo(t)
+
+        vars_interés = vars_interés or símismo.variables
 
         # Vensim tiene un problema raro con nombres de corridas con '.'
-        nombre_corrida = nombre_corrida.replace('.', '_')
+        nombre = nombre.replace('.', '_')
 
         corrida = Corrida(
-            nombre_corrida, eje_tiempo=EjeTiempo(t, símismo.unidad_tiempo()),
+            nombre, t=t.gen_tiempo(símismo.unidad_tiempo()),
             extern=gen_vals_extern(vals_inic, vals_extern, clima),
+            vars_mod=símismo.variables,
             vars_interés=vars_interés
         )
 
@@ -112,11 +112,10 @@ class Modelo(object):
         return res_grupo
 
     def iniciar_modelo(símismo, corrida):
-        símismo.variables.reinic()
-        corrida.resultados.actualizar()
+        raise NotImplementedError
 
     def correr(símismo, corrida):
-        while corrida.eje_tiempo.avanzar():
+        while corrida.t.avanzar():
             símismo.incrementar(corrida)
             corrida.actualizar_res()
 

@@ -106,7 +106,7 @@ if __name__ == '__main__':
 
             # Simulate the coupled model
             modelo.simular(paso=1, t_final=40, vals_inic=run,
-                           nombre_corrida=name)  # time step and final time are in months
+                           nombre=name)  # time step and final time are in months
 
             # Draw maps
             modelo.dibujar_mapa(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')

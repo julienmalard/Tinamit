@@ -36,7 +36,7 @@ class EnvoltClima(EnvolturaBF):
         símismo.datos = símismo.clima.obt_datos()
 
     def incrementar(símismo, corrida):
-        fecha = corrida.eje_tiempo.fecha()
+        fecha = corrida.t.fecha()
         símismo.variables.cambiar_vals({v: símismo.datos[str(v)][fecha] for v in símismo.variables})
 
     def unidad_tiempo(símismo):

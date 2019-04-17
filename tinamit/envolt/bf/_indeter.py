@@ -5,7 +5,7 @@ class ModeloIndeterminado(ModeloImpaciente):
     def incrementar(símismo, corrida):
         # Para simplificar el código un poco.
         p = símismo.paso_en_ciclo
-        n_pasos = corrida.eje_tiempo.pasos_avanzados(símismo.unidad_tiempo())
+        n_pasos = corrida.t.pasos_avanzados(símismo.unidad_tiempo())
 
         # Aplicar el incremento de paso
         p += n_pasos

@@ -15,13 +15,8 @@ class VariablesMod(object):
     def egresos(símismo):
         return [v for v in símismo.variables if v.egr]
 
-    def cambiar_vals(símismo, valores):
-        for vr, vl in valores.items():
-            símismo[vr].poner_val(vl)
-
-    def reinic(símismo):
-        for v in símismo:
-            v.reinic()
+    def vars_simul(símismo):
+        return VariablesModSimul(símismo)
 
     def __getitem__(símismo, itema):
         if itema in símismo:
@@ -50,7 +45,30 @@ class Variable(object):
         símismo.líms = líms
         símismo.info = info
 
-        símismo._val = np.zeros(dims)
+    def __str__(símismo):
+        return símismo.nombre
+
+
+class VariablesModSimul(object):
+    def __init__(símismo, variables):
+        símismo.variables = {str(v): VariableSimul(v) for v in variables}  # para hacer
+
+    def cambiar_vals(símismo, valores):
+        for vr, vl in valores.items():
+            símismo[vr].poner_val(vl)
+
+    def __getitem__(símismo, itema):
+        return símismo.variables[itema]
+
+    def __iter__(símismo):
+        for v in símismo.variables.values():
+            yield v
+
+
+class VariableSimul(object):
+    def __init__(símismo, var):
+        símismo.base = var
+        símismo._val = np.zeros(var.dims)
 
     def poner_val(símismo, val):
 
@@ -67,4 +85,4 @@ class Variable(object):
         símismo._val[:] = 0
 
     def __str__(símismo):
-        return símismo.nombre
+        return str(símismo.base)

@@ -1,6 +1,6 @@
 import numpy as np
 
-from tinamit.BF import ModeloBloques, ModeloDeterminado, ModeloIndeterminado
+from tinamit.envolt.bf import ModeloBloques, ModeloDeterminado, ModeloIndeterminado
 
 
 class EjBloques(ModeloBloques):

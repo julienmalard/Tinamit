@@ -379,7 +379,7 @@ class CajaSubEtp31(CjG.CajaSubEtapa):
                 nombre = 'Corrida Tinamït'
 
             símismo.apli.Modelo.simular(paso=símismo.IngrPaso.val, t_final=símismo.IngrTempFinal.val,
-                                        nombre_corrida=nombre)
+                                        nombre=nombre)
             símismo.apli.Modelo.guardar_resultados()
             símismo.BtSimul.desbloquear()
             símismo.CjSimulando.pack_forget()

@@ -9,7 +9,7 @@ import scipy.stats as estad
 from pruebas.test_mds import limpiar_mds
 from tinamit.Análisis.Calibs import CalibradorEc
 from tinamit.Análisis.Datos import MicroDatos, SuperBD
-from tinamit.EnvolturasMDS.PySD import ModeloPySD
+from tinamit.envolt.mds import EnvolturaPySD
 from tinamit.Geog_.Geog import Geografía
 
 try:

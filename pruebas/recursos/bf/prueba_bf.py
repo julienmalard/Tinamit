@@ -1,31 +1,23 @@
-from random import random as alea
-
-from tinamit import Modelo
 from tinamit.mod import VariablesMod, Variable
+from tinamit.envolt.bf import EnvolturaBF
 
 
-class ModeloPrueba(Modelo):
+class ModeloPrueba(EnvolturaBF):
 
     def __init__(símismo, unid_tiempo='años', nombre='modeloBF'):
         símismo.unid_tiempo = unid_tiempo
         super().__init__(nombre=nombre, variables=símismo._gen_vars())
 
-    def incrementar(símismo, corrida):
-        símismo._act_vals_dic_var({'Lluvia': símismo.obt_val_actual_var('Lago') / 10 * paso})
-        símismo._act_vals_dic_var({'Escala': símismo.obt_val_actual_var('Escala') + paso})
-        símismo._act_vals_dic_var({'Aleatorio': alea()})
-
     @staticmethod
     def _gen_vars():
         return VariablesMod([
-            Variable('Escala', unid=None, ingr=False, egr=True, líms=(0, None)),
-            Variable('Vacío', unid=None, ingr=True, egr=False, líms=(0, None)),
-            Variable('Vacío2', unid=None, ingr=True, egr=False, líms=(0, None)),
-            Variable('Aleatorio', unid=None, ingr=False, egr=True, líms=(0, 1))
+            Variable('Lluvia', unid=None, ingr=False, egr=True, líms=(0, None)),
+            Variable('Lago', unid=None, ingr=True, egr=False, líms=(0, None)),
         ])
 
-    def _leer_vals(símismo):
-        pass
+    def incrementar(símismo, corrida):
+        lago = símismo.variables['Lago'].obt_val()
+        símismo.variables['Lluvia'].poner_val(lago / 10 * paso)
 
     def cerrar(símismo):
         pass

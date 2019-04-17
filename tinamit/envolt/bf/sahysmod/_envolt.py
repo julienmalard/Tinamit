@@ -66,8 +66,6 @@ class ModeloSAHYSMOD(ModeloBloques):
         # Crear un diccionario de trabajo específico a esta corrida.
         símismo.direc_trabajo = tempfile.mkdtemp(str(corrida))
 
-        super().iniciar_modelo(corrida)
-
     def avanzar_modelo(símismo, n_ciclos):
         arch_egreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.out')
         arch_ingreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.inp')

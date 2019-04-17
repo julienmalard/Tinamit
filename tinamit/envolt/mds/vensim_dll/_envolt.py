@@ -31,13 +31,13 @@ class EnvolturaVensimDLL(EnvolturaMDS):
 
     def iniciar_modelo(símismo, corrida):
 
-        eje_tiempo = corrida.eje_tiempo
+        t = corrida.t
         # En Vensim, tenemos que incializar los valores de variables no editables antes de empezar la simulación.
         símismo.variables.cambiar_vals(
             {var: val for var, val in corrida.vals_inic() if not isinstance(var, VarAuxEditable)}
         )
 
-        f.inic_modelo(símismo.mod, paso=eje_tiempo.paso, n_pasos=eje_tiempo.n_pasos, nombre_corrida=str(corrida))
+        f.inic_modelo(símismo.mod, paso=t.paso, n_pasos=t.n_pasos, nombre_corrida=str(corrida))
 
         # Aplicar los valores iniciales de variables editables
         símismo.variables.cambiar_vals(
@@ -46,8 +46,6 @@ class EnvolturaVensimDLL(EnvolturaMDS):
 
         # Debe venir después de `f.inic_modelo()` sino no obtenemos datos para los variables
         símismo._leer_vals_de_vensim()
-
-        super().iniciar_modelo(corrida)
 
     def incrementar(símismo, corrida):
 

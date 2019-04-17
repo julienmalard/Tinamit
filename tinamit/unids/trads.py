@@ -4,10 +4,12 @@ from itertools import chain as cadena
 
 import pint
 import pkg_resources
-
+from pint import UnitRegistry
 from tinamit.config import _
 from tinamit.cositas import guardar_json, cargar_json
-from . import regu
+
+regu = UnitRegistry()
+C_ = regu.Quantity
 
 _archivo_trads = pkg_resources.resource_filename('tinamit.unids', 'trads_unids.json')
 _archivo_pluriales = pkg_resources.resource_filename('tinamit.unids', 'pluriales.json')

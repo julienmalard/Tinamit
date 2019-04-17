@@ -5,14 +5,79 @@ import unittest
 import numpy as np
 from numpy import testing as npt
 
-import tinamit.EnvolturasBF
 from pruebas.recursos.bf.prueba_bf import ModeloPrueba
-from tinamit.BF import EnvolturaBF
 from tinamit.BF import ModeloImpaciente
+from tinamit.envolt.bf import gen_bf, EnvolturaBF
 
 dir_act = os.path.split(__file__)[0]
 arch_bf = os.path.join(dir_act, 'recursos/bf/prueba_mod.py')
 arch_bf_flexible = os.path.join(dir_act, 'recursos/bf/modelo_flexible.py')
+
+
+class TestModeloDeter(unittest.TestCase):
+    pass
+
+
+class TestModeloIndeter(unittest.TestCase):
+    pass
+
+
+class TestModeloBloques(unittest.TestCase):
+    pass
+
+
+class TestGenAuto(unittest.TestCase):
+    def test_instancia(símismo):
+        mod = gen_bf(ModeloPrueba())
+        símismo.assertIsInstance(mod, EnvolturaBF)
+
+    def test_clase(símismo):
+        mod = gen_bf(ModeloPrueba)
+        símismo.assertIsInstance(mod, EnvolturaBF)
+
+    def test_archivo_instancia(símismo):
+        mod = gen_bf(símismo._obt_recurso('arch_instancia.py'))
+        símismo.assertIsInstance(mod, EnvolturaBF)
+
+    def test_archivo_clase(símismo):
+        mod = gen_bf(símismo._obt_recurso('arch_clase.py'))
+        símismo.assertIsInstance(mod, EnvolturaBF)
+
+    def test_archivo_instancia_no_identificada(símismo):
+        mod = gen_bf(símismo._obt_recurso('arch_instancia_no_identificada.py'))
+        símismo.assertIsInstance(mod, EnvolturaBF)
+
+    def test_archivo_clase_no_identificada(símismo):
+        mod = gen_bf(símismo._obt_recurso('arch_clase_no_identificada.py'))
+        símismo.assertIsInstance(mod, EnvolturaBF)
+
+    def test_archivo_múltiples(símismo):
+        mod = gen_bf(símismo._obt_recurso('arch_múltiples.py'))
+        símismo.assertEqual(mod.unidad_tiempo(), 'años')
+
+    def test_archivo_múltiples_no_identificada(símismo):
+        mod = gen_bf(símismo._obt_recurso('arch_múltiples_no_identificada.py'))
+        símismo.assertIsInstance(mod, EnvolturaBF)
+
+    def test_archivo_vacío(símismo):
+        with símismo.assertRaises(AttributeError):
+            gen_bf(símismo._obt_recurso('arch_vacío.py'))
+
+    def test_tipo_no_válido(símismo):
+        with símismo.assertRaises(TypeError):
+            gen_bf(123)
+
+    def test_archivo_no_existe(símismo):
+        with símismo.assertRaises(FileNotFoundError):
+            gen_bf('નમસ્તે')
+
+    def test_archivo_no_python(símismo):
+        with símismo.assertRaises(ValueError):
+            gen_bf(símismo._obt_recurso('no_python.txt'))
+
+    @staticmethod
+    def _obt_recurso(archivo):
+        return os.path.join('recursos/bf/_prbs_arch', archivo)
 
 
 # Comprobar que el modelo bf de prueba corre corectamente
@@ -90,25 +155,6 @@ class Test_ModeloSenc(unittest.TestCase):
         mod = EnvolturaBF(arch_bf, nombre='Nombre_inválido')
 
         símismo.assertNotIn('_', mod.nombre)
-
-
-# Comprobar que la EnvolturasBF pueda leer el modelo bf de prueba en todas las formas posibles para cargar un modelo bf.
-class Test_CrearEnvolturaBF(unittest.TestCase):
-    def test_crear_desde_archivo(símismo):
-        # Comprobar creación de la envoltura desde un fuente que contiene un modelo bf.
-        envlt = EnvolturaBF(arch_bf)
-        símismo.assertIsInstance(envlt, EnvolturaBF)
-
-    def test_crear_desde_clase(símismo):
-        # Comprobar creación de la envoltura desde una clase de modelo bf.
-        envlt = EnvolturaBF(ModeloPrueba)
-        símismo.assertIsInstance(envlt, EnvolturaBF)
-
-    def test_crear_desde_modelobf(símismo):
-        # Comprobar creación de la envoltura directamente desde un modelo bf.
-        modelo_bf = ModeloPrueba()
-        envlt = EnvolturaBF(modelo_bf)
-        símismo.assertIsInstance(envlt, EnvolturaBF)
 
 
 class Test_Envolturas_ModeloImpaciente(unittest.TestCase):
