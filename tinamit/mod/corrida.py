@@ -36,13 +36,13 @@ class PlantillaOpsCorridaGrupo(object):
 
 
 class OpsCorridaGrupoCombin(PlantillaOpsCorridaGrupo):
-    def __init__(símismo, t, vals_inic=None, vals_extern=None, clima=None, vars_interés=None, nombre='Tinamït'):
+    def __init__(símismo, t, vals_extern=None, clima=None, vars_interés=None, nombre='Tinamït'):
         símismo.nombre = nombre
-        super().__init__(t=t, vals_inic=vals_inic, vals_extern=vals_extern, clima=clima, vars_interés=vars_interés)
+        super().__init__(t=t, vals_extern=vals_extern, clima=clima, vars_interés=vars_interés)
 
     def __iter__(símismo):
         ops = itertools.product(*símismo.opciones.values())
-        nmbs = ['t', 'vals_inic', 'vals_extern', 'clima']
+        nmbs = ['t', 'vals_extern', 'clima']
         for i, op in enumerate(ops):
             yield {
                 **{n: o for n, o in zip(nmbs, op)},
@@ -52,11 +52,11 @@ class OpsCorridaGrupoCombin(PlantillaOpsCorridaGrupo):
 
 class OpsCorridaGrupo(PlantillaOpsCorridaGrupo):
 
-    def __init__(símismo, t, vals_inic=None, vals_extern=None, clima=None, vars_interés=None, nombre='Tinamït'):
+    def __init__(símismo, t, vals_extern=None, clima=None, vars_interés=None, nombre='Tinamït'):
         símismo.nombre = nombre
 
         args = {
-            't': t, 'vals_inic': vals_inic, 'vals_extern': vals_extern, 'clima': clima, 'vars_interés': vars_interés
+            't': t, 'vals_extern': vals_extern, 'clima': clima, 'vars_interés': vars_interés
         }
         if not isinstance(nombre, str):
             args['nombre'] = nombre

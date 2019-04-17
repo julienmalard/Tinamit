@@ -10,7 +10,7 @@ from tinamit.config import _, conf_mods
 from tinamit.cositas import guardar_json, cargar_json
 
 from .corrida import Corrida
-from .extern import gen_vals_extern
+from .extern import gen_extern
 from .res import ResultadosGrupo
 from .tiempo import EspecTiempo
 from .var import VariablesMod
@@ -54,7 +54,7 @@ class Modelo(object):
 
         raise NotImplementedError
 
-    def simular(símismo, t, nombre='Tinamït', vals_inic=None, vals_extern=None, clima=None, vars_interés=None):
+    def simular(símismo, t, nombre='Tinamït', vals_extern=None, clima=None, vars_interés=None):
         if not isinstance(t, EspecTiempo):
             t = EspecTiempo(t)
 
@@ -65,7 +65,7 @@ class Modelo(object):
 
         corrida = Corrida(
             nombre, t=t.gen_tiempo(símismo.unidad_tiempo()),
-            extern=gen_vals_extern(vals_inic, vals_extern, clima),
+            extern=gen_extern(vals_extern),
             vars_mod=símismo.variables,
             vars_interés=vars_interés
         )

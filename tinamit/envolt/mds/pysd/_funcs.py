@@ -17,9 +17,11 @@ def gen_mod_pysd(archivo):
 def obt_paso_mod_pysd(archivo):
     # Inelegante, seguro, pero por el momento inevitable con PySD
     with open(archivo, 'r', encoding='UTF-8') as d:
-        f = d.readline()
-        while f != 'def time_step():\n':
-            f = d.readline()
-        while not f.strip().startswith('Units:'):
-            f = d.readline()
-    return f.split(':')[1].strip()
+        buscando = False
+        for f in d:
+            if f == 'def time_step():\n':
+                buscando = True
+            if buscando and f.strip().startswith('Units:'):
+                return f.split(':')[1].strip()
+
+    raise ValueError()

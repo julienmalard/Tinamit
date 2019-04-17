@@ -22,7 +22,7 @@ class ModeloPrueba(Modelo):
         return VariablesMod([
             Variable('Escala', unid=None, ingr=False, egr=True, líms=(0, None)),
             Variable('Vacío', unid=None, ingr=True, egr=False, líms=(0, None)),
-            Variable('Vacío2', unid=None, ingr=True, egr=False, líms=(0, None)),
+            Variable('Vacío2', unid=None, ingr=True, egr=False, líms=(0, None), dims=(2,)),
         ])
 
     def cerrar(símismo):

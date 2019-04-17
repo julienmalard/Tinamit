@@ -1,12 +1,11 @@
 import ctypes
 import os
 import sys
-from warnings import warn as avisar
 
 import numpy as np
+
 from tinamit.config import _
 from tinamit.mod import Variable
-
 from . import _funcs as f
 from ._vars import VarAuxEditable
 from .._envolt import EnvolturaMDS
@@ -21,7 +20,7 @@ class EnvolturaVensimDLL(EnvolturaMDS):
     """
 
     def __init__(símismo, archivo, nombre='mds'):
-        símismo.mod = f.cargar_mod_vensim(ctypes.WinDLL(_obt_dll_vensim()), archivo)
+        símismo.mod = f.cargar_mod_vensim(_obt_dll_vensim(), archivo)
         símismo.paso = f.obt_paso_inicial(símismo.mod)
         vars_ = _gen_vars(símismo.mod)
         super().__init__(vars_, nombre)
@@ -99,7 +98,7 @@ class EnvolturaVensimDLL(EnvolturaMDS):
 
     @classmethod
     def instalado(cls):
-        return _obt_dll_vensim() is not None
+        return _obt_arch_dll_vensim() is not None
 
     def paralelizable(símismo):
         return True
@@ -134,9 +133,11 @@ class EnvolturaVensimDLL(EnvolturaMDS):
 
 def _obt_dll_vensim():
     if sys.platform[:3] != 'win':
-        avisar(_('Desafortunadamente, el DLL de Vensim funciona únicamente en Windows.'))
-        return False
+        raise OSError(_('Desafortunadamente, el DLL de Vensim funciona únicamente en Windows.'))
+    return ctypes.WinDLL(_obt_arch_dll_vensim())
 
+
+def _obt_arch_dll_vensim():
     return EnvolturaVensimDLL.obt_conf(
         'dll', auto=[
             'C:/Windows/System32/vendll32.dll',

@@ -15,6 +15,10 @@ def olvidar_envolt_mds(envoltura):
     _subclases.remove(envoltura)
 
 
+class ErrorNoInstalado(OSError):
+    pass
+
+
 def gen_mds(archivo):
     ext = os.path.splitext(archivo)[1]
 
@@ -25,4 +29,4 @@ def gen_mds(archivo):
             e = '.' + e if ext[0] != '.' else e
             if ext == e:
                 return cls(archivo)
-    raise ValueError(_('No se encontró envoltura instalada para archivos de tipo "{}".'.format(ext)))
+    raise ErrorNoInstalado(_('No se encontró envoltura instalada para archivos de tipo "{}".'.format(ext)))

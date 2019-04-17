@@ -1,9 +1,10 @@
+import os
 from ast import literal_eval
 
 from tinamit.Análisis.sintaxis import Ecuación
-from .._envolt import EnvolturaMDS
 from ._funcs import gen_mod_pysd, obt_paso_mod_pysd
 from ._vars import VarPySDAuxiliar, VarPySDNivel, VarPySDConstante, VariablesPySD
+from .._envolt import EnvolturaMDS
 
 
 class EnvolturaPySD(EnvolturaMDS):
@@ -56,6 +57,9 @@ class EnvolturaPySD(EnvolturaMDS):
         símismo._res_recién[v].values
         return corrida.resultados()
 
+    def unidad_tiempo(símismo):
+        return obt_paso_mod_pysd(os.path.splitext(símismo.archivo)[0] + '.py')
+
     def cambiar_vals(símismo, valores):
         símismo.vars_para_cambiar.update(valores)
 
@@ -81,15 +85,9 @@ class EnvolturaPySDMDL(EnvolturaPySD):
 class EnvolturaPySDXMILE(EnvolturaPySD):
     ext = ['.xmile', '.xml']
 
-    def unidad_tiempo(símismo):
-        return obt_paso_mod_pysd(símismo.archivo)
-
 
 class EnvolturaPySDPy(EnvolturaPySD):
     ext = '.py'
-
-    def unidad_tiempo(símismo):
-        return obt_paso_mod_pysd(símismo.archivo)
 
 
 def _gen_vars(mod):

@@ -57,7 +57,7 @@ class TiempoCalendario(Tiempo):
 
     def eje(símismo):
         paso = símismo.fact_conv * símismo.paso_guardar * símismo.tmñ_paso
-        return pd.period_range(
+        return pd.date_range(
             símismo.f_inic, periods=símismo.n_pasos // símismo.paso_guardar + 1,
             freq=str(paso) + _a_unid_pandas[símismo.unid_paso]
         )
@@ -111,7 +111,7 @@ def _a_unid_tnmt(unid):
     ]
     for u in aceptables:
         if unid == u:
-            return unid
+            return unid, 1
         try:
             factor = convertir(de=unid, a=u)
             if int(factor) == factor:
