@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import shapefile as sf
 from matplotlib import colors, cm
@@ -5,11 +7,12 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
 
 from tinamit.config import _
+from tinamit.cositas import detectar_codif
 
 
 class Mapa(object):
     def __init__(símismo, formas):
-        símismo.formas = formas
+        símismo.formas = [formas] if isinstance(formas, Forma) else formas
 
     def dibujar(símismo, archivo=None, título=None):
 
@@ -30,7 +33,8 @@ class Mapa(object):
 
 class Forma(object):
     def __init__(símismo, archivo, llenar, alpha):
-        símismo.forma = sf.Reader(archivo)
+        codif = detectar_codif(os.path.splitext(archivo)[0] + '.dbf')
+        símismo.forma = sf.Reader(archivo, encoding=codif)
         símismo.llenar = llenar
         símismo.alpha = alpha
 
@@ -52,9 +56,9 @@ class Forma(object):
                 seg = puntos[i0:i1 + 1]
                 x_lon = np.zeros((len(seg), 1))
                 y_lat = np.zeros((len(seg), 1))
-                for i in range(len(seg)):
-                    x_lon[i] = seg[i][0]
-                    y_lat[i] = seg[i][1]
+                for j in range(len(seg)):
+                    x_lon[j] = seg[j][0]
+                    y_lat[j] = seg[j][1]
 
                 clr = color[i] if isinstance(color, np.ndarray) else color
                 if símismo.llenar:
@@ -73,41 +77,28 @@ class FormaEstática(Forma):
 
 
 class FormaDinámica(Forma):
-    def __init__(símismo, archivo, col_id, escala_colores=None, llenar=True, alpha=1):
+    def __init__(símismo, archivo, escala_colores=None, llenar=True, alpha=1):
         super().__init__(archivo, llenar=llenar, alpha=alpha)
 
-        símismo.col_id = col_id
         símismo.escala_colores = símismo._resolver_colores(escala_colores)
         símismo.valores = np.full(len(símismo.forma.shapes()), np.nan)
         símismo.unidades = None
         símismo.escala = None
 
-        nombres_attr = [field[0] for field in símismo.forma.fields[1:]]
-        try:
-            símismo.ids = [x.record[nombres_attr.index(símismo.col_id)] for x in símismo.forma.shapeRecords()]
-        except ValueError:
-            raise ValueError(_('La columna "{}" no existe en la base de datos.').format(símismo.col_id))
-
-    def estab_valores(símismo, valores, escala=None, unidades=None):
+    def estab_valores(símismo, valores, escala_valores=None, unidades=None):
         símismo.unidades = unidades
 
-        if isinstance(valores, dict):
-            símismo.valores[:] = np.nan
-            for id_, val in valores.items():
-                i = símismo.ids.index(id_)
-                símismo.valores[i] = val
-        else:
-            símismo.valores[:] = valores
+        símismo._llenar_valores(valores)
 
-        if escala is None:
+        if escala_valores is None:
             if np.all(np.isnan(símismo.valores)):
-                escala = (0, 1)
+                escala_valores = (0, 1)
             else:
-                escala = (np.nanmin(símismo.valores), np.nanmax(símismo.valores))
-                if escala[0] == escala[1]:
-                    escala = (escala[0] - 0.5, escala[0] + 0.5)
+                escala_valores = (np.nanmin(símismo.valores), np.nanmax(símismo.valores))
+                if escala_valores[0] == escala_valores[1]:
+                    escala_valores = (escala_valores[0] - 0.5, escala_valores[0] + 0.5)
 
-        símismo.escala = escala
+        símismo.escala = escala_valores
 
     def dibujar(símismo, ejes, fig):
         vals_norm = (símismo.valores - símismo.escala[0]) / (símismo.escala[1] - símismo.escala[0])
@@ -138,6 +129,46 @@ class FormaDinámica(Forma):
         elif isinstance(colores, str):
             return ['#FFFFFF', colores]
         return colores
+
+    def _extraer_col(símismo, col):
+        nombres_attr = [field[0] for field in símismo.forma.fields[1:]]
+        try:
+            return [x.record[nombres_attr.index(col)] for x in símismo.forma.shapeRecords()]
+        except ValueError:
+            raise ValueError(_('La columna "{}" no existe en la base de datos.').format(col))
+
+    def _llenar_valores(símismo, valores):
+        raise NotImplementedError
+
+
+class FormaDinámicaNumérica(FormaDinámica):
+
+    def __init__(símismo, archivo, col_id=None, escala_colores=None, llenar=True, alpha=1):
+        super().__init__(archivo, escala_colores, llenar, alpha)
+
+        if col_id is not None:
+            ids = np.array(símismo._extraer_col(col_id))
+            símismo.ids = ids - np.min(ids)
+        else:
+            símismo.ids = None
+
+    def _llenar_valores(símismo, valores):
+        if símismo.ids is None:
+            símismo.valores[:] = valores
+        else:
+            símismo.valores[:] = valores[símismo.ids]
+
+
+class FormaDinámicaNombrada(FormaDinámica):
+    def __init__(símismo, archivo, col_id, escala_colores=None, llenar=True, alpha=1):
+        super().__init__(archivo, escala_colores, llenar, alpha)
+        símismo.ids = símismo._extraer_col(col_id)
+
+    def _llenar_valores(símismo, valores):
+        símismo.valores[:] = np.nan
+        for id_, val in valores.items():
+            i = símismo.ids.index(id_)
+            símismo.valores[i] = val
 
 
 class Agua(FormaEstática):

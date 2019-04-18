@@ -1,16 +1,20 @@
-import datetime as ft
 import os
+import random
+import shutil
+import tempfile
 import unittest
 
 import numpy as np
-import numpy.testing as npt
 
+from tinamit.geog.mapa import Mapa, FormaDinámicaNombrada, Calle, Ciudad, Bosque, OtraForma, Agua, FormaDinámicaNumérica
 from tinamit.geog.región import Nivel, Lugar, gen_nivel
 
 dir_act = os.path.split(__file__)[0]
 arch_csv_geog = os.path.join(dir_act, 'recursos/datos/prueba_geog.csv')
-arch_frm_regiones = os.path.join(dir_act, 'recursos/frm/munis.shp')
+arch_frm_nombrada = os.path.join(dir_act, 'recursos/frm/munis.shp')
+arch_frm_numérica = os.path.join(dir_act, 'recursos/frm/frm_numérica.shp')
 arch_frm_otra = os.path.join(dir_act, 'recursos/frm/otra_frm.shp')
+
 arch_clim_diario = os.path.join(dir_act, 'recursos/datos/clim_diario.csv')
 arch_clim_mensual = os.path.join(dir_act, 'recursos/datos/clim_mensual.csv')
 arch_clim_anual = os.path.join(dir_act, 'recursos/datos/clim_anual.csv')
@@ -77,83 +81,45 @@ class TestGenAuto(unittest.TestCase):
 
 
 class TestMapa(unittest.TestCase):
-    def test_dibujar_desde_matriz_np(símismo):
-        pass
-
-
-class Test_Geografía(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
-        cls.geog = Geografía(nombre='Prueba Guatemala')
-        cls.geog.espec_estruct_geog(archivo=arch_csv_geog)
+        cls.dir_ = tempfile.mkdtemp(prefix='prueba_geog_')
 
-    def test_dibujar_desde_matriz_np(símismo):
-        símismo.geog.agregar_frm_regiones(arch_frm_regiones, col_id='COD_MUNI')
-        lugares = símismo.geog.obt_lugares_en(escala='municipio')
-        símismo.geog.dibujar(archivo='prueba.jpg', valores=np.random.rand(len(lugares)), ids=lugares)
-        símismo.assertTrue(os.path.isfile('prueba.jpg'))
-        os.remove('prueba.jpg')
+    def _verificar_dibujó(símismo, mapa, nombre):
+        arch = os.path.join(símismo.dir_, nombre)
+        mapa.dibujar(arch)
+        símismo.assertTrue(os.path.isfile(arch))
+        os.remove(arch)
 
-    def test_dibujar_desde_matriz_np_sin_ids(símismo):
-        símismo.geog.agregar_frm_regiones(arch_frm_regiones, col_id='COD_MUNI')
-        lugares = símismo.geog.obt_lugares_en(escala='municipio')
-        símismo.geog.dibujar(archivo='prueba.jpg', valores=np.random.rand(len(lugares)))
-        símismo.assertTrue(os.path.isfile('prueba.jpg'))
-        os.remove('prueba.jpg')
+    def test_dibujar_formas_estáticas(símismo):
+        frms = [cls(arch_frm_otra) for cls in [Calle, Ciudad, Bosque, OtraForma, Agua]]
+        símismo._verificar_dibujó(Mapa(frms), 'mapa_estático.jpeg')
 
-    def test_dibujar_desde_matriz_np_sin_estruct(símismo):
-        geog = Geografía(nombre='Prueba Guatemala')
-        geog.agregar_frm_regiones(arch_frm_regiones, col_id='COD_MUNI', escala_geog='municipio')
-        lugares = geog.formas_reg['municipio']['ids']
-        geog.dibujar(archivo='prueba.jpg', valores=np.random.rand(len(lugares)))
-        os.remove('prueba.jpg')
+    def test_dibujar_forma_numérica(símismo):
+        frm = FormaDinámicaNumérica(arch_frm_numérica, col_id='Id')
+        frm.estab_valores(np.random.rand(*frm.valores.shape))
+        símismo._verificar_dibujó(Mapa(frm), 'mapa_matriz.jpeg')
 
-    def test_dibujar_desde_matriz_np_sin_estruct_con_ids(símismo):
-        geog = Geografía(nombre='Prueba Guatemala')
-        geog.agregar_frm_regiones(arch_frm_regiones, col_id='COD_MUNI', escala_geog='municipio')
-        lugares = geog.formas_reg['municipio']['ids']
-        geog.dibujar(archivo='prueba.jpg', valores=np.random.rand(len(lugares)), ids=lugares[::-1])
-        os.remove('prueba.jpg')
+    def test_dibujar_forma_numérica_sin_id(símismo):
+        frm = FormaDinámicaNumérica(arch_frm_numérica)
+        frm.estab_valores(np.random.rand(*frm.valores.shape))
+        símismo._verificar_dibujó(Mapa(frm), 'mapa_matriz_sin_id.jpeg')
 
+    def test_dibujar_forma_nombrada(símismo):
+        frm = FormaDinámicaNombrada(arch_frm_nombrada, col_id='COD_MUNI')
+        frm.estab_valores({id_: random.random() for id_ in frm.ids})
+        símismo._verificar_dibujó(Mapa(frm), 'mapa_dict.jpeg')
 
-class Test_Lugar(unittest.TestCase):
-    def test_observar_diarios(símismo):
-        lugar = Lugar(lat=0, long=0, elev=0)
-        lugar.observar_diarios(arch_clim_diario, cols_datos={'Precipitación': 'Lluvia'},
-                               conv={'Precipitación': 1}, c_fecha='Fecha')
-        f_inic = ft.datetime(2018, 1, 1).date()
-        f_final = ft.datetime(2018, 1, 31).date()
-        lugar.prep_datos(fecha_inic=f_inic, fecha_final=f_final)
-        res = lugar.devolver_datos('Precipitación', f_inic=f_inic, f_final=f_final)
-        npt.assert_array_equal(res['Precipitación'], [1] * 15 + [0] * 16)
+    def test_dibujar_escala_valores(símismo):
+        frm = FormaDinámicaNumérica(arch_frm_numérica, col_id='Id')
+        frm.estab_valores(np.random.rand(*frm.valores.shape), escala_valores=(0, 2))
+        símismo._verificar_dibujó(Mapa(frm), 'mapa_escala.jpeg')
 
-    def test_comb_datos(símismo):
-        lugar = Lugar(lat=0, long=0, elev=0)
-        lugar.observar_diarios(arch_clim_diario, cols_datos={'Precipitación': 'Lluvia'},
-                               conv={'Precipitación': 1}, c_fecha='Fecha')
-        f_inic = ft.datetime(2018, 1, 1).date()
-        f_final = ft.datetime(2018, 1, 31).date()
-        lugar.prep_datos(fecha_inic=f_inic, fecha_final=f_final)
-        res = lugar.comb_datos('Precipitación', combin='total', f_inic=f_inic, f_final=f_final)
-        símismo.assertEqual(res['Precipitación'], 15)
+    def test_dibujar_unidades(símismo):
+        frm = FormaDinámicaNumérica(arch_frm_numérica, col_id='Id')
+        frm.estab_valores(np.random.rand(*frm.valores.shape), unidades='Cosos')
+        símismo._verificar_dibujó(Mapa(frm), 'mapa_unids.jpeg')
 
-    def test_observar_mensuales(símismo):
-        lugar = Lugar(lat=0, long=0, elev=0)
-        lugar.observar_mensuales(arch_clim_mensual, cols_datos={'Precipitación': 'Lluvia'},
-                                 conv={'Precipitación': 1}, meses='Mes', años='Año')
-        f_inic = ft.datetime(2018, 1, 1).date()
-        f_final = ft.datetime(2018, 1, 31).date()
-        lugar.prep_datos(fecha_inic=f_inic, fecha_final=f_final)
-        res = lugar.devolver_datos('Precipitación', f_inic=f_inic, f_final=f_final)
-        npt.assert_array_equal(res['Precipitación'], np.ones(31))
-
-    def test_observar_anuales(símismo):
-        lugar = Lugar(lat=0, long=0, elev=0)
-        lugar.observar_anuales(arch_clim_anual, cols_datos={'Precipitación': 'Lluvia'},
-                               conv={'Precipitación': 1}, años='Año')
-        f_inic = ft.datetime(2018, 1, 1).date()
-        f_final = ft.datetime(2018, 1, 31).date()
-        lugar.prep_datos(fecha_inic=f_inic, fecha_final=f_final)
-        res = lugar.devolver_datos('Precipitación', f_inic=f_inic, f_final=f_final)
-        npt.assert_array_equal(res['Precipitación'], np.ones(31))
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.dir_)
