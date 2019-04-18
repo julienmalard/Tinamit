@@ -1,21 +1,21 @@
 language: python
 python:
-- '3.6'
+  - '3.6'
 os:
-- linux
+  - linux
 install:
-- pip install --upgrade pip setuptools wheel
-- pip install -r reqs.txt
-- pip install coveralls codecov
-- python setup.py sdist bdist_wheel
-- pip install tinamit --no-index --find-links=./dist
+  - pip install --upgrade pip setuptools wheel
+  - pip install -r reqs.txt
+  - pip install coveralls codecov
+  - python setup.py sdist bdist_wheel
+  - pip install tinamit --no-index --find-links=./dist
 script:
-- rm -r tinamit
-- cd pruebas
-- nosetests --with-coverage --cover-package=tinamit
+  - rm -r tinamit
+  - cd pruebas
+  - nosetests --with-coverage --cover-package=tinamit
 after_success:
-- coveralls --rcfile=.coveragerc
-- codecov
+  - coveralls --rcfile=.coveragerc
+  - codecov
 deploy:
   provider: pypi
   user: julien.malard

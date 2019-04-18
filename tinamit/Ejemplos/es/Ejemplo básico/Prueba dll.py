@@ -3,12 +3,11 @@ Python model "Prueba dll.py"
 Translated using PySD version 0.9.0
 """
 from __future__ import division
-import numpy as np
-from pysd import utils
-import xarray as xr
 
-from pysd.py_backend.functions import cache
+import numpy as np
+
 from pysd.py_backend import functions
+from pysd.py_backend.functions import cache
 
 _subscript_dict = {}
 

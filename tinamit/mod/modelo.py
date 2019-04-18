@@ -5,10 +5,10 @@ from warnings import warn as avisar
 
 import numpy as np
 import pandas as pd
+
 import tinamit.Geog_.Geog as Geog
 from tinamit.config import _, conf_mods
 from tinamit.cositas import guardar_json, cargar_json
-
 from .corrida import Corrida
 from .extern import gen_extern
 from .res import ResultadosGrupo

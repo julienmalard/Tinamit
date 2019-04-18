@@ -13,22 +13,22 @@
 <!--[if IE 8]>
 <html class="no-js lt-ie9" lang="{{ lang_attr }}" dir="auto"> <![endif]-->
 <!--[if gt IE 8]><!-->
-<html class="no-js" lang="{{ lang_attr }}" dir="auto"> <!--<![endif]-->
+<html class="no-js" dir="auto" lang="{{ lang_attr }}"> <!--<![endif]-->
 <head>
     <meta charset="utf-8">
     {{ metatags }}
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     {% block htmltitle %}
     <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
     {% endblock %}
 
     {# FAVICON #}
     {% if favicon %}
-    <link rel="shortcut icon" href="{{ pathto('_static/' + favicon, 1) }}"/>
+    <link href="{{ pathto('_static/' + favicon, 1) }}" rel="shortcut icon"/>
     {% endif %}
     {# CANONICAL URL #}
     {% if theme_canonical_url %}
-    <link rel="canonical" href="{{ theme_canonical_url }}{{ pagename }}.html"/>
+    <link href="{{ theme_canonical_url }}{{ pagename }}.html" rel="canonical"/>
     {% endif %}
 
     {# CSS #}
@@ -36,55 +36,55 @@
     {# OPENSEARCH #}
     {% if not embedded %}
     {% if use_opensearch %}
-    <link rel="search" type="application/opensearchdescription+xml"
+    <link href="{{ pathto('_static/opensearch.xml', 1) }}" rel="search"
           title="{% trans docstitle=docstitle|e %}Search within {{ docstitle }}{% endtrans %}"
-          href="{{ pathto('_static/opensearch.xml', 1) }}"/>
+          type="application/opensearchdescription+xml"/>
     {% endif %}
 
     {% endif %}
 
     {# RTD hosts this file, so just load on non RTD builds #}
     {% if not READTHEDOCS %}
-    <link rel="stylesheet" href="{{ pathto('_static/' + style, 1) }}" type="text/css"/>
+    <link href="{{ pathto('_static/' + style, 1) }}" rel="stylesheet" type="text/css"/>
     {% endif %}
 
-    <link rel="stylesheet" href="{{ pathto('_static/pygments.css', 1) }}" type="text/css"/>
+    <link href="{{ pathto('_static/pygments.css', 1) }}" rel="stylesheet" type="text/css"/>
 
     {% for cssfile in css_files %}
     {# Desactivar el tema automático #}
     {% if "sphinx_rtd_theme" not in cssfile %}
-    <link rel="stylesheet" href="{{ pathto(cssfile, 1) }}" type="text/css"/>
+    <link href="{{ pathto(cssfile, 1) }}" rel="stylesheet" type="text/css"/>
     {% endif %}
     {% endfor %}
 
     {% for cssfile in extra_css_files %}
-    <link rel="stylesheet" href="{{ pathto(cssfile, 1) }}" type="text/css"/>
+    <link href="{{ pathto(cssfile, 1) }}" rel="stylesheet" type="text/css"/>
     {% endfor %}
 
     {%- block linktags %}
     {%- if hasdoc('about') %}
-    <link rel="author" title="{{ _('About these documents') }}"
-          href="{{ pathto('about') }}"/>
+    <link href="{{ pathto('about') }}" rel="author"
+          title="{{ _('About these documents') }}"/>
     {%- endif %}
     {%- if hasdoc('genindex') %}
-    <link rel="index" title="{{ _('Index') }}"
-          href="{{ pathto('genindex') }}"/>
+    <link href="{{ pathto('genindex') }}" rel="index"
+          title="{{ _('Index') }}"/>
     {%- endif %}
     {%- if hasdoc('search') %}
-    <link rel="search" title="{{ _('Search') }}" href="{{ pathto('search') }}"/>
+    <link href="{{ pathto('search') }}" rel="search" title="{{ _('Search') }}"/>
     {%- endif %}
     {%- if hasdoc('copyright') %}
-    <link rel="copyright" title="{{ _('Copyright') }}" href="{{ pathto('copyright') }}"/>
+    <link href="{{ pathto('copyright') }}" rel="copyright" title="{{ _('Copyright') }}"/>
     {%- endif %}
-    <link rel="top" title="{{ docstitle|e }}" href="{{ pathto('index') }}"/>
+    <link href="{{ pathto('index') }}" rel="top" title="{{ docstitle|e }}"/>
     {%- if parents %}
-    <link rel="up" title="{{ parents[-1].title|striptags|e }}" href="{{ parents[-1].link|e }}"/>
+    <link href="{{ parents[-1].link|e }}" rel="up" title="{{ parents[-1].title|striptags|e }}"/>
     {%- endif %}
     {%- if next %}
-    <link rel="next" title="{{ next.title|striptags|e }}" href="{{ next.link|e }}"/>
+    <link href="{{ next.link|e }}" rel="next" title="{{ next.title|striptags|e }}"/>
     {%- endif %}
     {%- if prev %}
-    <link rel="prev" title="{{ prev.title|striptags|e }}" href="{{ prev.link|e }}"/>
+    <link href="{{ prev.link|e }}" rel="prev" title="{{ prev.title|striptags|e }}"/>
     {%- endif %}
     {%- endblock %}
     {%- block extrahead %} {% endblock %}
@@ -100,7 +100,7 @@
 <div class="wy-grid-for-nav">
 
     {# SIDE NAV, TOGGLES ON MOBILE #}
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+    <nav class="wy-nav-side" data-toggle="wy-nav-shift">
         <div class="wy-side-scroll">
             <div class="wy-side-nav-search">
                 {% block sidebartitle %}
@@ -108,13 +108,13 @@
                 {% if logo and theme_logo_only %}
                 <a href="{{ pathto(master_doc) }}">
                     {% else %}
-                    <a href="{{ pathto(master_doc) }}" class="icon icon-home"> {{ project }}
+                    <a class="icon icon-home" href="{{ pathto(master_doc) }}"> {{ project }}
                         {% endif %}
 
                         {% if logo %}
                         {# Not strictly valid HTML, but it's the only way to display/scale it properly, without weird
                         scripting or heaps of work #}
-                        <img src="{{ pathto('_static/' + logo, 1) }}" class="logo"/>
+                        <img class="logo" src="{{ pathto('_static/' + logo, 1) }}"/>
                         {% endif %}
                     </a>
 
@@ -135,7 +135,7 @@
                     {% endblock %}
             </div>
 
-            <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+            <div aria-label="main navigation" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
                 {% block menu %}
                 {#
                 The singlehtml builder doesn't handle this toctree call when the
@@ -156,12 +156,12 @@
         </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+    <section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
 
         {# MOBILE NAV, TRIGGLES SIDE NAV ON TOGGLE #}
-        <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <nav aria-label="top navigation" class="wy-nav-top" role="navigation">
             {% block mobile_nav %}
-            <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+            <i class="fa fa-bars" data-toggle="wy-nav-top"></i>
             <a href="{{ pathto(master_doc) }}">{{ project }}</a>
             {% endblock %}
         </nav>
@@ -175,7 +175,7 @@
                 <div class="rst-content">
                     {% endif %}
                     {% include "breadcrumbs.html" %}
-                    <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+                    <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
                         <div itemprop="articleBody">
                             {% block body %}{% endblock %}
                         </div>
@@ -205,16 +205,17 @@
             SOURCELINK_SUFFIX: '{{ sourcelink_suffix }}'
         };
 
+
 </script>
 {%- for scriptfile in script_files %}
-<script type="text/javascript" src="{{ pathto(scriptfile, 1) }}"></script>
+<script src="{{ pathto(scriptfile, 1) }}" type="text/javascript"></script>
 {%- endfor %}
 
 {% endif %}
 
 {# RTD hosts this file, so just load on non RTD builds #}
 {% if not READTHEDOCS %}
-<script type="text/javascript" src="{{ pathto('_static/js/theme.js', 1) }}"></script>
+<script src="{{ pathto('_static/js/theme.js', 1) }}" type="text/javascript"></script>
 {% endif %}
 
 {# STICKY NAVIGATION #}
@@ -223,6 +224,7 @@
       jQuery(function () {
           SphinxRtdTheme.StickyNav.enable();
       });
+
 
 </script>
 {% endif %}

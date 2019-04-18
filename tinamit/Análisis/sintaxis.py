@@ -701,9 +701,9 @@ class Ecuación(object):
             else:
                 sigma = pm.HalfNormal(name='sigma', sd=obs_y.values.std())
                 theta = pm.Normal(name='theta', sd=1)
-                beta = pm.HalfNormal(name='beta', sd=1/obs_y.values.std())
+                beta = pm.HalfNormal(name='beta', sd=1 / obs_y.values.std())
                 pm.Normal(name='Y_obs', mu=mu,
-                          sd=sigma , #* (beta*pm.math.abs_(mu) + 1),
+                          sd=sigma,  # * (beta*pm.math.abs_(mu) + 1),
                           observed=obs_y.values)
 
         return modelo

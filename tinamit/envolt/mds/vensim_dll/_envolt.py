@@ -133,7 +133,10 @@ class EnvolturaVensimDLL(EnvolturaMDS):
 
 def _obt_dll_vensim():
     if sys.platform[:3] != 'win':
-        raise OSError(_('Desafortunadamente, el DLL de Vensim funciona únicamente en Windows.'))
+        raise OSError(
+            _('\nDesafortunadamente, el DLL de Vensim funciona únicamente en Windows.'
+              '\nPuedes intentar la envoltura EnvolturaPySDMDL con un modelo .mdl en vez.')
+        )
     return ctypes.WinDLL(_obt_arch_dll_vensim())
 
 

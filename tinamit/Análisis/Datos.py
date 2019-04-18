@@ -8,8 +8,8 @@ import pandas as pd
 import xarray as xr
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
-
 from எண்ணிக்கை import எண்ணுக்கு as எ
+
 from tinamit.config import _
 from tinamit.cositas import detectar_codif, guardar_json, cargar_json
 

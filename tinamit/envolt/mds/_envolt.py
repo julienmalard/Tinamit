@@ -2,7 +2,6 @@ from ...mod import Modelo
 
 
 class EnvolturaMDS(Modelo):
-
     ext = []
 
     def __init__(símismo, variables, nombre='mds'):

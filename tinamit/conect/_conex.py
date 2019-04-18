@@ -1,7 +1,8 @@
 from warnings import warn as avisar
 
-from tinamit.unids.conv import convertir
 from tinamit.config import _
+from tinamit.unids.conv import convertir
+
 
 class ConexionesVars(object):
     def __init__(símismo):

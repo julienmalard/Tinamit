@@ -1,7 +1,7 @@
 import numpy as np
+
 from tinamit.envolt.bf._deter import ModeloDeterminado
 from tinamit.mod.var import Variable
-
 from ._impac import VariablesModImpaciente
 
 

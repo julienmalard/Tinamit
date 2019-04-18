@@ -8,9 +8,8 @@ import numpy.testing as npt
 from pruebas.recursos.bf.prueba_bf import ModeloPrueba
 from pruebas.recursos.bf.variantes import EjBloques, EjDeterminado, EjIndeterminado
 from pruebas.test_mds import generar_modelos_prueba, limpiar_mds
-from tinamit.envolt.bf import EnvolturaBF
 from tinamit.conect import Conectado, SuperConectado
-from tinamit.envolt.mds import gen_mds, EnvolturaPySD
+from tinamit.envolt.bf import EnvolturaBF
 from tinamit.unids import trads
 
 dir_act = os.path.split(__file__)[0]

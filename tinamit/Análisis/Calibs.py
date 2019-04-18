@@ -10,6 +10,7 @@ import spotpy
 import xarray as xr
 from scipy.optimize import minimize
 from scipy.stats import gaussian_kde
+
 from tinamit.Análisis.Datos import BDtexto, gen_SuperBD, SuperBD
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.config import _

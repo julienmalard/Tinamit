@@ -118,7 +118,7 @@ class TestSimulConDatos(unittest.TestCase):
         símismo._simul_con_extern(extern, ref=np.arange(11))
 
     def test_t_fecha_extern_bd_xr(símismo):
-        extern = xr.Dataset({'Vacío': ('tiempo', np.arange(11))}, coords={ 'tiempo': np.arange(11)})
+        extern = xr.Dataset({'Vacío': ('tiempo', np.arange(11))}, coords={'tiempo': np.arange(11)})
         símismo._simul_con_extern(extern, ref=np.arange(11))
 
     def test_t_numérico(símismo):

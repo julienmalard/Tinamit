@@ -1,5 +1,5 @@
-from tinamit.mod import VariablesMod, Variable
 from tinamit.envolt.bf import EnvolturaBF
+from tinamit.mod import VariablesMod, Variable
 
 
 class ModeloPrueba(EnvolturaBF):

@@ -6,44 +6,68 @@ from tinamit.config import _
 from tinamit.cositas import detectar_codif
 
 
-class Región(object):
-    def __init__(símismo, niveles):
-        símismo.niveles = {n.nombre: n for n in niveles}
-
-    def lugares_en(símismo, en, nivel):
-        return símismo[nivel].lugares()
-
-    def __getitem__(símismo, itema):
-        return símismo.niveles[itema]
-
-
 class Nivel(object):
-    def __init__(símismo, nombre):
+    def __init__(símismo, nombre, subniveles=None):
         símismo.nombre = nombre
+        símismo.subniveles = subniveles
+
+    def __eq__(símismo, otro):
+        return str(símismo) == str(otro)
+
+    def __str__(símismo):
+        return símismo.nombre
 
 
 class Lugar(object):
-    def __init__(símismo, nombre, sub_lugares=None):
+    def __init__(símismo, nombre, nivel, cód=None, sub_lugares=None):
+        símismo.cód = cód or nombre
+        símismo.nivel = nivel
         símismo.nombre = nombre
-        símismo.sub_lugares = sub_lugares or set()
+        símismo.sub_lugares = set(sub_lugares or [])
+
+    def lugares(símismo, en=None, nivel=None):
+        if en is None:
+            buscar_en = símismo
+        else:
+            buscar_en = símismo[en]
+        return {lg for lg in buscar_en if (nivel is None or lg.nivel == nivel)}
+
+    def buscar_nombre(símismo, nombre, nivel=None):
+        for lg in símismo:
+            if lg.nombre == nombre and (nivel is None or lg.nivel == nivel):
+                return lg
+        raise ValueError(_('Lugar "{nmb}" no encontrado en "{lg}"').format(nmb=nombre, lg=símismo))
+
+    def __iter__(símismo):
+        yield símismo
+        for lg in símismo.sub_lugares:
+            for s_lg in lg:
+                yield s_lg
+
+    def __getitem__(símismo, itema):
+        for lg in símismo:
+            if isinstance(itema, Lugar) and lg is itema:
+                return lg
+            elif itema == lg.cód:
+                return lg
+
+        raise KeyError(itema)
+
+    def __str__(símismo):
+        return símismo.nombre
 
 
-class Forma(object):
-    pass
 
-def región_de_csv(archivo, col_cód='Código'):
+def gen_nivel(archivo, nivel_base, nombre=None, col_cód='Código'):
     codif_csv = detectar_codif(archivo)
-    ext = os.path.splitext(archivo)[1]
-
-    if ext != '.csv':
-        raise ValueError(_('El archivo debe ser de formato csv.'))
+    nombre = nombre or os.path.splitext(os.path.split(nombre)[1])[0]
 
     with open(archivo, newline='', encoding=codif_csv) as d:
 
-        l = csv.DictReader(d)  # El lector de csv
+        f = csv.DictReader(d)  # El lector de csv
 
         # Guardar la primera fila como nombres de columnas
-        cols = [x.lower().strip() for x in l.fieldnames]
+        cols = [x.lower().strip() for x in f.fieldnames]
 
         if col_cód not in cols:
             raise ValueError(_(
@@ -51,9 +75,10 @@ def región_de_csv(archivo, col_cód='Código'):
                 'columnas del csv ({}).'
             ).format(col_cód, ', '.join(cols)))
 
-        doc = [OrderedDict((ll.lower().strip(), v.strip()) for ll, v in f.items()) for f in l]
+        doc = [OrderedDict((ll.lower().strip(), v.strip()) for ll, v in f.items()) for f in f]
 
-    return Región()
+    lugar_base = Lugar(nombre, )
+    return Nivel(nombre=nivel_base, lugares=lugar_base)
 
     # Inferir el orden de la jerarquía
     órden = []

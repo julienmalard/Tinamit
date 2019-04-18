@@ -10,7 +10,7 @@ from tinamit.envolt.mds import EnvolturaVensimDLL, EnvolturaPySDXMILE, Envoltura
 # Los tipos de modelos DS que queremos comprobar.
 tipos_modelos = {
     'PySDVensim': {'envlt': EnvolturaPySDMDL, 'prueba': 'recursos/mds/prueba_senc.mdl'},
-    'PySD_XMILE': {'envlt': EnvolturaPySDXMILE, 'prueba': 'recursos/mds/prueba_senc_.xmile'},
+    'PySD_XMILE': {'envlt': EnvolturaPySDXMILE, 'prueba': 'recursos/mds/prueba_senc_xml.xmile'},
     'dllVensim': {'envlt': EnvolturaVensimDLL, 'prueba': 'recursos/mds/prueba_senc.vpm'}
 }
 

@@ -1,9 +1,9 @@
 import pint
 import regex as re
 
+from tinamit.config import _
 from tinamit.unids import regu, C_, trad_unid
 from tinamit.unids.trads import buscar_singular
-from tinamit.config import _
 
 
 def convertir(de, a, val=1, lengua=None):

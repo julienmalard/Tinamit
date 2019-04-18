@@ -1,7 +1,6 @@
 import itertools
 
 from tinamit.config import _
-
 from .res import ResultadosSimul
 
 

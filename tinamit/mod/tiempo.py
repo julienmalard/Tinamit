@@ -3,6 +3,7 @@ from datetime import datetime, date
 import numpy as np
 import pandas as pd
 from dateutil.relativedelta import relativedelta
+
 from tinamit.config import _
 from tinamit.unids.conv import convertir
 

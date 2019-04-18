@@ -1,6 +1,7 @@
 import os
 
 from tinamit.Conectado import Conectado
+
 from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
 from tinamit.Geog_.Geog import Lugar, Geografía
 
@@ -115,13 +116,13 @@ if __name__ == '__main__':
         # Climate change runs
         location = Lugar(lat=32.178207, long=73.217391, elev=217)
         location.observar((os.path.join(base_dir, 'مشاہدہ بارش.csv')), meses='مہینہ', años='سال',
-                                    cols_datos={'Precipitación': 'بارش (ملیمیٹر)',
-                                                'Temperatura mínima': 'درجہ_حرارت_کم',
-                                                'Temperatura máxima': 'درجہ_حرارت_زیادہ'
-                                                },
-                                    conv={'Precipitación': 1,
-                                          'Temperatura mínima': 1,
-                                          'Temperatura máxima': 1})
+                          cols_datos={'Precipitación': 'بارش (ملیمیٹر)',
+                                      'Temperatura mínima': 'درجہ_حرارت_کم',
+                                      'Temperatura máxima': 'درجہ_حرارت_زیادہ'
+                                      },
+                          conv={'Precipitación': 1,
+                                'Temperatura mínima': 1,
+                                'Temperatura máxima': 1})
 
         modelo.mds.conectar_var_clima(var='TminTinamit', var_clima='Temperatura mínima', conv=1)
         modelo.mds.conectar_var_clima(var='TmaxTinamit', var_clima='Temperatura máxima', conv=1)

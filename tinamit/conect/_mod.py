@@ -1,13 +1,12 @@
-import asyncio
 import threading
 from warnings import warn as avisar
 
 import numpy as np
 
-from tinamit.mod import Modelo
 from tinamit.config import _
 from tinamit.envolt.bf import gen_bf
 from tinamit.envolt.mds import gen_mds
+from tinamit.mod import Modelo
 from tinamit.unids.conv import convertir
 from ._conex import Conex, ConexionesVars
 from ._vars import VariablesConectado

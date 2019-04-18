@@ -9,7 +9,6 @@ import scipy.stats as estad
 from pruebas.test_mds import limpiar_mds
 from tinamit.Análisis.Calibs import CalibradorEc
 from tinamit.Análisis.Datos import MicroDatos, SuperBD
-from tinamit.envolt.mds import EnvolturaPySD
 from tinamit.Geog_.Geog import Geografía
 
 try:
@@ -22,7 +21,6 @@ if T is None:
     hay_compil_c = False
 else:
     hay_compil_c = T.configdefaults.rc == 0
-
 
 dir_act = os.path.split(__file__)[0]
 arch_csv_geog = os.path.join(dir_act, 'recursos/datos/prueba_geog.csv')

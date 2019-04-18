@@ -1,8 +1,6 @@
 import inspect
 import unittest
 
-import numpy.testing as npt
-
 from tinamit.envolt import bf
 
 
