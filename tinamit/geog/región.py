@@ -57,36 +57,29 @@ class Lugar(object):
         return símismo.nombre
 
 
-
 def gen_nivel(archivo, nivel_base, nombre=None, col_cód='Código'):
     codif_csv = detectar_codif(archivo)
     nombre = nombre or os.path.splitext(os.path.split(nombre)[1])[0]
 
     with open(archivo, newline='', encoding=codif_csv) as d:
 
-        f = csv.DictReader(d)  # El lector de csv
+        lc = csv.DictReader(d)  # El lector de csv
 
         # Guardar la primera fila como nombres de columnas
-        cols = [x.lower().strip() for x in f.fieldnames]
+        cols = [x.strip() for x in lc.fieldnames]
 
         if col_cód not in cols:
             raise ValueError(_(
-                'La columna de código de región especificada ("{}") no concuerda con los nombres de '
-                'columnas del csv ({}).'
-            ).format(col_cód, ', '.join(cols)))
+                'La columna de código de región especificada ("{c}") no concuerda con los nombres de '
+                'columnas del csv ({n}).'
+            ).format(c=col_cód, n=', '.join(cols)))
 
-        doc = [OrderedDict((ll.lower().strip(), v.strip()) for ll, v in f.items()) for f in f]
-
-    lugar_base = Lugar(nombre, )
-    return Nivel(nombre=nivel_base, lugares=lugar_base)
+        doc = [OrderedDict((ll.strip(), v.strip()) for ll, v in f.items()) for f in lc]
 
     # Inferir el orden de la jerarquía
     órden = []
 
     escalas = [x for x in cols if x != col_cód]
-    símismo.escalas.extend(escalas)
-
-    símismo.info_geog.update({esc: [] for esc in escalas})
 
     coescalas = []
     for f in doc:
@@ -106,32 +99,27 @@ def gen_nivel(archivo, nivel_base, nombre=None, col_cód='Código'):
             if not len(cn):
                 coescalas.remove(cn)
 
-    símismo.orden_jerárquico.extend(órden)
+    órden.insert(0, nivel_base)
+    niveles = {}
+    anterior = None
+    for nvls in órden[::-1]:
+        if isinstance(nvls, str):
+            niveles[nvls] = Nivel(nombre=nvls, subniveles=anterior)
+        else:
+            for nvl in nvls:
+                niveles[nvl] = Nivel(nombre=nvl, subniveles=anterior)
+        anterior = nvls
 
-    for f in doc:
-        cód = f[col_cód]
-        escala = None
-        for esc in órden[::-1]:
-            if isinstance(esc, str):
-                if len(f[esc]):
-                    escala = esc
-            else:
-                for nv_ig in esc:
-                    if len(f[nv_ig]):
-                        escala = nv_ig
-            if escala is not None:
-                break
+    dic_doc = {f[col_cód]: f for f in doc}
+    quedan = list(dic_doc)
+    lugares = {}
+    for nvl, obj_nvl in niveles.items():
+        for cód in list(quedan):
+            lg = dic_doc[cód]
+            if lg[nvl]:
+                nmb = lg[nvl]
+                subs = {s for c, s in lugares.items() if (dic_doc[c][nvl] == nmb or dic_doc[c][nvl] == cód)}
+                lugares[cód] = Lugar(nmb, nivel=obj_nvl, cód=cód, sub_lugares=subs)
+                quedan.remove(cód)
 
-        nombre = f[escala]
-
-        símismo.cód_a_lugar[cód] = {
-            'escala': escala,
-            'nombre': nombre,
-            'en': {ll: v for ll, v in f.items() if ll in escalas and len(v) and ll != escala}
-        }
-        símismo.info_geog[escala].append(cód)
-
-    for cód, dic in símismo.cód_a_lugar.items():
-        for esc, lg_en in dic['en'].items():
-            if lg_en not in símismo.cód_a_lugar:
-                dic['en'][esc] = símismo.nombre_a_cód(nombre=lg_en, escala=esc)
+    return Lugar(nombre=nombre, nivel=niveles[nivel_base], sub_lugares=lugares.values())

@@ -79,6 +79,9 @@ class TestGenAuto(unittest.TestCase):
     def setUpClass(cls):
         cls.nivel = gen_nivel(arch_csv_geog, nivel_base='País', nombre='Iximulew')
 
+    def test_funcionó(símismo):
+        pass  # para hacer
+
 
 class TestMapa(unittest.TestCase):
     @classmethod
