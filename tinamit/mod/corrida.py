@@ -21,8 +21,12 @@ class Corrida(object):
         if símismo.t.t_guardar():
             símismo.resultados.actualizar()
 
+    def obt_extern_act(símismo, var=None):
+        if símismo.extern:
+            return símismo.extern.obt_vals_t(símismo.t, var=var)
 
-class PlantillaOpsCorridaGrupo(object):
+
+class PlantillaOpsSimulGrupo(object):
     def __init__(símismo, **argsll):
         símismo.opciones = argsll
 
@@ -34,7 +38,7 @@ class PlantillaOpsCorridaGrupo(object):
         raise NotImplementedError
 
 
-class OpsCorridaGrupoCombin(PlantillaOpsCorridaGrupo):
+class OpsSimulGrupoCombin(PlantillaOpsSimulGrupo):
     def __init__(símismo, t, vals_extern=None, clima=None, vars_interés=None, nombre='Tinamït'):
         símismo.nombre = nombre
         super().__init__(t=t, vals_extern=vals_extern, clima=clima, vars_interés=vars_interés)
@@ -49,7 +53,7 @@ class OpsCorridaGrupoCombin(PlantillaOpsCorridaGrupo):
             }
 
 
-class OpsCorridaGrupo(PlantillaOpsCorridaGrupo):
+class OpsSimulGrupo(PlantillaOpsSimulGrupo):
 
     def __init__(símismo, t, vals_extern=None, clima=None, vars_interés=None, nombre='Tinamït'):
         símismo.nombre = nombre

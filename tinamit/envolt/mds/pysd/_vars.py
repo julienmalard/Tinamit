@@ -12,25 +12,25 @@ class VarPySD(VarMDS):
 
 
 class VarPySDConstante(VarPySD, VarConstante):
-    def __init__(símismo, nombre, nombre_py, unid, ec, parientes, dims=(1,), subs=None, líms=None, info=''):
+    def __init__(símismo, nombre, nombre_py, unid, ec, parientes, inic=0, subs=None, líms=None, info=''):
         super().__init__(
-            nombre_py, nombre=nombre, unid=unid, ec=ec, parientes=parientes, dims=dims, subs=subs, líms=líms,
+            nombre_py, nombre=nombre, unid=unid, ec=ec, parientes=parientes, inic=inic, subs=subs, líms=líms,
             info=info
         )
 
 
 class VarPySDAuxiliar(VarPySD, VarAuxiliar):
 
-    def __init__(símismo, nombre, nombre_py, unid, ec, parientes, dims=(1,), subs=None, líms=None, info=''):
+    def __init__(símismo, nombre, nombre_py, unid, ec, parientes, inic=0, subs=None, líms=None, info=''):
         super().__init__(
-            nombre_py, nombre=nombre, unid=unid, ec=ec, parientes=parientes, dims=dims, subs=subs, líms=líms,
+            nombre_py, nombre=nombre, unid=unid, ec=ec, parientes=parientes, inic=inic, subs=subs, líms=líms,
             info=info
         )
 
 
 class VarPySDNivel(VarPySD, VarNivel):
-    def __init__(símismo, nombre, nombre_py, unid, ec, parientes, dims=(1,), subs=None, líms=None, info=''):
+    def __init__(símismo, nombre, nombre_py, unid, ec, parientes, inic=0, subs=None, líms=None, info=''):
         super().__init__(
-            nombre_py, nombre=nombre, unid=unid, ec=ec, parientes=parientes, dims=dims, subs=subs, líms=líms,
+            nombre_py, nombre=nombre, unid=unid, ec=ec, parientes=parientes, inic=inic, subs=subs, líms=líms,
             info=info
         )

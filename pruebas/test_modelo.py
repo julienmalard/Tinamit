@@ -9,7 +9,7 @@ import xarray as xr
 from pruebas.recursos.mod.prueba_mod import ModeloPrueba
 from tinamit.config import trads
 from tinamit.mod import EspecTiempo
-from tinamit.mod import OpsCorridaGrupoCombin, OpsCorridaGrupo
+from tinamit.mod import OpsSimulGrupoCombin, OpsSimulGrupo
 
 _ = trads.trad
 
@@ -33,6 +33,11 @@ class TestSimular(unittest.TestCase):
         npt.assert_equal(res.vals, np.arange(21, step=2).reshape((11, 1)))
         npt.assert_equal(res.vals.indexes[_('tiempo')], np.arange(21, step=2))
 
+    def test_paso_inválido(símismo):
+        mod = ModeloPrueba()
+        with símismo.assertRaises(ValueError):
+            mod.simular(EspecTiempo(100, tmñ_paso=0))
+
     def test_guardar_cada(símismo):
         mod = ModeloPrueba()
         res = mod.simular(t=EspecTiempo(10, paso_guardar=2))['Escala']
@@ -53,24 +58,24 @@ class TestSimularGrupo(unittest.TestCase):
     def test_simular_grupo(símismo):
         vals_extern = [{'Escala': 1}, {'Escala': 2}]
         mod = ModeloPrueba()
-        ops = OpsCorridaGrupo(5, vals_extern=vals_extern)
+        ops = OpsSimulGrupo(5, vals_extern=vals_extern)
         res = mod.simular_grupo(ops)
         for corr, vl in zip(res.values(), vals_extern):
             símismo.assertEqual(corr['Escala'].vals.values[0], vl['Escala'])
 
     def test_simular_grupo_combin(símismo):
         mod = ModeloPrueba()
-        ops = OpsCorridaGrupoCombin([5, 6], vals_extern=[{'Escala': 1}, {'Escala': 2}])
+        ops = OpsSimulGrupoCombin([5, 6], vals_extern=[{'Escala': 1}, {'Escala': 2}])
         res = mod.simular_grupo(ops)
         símismo.assertEqual(len(res), 4)
 
     def test_simular_grupo_tmñ_erróneo(símismo):
         with símismo.assertRaises(ValueError):
-            OpsCorridaGrupo([5, 6, 7], vals_extern=[{'Escala': 1}, {'Escala': 2}])
+            OpsSimulGrupo([5, 6, 7], vals_extern=[{'Escala': 1}, {'Escala': 2}])
 
     def test_simular_paralelo(símismo):
         mod = ModeloPrueba()
-        ops = OpsCorridaGrupoCombin(5, vals_extern=[{'Escala': 1}, {'Escala': 2}])
+        ops = OpsSimulGrupoCombin(5, vals_extern=[{'Escala': 1}, {'Escala': 2}])
         sin_paralelo = mod.simular_grupo(ops)
         con_paralelo = mod.simular_grupo(ops, paralelo=True)
         símismo.assertEqual(sin_paralelo, con_paralelo)
@@ -78,7 +83,7 @@ class TestSimularGrupo(unittest.TestCase):
     def test_simular_grupo_con_lista_nombres(símismo):
         mod = ModeloPrueba()
         nombres = ['corrida 1', 'corrida 2']
-        ops = OpsCorridaGrupo(5, vals_extern=[{'Escala': 1}, {'Escala': 2}], nombre=nombres)
+        ops = OpsSimulGrupo(5, vals_extern=[{'Escala': 1}, {'Escala': 2}], nombre=nombres)
         res = mod.simular_grupo(ops)
         símismo.assertSetEqual(set(nombres), set(res))
 
@@ -99,11 +104,11 @@ class TestSimulConDatos(unittest.TestCase):
 
     def test_t_fecha_extern_pd_num(símismo):
         extern = pd.DataFrame(data={'Vacío': np.arange(5)}, index=np.arange(10, step=2))
-        símismo._simul_con_extern(extern, ref=[0, 0, 1, 0, 2, 0, 3, 0, 4, 0, 0])
+        símismo._simul_con_extern(extern, ref=[0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4, 4])
 
     def test_t_fecha_extern_pd_fecha(símismo):
         extern = pd.DataFrame(data={'Vacío': np.arange(4)}, index=pd.date_range('2000-01-02', '2000-01-05'))
-        símismo._simul_con_extern(extern, ref=[0, 0, 1, 2, 3, 0, 0, 0, 0, 0, 0])
+        símismo._simul_con_extern(extern, ref=[0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 3])
 
     def test_t_fecha_extern_xr_fecha(símismo):
         extern = {
@@ -123,7 +128,7 @@ class TestSimulConDatos(unittest.TestCase):
 
     def test_t_numérico(símismo):
         extern = pd.DataFrame(data={'Vacío': np.arange(5)}, index=np.arange(10, step=2))
-        símismo._simul_con_extern(extern, fecha=False, ref=[0, 0, 1, 0, 2, 0, 3, 0, 4, 0, 0])
+        símismo._simul_con_extern(extern, fecha=False, ref=[0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4, 4])
 
     def test_t_numérico_extern_fecha(símismo):
         extern = pd.DataFrame(data={'Vacío': np.arange(4)}, index=pd.date_range('2000-01-02', '2000-01-05'))

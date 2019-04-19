@@ -78,7 +78,10 @@ class TiempoCalendario(Tiempo):
 
 class EspecTiempo(object):
     def __init__(símismo, n_pasos, f_inic=None, tmñ_paso=1, paso_guardar=1):
-        símismo.f_inic = f_inic
+
+        if (int(tmñ_paso) != tmñ_paso) or (tmñ_paso < 1):
+            raise ValueError(_('`tmñ_paso` debe ser un número entero superior a 0.'))
+        símismo.f_inic = _gen_fecha(f_inic)
 
         símismo.tmñ_paso = tmñ_paso
         símismo.n_pasos = n_pasos

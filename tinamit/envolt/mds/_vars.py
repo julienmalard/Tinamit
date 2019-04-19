@@ -19,8 +19,8 @@ class VariablesMDS(VariablesMod):
 
 
 class VarMDS(Variable):
-    def __init__(símismo, nombre, unid, ingr, egr, ec, parientes, dims, subs=None, líms=None, info=''):
-        super().__init__(nombre, unid, ingr=ingr, egr=egr, dims=dims, líms=líms, info=info)
+    def __init__(símismo, nombre, unid, ingr, egr, ec, parientes, inic, subs=None, líms=None, info=''):
+        super().__init__(nombre, unid, ingr=ingr, egr=egr, inic=inic, líms=líms, info=info)
 
         símismo.ec = ec
         símismo.parientes = parientes
@@ -28,28 +28,28 @@ class VarMDS(Variable):
 
 
 class VarConstante(VarMDS):
-    def __init__(símismo, nombre, unid, ec, parientes, dims, subs=None, líms=None, info=''):
+    def __init__(símismo, nombre, unid, ec, parientes, inic, subs=None, líms=None, info=''):
         super().__init__(
-            nombre, unid, ec=ec, parientes=parientes, dims=dims, subs=subs, líms=líms, info=info, ingr=True, egr=False
+            nombre, unid, ec=ec, parientes=parientes, inic=inic, subs=subs, líms=líms, info=info, ingr=True, egr=False
         )
 
 
 class VarInic(VarMDS):
-    def __init__(símismo, nombre, unid, ec, parientes, dims, subs=None, líms=None, info=''):
+    def __init__(símismo, nombre, unid, ec, parientes, inic, subs=None, líms=None, info=''):
         super().__init__(
-            nombre, unid, ec=ec, parientes=parientes, dims=dims, subs=subs, líms=líms, info=info, ingr=True, egr=False
+            nombre, unid, ec=ec, parientes=parientes, inic=inic, subs=subs, líms=líms, info=info, ingr=True, egr=False
         )
 
 
 class VarNivel(VarMDS):
-    def __init__(símismo, nombre, unid, ec, parientes, dims, subs=None, líms=None, info=''):
+    def __init__(símismo, nombre, unid, ec, parientes, inic, subs=None, líms=None, info=''):
         super().__init__(
-            nombre, unid, ec=ec, parientes=parientes, dims=dims, subs=subs, líms=líms, info=info, ingr=False, egr=True
+            nombre, unid, ec=ec, parientes=parientes, inic=inic, subs=subs, líms=líms, info=info, ingr=False, egr=True
         )
 
 
 class VarAuxiliar(VarMDS):
-    def __init__(símismo, nombre, unid, ec, parientes, dims, subs=None, líms=None, info=''):
+    def __init__(símismo, nombre, unid, ec, parientes, inic, subs=None, líms=None, info=''):
         super().__init__(
-            nombre, unid, ec=ec, parientes=parientes, dims=dims, subs=subs, líms=líms, info=info, ingr=True, egr=True
+            nombre, unid, ec=ec, parientes=parientes, inic=inic, subs=subs, líms=líms, info=info, ingr=True, egr=True
         )

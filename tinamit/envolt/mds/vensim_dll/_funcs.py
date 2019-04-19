@@ -40,6 +40,8 @@ def cargar_mod_vensim(mod, archivo):
 
 
 def inic_modelo(mod, paso, n_pasos, nombre_corrida):
+    nombre_corrida = _verificar_nombre(nombre_corrida)
+
     # Establecer el nombre de la corrida.
     cmd_vensim(func=mod.vensim_command,
                args="SIMULATE>RUNNAME|%s" % nombre_corrida,
@@ -340,3 +342,8 @@ def cmd_vensim(func, args, mensaje_error=None, val_error=None):  # pragma: sin c
 
     # Devolver el valor devuelto por la función Vensim
     return resultado
+
+
+def _verificar_nombre(nombre):
+    # Vensim tiene un problema raro con nombres de corridas con '.' (y quién sabe qué más)
+    return nombre.replace('.', '_')

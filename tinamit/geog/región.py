@@ -17,6 +17,9 @@ class Nivel(object):
     def __str__(símismo):
         return símismo.nombre
 
+    def __getitem__(símismo, itema):
+        return next(n for n in símismo.subniveles if n == itema)
+
 
 class Lugar(object):
     def __init__(símismo, nombre, nivel, cód=None, sub_lugares=None):
@@ -57,7 +60,7 @@ class Lugar(object):
         return símismo.nombre
 
 
-def gen_nivel(archivo, nivel_base, nombre=None, col_cód='Código'):
+def gen_lugares(archivo, nivel_base, nombre=None, col_cód='Código'):
     codif_csv = detectar_codif(archivo)
     nombre = nombre or os.path.splitext(os.path.split(nombre)[1])[0]
 
@@ -105,10 +108,11 @@ def gen_nivel(archivo, nivel_base, nombre=None, col_cód='Código'):
     for nvls in órden[::-1]:
         if isinstance(nvls, str):
             niveles[nvls] = Nivel(nombre=nvls, subniveles=anterior)
+            anterior = niveles[nvls]
         else:
             for nvl in nvls:
                 niveles[nvl] = Nivel(nombre=nvl, subniveles=anterior)
-        anterior = nvls
+            anterior = [niveles[nv] for nv in nvls]
 
     dic_doc = {f[col_cód]: f for f in doc}
     quedan = list(dic_doc)

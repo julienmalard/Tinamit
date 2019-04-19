@@ -3,16 +3,14 @@ from tinamit.mod import VariablesMod, Variable, Modelo
 
 class ModeloPrueba(Modelo):
 
-    def __init__(símismo, unid_tiempo='años', nombre='modeloBF'):
+    def __init__(símismo, unid_tiempo='años', nombre='prueba'):
         símismo.unid_tiempo = unid_tiempo
         super().__init__(nombre=nombre, variables=símismo._gen_vars())
 
-    def iniciar_modelo(símismo, corrida):
-        pass  # para hacer
-
-    def incrementar(símismo, corrida):
-        vars_ = corrida.variables
-        pasos = corrida.t.pasos_avanzados(símismo.unidad_tiempo())
+    def incrementar(símismo):
+        super().incrementar()
+        vars_ = símismo.corrida.variables
+        pasos = símismo.corrida.t.pasos_avanzados(símismo.unidad_tiempo())
         vars_.cambiar_vals({
             'Escala': vars_['Escala'].obt_val() + pasos,
         })
@@ -22,7 +20,7 @@ class ModeloPrueba(Modelo):
         return VariablesMod([
             Variable('Escala', unid=None, ingr=False, egr=True, líms=(0, None)),
             Variable('Vacío', unid=None, ingr=True, egr=False, líms=(0, None)),
-            Variable('Vacío2', unid=None, ingr=True, egr=False, líms=(0, None), dims=(2,)),
+            Variable('Vacío2', unid=None, ingr=True, egr=False, líms=(0, None), inic=[0, 0]),
         ])
 
     def cerrar(símismo):

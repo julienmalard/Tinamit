@@ -129,6 +129,7 @@ class EnvolturaVensimDLL(EnvolturaMDS):
 
                     # Guardar en el diccionario interno.
                     matr_val[n] = val  # Para hacer: opciones de dimensiones múltiples
+                símismo.variables.cambiar_vals({v: matr_val})
 
 
 def _obt_dll_vensim():
@@ -206,6 +207,6 @@ def _gen_vars(mod):
         else:
             raise ValueError(tipo_var)
 
-        l_vars.append(cls(var, unid=unid, ec=ec, subs=subs, parientes=parientes, dims=dims, líms=líms, info=info))
+        l_vars.append(cls(var, unid=unid, ec=ec, subs=subs, parientes=parientes, inic=inic, líms=líms, info=info))
 
     return VariablesMDS(l_vars)

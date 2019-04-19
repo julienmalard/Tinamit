@@ -6,7 +6,6 @@ from warnings import warn as avisar
 import numpy as np
 import pandas as pd
 
-import tinamit.Geog_.Geog as Geog
 from tinamit.config import _, conf_mods
 from tinamit.cositas import guardar_json, cargar_json
 from .corrida import Corrida
@@ -41,6 +40,7 @@ class Modelo(object):
 
         símismo.nombre = nombre
         símismo.variables = variables
+        símismo.corrida = None
 
     def unidad_tiempo(símismo):
         """
@@ -60,9 +60,6 @@ class Modelo(object):
 
         vars_interés = vars_interés or símismo.variables
 
-        # Vensim tiene un problema raro con nombres de corridas con '.'
-        nombre = nombre.replace('.', '_')
-
         corrida = Corrida(
             nombre, t=t.gen_tiempo(símismo.unidad_tiempo()),
             extern=gen_extern(vals_extern),
@@ -71,12 +68,12 @@ class Modelo(object):
         )
 
         símismo.iniciar_modelo(corrida)
-        símismo.correr(corrida)
+        símismo.correr()
         símismo.cerrar()
 
         return corrida.resultados
 
-    def simular_grupo(símismo, ops_grupo, paralelo=False):
+    def simular_grupo(símismo, ops_grupo, nombre='Tinamït', paralelo=False):
 
         if paralelo and not símismo.paralelizable():
             avisar(_(
@@ -88,7 +85,7 @@ class Modelo(object):
             ))
             paralelo = False
 
-        res_grupo = ResultadosGrupo()
+        res_grupo = ResultadosGrupo(nombre)
         if paralelo:
             l_trabajos = []
             copia_mod = pickle.dumps(símismo)  # Una copia de este modelo.
@@ -104,23 +101,28 @@ class Modelo(object):
                 res_grupo[str(res)] = res
 
         else:
-
             for ops in ops_grupo:
                 res = símismo.simular(**ops)
-                res_grupo[res.nombre] = res
+                res_grupo[str(res)] = res
 
         return res_grupo
 
-    def iniciar_modelo(símismo, corrida):
-        raise NotImplementedError
+    def iniciar_modelo(símismo, corrida):  # para hacer: super() en subclasses
+        símismo.corrida = corrida
+        corrida.variables.reinic()
 
-    def correr(símismo, corrida):
-        while corrida.t.avanzar():
-            símismo.incrementar(corrida)
-            corrida.actualizar_res()
+        if corrida.extern:
+            símismo.cambiar_vals(corrida.obt_extern_act())
+        corrida.actualizar_res()
 
-    def incrementar(símismo, corrida):
-        raise NotImplementedError
+    def correr(símismo):
+        while símismo.corrida.t.avanzar():
+            símismo.incrementar()
+            símismo.corrida.actualizar_res()
+
+    def incrementar(símismo):  # para hacer: super() en subclasses
+        if símismo.corrida.extern:
+            símismo.cambiar_vals(símismo.corrida.obt_extern_act())
 
     def cerrar(símismo):
         """
@@ -140,7 +142,7 @@ class Modelo(object):
         """
 
         # Cambia primero el valor en el diccionario interno del Modelo
-        símismo.variables.cambiar_vals(valores=valores)
+        símismo.corrida.variables.cambiar_vals(valores=valores)
 
     def valid_var(símismo, var):
         if var in símismo.variables:

@@ -8,27 +8,66 @@ from matplotlib.figure import Figure as Figura
 
 from tinamit.config import _
 from tinamit.cositas import detectar_codif
+from ..mod import ResultadosSimul
 
 
-class Mapa(object):
-    def __init__(símismo, formas):
-        símismo.formas = [formas] if isinstance(formas, Forma) else formas
+def dibujar_mapa(formas, archivo=None, título=None):
+    formas = [formas] if isinstance(formas, Forma) else formas
 
-    def dibujar(símismo, archivo=None, título=None):
+    fig = Figura()
+    TelaFigura(fig)
+    ejes = fig.add_subplot(111)
+    ejes.set_aspect('equal')
 
-        fig = Figura()
-        TelaFigura(fig)
-        ejes = fig.add_subplot(111)
-        ejes.set_aspect('equal')
+    for frm in formas:
+        frm.dibujar(ejes, fig)
+    if título is not None:
+        ejes.set_title(título)
+    if archivo:
+        fig.savefig(archivo, dpi=500)
 
-        for frm in símismo.formas:
-            frm.dibujar(ejes, fig)
-        if título is not None:
-            ejes.set_title(título)
-        if archivo:
-            fig.savefig(archivo, dpi=500)
+    return ejes
 
-        return ejes
+
+def dibujar_mapa_de_res(forma_dinámica, res, var, t, escala=None, título='', directorio=None, otras_formas=None):
+    título = título or res.nombre
+    directorio = directorio or título
+    otras_formas = otras_formas or []
+
+    def _extr_i(matr, i):
+        return matr[i] if isinstance(i, int) else matr.sel(**{_('tiempo'): i}).values
+
+    if isinstance(res, ResultadosSimul):
+        res_var = res[var].vals
+        unids = res[var].var.base.unid
+
+        escala = escala or (np.min(res_var), np.max(res_var))
+
+        def _extr_res_i(i):
+            return _extr_i(res_var, i)
+
+    else:
+
+        unids = list(res.values())[0][var].var.base.unid
+
+        todos_vals = np.array([res_lg[var].vals for res_lg in res.values()])
+        escala = escala or (np.min(todos_vals), np.max(todos_vals))
+
+        def _extr_res_i(i):
+            return {lg: _extr_i(res_lg[var].vals, i) for lg, res_lg in res.items()}
+
+    if isinstance(t, int):
+        pasos = range(t, t+1)
+    else:
+        pasos = t
+
+    for i_p in pasos:
+        título_i = '{}_{}'.format(título, i_p)
+        arch_i = os.path.join(directorio, título_i)
+        res_i = _extr_res_i(i_p)
+        forma_dinámica.estab_valores(res_i, escala_valores=escala, unidades=unids)
+
+        dibujar_mapa([forma_dinámica, *otras_formas], archivo=arch_i, título=título_i)
 
 
 class Forma(object):
@@ -162,7 +201,7 @@ class FormaDinámicaNumérica(FormaDinámica):
 class FormaDinámicaNombrada(FormaDinámica):
     def __init__(símismo, archivo, col_id, escala_colores=None, llenar=True, alpha=1):
         super().__init__(archivo, escala_colores, llenar, alpha)
-        símismo.ids = símismo._extraer_col(col_id)
+        símismo.ids = [str(x) for x in símismo._extraer_col(col_id)]
 
     def _llenar_valores(símismo, valores):
         símismo.valores[:] = np.nan

@@ -5,9 +5,14 @@ import tempfile
 import unittest
 
 import numpy as np
+import pandas as pd
 
-from tinamit.geog.mapa import Mapa, FormaDinámicaNombrada, Calle, Ciudad, Bosque, OtraForma, Agua, FormaDinámicaNumérica
-from tinamit.geog.región import Nivel, Lugar, gen_nivel
+from pruebas.recursos.mod.prueba_mod import ModeloPrueba
+from tinamit.geog.mapa import dibujar_mapa, dibujar_mapa_de_res, \
+    Calle, Ciudad, Bosque, OtraForma, Agua, \
+    FormaDinámicaNumérica, FormaDinámicaNombrada
+from tinamit.geog.región import Nivel, Lugar, gen_lugares
+from tinamit.mod import OpsSimulGrupo
 
 dir_act = os.path.split(__file__)[0]
 arch_csv_geog = os.path.join(dir_act, 'recursos/datos/prueba_geog.csv')
@@ -77,51 +82,82 @@ class TestRegión(unittest.TestCase):
 class TestGenAuto(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.nivel = gen_nivel(arch_csv_geog, nivel_base='País', nombre='Iximulew')
+        cls.lugar = gen_lugares(arch_csv_geog, nivel_base='País', nombre='Iximulew')
 
-    def test_funcionó(símismo):
-        pass  # para hacer
+    def test_niveles(símismo):
+        nivel = símismo.lugar.nivel
+        símismo.assertEqual(nivel, 'País')
+        símismo.assertSetEqual(set(str(n) for n in nivel.subniveles), {'Departamento', 'Territorio'})
+        símismo.assertEqual(nivel['Departamento'].subniveles, 'Municipio')
+
+    def test_lugares(símismo):
+        símismo.assertEqual(símismo.lugar.buscar_nombre('SOLOLÁ', 'Departamento').cód, '7')
+        símismo.assertEqual(símismo.lugar.buscar_nombre('SOLOLÁ', 'Municipio').cód, '701')
 
 
 class TestMapa(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.dir_ = tempfile.mkdtemp(prefix='prueba_geog_')
+        cls.dir_ = tempfile.mkdtemp(prefix='prb_mapa_')
 
-    def _verificar_dibujó(símismo, mapa, nombre):
+    def _verificar_dibujó(símismo, formas, nombre):
         arch = os.path.join(símismo.dir_, nombre)
-        mapa.dibujar(arch)
+        dibujar_mapa(formas, arch)
         símismo.assertTrue(os.path.isfile(arch))
         os.remove(arch)
 
     def test_dibujar_formas_estáticas(símismo):
         frms = [cls(arch_frm_otra) for cls in [Calle, Ciudad, Bosque, OtraForma, Agua]]
-        símismo._verificar_dibujó(Mapa(frms), 'mapa_estático.jpeg')
+        símismo._verificar_dibujó(frms, 'mapa_estático.jpeg')
 
     def test_dibujar_forma_numérica(símismo):
         frm = FormaDinámicaNumérica(arch_frm_numérica, col_id='Id')
         frm.estab_valores(np.random.rand(*frm.valores.shape))
-        símismo._verificar_dibujó(Mapa(frm), 'mapa_matriz.jpeg')
+        símismo._verificar_dibujó(frm, 'mapa_matriz.jpeg')
 
     def test_dibujar_forma_numérica_sin_id(símismo):
         frm = FormaDinámicaNumérica(arch_frm_numérica)
         frm.estab_valores(np.random.rand(*frm.valores.shape))
-        símismo._verificar_dibujó(Mapa(frm), 'mapa_matriz_sin_id.jpeg')
+        símismo._verificar_dibujó(frm, 'mapa_matriz_sin_id.jpeg')
 
     def test_dibujar_forma_nombrada(símismo):
         frm = FormaDinámicaNombrada(arch_frm_nombrada, col_id='COD_MUNI')
         frm.estab_valores({id_: random.random() for id_ in frm.ids})
-        símismo._verificar_dibujó(Mapa(frm), 'mapa_dict.jpeg')
+        símismo._verificar_dibujó(frm, 'mapa_dict.jpeg')
 
     def test_dibujar_escala_valores(símismo):
         frm = FormaDinámicaNumérica(arch_frm_numérica, col_id='Id')
         frm.estab_valores(np.random.rand(*frm.valores.shape), escala_valores=(0, 2))
-        símismo._verificar_dibujó(Mapa(frm), 'mapa_escala.jpeg')
+        símismo._verificar_dibujó(frm, 'mapa_escala.jpeg')
 
     def test_dibujar_unidades(símismo):
         frm = FormaDinámicaNumérica(arch_frm_numérica, col_id='Id')
         frm.estab_valores(np.random.rand(*frm.valores.shape), unidades='Cosos')
-        símismo._verificar_dibujó(Mapa(frm), 'mapa_unids.jpeg')
+        símismo._verificar_dibujó(frm, 'mapa_unids.jpeg')
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.dir_)
+
+
+class TestMapaResultados(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.dir_ = tempfile.mkdtemp(prefix='prb_mapa_res_')
+
+    def test_mapa_de_simul(símismo):
+        frm = FormaDinámicaNumérica(arch_frm_numérica, col_id='Id')
+        extern = {'Vacío': np.arange(len(frm.ids))}
+        res = ModeloPrueba().simular(t=10, vals_extern=extern)
+        dibujar_mapa_de_res(forma_dinámica=frm, res=res, var='Vacío', t=3, directorio=símismo.dir_)
+
+    def test_mapa_de_simul_grupo(símismo):
+        ops = OpsSimulGrupo(t=3, vals_extern=[{'Vacío': 1}, {'Vacío': 3}], nombre=['701', '101'])
+        res = ModeloPrueba().simular_grupo(ops)
+
+        frm = FormaDinámicaNombrada(arch_frm_nombrada, col_id='COD_MUNI')
+        dibujar_mapa_de_res(forma_dinámica=frm, res=res, var='Vacío', t=3, directorio=símismo.dir_)
 
     @classmethod
     def tearDownClass(cls):

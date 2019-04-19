@@ -50,8 +50,8 @@ class EnvolturaPySD(EnvolturaMDS):
 
         símismo.vars_para_cambiar.clear()
 
-    def correr(símismo, corrida):
-        super().correr(corrida)
+    def correr(símismo,):
+        super().correr()
         símismo.incrementar(corrida.t.n_pasos)
         # para hacer
 

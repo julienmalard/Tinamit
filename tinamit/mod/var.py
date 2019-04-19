@@ -34,14 +34,15 @@ class VariablesMod(object):
 
 
 class Variable(object):
-    def __init__(símismo, nombre, unid, ingr, egr, dims=(1,), líms=None, info=''):
+    def __init__(símismo, nombre, unid, ingr, egr, inic=0, líms=None, info=''):
         if not (ingr or egr):
             raise ValueError(_('Si no es variable ingreso, debe ser egreso.'))
         símismo.nombre = nombre
         símismo.unid = unid
         símismo.ingr = ingr
         símismo.egr = egr
-        símismo.dims = dims
+        símismo.inic = _a_np(inic)
+        símismo.dims = símismo.inic.shape
         símismo.líms = líms
         símismo.info = info
 
@@ -55,7 +56,11 @@ class VariablesModSimul(object):
 
     def cambiar_vals(símismo, valores):
         for vr, vl in valores.items():
-            símismo[vr].poner_val(vl)
+            símismo[str(vr)].poner_val(vl)
+
+    def reinic(símismo):
+        for v in símismo:
+            v.reinic()
 
     def __getitem__(símismo, itema):
         return símismo.variables[itema]
@@ -82,7 +87,16 @@ class VariableSimul(object):
         return símismo._val  # para disuadir modificaciones directas a `símismo._val`
 
     def reinic(símismo):
-        símismo._val[:] = 0
+        símismo._val[:] = símismo.base.inic
 
     def __str__(símismo):
         return str(símismo.base)
+
+
+def _a_np(val):
+    if isinstance(val, np.ndarray):
+        return val
+    elif isinstance(val, (float, int)):
+        return np.array([val])
+    else:
+        return np.array(val)

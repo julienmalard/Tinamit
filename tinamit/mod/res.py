@@ -9,7 +9,10 @@ from .var import Variable
 
 
 class ResultadosGrupo(dict):
-    pass
+
+    def __init__(símismo, nombre):
+        símismo.nombre = nombre
+        super().__init__()
 
 
 class ResultadosSimul(object):
@@ -59,7 +62,7 @@ class ResultadosSimul(object):
         return {v: r.a_dic() for v, r in símismo.res_vars.items()}
 
     def __str__(símismo):
-        return str(símismo.nombre)
+        return símismo.nombre
 
     def __iter__(símismo):
         for v in símismo.res_vars.values():
