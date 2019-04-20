@@ -129,7 +129,7 @@ class Modelo(object):
         Esta función debe tomar las acciones necesarias para terminar la simulación y cerrar el modelo, si aplica.
         Si no aplica, usar ``pass``.
         """
-        raise NotImplementedError
+        pass
 
     def cambiar_vals(símismo, valores):
         """

@@ -19,9 +19,6 @@ class ModeloPrueba(EnvolturaBF):
         lago = símismo.variables['Lago'].obt_val()
         símismo.variables['Lluvia'].poner_val(lago / 10 * paso)
 
-    def cerrar(símismo):
-        pass
-
     def unidad_tiempo(símismo):
         return símismo.unid_tiempo
 

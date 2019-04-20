@@ -23,9 +23,6 @@ class ModeloPrueba(Modelo):
             Variable('Vacío2', unid=None, ingr=True, egr=False, líms=(0, None), inic=[0, 0]),
         ])
 
-    def cerrar(símismo):
-        pass
-
     def unidad_tiempo(símismo):
         return símismo.unid_tiempo
 

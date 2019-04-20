@@ -8,6 +8,3 @@ class EnvolturaBF(Modelo):
 
     def unidad_tiempo(símismo):
         raise NotImplementedError
-
-    def cerrar(símismo):
-        raise NotImplementedError

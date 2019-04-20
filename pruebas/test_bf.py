@@ -18,13 +18,13 @@ class TestModeloDeter(unittest.TestCase):
         cls.res = EjDeterminado(tmñ_ciclo=5).simular(50)
 
     def test_paso(símismo):
-        npt.assert_equal(símismo.res['paso'], np.arange(51))
+        npt.assert_equal(símismo.res['paso'].vals.values.flatten(), np.arange(51))
 
     def test_ciclo(símismo):
-        npt.assert_equal(símismo.res['ciclo'], np.concatenate(([0], np.repeat(np.arange(1, 11), 5))))
+        npt.assert_equal(símismo.res['ciclo'].vals.values.flatten(), np.concatenate(([0], np.repeat(np.arange(1, 11), 5))))
 
     def test_i_en_ciclo(símismo):
-        npt.assert_equal(símismo.res['i_en_ciclo'], np.concatenate(([4], np.tile(np.arange(5), 10))))
+        npt.assert_equal(símismo.res['i_en_ciclo'].vals.values.flatten(), np.concatenate(([4], np.tile(np.arange(5), 10))))
 
 
 class TestModeloIndeter(unittest.TestCase):

@@ -43,6 +43,3 @@ class EnvoltClima(EnvolturaBF):
 
     def unidad_tiempo(símismo):
         return 'día'
-
-    def cerrar(símismo):
-        pass

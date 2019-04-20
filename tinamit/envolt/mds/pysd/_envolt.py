@@ -55,9 +55,6 @@ class EnvolturaPySD(EnvolturaMDS):
         símismo.vars_para_cambiar.update({vr: float(vl) for vr, vl in valores.items()})
         super().cambiar_vals(valores)
 
-    def cerrar(símismo):
-        pass
-
     def paralelizable(símismo):
         return True
 

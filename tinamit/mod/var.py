@@ -28,6 +28,9 @@ class VariablesMod(object):
             return símismo.variables[str(itema)]
         raise KeyError(itema)
 
+    def __setitem__(símismo, llave, valor):
+        símismo.variables[llave] = valor
+
     def __iter__(símismo):
         for v in símismo.variables.values():
             yield v
@@ -67,6 +70,22 @@ class Variable(object):
 
     def reinic(símismo):
         símismo._val[:] = símismo.inic
+
+    def __iadd__(símismo, otro):
+        símismo.poner_val(símismo._val + otro)
+        return símismo
+
+    def __imul__(símismo, otro):
+        símismo.poner_val(símismo._val * otro)
+
+    def __imod__(símismo, otro):
+        símismo.poner_val(símismo._val % otro)
+
+    def __ifloordiv__(símismo, otro):
+        símismo.poner_val(símismo._val // otro)
+
+    def __ipow__(símismo, otro):
+        símismo.poner_val(símismo._val ** otro)
 
     def __str__(símismo):
         return símismo.nombre

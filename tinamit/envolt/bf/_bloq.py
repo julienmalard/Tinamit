@@ -16,9 +16,6 @@ class ModeloBloques(ModeloDeterminado):
     def avanzar_modelo(símismo, n_ciclos):
         raise NotImplementedError
 
-    def cerrar(símismo):
-        raise NotImplementedError
-
 
 class VariablesModBloques(VariablesModDeter):
 
