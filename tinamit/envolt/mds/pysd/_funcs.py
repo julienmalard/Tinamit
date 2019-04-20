@@ -7,6 +7,9 @@ from tinamit.cositas import arch_más_recién
 def gen_mod_pysd(archivo):
     nmbr, ext = os.path.splitext(archivo)
 
+    if ext == '.py':
+        return pysd.load(archivo)
+
     arch_py = nmbr + '.py'
     if os.path.isfile(arch_py) and arch_más_recién(arch_py, archivo):
         return pysd.load(nmbr + '.py')
