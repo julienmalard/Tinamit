@@ -17,14 +17,7 @@ def gen_mod_pysd(archivo):
         return pysd.read_vensim(archivo) if ext == '.mdl' else pysd.read_xmile(archivo)
 
 
-def obt_paso_mod_pysd(archivo):
-    # Inelegante, seguro, pero por el momento inevitable con PySD
-    with open(archivo, 'r', encoding='UTF-8') as d:
-        buscando = False
-        for f in d:
-            if f == 'def time_step():\n':
-                buscando = True
-            if buscando and f.strip().startswith('Units:'):
-                return f.split(':')[1].strip()
-
-    raise ValueError()
+def obt_paso_mod_pysd(mod):
+    doc = mod.components.time_step.__doc__
+    partes = doc.split()
+    return partes[partes.index('Units:')+1]
