@@ -10,11 +10,5 @@ class EnvolturaMDS(Modelo):
     def unidad_tiempo(símismo):
         raise NotImplementedError
 
-    def iniciar_modelo(símismo, corrida):
-        raise NotImplementedError
-
-    def incrementar(símismo, corrida):
-        raise NotImplementedError
-
     def cerrar(símismo):
         raise NotImplementedError

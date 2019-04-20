@@ -39,7 +39,7 @@ def dibujar_mapa_de_res(forma_dinámica, res, var, t, escala=None, título='', d
 
     if isinstance(res, ResultadosSimul):
         res_var = res[var].vals
-        unids = res[var].var.base.unid
+        unids = res[var].var.unid
 
         escala = escala or (np.min(res_var), np.max(res_var))
 
@@ -48,7 +48,7 @@ def dibujar_mapa_de_res(forma_dinámica, res, var, t, escala=None, título='', d
 
     else:
 
-        unids = list(res.values())[0][var].var.base.unid
+        unids = list(res.values())[0][var].var.unid
 
         todos_vals = np.array([res_lg[var].vals for res_lg in res.values()])
         escala = escala or (np.min(todos_vals), np.max(todos_vals))

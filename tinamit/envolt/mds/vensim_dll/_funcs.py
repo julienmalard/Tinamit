@@ -3,6 +3,8 @@ import ctypes
 import os
 import struct
 
+import numpy as np
+
 from tinamit.config import _
 from tinamit.cositas import arch_más_recién
 
@@ -187,7 +189,7 @@ def obt_unid_tiempo(mod):
     )
 
 
-def obt_val_var(mod, var):
+def _obt_val_var_unidim(mod, var):
     # Una memoria
     mem_inter = ctypes.create_string_buffer(4)
 
@@ -347,3 +349,24 @@ def cmd_vensim(func, args, mensaje_error=None, val_error=None):  # pragma: sin c
 def _verificar_nombre(nombre):
     # Vensim tiene un problema raro con nombres de corridas con '.' (y quién sabe qué más)
     return nombre.replace('.', '_')
+
+
+def obt_val_var(mod, var, subs):
+    if subs is None:
+        # Si el variable no tiene dimensiones (subscriptos)...
+
+        # Leer su valor.
+        val = _obt_val_var_unidim(mod, var)
+
+    else:
+        val = np.zeros_like(subs)
+        for n, s in enumerate(subs):
+            var_s = str(var) + s
+
+            # Leer su valor.
+            v = _obt_val_var_unidim(mod, var_s)
+
+            # Guardar en el diccionario interno.
+            val[n] = v  # Para hacer: opciones de dimensiones múltiples
+
+    return val

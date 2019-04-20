@@ -21,9 +21,6 @@ class ModeloImpaciente(EnvolturaBF):
     def cerrar(símismo):
         raise NotImplementedError
 
-    def incrementar(símismo, corrida):
-        raise NotImplementedError
-
 
 class VariablesModImpaciente(VariablesMod):
     def vars_ciclo(símismo):
@@ -36,8 +33,8 @@ class VariablesModImpaciente(VariablesMod):
 
 class VarCiclo(Variable):
 
-    def __init__(símismo, nombre, unid, ingr, egr, dims=(1,), líms=None, info=''):
-        super().__init__(nombre, unid, ingr, egr, dims, líms, info)
+    def __init__(símismo, nombre, unid, ingr, egr, inic=0, líms=None, info=''):
+        super().__init__(nombre, unid, ingr, egr, inic=inic, líms=líms, info=info)
         símismo._matr_paso = None
         símismo.paso = 0
 

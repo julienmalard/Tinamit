@@ -9,17 +9,18 @@ from pruebas.recursos.bf.prueba_bf import ModeloPrueba
 from pruebas.recursos.bf.variantes import EjBloques, EjDeterminado, EjIndeterminado
 from pruebas.test_mds import generar_modelos_prueba, limpiar_mds
 from tinamit.conect import Conectado, SuperConectado
-from tinamit.envolt.bf import EnvolturaBF
+from tinamit.envolt.bf import EnvolturaBF, gen_bf
+from tinamit.envolt.mds import EnvolturaPySD
 from tinamit.unids import trads
 
 dir_act = os.path.split(__file__)[0]
 arch_bf = os.path.join(dir_act, 'recursos/bf/prueba_mod.py')
-arch_mds = os.path.join(dir_act, 'recursos/mds/prueba_senc.mdl')
+arch_mds = os.path.join(dir_act, 'recursos/mds/prueba_senc_mdl.mdl')
 arch_mod_vacío = os.path.join(dir_act, 'recursos/mds/prueba_vacía.mdl')
 
 
 # Comprobar Conectado
-class Test_Conectado(unittest.TestCase):
+class TestConectado(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -29,22 +30,18 @@ class Test_Conectado(unittest.TestCase):
 
         # Generar las instancias de los modelos individuales y conectados
         cls.mods_mds = generar_modelos_prueba()
-        cls.mod_bf = EnvolturaBF(arch_bf)
 
-        cls.modelos = {ll: Conectado() for ll in cls.mods_mds}  # type: dict[str, Conectado]
+        cls.modelos = {ll: Conectado(bf=gen_bf(arch_bf), mds=mod) for ll, mod in cls.mods_mds}
 
         # Agregar traducciones necesarias.
         trads.agregar_trad('year', 'año', leng_trad='es', leng_orig='en')
         trads.agregar_trad('month', 'mes', leng_trad='es', leng_orig='en')
 
         # Conectar los modelos
-        for mds, mod_con in cls.modelos.items():
-            mod_con.estab_bf(cls.mod_bf)
-            mod_con.estab_mds(cls.mods_mds[mds])
-
-            mod_con.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)
-            mod_con.conectar(var_mds='Lago', var_bf='Lago', mds_fuente=True)
-            mod_con.conectar(var_mds='Aleatorio', var_bf='Aleatorio', mds_fuente=False)
+        for mod in cls.modelos.values():
+            mod.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)
+            mod.conectar(var_mds='Lago', var_bf='Lago', mds_fuente=True)
+            mod.conectar(var_mds='Aleatorio', var_bf='Aleatorio', mds_fuente=False)
 
     def test_reinic_vals(símismo):
         """
@@ -182,7 +179,7 @@ class Test_Conectado(unittest.TestCase):
         limpiar_mds()
 
 
-class Test_3ModelosConectados(unittest.TestCase):
+class Test3ModelosConectados(unittest.TestCase):
     """
     Comprobar 3+ modelos conectados.
     """
@@ -194,20 +191,20 @@ class Test_3ModelosConectados(unittest.TestCase):
         """
 
         # Crear los 3 modelos
-        bf = EnvolturaBF(arch_bf, nombre='bf')
-        tercio = ModeloPySD(arch_mod_vacío, nombre='tercio')
-        mds = ModeloPySD(arch_mds, nombre='mds')
+        bf = gen_bf(arch_bf)
+        tercio = EnvolturaPySD(arch_mod_vacío, nombre='tercio')
+        mds = EnvolturaPySD(arch_mds, nombre='mds')
 
         # El Conectado
-        conectado = SuperConectado()
-        for m in [bf, mds, tercio]:
-            conectado.agregar_modelo(m)
+        conectado = SuperConectado([bf, mds, tercio])
 
         # Conectar variables entre dos de los modelos por el intermediario del tercero.
-        conectado.conectar_vars(var_fuente='Aleatorio', modelo_fuente='bf',
-                                var_recip='Aleatorio', modelo_recip='tercio')
-        conectado.conectar_vars(var_fuente='Aleatorio', modelo_fuente='tercio',
-                                var_recip='Aleatorio', modelo_recip='mds')
+        conectado.conectar_vars(
+            var_fuente='Aleatorio', modelo_fuente='bf', var_recip='Aleatorio', modelo_recip='tercio'
+        )
+        conectado.conectar_vars(
+            var_fuente='Aleatorio', modelo_fuente='tercio', var_recip='Aleatorio', modelo_recip='mds'
+        )
 
         # Simular
         res = conectado.simular(100, vars_interés=['bf_Aleatorio', 'mds_Aleatorio'])
@@ -258,23 +255,6 @@ class Test_3ModelosConectados(unittest.TestCase):
         """
 
         limpiar_mds()
-
-
-class Test_GenerarConectado(unittest.TestCase):
-
-    def test_generar_con_submodelos(símismo):
-        mds = generar_mds(archivo=arch_mds)
-        bf = ModeloPrueba(unid_tiempo='mes')
-        cnctd = Conectado(bf, mds)
-        símismo.assertSetEqual(set(cnctd.modelos), {'mds', 'bf'})
-
-    def test_generar_sin_submodelos(símismo):
-        mds = generar_mds(archivo=arch_mds)
-        bf = ModeloPrueba(unid_tiempo='mes')
-        cnctd = Conectado()
-        cnctd.estab_bf(bf)
-        cnctd.estab_mds(mds)
-        símismo.assertSetEqual(set(cnctd.modelos), {'mds', 'bf'})
 
 
 class Test_ConversionesUnidadesTiempo(unittest.TestCase):

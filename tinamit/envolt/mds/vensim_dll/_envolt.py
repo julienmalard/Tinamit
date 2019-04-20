@@ -20,6 +20,7 @@ class EnvolturaVensimDLL(EnvolturaMDS):
     """
 
     def __init__(símismo, archivo, nombre='mds'):
+        símismo.inicializado = False
         símismo.mod = f.cargar_mod_vensim(_obt_dll_vensim(), archivo)
         símismo.paso = f.obt_paso_inicial(símismo.mod)
         vars_ = _gen_vars(símismo.mod)
@@ -46,8 +47,11 @@ class EnvolturaVensimDLL(EnvolturaMDS):
         # Debe venir después de `f.inic_modelo()` sino no obtenemos datos para los variables
         símismo._leer_vals_de_vensim()
 
-    def incrementar(símismo, corrida):
+        símismo.inicializado = True
 
+    def incrementar(símismo):
+        super().incrementar()
+        corrida = símismo.corrida
         # Establecer el paso.
         if corrida != símismo.paso:
             f.estab_paso(símismo.mod, corrida)
@@ -110,26 +114,10 @@ class EnvolturaVensimDLL(EnvolturaMDS):
             l_vars = símismo.variables
 
         for v in l_vars:
-            if v.dims == (1,):
-                # Si el variable no tiene dimensiones (subscriptos)...
+            val = f.obt_val_var(símismo.mod, str(v), v.subs)
 
-                # Leer su valor.
-                val = f.obt_val_var(símismo.mod, v)
-
-                # Guardar en el diccionario interno.
-                símismo.variables.cambiar_vals({v: val})
-
-            else:
-                matr_val = v.val
-                for n, s in enumerate(símismo.variables[v].subs):
-                    var_s = str(v) + s
-
-                    # Leer su valor.
-                    val = f.obt_val_var(símismo.mod, var_s)
-
-                    # Guardar en el diccionario interno.
-                    matr_val[n] = val  # Para hacer: opciones de dimensiones múltiples
-                símismo.variables.cambiar_vals({v: matr_val})
+            # Guardar en el diccionario interno.
+            símismo.variables.cambiar_vals({v: val})
 
 
 def _obt_dll_vensim():
@@ -148,7 +136,7 @@ def _obt_arch_dll_vensim():
             'C:/Windows/SysWOW64/vendll32.dll'
         ], cond=os.path.isfile,
         mnsj_err=_(
-            'Debes instalar Vensim DSS en tu computadora y, si todavía aparece este mensaje,'
+            '\nDebes instalar Vensim DSS en tu computadora y, si todavía aparece este mensaje,'
             '\nespecificar la ubicación del dll manualmente, p. ej.'
             '\n\tEnvolturaVensimDLL.estab_conf("dll", "C:/Camino/raro/para/vendll32.dll")'
             '\npara poder hacer simulaciones con Vensim DSS.'

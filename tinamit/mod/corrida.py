@@ -10,11 +10,11 @@ class Corrida(object):
         símismo.t = t
         símismo.extern = extern
 
-        símismo.variables = vars_mod.vars_simul()
+        símismo.variables = vars_mod
         símismo.vars_interés = vars_interés
 
         símismo.resultados = ResultadosSimul(
-            nombre=nombre, t=t, variables=[v for v in símismo.variables if v.base in vars_interés]
+            nombre=nombre, t=t, variables=[v for v in símismo.variables if v in vars_interés]
         )
 
     def actualizar_res(símismo):

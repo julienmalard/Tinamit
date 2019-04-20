@@ -1,8 +1,6 @@
 import numpy as np
 
-from tinamit.envolt.bf._deter import ModeloDeterminado
-from tinamit.mod.var import Variable
-from ._impac import VariablesModImpaciente
+from tinamit.envolt.bf._deter import ModeloDeterminado, VariablesModDeter
 
 
 class ModeloBloques(ModeloDeterminado):
@@ -22,7 +20,7 @@ class ModeloBloques(ModeloDeterminado):
         raise NotImplementedError
 
 
-class VariablesModBloques(VariablesModImpaciente):
+class VariablesModBloques(VariablesModDeter):
 
     def __init__(símismo, variables, tmñ_bloques):
         símismo.tmñ_bloques_cum = np.cumsum(tmñ_bloques)
@@ -39,7 +37,7 @@ class VariablesModBloques(VariablesModImpaciente):
         return [v for v in símismo if isinstance(v, VarBloque)]
 
 
-class VarBloque(Variable):
+class VarBloque():
 
     def __init__(símismo, nombre, unid, ingr, egr, dims=(1,), líms=None, info=''):
         super().__init__(nombre, unid, ingr, egr, dims, líms, info)

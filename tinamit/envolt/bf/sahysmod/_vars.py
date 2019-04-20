@@ -3,9 +3,9 @@ from tinamit.mod.var import Variable
 
 
 class VarSAHYSMOD(Variable):
-    def __init__(símismo, nombre, cód, unid, ingr, egr, dims, líms=None, info=''):
+    def __init__(símismo, nombre, cód, unid, ingr, egr, inic, líms=None, info=''):
         símismo.cód = cód
-        super().__init__(nombre, unid=unid, ingr=ingr, egr=egr, dims=dims, líms=líms, info=info)
+        super().__init__(nombre, unid=unid, ingr=ingr, egr=egr, inic=inic, líms=líms, info=info)
 
 
 class VarBloqSAHYSMOD(VarSAHYSMOD, VarBloque):

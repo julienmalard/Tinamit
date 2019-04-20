@@ -2,6 +2,10 @@ from ._impac import ModeloImpaciente
 
 
 class ModeloIndeterminado(ModeloImpaciente):
+
+    def __init__(símismo, variables, nombre='bf'):
+        super().__init__(tmñ_ciclo=0, variables=variables, nombre=nombre)
+
     def incrementar(símismo, corrida):
         # Para simplificar el código un poco.
         p = símismo.paso_en_ciclo

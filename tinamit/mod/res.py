@@ -80,7 +80,7 @@ class ResultadosVar(object):
         símismo.var = var
         símismo.t = t
 
-        dims = símismo.var.base.dims
+        dims = símismo.var.dims
         matr = np.zeros((len(t), *dims))
         símismo.vals = xr.DataArray(
             matr, coords={_('tiempo'): símismo.t.eje()},
@@ -88,7 +88,7 @@ class ResultadosVar(object):
         )
 
     def actualizar(símismo):
-        símismo.vals[símismo.t.í // símismo.t.paso_guardar] = símismo.var.obt_val()
+        símismo.vals[símismo.t.í // símismo.t.guardar_cada] = símismo.var.obt_val()
 
     def __str__(símismo):
         return str(símismo.var)

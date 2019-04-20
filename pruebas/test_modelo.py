@@ -40,13 +40,13 @@ class TestSimular(unittest.TestCase):
 
     def test_guardar_cada(símismo):
         mod = ModeloPrueba()
-        res = mod.simular(t=EspecTiempo(10, paso_guardar=2))['Escala']
+        res = mod.simular(t=EspecTiempo(10, guardar_cada=2))['Escala']
         npt.assert_equal(res.vals, np.arange(11, step=2).reshape((6, 1)))
         npt.assert_equal(res.t.eje(), np.arange(11, step=2))
 
     def test_guardar_cada_con_fecha(símismo):
         mod = ModeloPrueba(unid_tiempo='días')
-        res = mod.simular(t=EspecTiempo(10, '2001-01-01', paso_guardar=2))['Escala']
+        res = mod.simular(t=EspecTiempo(10, '2001-01-01', guardar_cada=2))['Escala']
         npt.assert_equal(res.vals, np.arange(11, step=2).reshape((6, 1)))
         pdt.assert_index_equal(
             res.vals.indexes[_('tiempo')], pd.date_range('2001-01-01', periods=6, freq='2D'), check_names=False

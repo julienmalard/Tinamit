@@ -18,7 +18,7 @@ class SuperConectado(Modelo):
     instancias de sí misma, así permitiendo la conexión de números arbitrarios de modelos anidados.
     """
 
-    def __init__(símismo, modelos, nombre='superconectado'):
+    def __init__(símismo, modelos, nombre='SuperConectado'):
         símismo.modelos = ModelosConectados(modelos)
         símismo.conexiones = ConexionesVars()
 
@@ -64,7 +64,7 @@ class SuperConectado(Modelo):
         return next(u for u, c in zip(unids, factores_conv) if c == 1)
 
     def iniciar_modelo(símismo, corrida):
-        super().iniciar_modelo(corrida)  # para hacer: ¿necesario?
+        super().iniciar_modelo(corrida)
 
         for m in símismo.modelos:
             m.iniciar_modelo(corrida)

@@ -1,6 +1,6 @@
 import math as mat
 
-from ._impac import ModeloImpaciente
+from ._impac import ModeloImpaciente, VariablesModImpaciente
 
 
 class ModeloDeterminado(ModeloImpaciente):
@@ -35,3 +35,10 @@ class ModeloDeterminado(ModeloImpaciente):
 
     def cerrar(símismo):
         raise NotImplementedError
+
+
+class VariablesModDeter(VariablesModImpaciente):
+    pass
+
+class VariableDeter():
+    pass

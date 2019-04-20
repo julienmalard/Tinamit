@@ -14,7 +14,7 @@ class Tiempo(object):
         símismo.tmñ_paso = t.tmñ_paso
         símismo.n_pasos = t.n_pasos
         símismo.f_inic = t.f_inic
-        símismo.paso_guardar = t.paso_guardar
+        símismo.guardar_cada = t.guardar_cada
 
         símismo.unid_paso, símismo.fact_conv = _a_unid_tnmt(unid_paso)
 
@@ -23,7 +23,7 @@ class Tiempo(object):
         símismo.í = 0
 
     def t_guardar(símismo):
-        return not (símismo.í * símismo.tmñ_paso % símismo.paso_guardar)
+        return not (símismo.í * símismo.tmñ_paso % símismo.guardar_cada)
 
     def pasos_avanzados(símismo, unid):
         return símismo._obt_fact_conv(unid) * símismo.fact_conv * símismo.tmñ_paso
@@ -35,7 +35,10 @@ class Tiempo(object):
         return False
 
     def eje(símismo):
-        return np.arange(símismo.n_pasos * símismo.tmñ_paso + 1, step=símismo.tmñ_paso * símismo.paso_guardar)
+        return np.arange(
+            símismo.n_pasos * símismo.tmñ_paso + 1,
+            step=símismo.guardar_cada * símismo.tmñ_paso
+        )
 
     def _obt_fact_conv(símismo, unid):
 
@@ -48,7 +51,7 @@ class Tiempo(object):
             return fact
 
     def __len__(símismo):
-        return símismo.n_pasos // símismo.paso_guardar + 1
+        return símismo.n_pasos // símismo.guardar_cada + 1
 
 
 class TiempoCalendario(Tiempo):
@@ -57,9 +60,9 @@ class TiempoCalendario(Tiempo):
         return símismo.f_inic + relativedelta(**{unid_ft: símismo.í * símismo.fact_conv})
 
     def eje(símismo):
-        paso = símismo.fact_conv * símismo.paso_guardar * símismo.tmñ_paso
+        paso = símismo.fact_conv * símismo.guardar_cada * símismo.tmñ_paso
         return pd.date_range(
-            símismo.f_inic, periods=símismo.n_pasos // símismo.paso_guardar + 1,
+            símismo.f_inic, periods=símismo.n_pasos // símismo.guardar_cada + 1,
             freq=str(paso) + _a_unid_pandas[símismo.unid_paso]
         )
 
@@ -77,7 +80,7 @@ class TiempoCalendario(Tiempo):
 
 
 class EspecTiempo(object):
-    def __init__(símismo, n_pasos, f_inic=None, tmñ_paso=1, paso_guardar=1):
+    def __init__(símismo, n_pasos, f_inic=None, tmñ_paso=1, guardar_cada=1):
 
         if (int(tmñ_paso) != tmñ_paso) or (tmñ_paso < 1):
             raise ValueError(_('`tmñ_paso` debe ser un número entero superior a 0.'))
@@ -85,7 +88,7 @@ class EspecTiempo(object):
 
         símismo.tmñ_paso = tmñ_paso
         símismo.n_pasos = n_pasos
-        símismo.paso_guardar = paso_guardar
+        símismo.guardar_cada = guardar_cada
 
     def gen_tiempo(símismo, unid_paso):
         if símismo.f_inic:

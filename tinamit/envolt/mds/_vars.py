@@ -12,10 +12,10 @@ class VariablesMDS(VariablesMod):
         return [v for v in símismo if isinstance(v, VarConstante)]
 
     def parientes(símismo, var):
-        return símismo[str(var)].parientes()
+        return símismo[str(var)].parientes
 
     def hijos(símismo, var):
-        return [v for v in símismo if var in v.parientes()]
+        return [v for v in símismo if var in v.parientes]
 
 
 class VarMDS(Variable):

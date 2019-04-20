@@ -15,12 +15,18 @@ class VariablesMod(object):
     def egresos(símismo):
         return [v for v in símismo.variables if v.egr]
 
-    def vars_simul(símismo):
-        return VariablesModSimul(símismo)
+    def cambiar_vals(símismo, valores):
+        for vr, vl in valores.items():
+            símismo[str(vr)].poner_val(vl)
+
+    def reinic(símismo):
+        for v in símismo:
+            v.reinic()
 
     def __getitem__(símismo, itema):
         if itema in símismo:
             return símismo.variables[str(itema)]
+        raise KeyError(itema)
 
     def __iter__(símismo):
         for v in símismo.variables.values():
@@ -46,34 +52,7 @@ class Variable(object):
         símismo.líms = líms
         símismo.info = info
 
-    def __str__(símismo):
-        return símismo.nombre
-
-
-class VariablesModSimul(object):
-    def __init__(símismo, variables):
-        símismo.variables = {str(v): VariableSimul(v) for v in variables}  # para hacer
-
-    def cambiar_vals(símismo, valores):
-        for vr, vl in valores.items():
-            símismo[str(vr)].poner_val(vl)
-
-    def reinic(símismo):
-        for v in símismo:
-            v.reinic()
-
-    def __getitem__(símismo, itema):
-        return símismo.variables[itema]
-
-    def __iter__(símismo):
-        for v in símismo.variables.values():
-            yield v
-
-
-class VariableSimul(object):
-    def __init__(símismo, var):
-        símismo.base = var
-        símismo._val = np.zeros(var.dims)
+        símismo._val = símismo.inic.copy()
 
     def poner_val(símismo, val):
 
@@ -87,10 +66,10 @@ class VariableSimul(object):
         return símismo._val  # para disuadir modificaciones directas a `símismo._val`
 
     def reinic(símismo):
-        símismo._val[:] = símismo.base.inic
+        símismo._val[:] = símismo.inic
 
     def __str__(símismo):
-        return str(símismo.base)
+        return símismo.nombre
 
 
 def _a_np(val):

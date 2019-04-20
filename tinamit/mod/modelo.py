@@ -12,7 +12,7 @@ from .corrida import Corrida
 from .extern import gen_extern
 from .res import ResultadosGrupo
 from .tiempo import EspecTiempo
-from .var import VariablesMod
+from .var import VariablesMod, Variable
 
 
 class Modelo(object):
@@ -58,7 +58,7 @@ class Modelo(object):
         if not isinstance(t, EspecTiempo):
             t = EspecTiempo(t)
 
-        vars_interés = vars_interés or símismo.variables
+        vars_interés = símismo._valid_vars(vars_interés) or símismo.variables
 
         corrida = Corrida(
             nombre, t=t.gen_tiempo(símismo.unidad_tiempo()),
@@ -209,6 +209,13 @@ class Modelo(object):
         """
 
         return False
+
+    def _valid_vars(símismo, vars_):
+        if vars_ is None:
+            return
+        if isinstance(vars_, (str, Variable)):
+            vars_ = [vars_]
+        return [símismo.variables[v] for v in vars_]
 
     def __str__(símismo):
         return símismo.nombre
