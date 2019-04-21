@@ -47,16 +47,23 @@ class TestModeloBloques(unittest.TestCase):
         cls.res = EjBloques(tmñ_bloques=[3, 4, 5]).simular(36)
 
     def test_paso(símismo):
-        npt.assert_equal(símismo.res['paso'], np.arange(51))
+        npt.assert_equal(símismo.res['paso'].vals.values.flatten(), np.arange(37))
 
     def test_ciclo(símismo):
-        npt.assert_equal(símismo.res['ciclo'], np.concatenate(([0], np.repeat(np.arange(1, 11), 5))))
+        npt.assert_equal(
+            símismo.res['ciclo'].vals.values.flatten(), np.concatenate(([0], np.repeat(np.arange(1, 4), 12)))
+        )
 
     def test_bloque(símismo):
-        npt.assert_equal(símismo.res['bloque'], np.concatenate(([2], np.tile(np.repeat([0, 1, 2], [3, 4, 5]), 3))))
+        npt.assert_equal(
+            símismo.res['bloque'].vals.values.flatten(),
+            np.concatenate(([2], np.tile(np.repeat([0, 1, 2], [3, 4, 5]), 3)))
+        )
 
     def test_i_en_ciclo(símismo):
-        npt.assert_equal(símismo.res['i_en_ciclo'], np.concatenate(([4], np.tile(np.arange(5), 10))))
+        npt.assert_equal(
+            símismo.res['i_en_ciclo'].vals.values.flatten(), np.concatenate(([11], np.tile(np.arange(12), 3)))
+        )
 
 
 class TestGenAuto(unittest.TestCase):

@@ -53,3 +53,8 @@ class VarPaso(Variable):
     def act_paso(símismo, paso):
         símismo.paso = paso
         super().poner_val(símismo._matr_paso[paso])
+
+    def reinic(símismo):
+        símismo.paso = 0
+        símismo._matr_paso[:] = símismo.inic
+        super().reinic()

@@ -1,6 +1,6 @@
 import numpy as np
 
-from tinamit.envolt.bf._deter import ModeloDeterminado, VariablesModDeter
+from tinamit.envolt.bf._deter import ModeloDeterminado, VariablesModDeter, VarPasoDeter
 
 
 class ModeloBloques(ModeloDeterminado):
@@ -25,28 +25,18 @@ class VariablesModBloques(VariablesModDeter):
         super().__init__(variables)
 
     def act_paso(símismo, paso):
-        b = next(i for i, s in enumerate(símismo.tmñ_bloques_cum) if paso < s)
-        for v in símismo.vars_bloque():
-            v.act_paso(bloque=b)
-        super().act_paso(paso)
+        b = símismo.bloque(paso)
+        for v in símismo.vars_paso():
+            if isinstance(v, VarBloque):
+                v.act_paso(b)
+            else:
+                v.act_paso(paso)
 
-    def vars_bloque(símismo):
-        return [v for v in símismo if isinstance(v, VarBloque)]
+    def bloque(símismo, paso):
+        return next(i for i, s in enumerate(símismo.tmñ_bloques_cum) if paso < s)
 
 
-class VarBloque():
+class VarBloque(VarPasoDeter):
 
-    def __init__(símismo, nombre, unid, ingr, egr, dims=(1,), líms=None, info=''):
-        super().__init__(nombre, unid, ingr, egr, dims, líms, info)
-
-    def poner_val(símismo, val):
-        pass
-
-    def obt_val(símismo):
-        pass
-
-    def act_paso(símismo, bloque):
-        pass
-
-    def reinic(símismo):
-        pass
+    def __init__(símismo, nombre, unid, ingr, egr, tmñ_bloques, inic=0, líms=None, info=''):
+        super().__init__(nombre, unid, ingr, egr, tmñ_ciclo=len(tmñ_bloques), inic=inic, líms=líms, info=info)

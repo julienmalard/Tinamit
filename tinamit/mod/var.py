@@ -94,7 +94,7 @@ class Variable(object):
 def _a_np(val):
     if isinstance(val, np.ndarray):
         return val
-    elif isinstance(val, (float, int)):
+    elif isinstance(val, (int, float, np.number)):
         return np.array([val])
     else:
         return np.array(val)
