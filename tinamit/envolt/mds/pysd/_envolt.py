@@ -23,6 +23,7 @@ class EnvolturaPySD(EnvolturaMDS):
         # Poner los variables y el tiempo a sus valores iniciales
         símismo.mod.reload()
         símismo.mod.initialize()
+        símismo.paso_act = 0
 
         símismo.cont_simul = False
 
@@ -31,15 +32,18 @@ class EnvolturaPySD(EnvolturaMDS):
     def incrementar(símismo, rebanada):
         super().incrementar(rebanada)
 
+        símismo.paso_act += rebanada.n_pasos
+        devolv = símismo.paso_act if símismo.cont_simul else [0, símismo.paso_act]
         res = símismo.mod.run(
             initial_condition='current' if símismo.cont_simul else 'original', params=símismo.vars_para_cambiar,
-            return_timestamps=None, return_columns=[v.nombre_py for v in rebanada.resultados.variables()]
+            return_timestamps=devolv, return_columns=[v.nombre_py for v in rebanada.resultados.variables()]
         )
 
         # Guardar valores iniciales para niveles
         if not símismo.cont_simul:
             for nv in símismo.variables.niveles():
-                rebanada.resultados[nv].vals[0] = res[nv.nombre_py][0]
+                if nv in rebanada.resultados.variables():
+                    rebanada.resultados[nv].vals[0] = res[nv.nombre_py][0]
 
         símismo.cont_simul = True
         símismo.variables.cambiar_vals({v: res[v.nombre_py].values[-1] for v in rebanada.resultados.variables()})

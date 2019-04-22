@@ -4,21 +4,21 @@ from tinamit.mod import VariablesMod, Variable
 
 class ModeloPrueba(EnvolturaBF):
 
-    def __init__(símismo, unid_tiempo='años', nombre='bf'):
+    def __init__(símismo, unid_tiempo='mes', nombre='bf'):
         símismo.unid_tiempo = unid_tiempo
-        super().__init__(nombre=nombre, variables=símismo._gen_vars())
+        super().__init__(nombre=nombre, variables=símismo._gen_vars(unid_tiempo))
 
     @staticmethod
-    def _gen_vars():
+    def _gen_vars(unid_t):
         return VariablesMod([
-            Variable('Lluvia', unid=None, ingr=False, egr=True, inic=1, líms=(0, None)),
-            Variable('Lago', unid=None, ingr=True, egr=False, inic=1000, líms=(0, None)),
+            Variable('Lluvia', unid='m3/'+unid_t, ingr=False, egr=True, inic=1, líms=(0, None)),
+            Variable('Lago', unid='m3', ingr=True, egr=False, inic=1000, líms=(0, None)),
         ])
 
     def incrementar(símismo, rebanada):
         super().incrementar(rebanada)
         lago = símismo.variables['Lago'].obt_val()
-        símismo.variables['Lluvia'].poner_val(lago / 10 * rebanada.n_pasos)
+        símismo.variables['Lluvia'].poner_val(lago / 120 * rebanada.n_pasos)
 
     def unidad_tiempo(símismo):
         return símismo.unid_tiempo

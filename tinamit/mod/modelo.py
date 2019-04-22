@@ -111,7 +111,7 @@ class Modelo(object):
         corrida.variables.reinic()
 
         if corrida.extern:
-            símismo.cambiar_vals(corrida.obt_extern_act())
+            símismo.cambiar_vals({vr: vl for vr, vl in corrida.obt_extern_act().items() if vr in símismo.variables})
         corrida.actualizar_res()
 
     def correr(símismo):
@@ -146,7 +146,7 @@ class Modelo(object):
         """
 
         # Cambia primero el valor en el diccionario interno del Modelo
-        símismo.corrida.variables.cambiar_vals(valores=valores)
+        símismo.variables.cambiar_vals(valores=valores)
 
     @classmethod
     def obt_conf(cls, llave, auto=None, cond=None, mnsj_err=None):

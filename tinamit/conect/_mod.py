@@ -55,7 +55,7 @@ class SuperConectado(Modelo):
             # Intentar convertir la unidad del submodelo a la unidad de base
             factores_conv.append(convertir(de=unids[0], a=u))
         factores_conv = np.array(factores_conv)
-        np.divide(factores_conv, factores_conv.min(), out=factores_conv)
+        factores_conv = np.divide(factores_conv, factores_conv.min())
 
         facts_conv_ent = np.round(factores_conv)
         if not np.array_equal(facts_conv_ent, factores_conv):
@@ -74,6 +74,7 @@ class SuperConectado(Modelo):
             m.iniciar_modelo(corrida)
 
         símismo._intercambiar_vars()
+        corrida.actualizar_res()
 
     def incrementar(símismo, rebanada):
         def incr_mod(mod, d, reb):
@@ -114,7 +115,7 @@ class SuperConectado(Modelo):
 
     def cambiar_vals(símismo, valores):
         for mod in símismo.modelos:
-            mod.cambiar_vals({vr: vl for vr, vl in valores if vr in mod})
+            mod.cambiar_vals({vr: vl for vr, vl in valores.items() if vr in mod.variables})
 
     def _mod_de_var(símismo, var):
         return next(m for m in símismo.modelos if var in m)

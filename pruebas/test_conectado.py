@@ -4,6 +4,7 @@ from collections import Counter
 
 import numpy as np
 import numpy.testing as npt
+import xarray.testing as xrt
 
 from pruebas.recursos.bf.prueba_bf import ModeloPrueba
 from pruebas.recursos.bf.variantes import EjBloques, EjDeterminado, EjIndeterminado
@@ -11,6 +12,7 @@ from pruebas.test_mds import generar_modelos_prueba, limpiar_mds
 from tinamit.conect import Conectado, SuperConectado
 from tinamit.envolt.bf import EnvolturaBF, gen_bf
 from tinamit.envolt.mds import EnvolturaPySD
+from tinamit.mod import OpsSimulGrupo
 from tinamit.unids import trads
 
 dir_act = os.path.split(__file__)[0]
@@ -52,8 +54,8 @@ class TestConectado(unittest.TestCase):
                 egr1 = mod.simular(100, vars_interés=list(mod.variables))
                 egr2 = mod.simular(100, vars_interés=list(mod.variables))
 
-                for var in egr1.data_vars:
-                    npt.assert_array_equal(egr1[var].values, egr2[var].values, err_msg=var)
+                for r1, r2 in zip(egr1, egr2):
+                    xrt.assert_equal(r1.vals, r2.vals)
 
     def test_intercambio_de_variables(símismo):
         """
@@ -62,10 +64,14 @@ class TestConectado(unittest.TestCase):
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                egr = mod.simular(100)
+                res = mod.simular(100)
 
-                npt.assert_array_equal(egr['bf']['Lluvia'], egr['mds']['Lluvia'], err_msg='Lluvia')
-                npt.assert_array_equal(egr['bf']['Lago'], egr['mds']['Lago'], err_msg='Lago')
+                npt.assert_array_equal(
+                    res['bf']['Lluvia'].vals.values.flatten(), res['mds']['Lluvia'].vals.values.flatten()
+                )
+                npt.assert_array_equal(
+                    res['bf']['Lago'].vals.values.flatten(), res['mds']['Lago'].vals.values.flatten()
+                )
 
     def test_simular_grupo(símismo):
         """
@@ -74,98 +80,24 @@ class TestConectado(unittest.TestCase):
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                t_final = 100
-                referencia = {}
-                mod.simular(t_final=t_final, vals_inic={'Nivel lago inicial': 50}, vars_interés='Lago')
-                referencia['lago_50'] = mod.leer_resultados('Lago')
+                t_final = 10
+                ref = {
+                    'lago_%i' % i: mod.simular(t_final, vals_extern={'Nivel lago inicial': i}, vars_interés='Lago')
+                    for i in [50, 2000]
+                }
 
-                mod.simular(t_final=t_final, vals_inic={'Nivel lago inicial': 2000}, vars_interés='Lago')
-                referencia['lago_2000'] = mod.leer_resultados('Lago')
-
-                resultados = mod.simular_grupo(
-                    t_final=t_final,
-                    vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
+                ops = OpsSimulGrupo(
+                    t_final, vals_extern=[{'Nivel lago inicial': 50}, {'Nivel lago inicial': 2000}],
+                    nombre=['lago_50', 'lago_2000'],
                     vars_interés='Lago'
                 )
+                resultados = mod.simular_grupo(ops)
 
-                for c in resultados:
-                    npt.assert_allclose(referencia[c]['mds_Lago'], resultados[c]['mds_Lago'], rtol=0.001)
-
-    def test_simular_grupo_con_paralelo(símismo):
-        """
-        Comprobamos que :func:`SuperConectado.simular_grupo` funcione igual con o sin paralelización.
-
-        """
-        mod = símismo.modelos['PySDVensim']
-
-        t_final = 100
-
-        sin_paral = mod.simular_grupo(
-            t_final=t_final,
-            vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
-            vars_interés='Lago',
-            paralelo=False
-        )
-
-        con_paral = mod.simular_grupo(
-            t_final=t_final,
-            vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
-            vars_interés='Lago',
-            paralelo=True
-        )
-
-        for c in sin_paral:
-            npt.assert_allclose(sin_paral[c]['mds_Lago'], con_paral[c]['mds_Lago'], rtol=0.001)
-
-    def test_simular_grupo_inicvals_por_submodelo(símismo):
-        """
-        Asegurarse que podamos especificar valores iniciales por submodelo en un diccionario.
-        """
-        mod = símismo.modelos['PySDVensim']
-
-        t_final = 100
-        vals_inic = {'mds_Nivel lago inicial': 50}
-        ref = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
-
-        vals_inic = {'mds': {'Nivel lago inicial': 50}}
-        res = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
-
-        for c in res:
-            npt.assert_allclose(ref[c]['mds_Lago'], res[c]['mds_Lago'], rtol=0.001)
-
-    def test_simular_grupo_inicvals_por_corrida_y_submodelo(símismo):
-        """
-        Simular corridas en grupo con valores iniciales especificadas por submodelo en un diccionario.
-        """
-        mod = símismo.modelos['PySDVensim']
-
-        t_final = 100
-        vals_inic = {'50': {'mds_Nivel lago inicial': 50}}
-        ref = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
-
-        vals_inic = {'50': {'mds': {'Nivel lago inicial': 50}}}
-        res = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
-
-        for c in res:
-            npt.assert_allclose(ref[c]['mds_Lago'], res[c]['mds_Lago'], rtol=0.001)
-
-    def test_inic_vals_por_nombre_completo(símismo):
-        mod = símismo.modelos['PySDVensim']
-        vals_inic = {'mds_Nivel lago inicial': 50}
-        res = mod.simular(100, vals_inic=vals_inic, vars_interés='Nivel lago inicial')
-        símismo.assertEqual(res['mds_Nivel lago inicial'][0], 50)
-
-    def test_inic_vals_por_nombre_en_submodelo(símismo):
-        mod = símismo.modelos['PySDVensim']
-        vals_inic = {'Nivel lago inicial': 40}
-        res = mod.simular(100, vals_inic=vals_inic, vars_interés='Nivel lago inicial')
-        símismo.assertEqual(res['mds_Nivel lago inicial'][0], 40)
-
-    def test_inic_vals_por_submodelo_y_nombre(símismo):
-        mod = símismo.modelos['PySDVensim']
-        vals_inic = {'mds': {'Nivel lago inicial': 30}}
-        res = mod.simular(100, vals_inic=vals_inic, vars_interés='Nivel lago inicial')
-        símismo.assertEqual(res['mds_Nivel lago inicial'][0], 30)
+                for c in ref:
+                    npt.assert_allclose(
+                        ref[c]['bf']['Lago'].vals.values.flatten(),
+                        resultados[c]['bf']['Lago'].vals.values.flatten(), rtol=0.001
+                    )
 
     @classmethod
     def tearDownClass(cls):
@@ -174,7 +106,6 @@ class TestConectado(unittest.TestCase):
         """
 
         limpiar_mds()
-
 
 class Test3ModelosConectados(unittest.TestCase):
     """
@@ -253,7 +184,6 @@ class Test3ModelosConectados(unittest.TestCase):
 
         limpiar_mds()
 
-
 class Test_ConversionesUnidadesTiempo(unittest.TestCase):
 
     @classmethod
@@ -292,7 +222,6 @@ class Test_ConversionesUnidadesTiempo(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         limpiar_mds()
-
 
 class Test_ConectarConModelosImpacientes(unittest.TestCase):
     @classmethod
@@ -384,17 +313,20 @@ class Test_ConectarConModelosImpacientes(unittest.TestCase):
     def test_hacia_mod_impac_suma(símismo):
         for nmbr, res in símismo.res.items():
             with símismo.subTest(mod=nmbr):
-                npt.assert_equal(res['{}_egr_suma'.format(nmbr)].values[1:], símismo._simular_proc_ingr(nmbr, np.sum))
+                npt.assert_equal(res['{}_egr_suma'.format(nmbr)].values[1:],
+                                 símismo._simular_proc_ingr(nmbr, np.sum))
 
     def test_hacia_mod_impac_prom(símismo):
         for nmbr, res in símismo.res.items():
             with símismo.subTest(mod=nmbr):
-                npt.assert_equal(res['{}_egr_prom'.format(nmbr)].values[1:], símismo._simular_proc_ingr(nmbr, np.mean))
+                npt.assert_equal(res['{}_egr_prom'.format(nmbr)].values[1:],
+                                 símismo._simular_proc_ingr(nmbr, np.mean))
 
     def test_hacia_mod_impac_máx(símismo):
         for nmbr, res in símismo.res.items():
             with símismo.subTest(mod=nmbr):
-                npt.assert_equal(res['{}_egr_máx'.format(nmbr)].values[1:], símismo._simular_proc_ingr(nmbr, np.max))
+                npt.assert_equal(res['{}_egr_máx'.format(nmbr)].values[1:],
+                                 símismo._simular_proc_ingr(nmbr, np.max))
 
     def test_hacia_mod_impac_directo(símismo):
         for nmbr, res in símismo.res.items():

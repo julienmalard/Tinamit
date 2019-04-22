@@ -93,7 +93,7 @@ class TestGenAuto(unittest.TestCase):
 
     def test_archivo_múltiples(símismo):
         mod = gen_bf(símismo._obt_recurso('arch_múltiples.py'))
-        símismo.assertEqual(mod.unidad_tiempo(), 'años')
+        símismo.assertIsInstance(mod, EnvolturaBF)
 
     def test_archivo_múltiples_no_identificada(símismo):
         mod = gen_bf(símismo._obt_recurso('arch_múltiples_no_identificada.py'))
