@@ -1,7 +1,6 @@
 from pkg_resources import resource_filename
 
 from .config import conf, conf_mods, trads
-from .envolt import bf, mds
 
 # Cosas básicas
 __autor__ = 'Julien Malard'

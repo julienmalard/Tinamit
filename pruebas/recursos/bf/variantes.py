@@ -1,7 +1,7 @@
 import numpy as np
 
 from tinamit.envolt.bf import ModeloBloques, ModeloDeterminado, ModeloIndeterminado, VariablesModDeter, \
-    VariablesModImpaciente, VarBloque, VarPasoDeter, VariablesModBloques
+    VariablesModIndeterminado, VarBloque, VarPasoDeter, VariablesModBloques, VarPasoIndeter
 from tinamit.mod import Variable
 
 
@@ -72,15 +72,14 @@ class EjIndeterminado(ModeloIndeterminado):
     def __init__(símismo, rango_n, unid_tiempo='días'):
         símismo.rango_n = rango_n
         símismo.unid_tiempo = unid_tiempo
-        símismo.n = np.random.randint(*rango_n)
 
         super().__init__(variables=símismo._gen_vars())
 
     @staticmethod
     def _gen_vars():
-        return VariablesModImpaciente([
+        return VariablesModIndeterminado([
             Variable('ciclo', unid=None, ingr=False, egr=True, líms=(0, None)),
-            Variable('paso', unid=None, ingr=False, egr=True, líms=(0, None)),
+            VarPasoIndeter('paso', unid=None, ingr=False, egr=True, líms=(0, None)),
             Variable('ingreso', unid=None, ingr=True, egr=False, líms=(0, None))
         ])
 
@@ -88,5 +87,8 @@ class EjIndeterminado(ModeloIndeterminado):
         return símismo.unid_tiempo
 
     def mandar_modelo(símismo):
-        símismo.n = np.random.randint(*símismo.rango_n)
-        return símismo.n
+        n = np.random.randint(*símismo.rango_n)
+        símismo.variables['ciclo'] += 1
+        paso = símismo.variables['paso'].obt_val()
+        símismo.variables['paso'].poner_vals_paso(np.arange(paso+1, n+paso+1))
+        return n

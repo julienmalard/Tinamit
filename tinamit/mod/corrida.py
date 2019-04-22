@@ -1,7 +1,6 @@
 import itertools
 
 from tinamit.config import _
-from .res import ResultadosSimul
 
 
 class Corrida(object):
@@ -11,10 +10,9 @@ class Corrida(object):
         símismo.extern = extern
 
         símismo.variables = vars_mod
-        símismo.vars_interés = vars_interés
 
-        símismo.resultados = ResultadosSimul(
-            nombre=nombre, t=t, variables=[v for v in símismo.variables if v in vars_interés]
+        símismo.resultados = vars_mod.gen_res(
+            nombre=nombre, t=t, vars_interés=vars_interés
         )
 
     def actualizar_res(símismo):
@@ -24,6 +22,13 @@ class Corrida(object):
     def obt_extern_act(símismo, var=None):
         if símismo.extern:
             return símismo.extern.obt_vals_t(símismo.t, var=var)
+
+
+class Rebanada(object):
+    def __init__(símismo, n_pasos, resultados):
+        símismo.n_pasos = n_pasos
+
+        símismo.resultados = resultados
 
 
 class PlantillaOpsSimulGrupo(object):

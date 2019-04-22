@@ -17,10 +17,10 @@ class ResultadosGrupo(dict):
 
 class ResultadosSimul(object):
 
-    def __init__(símismo, nombre, t, variables):
+    def __init__(símismo, nombre, t, vars_interés):
         símismo.nombre = nombre
         símismo.t = t
-        símismo.res_vars = {str(v): ResultadosVar(v, t) for v in variables}
+        símismo.res_vars = {str(v): ResultadosVar(v, t) for v in vars_interés}
 
     def actualizar(símismo):
         for v in símismo:
@@ -60,6 +60,9 @@ class ResultadosSimul(object):
 
     def a_dic(símismo):
         return {v: r.a_dic() for v, r in símismo.res_vars.items()}
+
+    def variables(símismo):
+        return [v.var for v in símismo]
 
     def __str__(símismo):
         return símismo.nombre

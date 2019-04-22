@@ -49,8 +49,8 @@ class EnvolturaVensimDLL(EnvolturaMDS):
 
         símismo.inicializado = True
 
-    def incrementar(símismo):
-        super().incrementar()
+    def incrementar(símismo, rebanada):
+        super().incrementar(rebanada)
         corrida = símismo.corrida
         # Establecer el paso.
         if corrida != símismo.paso:
@@ -58,7 +58,7 @@ class EnvolturaVensimDLL(EnvolturaMDS):
             símismo.paso = corrida
 
         f.avanzar_modelo(símismo.mod)
-        símismo._leer_vals_de_vensim(corrida.resultados.vars_interés)
+        símismo._leer_vals_de_vensim(rebanada.resultados.variables())
 
     def cambiar_vals(símismo, valores):
         super().cambiar_vals(valores)

@@ -33,12 +33,12 @@ class TestModeloIndeter(unittest.TestCase):
         cls.res = EjIndeterminado(rango_n=(3, 7)).simular(50)
 
     def test_paso(símismo):
-        npt.assert_equal(símismo.res['paso'], np.arange(51))
+        npt.assert_equal(símismo.res['paso'].vals.values.flatten(), np.arange(51))
 
     def test_ciclo(símismo):
-        ciclo = símismo.res['ciclo']
+        ciclo = símismo.res['ciclo'].vals.values.flatten()
         npt.assert_equal(np.unique(ciclo), np.arange(len(np.unique(ciclo))))
-        símismo.assertTrue(all(3 <= np.sum(ciclo == c) <= 7 for c in np.unique(ciclo)))
+        símismo.assertTrue(all(np.sum(ciclo == c) <= 7 for c in np.unique(ciclo)))
 
 
 class TestModeloBloques(unittest.TestCase):

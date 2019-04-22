@@ -4,26 +4,24 @@ from tinamit.mod import VariablesMod, Variable
 
 class ModeloPrueba(EnvolturaBF):
 
-    def __init__(símismo, unid_tiempo='años', nombre='modeloBF'):
+    def __init__(símismo, unid_tiempo='años', nombre='bf'):
         símismo.unid_tiempo = unid_tiempo
         super().__init__(nombre=nombre, variables=símismo._gen_vars())
 
     @staticmethod
     def _gen_vars():
         return VariablesMod([
-            Variable('Lluvia', unid=None, ingr=False, egr=True, líms=(0, None)),
-            Variable('Lago', unid=None, ingr=True, egr=False, líms=(0, None)),
+            Variable('Lluvia', unid=None, ingr=False, egr=True, inic=1, líms=(0, None)),
+            Variable('Lago', unid=None, ingr=True, egr=False, inic=1000, líms=(0, None)),
         ])
 
-    def incrementar(símismo, corrida):
+    def incrementar(símismo, rebanada):
+        super().incrementar(rebanada)
         lago = símismo.variables['Lago'].obt_val()
-        símismo.variables['Lluvia'].poner_val(lago / 10 * paso)
+        símismo.variables['Lluvia'].poner_val(lago / 10 * rebanada.n_pasos)
 
     def unidad_tiempo(símismo):
         return símismo.unid_tiempo
-
-    def _vals_inic(símismo):
-        return {'Lluvia': 1, 'Lago': 1000, 'Escala': 0, 'Vacío': 10, 'Vacío2': 10, 'Vacío3': 10, 'Aleatorio': 0}
 
     def paralelizable(símismo):
         return True

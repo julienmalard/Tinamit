@@ -33,8 +33,8 @@ class ConexionesVars(object):
 class Conex(object):
     def __init__(símismo, var_fuente, modelo_fuente, var_recip, modelo_recip, conv):
 
-        if modelo_recip is modelo_recip:
-            raise ValueError(_('Los modelos de variables conectados deben ser distintos'))
+        if modelo_recip is modelo_fuente:
+            raise ValueError(_('Los modelos de variables conectados deben ser distintos.'))
 
         símismo.var_fuente = var_fuente
         símismo.modelo_fuente = modelo_fuente
@@ -49,10 +49,10 @@ class Conex(object):
         v_f = símismo.var_fuente
         v_r = símismo.var_recip
 
-        if v_f.dims() != v_r.dims():
+        if v_f.dims != v_r.dims:
             raise ValueError(
                 _('Dimensiones incompatibles entre variables "{}" {} y "{}" {}.')
-                    .format(v_f, v_f.dims(), v_r, v_r.dims())
+                    .format(v_f, v_f.dims, v_r, v_r.dims)
             )
 
         if not _líms_compat(símismo.var_fuente.líms, símismo.var_recip.líms):
@@ -65,15 +65,22 @@ def _resolv_conv(unid_1, unid_2, conv):
     if conv is None:
         # Si no se especificó factor de conversión...
 
-        # Intentar hacer una conversión automática.
-        try:
-            conv = convertir(de=unid_1, a=unid_2)
-        except ValueError:
-            # Si eso no funcionó, suponer una conversión de 1.
-            avisar(_('No se pudo identificar una conversión automática entre {} y {}. '
-                     'Se está suponiendo un factor de conversión de 1.')
-                   .format(unid_1, unid_2))
+        mensaje = _('No se pudo identificar una conversión automática entre {} y {}. '
+                    'Se está suponiendo un factor de conversión de 1.').format(unid_1, unid_2)
+        if unid_1 is None or unid_2 is None:
             conv = 1
+            if not (unid_1 is unid_2 is None):
+                avisar(mensaje)
+
+        else:
+            # Intentar hacer una conversión automática.
+            try:
+                conv = convertir(de=unid_1, a=unid_2)
+            except ValueError:
+                # Si eso no funcionó, suponer una conversión de 1.
+                conv = 1
+                avisar(mensaje)
+
     return conv
 
 

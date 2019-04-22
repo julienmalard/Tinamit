@@ -5,7 +5,7 @@ from تقدیر.مقام import مقام
 from tinamit.config import _
 from tinamit.envolt.bf import EnvolturaBF
 from . import Variable
-from . import VariablesMod
+from tinamit.mod import VariablesMod
 
 
 class Clima(object):
@@ -30,16 +30,15 @@ class EnvoltClima(EnvolturaBF):
         símismo.clima = clima
         símismo.datos = None
         variables = VariablesMod(
-            [Variable(v, unid=, ingr=False, egr=True) for v in símismo.clima.variables()]
+            [Variable(v, unid=NotImplemented, ingr=False, egr=True) for v in símismo.clima.variables()]
         )
         super().__init__(variables=variables, nombre='clima')
 
     def iniciar_modelo(símismo, corrida):
         símismo.datos = símismo.clima.obt_datos()
 
-    def incrementar(símismo, corrida):
-        fecha = corrida.t.fecha()
-        símismo.variables.cambiar_vals({v: símismo.datos[str(v)][fecha] for v in símismo.variables})
+    def incrementar(símismo, rebanada):
+        símismo.variables.cambiar_vals({v: símismo.datos[str(v)][símismo.corrida.t.fecha()] for v in símismo.variables})
 
     def unidad_tiempo(símismo):
         return 'día'

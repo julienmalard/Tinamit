@@ -8,11 +8,12 @@ import pandas as pd
 
 from tinamit.config import _, conf_mods
 from tinamit.cositas import guardar_json, cargar_json
-from .corrida import Corrida
+from .corrida import Corrida, Rebanada
 from .extern import gen_extern
 from .res import ResultadosGrupo
 from .tiempo import EspecTiempo
-from .var import VariablesMod, Variable
+from .var import Variable
+from .vars_mod import VariablesMod
 
 
 class Modelo(object):
@@ -57,8 +58,6 @@ class Modelo(object):
     def simular(símismo, t, nombre='Tinamït', vals_extern=None, clima=None, vars_interés=None):
         if not isinstance(t, EspecTiempo):
             t = EspecTiempo(t)
-
-        vars_interés = símismo._valid_vars(vars_interés) or símismo.variables
 
         corrida = Corrida(
             nombre, t=t.gen_tiempo(símismo.unidad_tiempo()),
@@ -117,10 +116,15 @@ class Modelo(object):
 
     def correr(símismo):
         while símismo.corrida.t.avanzar():
-            símismo.incrementar()
+            símismo.incrementar(
+                Rebanada(
+                    símismo.corrida.t.pasos_avanzados(símismo.unidad_tiempo()),
+                    resultados=símismo.corrida.resultados
+                )
+            )
             símismo.corrida.actualizar_res()
 
-    def incrementar(símismo):  # para hacer: super() en subclasses
+    def incrementar(símismo, rebanada):
         if símismo.corrida.extern:
             símismo.cambiar_vals(símismo.corrida.obt_extern_act())
 
@@ -143,15 +147,6 @@ class Modelo(object):
 
         # Cambia primero el valor en el diccionario interno del Modelo
         símismo.corrida.variables.cambiar_vals(valores=valores)
-
-    def valid_var(símismo, var):
-        if var in símismo.variables:
-            return símismo.variables[var]
-        else:
-            raise ValueError(_(
-                'El variable "{v}" no existe en el modelo "{m}". Pero antes de quejarte '
-                'al gerente, sería buena idea verificar si lo escrbiste bien.'  # Sí, lo "escrbí" así por propósito. :)
-            ).format(v=var, m=símismo))
 
     @classmethod
     def obt_conf(cls, llave, auto=None, cond=None, mnsj_err=None):
@@ -209,13 +204,6 @@ class Modelo(object):
         """
 
         return False
-
-    def _valid_vars(símismo, vars_):
-        if vars_ is None:
-            return
-        if isinstance(vars_, (str, Variable)):
-            vars_ = [vars_]
-        return [símismo.variables[v] for v in vars_]
 
     def __str__(símismo):
         return símismo.nombre

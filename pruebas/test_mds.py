@@ -13,7 +13,7 @@ tipos_modelos = {
     'PySD_Vensim': {'envlt': EnvolturaPySD, 'prueba': 'recursos/mds/prueba_senc_mdl.mdl'},
     'PySD_XMILE': {'envlt': EnvolturaPySD, 'prueba': 'recursos/mds/prueba_senc_xml.xmile'},
     'PySD_Py': {'envlt': EnvolturaPySD, 'prueba': 'recursos/mds/prueba_senc_py.py'},
-    'dllVensim': {'envlt': EnvolturaVensimDLL, 'prueba': 'recursos/mds/prueba_senc.vpm'}
+    'dllVensim': {'envlt': EnvolturaVensimDLL, 'prueba': 'recursos/mds/prueba_senc_vpm.vpm'}
 }
 
 # Agregar la ubicación del fuente actual
@@ -45,11 +45,11 @@ class TestLeerModelos(unittest.TestCase):
 
         # Información sobre los variables del modelo de prueba
         cls.info_vars = {
-            'Lluvia': {'unidades': 'm3/mes', 'líms': (0, None)},
-            'Nivel lago inicial': {'unidades': 'm3', 'líms': (0, None)},
-            'Flujo río': {'unidades': 'm3/mes', 'líms': (0, None)},
-            'Lago': {'unidades': 'm3', 'líms': (0, None)},
-            'Evaporación': {'unidades': 'm3/mes', 'líms': (0, None)},
+            'Lluvia': {'unidades': 'm3/mes', 'líms': (0, np.nan)},
+            'Nivel lago inicial': {'unidades': 'm3', 'líms': (0, np.nan)},
+            'Flujo río': {'unidades': 'm3/mes', 'líms': (0, np.nan)},
+            'Lago': {'unidades': 'm3', 'líms': (0, np.nan)},
+            'Evaporación': {'unidades': 'm3/mes', 'líms': (0, np.nan)},
             'Aleatorio': {'unidades': 'Sdmn', 'líms': (0, 1)},
         }
 

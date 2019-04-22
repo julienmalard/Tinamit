@@ -14,7 +14,7 @@ from tinamit.envolt.mds import EnvolturaPySD
 from tinamit.unids import trads
 
 dir_act = os.path.split(__file__)[0]
-arch_bf = os.path.join(dir_act, 'recursos/bf/prueba_mod.py')
+arch_bf = os.path.join(dir_act, 'recursos/bf/prueba_bf.py')
 arch_mds = os.path.join(dir_act, 'recursos/mds/prueba_senc_mdl.mdl')
 arch_mod_vacío = os.path.join(dir_act, 'recursos/mds/prueba_vacía.mdl')
 
@@ -31,7 +31,7 @@ class TestConectado(unittest.TestCase):
         # Generar las instancias de los modelos individuales y conectados
         cls.mods_mds = generar_modelos_prueba()
 
-        cls.modelos = {ll: Conectado(bf=gen_bf(arch_bf), mds=mod) for ll, mod in cls.mods_mds}
+        cls.modelos = {ll: Conectado(bf=gen_bf(arch_bf), mds=mod) for ll, mod in cls.mods_mds.items()}
 
         # Agregar traducciones necesarias.
         trads.agregar_trad('year', 'año', leng_trad='es', leng_orig='en')
@@ -41,7 +41,6 @@ class TestConectado(unittest.TestCase):
         for mod in cls.modelos.values():
             mod.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)
             mod.conectar(var_mds='Lago', var_bf='Lago', mds_fuente=True)
-            mod.conectar(var_mds='Aleatorio', var_bf='Aleatorio', mds_fuente=False)
 
     def test_reinic_vals(símismo):
         """
@@ -50,25 +49,23 @@ class TestConectado(unittest.TestCase):
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                egr1 = mod.simular(t_final=100, vars_interés=list(mod.variables))
-                egr2 = mod.simular(t_final=100, vars_interés=list(mod.variables))
+                egr1 = mod.simular(100, vars_interés=list(mod.variables))
+                egr2 = mod.simular(100, vars_interés=list(mod.variables))
 
                 for var in egr1.data_vars:
-                    if 'Aleatorio' not in var:
-                        npt.assert_array_equal(egr1[var].values, egr2[var].values, err_msg=var)
+                    npt.assert_array_equal(egr1[var].values, egr2[var].values, err_msg=var)
 
-    def test_intercambio_de_variables_en_simular(símismo):
+    def test_intercambio_de_variables(símismo):
         """
         Asegurarse que valores intercambiados tengan valores iguales en los resultados de ambos modelos.
         """
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                egr = mod.simular(t_final=100)
+                egr = mod.simular(100)
 
-                npt.assert_array_equal(egr['bf_Aleatorio'], egr['mds_Aleatorio'], err_msg='Aleatorio')
-                npt.assert_array_equal(egr['bf_Lluvia'], egr['mds_Lluvia'], err_msg='Lluvia')
-                npt.assert_array_equal(egr['bf_Lago'], egr['mds_Lago'], err_msg='Lago')
+                npt.assert_array_equal(egr['bf']['Lluvia'], egr['mds']['Lluvia'], err_msg='Lluvia')
+                npt.assert_array_equal(egr['bf']['Lago'], egr['mds']['Lago'], err_msg='Lago')
 
     def test_simular_grupo(símismo):
         """

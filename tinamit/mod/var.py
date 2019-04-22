@@ -3,45 +3,6 @@ import numpy as np
 from tinamit.config import _
 
 
-class VariablesMod(object):
-    def __init__(símismo, variables):
-        símismo.variables = {v.nombre: v for v in variables}
-        if len(símismo.variables) != len(variables):
-            raise ValueError(_('Los variables de un modelo deben todos tener nombre distinto.'))
-
-    def ingresos(símismo):
-        return [v for v in símismo.variables if v.ingr]
-
-    def egresos(símismo):
-        return [v for v in símismo.variables if v.egr]
-
-    def cambiar_vals(símismo, valores):
-        for vr, vl in valores.items():
-            símismo[str(vr)].poner_val(vl)
-
-    def reinic(símismo):
-        for v in símismo:
-            v.reinic()
-
-    def __getitem__(símismo, itema):
-        if itema in símismo:
-            return símismo.variables[str(itema)]
-        raise KeyError(itema)
-
-    def __setitem__(símismo, llave, valor):
-        símismo.variables[llave] = valor
-
-    def __iter__(símismo):
-        for v in símismo.variables.values():
-            yield v
-
-    def __contains__(símismo, itema):
-        if isinstance(itema, str):
-            return itema in símismo.variables
-        else:
-            return itema in símismo.variables.values()
-
-
 class Variable(object):
     def __init__(símismo, nombre, unid, ingr, egr, inic=0, líms=None, info=''):
         if not (ingr or egr):
@@ -52,7 +13,7 @@ class Variable(object):
         símismo.egr = egr
         símismo.inic = _a_np(inic)
         símismo.dims = símismo.inic.shape
-        símismo.líms = líms
+        símismo.líms = _proc_líms(líms)
         símismo.info = info
 
         símismo._val = símismo.inic.copy()
@@ -98,3 +59,10 @@ def _a_np(val):
         return np.array([val])
     else:
         return np.array(val)
+
+
+def _proc_líms(líms):
+    if líms is None:
+        return -np.inf, np.inf
+    else:
+        return líms[0] or -np.nan, líms[1] or np.nan

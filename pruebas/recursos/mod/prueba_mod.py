@@ -7,12 +7,11 @@ class ModeloPrueba(Modelo):
         símismo.unid_tiempo = unid_tiempo
         super().__init__(nombre=nombre, variables=símismo._gen_vars())
 
-    def incrementar(símismo):
-        super().incrementar()
-        vars_ = símismo.corrida.variables
-        pasos = símismo.corrida.t.pasos_avanzados(símismo.unidad_tiempo())
-        vars_.cambiar_vals({
-            'Escala': vars_['Escala'].obt_val() + pasos,
+    def incrementar(símismo, rebanada):
+        super().incrementar(rebanada)
+
+        símismo.variables.cambiar_vals({
+            'Escala': símismo.variables['Escala'].obt_val() + rebanada.n_pasos,
         })
 
     @staticmethod

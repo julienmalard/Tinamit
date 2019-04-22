@@ -1,4 +1,4 @@
-from ...mod import Modelo
+from tinamit.mod import Modelo
 
 
 class EnvolturaBF(Modelo):

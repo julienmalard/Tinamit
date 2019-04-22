@@ -5,10 +5,10 @@ from ._impac import ModeloImpaciente, VariablesModImpaciente, VarPaso
 
 class ModeloDeterminado(ModeloImpaciente):
 
-    def incrementar(símismo):
+    def incrementar(símismo, rebanada):
         # Para simplificar el código un poco.
         p = símismo.paso_en_ciclo
-        n_pasos = símismo.corrida.t.pasos_avanzados(símismo.unidad_tiempo())
+        n_pasos = rebanada.n_pasos
 
         # Aplicar el incremento de paso
         p_después = (p + n_pasos) % símismo.tmñ_ciclo

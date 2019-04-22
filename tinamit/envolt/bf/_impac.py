@@ -1,6 +1,7 @@
 import numpy as np
 
-from tinamit.mod.var import Variable, VariablesMod
+from tinamit.mod.var import Variable
+from tinamit.mod import VariablesMod
 from ._envolt import EnvolturaBF
 
 

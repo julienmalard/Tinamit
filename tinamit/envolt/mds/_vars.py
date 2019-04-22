@@ -1,4 +1,5 @@
-from tinamit.mod.var import VariablesMod, Variable
+from tinamit.mod.var import Variable
+from tinamit.mod import VariablesMod
 
 
 class VariablesMDS(VariablesMod):
