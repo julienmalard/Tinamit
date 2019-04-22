@@ -1,5 +1,5 @@
-from pruebas.recursos.bf.prueba_bf import ModeloPrueba
+from pruebas.recursos.bf.prueba_bf import PruebaBF
 
-OtraEnvoltura = ModeloPrueba('días')
+OtraEnvoltura = PruebaBF('días')
 
-MiEnvoltura = ModeloPrueba()
+MiEnvoltura = PruebaBF()

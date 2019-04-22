@@ -6,12 +6,15 @@ from tinamit.unids.conv import convertir
 
 class ConexionesVars(object):
     def __init__(símismo):
-        símismo._conexiones = set()
+        símismo._conexiones = []
 
     def agregar(símismo, conex):
         if any(conex.var_recip is c.var_recip for c in símismo):
             raise ValueError(_('El variable "{}" ya está conectado como variable recipiente.').format(conex.var_recip))
-        símismo._conexiones.add(conex)
+
+        # Si esta conexíon depende de otra, asegurarse que la otra se actualice antes de ésta
+        i = next((i + 1 for i, c in enumerate(símismo._conexiones) if (c.var_recip is conex.var_fuente)), 0)
+        símismo._conexiones.insert(i, conex)
 
     def quitar(símismo, var_fuente, modelo_fuente, modelo_recip, var_recip):
         for c in símismo._buscar(var_fuente, modelo_fuente, modelo_recip, var_recip):
@@ -51,8 +54,7 @@ class Conex(object):
 
         if v_f.dims != v_r.dims:
             raise ValueError(
-                _('Dimensiones incompatibles entre variables "{}" {} y "{}" {}.')
-                    .format(v_f, v_f.dims, v_r, v_r.dims)
+                _('Dimensiones incompatibles entre variables "{}" {} y "{}" {}.').format(v_f, v_f.dims, v_r, v_r.dims)
             )
 
         if not _líms_compat(símismo.var_fuente.líms, símismo.var_recip.líms):

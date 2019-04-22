@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 from numpy import testing as npt
 
-from pruebas.recursos.bf.prueba_bf import ModeloPrueba
+from pruebas.recursos.bf.prueba_bf import PruebaBF
 from pruebas.recursos.bf.variantes import EjDeterminado, EjBloques, EjIndeterminado
 from tinamit.envolt.bf import gen_bf, EnvolturaBF
 
@@ -68,11 +68,11 @@ class TestModeloBloques(unittest.TestCase):
 
 class TestGenAuto(unittest.TestCase):
     def test_instancia(símismo):
-        mod = gen_bf(ModeloPrueba())
+        mod = gen_bf(PruebaBF())
         símismo.assertIsInstance(mod, EnvolturaBF)
 
     def test_clase(símismo):
-        mod = gen_bf(ModeloPrueba)
+        mod = gen_bf(PruebaBF)
         símismo.assertIsInstance(mod, EnvolturaBF)
 
     def test_archivo_instancia(símismo):

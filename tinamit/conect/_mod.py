@@ -93,7 +93,7 @@ class SuperConectado(Modelo):
             target=incr_mod,
             args=(mod, dic_err, Rebanada(
                 n_pasos=símismo.corrida.t.pasos_avanzados(mod.unidad_tiempo()),
-                resultados=símismo.corrida.resultados[str(mod)],
+                resultados=rebanada.resultados[str(mod)],
             )))
             for mod in símismo.modelos
         ]
@@ -118,7 +118,7 @@ class SuperConectado(Modelo):
             mod.cambiar_vals({vr: vl for vr, vl in valores.items() if vr in mod.variables})
 
     def _mod_de_var(símismo, var):
-        return next(m for m in símismo.modelos if var in m)
+        return next(m for m in símismo.modelos if var in m.variables)
 
     def _intercambiar_vars(símismo):
         for c in símismo.conexiones:  # para hacer: por modelo para conexión más rápida

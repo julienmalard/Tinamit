@@ -1,5 +1,6 @@
+from tinamit.config import _
 from ._res import ResultadosConectado
-from ..mod import VariablesMod, Variable
+from ..mod import VariablesMod
 
 
 class VariablesConectado(VariablesMod):

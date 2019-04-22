@@ -1,6 +1,6 @@
 from tinamit.config import _
-from .var import Variable
 from .res import ResultadosSimul
+from .var import Variable
 
 
 class VariablesMod(object):

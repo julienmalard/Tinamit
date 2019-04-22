@@ -16,7 +16,7 @@ class Variable(object):
         símismo.líms = _proc_líms(líms)
         símismo.info = info
 
-        símismo._val = símismo.inic.copy()
+        símismo._val = símismo.inic.astype(float)
 
     def poner_val(símismo, val):
 

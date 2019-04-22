@@ -2,7 +2,7 @@ from tinamit.envolt.bf import EnvolturaBF
 from tinamit.mod import VariablesMod, Variable
 
 
-class ModeloPrueba(EnvolturaBF):
+class PruebaBF(EnvolturaBF):
 
     def __init__(símismo, unid_tiempo='mes', nombre='bf'):
         símismo.unid_tiempo = unid_tiempo

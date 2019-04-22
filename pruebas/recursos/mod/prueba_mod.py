@@ -1,3 +1,5 @@
+import random
+
 from tinamit.mod import VariablesMod, Variable, Modelo
 
 
@@ -12,6 +14,7 @@ class ModeloPrueba(Modelo):
 
         símismo.variables.cambiar_vals({
             'Escala': símismo.variables['Escala'].obt_val() + rebanada.n_pasos,
+            'Aleatorio': random.random()
         })
 
     @staticmethod
@@ -20,6 +23,7 @@ class ModeloPrueba(Modelo):
             Variable('Escala', unid=None, ingr=False, egr=True, líms=(0, None)),
             Variable('Vacío', unid=None, ingr=True, egr=False, líms=(0, None)),
             Variable('Vacío2', unid=None, ingr=True, egr=False, líms=(0, None), inic=[0, 0]),
+            Variable('Aleatorio', unid=None, ingr=False, egr=True, líms=(0, 1))
         ])
 
     def unidad_tiempo(símismo):
