@@ -65,4 +65,4 @@ def _proc_líms(líms):
     if líms is None:
         return -np.inf, np.inf
     else:
-        return líms[0] or -np.inf, líms[1] or np.inf
+        return -np.inf if líms[0] is None else líms[0], np.inf if líms[1] is None else líms[1]
