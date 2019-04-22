@@ -3,7 +3,7 @@ import pandas as pd
 import xarray as xr
 
 from tinamit.config import _
-from .tiempo import TiempoCalendario
+from .tiempo import Tiempo
 from .var import Variable
 
 
@@ -12,13 +12,13 @@ class Extern(object):
         símismo.interpol = interpol
         símismo._vals = vals_vars
 
-    def obt_vals_t(símismo, t, var=None):
+    def obt_vals(símismo, t, var=None):
         vals = símismo._vals
 
         if var is not None:
             if isinstance(var, (str, Variable)):
                 var = [var]
-            vals = {vr: vl for vr, vl in vals if vr in var}
+            vals = {vr: vl for vr, vl in vals.items() if vr in var}
 
         vals = {vr: símismo._obt_a_t(vl, t, símismo.interpol) for vr, vl in vals.items()}
 
@@ -28,17 +28,28 @@ class Extern(object):
     def _obt_a_t(m_xr, t, interpol):
         tiempo_xr = m_xr[_('tiempo')]
         if np.issubdtype(tiempo_xr.dtype, np.datetime64):
-            if not isinstance(t, TiempoCalendario):
-                raise TypeError(_(
-                    'Solamente se pueden utilizar datos caléndricos con una simulación con fecha inicial.'
-                ))
-            i = t.fecha()
+            if isinstance(t, Tiempo):
+                f = t.fecha()
+            elif isinstance(t, tuple):
+                f = t[1]
+            else:
+                f = t
+            if interpol and len(tiempo_xr) > 1:
+                return m_xr.interp(**{_('tiempo'): f}).values
+            try:
+                return m_xr.sel(**{_('tiempo'): f}).values
+            except (KeyError, IndexError):
+                return np.nan
+        if isinstance(t, Tiempo):
+            i = t.í
+        elif isinstance(t, tuple):
+            i = t[0]
         else:
-            i = t.í * t.tmñ_paso  # para hacer: ¿más elegante?
+            i = t
         if interpol and len(tiempo_xr) > 1:
             return m_xr.interp(**{_('tiempo'): i}).values
         try:
-            return m_xr.sel(**{_('tiempo'): i}).values if not isinstance(i, int) else m_xr[i].values
+            return m_xr[i].values
         except (KeyError, IndexError):
             return np.nan
 
