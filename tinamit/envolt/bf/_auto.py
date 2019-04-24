@@ -6,19 +6,19 @@ from importlib import import_module as importar_mod
 from warnings import warn as avisar
 
 from tinamit.config import _
-from ._envolt import EnvolturaBF
+from ._envolt import ModeloBF
 
 
 def gen_bf(mod):
-    if isinstance(mod, EnvolturaBF):
+    if isinstance(mod, ModeloBF):
         return mod
     elif callable(mod):
-        if issubclass(mod, EnvolturaBF):
+        if issubclass(mod, ModeloBF):
             return mod()
     elif isinstance(mod, str):
         return _extraer_de_archivo(mod)
     raise TypeError(
-        _('Debes dar o una instancia o subclase de `EnvolturaMDS`, o la dirección de un archivo que contiene una.')
+        _('Debes dar o una instancia o subclase de `ModeloMDS`, o la dirección de un archivo que contiene una.')
     )
 
 
@@ -32,10 +32,10 @@ def _extraer_de_archivo(archivo):
     dir_mod, nombre_mod = os.path.split(archivo)
     sys.path.append(dir_mod)
     módulo = importar_mod(os.path.splitext(nombre_mod)[0])
-    instancias = {nmb: cls for nmb, cls in inspect.getmembers(módulo, lambda x: isinstance(x, EnvolturaBF))}
+    instancias = {nmb: cls for nmb, cls in inspect.getmembers(módulo, lambda x: isinstance(x, ModeloBF))}
     clases = {
         nmb: cls for nmb, cls in inspect.getmembers(
-            módulo, lambda x: (inspect.isclass(x) and issubclass(x, EnvolturaBF))
+            módulo, lambda x: (inspect.isclass(x) and issubclass(x, ModeloBF))
         )
     }
     if instancias:
@@ -61,7 +61,7 @@ def _extraer_de_archivo(archivo):
         return potenciales['Envoltura']
     elif potenciales:
         nmb_elegida = list(potenciales)[0]
-        avisar(_('\nHabía más de una instancia de "EnvolturaBF" en el fuente'
+        avisar(_('\nHabía más de una instancia de "ModeloBF" en el fuente'
                  '\n\t{}'
                  '\n...y ninguna se llamaba "Envoltura". Tomaremos "{}" como la envoltura'
                  '\ny esperaremos que funcione. Si no te parece, asegúrate que la definición de clase o el'

@@ -27,6 +27,8 @@ class ModeloDeterminado(ModeloImpaciente):
         # Actualizar el paso en los variables
         símismo.variables.act_paso(símismo.paso_en_ciclo)
 
+        super().incrementar(rebanada)
+
     def avanzar_modelo(símismo, n_ciclos):
         raise NotImplementedError
 

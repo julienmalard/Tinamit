@@ -35,21 +35,23 @@ class Extern(object):
             else:
                 f = t
             if interpol and len(tiempo_xr) > 1:
-                return m_xr.interp(**{_('tiempo'): f}).values
+                return m_xr.interp(**{_('tiempo'): f})
             try:
-                return m_xr.sel(**{_('tiempo'): f}).values
+                return m_xr.sel(**{_('tiempo'): f})
             except (KeyError, IndexError):
                 return np.nan
         if isinstance(t, Tiempo):
             i = t.í
         elif isinstance(t, tuple):
             i = t[0]
-        else:
+        elif isinstance(t, (int, float)):
             i = t
+        else:
+            i = [j for j in t if j in m_xr[_('tiempo')]]
         if interpol and len(tiempo_xr) > 1:
-            return m_xr.interp(**{_('tiempo'): i}).values
+            return m_xr.interp(**{_('tiempo'): i})
         try:
-            return m_xr[i].values
+            return m_xr[i]
         except (KeyError, IndexError):
             return np.nan
 

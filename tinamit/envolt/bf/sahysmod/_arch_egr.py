@@ -3,17 +3,15 @@ import re
 import numpy as np
 
 
-def leer_arch_egr(archivo, n_est, n_polí, años):
+def leer_arch_egr(archivo, años=None, procesar=True):
     años = [años] if isinstance(años, int) else años
 
     dic_datos = {}
-    for k, v in dic_datos.items():
-        v[:] = -1
 
+    n_est, n_polí = _buscar_forma(archivo)
     with open(archivo, 'r') as d:
 
-        for a in años:
-            _avanzar_a_año(a, d)
+        for a in _avanzar_año(d, año=años):
 
             for e in range(1, n_est + 1):
                 _avanzar_a_estación(e, d)
@@ -32,6 +30,8 @@ def leer_arch_egr(archivo, n_est, n_polí, años):
                                 dic_datos[var][a, e, p] = val
 
                         f = d.readline()
+    if procesar:
+        procesar_cr(dic_datos)
 
     return dic_datos
 
@@ -44,7 +44,7 @@ def procesar_cr(dic):
     # Ajustar la salinidad por la presencia de varios cultivos
     kr = dic['Kr#']
 
-    salin_suelo = np.zeros_like(dic['Kr#'])
+    salin_suelo = np.zeros_like(kr)
 
     # Crear una máscara boleana para cada valor potencial de Kr y llenarlo con la salinidad correspondiente
     kr0 = (kr == 0)
@@ -83,10 +83,37 @@ def procesar_cr(dic):
         dic[k][dic[k] == -1] = 0
 
 
-def _avanzar_a_año(año, d):
-    f = d.readline()
-    while re.match(r'\W*YEAR:\W+%i\W' % año, f) is None:
+def _buscar_forma(arch):
+    n_est = n_polí = 0
+    with open(arch, 'r') as d:
         f = d.readline()
+        while not re.match(r'\W*YEAR:\W+0+\W', f):
+            f = d.readline()
+
+        while not re.match(r'\W*YEAR:\W+1+\W', f):
+            m = re.search(r'\W*Season:\W+([0-9]+)\W', f)
+            if m:
+                n_est = int(m.groups()[0])
+            else:
+                m = re.search(r'\W*Polygon:\W+([0-9]+)\W', f)
+                if m:
+                    n_polí = int(m.groups()[0])
+            f = d.readline()
+
+    return n_est, n_polí
+
+
+def _avanzar_año(d, año=None):
+    f = d.readline()
+    if año is None:
+        while re.match(r'\W*YEAR:\W+[0-9]+\W', f) is None:
+            f = d.readline()
+        yield int(re.search(r'\W*YEAR:\W+([0-9]+)', f).groups()[0])
+    else:
+        for a in año:
+            while re.match(r'\W*YEAR:\W+%i\W' % a, f) is None:
+                f = d.readline()
+            yield a
 
 
 def _avanzar_a_estación(estación, d):

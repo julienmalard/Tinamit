@@ -3,17 +3,19 @@ import unittest
 
 import numpy as np
 import numpy.testing as npt
+import pandas as pd
+import xarray.testing as xrt
 
-from tinamit.envolt.mds import EnvolturaVensimDLL, EnvolturaPySD, EnvolturaMDS, gen_mds, \
+from tinamit.envolt.mds import ModeloVensimDLL, ModeloPySD, ModeloMDS, gen_mds, \
     ErrorNoInstalado
 # Los tipos de modelos DS que queremos comprobar.
 from tinamit.mod import EspecTiempo
 
 tipos_modelos = {
-    'PySD_Vensim': {'envlt': EnvolturaPySD, 'prueba': 'recursos/mds/prueba_senc_mdl.mdl'},
-    'PySD_XMILE': {'envlt': EnvolturaPySD, 'prueba': 'recursos/mds/prueba_senc_xml.xmile'},
-    'PySD_Py': {'envlt': EnvolturaPySD, 'prueba': 'recursos/mds/prueba_senc_py.py'},
-    'dllVensim': {'envlt': EnvolturaVensimDLL, 'prueba': 'recursos/mds/prueba_senc_vpm.vpm'}
+    'PySD_Vensim': {'envlt': ModeloPySD, 'prueba': 'recursos/mds/prueba_senc_mdl.mdl'},
+    'PySD_XMILE': {'envlt': ModeloPySD, 'prueba': 'recursos/mds/prueba_senc_xml.xmile'},
+    'PySD_Py': {'envlt': ModeloPySD, 'prueba': 'recursos/mds/prueba_senc_py.py'},
+    'dllVensim': {'envlt': ModeloVensimDLL, 'prueba': 'recursos/mds/prueba_senc_vpm.vpm'}
 }
 
 # Agregar la ubicación del fuente actual
@@ -45,11 +47,11 @@ class TestLeerModelos(unittest.TestCase):
 
         # Información sobre los variables del modelo de prueba
         cls.info_vars = {
-            'Lluvia': {'unidades': 'm3/mes', 'líms': (0, np.nan)},
-            'Nivel lago inicial': {'unidades': 'm3', 'líms': (0, np.nan)},
-            'Flujo río': {'unidades': 'm3/mes', 'líms': (0, np.nan)},
-            'Lago': {'unidades': 'm3', 'líms': (0, np.nan)},
-            'Evaporación': {'unidades': 'm3/mes', 'líms': (0, np.nan)},
+            'Lluvia': {'unidades': 'm3/mes', 'líms': (0, np.inf)},
+            'Nivel lago inicial': {'unidades': 'm3', 'líms': (0, np.inf)},
+            'Flujo río': {'unidades': 'm3/mes', 'líms': (0, np.inf)},
+            'Lago': {'unidades': 'm3', 'líms': (0, np.inf)},
+            'Evaporación': {'unidades': 'm3/mes', 'líms': (0, np.inf)},
             'Aleatorio': {'unidades': 'Sdmn', 'líms': (0, 1)},
         }
 
@@ -193,14 +195,27 @@ class TestSimular(unittest.TestCase):
             )['Lago'].vals.values
             npt.assert_equal(res_paso_1, res_paso_2)
 
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Limpiar todos los archivos temporarios.
+        """
+
+        limpiar_mds()
+
+
+class TestSimulExpres(unittest.TestCase):
+
     def test_simul_exprés(símismo):
-        for nmb, res in símismo.res.items():
+        for nmb, mod in generar_modelos_prueba().items():
             with símismo.subTest(mod=nmb):
-                mod.combin_pasos = False
-                res_por_paso = mod.simular(t_final=100, paso=1, vars_interés=['Lago'])['Lago']
-                mod.combin_pasos = True
-                res_exprés = mod.simular(t_final=100, paso=1, vars_interés=['Lago'])['Lago']
-                npt.assert_allclose(res_por_paso, res_exprés, 1e-3)
+                extern = pd.DataFrame({'Lluvia': np.arange(10)}, index=np.arange(10))
+                res_exprés = mod.simular(100, vals_extern=extern)
+                mod._correr_hasta_final = lambda: None
+                res_por_paso = mod.simular(100, vals_extern=extern)
+
+                for res_var_exp, res_var_paso in zip(res_exprés, res_por_paso):
+                    xrt.assert_equal(res_var_exp.vals, res_var_paso.vals)
 
     @classmethod
     def tearDownClass(cls):
@@ -225,7 +240,7 @@ class TestGenerarMDS(unittest.TestCase):
             with símismo.subTest(ext=os.path.splitext(d['prueba'])[1], envlt=d['envlt'].__name__):
                 try:
                     mod = gen_mds(d['prueba'])  # Generar el modelo
-                    símismo.assertIsInstance(mod, EnvolturaMDS)
+                    símismo.assertIsInstance(mod, ModeloMDS)
                 except ErrorNoInstalado:
                     # No hay problema si el mds no se pudo leer en la computadora actual. De pronto no estaba instalado.
                     pass
@@ -260,7 +275,7 @@ def limpiar_mds(direc='./recursos/mds'):
             ext = os.path.splitext(a)[1]
             try:
                 if ext in ['.2mdl', '.vdf', '.csv'] or (ext == '.py' and any(
-                        os.path.isfile(os.path.join(direc,os.path.splitext(a)[0] + e))
+                        os.path.isfile(os.path.join(direc, os.path.splitext(a)[0] + e))
                         for e in ['.xmile', '.xml', '.mdl']
                 )):
                     os.remove(os.path.join(direc, a))

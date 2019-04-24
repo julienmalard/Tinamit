@@ -1,10 +1,10 @@
 import os
 
 from tinamit.config import _
-from .pysd import EnvolturaPySD
-from .vensim_dll import EnvolturaVensimDLL
+from .pysd import ModeloPySD
+from .vensim_dll import ModeloVensimDLL
 
-_subclases = [EnvolturaPySD, EnvolturaVensimDLL]
+_subclases = [ModeloPySD, ModeloVensimDLL]
 
 
 def registrar_envolt_mds(envoltura):

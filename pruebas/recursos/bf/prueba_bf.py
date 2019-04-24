@@ -1,8 +1,8 @@
-from tinamit.envolt.bf import EnvolturaBF
+from tinamit.envolt.bf import ModeloBF
 from tinamit.mod import VariablesMod, Variable
 
 
-class PruebaBF(EnvolturaBF):
+class PruebaBF(ModeloBF):
 
     def __init__(símismo, unid_tiempo='mes', nombre='bf'):
         símismo.unid_tiempo = unid_tiempo
@@ -16,9 +16,9 @@ class PruebaBF(EnvolturaBF):
         ])
 
     def incrementar(símismo, rebanada):
-        super().incrementar(rebanada)
         lago = símismo.variables['Lago'].obt_val()
         símismo.variables['Lluvia'].poner_val(lago / 120 * rebanada.n_pasos)
+        super().incrementar(rebanada)
 
     def unidad_tiempo(símismo):
         return símismo.unid_tiempo

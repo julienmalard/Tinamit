@@ -1,14 +1,15 @@
 import os
-import re
 import shutil
 import tempfile
 from subprocess import run
 
+from pkg_resources import resource_filename
+
 from tinamit.config import _
 from tinamit.envolt.bf import ModeloBloques
-from ._arch_egr import leer_arch_egr, procesar_cr
+from ._arch_egr import leer_arch_egr
 from ._arch_ingr import leer_info_dic_paráms, escribir_desde_dic_paráms
-from ._vars import VariablesSAHYSMOD, VarBloqSAHYSMOD
+from ._vars import VariablesSAHYSMOD, VarBloqSAHYSMOD, _vars_sahysmod
 
 
 class ModeloSAHYSMOD(ModeloBloques):
@@ -43,8 +44,7 @@ class ModeloSAHYSMOD(ModeloBloques):
 
         # Guardar el número de estaciones y de polígonos
         n_estaciones = int(símismo.dic_ingr['NS'])
-        dur_estaciones = [int(float(x)) for x in símismo.dic_ingr['TS']]  # La duración de las estaciones (en meses)
-        n_polí = int(símismo.dic_ingr['NN_IN'])
+        dur_estaciones = [int(x) for x in símismo.dic_ingr['TS']]  # La duración de las estaciones (en meses)
 
         # Asegurarse que el número de estaciones es igual al número de duraciones de estaciones.
         if n_estaciones != len(dur_estaciones):
@@ -53,10 +53,10 @@ class ModeloSAHYSMOD(ModeloBloques):
                   'especificadas no corresponde al número de estaciones especificadas (líneas 3 y 4).')
             )
 
-        variables = VariablesSAHYSMOD(dims=(n_polí,), tmñ_bloques=dur_estaciones)
+        variables = VariablesSAHYSMOD(inic=símismo.dic_ingr, tmñ_bloques=dur_estaciones)
 
         # Inicializar la clase pariente.
-        super().__init__(tmñ_bloques, variables=variables, nombre=nombre)
+        super().__init__(tmñ_bloques=dur_estaciones, variables=variables, nombre=nombre)
 
         # Establecer los variables climáticos.
         símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total', conv=0.001)
@@ -92,11 +92,6 @@ class ModeloSAHYSMOD(ModeloBloques):
         símismo.leer_egr_modelo(n_ciclos=n_ciclos)
 
     def cerrar(símismo):
-
-        for f in os.listdir(símismo.direc_trabajo):
-            if re.match('Name(0|[0-9]{2})$', f):
-                os.remove(f)
-
         shutil.rmtree(símismo.direc_trabajo)
 
     def leer_egr_modelo(símismo, n_ciclos):
@@ -105,8 +100,6 @@ class ModeloSAHYSMOD(ModeloBloques):
         dic_egr = leer_arch_egr(
             archivo=archivo, n_est=símismo.n_estaciones, n_polí=símismo.n_polí, años=[n_ciclos]
         )
-
-        procesar_cr(dic_egr)
 
         # Convertir códigos de variables a nombres de variables
         for c, v in dic_egr.items():
@@ -121,6 +114,18 @@ class ModeloSAHYSMOD(ModeloBloques):
 
     def unidad_tiempo(símismo):
         return 'mes'
+
+    @classmethod
+    def prb_egreso(cls):
+        arch = resource_filename(__name__, 'rcrs/prb_egresos.out')
+
+        return arch, leer_arch_egr
+
+    @classmethod
+    def prb_ingreso(cls):
+        arch = resource_filename(__name__, 'rcrs/prb_datos_inic.inp')
+
+        return arch, _vars_sahysmod
 
     def _escribir_archivo_ingr(símismo, n_ciclos, archivo):
 

@@ -4,7 +4,7 @@ import unittest
 import numpy.testing as npt
 import xarray.testing as xrt
 
-from pruebas.recursos.mod.prueba_mod import ModeloPrueba
+from pruebas.recursos.mod.prueba_mod import ModeloAlea
 from pruebas.test_mds import generar_modelos_prueba, limpiar_mds
 from tinamit.conect import Conectado, SuperConectado
 from tinamit.envolt.bf import gen_bf
@@ -115,9 +115,9 @@ class Test3ModelosConectados(unittest.TestCase):
         """
 
         # Crear los 3 modelos
-        mod_1 = ModeloPrueba(nombre='modelo 1')
-        mod_2 = ModeloPrueba(nombre='modelo 2')
-        mod_3 = ModeloPrueba(nombre='modelo 3')
+        mod_1 = ModeloAlea(nombre='modelo 1')
+        mod_2 = ModeloAlea(nombre='modelo 2')
+        mod_3 = ModeloAlea(nombre='modelo 3')
 
         # El Conectado
         conectado = SuperConectado([mod_1, mod_2, mod_3])
@@ -144,9 +144,9 @@ class Test3ModelosConectados(unittest.TestCase):
         """
 
         # Los tres modelos
-        mod_1 = ModeloPrueba(nombre='modelo 1')
-        mod_2 = ModeloPrueba(nombre='modelo 2')
-        mod_3 = ModeloPrueba(nombre='modelo 3')
+        mod_1 = ModeloAlea(nombre='modelo 1')
+        mod_2 = ModeloAlea(nombre='modelo 2')
+        mod_3 = ModeloAlea(nombre='modelo 3')
 
         # El primer Conectado
         conectado_sub = SuperConectado(nombre='sub', modelos=[mod_1, mod_2])

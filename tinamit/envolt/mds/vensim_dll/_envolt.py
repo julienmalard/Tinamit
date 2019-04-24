@@ -7,12 +7,12 @@ import numpy as np
 from tinamit.config import _
 from tinamit.mod import Variable
 from . import _funcs as f
-from ._vars import VarAuxEditable
-from .._envolt import EnvolturaMDS
-from .._vars import VarNivel, VarConstante, VariablesMDS, VarInic, VarAuxiliar
+from ._vars import VarAuxEditable, VariablesModVensimDLL
+from .._envolt import ModeloMDS
+from .._vars import VarNivel, VarConstante, VarInic, VarAuxiliar
 
 
-class EnvolturaVensimDLL(EnvolturaMDS):
+class ModeloVensimDLL(ModeloMDS):
     """
     Esta es la envoltura para modelos de tipo Vensim. Puede leer y controlar cualquier modelo Vensim para que
     se pueda emplear en Tinamït.
@@ -23,25 +23,23 @@ class EnvolturaVensimDLL(EnvolturaMDS):
         símismo.inicializado = False
         símismo.mod = f.cargar_mod_vensim(_obt_dll_vensim(), archivo)
         símismo.paso = f.obt_paso_inicial(símismo.mod)
-        vars_ = _gen_vars(símismo.mod)
-        super().__init__(vars_, nombre)
+        super().__init__(_gen_vars(símismo.mod), nombre)
 
     def unidad_tiempo(símismo):
         return f.obt_unid_tiempo(símismo.mod)
 
     def iniciar_modelo(símismo, corrida):
-
         t = corrida.t
         # En Vensim, tenemos que incializar los valores de variables no editables antes de empezar la simulación.
         símismo.variables.cambiar_vals(
-            {var: val for var, val in corrida.vals_inic() if not isinstance(var, VarAuxEditable)}
+            {var: val for var, val in corrida.extern.obt_vals(var=símismo.variables.no_editables())}
         )
 
         f.inic_modelo(símismo.mod, paso=t.paso, n_pasos=t.n_pasos, nombre_corrida=str(corrida))
 
         # Aplicar los valores iniciales de variables editables
         símismo.variables.cambiar_vals(
-            {var: val for var, val in corrida.vals_inic() if isinstance(var, VarAuxEditable)}
+            {var: val for var, val in corrida.extern.obt_vals(var=símismo.variables.editables())}
         )
 
         # Debe venir después de `f.inic_modelo()` sino no obtenemos datos para los variables
@@ -50,7 +48,6 @@ class EnvolturaVensimDLL(EnvolturaMDS):
         símismo.inicializado = True
 
     def incrementar(símismo, rebanada):
-        super().incrementar(rebanada)
         corrida = símismo.corrida
         # Establecer el paso.
         if corrida != símismo.paso:
@@ -60,8 +57,12 @@ class EnvolturaVensimDLL(EnvolturaMDS):
         f.avanzar_modelo(símismo.mod)
         símismo._leer_vals_de_vensim(rebanada.resultados.variables())
 
+        super().incrementar(rebanada)
+
     def cambiar_vals(símismo, valores):
         super().cambiar_vals(valores)
+        if not símismo.inicializado:
+            return
 
         for var, val in valores.items():
             # Para cada variable para cambiar...
@@ -124,13 +125,13 @@ def _obt_dll_vensim():
     if sys.platform[:3] != 'win':
         raise OSError(
             _('\nDesafortunadamente, el DLL de Vensim funciona únicamente en Windows.'
-              '\nPuedes intentar la envoltura EnvolturaPySDMDL con un modelo .mdl en vez.')
+              '\nPuedes intentar la envoltura ModeloPySDMDL con un modelo .mdl en vez.')
         )
     return ctypes.WinDLL(_obt_arch_dll_vensim())
 
 
 def _obt_arch_dll_vensim():
-    return EnvolturaVensimDLL.obt_conf(
+    return ModeloVensimDLL.obt_conf(
         'dll', auto=[
             'C:/Windows/System32/vendll32.dll',
             'C:/Windows/SysWOW64/vendll32.dll'
@@ -138,7 +139,7 @@ def _obt_arch_dll_vensim():
         mnsj_err=_(
             '\nDebes instalar Vensim DSS en tu computadora y, si todavía aparece este mensaje,'
             '\nespecificar la ubicación del dll manualmente, p. ej.'
-            '\n\tEnvolturaVensimDLL.estab_conf("dll", "C:/Camino/raro/para/vendll32.dll")'
+            '\n\tModeloVensimDLL.estab_conf("dll", "C:/Camino/raro/para/vendll32.dll")'
             '\npara poder hacer simulaciones con Vensim DSS.'
         )
     )
@@ -179,6 +180,7 @@ def _gen_vars(mod):
             dims = (len(subs),)  # Para hacer: permitir más de 1 dimensión
         else:
             dims = (1,)
+        inic = np.zeros(dims)
 
         # Leer la ecuación del variable, sus hijos y sus parientes directamente de Vensim
         ec = f.obt_atrib_var(mod, var, 3)
@@ -197,4 +199,4 @@ def _gen_vars(mod):
 
         l_vars.append(cls(var, unid=unid, ec=ec, subs=subs, parientes=parientes, inic=inic, líms=líms, info=info))
 
-    return VariablesMDS(l_vars)
+    return VariablesModVensimDLL(l_vars)

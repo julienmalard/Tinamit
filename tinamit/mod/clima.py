@@ -3,7 +3,7 @@ from datetime import date, datetime
 from تقدیر.مقام import مقام
 
 from tinamit.config import _
-from tinamit.envolt.bf import EnvolturaBF
+from tinamit.envolt.bf import ModeloBF
 from . import Variable
 from tinamit.mod import VariablesMod
 
@@ -24,7 +24,7 @@ class Clima(object):
         return {v for v in símismo._lugar.متاغیرات()}
 
 
-class EnvoltClima(EnvolturaBF):
+class EnvoltClima(ModeloBF):
 
     def __init__(símismo, clima):
         símismo.clima = clima

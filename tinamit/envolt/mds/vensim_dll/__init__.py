@@ -1,1 +1,1 @@
-from ._envolt import EnvolturaVensimDLL
+from ._envolt import ModeloVensimDLL

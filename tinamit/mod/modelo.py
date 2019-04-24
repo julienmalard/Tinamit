@@ -12,7 +12,6 @@ from .corrida import Corrida, Rebanada
 from .extern import gen_extern
 from .res import ResultadosGrupo
 from .tiempo import EspecTiempo
-from .var import Variable
 from .vars_mod import VariablesMod
 
 
@@ -111,22 +110,29 @@ class Modelo(object):
         corrida.variables.reinic()
 
         if corrida.extern:
-            símismo.cambiar_vals({vr: vl for vr, vl in corrida.obt_extern_act().items() if vr in símismo.variables})
+            símismo.cambiar_vals({vr: vl.values for vr, vl in corrida.obt_extern_act().items() if vr in símismo.variables})
         corrida.actualizar_res()
 
     def correr(símismo):
-        while símismo.corrida.t.avanzar():
-            símismo.incrementar(
-                Rebanada(
-                    símismo.corrida.t.pasos_avanzados(símismo.unidad_tiempo()),
-                    resultados=símismo.corrida.resultados
+        intento = símismo._correr_hasta_final()
+        if intento is not None:
+            símismo.corrida.resultados.poner_vals_t(intento)
+        else:
+            while símismo.corrida.t.avanzar():
+                símismo.incrementar(
+                    Rebanada(
+                        símismo.corrida.t.pasos_avanzados(símismo.unidad_tiempo()),
+                        resultados=símismo.corrida.resultados
+                    )
                 )
-            )
-            símismo.corrida.actualizar_res()
+                símismo.corrida.actualizar_res()
+
+    def _correr_hasta_final(símismo):
+        return None
 
     def incrementar(símismo, rebanada):
         if símismo.corrida.extern:
-            símismo.cambiar_vals(símismo.corrida.obt_extern_act())
+            símismo.cambiar_vals({vr: vl.values for vr, vl in símismo.corrida.obt_extern_act().items()})
 
     def cerrar(símismo):
         """
@@ -188,6 +194,14 @@ class Modelo(object):
 
         return True
 
+    @classmethod
+    def prb_ingreso(cls):
+        pass
+
+    @classmethod
+    def prb_egreso(cls):
+        pass
+
     def paralelizable(símismo):
         """
         Indica si el modelo actual se puede paralelizar de manera segura o no. Si implementas una subclase
@@ -209,98 +223,6 @@ class Modelo(object):
         return símismo.nombre
 
     # para hacer:
-
-    def _procesar_vars_extern(símismo, vars_inic, vars_extern, bd, t_inic, t_final, lg=None):
-        """
-
-        Parameters
-        ----------
-        vars_inic : dict | list
-        vars_extern :
-        bd : SuperBD | None
-        lg :
-
-        Returns
-        -------
-
-        """
-        if lg is None and bd is not None and len(bd.lugares()) != 1:
-            raise ValueError(
-                _('Debes emplear ".simular_en()" para simulaciones con bases de datos con lugares múltiples.')
-            )
-
-        # Variables externos
-        if isinstance(vars_extern, str):
-            vars_extern = [vars_extern]
-        if vars_extern is vars_inic is None and bd is not None:
-            vars_extern = [x for x in list(bd.variables) if x in símismo.variables]
-        if vars_extern is None:
-            vals_extern = None
-        elif isinstance(vars_extern, list):
-            if bd is None:
-                raise ValueError
-            vals_extern = bd.obt_datos(l_vars=vars_extern, lugares=lg, tiempos=(t_inic, t_final), interpolar=False)
-        elif isinstance(vars_extern, (dict, pd.DataFrame, xr.Dataset)):
-            if isinstance(vars_extern, dict) and all(isinstance(v, str) for v in vars_extern.values()):
-                vals_extern = bd.obt_datos(
-                    l_vars=list(vars_extern.values()), lugares=lg, tiempos=(t_inic, t_final), interpolar=False
-                )
-                corresp_extern = {v: ll for ll, v in vars_extern.items()}
-                vals_extern.rename(corresp_extern, inplace=True)
-
-            else:
-                vals_extern = gen_SuperBD(vars_extern).obt_datos(tiempos=(t_inic, t_final), interpolar=False)
-        else:
-            raise TypeError(type(vars_extern))
-
-        # Variables iniciales
-        if isinstance(vars_inic, str):
-            vars_inic = [vars_inic]
-        corresps_inic = None
-        if vars_inic is None:
-            if bd is not None:
-                datos_inic = bd.obt_datos(lugares=lg, tiempos=t_inic, interpolar=False)
-                if len(datos_inic['tiempo']):
-                    vals_inic = {v: datos_inic[v].values[0] for v in bd.variables
-                                 if v in símismo.variables and not np.isnan(datos_inic[v])}
-                else:
-                    vals_inic = {}
-            else:
-                vals_inic = {}
-        elif isinstance(vars_inic, list):
-            vals_inic = {v: None for v in vars_inic}
-        elif isinstance(vars_inic, dict):
-            vals_inic = {ll: v if not isinstance(v, str) else None for ll, v in vars_inic.items()}
-            corresps_inic = {ll: v for ll, v in vars_inic.items() if isinstance(v, str)}
-            for vr, vr_bd in corresps_inic.items():
-                vals_inic[vr_bd] = vals_inic.pop(vr)
-        else:
-            raise TypeError(type(vars_inic))
-
-        for vr, vl in vals_inic.items():
-            if vl is None:
-                if vr not in bd.variables:
-                    raise ValueError
-                else:
-                    datos = bd.obt_datos(vr, lugares=lg, tiempos=t_inic)
-                    try:
-                        vals_inic[vr] = datos[vr].values[0]
-                    except IndexError:
-                        raise
-
-        if corresps_inic is not None:
-            for vr, vr_bd in corresps_inic.items():
-                vals_inic[vr] = vals_inic.pop(vr_bd)
-
-        if vals_extern is not None:
-            for vr in vals_extern.data_vars:
-                if vr not in vals_inic:
-                    datos = vals_extern.where(vals_extern['tiempo'] == t_inic, drop=True)[vr].values
-                    if len(datos) and not np.isnan(datos):
-                        vals_inic[vr] = datos[0]
-
-        return vals_inic, vals_extern
-
     def conectar_var_clima(símismo, var, var_clima, conv, combin=None):
         """
         Conecta un variable climático.

@@ -28,6 +28,9 @@ class Tiempo(object):
     def pasos_avanzados(símismo, unid):
         return símismo._obt_fact_conv(unid) * símismo.fact_conv * símismo.tmñ_paso
 
+    def fecha(símismo):
+        pass
+
     def avanzar(símismo):
         if símismo.í < símismo.n_pasos:
             símismo.í += 1

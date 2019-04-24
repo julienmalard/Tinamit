@@ -64,6 +64,10 @@ class ResultadosSimul(object):
     def variables(símismo):
         return [v.var for v in símismo]
 
+    def poner_vals_t(símismo, valores):
+        for vr, vl in valores.items():
+            símismo[vr].poner_vals_t(vl)
+
     def __str__(símismo):
         return símismo.nombre
 
@@ -92,6 +96,9 @@ class ResultadosVar(object):
 
     def actualizar(símismo):
         símismo.vals[símismo.t.í // símismo.t.guardar_cada] = símismo.var.obt_val()
+
+    def poner_vals_t(símismo, vals):
+        símismo.vals[:] = vals.reshape(símismo.vals.shape)
 
     def __str__(símismo):
         return str(símismo.var)

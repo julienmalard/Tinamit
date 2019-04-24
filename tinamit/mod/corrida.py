@@ -21,7 +21,7 @@ class Corrida(object):
 
     def obt_extern_act(símismo, var=None):
         if símismo.extern:
-            return símismo.extern.obt_vals_t(símismo.t, var=var)
+            return símismo.extern.obt_vals(símismo.t, var=var)
 
 
 class Rebanada(object):

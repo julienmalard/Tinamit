@@ -26,6 +26,8 @@ class ModeloIndeterminado(ModeloImpaciente):
         # Actualizar el paso en los variables
         símismo.variables.act_paso(símismo.paso_en_ciclo)
 
+        super().incrementar(rebanada)
+
     def unidad_tiempo(símismo):
         raise NotImplementedError
 

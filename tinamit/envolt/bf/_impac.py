@@ -2,10 +2,10 @@ import numpy as np
 
 from tinamit.mod.var import Variable
 from tinamit.mod import VariablesMod
-from ._envolt import EnvolturaBF
+from ._envolt import ModeloBF
 
 
-class ModeloImpaciente(EnvolturaBF):
+class ModeloImpaciente(ModeloBF):
 
     def __init__(símismo, tmñ_ciclo, variables, nombre='bf'):
         símismo.paso_en_ciclo = tmñ_ciclo - 1

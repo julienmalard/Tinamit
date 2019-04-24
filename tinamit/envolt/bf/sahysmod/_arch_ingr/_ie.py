@@ -37,8 +37,8 @@ from pkg_resources import resource_filename
 
 from tinamit.envolt.bf.sahysmod._arch_ingr import _anlzd_sntct
 
-PLANTILLACSV = resource_filename(__name__, 'recursos/sahysmod.csv.tmpl')
-PLANTILLAINP = resource_filename(__name__, 'recursos/sahysmod.inp.tmpl')
+PLANTILLACSV = resource_filename(__name__, 'rcrs/sahysmod.csv.tmpl')
+PLANTILLAINP = resource_filename(__name__, 'rcrs/sahysmod.inp.tmpl')
 
 parámsParaTransponer = [
     'A',

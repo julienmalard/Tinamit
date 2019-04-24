@@ -6,7 +6,7 @@ from numpy import testing as npt
 
 from pruebas.recursos.bf.prueba_bf import PruebaBF
 from pruebas.recursos.bf.variantes import EjDeterminado, EjBloques, EjIndeterminado
-from tinamit.envolt.bf import gen_bf, EnvolturaBF
+from tinamit.envolt.bf import gen_bf, ModeloBF
 
 dir_act = os.path.split(__file__)[0]
 arch_bf = os.path.join(dir_act, 'recursos/bf/prueba_mod.py')
@@ -69,35 +69,35 @@ class TestModeloBloques(unittest.TestCase):
 class TestGenAuto(unittest.TestCase):
     def test_instancia(símismo):
         mod = gen_bf(PruebaBF())
-        símismo.assertIsInstance(mod, EnvolturaBF)
+        símismo.assertIsInstance(mod, ModeloBF)
 
     def test_clase(símismo):
         mod = gen_bf(PruebaBF)
-        símismo.assertIsInstance(mod, EnvolturaBF)
+        símismo.assertIsInstance(mod, ModeloBF)
 
     def test_archivo_instancia(símismo):
         mod = gen_bf(símismo._obt_recurso('arch_instancia.py'))
-        símismo.assertIsInstance(mod, EnvolturaBF)
+        símismo.assertIsInstance(mod, ModeloBF)
 
     def test_archivo_clase(símismo):
         mod = gen_bf(símismo._obt_recurso('arch_clase.py'))
-        símismo.assertIsInstance(mod, EnvolturaBF)
+        símismo.assertIsInstance(mod, ModeloBF)
 
     def test_archivo_instancia_no_identificada(símismo):
         mod = gen_bf(símismo._obt_recurso('arch_instancia_no_identificada.py'))
-        símismo.assertIsInstance(mod, EnvolturaBF)
+        símismo.assertIsInstance(mod, ModeloBF)
 
     def test_archivo_clase_no_identificada(símismo):
         mod = gen_bf(símismo._obt_recurso('arch_clase_no_identificada.py'))
-        símismo.assertIsInstance(mod, EnvolturaBF)
+        símismo.assertIsInstance(mod, ModeloBF)
 
     def test_archivo_múltiples(símismo):
         mod = gen_bf(símismo._obt_recurso('arch_múltiples.py'))
-        símismo.assertIsInstance(mod, EnvolturaBF)
+        símismo.assertIsInstance(mod, ModeloBF)
 
     def test_archivo_múltiples_no_identificada(símismo):
         mod = gen_bf(símismo._obt_recurso('arch_múltiples_no_identificada.py'))
-        símismo.assertIsInstance(mod, EnvolturaBF)
+        símismo.assertIsInstance(mod, ModeloBF)
 
     def test_archivo_vacío(símismo):
         with símismo.assertRaises(AttributeError):

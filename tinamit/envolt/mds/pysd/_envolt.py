@@ -1,12 +1,15 @@
 from ast import literal_eval
 
+import numpy as np
+import xarray as xr
+
 from tinamit.Análisis.sintaxis import Ecuación
 from ._funcs import gen_mod_pysd, obt_paso_mod_pysd
 from ._vars import VarPySDAuxiliar, VarPySDNivel, VarPySDConstante, VariablesPySD
-from .._envolt import EnvolturaMDS
+from .._envolt import ModeloMDS
 
 
-class EnvolturaPySD(EnvolturaMDS):
+class ModeloPySD(ModeloMDS):
     ext = ['.mdl', '.xmile', '.xml', '.py']
 
     def __init__(símismo, archivo, nombre='mds'):
@@ -30,7 +33,6 @@ class EnvolturaPySD(EnvolturaMDS):
         super().iniciar_modelo(corrida)
 
     def incrementar(símismo, rebanada):
-        super().incrementar(rebanada)
 
         símismo.paso_act += rebanada.n_pasos
         devolv = símismo.paso_act if símismo.cont_simul else [0, símismo.paso_act]
@@ -41,14 +43,26 @@ class EnvolturaPySD(EnvolturaMDS):
 
         # Guardar valores iniciales para niveles
         if not símismo.cont_simul:
-            for nv in símismo.variables.niveles():
-                if nv in rebanada.resultados.variables():
-                    rebanada.resultados[nv].vals[0] = res[nv.nombre_py][0]
+            for v in rebanada.resultados.variables():
+                rebanada.resultados[v].vals[0] = res[v.nombre_py][0]
 
         símismo.cont_simul = True
         símismo.variables.cambiar_vals({v: res[v.nombre_py].values[-1] for v in rebanada.resultados.variables()})
 
         símismo.vars_para_cambiar.clear()
+        super().incrementar(rebanada)
+
+    def _correr_hasta_final(símismo):
+        t = símismo.corrida.t
+        paráms = {
+            vr: vl.squeeze().to_pandas()
+            for vr, vl in símismo.corrida.extern.obt_vals(t.eje(), var=símismo.variables).items()
+        }
+        res_pysd = símismo.mod.run(
+            params=paráms,
+            return_timestamps=np.arange(0, t.n_pasos * t.tmñ_paso + 1, t.guardar_cada * t.tmñ_paso)
+        )
+        return {vr: res_pysd[str(vr)].values for vr in símismo.corrida.resultados.variables()}
 
     def unidad_tiempo(símismo):
         return obt_paso_mod_pysd(símismo.mod)
