@@ -587,7 +587,8 @@ class CalibradorMod(object):
 
                 if final_líms_paráms is not None and método in ['dream', 'demcz', 'sceua']:
                     if método == 'dream':
-                        muestreador.sample(repetitions=n_iter, runs_after_convergence=n_iter,  # repetitions= 2000+n_iter
+                        muestreador.sample(repetitions=n_iter, runs_after_convergence=n_iter,
+                                           # repetitions= 2000+n_iter
                                            nChains=len(final_líms_paráms))
                     elif método == 'sceua':
                         muestreador.sample(n_iter, ngs=len(final_líms_paráms) * 3)
@@ -984,7 +985,7 @@ class PatrónProc(object):
         vals_inic = {PatrónProc.itr:
                          gen_val_inic(x, símismo.mapa_paráms, símismo.líms_paráms, símismo.final_líms_paráms)}
 
-        res = símismo.mod.simular_grupo(vars_interés=símismo.vars_interés[0], t_final= 41, #símismo.t_final,
+        res = símismo.mod.simular_grupo(vars_interés=símismo.vars_interés[0], t_final=41,  # símismo.t_final,
                                         vals_inic=vals_inic, guardar=símismo.guar_sim)
 
         PatrónProc.itr += 1
@@ -1015,7 +1016,8 @@ class PatrónProc(object):
     def objectivefunction(símismo, simulation, evaluation, params=None):
         # like = spotpy.likelihoods.gaussianLikelihoodMeasErrorOut(evaluation,simulation)
         # like = spotpy.objectivefunctions.nashsutcliffe(evaluation, simulation)
-        gof = gen_gof(símismo.tipo_proc, simulation, evaluation, símismo.obj_func, símismo.len_bparam, obs=símismo.obs, valid ='point-pattern')
+        gof = gen_gof(símismo.tipo_proc, simulation, evaluation, símismo.obj_func, símismo.len_bparam, obs=símismo.obs,
+                      valid='point-pattern', itr=PatrónProc.itr)
         return gof
 
 
@@ -1085,7 +1087,21 @@ def gen_val_inic(x, mapa_paráms, líms_paráms, final_líms_paráms):
     return vals_inic
 
 
-def gen_gof(tipo_proc, sim=None, eval=None, obj_func=None, len_bparam=None, valid=None, obs=None):
+path = "D:\Thesis\pythonProject\localuse\Dt\Calib\like\calib\\dream"
+save_path = f"{path}\\dream\\"
+
+def gen_gof(tipo_proc, sim=None, eval=None, obj_func=None, len_bparam=None, valid=None, obs=None, itr=None):
+    global save_path
+    def _classify(aic_array):
+        maxi = np.nanmax(aic_array)
+        mini = np.nanmin(aic_array)
+        jump = (maxi - mini) / 3
+        cls1 = [i for i in aic_array if int(i) in range(int(mini - 0.5), int(mini + jump))]
+        cls2 = [i for i in aic_array if int(i) in range(int(mini + jump - 0.5), int(mini + 2 * jump))]
+        cls3 = [i for i in aic_array if int(i) in range(int(mini + 2 * jump - 0.5), int(mini + 3 * jump + 0.5))]
+        best = np.asarray(max([cls1, cls2, cls3], key=len))
+        return np.nanmean(best), len(best)
+
     if tipo_proc == 'patrón':
         if valid == 'pattern-pattern':
             len_obs_poly = np.empty([len(eval)])
@@ -1094,32 +1110,59 @@ def gen_gof(tipo_proc, sim=None, eval=None, obj_func=None, len_bparam=None, vali
                     t_sim = patro_proces(tipo_proc, obs, sim, valid="valid_others_s")
                     # patro_proces(tipo_proc, eval, sim[vr][n, :].T, vars_interés=None, valid=None)
                     len_obs_poly[i] = -aic(len_bparam[i], eval[i], t_sim[list(t_sim)[i]]['y_pred'])
-            return np.nanmean(len_obs_poly)
+            like, wt = _classify(len_obs_poly)
+            return like
         elif valid == 'point-pattern':
             len_valid_sim = np.empty([len(len_bparam)])  # 20*poly6
             for i, y_sim in enumerate(sim):  # i=[1, 20], pa=[6*21]  # j=1, 6; poly [21]
                 if obj_func == 'AIC':
                     len_valid_sim[i] = -aic(len_bparam[i], eval[i], y_sim)
-            return np.nanmean(len_valid_sim)
+            like, wt = _classify(len_valid_sim)
+            if itr == 0 :
+                if not os.path.isfile(f"{path}\\dream\\0.npy"):
+                    save_path = f"{path}\\dream\\"
+                elif not os.path.isfile(f"{path}\\dream_rev\\0.npy"):
+                    save_path = f"{path}\\dream_rev\\"
+                elif not os.path.isfile(f"{path}\\dream_nse\\0.npy"):
+                    save_path = f"{path}\\dream_nse\\"
+                elif not os.path.isfile(f"{path}\\dream_nse_rev\\0.npy"):
+                    save_path = f"{path}\\dream_nse_rev\\"
+
+            np.save(save_path + f"{itr}", (like, wt))
+
+            return like
         elif valid == 'point-pattern_valid':
             len_valid_sim = np.empty([len(sim), len(len_bparam)])  # 144runs, 13polys
+            like_wt = []
             for i, poly_aray in enumerate(sim):  # i=[1, 20], pa=[6*21]
                 for j, y_sim in enumerate(poly_aray):  # j=1, 6; poly [21]
                     if obj_func == 'AIC':
                         len_valid_sim[i, j] = -aic(len_bparam[j], eval[j], y_sim)
-            return np.nanmean(len_valid_sim, axis=1)
-
+            for i in range(len(len_valid_sim)):
+                like, wt = _classify(len_valid_sim[i])
+                like_wt.append([like, wt])
+            return like_wt
 
     elif tipo_proc == 'multidim':
         if eval.shape == sim.shape:
             if obj_func == 'NSE':
-                return nse(eval, sim)
-            elif obj_func == 'rmse':
-                return  compute_rmse(eval, sim)
+                len_aray = np.empty(eval.shape[0])
+                for i in range(eval.shape[0]):
+                    len_aray[i] = nse(eval[i], sim[i])
+                like, wt = _classify(len_aray)
+                # np.save(f"D:\Thesis\pythonProject\localuse\Dt\Calib\like\\nse\original\\like\\{itr}", (like, wt))
+                # np.save(f"D:\Thesis\pythonProject\localuse\Dt\Calib\like\\nse\\reverse\\like\\{itr}", (like, wt))
+                return like
         else:
-            if obj_func == 'NSE':
-                return np.array([nse(eval, sim[i, :]) for i in range(len(sim))])
-            elif obj_func == 'rmse':
-                return  np.array([compute_rmse(eval, sim[i, :]) for i in range(len(sim))])
-            elif obj_func == 'AIC':
-                return np.asarray([-aic(len_bparam[i], eval[i], sim[list(sim)[i]]['y_pred'])for i in range(len(sim))])
+            like_wt = []
+            len_aray = np.empty([len(sim), eval.shape[0]])
+            for i in range(len(sim)):
+                for j in range(eval.shape[0]):
+                    if obj_func == 'NSE':
+                        len_aray[i, j] = nse(eval[j], sim[i, j])
+                    elif obj_func == 'rmse':
+                        len_aray[i, j] = compute_rmse(eval[j], sim[i, j])
+            for i in range(len(len_aray)):
+                like, wt = _classify(len_aray[i])
+                like_wt.append([like, wt])
+            return like_wt

@@ -3,24 +3,29 @@ from matplotlib import pyplot
 import numpy as np
 from matplotlib_venn import venn3
 
-gard = "D:\Thesis\pythonProject\localuse\Dt\Calib\\cali_res\\original\\"
-# n = 7
-# calib_abc = np.load(gard+f'calib_cluster.npy').tolist()
-calib_abc = np.load(gard + f'calib-fscabc.npy').tolist()
-all_tests = np.load(gard + "origina21-fscabc-kappa.npy").tolist()  #
-calib_ind = np.argsort(calib_abc['prob'])[-20:]
-vr = 'mds_Watertable depth Tinamit'
-# sim_eq_obs = "D:\Thesis\pythonProject\localuse\Dt\Calib\cali_res\\reverse\\t_sim_all\\all\\all_sim_eq_obs.npy"
-d_trend = np.load(gard + f'original7-fscabc-detrend.npy').tolist()
-trend_multi = np.load(gard + f'origina21-fscabc-trend.npy').tolist()
-trend_barlas = np.load(gard + f'original7-fscabc-trend.npy').tolist()
-rev_agreement = np.load(gard + f'rev_agreemt-fscabc-coeffienct of agreement.npy').tolist()
-agreement = np.load(gard + f'agreemt-fscabc-coeffienct of agreement.npy').tolist()
+# gard = "D:\Thesis\pythonProject\localuse\Dt\Calib\\cali_res\\original\\"
 
-# top_20_calib = {i: calib_abc['prob'][i] for i in np.sort(np.argsort(calib_abc['prob'])[-20:])}
-# {i: vec[f'n{i}'] for p, vec in all_tests['mds_Watertable depth Tinamit']['aic_21'].items() for i in top_20_calib if f'n{i}' in vec}
+def load_path(cls, type, method):
+    gard_point = "D:\Thesis\pythonProject\localuse\Dt\Calib\cali_res\\nse\\"
+    calib_point=np.load(gard_point+'calib-fscabc_class_nse.npy').tolist()
+    point_ind = np.argsort(calib_point['prob'])[-20:]
+    # valid_point=np.load(gard_point+'fscabc-nse.npy').tolist()
 
-def detect_21(all_tests, vr, obj_func, calib_ind, relate, threshold):
+    gard = f"D:\Thesis\pythonProject\localuse\Dt\Calib\\cali_res\\{cls}\\"
+    # calib_abc = np.load(gard+f'calib_cluster.npy').tolist()
+    calib_abc = np.load(gard + f'calib-{method}_class.npy').tolist()
+    all_tests = np.load(gard +f"{type}21-{method}-aic.npy").tolist()  #
+    calib_ind = np.argsort(calib_abc['prob'])[-20:]
+    vr = 'mds_Watertable depth Tinamit'
+    # sim_eq_obs = "D:\Thesis\pythonProject\localuse\Dt\Calib\cali_res\\reverse\\t_sim_all\\all\\all_sim_eq_obs.npy"
+    d_trend = np.load(gard + f'{type}7-{method}-detrend.npy').tolist()
+    trend_multi = np.load(gard + f'{type}21-{method}-trend.npy').tolist()
+    trend_barlas = np.load(gard + f'{type}7-{method}-trend.npy').tolist()
+    #agreement = np.load(gard + f'rev_agreemt-fscabc-coeffienct of agreement.npy').tolist()
+    agreement = np.load(gard + f'agreemt-{method}-coeffienct of agreement.npy').tolist()
+    return all_tests, vr, calib_ind, trend_multi, trend_barlas, d_trend, agreement, calib_abc, gard
+
+def detect_21(calib_abc, all_tests, vr, obj_func, calib_ind, relate, threshold):
     obj = {}
     if obj_func == 'aic_21':
         aic = {i: calib_abc['prob'][i] for i in calib_ind}
@@ -59,12 +64,31 @@ def detect_21(all_tests, vr, obj_func, calib_ind, relate, threshold):
     else:
         return obj
 
-def coa(vr, obj_func, calib_ind, agreement):
+def coa(vr, calib_ind, agreement):
+    kap = { }
+    icc1 = { }
     kappa = agreement[vr]['kappa']
     icc = agreement[vr]['icc']
-    pass
+    for p in kappa:
+        for n, v in kappa[p].items():
+            if v['ka_slope'] == 1 and int(n[1:]) in calib_ind:
+                if p not in kap:
+                    kap[p] = []
+                kap[p].append(n)
+    kap['n'] = set([n for p in kap for n in kap[p]])
+    kap['slope']  = all(v['ka_slope'] for p in kappa if p != 'n' for n , v in kappa[p].items() if int(n[1:]) in calib_ind and v['ka_slope']==1)
 
-def point_based(obj_fun, all_tests, top_n):
+    for p in icc:
+        for n in icc[p]:
+            if icc[p][n] > 0.75 and int(n[1:]) in calib_ind:
+                if p not in icc1:
+                    icc1[p] = []
+                icc1[p].append(n)
+    icc1['n'] = set([n for p in icc1 for n in icc1[p]])
+    icc1['all>0'] = all(v for p in icc if p != 'n' for n, v in icc[p].items() if int(n[1:]) in calib_ind and v>0.4)
+    return kap, icc1
+
+def point_based(obj_fun, all_tests, top_n, calib_ind):
     vr = 'mds_Watertable depth Tinamit'
     obj = {'n': {}}
     if obj_fun == 'RMSE':
@@ -139,14 +163,14 @@ def plot_venn(top_val, save_path, set_labels=('Multi-step tests', 'AIC', 'KAPPA'
     pyplot.savefig(save_path)
 
 
-def plot_top_sim(obj_func, trend_multi, trend_barlas, save_plot):
+def plot_top_sim(obj_func, trend_multi, trend_barlas, save_plot, calib_ind, all_tests, gard, type, method):
     vr = 'mds_Watertable depth Tinamit'
     if obj_func == 'multi_behavior_tests':
-        p_n = barlas(gard + "original7-fscabc-phase.npy", calib_ind, plot=True)
+        p_n = barlas(gard + f"{type}7-{method}-phase.npy", calib_ind, plot=True)
         obj_func = 'Muti-behaviour tests'
         trend = trend_barlas
     elif obj_func == 'AIC':
-        AIC = point_based('AIC', all_tests, 20)
+        AIC = point_based('AIC', all_tests, 20, calib_ind)
         p_n = [(p, n) for n in AIC['n'] for p in trend_multi['t_sim'][f'n{n}']]
         trend = trend_multi
     else:

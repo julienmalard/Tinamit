@@ -1869,11 +1869,8 @@ class Modelo(object):
             t_final = len(obs['n']) - 1
         if lg is None:
             d_vals_prms = {p: d_p['dist'] for p, d_p in símismo.calibs.items()}  # {'A': ndaray(100), 'B'...}
-            máx_prob = [d_p['máx_prob'] for p, d_p in símismo.calibs.items()][0]
         else:
             d_vals_prms = {p: d_p['dist'] for p, d_p in lg.items() if isinstance(d_p, dict)}  # {'A': ndaray(100), 'B'...}
-            máx_prob = lg['máx_prob']
-
         n_vals = len(list(d_vals_prms.values())[0])
 
         if valid_sim is not None:
@@ -1926,15 +1923,15 @@ class Modelo(object):
             resultados = validar_resultados(obs=obs, matrs_simul=matrs_simul, tipo_proc=tipo_proc)
         else:
             resultados = validar_resultados(obs=obs, matrs_simul=matrs_simul, tipo_proc=tipo_proc,
-                                            obj_func=obj_func, ind_simul=lg['buenas'],
-                                            save_plot=save_plot, gard=guardar, t_sim_gard=t_sim_gard, sim_eq_obs=sim_eq_obs)
+                                            obj_func=obj_func, lg=lg, save_plot=save_plot, gard=guardar,
+                                            t_sim_gard=t_sim_gard, sim_eq_obs=sim_eq_obs)
 
-        if n_sim and obj_func == 'AIC':
-            for vr in l_vars:
-                probs = resultados[vr]['AIC']
-                buenas = (probs >= np.min(np.sort(probs)[int(len(probs) * 0.8):])) #top 20%
-                resultados['ind_top_valid'] = np.where(buenas)[0]
-                resultados['top_valid'] = probs[buenas]
+        # if n_sim and obj_func == 'AIC':
+        #     for vr in l_vars:
+        #         probs = resultados[vr]['AIC']
+        #         buenas = (probs >= np.min(np.sort(probs)[int(len(probs) * 0.8):])) #top 20%
+        #         resultados['ind_top_valid'] = np.where(buenas)[0]
+        #         resultados['top_valid'] = probs[buenas]
 
         if guardar:
             np.save(guardar+f'-{obj_func.lower()}', resultados)

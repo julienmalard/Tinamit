@@ -42,11 +42,10 @@
 # from tinamit.Calib.ej.obs_patrón import read_obs_csv
 # gard_sim = "D:\Thesis\pythonProject\localuse\Dt\Calib\simular\\fscabc\\"
 # data = read_obs_csv("D:\Thesis\data\\total_obs.csv")
+import os
 import operator
 from matplotlib import pyplot
 import numpy as np
-
-
 
 vr = 'mds_Watertable depth Tinamit'
 
@@ -65,3 +64,17 @@ vr = 'mds_Watertable depth Tinamit'
 #     obs_series = pd.Series(data[1][poly], index=data[0])
 #     lag_plot(obs_series)
 # pyplot.savefig("D:\Thesis\pythonProject\localuse\Dt\Calib\plot\Calib\\abc\\obs_dt")
+
+# combined = [ ]
+# for i in range(145, 769):
+#     like = np.load(f"D:\Thesis\pythonProject\localuse\Dt\Calib\like\\nse\\original\\like\\{i}.npy").tolist()
+#     # wt = np.load(f"D:\Thesis\pythonProject\localuse\Dt\Calib\like\\aic\\reverse\\wt\\{i}.npy").tolist()
+#     combined.append([like])
+
+# aic = np.load("D:\Thesis\pythonProject\localuse\Dt\Calib\cali_res\class\\original21-fscabc-aic.npy").tolist()
+# aic_rev = np.load("D:\Thesis\pythonProject\localuse\Dt\Calib\like\calib\\aic_rev.npy").tolist()
+# nse_1 = np.load("D:\Thesis\pythonProject\localuse\Dt\Calib\like\calib\\nse_1.npy").tolist()
+
+
+print()
+

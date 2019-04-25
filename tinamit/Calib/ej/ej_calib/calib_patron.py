@@ -1,6 +1,7 @@
 import numpy as np
 
-from tinamit.Calib.ej.ej_calib.info_calib import load_calib_info
+from tinamit.Calib.ej.ej_calib.info_calib import sim_dream, guardar_dream, sim_dream_rev, \
+    guardar_dream_rev, guardar_dream_nse, sim_dream_nse, sim_dream_nse_rev, guardar_dream_nse_rev
 from tinamit.Calib.ej.sens_análisis import gen_mod
 from tinamit.Análisis.Sens.muestr import gen_problema
 from tinamit.Calib.ej.info_paráms import calib_líms_paráms, calib_mapa_paráms
@@ -13,7 +14,6 @@ líms_paráms_final.append(
 mod = gen_mod()
 
 method = ['dream', 'fscabc']
-
 
 def _calib(bd, tipo_proc, obj_func, guardar, método, guar_sim, egr_spotpy):
     calib_res = mod.calibrar(paráms=list(líms_paráms_final), bd=bd, líms_paráms=calib_líms_paráms,
@@ -32,13 +32,62 @@ def _valid(bd, tipo_proc, obj_func, guardar, valid_sim, n_sim, save_plot, t_sim_
 
 if __name__ == "__main__":
     for m in method:
-        if m == 'fscabc':
-            bd, guardar, lg, valid_sim, n_sim, t_sim_gard, tipo_proc, obj_func, sim_eq_obs, save_plot = load_calib_info(
-                m, 'agreement', t_trend=True, calib=False, rev=False, egr_spotpy=False)
-            # calib_valid(bd, tipo_proc, obj_func, guardar, método, guar_sim, egr_spotpy)
-            _valid(bd, tipo_proc, obj_func, guardar, valid_sim, n_sim, save_plot, t_sim_gard, sim_eq_obs, lg)
+        # if m == 'fscabc':
+        if m == 'dream':
 
+            _calib(bd=ori_calib, tipo_proc='patrón', obj_func='AIC', guardar=guardar_dream, método=m,
+                   guar_sim=sim_dream, egr_spotpy=False)
 
+            _calib(bd=ori_valid, tipo_proc='patrón', obj_func='AIC', guardar=guardar_dream_rev, método=m,
+                   guar_sim=sim_dream_rev, egr_spotpy=False)
+
+            _calib(bd=ori_calib, tipo_proc='multidim', obj_func='NSE', guardar=guardar_dream_nse, método=m,
+                   guar_sim=sim_dream_nse, egr_spotpy=False)
+
+            _calib(bd=ori_valid, tipo_proc='multidim', obj_func='NSE', guardar=guardar_dream_nse_rev, método=m,
+                   guar_sim=sim_dream_nse_rev, egr_spotpy=False)
+
+            # bd, tipo_proc, obj_func, método, guardar, guar_sim, egr_spotpy, n_sim = load_calib_info(
+            #     m, 'reverse', t_trend=False, calib=True, rev=True, egr_spotpy=False, obj_func='NSE', tipo_proc='multidim')
+            # _calib(bd, tipo_proc, obj_func, guardar, método, guar_sim, egr_spotpy)
+
+            # bd, tipo_proc, obj_func, método, guardar, guar_sim, egr_spotpy, n_sim = load_calib_info(
+            #     m, 'original', t_trend=False, calib=True, rev=False, egr_spotpy=False, obj_func='AIC',
+            #     tipo_proc='patrón')
+            # _calib(bd, tipo_proc, obj_func, guardar, método, guar_sim, egr_spotpy)
+
+            # bd, tipo_proc, obj_func, método, guardar, guar_sim, egr_spotpy, n_sim = load_calib_info(
+            #     m, 'reverse', t_trend=False, calib=True, rev=True, egr_spotpy=False, obj_func='AIC',
+            #     tipo_proc='patrón')
+            # _calib(bd, tipo_proc, obj_func, guardar, método, guar_sim, egr_spotpy)
+
+            # bd, tipo_proc, obj_func, método, guardar, guar_sim, egr_spotpy = load_calib_info(
+            #     m, 'nse', t_trend=False, calib=True, rev=True, egr_spotpy=False, obj_func='nse',
+            #     tipo_proc='multidim')
+            # _calib(bd, tipo_proc, obj_func, guardar, método, guar_sim, egr_spotpy)
+
+            # bd, tipo_proc, obj_func, guardar, método, valid_sim, save_plot, t_sim_gard, sim_eq_obs, n_sim, lg = load_calib_info(
+            #     m, 'original', t_trend=True, calib=False, rev=False, egr_spotpy=False, obj_func='aic')
+            # _valid(bd, tipo_proc, obj_func, guardar, valid_sim, n_sim, save_plot, t_sim_gard, sim_eq_obs, lg)
+            # bd, tipo_proc, obj_func, guardar, método, valid_sim, save_plot, t_sim_gard, sim_eq_obs, n_sim, lg = load_calib_info(
+            #     m, 'original', t_trend=False, calib=False, rev=False, egr_spotpy=False, obj_func='barlas')
+            # _valid(bd, tipo_proc, obj_func, guardar, valid_sim, n_sim, save_plot, t_sim_gard, sim_eq_obs, lg)
+
+            # bd, guardar, lg, valid_sim, n_sim, t_sim_gard, tipo_proc, obj_func, sim_eq_obs, save_plot = load_calib_info(
+            #     m, 'agreement', t_trend=False, calib=False, rev=False, egr_spotpy=False, obj_func='coeffienct of agreement')
+            # _valid(bd, tipo_proc, obj_func, guardar, valid_sim, n_sim, save_plot, t_sim_gard, sim_eq_obs, lg)
+
+            # bd, tipo_proc, obj_func, guardar, método, valid_sim, save_plot, t_sim_gard, sim_eq_obs, n_sim, lg = load_calib_info(
+            #     m, 'reverse', t_trend=False, calib=False, rev=True, egr_spotpy=False, obj_func='aic')
+            # _valid(bd, tipo_proc, obj_func, guardar, valid_sim, n_sim, save_plot, t_sim_gard, sim_eq_obs, lg)
+
+            # bd, tipo_proc, obj_func, guardar, método, valid_sim, save_plot, t_sim_gard, sim_eq_obs, n_sim, lg = load_calib_info(
+            #     m, 'reverse', t_trend=False, calib=False, rev=True, egr_spotpy=False, obj_func='barlas')
+            # _valid(bd, tipo_proc, obj_func, guardar, valid_sim, n_sim, save_plot, t_sim_gard, sim_eq_obs, lg)
+
+            # bd, guardar, lg, valid_sim, n_sim, t_sim_gard, tipo_proc, obj_func, sim_eq_obs, save_plot = load_calib_info(
+            #     m, 'agreement', t_trend=False, calib=False, rev=True, egr_spotpy=False, obj_func='coeffienct of agreement')
+            # _valid(bd, tipo_proc, obj_func, guardar, valid_sim, n_sim, save_plot, t_sim_gard, sim_eq_obs, lg)
 # if __name__ == "__main__":
 #     for m in method:
 #         if m == 'fscabc':

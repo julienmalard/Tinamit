@@ -1,47 +1,47 @@
 import operator
 import numpy as np
-from tinamit.Calib.ej.ej_calib.calib_análisis import detect_21, all_tests, vr, calib_ind, point_based, barlas, gard, \
-    d_trend, plot_top_sim, trend_multi, trend_barlas, prep_cluster_dt, coa
+from tinamit.Calib.ej.ej_calib.calib_análisis import detect_21, point_based, barlas, \
+    plot_top_sim, prep_cluster_dt, coa, load_path
 from tinamit.Calib.ej.sens_análisis import clustering
 
+def load_results(cls, type, method):
+    all_tests, vr, calib_ind, trend_multi, trend_barlas, d_trend, agreement, calib_abc, gard = load_path(cls, type, method)
+    kap, icc = coa(vr, calib_ind, agreement)
+    aic, aic_21 = detect_21(calib_abc, all_tests, vr, 'aic_21', calib_ind, operator.gt, 5)
+    rmse_21 = detect_21(calib_abc, all_tests, vr, 'rmse_21', calib_ind, operator.lt, 0.5)
+    nse_21 = detect_21(calib_abc, all_tests, vr, 'nse_21', calib_ind, operator.gt, 0.65)
 
-def load_results(method):
-    kap, icc = coa()
-    aic, aic_21 = detect_21(all_tests, vr, 'aic_21', calib_ind, operator.gt, 5)
-    rmse_21 = detect_21(all_tests, vr, 'rmse_21', calib_ind, operator.lt, 0.5)
-    nse_21 = detect_21(all_tests, vr, 'nse_21', calib_ind, operator.gt, 0.65)
+    AIC = point_based('AIC', all_tests, 20, calib_ind)
+    NSE = point_based('NSE', all_tests, 20, calib_ind)
+    RMSE = point_based('RMSE', all_tests, 20, calib_ind)
 
-    AIC = point_based('AIC', all_tests, 20)
-    NSE = point_based('NSE', all_tests, 20)
-    RMSE = point_based('RMSE', all_tests, 20)
+    t_n, t_p = barlas(gard + f'{type}7-{method}-trend.npy', calib_ind, 't_sim', trend=True)
+    corr_n, corr_p = barlas(gard + f'{type}7-{method}-Rk.npy', calib_ind, 'corr_sim')
 
-    t_n, t_p = barlas(gard + f'original7-{method}-trend.npy', calib_ind, 't_sim', trend=True)
-    corr_n, corr_p = barlas(gard + f'original7-{method}-Rk.npy', calib_ind, 'corr_sim')
-
-    diff = np.load(gard + f'original7-{method}-autocorr_variables.npy').tolist()
+    diff = np.load(gard + f'{type}7-{method}-autocorr_variables.npy').tolist()
     diff_n = set(n for p in diff['pass_diff'] for n in diff['pass_diff'][p] if int(n[1:]) in calib_ind)  # 63
 
-    mean_n, mean_p = barlas(gard + f'original7-{method}-Mean.npy', calib_ind)
-    amp_n, amp_p = barlas(gard + 'original7-fscabc-Std.npy', calib_ind)
-    phase_n, phase_p = barlas(gard + 'original7-fscabc-phase.npy', calib_ind)
-    u_n, u_p = barlas(gard + 'original7-fscabc-multi_behavior_tests.npy', calib_ind, 'multi_behavior_tests', vr=vr)
+    mean_n, mean_p = barlas(gard + f'{type}7-{method}-Mean.npy', calib_ind)
+    amp_n, amp_p = barlas(gard + f'{type}7-{method}-Std.npy', calib_ind)
+    phase_n, phase_p = barlas(gard + f'{type}7-{method}-phase.npy', calib_ind)
+    u_n, u_p = barlas(gard + f'{type}7-{method}-multi_behavior_tests.npy', calib_ind, 'multi_behavior_tests', vr=vr)
+
+    print(plot_top(trend_multi, trend_barlas, calib_ind, all_tests, gard, type, method))
+
     return {'21': [aic_21, rmse_21, nse_21], 'point_based': [AIC, NSE, RMSE],
-            'barlas': [t_n, t_p, d_trend, corr_n, corr_p, phase_n, phase_p], 'coa': [kap, icc]}
+            'barlas': [t_n, t_p, d_trend, corr_n, corr_p, phase_n, phase_p],
+            'coa': [kap, icc]}
 
-
-def plot_top(trend_multi, trend_barlas):
+def plot_top(trend_multi, trend_barlas, calib_ind, all_tests, gard, type, method):
     trend_multi = trend_multi
     trend_barlas = trend_barlas
-    save_plot = "D:\Thesis\pythonProject\localuse\Dt\Calib\plot\\reverse\\"
+    save_plot = f"D:\Thesis\pythonProject\localuse\Dt\Calib\plot\\{type}\\"
     mismatch = []
     for obj in ['aic_21', 'kappa', 'rmse_21', 'nse_21', 'multi_behavior_tests', 'AIC']:
-        mismatch.append(plot_top_sim(obj, trend_multi, trend_barlas, save_plot))
+        mismatch.append(plot_top_sim(obj, trend_multi, trend_barlas, save_plot, calib_ind, all_tests, gard, type, method))
     return mismatch
 
-
-load_results()
-print(plot_top(trend_multi, trend_barlas))
-
+load_results('class_rev', 'reverse', 'fscabc')
 
 def prep_cluster(sim_eq_obs):
     vr = 'mds_Watertable depth Tinamit'
