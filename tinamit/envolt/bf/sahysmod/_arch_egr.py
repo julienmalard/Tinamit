@@ -9,6 +9,7 @@ def leer_arch_egr(archivo, años=None, procesar=True):
     dic_datos = {}
 
     n_est, n_polí = _buscar_forma(archivo)
+    n_años = _buscar_n_años(archivo) if años is None else len(años)
     with open(archivo, 'r') as d:
 
         for a in _avanzar_año(d, año=años):
@@ -22,12 +23,12 @@ def leer_arch_egr(archivo, años=None, procesar=True):
                     f = d.readline()
 
                     while not _fin_sección(f):
-
-                        for var, val in _extraer_vars(f):
+                        vrs = _extraer_vars(f)
+                        for var, val in vrs:
                             if var not in dic_datos:
-                                dic_datos[var] = np.full((len(años), n_est, n_polí), np.nan)
+                                dic_datos[var] = np.full((n_años, n_est, n_polí), np.nan)
                             if len(val):
-                                dic_datos[var][a, e, p] = val
+                                dic_datos[var][a, e - 1, p - 1] = val
 
                         f = d.readline()
     if procesar:
@@ -38,37 +39,37 @@ def leer_arch_egr(archivo, años=None, procesar=True):
 
 def procesar_cr(dic):
     # Estos variables, si faltan en el egreso, deberían ser 0 y no NaN
-    for cr in ['CrA#', 'CrB#', 'CrU#', 'Cr4#', 'A#', 'B#', 'U#']:
+    for cr in ['CrA', 'CrB', 'CrU', 'Cr4', 'A', 'B', 'U']:
         dic[cr][np.isnan(dic[cr])] = 0
 
     # Ajustar la salinidad por la presencia de varios cultivos
-    kr = dic['Kr#']
+    kr = dic['Kr']
 
     salin_suelo = np.zeros_like(kr)
 
     # Crear una máscara boleana para cada valor potencial de Kr y llenarlo con la salinidad correspondiente
     kr0 = (kr == 0)
     salin_suelo[kr0] = \
-        dic['A#'][kr0] * dic['CrA#'][kr0] + dic['B#'][kr0] * dic['CrB#'][kr0] + dic['U#'][kr0] * dic['CrU#'][kr0]
+        dic['A'][kr0] * dic['CrA'][kr0] + dic['B'][kr0] * dic['CrB'][kr0] + dic['U'][kr0] * dic['CrU'][kr0]
 
     kr1 = (kr == 1)
-    salin_suelo[kr1] = dic['CrU#'][kr1] * dic['U#'][kr1] + dic['C1*#'][kr1] * (1 - dic['U#'][kr1])
+    salin_suelo[kr1] = dic['CrU'][kr1] * dic['U'][kr1] + dic['C1*'][kr1] * (1 - dic['U'][kr1])
 
     kr2 = (kr == 2)
-    salin_suelo[kr2] = dic['CrA#'][kr2] * dic['A#'][kr2] + dic['C2*#'][kr2] * (1 - dic['A#'][kr2])
+    salin_suelo[kr2] = dic['CrA'][kr2] * dic['A'][kr2] + dic['C2*'][kr2] * (1 - dic['A'][kr2])
 
     kr3 = (kr == 3)
-    salin_suelo[kr3] = dic['CrB#'][kr3] * dic['B#'][kr3] + dic['C3*#'][kr3] * (1 - dic['B#'][kr3])
+    salin_suelo[kr3] = dic['CrB'][kr3] * dic['B'][kr3] + dic['C3*'][kr3] * (1 - dic['B'][kr3])
 
     kr4 = (kr == 4)
-    salin_suelo[kr4] = dic['Cr4#'][kr4]
+    salin_suelo[kr4] = dic['Cr4'][kr4]
 
     para_llenar = [
-        {'másc': kr0, 'cr': ['Cr4#']},
-        {'másc': kr1, 'cr': ['CrA#', 'CrB#', 'Cr4#']},
-        {'másc': kr2, 'cr': ['CrB#', 'CrU#', 'Cr4#']},
-        {'másc': kr3, 'cr': ['CrA#', 'CrU#', 'Cr4#']},
-        {'másc': kr4, 'cr': ['CrA#', 'CrB#', 'CrU#']}
+        {'másc': kr0, 'cr': ['Cr4']},
+        {'másc': kr1, 'cr': ['CrA', 'CrB', 'Cr4']},
+        {'másc': kr2, 'cr': ['CrB', 'CrU', 'Cr4']},
+        {'másc': kr3, 'cr': ['CrA', 'CrU', 'Cr4']},
+        {'másc': kr4, 'cr': ['CrA', 'CrB', 'CrU']}
     ]
 
     for d in para_llenar:
@@ -85,6 +86,7 @@ def procesar_cr(dic):
 
 def _buscar_forma(arch):
     n_est = n_polí = 0
+    # para hacer: más elegante
     with open(arch, 'r') as d:
         f = d.readline()
         while not re.match(r'\W*YEAR:\W+0+\W', f):
@@ -101,6 +103,17 @@ def _buscar_forma(arch):
             f = d.readline()
 
     return n_est, n_polí
+
+
+def _buscar_n_años(arch):
+    n_años = 0
+    with open(arch, 'r') as d:
+        for f in d:
+            m = re.search(r'\W*Polygon:\W+([0-9]+)\W', f)
+            if m:
+                n_años = int(m.groups()[0]) + 1
+
+    return n_años
 
 
 def _avanzar_año(d, año=None):
@@ -133,4 +146,4 @@ def _fin_sección(f):
 
 
 def _extraer_vars(f):
-    return re.search(r'([A-Za-z0-9*#]+)\W+=\W+([0-9.E\-]+)?', f)
+    return re.findall(r'([A-Za-z0-9*#]+)\W+=\W+([0-9.]+(?:E?[+\-0-9]+)?)?', f)
