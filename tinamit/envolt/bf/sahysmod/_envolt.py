@@ -9,7 +9,7 @@ from tinamit.config import _
 from tinamit.envolt.bf import ModeloBloques
 from ._arch_egr import leer_arch_egr
 from ._arch_ingr import leer_info_dic_paráms, escribir_desde_dic_paráms
-from ._vars import VariablesSAHYSMOD, VarBloqSAHYSMOD, _vars_sahysmod
+from ._vars import VariablesSAHYSMOD, VarBloqSAHYSMOD
 
 
 class ModeloSAHYSMOD(ModeloBloques):
@@ -42,21 +42,10 @@ class ModeloSAHYSMOD(ModeloBloques):
         # Leer el fuente de ingreso
         símismo.dic_ingr = leer_info_dic_paráms(archivo_fnt=símismo.archivo)
 
-        # Guardar el número de estaciones y de polígonos
-        n_estaciones = int(símismo.dic_ingr['NS'])
-        dur_estaciones = [int(x) for x in símismo.dic_ingr['TS']]  # La duración de las estaciones (en meses)
-
-        # Asegurarse que el número de estaciones es igual al número de duraciones de estaciones.
-        if n_estaciones != len(dur_estaciones):
-            raise ValueError(
-                _('Error en el fuente de datos iniciales SAHYSMOD: el número de duraciones de estaciones'
-                  'especificadas no corresponde al número de estaciones especificadas (líneas 3 y 4).')
-            )
-
-        variables = VariablesSAHYSMOD(inic=símismo.dic_ingr, tmñ_bloques=dur_estaciones)
+        variables = VariablesSAHYSMOD(inic=símismo.dic_ingr)
 
         # Inicializar la clase pariente.
-        super().__init__(tmñ_bloques=dur_estaciones, variables=variables, nombre=nombre)
+        super().__init__(variables=variables, nombre=nombre)
 
         # Establecer los variables climáticos.
         símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total', conv=0.001)
@@ -98,7 +87,7 @@ class ModeloSAHYSMOD(ModeloBloques):
         archivo = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.out')
 
         dic_egr = leer_arch_egr(
-            archivo=archivo, n_est=símismo.n_estaciones, n_polí=símismo.n_polí, años=[n_ciclos]
+            archivo=archivo, años=n_ciclos
         )
 
         # Convertir códigos de variables a nombres de variables
@@ -123,9 +112,16 @@ class ModeloSAHYSMOD(ModeloBloques):
 
     @classmethod
     def prb_ingreso(cls):
-        arch = resource_filename(__name__, 'rcrs/prb_datos_inic.inp')
+        arch = resource_filename(__name__, 'rcrs/prb_ingresos.inp')
 
-        return arch, _vars_sahysmod
+        def f(a):
+            return VariablesSAHYSMOD(leer_info_dic_paráms(a))
+
+        return arch, f
+
+    @classmethod
+    def prb_simul(cls):
+        return resource_filename(__name__, 'rcrs/prb_ingresos.inp')
 
     def _escribir_archivo_ingr(símismo, n_ciclos, archivo):
 

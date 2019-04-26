@@ -5,10 +5,15 @@ from tinamit.envolt.bf._deter import ModeloDeterminado, VariablesModDeter, VarPa
 
 class ModeloBloques(ModeloDeterminado):
 
-    def __init__(símismo, tmñ_bloques, variables, nombre='bf'):
-        super().__init__(tmñ_ciclo=np.sum(tmñ_bloques), variables=variables, nombre=nombre)
+    def __init__(símismo, variables, nombre='bf'):
+        """
 
-        símismo.tmñ_bloques = tmñ_bloques
+        Parameters
+        ----------
+        variables: VariablesModBloques
+        nombre: str
+        """
+        super().__init__(tmñ_ciclo=np.sum(variables.tmñ_bloques), variables=variables, nombre=nombre)
 
     def unidad_tiempo(símismo):
         raise NotImplementedError
@@ -20,6 +25,7 @@ class ModeloBloques(ModeloDeterminado):
 class VariablesModBloques(VariablesModDeter):
 
     def __init__(símismo, variables, tmñ_bloques):
+        símismo.tmñ_bloques = tmñ_bloques
         símismo.tmñ_bloques_cum = np.cumsum(tmñ_bloques)
         símismo.n_bloques = len(tmñ_bloques)
         super().__init__(variables)

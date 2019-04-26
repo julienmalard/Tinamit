@@ -21,10 +21,8 @@ class TestConfig(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        try:
-            conf.borrar('prueba')
-        except KeyError:
-            pass
+        conf.borrar('prueba')
+        conf.borrar('prueba2')
 
 
 class TestCambiarLengua(unittest.TestCase):

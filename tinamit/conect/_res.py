@@ -8,6 +8,9 @@ class ResultadosConectado(ResultadosSimul):
             str(m): m.variables.gen_res(nombre, t, [v for v in vars_interés if v in m.variables]) for m in modelos
         }
 
+    def a_dic(símismo):
+        return {m: v.a_dic() for m, v in símismo.res_vars.items()}
+
     def __iter__(símismo):
         for m in símismo.res_vars.values():
             for v in m:

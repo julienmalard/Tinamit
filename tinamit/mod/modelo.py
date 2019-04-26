@@ -6,6 +6,7 @@ from warnings import warn as avisar
 import numpy as np
 import pandas as pd
 
+from tinamit.Análisis.Datos import jsonificar
 from tinamit.config import _, conf_mods
 from tinamit.cositas import guardar_json, cargar_json
 from .corrida import Corrida, Rebanada
@@ -193,14 +194,6 @@ class Modelo(object):
         """
 
         return True
-
-    @classmethod
-    def prb_ingreso(cls):
-        pass
-
-    @classmethod
-    def prb_egreso(cls):
-        pass
 
     def paralelizable(símismo):
         """

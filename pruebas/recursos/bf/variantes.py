@@ -64,7 +64,7 @@ class EjBloques(ModeloBloques):
         paso = símismo.variables['paso'].obt_val()
         símismo.variables['paso'].poner_vals_paso(np.arange(paso + 1, paso + símismo.tmñ_ciclo + 1))
         símismo.variables['i_en_ciclo'].poner_vals_paso(np.arange(símismo.tmñ_ciclo))
-        símismo.variables['bloque'].poner_vals_paso(np.arange(len(símismo.tmñ_bloques)))
+        símismo.variables['bloque'].poner_vals_paso(np.arange(len(símismo.variables.tmñ_bloques)))
 
 
 class EjIndeterminado(ModeloIndeterminado):

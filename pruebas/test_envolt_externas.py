@@ -1,10 +1,9 @@
 import unittest
 
 from tinamit.envolt.bf.sahysmod import ModeloSAHYSMOD
-from tinamit.envolt.mds import ModeloPySD, ModeloVensimDLL
-from tinamit.mod.prbs import verificar_leer_ingr, verificar_leer_egr
+from tinamit.mod.prbs import verificar_leer_ingr, verificar_leer_egr, verificar_simul
 
-_envolts = [ModeloSAHYSMOD, ModeloPySD, ModeloVensimDLL]
+_envolts = [ModeloSAHYSMOD]
 
 
 class TestEnvolturasExtern(unittest.TestCase):
@@ -22,8 +21,4 @@ class TestEnvolturasExtern(unittest.TestCase):
     def test_correr_modelo(símismo):
         for cls in _envolts:
             with símismo.subTest(envlt=cls.__name__):
-                arch_ingr = cls.prb_ingreso()
-                arch_egr = cls.prb_egreso()
-                if arch_ingr and arch_egr and cls.instalado():
-                    mod = cls(arch_ingr)
-                    mod.simular(2)
+                verificar_simul(símismo, cls)

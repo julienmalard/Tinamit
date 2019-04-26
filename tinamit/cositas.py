@@ -3,7 +3,8 @@ import os
 import shutil
 import tempfile
 from warnings import warn as avisar
-
+import xarray as xr
+import numpy as np
 from chardet import UniversalDetector
 
 
@@ -158,3 +159,29 @@ def cargar_json(arch, codif='UTF-8'):
 
     with open(arch, 'r', encoding=codif) as d:
         return json.load(d)
+
+
+def jsonificar(o, r=None):
+    if isinstance(o, dict):
+        r = {}
+        for ll, v in o.items():
+            if isinstance(v, (dict, list)):
+                r[ll] = jsonificar(v)
+            elif isinstance(v, np.ndarray):
+                r[ll] = v.tolist()
+            elif isinstance(v, (xr.Dataset, xr.DataArray)):
+                r[ll] = v.to_dict()
+            else:
+                r[ll] = v
+    elif isinstance(o, list):
+        r = []
+        for v in o:
+            if isinstance(v, (dict, list)):
+                r.append(jsonificar(v))
+            elif isinstance(v, np.ndarray):
+                r.append(v.tolist())
+            elif isinstance(v, (xr.Dataset, xr.DataArray)):
+                r.append(v.to_dict())
+            else:
+                r.append(v)
+    return r
