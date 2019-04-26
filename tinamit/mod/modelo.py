@@ -179,7 +179,7 @@ class Modelo(object):
 
     @classmethod
     def estab_conf(cls, llave, valor):
-        conf_mods['envolt'][cls.__name__][llave] = valor
+        conf_mods[cls.__name__, llave] = valor
 
     @classmethod
     def instalado(cls):

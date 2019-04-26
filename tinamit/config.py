@@ -10,9 +10,10 @@ from tinamit.cositas import cargar_json, guardar_json
 
 # Código para manejar configuraciones de Tinamït
 class OpsConfig(object):
-    def __init__(símismo, valores=None):
+    def __init__(símismo, pariente, valores=None):
         valores = valores or {}
-        símismo.valores = {ll: OpsConfig(v) if isinstance(v, dict) else v for ll, v in valores.items()}
+        símismo.valores = {ll: OpsConfig(símismo, v) if isinstance(v, dict) else v for ll, v in valores.items()}
+        símismo.pariente = pariente
 
     def a_dic(símismo):
         return {ll: v.a_dic() if isinstance(v, OpsConfig) else v for ll, v in símismo.valores.items()}
@@ -24,6 +25,9 @@ class OpsConfig(object):
             símismo.valores.pop(llave[0])
         else:
             símismo.valores[llave[0]].borrar(llave[1:])
+
+    def guardar(símismo):
+        símismo.pariente.guardar()
 
     def __contains__(símismo, itema):
         return itema in símismo.valores
@@ -43,8 +47,9 @@ class OpsConfig(object):
             símismo.valores[llave[0]] = valor
         else:
             if not llave[0] in símismo:
-                símismo.valores[llave[0]] = OpsConfig()
+                símismo.valores[llave[0]] = OpsConfig(pariente=símismo)
             símismo.valores[llave[0]][llave[1:]] = valor
+        símismo.guardar()
 
 
 class Config(OpsConfig):
@@ -62,12 +67,12 @@ class Config(OpsConfig):
 
         auto.update(val_arch)
 
-        super().__init__(auto)
+        super().__init__(pariente=None,valores=auto)
 
         símismo.guardar()
 
     def reinic(símismo):
-        símismo.valores = OpsConfig(símismo.val_auto)
+        símismo.valores = OpsConfig(pariente=símismo, valores=símismo.val_auto)
         símismo.guardar()
 
     def borrar(símismo, llave):

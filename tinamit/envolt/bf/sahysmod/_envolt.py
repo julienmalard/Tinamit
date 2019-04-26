@@ -3,6 +3,7 @@ import shutil
 import tempfile
 from subprocess import run
 
+import numpy as np
 from pkg_resources import resource_filename
 
 from tinamit.config import _
@@ -48,12 +49,13 @@ class ModeloSAHYSMOD(ModeloBloques):
         super().__init__(variables=variables, nombre=nombre)
 
         # Establecer los variables climáticos.
-        símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total', conv=0.001)
+        # símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total', conv=0.001)
 
     def iniciar_modelo(símismo, corrida):
 
         # Crear un diccionario de trabajo específico a esta corrida.
-        símismo.direc_trabajo = tempfile.mkdtemp(str(corrida))
+        símismo.direc_trabajo = tempfile.mkdtemp('_' + str(corrida))
+        super().iniciar_modelo(corrida)
 
     def avanzar_modelo(símismo, n_ciclos):
         arch_egreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.out')
@@ -73,10 +75,14 @@ class ModeloSAHYSMOD(ModeloBloques):
 
         # Verificar que SAHYSMOD generó egresos.
         if not os.path.isfile(arch_egreso):
-            raise FileNotFoundError(
-                _('El modelo SAHYSMOD no generó egreso. Esto probablemente quiere decir que tuvo problema interno.'
-                  '\n¡Diviértete! :)')
-            )
+            with open(os.path.join(símismo.direc_trabajo, 'error.lst')) as d:
+                mnsj_sahysmod = d.readlines()
+
+            raise FileNotFoundError(_(
+                '\nEl modelo SAHYSMOD no generó egreso. Esto probablemente quiere decir que tuvo problema interno.'
+                '\n¡Diviértete! :)'
+                '\nMensajes de error de SAHYSMOD:'
+                '\n{}').format(mnsj_sahysmod))
 
         símismo.leer_egr_modelo(n_ciclos=n_ciclos)
 
@@ -130,13 +136,20 @@ class ModeloSAHYSMOD(ModeloBloques):
 
         # Copiar datos desde el diccionario de ingresos
         for var in símismo.variables.egresos():
-            if isinstance(var, VarBloqSAHYSMOD):
-                val = var.obt_val()
-            else:
-                val = var.obt_val_t()  # para hacer
+            llave = var.cód.replace('#', '').upper()
+            if llave in símismo.dic_ingr:
+                m = símismo.dic_ingr[llave]
 
-            llave = var.código.replace('#', '')
-            símismo.dic_ingr[llave] = val
+                if isinstance(var, VarBloqSAHYSMOD):
+                    val = var.obt_vals_paso()
+                    if m.shape == val.shape:
+                        m[:] = val
+                    else:
+                        m[:] = val[-1]
+                else:
+                    val = var.obt_val()
+                    m[:] = val
+                m[np.isnan(m)] = -1
 
         # Y finalmente, escribir el fuente de valores de ingreso
         escribir_desde_dic_paráms(dic_paráms=símismo.dic_ingr, archivo_obj=archivo)

@@ -28,7 +28,7 @@ def leer_arch_egr(archivo, años=None, procesar=True):
                             if var not in dic_datos:
                                 dic_datos[var] = np.full((n_años, n_est, n_polí), np.nan)
                             if len(val):
-                                dic_datos[var][a, e - 1, p - 1] = val
+                                dic_datos[var][a, e - 1, p - 1] = val.replace(',', '.')
 
                         f = d.readline()
     if procesar:

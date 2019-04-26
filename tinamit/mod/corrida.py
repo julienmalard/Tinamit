@@ -23,6 +23,9 @@ class Corrida(object):
         if símismo.extern:
             return símismo.extern.obt_vals(símismo.t, var=var)
 
+    def __str__(símismo):
+        return símismo.nombre
+
 
 class Rebanada(object):
     def __init__(símismo, n_pasos, resultados):
