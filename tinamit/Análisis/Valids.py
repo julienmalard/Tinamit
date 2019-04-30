@@ -77,23 +77,21 @@ def validar_resultados(obs, matrs_simul, tol=0.65, tipo_proc=None, obj_func=None
                                                     scale=np.nanstd(sims_norm_T[vr]) / np.sqrt(len(sims_norm_T[vr])))
 
     elif tipo_proc == 'patrón':
-        if obj_func.lower() == 'aic':
-            for vr in l_vars:
-                eval, len_bparam = patro_proces(tipo_proc, obs, obs_norm[vr], l_vars)
-                like_aic = gen_gof(tipo_proc, sim=sims_norm_T[vr], obj_func='AIC', eval=eval,
-                                   len_bparam=len_bparam, valid='point-pattern')
-                egr[vr]['AIC'] = like_aic
-
-        elif obj_func.lower() == 'multi_behavior_tests':
-            poly, trend, linear= PatrónValidTest.trend_compare(obs, obs_norm, sims_norm_T, tipo_proc, l_vars,
+        if obj_func.lower() == 'multi_behavior_tests':
+            poly, trend, linear, eval, len_bparam= PatrónValidTest.trend_compare(obs, obs_norm, sims_norm_T, tipo_proc, l_vars,
                                                         save_plot=save_plot, gard=gard)
+            # np.save(gard+'trend_linear', (trend, linear))
+
+            like_aic = gen_gof(tipo_proc, sim=sims_norm_T[vr], obj_func='AIC', eval=eval,
+                               len_bparam=len_bparam, valid='point-pattern')
+            egr[vr]['AIC'] = like_aic
+            # trend, linear =np.load(f"{gard[:-9]}valid_aictrend_linear.npy").tolist()
             kappa, icc = coeff_agreement(linear, trend, poly)
             for vr in l_vars:
                 egr[vr]['kappa'] = kappa
                 egr[vr]['icc'] = icc
 
             return egr
-
     else:
         egr[vr] = {obj_func.lower(): gen_gof('multidim', sim=sims_norm_T[vr], obj_func=obj_func,
                                              eval=obs_norm[vr])}
@@ -209,19 +207,23 @@ class PatrónValidTest(object):
     @staticmethod
     def trend_compare(obs, obs_norm, sim_norm, tipo_proc, vars_interés, save_plot, gard=None):
         poly = obs['x0'].values
+        trend = {'t_obs': {}, 't_sim': {}}
+        linear = {'t_obs': {}, 't_sim': {}}
+        matriz_vacía = np.empty([len(poly), len(obs['n'].values)])
         for vr in vars_interés:
-            trend = {'t_obs': {}, 't_sim': {}}
-            linear = {'t_obs': {}, 't_sim': {}}
             print("\n****Start detecting observed data****\n")
-            t_obs, length_params_obs, d_all_obs = patro_proces(tipo_proc, obs, obs_norm[vr], vars_interés, 'valid_multi_tests')
-            trend['t_obs'].update(t_obs)
-            trend['t_obs'].update({'best_patt': [list(v.keys())[0] for i, v in t_obs.items()]})
-            linear['t_obs'].update({p: list(d_all_obs[p]['linear']['bp_params'].values()) for p in d_all_obs})
+            t_obs = patro_proces(tipo_proc, obs, obs_norm[vr], vars_interés, 'valid_multi_tests')
+            trend['t_obs'] = t_obs[0]
+            trend['t_obs'].update({'best_patt': [list(v.keys())[0] for i, v in t_obs[0].items()]})
+            linear['t_obs'].update({p: list(t_obs[2][p]['linear']['bp_params'].values()) for p in t_obs[2]})
 
             print("\n****Start detecting simulated data****\n")
-            t_sim, length_params_sim, d_all_sim = patro_proces(tipo_proc, obs, sim_norm[vr], vars_interés, 'valid_multi_tests')
-            trend['t_sim'].update({'best_patt': [list(v.keys())[0] for i, v in t_sim.items()]})
-            linear['t_sim'].update({p: list(d_all_sim[p]['linear']['bp_params'].values()) for p in d_all_sim})
+            t_sim = patro_proces(tipo_proc, obs, sim_norm[vr], vars_interés, 'valid_multi_tests')
+            trend['t_sim'].update({'best_patt': [list(v.keys())[0] for i, v in t_sim[0].items()]})
+            linear['t_sim'].update({p: list(t_sim[2][p]['linear']['bp_params'].values()) for p in t_sim[2]})
+
+            for poly, d_data in t_obs[0].items():
+                matriz_vacía[list(t_obs[0]).index(poly), :] = np.asarray(t_obs[0][poly]['y_pred'])
 
             # if the pattens are the same and the values with index are the same
             trend['t_sim']['same_patt'] = {}
@@ -230,10 +232,18 @@ class PatrónValidTest(object):
                 if patt == trend['t_sim']['best_patt'][ind]:
                     # if np.count_nonzero(np.isnan(t_obs[poly[ind]]['y_pred']
                     #                              [~np.isnan(t_sim[poly[ind]]['y_pred'])])) == 0:
-                    trend['t_sim']['same_patt'][poly[ind]] = t_sim[poly[ind]]
+                    trend['t_sim']['same_patt'][poly[ind]] = t_sim[0][poly[ind]]
                 else:
-                    trend['t_sim']['diff_patt'][poly[ind]] = {f'{patt}': d_all_sim[poly[ind]][patt]}
+                    trend['t_sim']['diff_patt'][poly[ind]] = {f'{patt}': t_sim[2][poly[ind]][patt]}
 
+            x_data = np.arange(len(obs['n']))
+            sim = { }
+            for p, d_v in trend['t_sim']['diff_patt'].items():
+                y_pred = np.asarray(
+                    predict(x_data, list(trend['t_sim']['diff_patt'][p].values())[0]['bp_params'], list(d_v.keys())[0]))
+                sim[p] = {list(d_v.keys())[0]: list(d_v.values())[0], 'y_pred': y_pred}
+                trend['t_sim']['diff_patt'][p] =  sim[p]
+            del sim
             if save_plot is not None:
                 def _plot_poly(p):
                     handles, labels = pyplot.gca().get_legend_handles_labels()
@@ -245,7 +255,6 @@ class PatrónValidTest(object):
                     pyplot.legend(handle_list, label_list)
                     pyplot.savefig(save_plot + f't_poly_{p}')
                     pyplot.close('all')
-
                 for p in poly:
                     if p in trend['t_sim']['same_patt']:
                         same_occr = trend['t_sim']['same_patt'][p]['y_pred']
@@ -260,7 +269,7 @@ class PatrónValidTest(object):
                         _plot_poly(p)
         if gard:
             np.save(gard + '-trend', trend)
-        return poly, trend, linear
+        return poly, trend, linear, matriz_vacía, t_obs[1]
 
     def detrend(símismo, poly, trend, obs_norm, sim_norm):
         def _d_trend(d_bparams, patt, dt_norm):
@@ -529,38 +538,22 @@ class PatrónValidTest(object):
 
 def coeff_agreement(linear, trend, poly):
     kappa = {}
-    icc = {}
-
-    trend_kp = linear
-    trend_icc = trend
+    icc = {'same': { }, 'diff': {}}
 
     for p in poly:
-        obs_bp = np.asarray(list(trend_kp['t_obs'][p]['linear']['bp_params'].values()))
-        sim_bp = np.asarray(list(trend_kp['t_sim'][p]['linear']['bp_params'].values()))
+        obs_l = np.asarray(linear['t_obs'][p])
+        sim_l = np.asarray(linear['t_sim'][p])
 
-        tf = ((obs_bp == sim_bp) & (obs_bp == 0)) | (obs_bp * sim_bp > 0)
-        if all(i for i in tf):
-            ka_all = 1
-        elif any(i for i in tf):
-            ka_all = 0.5
+        tf = ((obs_l == sim_l) & (obs_l == 0)) | (obs_l * sim_l > 0)
+        kappa.update({p: {'sign_bparam': 1, 'sign_slope': 1} if all(i for i in tf) else {'sign_bparam': 0.5, 'sign_slope': 1} if tf[0] else None})
+
+        if p in trend['t_sim']['same_patt']:
+            obs_bp = np.asarray(list(list(trend['t_obs'][p].values())[0]['bp_params'].values()))
+            sim_bp = np.asarray(list(list(trend['t_sim']['same_patt'][p].values())[0]['bp_params'].values()))
+            icc['same'][p] = ICC_rep_anova(np.asarray([obs_bp, sim_bp]).T)[0]
+
         else:
-            ka_all = 0
-
-        if tf[0]:
-            ka_a = 1
-        else:
-            ka_a = 0
-        if ka_all >= 0.5 and ka_a == 1:
-            if not len(kappa) or p not in kappa:
-                kappa[p] = {}
-            kappa[p].update({'ka_bparam': ka_all, 'ka_slope': ka_a})
-
-        for p in trend_icc['t_sim']:
-            obs_bp = np.asarray(list(list(trend_icc['t_obs'][p].values())[0]['bp_params'].values()))
-            sim_bp = np.asarray(list(list(trend_icc['t_sim'][p].values())[0]['bp_params'].values()))
-            icc_dt = np.asarray([obs_bp, sim_bp]).T
-            val = ICC_rep_anova(icc_dt)[0]
-            if not len(icc) or p not in icc:
-                icc[p] = {}
-            icc[p] = val
+            obs_bp = np.asarray(list(list(trend['t_obs'][p].values())[0]['bp_params'].values()))
+            sim_bp = np.asarray(list(list(trend['t_sim']['diff_patt'][p].values())[0]['bp_params'].values()))
+            icc['diff'][p] = ICC_rep_anova(np.asarray([obs_bp, sim_bp]).T)[0]
     return kappa, icc
