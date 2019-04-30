@@ -12,6 +12,11 @@ guardar_dream_rev = "D:\Thesis\pythonProject\localuse\Dt\Calib\cali_res\dream_re
 guardar_dream_nse = "D:\Thesis\pythonProject\localuse\Dt\Calib\cali_res\dream_nse\\"
 guardar_dream_nse_rev = "D:\Thesis\pythonProject\localuse\Dt\Calib\cali_res\dream_nse_rev\\"
 
+plot_dream = "D:\Thesis\pythonProject\localuse\Dt\Calib\plot\dream\\aic\\"
+plot_dream_rev = "D:\Thesis\pythonProject\localuse\Dt\Calib\plot\dream\\aic_rev\\"
+plot_dream_nse = "D:\Thesis\pythonProject\localuse\Dt\Calib\plot\dream\\nse\\"
+plot_dream_nse_rev = "D:\Thesis\pythonProject\localuse\Dt\Calib\plot\dream\\nse_rev\\"
+
 sim_dream = "D:\Thesis\pythonProject\localuse\Dt\Calib\\simular\\dream\\"
 sim_dream_rev = "D:\Thesis\pythonProject\localuse\Dt\Calib\\simular\\\dream_rev\\"
 sim_dream_nse = "D:\Thesis\pythonProject\localuse\Dt\Calib\\simular\\dream_nse\\"
@@ -86,7 +91,6 @@ def load_calib_info(method, type_sim, t_trend=True, calib=False, rev=False, egr_
                            'linear_trend': None}  # guardar_reverse + 'linear\\trend.npy'}
         tipo_proc = 'patrón'
         obj_func = 'coeffienct of agreement'
-        sim_eq_obs = False
         save_plot = None
         if rev:
             bd = ori_calib
@@ -103,7 +107,7 @@ def load_calib_info(method, type_sim, t_trend=True, calib=False, rev=False, egr_
             valid_sim = sim_class
             n_sim = 144
             t_sim_gard = t_sim_agree_ori
-        return bd, guardar, lg, valid_sim, n_sim, t_sim_gard, tipo_proc, obj_func, sim_eq_obs, save_plot
+        return bd, guardar, lg, valid_sim, n_sim, t_sim_gard, tipo_proc, obj_func, save_plot
 
 
     elif type_sim == 'original':
@@ -136,7 +140,6 @@ def load_calib_info(method, type_sim, t_trend=True, calib=False, rev=False, egr_
             método = method
             bd = ori_valid
             tipo_proc = 'patrón'
-            sim_eq_obs = False
             valid_sim = sim_class
             if obj_func == 'barlas':
                 obj_func = 'multi_behavior_tests'
@@ -148,7 +151,7 @@ def load_calib_info(method, type_sim, t_trend=True, calib=False, rev=False, egr_
                 save_plot = plot + 'class\\21\\'
                 guardar = guardar_class + f'origina21-{method}'
                 t_sim_gard = t_sim_gard_original21
-            return bd, tipo_proc, obj_func, guardar, método, valid_sim, save_plot, t_sim_gard, sim_eq_obs, n_sim, lg
+            return bd, tipo_proc, obj_func, guardar, método, valid_sim, save_plot, t_sim_gard, n_sim, lg
 
     elif type_sim == 'reverse':
         plot = "D:\Thesis\pythonProject\localuse\Dt\Calib\plot\\"
@@ -183,7 +186,6 @@ def load_calib_info(method, type_sim, t_trend=True, calib=False, rev=False, egr_
             método = method
             bd = ori_calib
             tipo_proc = 'patrón'
-            sim_eq_obs = False
             valid_sim = sim_class_rev
             if obj_func == 'barlas':
                 obj_func = 'multi_behavior_tests'
@@ -195,7 +197,7 @@ def load_calib_info(method, type_sim, t_trend=True, calib=False, rev=False, egr_
                 save_plot = plot + 'class_rev\\21\\'
                 guardar = guardar_class_rev + f'reverse21-{method}'
                 t_sim_gard = t_sim_gard_reverse21
-            return bd, tipo_proc, obj_func, guardar, método, valid_sim, save_plot, t_sim_gard, sim_eq_obs, n_sim, lg
+            return bd, tipo_proc, obj_func, guardar, método, valid_sim, save_plot, t_sim_gard, n_sim, lg
 
     elif type_sim == 'clutering':
         t_trendall = "D:\Thesis\pythonProject\localuse\Dt\Calib\cali_res\\reverse\\t_sim_all\\all\\all-fscabc-trend.npy"

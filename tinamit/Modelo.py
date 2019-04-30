@@ -1812,7 +1812,7 @@ class Modelo(object):
             símismo.calibs.update(d_calibs)
 
     def validar(símismo, bd, var=None, t_final=None, corresp_vars=None, tipo_proc=None, guardar=False, obj_func=None,
-                lg=None, paralelo=False, valid_sim=False, n_sim=None, save_plot=None, t_sim_gard=None, sim_eq_obs=None):
+                lg=None, paralelo=False, valid_sim=False, n_sim=None, save_plot=None):
         if obj_func is not None:
             obj_func = obj_func.upper()
         if var is None:
@@ -1826,8 +1826,7 @@ class Modelo(object):
                 bd_lg = gen_SuperBD(bd[lg])
                 vld = símismo._validar(bd=bd_lg, var=var, t_final=t_final, corresp_vars=corresp_vars, lg=lg,
                                        tipo_proc=None, t_inic=None, guardar=guardar, obj_func=obj_func,
-                                       paralelo=paralelo, valid_sim=valid_sim, n_sim=n_sim, save_plot=save_plot,
-                                       t_sim_gard=t_sim_gard, sim_eq_obs=sim_eq_obs)
+                                       paralelo=paralelo, valid_sim=valid_sim, n_sim=n_sim, save_plot=save_plot)
                 res[lg] = vld
             res['éxito'] = all(d['éxito'] for d in res.values())
             return res
@@ -1842,10 +1841,10 @@ class Modelo(object):
 
         return símismo._validar(bd=bd, var=var, t_final=t_final, corresp_vars=corresp_vars, tipo_proc=tipo_proc,
                                 t_inic=t_inic, guardar=guardar, obj_func=obj_func, lg=lg, paralelo=paralelo,
-                                valid_sim=valid_sim, n_sim=n_sim, save_plot=save_plot, t_sim_gard=t_sim_gard, sim_eq_obs=sim_eq_obs)
+                                valid_sim=valid_sim, n_sim=n_sim, save_plot=save_plot)
 
     def _validar(símismo, bd, var, t_final, corresp_vars, tipo_proc, t_inic, guardar, obj_func, lg, paralelo,
-                 valid_sim, n_sim, save_plot, t_sim_gard, sim_eq_obs):
+                 valid_sim, n_sim, save_plot):
         if corresp_vars is None:
             corresp_vars = {}
 
@@ -1871,16 +1870,23 @@ class Modelo(object):
             d_vals_prms = {p: d_p['dist'] for p, d_p in símismo.calibs.items()}  # {'A': ndaray(100), 'B'...}
         else:
             d_vals_prms = {p: d_p['dist'] for p, d_p in lg.items() if isinstance(d_p, dict)}  # {'A': ndaray(100), 'B'...}
+
         n_vals = len(list(d_vals_prms.values())[0])
 
         if valid_sim is not None:
+            start_sim = 0
             if n_sim is not None:
                 m_res =  np.empty(
-                    [n_sim, *np.asarray([Dataset.from_dict(cargar_json(os.path.join(valid_sim, f'{0}')))[vr].values
-                                          for vr in l_vars][0]).shape])  # 29*42*215
+                    [n_sim, *np.asarray([Dataset.from_dict(cargar_json(os.path.join(valid_sim, f'{start_sim}')))[vr].values
+                                          for vr in l_vars][0]).shape])  # 495*42*215
                 for i in range(n_sim):
-                    m_res[i, :] = np.asarray([Dataset.from_dict(cargar_json(os.path.join(valid_sim, f'{i}')))[vr].values
+                    m_res[i, :] = np.asarray([Dataset.from_dict(cargar_json(os.path.join(valid_sim, f'{i+start_sim}')))[vr].values
                          for vr in l_vars][0])
+                ind = np.argsort(lg['prob'])[-int(len(lg['prob']) * 0.2):]
+                m_res = m_res[ind, ]
+                prob = lg['prob'][ind]
+                wt = np.asarray([(p-np.min(prob))/np.ptp(prob) for p in prob])
+
             else:
                 m_res = np.empty(
                     [n_vals, *np.asarray([Dataset.from_dict(cargar_json(os.path.join(valid_sim, f'{0}')))[vr].values
@@ -1914,7 +1920,12 @@ class Modelo(object):
                 for ind, v in enumerate([int(i) for i in obs['x0'].values]): #215
                     n_res[:, :, ind] = mm_res[:, :, v - 1]
 
-            matrs_simul = {vr: n_res for vr in l_vars}
+            nn_res = np.zeros([1, *n_res.shape[1:]])
+            for p in range(obs['x0'].values.size):
+                for t in range(len(obs['n'])):
+                    nn_res[:, t, p] = np.average(n_res[:, t, p], weights=wt)
+
+            matrs_simul = {vr: nn_res for vr in l_vars}
         else:
             matrs_simul = {vr: np.array([d[vr].values for d in res_simul.values()]) for vr in
                            l_vars}  # {param: 100*21*6}// 5*62*215
@@ -1923,18 +1934,10 @@ class Modelo(object):
             resultados = validar_resultados(obs=obs, matrs_simul=matrs_simul, tipo_proc=tipo_proc)
         else:
             resultados = validar_resultados(obs=obs, matrs_simul=matrs_simul, tipo_proc=tipo_proc,
-                                            obj_func=obj_func, lg=lg, save_plot=save_plot, gard=guardar,
-                                            t_sim_gard=t_sim_gard, sim_eq_obs=sim_eq_obs)
-
-        # if n_sim and obj_func == 'AIC':
-        #     for vr in l_vars:
-        #         probs = resultados[vr]['AIC']
-        #         buenas = (probs >= np.min(np.sort(probs)[int(len(probs) * 0.8):])) #top 20%
-        #         resultados['ind_top_valid'] = np.where(buenas)[0]
-        #         resultados['top_valid'] = probs[buenas]
+                                            obj_func=obj_func, save_plot=save_plot, gard=guardar)
 
         if guardar:
-            np.save(guardar+f'-{obj_func.lower()}', resultados)
+            np.save(guardar+f"_{obj_func}", resultados)
 
         return resultados
 

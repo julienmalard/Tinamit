@@ -1017,7 +1017,7 @@ class PatrónProc(object):
         # like = spotpy.likelihoods.gaussianLikelihoodMeasErrorOut(evaluation,simulation)
         # like = spotpy.objectivefunctions.nashsutcliffe(evaluation, simulation)
         gof = gen_gof(símismo.tipo_proc, simulation, evaluation, símismo.obj_func, símismo.len_bparam, obs=símismo.obs,
-                      valid='point-pattern', itr=PatrónProc.itr)
+                      valid='point-pattern', itr=PatrónProc.itr)[0]
         return gof
 
 
@@ -1026,24 +1026,15 @@ def patro_proces(tipo_proc, obs, norm_obs, vars_interés=None, valid=None):
         return norm_obs, 0  # nparray[38, 61]
     elif tipo_proc == 'patrón':
         if valid == 'valid_multi_tests':
-            return compute_patron(obs, norm_obs, valid=valid)[1]
-        elif valid == 'valid_others_s':
-            return compute_patron(obs, norm_obs, valid=valid)[1]
-        elif valid == 'valid_others_o':
-            d_patron = compute_patron(obs, norm_obs, valid=valid)[1]
-            length_params = []
-            for poly, d_data in d_patron.items():
-                length_params.append(len(list(d_data.values())[0]['bp_params']))
-            return d_patron, length_params
-        elif valid == 'coeff_linear':
-            return compute_patron(obs, norm_obs, valid=valid)[1]
+            best_behaviors, d_patron, d_numero = compute_patron(obs, norm_obs, valid=valid)
+            length_params = [len(list(d_data.values())[0]['bp_params']) for poly, d_data in d_patron.items()]
+            return d_patron, length_params, d_numero
         else:
             d_patron = compute_patron(obs, norm_obs, valid=valid)[1]
-            matriz_vacía = np.empty([obs[vars_interés[0]].values.shape[0], len(d_patron)])  # 61, 38
-            length_params = []
+            matriz_vacía = np.empty([obs[vars_interés[0]].values.shape[0], len(d_patron)])  # 41, 19
+            length_params = [len(list(d_data.values())[0]['bp_params']) for poly, d_data in d_patron.items()]
             for poly, d_data in d_patron.items():
                 matriz_vacía[:, list(d_patron).index(poly)] = np.asarray(d_patron[poly]['y_pred'])
-                length_params.append(len(list(d_data.values())[0]['bp_params']))
             return matriz_vacía.T, length_params  # (nparray 38*61, [list of the length of the bp_params])
 
 
@@ -1091,7 +1082,7 @@ path = "D:\Thesis\pythonProject\localuse\Dt\Calib\like\calib\\dream"
 save_path = f"{path}\\dream\\"
 
 def gen_gof(tipo_proc, sim=None, eval=None, obj_func=None, len_bparam=None, valid=None, obs=None, itr=None):
-    global save_path
+    # global save_path
     def _classify(aic_array):
         maxi = np.nanmax(aic_array)
         mini = np.nanmin(aic_array)
@@ -1107,8 +1098,7 @@ def gen_gof(tipo_proc, sim=None, eval=None, obj_func=None, len_bparam=None, vali
             len_obs_poly = np.empty([len(eval)])
             for i, y_sim in enumerate(sim):
                 if obj_func == 'AIC':
-                    t_sim = patro_proces(tipo_proc, obs, sim, valid="valid_others_s")
-                    # patro_proces(tipo_proc, eval, sim[vr][n, :].T, vars_interés=None, valid=None)
+                    t_sim = patro_proces(tipo_proc, obs, sim, valid="valid_multi_tests")[0]
                     len_obs_poly[i] = -aic(len_bparam[i], eval[i], t_sim[list(t_sim)[i]]['y_pred'])
             like, wt = _classify(len_obs_poly)
             return like
@@ -1118,40 +1108,31 @@ def gen_gof(tipo_proc, sim=None, eval=None, obj_func=None, len_bparam=None, vali
                 if obj_func == 'AIC':
                     len_valid_sim[i] = -aic(len_bparam[i], eval[i], y_sim)
             like, wt = _classify(len_valid_sim)
-            if itr == 0 :
-                if not os.path.isfile(f"{path}\\dream\\0.npy"):
-                    save_path = f"{path}\\dream\\"
-                elif not os.path.isfile(f"{path}\\dream_rev\\0.npy"):
-                    save_path = f"{path}\\dream_rev\\"
-                elif not os.path.isfile(f"{path}\\dream_nse\\0.npy"):
-                    save_path = f"{path}\\dream_nse\\"
-                elif not os.path.isfile(f"{path}\\dream_nse_rev\\0.npy"):
-                    save_path = f"{path}\\dream_nse_rev\\"
-
-            np.save(save_path + f"{itr}", (like, wt))
-
-            return like
-        elif valid == 'point-pattern_valid':
-            len_valid_sim = np.empty([len(sim), len(len_bparam)])  # 144runs, 13polys
-            like_wt = []
-            for i, poly_aray in enumerate(sim):  # i=[1, 20], pa=[6*21]
-                for j, y_sim in enumerate(poly_aray):  # j=1, 6; poly [21]
-                    if obj_func == 'AIC':
-                        len_valid_sim[i, j] = -aic(len_bparam[j], eval[j], y_sim)
-            for i in range(len(len_valid_sim)):
-                like, wt = _classify(len_valid_sim[i])
-                like_wt.append([like, wt])
-            return like_wt
+            # if itr == 0 :
+            #     if not os.path.isfile(f"{path}\\dream\\0.npy"):
+            #         save_path = f"{path}\\dream\\"
+            #     elif not os.path.isfile(f"{path}\\dream_rev\\0.npy"):
+            #         save_path = f"{path}\\dream_rev\\"
+            #     elif not os.path.isfile(f"{path}\\dream_nse\\0.npy"):
+            #         save_path = f"{path}\\dream_nse\\"
+            #     elif not os.path.isfile(f"{path}\\dream_nse_rev\\0.npy"):
+            #         save_path = f"{path}\\dream_nse_rev\\"
+            #
+            # np.save(save_path + f"{itr}", (like, wt))
+            return like, len_valid_sim
 
     elif tipo_proc == 'multidim':
         if eval.shape == sim.shape:
-            if obj_func == 'NSE':
-                len_aray = np.empty(eval.shape[0])
-                for i in range(eval.shape[0]):
+            len_aray = np.empty(eval.shape[0])
+            for i in range(eval.shape[0]):
+                if obj_func == 'NSE':
                     len_aray[i] = nse(eval[i], sim[i])
-                like, wt = _classify(len_aray)
-                # np.save(f"D:\Thesis\pythonProject\localuse\Dt\Calib\like\\nse\original\\like\\{itr}", (like, wt))
-                # np.save(f"D:\Thesis\pythonProject\localuse\Dt\Calib\like\\nse\\reverse\\like\\{itr}", (like, wt))
+                elif obj_func == 'rmse':
+                    compute_rmse(eval[i], sim[i])
+            like, wt = _classify(len_aray)
+            if valid is not None:
+                return like, len_aray
+            else:
                 return like
         else:
             like_wt = []
