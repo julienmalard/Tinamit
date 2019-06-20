@@ -58,7 +58,7 @@ import numpy as np
 #
 
 
-def anal_línea_l(línea, nombres_parámetros, dic_parámetros):
+def anlz_línea_l(línea, nombres_parámetros, dic_parámetros):
     if nombres_parámetros[0] == '#':
         dic_parámetros['#'].append(línea.strip())
     else:
@@ -79,162 +79,162 @@ def construir_línea_l(nombres_parámetros, dic_parámetros):
     return línea + '\n'
 
 
-def anal_línea_f(línea, nombres_parámetros, anchura_cols, dic_parámetros):  # pragma: sin cobertura
+def anlz_línea_f(línea, nombres_parámetros, anchura_cols, dic_parámetros):  # pragma: sin cobertura
     cursor = 0
-    matrizParáms = 0
+    matriz_paráms = 0
 
     for i in range(len(anchura_cols)):
-        if not matrizParáms:
+        if not matriz_paráms:
             if nombres_parámetros[i][0] != '*':
                 dic_parámetros[nombres_parámetros[i]] = línea[cursor:cursor + anchura_cols[i]].strip('\n')
                 cursor += anchura_cols[i]
             else:
-                matrizParáms = nombres_parámetros[i][1:]
-                dic_parámetros[matrizParáms] = []
-        if matrizParáms:
-            dic_parámetros[matrizParáms].append(línea[cursor:cursor + anchura_cols[i]].strip())
+                matriz_paráms = nombres_parámetros[i][1:]
+                dic_parámetros[matriz_paráms] = []
+        if matriz_paráms:
+            dic_parámetros[matriz_paráms].append(línea[cursor:cursor + anchura_cols[i]].strip())
             cursor += anchura_cols[i]
     return dic_parámetros
 
 
-def construir_línea_f(nombresParáms, anchuraCols, dicParáms):  # pragma: sin cobertura
-    líneaEgr = ''
-    matrizParáms = 0
-    for i in range(len(anchuraCols)):
-        if not matrizParáms:
-            paramName = nombresParáms[i]
-            if paramName[0] != '*':
-                parám = dicParáms[paramName]
-                parám = (anchuraCols[i] - len(parám)) * ' ' + parám
-                líneaEgr += parám
+def construir_línea_f(nombres_paráms, anchura_cols, dic_paráms):  # pragma: sin cobertura
+    línea_egr = ''
+    matriz_paráms = 0
+    for i in range(len(anchura_cols)):
+        if not matriz_paráms:
+            nombre_parám = nombres_paráms[i]
+            if nombre_parám[0] != '*':
+                parám = dic_paráms[nombre_parám]
+                parám = (anchura_cols[i] - len(parám)) * ' ' + parám
+                línea_egr += parám
             else:
-                matrizParáms = paramName.strip('*')
-                listaParám = [parameter for parameter in dicParáms[matrizParáms]]
-        if matrizParáms:
-            parám = listaParám.pop(0)
-            parám = (anchuraCols[i] - len(parám)) * ' ' + parám
-            líneaEgr += parám
-    return líneaEgr + '  \n'
+                matriz_paráms = nombre_parám.strip('*')
+                lista_parám = [parameter for parameter in dic_paráms[matriz_paráms]]
+        if matriz_paráms:
+            parám = lista_parám.pop(0)
+            parám = (anchura_cols[i] - len(parám)) * ' ' + parám
+            línea_egr += parám
+    return línea_egr + '  \n'
 
 
-def anal_línea_d(línea, nombresParáms, delim, dicParáms):
+def anal_línea_d(línea, nombres_paráms, delim, dic_paráms):
     línea = línea.strip()
     if delim == 'W':
         valores = línea.split()
     else:
         valores = [value.strip() for value in línea.split(delim)]
-    matrizParáms = 0
+    matriz_paráms = 0
     for i in range(len(valores)):
-        if not matrizParáms:
+        if not matriz_paráms:
             try:
-                if nombresParáms[i][0] != '*':
-                    dicParáms[nombresParáms[i]] = valores[i]
+                if nombres_paráms[i][0] != '*':
+                    dic_paráms[nombres_paráms[i]] = valores[i]
                 else:
-                    matrizParáms = nombresParáms[i][1:]
-                    dicParáms[matrizParáms] = []
+                    matriz_paráms = nombres_paráms[i][1:]
+                    dic_paráms[matriz_paráms] = []
             except IndexError:
-                return dicParáms
-        if matrizParáms:
-            dicParáms[matrizParáms].append(valores[i])
-    return dicParáms
+                return dic_paráms
+        if matriz_paráms:
+            dic_paráms[matriz_paráms].append(valores[i])
+    return dic_paráms
 
 
-def build_d_línea(nombresParáms, delim, dicParáms):
+def build_d_línea(nombres_paráms, delim, dic_paráms):
     valores = []
     # Si el separador es espacio blanco ('W'), emplear un espacio cono separador
     delim = '  ' if delim == 'W' else delim
-    for nombreParám in nombresParáms:
+    for nombreParám in nombres_paráms:
         if nombreParám[0] != '*':
-            valores.append(str(dicParáms[nombreParám]))
+            valores.append(str(dic_paráms[nombreParám]))
         else:
-            valores += [str(x) for x in dicParáms[nombreParám.strip('*')]]
+            valores += [str(x) for x in dic_paráms[nombreParám.strip('*')]]
 
     return delim.join(valores) + '  \n'
 
 
-def anal_línea(línea, nombresParáms, especLínea, dicParáms):
-    if especLínea[0] == 'L':
-        anal_línea_l(línea, nombresParáms, dicParáms)
-    elif especLínea[0] == 'F':
-        anal_línea_f(línea, nombresParáms, especLínea[1], dicParáms)
-    elif especLínea[0] == 'D':
-        anal_línea_d(línea, nombresParáms, especLínea[1], dicParáms)
-    return dicParáms
+def anal_línea(línea, nombres_paráms, espec_línea, dic_paráms):
+    if espec_línea[0] == 'L':
+        anlz_línea_l(línea, nombres_paráms, dic_paráms)
+    elif espec_línea[0] == 'F':
+        anlz_línea_f(línea, nombres_paráms, espec_línea[1], dic_paráms)
+    elif espec_línea[0] == 'D':
+        anal_línea_d(línea, nombres_paráms, espec_línea[1], dic_paráms)
+    return dic_paráms
 
 
-def construir_línea(nombresParáms, especLínea, dicParáms, dicConfig, paráms_ent):
+def construir_línea(nombres_paráms, espec_línea, dic_paráms, dic_config, paráms_ent):
     if paráms_ent is not None:
-        for p in dicParáms:
+        for p in dic_paráms:
             if p in paráms_ent:
-                dicParáms[p] = dicParáms[p].astype(int)
-    if especLínea[0] == 'L':
-        línea = construir_línea_l(nombresParáms, dicParáms)
-    elif especLínea[0] == 'F':
-        línea = construir_línea_f(nombresParáms, especLínea[1], dicParáms)
-    elif especLínea[0] == 'D':
-        línea = build_d_línea(nombresParáms, especLínea[1], dicParáms)
+                dic_paráms[p] = dic_paráms[p].astype(int)
+    if espec_línea[0] == 'L':
+        línea = construir_línea_l(nombres_paráms, dic_paráms)
+    elif espec_línea[0] == 'F':
+        línea = construir_línea_f(nombres_paráms, espec_línea[1], dic_paráms)
+    elif espec_línea[0] == 'D':
+        línea = build_d_línea(nombres_paráms, espec_línea[1], dic_paráms)
     else:
-        raise ValueError(especLínea[0])
-    if 'CSVPAD' in dicConfig.keys():
-        diff = dicConfig['CSVPAD'] - 1 - línea.count(',')
+        raise ValueError(espec_línea[0])
+    if 'CSVPAD' in dic_config.keys():
+        diff = dic_config['CSVPAD'] - 1 - línea.count(',')
         if diff > 0:
             línea = línea.strip() + ',' * diff + '\n'
     return línea
 
 
-def _crearMatrizDeZeros(*dims):
+def _crear_matriz_de_zeros(*dims):
     if len(dims) == 1:
         return [0] * dims[0]
     else:
         matr = []
         for i in range(dims[0]):
-            matr.append(_crearMatrizDeZeros(*dims[1:]))
+            matr.append(_crear_matriz_de_zeros(*dims[1:]))
         return matr
 
 
-def leer_archivo(nombre_archContenido, nombre_archPlantilla, paráms_ent=None):
+def leer_archivo(nombre_arch_contenido, nombre_arch_plantilla, paráms_ent=None):
     if paráms_ent is None:
         paráms_ent = []
 
     dic_paráms = {'#': []}
-    configDic = {}
-    with open(nombre_archContenido, 'r') as archContenido, open(nombre_archPlantilla, 'r') as archPlantilla:
+    config_dic = {}
+    with open(nombre_arch_contenido, 'r') as archContenido, open(nombre_arch_plantilla, 'r') as archPlantilla:
         for línea_plantilla in archPlantilla:
 
             if línea_plantilla[0] == '!':
-                configTupla = literal_eval(línea_plantilla[1:].strip())
-                configDic[configTupla[0]] = configTupla[1]
+                config_tupla = literal_eval(línea_plantilla[1:].strip())
+                config_dic[config_tupla[0]] = config_tupla[1]
             elif línea_plantilla[0] != '#':
-                templateTuple = literal_eval(línea_plantilla.strip())
-                if templateTuple[0][0:4] != 'FOR[':
+                template_tuple = literal_eval(línea_plantilla.strip())
+                if template_tuple[0][0:4] != 'FOR[':
                     línea_contenido = archContenido.readline().strip('\n')
-                    anal_línea(línea_contenido, templateTuple[1], templateTuple[0], dic_paráms)
+                    anal_línea(línea_contenido, template_tuple[1], template_tuple[0], dic_paráms)
                 else:
-                    dims = [i.strip(']') for i in templateTuple[0].split('[')][1:]
+                    dims = [i.strip(']') for i in template_tuple[0].split('[')][1:]
                     for i in range(len(dims)):
                         try:
                             dims[i] = int(dims[i])
                         except ValueError:
                             dims[i] = int(dic_paráms[dims[i]])
-                    tupleEspecLínea = templateTuple[1]
-                    for especLínea in tupleEspecLínea:
+                    tuple_espec_línea = template_tuple[1]
+                    for especLínea in tuple_espec_línea:
 
-                        for nombreParám in especLínea[1]:
-                            nombreParám = nombreParám.strip('*')
-                            dic_paráms[nombreParám] = _crearMatrizDeZeros(*dims)
+                        for nombre_parám in especLínea[1]:
+                            nombre_parám = nombre_parám.strip('*')
+                            dic_paráms[nombre_parám] = _crear_matriz_de_zeros(*dims)
 
                     iterdims = [range(dim) for dim in dims]
                     for indices in itertools.product(*iterdims):
-                        dicTemp = {}
-                        for especLínea in tupleEspecLínea:
+                        dic_temp = {}
+                        for especLínea in tuple_espec_línea:
                             línea_contenido = archContenido.readline().strip('\n')
-                            anal_línea(línea_contenido, especLínea[1], especLínea[0], dicTemp)
-                            for nombreParám in especLínea[1]:
-                                nombreParám = nombreParám.strip("*")
-                                d = dic_paráms[nombreParám]
+                            anal_línea(línea_contenido, especLínea[1], especLínea[0], dic_temp)
+                            for nombre_parám in especLínea[1]:
+                                nombre_parám = nombre_parám.strip("*")
+                                d = dic_paráms[nombre_parám]
                                 for i in indices[:-1]:
                                     d = d[i]
-                                d[indices[-1]] = dicTemp[nombreParám]
+                                d[indices[-1]] = dic_temp[nombre_parám]
 
     for k, v in dic_paráms.items():
         if isinstance(v, list):
@@ -246,54 +246,54 @@ def leer_archivo(nombre_archContenido, nombre_archPlantilla, paráms_ent=None):
     return dic_paráms
 
 
-def escribir_archivo(dicParáms, nombre_archContenido, nombre_archPlantilla, paráms_ent=None):
+def escribir_archivo(dic_paráms, nombre_arch_contenido, nombre_arch_plantilla, paráms_ent=None):
     # k=1
-    dicConfig = {}
-    with open(nombre_archContenido, 'w') as archContenido, open(nombre_archPlantilla, 'r') as archPlantilla:
-        for templatelínea in archPlantilla:
-            # print('building línea {} of file {}'.format(k, nombre_archPlantilla))
+    dic_config = {}
+    with open(nombre_arch_contenido, 'w') as archContenido, open(nombre_arch_plantilla, 'r') as arch_plantilla:
+        for templatelínea in arch_plantilla:
+            # print('building línea {} of file {}'.format(k, nombre_arch_plantilla))
             # k+=1
             if templatelínea[0] == '!':
-                tuplaConfig = literal_eval(templatelínea[1:].strip())
-                dicConfig[tuplaConfig[0]] = tuplaConfig[1]
+                tupla_config = literal_eval(templatelínea[1:].strip())
+                dic_config[tupla_config[0]] = tupla_config[1]
             elif templatelínea[0] != '#':
-                tuplaPlantilla = literal_eval(templatelínea.strip())
-                if tuplaPlantilla[0][0:4] != 'FOR[':
+                tupla_plantilla = literal_eval(templatelínea.strip())
+                if tupla_plantilla[0][0:4] != 'FOR[':
                     archContenido.write(
-                        construir_línea(tuplaPlantilla[1], tuplaPlantilla[0], dicParáms, dicConfig, paráms_ent)
+                        construir_línea(tupla_plantilla[1], tupla_plantilla[0], dic_paráms, dic_config, paráms_ent)
                     )
                 else:
-                    dims = [i.strip(']') for i in tuplaPlantilla[0].split('[')][1:]
+                    dims = [i.strip(']') for i in tupla_plantilla[0].split('[')][1:]
                     for i in range(len(dims)):
                         try:
                             dims[i] = int(dims[i])
                         except ValueError:
-                            dims[i] = int(dicParáms[dims[i]])
-                    líneaSpecTuple = tuplaPlantilla[1]
+                            dims[i] = int(dic_paráms[dims[i]])
+                    línea_espec_tuple = tupla_plantilla[1]
                     iterdims = [range(dim) for dim in dims]
                     for indices in itertools.product(*iterdims):
-                        dicTemp = {}
-                        for especLínea in líneaSpecTuple:
-                            for nombreParám in especLínea[1]:
-                                nombreParám = nombreParám.strip('*')
-                                p_d = dicParáms[nombreParám]
+                        dic_temp = {}
+                        for especLínea in línea_espec_tuple:
+                            for nombre_parám in especLínea[1]:
+                                nombre_parám = nombre_parám.strip('*')
+                                p_d = dic_paráms[nombre_parám]
                                 for i in indices:
                                     p_d = p_d[i]
 
-                                dicTemp[nombreParám] = p_d
+                                dic_temp[nombre_parám] = p_d
 
                             archContenido.write(
-                                construir_línea(especLínea[1], especLínea[0], dicTemp, dicConfig, paráms_ent))
-    return nombre_archContenido
+                                construir_línea(especLínea[1], especLínea[0], dic_temp, dic_config, paráms_ent))
+    return nombre_arch_contenido
 
 
 def central(*args):  # pragma: sin cobertura
     if args[1] == '-r':
-        dicParáms = leer_archivo(args[2], args[3])
-        print(dicParáms[args[4]])
+        dic_paráms = leer_archivo(args[2], args[3])
+        print(dic_paráms[args[4]])
     elif args[1] == '-c':
-        dicParáms = leer_archivo(args[2], args[3])
-        escribir_archivo(dicParáms, args[4], args[5])
+        dic_paráms = leer_archivo(args[2], args[3])
+        escribir_archivo(dic_paráms, args[4], args[5])
     return 0
 
 

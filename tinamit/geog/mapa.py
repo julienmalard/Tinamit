@@ -41,7 +41,7 @@ def dibujar_mapa_de_res(forma_dinámica, res, var, t, escala=None, título='', d
         res_var = res[var].vals
         unids = res[var].var.unid
 
-        escala = escala or (np.min(res_var), np.max(res_var))
+        escala = escala or (np.min(res_var.values), np.max(res_var.values))
 
         def _extr_res_i(i):
             return _extr_i(res_var, i)

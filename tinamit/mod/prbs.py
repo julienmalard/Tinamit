@@ -1,4 +1,5 @@
 import os
+import unittest
 
 import numpy as np
 import numpy.testing as npt
@@ -7,6 +8,18 @@ from tinamit.cositas import guardar_json, jsonificar, cargar_json
 
 
 def verificar_leer_ingr(caso, cls):
+    """
+
+    Parameters
+    ----------
+    caso: unittest.TestCase
+
+    cls
+
+    Returns
+    -------
+
+    """
     info_prb = cls.prb_ingreso()
     if info_prb:
         arch, f_leer = info_prb
@@ -18,7 +31,9 @@ def verificar_leer_ingr(caso, cls):
 
         caso.assertSetEqual(set(dic), set(ref))
         for vr in ref:
-            caso.assertDictEqual(dic[vr], ref[vr], msg=vr)
+            caso.assertEqual(dic[vr]['unid'], ref[vr]['unid'], vr)
+            caso.assertTupleEqual(tuple(dic[vr]['líms']), tuple(ref[vr]['líms']), vr)
+            npt.assert_equal(dic[vr]['inic'], ref[vr]['inic'], err_msg=vr)
 
 
 def verificar_leer_egr(caso, cls):

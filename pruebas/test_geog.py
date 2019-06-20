@@ -5,8 +5,6 @@ import tempfile
 import unittest
 
 import numpy as np
-import pandas as pd
-
 from pruebas.recursos.mod.prueba_mod import ModeloPrueba
 from tinamit.geog.mapa import dibujar_mapa, dibujar_mapa_de_res, \
     Calle, Ciudad, Bosque, OtraForma, Agua, \
@@ -149,7 +147,7 @@ class TestMapaResultados(unittest.TestCase):
     def test_mapa_de_simul(símismo):
         frm = FormaDinámicaNumérica(arch_frm_numérica, col_id='Id')
         extern = {'Vacío': np.arange(len(frm.ids))}
-        res = ModeloPrueba().simular(t=10, vals_extern=extern)
+        res = ModeloPrueba(dims=(215,)).simular(t=10, vals_extern=extern)
         dibujar_mapa_de_res(forma_dinámica=frm, res=res, var='Vacío', t=3, directorio=símismo.dir_)
 
     def test_mapa_de_simul_grupo(símismo):

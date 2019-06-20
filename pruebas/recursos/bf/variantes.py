@@ -38,7 +38,7 @@ class EjBloques(ModeloBloques):
     def __init__(símismo, tmñ_bloques, unid_tiempo='días'):
         símismo.unid_tiempo = unid_tiempo
 
-        super().__init__(tmñ_bloques=tmñ_bloques, variables=símismo._gen_vars(tmñ_bloques))
+        super().__init__(variables=símismo._gen_vars(tmñ_bloques))
 
     @staticmethod
     def _gen_vars(tmñ_bloques):

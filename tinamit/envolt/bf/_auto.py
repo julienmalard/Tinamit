@@ -65,7 +65,8 @@ def _extraer_de_archivo(archivo):
                  '\n\t{}'
                  '\n...y ninguna se llamaba "Envoltura". Tomaremos "{}" como la envoltura'
                  '\ny esperaremos que funcione. Si no te parece, asegúrate que la definición de clase o el'
-                 '\nobjeto correcto se llame "Envoltura".').format(archivo, nmb_elegida))
+                 '\nobjeto correcto se llame "Envoltura".'
+                 ).format(archivo, nmb_elegida))
         return potenciales[nmb_elegida]
 
     raise AttributeError(_(

@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 import tempfile
+from datetime import datetime, date
 from warnings import warn as avisar
 import xarray as xr
 import numpy as np
@@ -185,3 +186,16 @@ def jsonificar(o, r=None):
             else:
                 r.append(v)
     return r
+
+
+def _gen_fecha(f):
+    if f is None:
+        return
+    elif isinstance(f, str):
+        return datetime.strptime(f, '%Y-%m-%d')
+    elif isinstance(f, datetime):
+        return f
+    elif isinstance(f, date):
+        return datetime(f.year, f.month, f.day)
+    else:
+        raise TypeError(type(f))

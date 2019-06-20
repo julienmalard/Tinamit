@@ -1,10 +1,9 @@
-from datetime import datetime, date
-
 import numpy as np
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
 from tinamit.config import _
+from tinamit.cositas import _gen_fecha
 from tinamit.unids.conv import convertir
 
 
@@ -98,19 +97,6 @@ class EspecTiempo(object):
             return TiempoCalendario(t=símismo, unid_paso=unid_paso)
         else:
             return Tiempo(t=símismo, unid_paso=unid_paso)
-
-
-def _gen_fecha(f):
-    if f is None:
-        return
-    elif isinstance(f, str):
-        return datetime.strptime(f, '%Y-%m-%d')
-    elif isinstance(f, datetime):
-        return f
-    elif isinstance(f, date):
-        return datetime(f.year, f.month, f.day)
-    else:
-        raise TypeError(type(f))
 
 
 def _a_unid_tnmt(unid):
