@@ -9,20 +9,12 @@ from .fuente import Fuente, FuentePandas, FuenteDic, FuenteVarXarray, FuenteBase
 class BD(object):
     def __init__(símismo, fuentes):
         símismo.fuentes = [fuentes] if isinstance(fuentes, Fuente) else fuentes
-        símismo.vars_disp = list(set((v for f in símismo.fuentes for v in f.obt_vars())))
+        símismo.variables = list(set((v for f in símismo.fuentes for v in f.obt_vars())))
 
-    def obt_vals(símismo, vars_interés, lugares=None, fechas=None, fuentes=None):
-        fuentes_filtradas = símismo._filtrar_fuentes(fuentes)
-        return xr.merge(
-            (f.obt_vals(vars_interés=vars_interés, lugares=lugares, fechas=fechas) for f in fuentes_filtradas)
+    def obt_vals(símismo, vars_interés, lugares=None, fechas=None):
+        return xr.concat(
+            (f.obt_vals(vars_interés=vars_interés, lugares=lugares, fechas=fechas) for f in símismo.fuentes), 'n'
         )
-
-    def _filtrar_fuentes(símismo, fuentes):
-        fuentes = [fuentes] if isinstance(fuentes, (Fuente, str)) else fuentes
-        fuentes = [str(f) for f in fuentes]
-        for f in símismo.fuentes:
-            if f.nombre in fuentes:
-                yield f
 
 
 def _gen_fuente(fnt, nombre=None, lugares=None, fechas=None):

@@ -1,17 +1,10 @@
-import os
-import re
-import tempfile
 from warnings import warn as avisar
 
 import numpy as np
 import pandas as pd
 import scipy.stats as estad
-import spotpy
-import xarray as xr
 from scipy.optimize import minimize
-from scipy.stats import gaussian_kde
-
-from tinamit.Análisis.Datos import BDtexto, gen_SuperBD, SuperBD
+from tinamit.Análisis.Datos import gen_SuperBD, SuperBD
 from tinamit.Análisis.sintaxis import Ecuación
 from tinamit.config import _
 
@@ -69,31 +62,6 @@ class CalibradorEc(object):
     """
     Un objeto para manejar la calibración de ecuaciones.
     """
-
-    def __init__(símismo, ec, var_y=None, otras_ecs=None, corresp_vars=None, dialecto=None):
-        """
-        Inicializa el `Calibrador`.
-
-        Parameters
-        ----------
-        ec: str
-            La ecuación, en formato texto, para calibrar.
-        var_y: str
-            El nombre del variable y. Si no se especifica aquí, debe estar en la ecuación sí misma (por ejemplo,
-            "y = a*x + b" en vez de simplemente "a*x + b").
-        otras_ecs: dict[str, str]
-            Un diccionario de otras ecuaciones para substituir variables en la ecuación principal.
-        corresp_vars: dict[str, str]
-            Un diccionario de equivalencias de nombres entre ecuación y eventual base de datos.
-        """
-
-        # Crear la ecuación.
-        símismo.ec = Ecuación(ec, nombre=var_y, otras_ecs=otras_ecs, nombres_equiv=corresp_vars, dialecto=dialecto)
-
-        # Asegurarse que se especificó el variable y.
-        if símismo.ec.nombre is None:
-            raise ValueError(_('Debes especificar el nombre del variable dependiente, o con el parámetro'
-                               '`var_y`, o directamente en la ecuación, por ejemplo: "y = a*x ..."'))
 
     def calibrar(símismo, bd_datos, paráms=None, líms_paráms=None, método=None, tipo=None, binario=False, geog=None,
                  en=None,
@@ -451,158 +419,6 @@ class CalibradorEc(object):
             Los parámetros calibrados.
         """
 
-        # Generar la función dinámica Python
-        paráms = list(líms_paráms)
-        f_python = ec.a_python(paráms=paráms)
-
-        # Todos los variables
-        l_vars = vars_x + [var_y]
-
-        # Todas las observaciones
-        obs = bd_datos.obt_datos(l_vars=l_vars, excl_faltan=True, tipo=tipo)
-
-        # Calibrar según la situación
-        if lugares is None:
-            # Si no hay lugares, optimizar de una vez con todas las observaciones.
-            resultados = _optimizar(f_python, líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
-                                    **ops_método)
-        else:
-            # Si hay lugares...
-
-            # Una función recursiva para calibrar según la jerarquía
-            def _calibrar_jerárchico_manual(lugar, jrq, clbs=None):
-                """
-                Una función recursiva que permite calibrar en una jerarquía, tomando optimizaciones de niveles más
-                altos si no consigue datos para niveles más bajos.
-
-                Parameters
-                ----------
-                lugar: str
-                    El lugar en cual calibrar.
-                jrq: dict
-                    La jerarquía.
-                clbs: dict
-                    El diccionario de los resultados de la calibración. (Parámetro recursivo.)
-
-                """
-
-                # Para la recursión
-                if clbs is None:
-                    clbs = {}
-
-                if lugar is None:
-                    # Si estamos al nivel más alto de la jerarquía, tomar todos los datos.
-                    obs_lg = obs
-                    inic = pariente = None  # Y no tenemos ni estimos iniciales, ni región pariente
-                else:
-                    # Sino, tomar los datos de esta región únicamente.
-                    lgs_potenciales = geog.obt_todos_lugares_en(lugar)
-                    obs_lg = obs.where(obs['lugar'].isin(lgs_potenciales + [lugar]), drop=True)
-
-                    # Intentar sacar información del nivel superior en la jerarquía
-                    try:
-                        pariente = jrq[lugar]  # El nivel inmediatemente superior
-
-                        # Calibrar recursivamente si necesario
-                        if pariente not in clbs:
-                            _calibrar_jerárchico_manual(lugar=pariente, jrq=jrq, clbs=clbs)
-
-                        # Tomar la calibración superior como punto inicial para facilitar la búsqueda
-                        inic = [clbs[pariente][p]['val'] for p in paráms]
-
-                    except KeyError:
-                        # Error improbable con la jerarquía.
-                        avisar(_('No encontramos datos para el lugar "{}", ni siguiera en su jerarquía, y por eso'
-                                 'no pudimos calibrarlo.').format(lugar))
-                        resultados[lugar] = {}  # Calibración vacía
-                        return  # Si hubo error en la jerarquía, no hay nada más que hacer para este lugar.
-
-                # Ahora, calibrar.
-                if len(obs_lg['n']):
-                    # Si tenemos observaciones, calibrar con esto.
-                    resultados[lugar] = _optimizar(
-                        f_python, líms_paráms=líms_paráms,
-                        obs_x=obs_lg[vars_x], obs_y=obs_lg[var_y], inic=inic, **ops_método
-                    )
-                else:
-                    # Si no tenemos observaciones, copiar la calibración del pariente
-                    resultados[lugar] = clbs[pariente]
-
-            # Calibrar para cada lugar
-            resultados = {}
-            for lg in lugares:
-                _calibrar_jerárchico_manual(lugar=lg, jrq=jerarquía, clbs=resultados)
-
-        # Devolver únicamente los lugares de interés.
-        if lugares is not None:
-            return {ll: v for ll, v in resultados.items() if ll in lugares}
-        else:
-            return resultados
-
-
-class CalibradorMod(object):
-    def __init__(símismo, mod):
-        """
-
-        Parameters
-        ----------
-        mod : Modelo.Modelo
-        """
-        símismo.mod = mod
-
-    def calibrar(símismo, paráms, líms_paráms, bd, método, vars_obs, n_iter, corresp_vars=None):
-
-        método = método.lower()
-        mod = símismo.mod
-        bd = gen_SuperBD(bd)
-
-        if corresp_vars is None:
-            corresp_vars = {}
-
-        if vars_obs is None:
-            vars_obs = list(bd.variables)
-        vars_obs = [corresp_vars[v] if v in corresp_vars else v for v in vars_obs]
-        obs = bd.obt_datos(vars_obs, tipo='datos')[vars_obs]
-
-        if método in _algs_spotpy:
-
-            temp = tempfile.NamedTemporaryFile('w', encoding='UTF-8', prefix='CalibTinamït_')
-
-            mod_spotpy = ModSpotPy(mod=mod, líms_paráms=líms_paráms, obs=obs)
-            muestreador = _algs_spotpy[método](mod_spotpy, dbname=temp.name, dbformat='csv')
-            if método == 'dream':
-                muestreador.sample(repetitions=2000 + n_iter, runs_after_convergence=n_iter)
-            else:
-                muestreador.sample(n_iter)
-            egr_spotpy = BDtexto(temp.name + '.csv')
-
-            cols_prm = [c for c in egr_spotpy.obt_nombres_cols() if c.startswith('par')]
-            trzs = egr_spotpy.obt_datos(cols_prm)
-            probs = egr_spotpy.obt_datos('like1')['like1']
-
-            if os.path.isfile(temp.name + '.csv'):
-                os.remove(temp.name + '.csv')
-
-            if método == 'dream':
-                trzs = trzs[-n_iter:]
-                probs = probs[-n_iter:]
-            elif método != 'mcmc':
-                buenas = (probs >= 0.80)
-                trzs = {p: trzs[p][buenas] for p in cols_prm}
-                probs = probs[buenas]
-
-            rango_prob = (probs.min(), probs.max())
-            pesos = (probs - rango_prob[0]) / (rango_prob[1] - rango_prob[0])
-
-            res = {}
-            for p in paráms:
-                col_p = ('par' + p).replace(' ', '_')
-                res[p] = {'dist': trzs[col_p], 'val': _calc_máx_trz(trzs[col_p]), 'peso': pesos}
-
-            return res
-
-        else:
-            raise ValueError(_('Método de calibración "{}" no reconocido.').format(método))
 
 
 # Unas funciones auxiliares
@@ -694,28 +510,6 @@ def _procesar_calib_bayes(traza, paráms):
 
     # Devolver los resultados procesados.
     return {p: {'val': d_prom[p], 'cmbr': d_máx[p], 'dist': traza[p]} for p in paráms}
-
-
-def _calc_máx_trz(trz):
-    if len(trz) == 1:
-        return trz[0]
-
-    # Ajustar el rango, si es muy grande (necesario para las funciones que siguen)
-    escl = np.max(trz)
-    rango = escl - np.min(trz)
-    if escl < 10e10:
-        escl = 1  # Si no es muy grande, no hay necesidad de ajustar
-
-    # Intentar calcular la densidad máxima.
-    try:
-        # Se me olvidó cómo funciona esta parte.
-        fdp = gaussian_kde(trz / escl)
-        x = np.linspace(trz.min() / escl - 1 * rango, trz.max() / escl + 1 * rango, 1000)
-        máx = x[np.argmax(fdp.evaluate(x))] * escl
-        return máx
-
-    except BaseException:
-        return np.nan
 
 
 def _optimizar(func, líms_paráms, obs_x, obs_y, inic=None, **ops):
@@ -821,70 +615,3 @@ def _optimizar(func, líms_paráms, obs_x, obs_y, inic=None, **ops):
 
     # Devolver los resultados en el formato correcto.
     return {p: {'val': opt.x[i]} for i, p in enumerate(paráms)}
-
-
-_algs_spotpy = {
-    'fast': spotpy.algorithms.fast,
-    'dream': spotpy.algorithms.dream,
-    'mc': spotpy.algorithms.mc,
-    'mcmc': spotpy.algorithms.mcmc,
-    'mle': spotpy.algorithms.mle,
-    'lhs': spotpy.algorithms.lhs,
-    'sa': spotpy.algorithms.sa,
-    'sceua': spotpy.algorithms.sceua,
-    'rope': spotpy.algorithms.rope,
-    'abc': spotpy.algorithms.abc,
-    'fscabc': spotpy.algorithms.fscabc,
-
-}
-
-
-class ModSpotPy(object):
-    def __init__(símismo, mod, líms_paráms, obs):
-        """
-
-        Parameters
-        ----------
-        mod : Modelo.Modelo
-        líms_paráms : dict
-        obs: xr.Dataset
-        """
-
-        símismo.paráms = [
-            spotpy.parameter.Uniform(re.sub('\W|^(?=\d)', '_', p), low=d[0], high=d[1], optguess=(d[0] + d[1]) / 2)
-            for p, d in líms_paráms.items()
-        ]
-        símismo.nombres_paráms = list(líms_paráms)
-        símismo.mod = mod
-        símismo.vars_interés = sorted(list(obs.data_vars))
-        símismo.t_final = len(obs['n']) - 1
-
-        símismo.mu_obs = símismo._aplastar(obs.mean())
-        símismo.sg_obs = símismo._aplastar(obs.std())
-        símismo.obs_norm = símismo._aplastar((obs - obs.mean()) / obs.std())
-
-    def parameters(símismo):
-        return spotpy.parameter.generate(símismo.paráms)
-
-    def simulation(símismo, x):
-        res = símismo.mod.simular(
-            t_final=símismo.t_final, vars_interés=símismo.vars_interés, vals_inic=dict(zip(símismo.nombres_paráms, x))
-        )
-        m_res = np.array([res[v].values for v in símismo.vars_interés]).T
-
-        return ((m_res - símismo.mu_obs) / símismo.sg_obs).T.ravel()
-
-    def evaluation(símismo):
-        return símismo.obs_norm
-
-    def objectivefunction(símismo, simulation, evaluation, params=None):
-        # like = spotpy.likelihoods.gaussianLikelihoodMeasErrorOut(evaluation,simulation)
-        like = spotpy.objectivefunctions.nashsutcliffe(evaluation, simulation)
-
-        return like
-
-    def _aplastar(símismo, datos):
-        if isinstance(datos, xr.Dataset):
-            return np.array([datos[v].values.ravel() for v in símismo.vars_interés]).ravel()
-        elif isinstance(datos, dict):
-            return np.array([datos[v].ravel() for v in sorted(datos)]).ravel()

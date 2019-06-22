@@ -3,30 +3,31 @@ import datetime
 import os
 
 import numpy as np
+import pandas as pd
 import xarray as xr
-from tinamit.config import _
-from tinamit.cositas import detectar_codif, _gen_fecha
 
+from tinamit.config import _
+from tinamit.cositas import detectar_codif
 from எண்ணிக்கை import எண்ணுக்கு as எ
 
 
 class Fuente(object):
 
-    def __init__(símismo, nombre, vars_disp, lugares=None, fechas=None):
+    def __init__(símismo, nombre, variables, lugares=None, fechas=None):
         símismo.nombre = nombre
         símismo.lugares = lugares
-        símismo.vars_disp = vars_disp
+        símismo.variables = variables
 
         símismo._equiv_nombres = {}
 
         try:
-            símismo.fechas = _gen_fecha(fechas)
+            símismo.fechas = pd.to_datetime(fechas)
         except ValueError:
             símismo.fechas = fechas
 
     def obt_vals(símismo, vars_interés, lugares=None, fechas=None):
 
-        coords = {_('lugar'): ('n', símismo.obt_lugar()), _('tiempo'): ('n', símismo.obt_fecha())}
+        coords = símismo._gen_coords()
         if isinstance(vars_interés, str):
             vals = xr.DataArray(
                 símismo._vec_var(símismo._resolver_nombre(vars_interés)),
@@ -38,25 +39,22 @@ class Fuente(object):
                 coords=coords
             )
 
-        if lugares is not None:
-            vals = vals[vals[_('lugar')] in lugares]
-        if fechas is not None:
-            vals = vals[vals[_('tiempo')] in fechas]
-
-        return vals[np.logical_and(
-            símismo._filtrar_fechas(vals[_('tiempo')], fechas),
-            símismo._filtrar_lugares(vals['lugar'], lugares)
-        )]
+        return símismo._filtrar_lugares(símismo._filtrar_fechas(vals, fechas), lugares)
 
     def obt_lugar(símismo):
         if isinstance(símismo.lugares, str):
-            return símismo._vec_var(símismo.lugares, tx=True)
+            try:
+                return símismo._vec_var(símismo.lugares, tx=True)
+            except KeyError:
+                pass
         return símismo.lugares
 
     def obt_fecha(símismo):
         if isinstance(símismo.fechas, str):
-            return símismo._vec_var(símismo.fechas, tx=True).astype('datetime64')
-        return símismo.fechas
+            fechas = símismo._vec_var(símismo.fechas, tx=True)
+        else:
+            fechas = símismo.fechas
+        return pd.to_datetime(fechas, infer_datetime_format=True)
 
     def equiv_nombre(símismo, var, equiv):
         símismo._equiv_nombres[equiv] = var
@@ -67,26 +65,43 @@ class Fuente(object):
         except KeyError:
             return var
 
+    def _gen_coords(símismo):
+        coords = {}
+        lugar = símismo.obt_lugar()
+        fecha = símismo.obt_fecha()
+        if isinstance(lugar, (np.ndarray, pd.Series)):
+            coords[_('lugar')] = ('n', lugar)
+        else:
+            coords[_('lugar')] = lugar
+        if isinstance(fecha, (np.ndarray, pd.Series, pd.DatetimeIndex)):
+            coords[_('tiempo')] = ('n', fecha)
+        else:
+            coords[_('tiempo')] = fecha
+
+        return coords
+
     def _vec_var(símismo, var, tx=False):
         raise NotImplementedError
 
     @staticmethod
-    def _filtrar_lugares(lugares, criteria):
+    def _filtrar_lugares(vals, criteria):
         if criteria is None:
-            return lugares
-
+            return vals
         criteria = [criteria] if isinstance(criteria, str) else criteria
-        return np.isin(lugares, criteria)
+        return vals.where(vals[_('lugar')].isin(criteria), drop=True)
 
     @staticmethod
-    def _filtrar_fechas(fechas, criteria):
+    def _filtrar_fechas(vals, criteria):
         if criteria is None:
-            return fechas
-        elif isinstance(criteria, tuple) and len(criteria) == 2:
-            return np.logical_and(np.less_equal(fechas, criteria[1]), np.greater_equal(fechas, criteria[0]))
-
-        criteria = [criteria] if isinstance(criteria, datetime.datetime) else criteria
-        return np.isin(fechas, criteria)
+            return vals
+        criteria = pd.to_datetime(criteria)
+        fechas = vals[_('tiempo')]
+        if isinstance(criteria, tuple) and len(criteria) == 2:
+            cond = np.logical_and(np.less_equal(fechas, criteria[1]), np.greater_equal(fechas, criteria[0]))
+        else:
+            criteria = [criteria] if isinstance(criteria, pd.Timestamp) else criteria
+            cond = fechas.isin(criteria)
+        return vals.where(cond, drop=True)
 
     def __str__(símismo):
         return símismo.nombre
@@ -101,7 +116,7 @@ class FuenteCSV(Fuente):
         cód_vacío = cód_vacío or ['na', 'NA', 'NaN', 'nan', 'NAN', '']
         símismo.cód_vacío = [cód_vacío] if isinstance(cód_vacío, (int, float, str)) else cód_vacío
 
-        super().__init__(nombre, vars_disp=símismo.obt_vars(), lugares=lugares, fechas=fechas)
+        super().__init__(nombre, variables=símismo.obt_vars(), lugares=lugares, fechas=fechas)
 
     def obt_vars(símismo):
         with open(símismo.archivo, encoding=símismo.codif) as d:
@@ -118,7 +133,7 @@ class FuenteCSV(Fuente):
 
             for n_f, f in enumerate(lector):
                 if tx:
-                    val = f[var]
+                    val = f[var].strip()
 
                 else:
                     val = எ(f[var].strip()) if f[var].strip() not in símismo.cód_vacío else np.nan
@@ -132,7 +147,7 @@ class FuenteDic(Fuente):
 
     def __init__(símismo, dic, nombre, lugares=None, fechas=None):
         símismo.dic = dic
-        super().__init__(nombre, vars_disp=list(símismo.dic), lugares=lugares, fechas=fechas)
+        super().__init__(nombre, variables=list(símismo.dic), lugares=lugares, fechas=fechas)
 
     def _vec_var(símismo, var, tx=False):
         return np.array(símismo.dic[var])
@@ -140,9 +155,9 @@ class FuenteDic(Fuente):
 
 class FuenteVarXarray(Fuente):
 
-    def __init__(símismo, nombre, obj, lugares=None, fechas=None):
+    def __init__(símismo, obj, nombre, lugares=None, fechas=None):
         símismo.obj = obj
-        super().__init__(nombre, vars_disp=[símismo.obj.name], lugares=lugares, fechas=fechas)
+        super().__init__(nombre, variables=[símismo.obj.name], lugares=lugares, fechas=fechas)
 
     def _vec_var(símismo, var, tx=False):
         return símismo.obj
@@ -150,18 +165,18 @@ class FuenteVarXarray(Fuente):
 
 class FuenteBaseXarray(Fuente):
 
-    def __init__(símismo, nombre, obj, lugares=None, fechas=None):
-        super().__init__(nombre, vars_disp=list(símismo.obj.data_vars), lugares=lugares, fechas=fechas)
+    def __init__(símismo, obj, nombre, lugares=None, fechas=None):
         símismo.obj = obj
+        super().__init__(nombre, variables=list(símismo.obj.data_vars), lugares=lugares, fechas=fechas)
 
     def _vec_var(símismo, var, tx=False):
         return símismo.obj[var]
 
 
 class FuentePandas(Fuente):
-    def __init__(símismo, nombre, obj, lugares=None, fechas=None):
-        super().__init__(nombre, vars_disp=list(símismo.obj), lugares=lugares, fechas=fechas)
+    def __init__(símismo, obj, nombre, lugares=None, fechas=None):
         símismo.obj = obj
+        super().__init__(nombre, variables=list(símismo.obj), lugares=lugares, fechas=fechas)
 
     def _vec_var(símismo, var, tx=False):
         return símismo.obj[var]

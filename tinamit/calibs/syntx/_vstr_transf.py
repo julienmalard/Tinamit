@@ -4,13 +4,15 @@ from ._funcs import conv_fun
 
 
 class VstrAPyMC3(object):
-    def __init__(símismo, d_vars_pm, obs_x, nv_jerarquía):
+    def __init__(símismo, d_vars_pm, obs_x, nv_jerarquía, dialecto='tinamït'):
         símismo.d_vars_pm = d_vars_pm
         símismo.nv_jerarquía = nv_jerarquía
         símismo.obs_x = obs_x
 
+        símismo.dialecto = dialecto
+
     def func(símismo, x):
-        fun = conv_fun(x.children[0], 'tinamït', 'pm')  # Traducir la función a PyMC3
+        fun = conv_fun(x.children[0], símismo.dialecto, 'pm')  # Traducir la función a PyMC3
         args = [símismo.convertir(a) for a in
                 x.children[1].children]  # Recursar a través de los argumentos de la función
 

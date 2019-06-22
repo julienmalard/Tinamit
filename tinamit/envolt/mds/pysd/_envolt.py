@@ -1,9 +1,8 @@
 from ast import literal_eval
 
 import numpy as np
-import xarray as xr
+from tinamit.calibs.ec import Ecuación
 
-from tinamit.Análisis.sintaxis import Ecuación
 from ._funcs import gen_mod_pysd, obt_paso_mod_pysd
 from ._vars import VarPySDAuxiliar, VarPySDNivel, VarPySDConstante, VariablesPySD
 from .._envolt import ModeloMDS

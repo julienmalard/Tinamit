@@ -13,7 +13,7 @@ from pkg_resources import resource_filename
 
 
 class Gramática(object):
-    _arch = resource_filename('tinamit.Análisis', 'grams/gram_ecs.g')
+    _arch = resource_filename('tinamit.calibs.syntx', 'gram_ecs.g')
 
     def __init__(símismo):
         with open(símismo._arch, encoding='UTF-8') as d:
@@ -28,7 +28,7 @@ class Ecuación(object):
     Un objeto para manejar ecuaciones dinámicas.
     """
 
-    def __init__(símismo, ec, nombre=None, otras_ecs=None, nombres_equiv=None):
+    def __init__(símismo, ec, nombre=None, otras_ecs=None, nombres_equiv=None, dialecto='tinamït'):
         """
         Inicializa un objeto de ecuación.
 
@@ -54,12 +54,17 @@ class Ecuación(object):
         # Si es una ecuación de variable o de subscripto
         símismo.tipo = 'var'
 
+        símismo.dialecto = dialecto
+
         # Analizar la ecuación
         árbol = anlzdr.gram.parse(ec)
 
         # Aplicar subsituciones de ecuaciones de variables
-        subst = {v_otr: Ecuación(ec_otr, otras_ecs={v: otr for v, otr in otras_ecs.items() if v != v_otr}).árbol for
-                 v_otr, ec_otr in otras_ecs.items()}
+        subst = {
+            v_otr: Ecuación(
+                ec_otr, otras_ecs={v: otr for v, otr in otras_ecs.items() if v != v_otr}, dialecto=dialecto
+            ).árbol for v_otr, ec_otr in otras_ecs.items()
+        }
         TrnsfSubstNmbrs(subst).transform(árbol)
 
         # Aplicar substituciones de nombres
@@ -237,7 +242,7 @@ class Ecuación(object):
                 d_vars_pm = _gen_d_vars_pm_jer()
 
             mu = VstrAPyMC3(
-                d_vars_pm=d_vars_pm, obs_x=obs_x, nv_jerarquía=nv_jerarquía,
+                d_vars_pm=d_vars_pm, obs_x=obs_x, nv_jerarquía=nv_jerarquía, dialecto=símismo.dialecto
             ).convertir(símismo.árbol)
 
             if binario:
@@ -272,7 +277,7 @@ class Ecuación(object):
         """
 
         # Aplicar la función recursiva.
-        return VstrExtrArgs(f=func, i=i, dial=símismo.dialecto)(símismo.árbol)
+        return VstrExtrArgs(f=func, i=i, dial='tinamït')(símismo.árbol)
 
     def __str__(símismo):
         return VstrATx('tinamït').convertir(símismo.árbol)

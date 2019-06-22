@@ -6,7 +6,6 @@ from warnings import warn as avisar
 import numpy as np
 import pandas as pd
 
-from tinamit.Análisis.Datos import jsonificar
 from tinamit.config import _, conf_mods
 from tinamit.cositas import guardar_json, cargar_json
 from .corrida import Corrida, Rebanada
@@ -15,7 +14,34 @@ from .res import ResultadosGrupo
 from .tiempo import EspecTiempo
 from .vars_mod import VariablesMod
 
+def jsonificar(o):
+    if isinstance(o, dict):
+        for ll, v in o.items():
+            if isinstance(v, (dict, list)):
+                jsonificar(v)
+            elif isinstance(v, (ft.date, ft.datetime)):
+                o[ll] = str(v)
+            elif isinstance(v, np.ndarray):
+                o[ll] = v.tolist()
+    elif isinstance(o, list):
+        for i, v in enumerate(o):
+            if isinstance(v, (dict, list)):
+                jsonificar(v)
+            elif isinstance(v, (ft.date, ft.datetime)):
+                o[i] = str(v)
+            elif isinstance(v, np.ndarray):
+                o[i] = v.tolist()
 
+
+def numpyficar(d):
+    for ll, v in d.items():
+        if isinstance(v, dict):
+            numpyficar(v)
+        elif isinstance(v, list):
+            try:
+                d[ll] = np.array(v, dtype=float)
+            except ValueError:
+                pass
 class Modelo(object):
     """
     Todas las cosas en Tinamit son instancias de `Modelo`, que sea un modelo de dinámicas de los sistemas, un modelo de
