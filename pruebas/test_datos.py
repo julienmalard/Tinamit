@@ -6,6 +6,7 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import xarray as xr
+import xarray.testing as xrt
 
 import tinamit.datos.fuente as fnt
 from tinamit.config import _
@@ -21,11 +22,11 @@ class TestGeneraFuentes(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         dic_datos = {
-            'lugar': [708, 708, 7, 7, 7, 701],
-            'fecha': ['2000', '2002', '2000', '2002', '2003', '1990'],
-            'var_completo': [1, 2, 2, 3, 4, 0],
-            'var_incompleto': [np.nan, 10, 20, np.nan, 30, 15],
-            'temp': [1, 1, 1, 1, 1, 1]
+            'lugar': [708, 708, 7],
+            'fecha': ['2000', '2002', '2000'],
+            'var_completo': [1, 2, 2],
+            'var_incompleto': [np.nan, 10, 20],
+            'temp': [1, 1, 1]
         }
 
         cls.bds = {
@@ -47,13 +48,13 @@ class TestGeneraFuentes(unittest.TestCase):
         for nmb, bd in símismo.bds.items():
             with símismo.subTest(bd=nmb):
                 datos = bd.obt_vals(['var_completo'])
-                npt.assert_array_equal(datos['var_completo'], [1, 2, 2, 3, 4, 0])
+                npt.assert_array_equal(datos['var_completo'], [1, 2, 2])
 
     def test_obt_datos_faltan(símismo):
         for nmb, bd in símismo.bds.items():
             with símismo.subTest(bd=nmb):
                 datos = bd.obt_vals(['var_incompleto'])
-                npt.assert_array_equal(datos['var_incompleto'], [np.nan, 10, 20, np.nan, 30, 15])
+                npt.assert_array_equal(datos['var_incompleto'], [np.nan, 10, 20])
 
 
 class TestFuentes(unittest.TestCase):
@@ -101,10 +102,16 @@ class TestBD(unittest.TestCase):
         fnt2 = fnt.FuenteCSV(arch_datos2, nombre='prueba 1', fechas='fecha', lugares='lugar')
         cls.bd = BD(fuentes=[fnt1, fnt2])
 
-    def test_obt_datos(símismo):
+    def test_obt_datos_1_var(símismo):
         res = símismo.bd.obt_vals('var_completo')
         símismo.assertSetEqual(_a_conj(res, 'lugar'), {'701', '708', '7'})
+        símismo.assertEqual(res.name, 'var_completo')
+
+    def test_obt_datos_multi_vars(símismo):
+        res = símismo.bd.obt_vals(['var_completo', 'var_incompleto'])
+        símismo.assertSetEqual(_a_conj(res, 'lugar'), {'701', '708', '7'})
         símismo.assertIn('var_completo', res)
+        símismo.assertIn('var_incompleto', res)
 
     def test_obt_datos_de_lugar(símismo):
         res = símismo.bd.obt_vals('var_completo', lugares='708')
@@ -122,26 +129,30 @@ class TestBD(unittest.TestCase):
         res = símismo.bd.obt_vals('var_completo', fechas=('2000', '2002-6-1'))
         símismo.assertTrue(fechas_en_rango(res[_('tiempo')], ('2000-1-1', '2002-6-1')))
 
-    def test_obt_datos_reg_con_interpol_no_necesario(símismo):
-        res = símismo.bd.obt_vals('var_completo', fechas=('2000', '2002-6-1'))
-        símismo.assertTrue(res['var_completo'].values.shape[0] > 0)
-        símismo.assertTrue(fechas_en_rango(res[_('tiempo')], ('2000-1-1', '2002-6-1')))
+    def test_interpol_no_necesaria(símismo):
+        res = símismo.bd.interpolar('var_completo', fechas=('2000', '2002-1-1'), lugares='708')
 
-    def test_obt_datos_reg_fecha_única_con_interpol(símismo):
-        res = símismo.bd.obt_vals(['var_incompleto', 'var_completo'], fechas='2001')
+        ref = símismo.bd.obt_vals('var_completo', lugares='708')
+        xrt.assert_equal(
+            res.where(res['tiempo'].isin(pd.to_datetime(('2000', '2002-1-1'))), drop=True),
+            ref.where(ref['tiempo'].isin(pd.to_datetime(('2000', '2002-1-1'))), drop=True)
+        )
+
+    def test_interpol_con_fecha_única(símismo):
+        res = símismo.bd.interpolar(['var_incompleto', 'var_completo'], fechas='2001')
 
         # Verificar interpolaciones
-        vals = res.where(np.logical_and(res[_('lugares')] == '7', res[_('tiempo')] == np.datetime64('2001-01-01')),
-                         drop=True)
+        vals = res.where(
+            np.logical_and(res[_('lugar')] == '7', res[_('tiempo')] == np.datetime64('2001-01-01')),
+            drop=True
+        )
         npt.assert_allclose(vals['var_completo'].values, 2.500684)
         npt.assert_allclose(vals['var_incompleto'].values, 23.3394, rtol=0.001)
 
-    def test_obt_datos_reg_fecha_rango_con_interpol(símismo):
+    def test_interpol_con_fecha_rango(símismo):
         l_vars = ['var_incompleto', 'var_completo']
-        res = símismo.bd.obt_vals(l_vars, fechas=('2000', '2002-6-1'))
-        for v in l_vars:
-            símismo.assertTrue(res[v].values.shape[0] > 0)
-            símismo.assertTrue(fechas_en_rango(res[_('tiempo')], ('2000-1-1', '2002-6-1')))
+        res = símismo.bd.interpolar(l_vars, fechas=('2000', '2002-6-1')).dropna('n', how='any')
+        npt.assert_allclose(res['var_incompleto'].values, [15., 20., 26.67, 10., 28.05, 30.], rtol=0.01)
 
 
 def _a_conj(bd, var):

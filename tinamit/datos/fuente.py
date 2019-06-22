@@ -16,7 +16,7 @@ class Fuente(object):
     def __init__(símismo, nombre, variables, lugares=None, fechas=None):
         símismo.nombre = nombre
         símismo.lugares = lugares
-        símismo.variables = variables
+        símismo.variables = [vr for vr in variables if vr not in [lugares, fechas]]
 
         símismo._equiv_nombres = {}
 
@@ -26,6 +26,7 @@ class Fuente(object):
             símismo.fechas = fechas
 
     def obt_vals(símismo, vars_interés, lugares=None, fechas=None):
+        vars_interés = vars_interés or símismo.variables
 
         coords = símismo._gen_coords()
         if isinstance(vars_interés, str):
