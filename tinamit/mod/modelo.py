@@ -337,28 +337,6 @@ class Modelo(object):
             # Aplicar el cambio
             símismo.cambiar_vals(valores={var: datos[var_clima] * conv})
 
-    def especificar_micro_calib(símismo, var, método=None, paráms=None, líms_paráms=None, tipo=None,
-                                escala=None, ops_método=None, ec=None, binario=False):
-
-        # Verificar el variable
-        var = símismo.valid_var(var)
-
-        if ec is None and 'ec' not in símismo.variables[var]:
-            raise ValueError(_('El variable "{}" no tiene ecuación asociada.').format(var))
-
-        # Especificar la micro calibración.
-        símismo.info_calibs['micro calibs'][var] = {
-            'escala': escala,
-            'método': método,
-            'ops_método': ops_método,
-            'paráms': paráms,
-            'líms_paráms': líms_paráms,
-            'binario': binario,
-            'tipo': tipo,
-            'ec': ec
-
-        }
-
     def verificar_micro_calib(símismo, var, bd, en=None, escala=None, geog=None, corresp_vars=None):
         """
         Comprueba una microcalibración a pequeña (o grande) escala. Útil para comprobar calibraciones sin perder
@@ -388,70 +366,6 @@ class Modelo(object):
 
         # Efectuar la calibración del variable.
         return símismo._calibrar_var(var=var, bd=bd, en=en, escala=escala, geog=geog, corresp_vars=corresp_vars)
-
-    def efectuar_micro_calibs(
-            símismo, bd, en=None, escala=None, jrq=None, geog=None, corresp_vars=None, autoguardar=False, recalc=True,
-            guardar_en=None
-    ):
-        """
-
-        Parameters
-        ----------
-        en : str
-            Dónde hay que calibrar. Por ejemplo, calibrar en el departamento de Tz'olöj Ya'. Si no se especifica,
-            se tomará la región geográfica en su totalidad. Solamente aplica si la base de datos vinculada tiene
-            geografía asociada.
-
-        escala : str
-            La escala a la cual calibrar. Por ejemplo, calibrar al nivel municipal en el departamento de Tz'olöj Ya'.
-            Si no se especifica, se tomará la escala correspondiendo a `en`. Solamente aplica si la base de datos
-            vinculada tiene geografía asociada.
-
-        geog: Geografía
-            Una geografía para calibraciones espaciales.
-
-        corresp_vars : dict
-            Un diccionario de correspondencia entre nombres de variables en el modelo y los nombres de los variables
-            correspondiente en la base de datos.
-
-        autoguardar : bool
-            Si hay que guardar los resultados automáticamente entre cada variable calibrado. Útil para calibraciones
-            que toman mucho tiempo.
-
-        recalc : bool
-            Si hay que recalcular calibraciones que ya se habían calculado.
-
-        Returns
-        -------
-        dict
-            La calibración.
-        """
-
-        # Borramos calibraciones existentes
-        if recalc:
-            símismo.calibs.clear()
-
-        # Para cada microcalibración...
-        for var, d_c in símismo.info_calibs['micro calibs'].items():
-
-            no_recalc = {v: [lg for lg in d_v] for v, d_v in símismo.calibs.items()} if not recalc else None
-
-            # Efectuar la calibración
-            calib = símismo._calibrar_var(
-                var=var, bd=bd, en=en, escala=escala, jrq=jrq, geog=geog, hermanos=True, corresp_vars=corresp_vars,
-                no_recalc=no_recalc
-            )
-            if calib is None:
-                continue
-
-            # Guardar las calibraciones para este variable y todos los otros variables que potencialmente
-            # fueron calibrados al mismo tiempo.
-            for v in calib:
-                símismo.calibs[v] = calib[v]
-
-            # Autoguardar, si querremos.
-            if autoguardar:
-                símismo.guardar_calibs(guardar_en)
 
     def _calibrar_var(símismo, var, bd, en=None, escala=None, jrq=None, geog=None, hermanos=False, corresp_vars=None,
                       no_recalc=None):

@@ -210,9 +210,9 @@ class TestSimulExpres(unittest.TestCase):
         for nmb, mod in generar_modelos_prueba().items():
             with símismo.subTest(mod=nmb):
                 extern = pd.DataFrame({'Lluvia': np.arange(10)}, index=np.arange(10))
-                res_exprés = mod.simular(100, vals_extern=extern)
+                res_exprés = mod.simular(12, vals_extern=extern)
                 mod._correr_hasta_final = lambda: None
-                res_por_paso = mod.simular(100, vals_extern=extern)
+                res_por_paso = mod.simular(12, vals_extern=extern)
 
                 for res_var_exp, res_var_paso in zip(res_exprés, res_por_paso):
                     xrt.assert_equal(res_var_exp.vals, res_var_paso.vals)

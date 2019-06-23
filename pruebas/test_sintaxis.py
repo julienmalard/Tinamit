@@ -1,13 +1,10 @@
 import math
 import unittest
 
-import numpy as np
-import xarray as xr
-
-from tinamit.calibs.ec import Ecuación
+from tinamit.calibs.sintx.ec import Ecuación
 
 
-class Test_AnalizarEc(unittest.TestCase):
+class TestAnalizarEc(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.ecs = {

@@ -77,5 +77,4 @@ class TestCalibModeloEspacial(unittest.TestCase):
         )
 
         for lg in símismo.paráms:
-            print(valid[lg]['Individuos Suceptibles']['ens'])
             símismo.assertTrue(valid[lg]['Individuos Suceptibles']['ens'], 0.95)

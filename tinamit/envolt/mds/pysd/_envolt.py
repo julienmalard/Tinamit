@@ -2,7 +2,7 @@ from ast import literal_eval
 
 import numpy as np
 
-from tinamit.calibs.ec import Ecuación
+from tinamit.calibs.sintx.ec import Ecuación
 from ._funcs import gen_mod_pysd, obt_paso_mod_pysd
 from ._vars import VarPySDAuxiliar, VarPySDNivel, VarPySDConstante, VariablesPySD
 from .._envolt import ModeloMDS

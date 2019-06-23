@@ -13,7 +13,7 @@ from pkg_resources import resource_filename
 
 
 class Gramática(object):
-    _arch = resource_filename('tinamit.calibs.syntx', 'gram_ecs.g')
+    _arch = resource_filename('tinamit.calibs.sintx', 'gram_ecs.g')
 
     def __init__(símismo):
         with open(símismo._arch, encoding='UTF-8') as d:

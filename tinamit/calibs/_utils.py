@@ -41,6 +41,7 @@ algs_spotpy = {
     'fscabc': spotpy.algorithms.fscabc,
     'bdd': spotpy.algorithms.dds
 }
+
 eval_funcs = {
     'ens': spt_f.nashsutcliffe,
     'rcep': lambda o, s: -spt_f.rmse(o, s),
