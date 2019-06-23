@@ -1,8 +1,8 @@
 from ast import literal_eval
 
 import numpy as np
-from tinamit.calibs.ec import Ecuación
 
+from tinamit.calibs.ec import Ecuación
 from ._funcs import gen_mod_pysd, obt_paso_mod_pysd
 from ._vars import VarPySDAuxiliar, VarPySDNivel, VarPySDConstante, VariablesPySD
 from .._envolt import ModeloMDS
@@ -57,9 +57,12 @@ class ModeloPySD(ModeloMDS):
             vr: vl.squeeze().to_pandas()
             for vr, vl in símismo.corrida.extern.obt_vals(t.eje(), var=símismo.variables).items()
         }
+        t_inic_mod = símismo.mod.time._t
         res_pysd = símismo.mod.run(
             params=paráms,
-            return_timestamps=np.arange(0, t.n_pasos * t.tmñ_paso + 1, t.guardar_cada * t.tmñ_paso)
+            return_timestamps=np.arange(
+                t_inic_mod, t_inic_mod + t.n_pasos * t.tmñ_paso + 1, t.guardar_cada * t.tmñ_paso
+            )
         )
         return {vr: res_pysd[str(vr)].values for vr in símismo.corrida.resultados.variables()}
 

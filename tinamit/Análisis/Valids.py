@@ -56,14 +56,6 @@ def _valid(obs, sim, comport=True):
     return egr
 
 
-def _rcem(obs, sim):
-    return np.sqrt(np.mean(np.square(obs - sim)))
-
-
-def _ens(obs, sim):
-    return 1 - np.sum(np.square(obs - sim)) / np.sum(np.square(obs - np.mean(obs)))
-
-
 def _anlz_ic(obs, sim):
     n_sims = sim.shape[0]
     prcnts_act = np.array([np.mean(np.less(obs, np.percentile(sim, i / n_sims * 100))) for i in range(n_sims)])

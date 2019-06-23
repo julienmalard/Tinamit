@@ -100,6 +100,9 @@ class ResultadosVar(object):
     def poner_vals_t(símismo, vals):
         símismo.vals[:] = vals.reshape(símismo.vals.shape)
 
+    def a_dic(símismo):
+        return símismo.vals.values
+
     def __str__(símismo):
         return str(símismo.var)
 

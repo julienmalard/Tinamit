@@ -4,8 +4,7 @@ import numpy as np
 import pandas as pd
 import scipy.stats as estad
 from scipy.optimize import minimize
-from tinamit.Análisis.Datos import gen_SuperBD, SuperBD
-from tinamit.Análisis.sintaxis import Ecuación
+
 from tinamit.config import _
 
 try:
@@ -418,7 +417,6 @@ class CalibradorEc(object):
         dict:
             Los parámetros calibrados.
         """
-
 
 
 # Unas funciones auxiliares

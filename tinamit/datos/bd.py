@@ -5,13 +5,14 @@ import pandas as pd
 import xarray as xr
 
 from tinamit.config import _
-from .fuente import Fuente, FuentePandas, FuenteDic, FuenteVarXarray, FuenteBaseXarray, FuenteCSV
+from .fuente import FuentePandas, FuenteDic, FuenteVarXarray, FuenteBaseXarray, FuenteCSV
 
 
 class BD(object):
     def __init__(símismo, fuentes):
-        símismo.fuentes = [fuentes] if isinstance(fuentes, Fuente) else fuentes
-        símismo.variables = list(set((v for f in símismo.fuentes for v in f.obt_vars())))
+        fuentes = [fuentes] if not isinstance(fuentes, (list, tuple)) else fuentes
+        símismo.fuentes = [_gen_fuente(f) for f in fuentes]
+        símismo.variables = list(set((v for f in símismo.fuentes for v in f.variables)))
 
     def obt_vals(símismo, vars_interés=None, lugares=None, fechas=None):
         """
@@ -85,16 +86,16 @@ class BD(object):
 
 def _gen_fuente(fnt, nombre=None, lugares=None, fechas=None):
     if isinstance(fnt, pd.DataFrame):
-        return FuentePandas(nombre or 'pandas', fnt, lugares=lugares, fechas=fechas)
+        return FuentePandas(fnt, nombre or 'pandas', lugares=lugares, fechas=fechas)
 
     elif isinstance(fnt, dict):
-        return FuenteDic(nombre or 'dic', fnt, lugares=lugares, fechas=fechas)
+        return FuenteDic(fnt, nombre or 'dic', lugares=lugares, fechas=fechas)
 
     elif isinstance(fnt, xr.Dataset):
-        return FuenteBaseXarray(nombre or 'xarray', fnt, lugares=lugares, fechas=fechas)
+        return FuenteBaseXarray(fnt, nombre or 'xarray', lugares=lugares, fechas=fechas)
 
     elif isinstance(fnt, xr.DataArray):
-        return FuenteVarXarray(nombre or 'xarray', fnt, lugares=lugares, fechas=fechas)
+        return FuenteVarXarray(fnt, nombre or 'xarray', lugares=lugares, fechas=fechas)
 
     elif isinstance(fnt, str):
         ext = os.path.splitext(fnt)[1]
@@ -103,3 +104,5 @@ def _gen_fuente(fnt, nombre=None, lugares=None, fechas=None):
             return FuenteCSV(fnt, lugares=lugares, fechas=fechas)
         else:
             raise ValueError(_('Formato de base de datos "{}" no reconocido.').format(ext))
+
+    return fnt
