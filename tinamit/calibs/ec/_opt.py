@@ -53,17 +53,20 @@ class CalibradorEcOpt(CalibradorEc):
             sub_lugs.remove(lug)
 
             # Intentar sacar información del nivel superior en la jerarquía
-            pariente = lugar.pariente(lug, ord_niveles=ord_niveles)  # El nivel inmediatamente superior
 
-            # Ahora, calibrar.
             if obs_lg.sizes['n']:
-                # Si tenemos observaciones, calibrar con esto.
 
-                if pariente is None:
-                    inic = None
-                else:
-                    # Tomar la calibración superior como punto inicial para facilitar la búsqueda
-                    inic = [clbs[pariente.cód][p]['cumbre'] for p in símismo.paráms]
+                def _buscar_inic_pariente(hj):
+                    pariente = lugar.pariente(hj, ord_niveles=ord_niveles)  # El nivel inmediatamente superior
+                    if pariente is None:
+                        return
+                    elif pariente.cód in clbs:
+                        # Tomar la calibración superior como punto inicial para facilitar la búsqueda
+                        return [clbs[pariente.cód][p]['cumbre'] for p in símismo.paráms]
+                    else:
+                        return _buscar_inic_pariente(pariente)
+
+                inic = _buscar_inic_pariente(lug)
 
                 resultados[lug.cód] = _optimizar(
                     símismo.f_python, líms_paráms=líms_paráms,

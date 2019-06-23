@@ -37,13 +37,6 @@ class CalibradorEcBayes(CalibradorEc):
 
             return _calibrar_mod_bayes(mod_bayes, paráms=list(símismo.paráms), ops=ops)
 
-        sub_lugares = {lg: lugar[lg].lugares() for lg in lugares}
-        lugs_obs = obs['lugar'].values
-        for lg, subs in sub_lugares.items():
-            lugs_obs[np.isin(lugs_obs, subs)] = lg
-        obs['lugar'] = ('n', lugs_obs)
-        obs = obs.where(obs['lugar'].isin(lugares), drop=True)
-
         # Si hay distribución geográfica, es un poco más complicado.
         if jerárquico:
             # Si estamos implementando un modelo jerárquico...
@@ -109,9 +102,9 @@ class CalibradorEcBayes(CalibradorEc):
             í_nv_jerarquía.insert(0, np.array([nv_jerarquía[-1].index(x) for x in obs['lugar'].values.tolist()]))
 
             # Generar el modelo bayes
-            mod_bayes_jrq = ec.gen_mod_bayes(
+            mod_bayes_jrq = símismo.ec.gen_mod_bayes(
                 líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
-                aprioris=None, binario=binario, nv_jerarquía=í_nv_jerarquía[::-1],
+                aprioris=None, binario=False, nv_jerarquía=í_nv_jerarquía[::-1],
             )
             var_res_lugares = {}
             for lg in lugares:
@@ -135,7 +128,7 @@ class CalibradorEcBayes(CalibradorEc):
 
             # Calibrar
             res_calib = _calibrar_mod_bayes(
-                mod_bayes_jrq, paráms=paráms + prms_extras, ops=ops_método
+                mod_bayes_jrq, paráms=símismo.paráms + prms_extras, ops=ops
             )
 
             # Formatear los resultados
@@ -157,22 +150,22 @@ class CalibradorEcBayes(CalibradorEc):
 
             # Efectuar las calibraciones para todos los lugares.
             resultados = {}
-            for lg in lugares:
-                lgs_potenciales = lugar.lugares(en=lg)
-                obs_lg = obs.where(obs['lugar'].isin(lgs_potenciales + [lg]), drop=True)
+            sub_lugs = list(lugar.lugares())
+            sub_lugs.remove(lugar)
+
+            for lg in sub_lugs:
+                obs_lg = obs.where(obs['lugar'].isin([x.cód for x in lg.lugares()]), drop=True)
 
                 if len(obs_lg['n']):
                     mod_bayes = símismo.ec.gen_mod_bayes(
                         líms_paráms=líms_paráms, obs_x=obs_lg[vars_x], obs_y=obs_lg[var_y],
                         binario=False, aprioris=None, nv_jerarquía=None
                     )
-                    resultados[lg] = _calibrar_mod_bayes(
+                    resultados[lg.cód] = _calibrar_mod_bayes(
                         mod_bayes=mod_bayes, paráms=símismo.paráms, obs=obs_lg, ops=ops
                     )
-                else:
-                    resultados[lg] = None
 
-        return {ll: v for ll, v in resultados.items() if ll in lugares}
+        return resultados
 
 
 # Unas funciones auxiliares
