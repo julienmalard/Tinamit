@@ -12,7 +12,9 @@ except ImportError:  # pragma: sin cobertura
 
 class CalibradorEcBayes(CalibradorEc):
 
-    def calibrar(símismo, bd, lugar=None, líms_paráms=None, ops=None, corresp_vars=None, jerárquico=True):
+    def calibrar(
+            símismo, bd, lugar=None, líms_paráms=None, ops=None, corresp_vars=None, ord_niveles=None, jerárquico=True
+    ):
 
         # Si no tenemos PyMC3, no podemos hacer inferencia bayesiana.
         if pm is None:
@@ -35,7 +37,7 @@ class CalibradorEcBayes(CalibradorEc):
 
             return _calibrar_mod_bayes(mod_bayes, paráms=list(símismo.paráms), ops=ops)
 
-        sub_lugares = {lg: geog.obt_todos_lugares_en(lg) for lg in lugares}
+        sub_lugares = {lg: lugar[lg].lugares() for lg in lugares}
         lugs_obs = obs['lugar'].values
         for lg, subs in sub_lugares.items():
             lugs_obs[np.isin(lugs_obs, subs)] = lg

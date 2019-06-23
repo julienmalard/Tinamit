@@ -36,5 +36,5 @@ class CalibradorEc(object):
         vars_bd = [v if v not in corresp_vars else corresp_vars[v] for v in vars_interés]
         return bd.obt_vals(vars_bd).dropna('n').rename(corresp_vars)
 
-    def calibrar(símismo, bd, lugar=None, líms_paráms=None, ops=None, corresp_vars=None):
+    def calibrar(símismo, bd, lugar=None, líms_paráms=None, ops=None, corresp_vars=None, ord_niveles=None):
         raise NotImplementedError

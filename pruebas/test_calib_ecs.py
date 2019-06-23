@@ -67,21 +67,21 @@ class TestCalibGeog(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.paráms = prms = {
-            'Factor a': {'701': 3.4, '708': 3, '1001': 10},
-            'Factor b': {'701': -1.5, '708': -1.1, '1001': -3}
+            'a': {'701': 3.4, '708': 3, '1001': 10},
+            'b': {'701': -1.5, '708': -1.1, '1001': -3}
         }  # Nota: ¡a en (0, +inf) y b en (-inf, +inf) según los límites en el modelo externo!
-        ec = 'y = a*x + b'
+        cls.ec = 'y = a*x + b'
         n_obs = {'701': 500, '708': 50, '1001': 500}
         datos_x = {lg: np.random.rand(n) for lg, n in n_obs.items()}
         datos_y = {
-            lg: datos_x[lg] * prms['Factor a'][lg] + prms['Factor b'][lg] + np.random.normal(0, 0.1, n_obs[lg])
+            lg: datos_x[lg] * prms['a'][lg] + prms['b'][lg] + np.random.normal(0, 0.1, n_obs[lg])
             for lg in n_obs
         }  # y = a*x + b
         lugares = [x for ll, v in datos_x.items() for x in [ll] * v.size]
         x = [i for v in datos_x.values() for i in v]
         y = [i for v in datos_y.values() for i in v]
 
-        cls.clbrds = {ll: v(ec=ec, paráms=['a', 'b']) for ll, v in calibradores.items()}
+        cls.clbrds = {ll: v(ec=cls.ec, paráms=['a', 'b']) for ll, v in calibradores.items()}
 
         cls.bd = BD(FuenteDic({'lugar': lugares, 'x': x, 'y': y}, 'Datos geográficos', lugares='lugar'))
 
@@ -92,20 +92,18 @@ class TestCalibGeog(unittest.TestCase):
         Calibramos una geografía con distintas escalas (municipios y departamentos).
         """
         líms_paráms = {'a': (0, 50)}
-        corresp_vars = {'X': 'x', 'Y': 'y'}
         for m in calibradores:
             with símismo.subTest(método=m):
-                clbrd = calibradores[m]()
-                calibs = clbrd.calibrar(
-                    símismo.bd, lugar=símismo.lugar, líms_paráms=líms_paráms, corresp_vars=corresp_vars
-                )
+                clbrd = calibradores[m](símismo.ec, paráms=['a', 'b'])
+                calibs = clbrd.calibrar(símismo.bd, lugar=símismo.lugar, líms_paráms=líms_paráms)
 
-                val = [símismo.paráms[lg][p] for lg in símismo.paráms for p in símismo.paráms[lg]]
-                if m == 'optimizar':
-                    est = [calibs[lg][p]['val'] for lg in símismo.paráms for p in símismo.paráms[lg]]
+                val = [símismo.paráms[p][lg] for p in símismo.paráms for lg in símismo.paráms[p]]
+                print(calibs)
+                if m == 'opt':
+                    est = [calibs[lg][p]['cumbre'] for p in símismo.paráms for lg in símismo.paráms[p]]
                     npt.assert_allclose(val, est, rtol=0.2)
                 else:
-                    est = [calibs[lg][p]['dist'] for lg in símismo.paráms for p in símismo.paráms[lg]]
+                    est = [calibs[lg][p]['trz'] for p in símismo.paráms for lg in símismo.paráms[p]]
                     símismo._verificar_aprox_bayes(val, est)
 
     def test_calibración_bayes_sin_mod_jerárquíco(símismo):

@@ -6,6 +6,7 @@ from scipy.optimize import minimize
 from tinamit.calibs._utils import eval_funcs
 from tinamit.calibs.ec import CalibradorEc
 from tinamit.config import _
+from tinamit.geog.región import Lugar
 
 
 class CalibradorEcOpt(CalibradorEc):
@@ -14,7 +15,7 @@ class CalibradorEcOpt(CalibradorEc):
         super().__init__(ec, paráms)
         símismo.f_python = símismo.ec.a_python(paráms=símismo.paráms)
 
-    def calibrar(símismo, bd, lugar=None, líms_paráms=None, ops=None, corresp_vars=None):
+    def calibrar(símismo, bd, lugar=None, líms_paráms=None, ops=None, corresp_vars=None, ord_niveles=None):
         ops = ops or {}
 
         líms_paráms = símismo._gen_líms_paráms(líms_paráms)
@@ -29,78 +30,53 @@ class CalibradorEcOpt(CalibradorEc):
         if lugar is None:
             # Si no hay lugares, optimizar de una vez con todas las observaciones.
             return _optimizar(símismo.f_python, líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y], **ops)
-        else:
-            # Si hay lugares...
 
-            # Una función recursiva para calibrar según la jerarquía
-            def _calibrar_jerárchico_manual(lugar, jrq, clbs=None):
-                """
-                Una función recursiva que permite calibrar en una jerarquía, tomando optimizaciones de niveles más
-                altos si no consigue datos para niveles más bajos.
+        # Si hay lugares...
 
-                Parameters
-                ----------
-                lugar: str
-                    El lugar en cual calibrar.
-                jrq: dict
-                    La jerarquía.
-                clbs: dict
-                    El diccionario de los resultados de la calibración. (Parámetro recursivo.)
+        # Una función recursiva para calibrar según la jerarquía
+        def _calibrar_jerárchico_manual(lug, clbs):
+            """
+            Una función recursiva que permite calibrar en una jerarquía, tomando optimizaciones de niveles más
+            altos si no consigue datos para niveles más bajos.
 
-                """
+            Parameters
+            ----------
+            lug: Lugar
+                El lugar en cual calibrar.
+            clbs: dict
+                El diccionario de los resultados de la calibración. (Parámetro recursivo.)
+            """
 
-                # Para la recursión
-                if clbs is None:
-                    clbs = {}
+            # Sino, tomar los datos de esta región únicamente.
+            obs_lg = obs.where(obs['lugar'].isin([x.cód for x in lug.lugares()]), drop=True)
+            sub_lugs = list(lug.lugares())
+            sub_lugs.remove(lug)
 
-                if lugar is None:
-                    # Si estamos al nivel más alto de la jerarquía, tomar todos los datos.
-                    obs_lg = obs
-                    inic = pariente = None  # Y no tenemos ni estimos iniciales, ni región pariente
+            # Intentar sacar información del nivel superior en la jerarquía
+            pariente = lugar.pariente(lug, ord_niveles=ord_niveles)  # El nivel inmediatamente superior
+
+            # Ahora, calibrar.
+            if obs_lg.sizes['n']:
+                # Si tenemos observaciones, calibrar con esto.
+
+                if pariente is None:
+                    inic = None
                 else:
-                    # Sino, tomar los datos de esta región únicamente.
-                    lgs_potenciales = geog.obt_todos_lugares_en(lugar)
-                    obs_lg = obs.where(obs['lugar'].isin(lgs_potenciales + [lugar]), drop=True)
+                    # Tomar la calibración superior como punto inicial para facilitar la búsqueda
+                    inic = [clbs[pariente.cód][p]['cumbre'] for p in símismo.paráms]
 
-                    # Intentar sacar información del nivel superior en la jerarquía
-                    try:
-                        pariente = jrq[lugar]  # El nivel inmediatemente superior
+                resultados[lug.cód] = _optimizar(
+                    símismo.f_python, líms_paráms=líms_paráms,
+                    obs_x=obs_lg[vars_x], obs_y=obs_lg[var_y], inic=inic, **ops
+                )
+            for sub in sub_lugs:
+                _calibrar_jerárchico_manual(lug=sub, clbs=clbs)
 
-                        # Calibrar recursivamente si necesario
-                        if pariente not in clbs:
-                            _calibrar_jerárchico_manual(lugar=pariente, jrq=jrq, clbs=clbs)
+        # Calibrar para cada lugar
+        resultados = {}
+        _calibrar_jerárchico_manual(lug=lugar, clbs=resultados)
 
-                        # Tomar la calibración superior como punto inicial para facilitar la búsqueda
-                        inic = [clbs[pariente][p]['val'] for p in paráms]
-
-                    except KeyError:
-                        # Error improbable con la jerarquía.
-                        avisar(_('No encontramos datos para el lugar "{}", ni siguiera en su jerarquía, y por eso'
-                                 'no pudimos calibrarlo.').format(lugar))
-                        resultados[lugar] = {}  # Calibración vacía
-                        return  # Si hubo error en la jerarquía, no hay nada más que hacer para este lugar.
-
-                # Ahora, calibrar.
-                if len(obs_lg['n']):
-                    # Si tenemos observaciones, calibrar con esto.
-                    resultados[lugar] = _optimizar(
-                        f_python, líms_paráms=líms_paráms,
-                        obs_x=obs_lg[vars_x], obs_y=obs_lg[var_y], inic=inic, **ops_método
-                    )
-                else:
-                    # Si no tenemos observaciones, copiar la calibración del pariente
-                    resultados[lugar] = clbs[pariente]
-
-            # Calibrar para cada lugar
-            resultados = {}
-            for lg in lugares:
-                _calibrar_jerárchico_manual(lugar=lg, jrq=jerarquía, clbs=resultados)
-
-        # Devolver únicamente los lugares de interés.
-        if lugares is not None:
-            return {ll: v for ll, v in resultados.items() if ll in lugares}
-        else:
-            return resultados
+        return resultados
 
 
 def _optimizar(func, líms_paráms, obs_x, obs_y, inic=None, **ops):

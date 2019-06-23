@@ -20,6 +20,9 @@ class Nivel(object):
     def __getitem__(símismo, itema):
         return next(n for n in símismo.subniveles if n == itema)
 
+    def __hash__(símismo):
+        return hash(str(símismo))
+
 
 class Lugar(object):
     def __init__(símismo, nombre, nivel, cód=None, sub_lugares=None):
@@ -40,6 +43,15 @@ class Lugar(object):
             if lg.nombre == nombre and (nivel is None or lg.nivel == nivel):
                 return lg
         raise ValueError(_('Lugar "{nmb}" no encontrado en "{lg}"').format(nmb=nombre, lg=símismo))
+
+    def pariente(símismo, lugar, ord_niveles=None):
+        ord_niveles = ord_niveles or símismo.niveles()
+        potenciales = [lg for lg in símismo if lugar in lg.sub_lugares]
+        if potenciales:
+            return sorted(potenciales, key=lambda x: ord_niveles.index(x.nivel))[0]
+
+    def niveles(símismo):
+        return list(set(lg.nivel for lg in símismo))
 
     def __iter__(símismo):
         yield símismo
