@@ -49,7 +49,7 @@ class ModeloSAHYSMOD(ModeloBloques):
         super().__init__(variables=variables, nombre=nombre)
 
         # Establecer los variables climáticos.
-        # símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total', conv=0.001)
+        símismo.conectar_var_clima(var='Pp - Rainfall', var_clima='Precipitación', combin='total', conv=0.001)
 
     def iniciar_modelo(símismo, corrida):
 

@@ -82,9 +82,9 @@ def estab_paso(mod, paso):
 def obt_paso_inicial(mod):
     # para hacer: verificar
     try:
-        return obt_val_var(mod, 'Game Interval')
+        return obt_val_var(mod, 'Game Interval', subs=None)
     except ValueError:
-        return obt_val_var(mod, 'TIME STEP')
+        return obt_val_var(mod, 'TIME STEP', subs=None)
 
 
 def cambiar_val(mod, var, val):

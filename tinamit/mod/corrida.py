@@ -4,12 +4,14 @@ from tinamit.config import _
 
 
 class Corrida(object):
-    def __init__(símismo, nombre, t, extern, vars_mod, vars_interés):
+    def __init__(símismo, nombre, t, extern, vars_mod, vars_interés, clima):
         símismo.nombre = nombre
         símismo.t = t
         símismo.extern = extern
 
         símismo.variables = vars_mod
+
+        símismo.clima = clima
 
         símismo.resultados = vars_mod.gen_res(
             nombre=nombre, t=t, vars_interés=vars_interés

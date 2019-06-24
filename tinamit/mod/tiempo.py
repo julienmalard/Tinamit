@@ -61,6 +61,14 @@ class TiempoCalendario(Tiempo):
         unid_ft = _a_unid_ft[símismo.unid_paso]
         return símismo.f_inic + relativedelta(**{unid_ft: símismo.í * símismo.fact_conv})
 
+    def fecha_próxima(símismo):
+        if símismo.unid_paso in ['año', 'mes']:
+            delta = relativedelta(**{símismo.unid_paso: símismo.tmñ_paso * símismo.fact_conv})
+            return símismo.fecha() + delta
+
+        n_días = convertir(símismo.unid_paso, a='día', val=símismo.tmñ_paso * símismo.fact_conv)
+        return símismo.fecha() + relativedelta(days=n_días)
+
     def eje(símismo):
         paso = símismo.fact_conv * símismo.guardar_cada * símismo.tmñ_paso
         return pd.date_range(

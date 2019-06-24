@@ -1,6 +1,6 @@
 import numpy as np
+import scipy.stats as estad
 import spotpy
-from scipy.stats import gaussian_kde
 from spotpy import objectivefunctions as spt_f, likelihoods as spt_l
 
 
@@ -16,7 +16,7 @@ def calc_máx_trz(trz):
     # Intentar calcular la densidad máxima.
     try:
         # Se me olvidó cómo funciona esta parte.
-        fdp = gaussian_kde(trz)
+        fdp = estad.gaussian_kde(trz)
         x = np.linspace(trz_norm.min(), trz_norm.max(), 1000)
         máx = x[np.argmax(fdp.evaluate(x))]
 
@@ -25,6 +25,14 @@ def calc_máx_trz(trz):
 
     except BaseException:
         return np.nan
+
+
+def _anlz_tendencia(o, s):
+    x = np.arange(len(o))
+    pend_obs = estad.linregress(x, o)[0]
+    pend_sim = estad.linregress(x, s)[0]
+
+    return (pend_obs > 0) is (pend_sim > 0)
 
 
 algs_spotpy = {
@@ -50,5 +58,6 @@ eval_funcs = {
     'r2': spt_f.rsquared,
     'rcnep': lambda o, s: -spt_f.rrmse(o, s),
     'log p': spt_f.log_p,
-    'verosimil_gaus': spt_l.gaussianLikelihoodMeasErrorOut
+    'verosimil_gaus': spt_l.gaussianLikelihoodMeasErrorOut,
+    'tendencia': _anlz_tendencia
 }

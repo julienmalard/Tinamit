@@ -4,44 +4,15 @@ from multiprocessing import Pool as Reserva
 from warnings import warn as avisar
 
 import numpy as np
-import pandas as pd
 
 from tinamit.config import _, conf_mods
-from tinamit.cositas import guardar_json, cargar_json
 from .corrida import Corrida, Rebanada
 from .extern import gen_extern
 from .res import ResultadosGrupo
 from .tiempo import EspecTiempo
 from .vars_mod import VariablesMod
 
-def jsonificar(o):
-    if isinstance(o, dict):
-        for ll, v in o.items():
-            if isinstance(v, (dict, list)):
-                jsonificar(v)
-            elif isinstance(v, (ft.date, ft.datetime)):
-                o[ll] = str(v)
-            elif isinstance(v, np.ndarray):
-                o[ll] = v.tolist()
-    elif isinstance(o, list):
-        for i, v in enumerate(o):
-            if isinstance(v, (dict, list)):
-                jsonificar(v)
-            elif isinstance(v, (ft.date, ft.datetime)):
-                o[i] = str(v)
-            elif isinstance(v, np.ndarray):
-                o[i] = v.tolist()
 
-
-def numpyficar(d):
-    for ll, v in d.items():
-        if isinstance(v, dict):
-            numpyficar(v)
-        elif isinstance(v, list):
-            try:
-                d[ll] = np.array(v, dtype=float)
-            except ValueError:
-                pass
 class Modelo(object):
     """
     Todas las cosas en Tinamit son instancias de `Modelo`, que sea un modelo de dinámicas de los sistemas, un modelo de
@@ -68,6 +39,7 @@ class Modelo(object):
         símismo.nombre = nombre
         símismo.variables = variables
         símismo.corrida = None
+        símismo.vars_clima = {}
 
     def unidad_tiempo(símismo):
         """
@@ -89,7 +61,8 @@ class Modelo(object):
             nombre, t=t.gen_tiempo(símismo.unidad_tiempo()),
             extern=gen_extern(vals_extern),
             vars_mod=símismo.variables,
-            vars_interés=vars_interés
+            vars_interés=vars_interés,
+            clima=clima
         )
 
         símismo.iniciar_modelo(corrida)
@@ -132,12 +105,16 @@ class Modelo(object):
 
         return res_grupo
 
-    def iniciar_modelo(símismo, corrida):  # para hacer: super() en subclasses
+    def iniciar_modelo(símismo, corrida):
         símismo.corrida = corrida
         corrida.variables.reinic()
 
         if corrida.extern:
-            símismo.cambiar_vals({vr: vl.values for vr, vl in corrida.obt_extern_act().items() if vr in símismo.variables})
+            símismo.cambiar_vals(
+                {vr: vl.values for vr, vl in corrida.obt_extern_act().items() if vr in símismo.variables})
+        if corrida.clima:
+            símismo.cambiar_vals(
+                {vr: vl.values for vr, vl in corrida.clima.obt_todos_vals(símismo.vars_clima).items()})
         corrida.actualizar_res()
 
     def correr(símismo):
@@ -160,6 +137,10 @@ class Modelo(object):
     def incrementar(símismo, rebanada):
         if símismo.corrida.extern:
             símismo.cambiar_vals({vr: vl.values for vr, vl in símismo.corrida.obt_extern_act().items()})
+
+        if símismo.corrida.clima and símismo.vars_clima:
+            t = símismo.corrida.t
+            símismo._act_vals_clima(t.fecha(), t.fecba_próxima())
 
     def cerrar(símismo):
         """
@@ -241,7 +222,6 @@ class Modelo(object):
     def __str__(símismo):
         return símismo.nombre
 
-    # para hacer:
     def conectar_var_clima(símismo, var, var_clima, conv, combin=None):
         """
         Conecta un variable climático.
@@ -258,35 +238,20 @@ class Modelo(object):
             Si este variable se debe adicionar o tomar el promedio entre varios pasos.
         """
 
-        var = símismo.valid_var(var)
-
-        if var_clima not in Geog.conv_vars:
-            raise ValueError(_('El variable climático "{}" no es una posibilidad. Debe ser uno de:\n'
-                               '\t{}').format(var_clima, ', '.join(Geog.conv_vars)))
-
-        if combin not in ['prom', 'total', None]:
-            raise ValueError(_('"Combin" debe ser "prom", "total", o None, no "{}".').format(combin))
+        combins = {
+            'prom': np.mean,
+            'total': np.sum
+        }
+        if isinstance(combin, str):
+            combin = combins[combin.lower()]
 
         símismo.vars_clima[var] = {
-            'nombre_extrn': var_clima,
+            'nombre_tqdr': var_clima,
             'combin': combin,
             'conv': conv
         }
 
-    def desconectar_var_clima(símismo, var):
-        """
-        Esta función desconecta un variable climático.
-
-        Parameters
-        ----------
-        var : str
-            El nombre interno del variable en el modelo.
-
-        """
-
-        símismo.vars_clima.pop(var)
-
-    def _act_vals_clima(símismo, f_0, f_1, lugar):
+    def _act_vals_clima(símismo, f_0, f_1):
         """
         Actualiza los variables climáticos. Esta función es la automática para cada modelo. Si necesitas algo más
         complicado (como, por ejemplo, predicciones por estación), la puedes cambiar en tu subclase.
@@ -297,148 +262,11 @@ class Modelo(object):
             La fecha actual.
         f_1 : ft.date | ft.datetime
             La próxima fecha.
-        lugar : Lugar
-            El objeto `Lugar` del cual obtendremos el clima.
-
         """
 
-        # Si no tenemos variables de clima, no hay nada que hacer.
-        if not len(símismo.vars_clima):
-            return
+        datos = símismo.corrida.clima.combin_datos(vars_clima=símismo.vars_clima, f_inic=f_0, f_final=f_1)
 
-        # Avisar si arriesgamos perder presición por combinar datos climáticos.
-        n_días = int((f_1 - f_0) / np.timedelta64(1, 'D'))
-        if n_días > 1:
-            avisar('El paso es de {} días. Puede ser que las predicciones climáticas pierdan '
-                   'en precisión.'.format(n_días))
-
-        # Correspondencia entre variables climáticos y sus nombres en el modelo.
-        nombres_extrn = [d['nombre_extrn'] for d in símismo.vars_clima.values()]
-
-        # La lista de maneras de combinar los valores diarios
-        combins = [d['combin'] for d in símismo.vars_clima.values()]
-
-        # La lista de factores de conversión
-        convs = [d['conv'] for d in símismo.vars_clima.values()]
-
-        # Calcular los datos
-        datos = lugar.comb_datos(vars_clima=nombres_extrn, combin=combins, f_inic=f_0, f_final=f_1)
-
-        # Aplicar los valores de variables calculados
-        for i, var in enumerate(símismo.vars_clima):
-            # Para cada variable en la lista de clima...
-
-            # El nombre oficial del variable de clima
-            var_clima = nombres_extrn[i]
-
-            # El factor de conversión de unidades
-            conv = convs[i]
-
-            # Aplicar el cambio
-            símismo.cambiar_vals(valores={var: datos[var_clima] * conv})
-
-    def _obt_vars_asociados(símismo, var, bd=None, enforzar_datos=False, incluir_hermanos=False):
-        """
-        Obtiene los variables asociados con un variable de interés.
-
-        Parameters
-        ----------
-        var : str
-            El variable de interés.
-        enforzar_datos : bool
-            Si buscamos únicamente variables que tienen datos en la base de datos vinculada.
-        incluir_hermanos :
-            Si incluyemos los hermanos del variable (es decir, otros variables que se computan a base de los parientes
-            del variable de interés.
-
-        Returns
-        -------
-        set
-            El conjunto de todos los variables vinculados.
-
-        Raises
-        ------
-        ValueError
-            Si no todos los variables asociados tienen ecuación especificada.
-        RecursionError
-            Si `enforzar_datos == True` y no hay suficientemente datos disponibles para encontrar parientes con datos
-            para todos los variables asociados con el variable de interés.
-        """
-
-        # La base de datos
-        bd_datos = bd if enforzar_datos else None
-
-        # El diccionario de variables
-        d_vars = símismo.variables
-
-        # Una función recursiva queda muy útil en casos así.
-        def _sacar_vars_recurs(v, c_v=None, sn_dts=None):
-            """
-            Una función recursiva para sacar variables asociados con un variable de interés.
-            Parameters
-            ----------
-            v : str
-                El variable de interés.
-            c_v : set
-                El conjunto de variables asociados (parámetro de recursión).
-
-            Returns
-            -------
-            set
-                El conjunto de variables asociados.
-
-            """
-
-            # Para evitar problemas de recursión en Python.
-            if c_v is None:
-                c_v = set()
-            if sn_dts is None:
-                sn_dts = set()
-
-            # Verificar que el variable tenga ecuación
-            if 'ec' not in d_vars[v]:
-                raise ValueError(_('El variable "{}" no tiene ecuación.').format(v))
-
-            # Los parientes del variable
-            parientes = d_vars[v]['parientes']
-
-            # Agregar los parientes al conjunto de variables vinculados
-            c_v.update(parientes)
-
-            for p in parientes:
-                # Para cada pariente...
-
-                p_bd = conex_var_datos[p] if p in conex_var_datos else p
-                if bd_datos is not None and p_bd not in bd_datos:
-                    # Si tenemos datos y este variable pariente no existe, tendremos que buscar sus parientes también.
-
-                    # ...pero si ya encontramos este variable en otra recursión, quiere decir que no tenemos
-                    # suficientemente datos y que estamos andando en círculos.
-                    if p in sn_dts:
-                        raise RecursionError(
-                            _('Estamos andando en círculos buscando variables con datos disponibles. Debes '
-                              'especificar más datos. Puedes empezar con uno de estos variables: {}'
-                              ).format(', '.join(sn_dts))
-                        )
-
-                    # Acordarse que ya intentamos buscar parientes con datos para este variable
-                    sn_dts.add(p)
-
-                    # Seguir con la recursión
-                    _sacar_vars_recurs(v=p, c_v=c_v, sn_dts=sn_dts)
-
-                if incluir_hermanos:
-                    # Si incluyemos a los hermanos, agregarlos y sus parientes aquí.
-                    hijos = d_vars[p]['hijos']
-                    c_v.update(hijos)
-                    for h in hijos:
-                        if h not in c_v:
-                            _sacar_vars_recurs(v=h, c_v=c_v, sn_dts=sn_dts)
-
-            # Devolver el conjunto de variables asociados
-            return c_v
-
-        return _sacar_vars_recurs(var)
+        símismo.cambiar_vals(valores=datos)
 
 
 def _correr_modelo(x):

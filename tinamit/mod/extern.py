@@ -58,7 +58,7 @@ class Extern(object):
 
 def gen_extern(datos, interpol=True):
     if isinstance(datos, Extern):
-        return Extern
+        return datos
 
     if isinstance(datos, pd.DataFrame):
         datos = datos.to_xarray().rename({'index': _('tiempo')})

@@ -52,10 +52,18 @@ class ModeloPySD(ModeloMDS):
 
     def _correr_hasta_final(símismo):
         t = símismo.corrida.t
-        paráms = {
-            vr: vl.squeeze().to_pandas()
-            for vr, vl in símismo.corrida.extern.obt_vals(t.eje(), var=símismo.variables).items()
-        }
+        if símismo.corrida.extern is not None:
+            paráms = {
+                vr: vl.squeeze().to_pandas()
+                for vr, vl in símismo.corrida.extern.obt_vals(t.eje(), var=símismo.variables).items()
+            }
+        else:
+            paráms = {}
+
+        if símismo.corrida.clima is not None:
+            vars_clima = símismo.corrida.clima.obt_todos_vals(t.eje(), vars_clima=símismo.vars_clima)
+            paráms.update(vars_clima)
+
         t_inic_mod = símismo.mod.time._t
         res_pysd = símismo.mod.run(
             params=paráms,
