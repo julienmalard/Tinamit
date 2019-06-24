@@ -60,6 +60,17 @@ class TestRegión(unittest.TestCase):
             símismo.depts['1'].sub_lugares
         )
 
+    def test_parientes(símismo):
+        símismo.assertEqual(
+            símismo.guate.pariente('M1'), símismo.depts['1']
+        )
+
+    def test_hijos(símismo):
+        símismo.assertSetEqual(
+            {x.cód for x in símismo.guate.hijos_inmediatos(ord_niveles=['Territorio'])},
+            {x.cód for x in list(símismo.depts.values()) + list(símismo.terrs.values()) + [símismo.munis['3']]}
+        )
+
     def test_obt_lugares_donde_no_hay(símismo):
         símismo.assertSetEqual(
             símismo.guate.lugares(en='D1', nivel='Territorio'),

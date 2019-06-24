@@ -49,8 +49,6 @@ class CalibradorEcOpt(CalibradorEc):
 
             # Sino, tomar los datos de esta región únicamente.
             obs_lg = obs.where(obs['lugar'].isin([x.cód for x in lug.lugares()]), drop=True)
-            sub_lugs = list(lug.lugares())
-            sub_lugs.remove(lug)
 
             # Intentar sacar información del nivel superior en la jerarquía
 
@@ -72,7 +70,7 @@ class CalibradorEcOpt(CalibradorEc):
                     símismo.f_python, líms_paráms=líms_paráms,
                     obs_x=obs_lg[vars_x], obs_y=obs_lg[var_y], inic=inic, **ops
                 )
-            for sub in sub_lugs:
+            for sub in lug.hijos_inmediatos(ord_niveles):
                 _calibrar_jerárchico_manual(lug=sub, clbs=clbs)
 
         # Calibrar para cada lugar

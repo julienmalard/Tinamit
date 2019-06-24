@@ -85,7 +85,7 @@ class TestCalibGeog(unittest.TestCase):
 
         cls.bd = BD(FuenteDic({'lugar': lugares, 'x': x, 'y': y}, 'Datos geográficos', lugares='lugar'))
 
-        cls.lugar = gen_lugares(arch_csv_geog, nivel_base='país', nombre='Iximulew')
+        cls.lugar = gen_lugares(arch_csv_geog, nivel_base='País', nombre='Iximulew')
 
     def test_calibración_geog_con_escalas(símismo):
         """

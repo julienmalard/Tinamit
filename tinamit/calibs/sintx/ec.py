@@ -169,7 +169,7 @@ class Ecuación(object):
 
         def _gen_d_vars_pm_jer():
             dists_base = _gen_d_vars_pm(
-                tmñ=(len(set(nv_jerarquía[0])),), fmt_nmbrs='mu_{}_nv_' + str(len(nv_jerarquía) - 1)
+                tmñ=(1,), fmt_nmbrs='mu_{}_nv_' + str(len(nv_jerarquía) - 1)
             )['norm']
 
             egr = {}
@@ -185,7 +185,7 @@ class Ecuación(object):
                 sg_v = pm.Gamma(name='sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 1), mu=mu_sg, sd=0.2, shape=(1,))
 
                 for í, nv in enumerate(nv_jerarquía[:-1]):
-                    tmñ_nv = nv.shape
+                    tmñ_nv = len(nv)
                     últ_niv = í == (len(nv_jerarquía) - 2)
                     í_nv = len(nv_jerarquía) - 2 - í
 
@@ -250,8 +250,8 @@ class Ecuación(object):
 
             else:
                 sigma = pm.HalfNormal(name='sigma', sd=obs_y.values.std())
-                theta = pm.Normal(name='theta', sd=1)
-                beta = pm.HalfNormal(name='beta', sd=1 / obs_y.values.std())
+                # theta = pm.Normal(name='theta', sd=1)
+                # beta = pm.HalfNormal(name='beta', sd=1 / obs_y.values.std())
                 pm.Normal(name='Y_obs', mu=mu,
                           sd=sigma,  # * (beta*pm.math.abs_(mu) + 1),
                           observed=obs_y.values)

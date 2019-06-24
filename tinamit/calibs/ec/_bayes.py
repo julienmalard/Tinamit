@@ -43,63 +43,35 @@ class CalibradorEcBayes(CalibradorEc):
 
             # Primero, crear una lista de las relaciones jerárquicas, el cual se necesita para crear el modelo
             # jerárquico bayes.
+            lugs = lugar.lugares()
+            nvs_jerarq = [[lugar]]
+            while len(lugs):
+                for lug in nvs_jerarq[-1]:
+                    lugs.remove(lug)
+                lgs_nv = [lug for lug in lugs if lugar.pariente(lug) in nvs_jerarq[-1]]
+                print(lgs_nv)
+                if len(lgs_nv):
+                    nvs_jerarq.append(lgs_nv)
+            print([[y.cód for y in x] for x in nvs_jerarq])
+            for í, nv in enumerate(nvs_jerarq):
+                nv[:] = [
+                    lg for lg in nv
+                    if (obs['lugar'].isin([x.cód for x in lg.lugares()]).sum()
+                        and ((í == len(nvs_jerarq) - 1) or any(
+                                lg is lugar.pariente(x, ord_niveles) for x in nvs_jerarq[í + 1]))
+                        )
+                ]
 
-            def _gen_nv_jerarquía(jrq, egr=None, nv_ant=None):
-                """
+            print([[y.cód for y in x] for x in nvs_jerarq])
 
-                Parameters
-                ----------
-                jrq: dict
-                    La jerarquía.
-                egr: list
-                    Parámetro para la recursión.
-                nv_ant: list
-                    Un lista de los nombres del nivel superior en la jerarquía. Parámetro de recursión.
+            í_nv_jerarquía = []
+            for í, nv in enumerate(nvs_jerarq[1:]):
+                for lg in nv:
+                    print(lg.cód, lugar.pariente(lg).cód)
+                print([x.cód for x in nvs_jerarq[í]])
+                í_nv_jerarquía.append([nvs_jerarq[í].index(lugar.pariente(lg)) for lg in nv])
 
-                Returns
-                -------
-                list:
-                """
-
-                # Empezar con el primer nivel
-                if nv_ant is None:
-                    nv_ant = [None]
-
-                # Empezar con egresos vacíos
-                if egr is None:
-                    egr = []
-
-                nv_act = [x for x in jrq if jrq[x] in nv_ant]
-
-                if len(nv_act):
-                    nv_act += [x for x in nv_ant if x in lugares and x not in nv_act]
-
-                    # Agregar a los egresos
-                    egr.append(nv_act)
-
-                    # Recursarr en los niveles inferiores
-                    _gen_nv_jerarquía(jrq, egr=egr, nv_ant=nv_act)
-
-                # Devolver el resultado
-                return egr
-
-            # Generar la lista de relaciones jerárquicas
-            nv_jerarquía = _gen_nv_jerarquía(jerarquía)
-
-            nv_jerarquía.insert(0, [None])
-
-            for í, nv in list(enumerate(nv_jerarquía))[::-1]:
-
-                if í == (len(nv_jerarquía) - 1):
-
-                    nv[:] = [x for x in nv if obs['lugar'].isin(x).sum()]
-                else:
-
-                    nv[:] = [x for x in nv if x in [jerarquía[y] for y in nv_jerarquía[í + 1]]]
-
-            í_nv_jerarquía = [np.array([nv_jerarquía[í - 1].index(jerarquía[x]) for x in y])
-                              for í, y in list(enumerate(nv_jerarquía))[:0:-1]]
-            í_nv_jerarquía.insert(0, np.array([nv_jerarquía[-1].index(x) for x in obs['lugar'].values.tolist()]))
+            print(í_nv_jerarquía)
 
             # Generar el modelo bayes
             mod_bayes_jrq = símismo.ec.gen_mod_bayes(
@@ -123,7 +95,7 @@ class CalibradorEcBayes(CalibradorEc):
 
             prms_extras = list({
                 'mu_{p}_nv_{í}'.format(p=p, í=x[0]) for x in set(var_res_lugares.values()) if isinstance(x, tuple)
-                for p in paráms
+                for p in símismo.paráms
             })
 
             # Calibrar
