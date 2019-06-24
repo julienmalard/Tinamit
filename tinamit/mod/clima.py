@@ -20,7 +20,7 @@ class Clima(object):
 
     def combin_datos(símismo, f_inic, f_final, vars_clima):
         vals = {}
-        datos = símismo.obt_datos(f_inic, f_final)
+        datos = símismo.obt_datos(f_inic, f_final).روزانہ()
         for v, d in vars_clima.items():
             combin = d['combin']
             datos_vr = datos[d['nombre_tqdr']]
@@ -30,7 +30,7 @@ class Clima(object):
 
     def obt_todos_vals(símismo, t, vars_clima):
         vals = {}
-        datos = símismo.obt_datos(t[0], t[-1])
+        datos = símismo.obt_datos(t[0], t[-1]).روزانہ()
         for v, d in vars_clima.items():
             datos_vr = datos[d['nombre_tqdr']]
             combin = d['combin']
@@ -38,7 +38,7 @@ class Clima(object):
             eje = t.eje()
             datos_t = [
                 combin(
-                    datos_vr[(datos_vr['date'] < f) & (datos_vr['date'] <= eje[i+1])]
+                    datos_vr[(datos_vr['date'] < f) & (datos_vr['date'] <= eje[i + 1])]
                 ) if combin is not None else datos_vr[f] for i, f in enumerate(eje[:-1])
             ]
 
