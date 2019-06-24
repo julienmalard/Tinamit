@@ -103,7 +103,7 @@ class TestCalibGeog(unittest.TestCase):
                     est = [calibs[lg][p]['cumbre'] for p in símismo.paráms for lg in símismo.paráms[p]]
                     npt.assert_allclose(val, est, rtol=0.2)
                 else:
-                    est = [calibs[lg][p]['trz'] for p in símismo.paráms for lg in símismo.paráms[p]]
+                    est = [calibs[lg][p]['dist'] for p in símismo.paráms for lg in símismo.paráms[p]]
                     símismo._verificar_aprox_bayes(val, est)
 
     def test_calibración_bayes_sin_mod_jerárquíco(símismo):

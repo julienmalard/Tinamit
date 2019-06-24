@@ -4,9 +4,9 @@ from ._funcs import conv_fun
 
 
 class VstrAPyMC3(object):
-    def __init__(símismo, d_vars_pm, obs_x, nv_jerarquía, dialecto='tinamït'):
+    def __init__(símismo, d_vars_pm, obs_x, í_datos, dialecto='tinamït'):
         símismo.d_vars_pm = d_vars_pm
-        símismo.nv_jerarquía = nv_jerarquía
+        símismo.í_datos = í_datos
         símismo.obs_x = obs_x
 
         símismo.dialecto = dialecto
@@ -25,10 +25,10 @@ class VstrAPyMC3(object):
     def var(símismo, x):
         v = str(x.children[0])
         try:
-            if símismo.nv_jerarquía is None:
+            if símismo.í_datos is None:
                 return símismo.d_vars_pm[v]
             else:
-                return símismo.d_vars_pm[v][símismo.nv_jerarquía[-1]]
+                return símismo.d_vars_pm[v][símismo.í_datos]
 
         except KeyError:
             # Si el variable no es un parámetro calibrable, debe ser un valor observado

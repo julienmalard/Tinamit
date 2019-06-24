@@ -49,10 +49,8 @@ class CalibradorEcBayes(CalibradorEc):
                 for lug in nvs_jerarq[-1]:
                     lugs.remove(lug)
                 lgs_nv = [lug for lug in lugs if lugar.pariente(lug) in nvs_jerarq[-1]]
-                print(lgs_nv)
                 if len(lgs_nv):
                     nvs_jerarq.append(lgs_nv)
-            print([[y.cód for y in x] for x in nvs_jerarq])
             for í, nv in enumerate(nvs_jerarq):
                 nv[:] = [
                     lg for lg in nv
@@ -62,41 +60,23 @@ class CalibradorEcBayes(CalibradorEc):
                         )
                 ]
 
-            print([[y.cód for y in x] for x in nvs_jerarq])
-
             í_nv_jerarquía = []
             for í, nv in enumerate(nvs_jerarq[1:]):
-                for lg in nv:
-                    print(lg.cód, lugar.pariente(lg).cód)
-                print([x.cód for x in nvs_jerarq[í]])
                 í_nv_jerarquía.append([nvs_jerarq[í].index(lugar.pariente(lg)) for lg in nv])
 
-            print(í_nv_jerarquía)
-
+            í_datos = np.array(
+                [next(i for i, lg in enumerate(nvs_jerarq[-1]) if x == lg.cód) for x in obs['lugar'].values.tolist()]
+            )
             # Generar el modelo bayes
             mod_bayes_jrq = símismo.ec.gen_mod_bayes(
                 líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
-                aprioris=None, binario=False, nv_jerarquía=í_nv_jerarquía[::-1],
-            )
-            var_res_lugares = {}
-            for lg in lugares:
-                if lg in nv_jerarquía[-1]:
-                    var_res_lugares[lg] = nv_jerarquía[-1].index(lg)
-                else:
-                    for í, nv in enumerate(nv_jerarquía[1::-1]):
-                        id_nv = lg
-                        while id_nv is not None:
-                            id_nv = jerarquía[id_nv]
-                            if id_nv in nv:
-                                var_res_lugares[lg] = (í + 1, nv.index(id_nv))
-                                break
-                        if lg in var_res_lugares:
-                            break
+                aprioris=None, binario=False, nv_jerarquía=í_nv_jerarquía,
+                í_datos=í_datos
 
-            prms_extras = list({
-                'mu_{p}_nv_{í}'.format(p=p, í=x[0]) for x in set(var_res_lugares.values()) if isinstance(x, tuple)
-                for p in símismo.paráms
-            })
+            )
+            prms_extras = [
+                'mu_{p}_nv_{í}'.format(í=í_nv, p=p) for í_nv in range(len(nvs_jerarq) - 1) for p in símismo.paráms
+            ]
 
             # Calibrar
             res_calib = _calibrar_mod_bayes(
@@ -105,17 +85,16 @@ class CalibradorEcBayes(CalibradorEc):
 
             # Formatear los resultados
             resultados = {}
-            for lg in lugares:
-                ubic_res = var_res_lugares[lg]
-
-                if isinstance(ubic_res, int):
-                    resultados[lg] = {p: {ll: v[..., ubic_res] for ll, v in res_calib[p].items()} for p in paráms}
-                else:
-                    nv, í = ubic_res
-                    resultados[lg] = {
-                        p: {ll: v[..., í] for ll, v in res_calib['mu_{}_nv_{}'.format(p, nv)].items()}
-                        for p in paráms
-                    }
+            for i, nv in enumerate(nvs_jerarq):
+                for j, lg in enumerate(nv):
+                    if i == (len(nvs_jerarq) - 1):
+                        res_lg = {p: {ll: v[..., j] for ll, v in res_calib[p].items()} for p in símismo.paráms}
+                    else:
+                        res_lg = {
+                            p: {ll: v[..., j] for ll, v in res_calib['mu_{}_nv_{}'.format(p, i)].items()}
+                            for p in símismo.paráms
+                        }
+                    resultados[lg.cód] = res_lg
 
         else:
             # Si no estamos haciendo un modelo jerárquico, hay que calibrar cada lugar individualmente.

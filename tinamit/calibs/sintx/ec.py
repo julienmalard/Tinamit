@@ -125,8 +125,10 @@ class Ecuación(object):
         else:
             return VstrCoefDe()(símismo.árbol, var, l_vars)
 
-    def gen_mod_bayes(símismo, líms_paráms, obs_x, obs_y, aprioris=None, binario=False, nv_jerarquía=None,
-                      trsld_sub=False):
+    def gen_mod_bayes(
+            símismo, líms_paráms, obs_x, obs_y, aprioris=None, binario=False, nv_jerarquía=None, í_datos=None,
+            trsld_sub=False
+    ):
 
         if pm is None:
             return ImportError(_('Hay que instalar PyMC3 para poder utilizar modelos bayesianos.'))
@@ -169,7 +171,7 @@ class Ecuación(object):
 
         def _gen_d_vars_pm_jer():
             dists_base = _gen_d_vars_pm(
-                tmñ=(1,), fmt_nmbrs='mu_{}_nv_' + str(len(nv_jerarquía) - 1)
+                tmñ=(1,), fmt_nmbrs='mu_{}_nv_0'
             )['norm']
 
             egr = {}
@@ -182,12 +184,12 @@ class Ecuación(object):
                 else:
                     mu_sg = 0.5
 
-                sg_v = pm.Gamma(name='sg_{}_nv_{}'.format(p, len(nv_jerarquía) - 1), mu=mu_sg, sd=0.2, shape=(1,))
+                sg_v = pm.Gamma(name='sg_{}_nv_0'.format(p), mu=mu_sg, sd=0.2, shape=(1,))
 
-                for í, nv in enumerate(nv_jerarquía[:-1]):
+                for í, nv in enumerate(nv_jerarquía):
                     tmñ_nv = len(nv)
-                    últ_niv = í == (len(nv_jerarquía) - 2)
-                    í_nv = len(nv_jerarquía) - 2 - í
+                    últ_niv = í == (len(nv_jerarquía) - 1)
+                    í_nv = í+1
 
                     nmbr_mu = p if últ_niv else 'mu_{}_nv_{}'.format(p, í_nv)
                     nmbr_sg = 'sg_{}_nv_{}'.format(p, í_nv)
@@ -242,7 +244,7 @@ class Ecuación(object):
                 d_vars_pm = _gen_d_vars_pm_jer()
 
             mu = VstrAPyMC3(
-                d_vars_pm=d_vars_pm, obs_x=obs_x, nv_jerarquía=nv_jerarquía, dialecto=símismo.dialecto
+                d_vars_pm=d_vars_pm, obs_x=obs_x, í_datos=í_datos, dialecto=símismo.dialecto
             ).convertir(símismo.árbol)
 
             if binario:
