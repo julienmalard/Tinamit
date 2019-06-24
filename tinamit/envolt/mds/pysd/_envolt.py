@@ -34,16 +34,15 @@ class ModeloPySD(ModeloMDS):
     def incrementar(símismo, rebanada):
 
         símismo.paso_act += rebanada.n_pasos
-        devolv = símismo.paso_act if símismo.cont_simul else [0, símismo.paso_act]
+        devolv = [símismo.paso_act-1, símismo.paso_act]
         res = símismo.mod.run(
             initial_condition='current' if símismo.cont_simul else 'original', params=símismo.vars_para_cambiar,
             return_timestamps=devolv, return_columns=[v.nombre_py for v in rebanada.resultados.variables()]
         )
 
         # Guardar valores iniciales para niveles
-        if not símismo.cont_simul:
-            for v in rebanada.resultados.variables():
-                rebanada.resultados[v].vals[0] = res[v.nombre_py][0]
+        for v in rebanada.resultados.variables():
+            rebanada.resultados[v].vals[símismo.paso_act-1] = res[v.nombre_py][símismo.paso_act-1]
 
         símismo.cont_simul = True
         símismo.variables.cambiar_vals({v: res[v.nombre_py].values[-1] for v in rebanada.resultados.variables()})
