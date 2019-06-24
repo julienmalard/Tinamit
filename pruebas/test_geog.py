@@ -62,7 +62,7 @@ class TestRegión(unittest.TestCase):
 
     def test_parientes(símismo):
         símismo.assertEqual(
-            símismo.guate.pariente('M1'), símismo.depts['1']
+            símismo.guate.pariente('M1', 'Departamento'), símismo.depts['1']
         )
 
     def test_hijos(símismo):

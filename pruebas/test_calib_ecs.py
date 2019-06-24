@@ -98,7 +98,6 @@ class TestCalibGeog(unittest.TestCase):
                 calibs = clbrd.calibrar(símismo.bd, lugar=símismo.lugar, líms_paráms=líms_paráms)
 
                 val = [símismo.paráms[p][lg] for p in símismo.paráms for lg in símismo.paráms[p]]
-                print(calibs)
                 if m == 'opt':
                     est = [calibs[lg][p]['cumbre'] for p in símismo.paráms for lg in símismo.paráms[p]]
                     npt.assert_allclose(val, est, rtol=0.2)

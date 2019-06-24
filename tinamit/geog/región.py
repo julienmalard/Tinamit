@@ -95,6 +95,8 @@ class OrdNiveles(object):
 
     def resolver(símismo, orden=None):
         orden = orden or []
+        if isinstance(orden, (str, Nivel)):
+            orden = [orden]
         return [x if isinstance(x, Nivel) else next((y for y in x if y in orden), x[0]) for x in símismo.ords]
 
     def __contains__(símismo, itema):
