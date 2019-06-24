@@ -31,6 +31,8 @@ class Lugar(object):
         símismo.nombre = nombre
         símismo.sub_lugares = set(sub_lugares or [])
 
+        símismo.ord_niveles = OrdNiveles(símismo)
+
     def lugares(símismo, en=None, nivel=None):
         if en is None:
             buscar_en = símismo
@@ -45,13 +47,14 @@ class Lugar(object):
         raise ValueError(_('Lugar "{nmb}" no encontrado en "{lg}"').format(nmb=nombre, lg=símismo))
 
     def pariente(símismo, lugar, ord_niveles=None):
-        ord_niveles = ord_niveles or símismo.niveles()
-        potenciales = [lg for lg in símismo if lugar in lg.sub_lugares]
+        lugar = símismo[lugar]
+        ord_niveles = símismo.ord_niveles.resolver(ord_niveles)
+        potenciales = [lg for lg in símismo if lugar in lg.sub_lugares and lg.nivel in ord_niveles]
         if potenciales:
-            return sorted(potenciales, key=lambda x: ord_niveles.index(x.nivel))[0]
+            return sorted(potenciales, key=lambda x: ord_niveles.index(str(x.nivel)))[0]
 
-    def niveles(símismo):
-        return list(set(lg.nivel for lg in símismo))
+    def hijos_inmediatos(símismo, ord_niveles=None):
+        return [lg for lg in símismo if símismo.pariente(lg, ord_niveles=ord_niveles) == símismo]
 
     def __iter__(símismo):
         yield símismo
@@ -70,6 +73,35 @@ class Lugar(object):
 
     def __str__(símismo):
         return símismo.nombre
+
+
+class OrdNiveles(object):
+    def __init__(símismo, lugar):
+
+        sub_ords = list(set(sub.ord_niveles.ords for sub in lugar.sub_lugares))
+        ords = []
+        for sb in sub_ords:
+            for i, nv in enumerate(sb):
+                if i > (len(ords)-1):
+                    ords.append(nv)
+                else:
+                    ant = ords[i]
+                    if isinstance(ant, Nivel) and ant != nv:
+                        ords[i] = (ant, nv)
+                    elif isinstance(ant, tuple) and nv not in ant:
+                        ords[i] = (*ant, nv)
+
+        símismo.ords = (*ords, lugar.nivel)
+
+    def resolver(símismo, orden=None):
+        orden = orden or []
+        return [x if isinstance(x, Nivel) else next((y for y in x if y in orden), x[0]) for x in símismo.ords]
+
+    def __contains__(símismo, itema):
+        for x in símismo.ords:
+            if (isinstance(x, Nivel) and x == itema) or (itema in x):
+                return True
+        return False
 
 
 def gen_lugares(archivo, nivel_base, nombre=None, col_cód='Código'):
@@ -134,7 +166,7 @@ def gen_lugares(archivo, nivel_base, nombre=None, col_cód='Código'):
             lg = dic_doc[cód]
             if lg[nvl]:
                 nmb = lg[nvl]
-                subs = {s for c, s in lugares.items() if (dic_doc[c][nvl] == nmb or dic_doc[c][nvl] == cód)}
+                subs = {s for c, s in lugares.items() if dic_doc[c][nvl] == cód}
                 lugares[cód] = Lugar(nmb, nivel=obj_nvl, cód=cód, sub_lugares=subs)
                 quedan.remove(cód)
 
