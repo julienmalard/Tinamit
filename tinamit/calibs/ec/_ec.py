@@ -3,8 +3,8 @@ from ..sintx.ec import Ecuación
 
 
 class CalibradorEc(object):
-    def __init__(símismo, ec, paráms):
-        símismo.ec = ec if isinstance(ec, Ecuación) else Ecuación(ec)
+    def __init__(símismo, ec, paráms, nombre=None, dialecto='tinamït'):
+        símismo.ec = ec if isinstance(ec, Ecuación) else Ecuación(ec, nombre=nombre, dialecto=dialecto)
         símismo.paráms = paráms
 
         # Asegurarse que se especificó el variable y.
@@ -34,7 +34,10 @@ class CalibradorEc(object):
     def _obt_datos(bd, vars_interés, corresp_vars):
         corresp_vars = corresp_vars or {}
         vars_bd = [v if v not in corresp_vars else corresp_vars[v] for v in vars_interés]
-        return bd.obt_vals(vars_bd).dropna('n').rename(corresp_vars)
+        datos = bd.obt_vals(vars_bd)  # para hacer: interpolar fechas
+        return datos.rename(
+            {v: ll for ll, v in corresp_vars.items()}
+        )
 
     def calibrar(símismo, bd, lugar=None, líms_paráms=None, ops=None, corresp_vars=None, ord_niveles=None):
         raise NotImplementedError

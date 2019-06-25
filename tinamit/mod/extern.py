@@ -26,7 +26,7 @@ class Extern(object):
 
     @staticmethod
     def _obt_a_t(m_xr, t, interpol):
-        tiempo_xr = m_xr[_('tiempo')]
+        tiempo_xr = m_xr[_('fecha')]
         if np.issubdtype(tiempo_xr.dtype, np.datetime64):
             if isinstance(t, Tiempo):
                 f = t.fecha()
@@ -35,9 +35,9 @@ class Extern(object):
             else:
                 f = t
             if interpol and len(tiempo_xr) > 1:
-                return m_xr.interp(**{_('tiempo'): f})
+                return m_xr.interp(**{_('fecha'): f})
             try:
-                return m_xr.sel(**{_('tiempo'): f})
+                return m_xr.sel(**{_('fecha'): f})
             except (KeyError, IndexError):
                 return np.nan
         if isinstance(t, Tiempo):
@@ -47,9 +47,9 @@ class Extern(object):
         elif isinstance(t, (int, float)):
             i = t
         else:
-            i = [j for j in t if j in m_xr[_('tiempo')]]
+            i = [j for j in t if j in m_xr[_('fecha')]]
         if interpol and len(tiempo_xr) > 1:
-            return m_xr.interp(**{_('tiempo'): i})
+            return m_xr.interp(**{_('fecha'): i})
         try:
             return m_xr[i]
         except (KeyError, IndexError):
@@ -61,7 +61,7 @@ def gen_extern(datos, interpol=True):
         return datos
 
     if isinstance(datos, pd.DataFrame):
-        datos = datos.to_xarray().rename({'index': _('tiempo')})
+        datos = datos.to_xarray().rename({'index': _('fecha')})
 
     if isinstance(datos, xr.Dataset):
         return Extern({vr: datos[vr] for vr in datos.data_vars}, interpol)
@@ -77,6 +77,6 @@ def _a_matr_xr(val):
             val = np.array([val])
         return xr.DataArray(
             val.reshape((1, *val.shape)),
-            coords={_('tiempo'): [0]},
-            dims=[_('tiempo'), *('x_' + str(i) for i in range(len(val.shape)))]
+            coords={_('fecha'): [0]},
+            dims=[_('fecha'), *('x_' + str(i) for i in range(len(val.shape)))]
         )

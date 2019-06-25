@@ -42,5 +42,5 @@ class Clima(object):
                 ) if combin is not None else datos_vr[f] for i, f in enumerate(eje[:-1])
             ]
 
-            vals[v] = xr.DataArray(datos_t * conv, coords={_('tiempo'): t}, dims=[_('tiempo')])
+            vals[v] = xr.DataArray(datos_t * conv, coords={_('fecha'): t}, dims=[_('fecha')])
         return vals

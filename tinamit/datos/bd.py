@@ -1,10 +1,11 @@
 import os
+from itertools import product
 
 import numpy as np
 import pandas as pd
 import xarray as xr
-
 from tinamit.config import _
+
 from .fuente import FuentePandas, FuenteDic, FuenteVarXarray, FuenteBaseXarray, FuenteCSV
 
 
@@ -27,61 +28,63 @@ class BD(object):
         -------
         xr.DataArray, xr.Dataset
         """
+        vr_único = False
+        if isinstance(vars_interés, str):
+            vars_interés = [vars_interés]
+            vr_único = True
 
-        return xr.concat(
-            (f.obt_vals(vars_interés=vars_interés, lugares=lugares, fechas=fechas) for f in símismo.fuentes), 'n'
+        l_vals_fnts = [f.obt_vals(vars_interés=vars_interés, lugares=lugares, fechas=fechas) for f in símismo.fuentes]
+        v_lugares = np.unique(np.concatenate([v[_('lugar')].dropna('n') for v in l_vals_fnts]+[['']]))
+        v_fechas = np.unique(np.concatenate([v[_('fecha')].dropna('n') for v in l_vals_fnts]+[[np.datetime64('NaT')]]))
+        v_lugares.sort()
+        v_fechas.sort()
+
+        vals = xr.Dataset(
+            data_vars={
+                vr: ((_('lugar'), _('fecha')), np.full((v_lugares.size, v_fechas.size), np.nan)) for vr in vars_interés
+            },
+            coords={_('lugar'): v_lugares, _('fecha'): v_fechas}
         )
+        for lg, fch in product(v_lugares, v_fechas):
+            fnts_lg_fch = [
+                v.where(np.logical_and(
+                    np.isnat(v['fecha']) if np.isnat(fch) else v['fecha'] == fch,
+                    v['lugar'] == lg), drop=True) for v in l_vals_fnts
+                if len(v.data_vars)
+            ]
+            bd_lg_fch = xr.auto_combine(fnts_lg_fch)
+            if not bd_lg_fch.sizes['n']:
+                continue
+            for vr in vars_interés:
+                try:
+                    vl = bd_lg_fch[vr].values[0]
+                except KeyError:
+                    vl = None
+                if vl is not None and vl != np.nan:
+                    índs = {}
+                    if not np.isnat(fch):
+                        índs[_('fecha')] = fch
+                    if lg:
+                        índs[_('lugar')] = lg
+                    vals[vr].loc[índs] = vl
+
+        vals = vals.stack(n=[_('fecha'), _('lugar')])
+        vals = vals.dropna('n', how='all')
+
+        return vals[vars_interés[0]] if vr_único else vals
 
     def interpolar(símismo, vars_interés, fechas, lugares=None, extrap=False):
         datos = símismo.obt_vals(vars_interés=vars_interés, lugares=lugares, fechas=None)
-        fechas = pd.to_datetime(fechas)
-        if isinstance(fechas, pd.Timestamp):
-            fechas = pd.DatetimeIndex([fechas])
 
-        lugares_únicos = set(datos[_('lugar')].values.tolist())
-        bds_lugares = {
-            lg: datos.where(datos[_('lugar')].isnull() if lg is None else datos[_('lugar')] == lg, drop=True)
-            for lg in lugares_únicos
-        }
+        # Las nuevas fechas de interés que hay que a la base de datos
+        if not isinstance(fechas, (tuple, list)):
+            fechas = [fechas]
+        nuevas_fechas = [x for x in pd.DatetimeIndex(fechas) if not (datos[_('fecha')] == x.to_datetime64()).any()]
+        datos = datos.unstack()
+        datos = datos.reindex(fecha=np.concatenate((datos[_('fecha')].values, np.array(pd.to_datetime(nuevas_fechas)))))
+        datos = datos.sortby(_('fecha'))
 
-        # Para cada lugar...
-        for lg, bd_lg in bds_lugares.items():
-
-            # Las nuevas fechas de interés que hay que a la base de datos
-            nuevas_fechas = [x for x in pd.DatetimeIndex(fechas) if not (bd_lg[_('tiempo')] == x.to_datetime64()).any()]
-
-            if isinstance(bd_lg, xr.Dataset):
-                vacíos = xr.Dataset(
-                    data_vars={x: ('n', np.full(len(nuevas_fechas), np.nan)) for x in bd_lg.data_vars},
-                    coords=dict(tiempo=('n', nuevas_fechas),
-                                **{_('lugar'): ('n', [lg] * len(nuevas_fechas))}
-                                )
-                )
-            else:
-                vacíos = xr.DataArray(
-                    data=np.full(len(nuevas_fechas), np.nan),
-                    coords=dict(tiempo=('n', nuevas_fechas), **{_('lugar'): ('n', [lg] * len(nuevas_fechas))}),
-                    dims='n', name=bd_lg.name
-                )
-            if len(vacíos):
-                bd_lg = xr.concat((bd_lg, vacíos), 'n')
-            bd_lg = bd_lg.sortby(_('tiempo')).interpolate_na('n', use_coordinate=_('tiempo'))
-
-            if extrap:
-                # Si quedaron combinaciones de variables y de fechas para las cuales no pudimos interpolar porque
-                # las fechas que faltaban se encontraban afuera de los límites de los datos disponibles,
-                # simplemente copiar el último valor disponible.
-                todavía_faltan = [x for x in bd_lg.data_vars if bd_lg.isnull().any()[x]]
-                for v in todavía_faltan:
-                    existen = np.where(bd_lg[v].notnull())[0]
-                    if len(existen):
-                        primero = existen[0]
-                        último = existen[-1]
-                        bd_lg[v][:primero] = bd_lg[v][primero]
-                        bd_lg[v][último + 1:] = bd_lg[v][último]
-            bds_lugares[lg] = bd_lg
-
-        return xr.concat(bds_lugares.values(), 'n').sortby(_('lugar')).sortby(_('tiempo'))
+        return datos.interpolate_na(_('fecha')).stack(n=[_('fecha'), _('lugar')])
 
 
 def _gen_fuente(fnt, nombre=None, lugares=None, fechas=None):

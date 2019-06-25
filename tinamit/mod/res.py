@@ -46,7 +46,7 @@ class ResultadosSimul(object):
             with open(arch, 'w', encoding='UTF-8', newline='') as a:
                 escr = csv.writer(a)
 
-                escr.writerow([_('tiempo')] + símismo.t)
+                escr.writerow([_('fecha')] + símismo.t)
                 for var in l_vars:
                     vals = símismo[var].values
                     if len(vals.shape) == 1:
@@ -90,8 +90,8 @@ class ResultadosVar(object):
         dims = símismo.var.dims
         matr = np.zeros((len(t), *dims))
         símismo.vals = xr.DataArray(
-            matr, coords={_('tiempo'): símismo.t.eje()},
-            dims=[_('tiempo'), *('x_' + str(i) for i in range(len(dims)))]
+            matr, coords={_('fecha'): símismo.t.eje()},
+            dims=[_('fecha'), *('x_' + str(i) for i in range(len(dims)))]
         )
 
     def actualizar(símismo):

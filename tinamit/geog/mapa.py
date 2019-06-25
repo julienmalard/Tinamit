@@ -35,7 +35,7 @@ def dibujar_mapa_de_res(forma_dinámica, res, var, t, escala=None, título='', d
     otras_formas = otras_formas or []
 
     def _extr_i(matr, i):
-        return matr[i] if isinstance(i, int) else matr.sel(**{_('tiempo'): i}).values
+        return matr[i] if isinstance(i, int) else matr.sel(**{_('fecha'): i}).values
 
     if isinstance(res, ResultadosSimul):
         res_var = res[var].vals

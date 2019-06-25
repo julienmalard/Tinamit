@@ -1,8 +1,9 @@
 from ast import literal_eval
 
 import numpy as np
-
 from tinamit.calibs.sintx.ec import Ecuación
+from tinamit.envolt.mds.pysd._funcs import decodar
+
 from ._funcs import gen_mod_pysd, obt_paso_mod_pysd
 from ._vars import VarPySDAuxiliar, VarPySDNivel, VarPySDConstante, VariablesPySD
 from .._envolt import ModeloMDS
@@ -34,7 +35,7 @@ class ModeloPySD(ModeloMDS):
     def incrementar(símismo, rebanada):
 
         símismo.paso_act += rebanada.n_pasos
-        devolv = [símismo.paso_act-1, símismo.paso_act]
+        devolv = [símismo.paso_act - 1, símismo.paso_act]
         res = símismo.mod.run(
             initial_condition='current' if símismo.cont_simul else 'original', params=símismo.vars_para_cambiar,
             return_timestamps=devolv, return_columns=[v.nombre_py for v in rebanada.resultados.variables()]
@@ -42,7 +43,7 @@ class ModeloPySD(ModeloMDS):
 
         # Guardar valores iniciales para niveles
         for v in rebanada.resultados.variables():
-            rebanada.resultados[v].vals[símismo.paso_act-1] = res[v.nombre_py][símismo.paso_act-1]
+            rebanada.resultados[v].vals[símismo.paso_act - 1] = res[v.nombre_py][símismo.paso_act - 1]
 
         símismo.cont_simul = True
         símismo.variables.cambiar_vals({v: res[v.nombre_py].values[-1] for v in rebanada.resultados.variables()})
@@ -95,11 +96,11 @@ def _gen_vars(mod):
             continue
 
         nombre_py = f['Py Name']
-        unid = f['Unit']
+        unid = decodar(f['Unit'])
         líms = literal_eval(f['Lims'])
-        ec = f['Eqn']
-        info = f['Comment']
-        obj_ec = Ecuación(ec)
+        ec = decodar(f['Eqn'])
+        info = decodar(f['Comment'])
+        obj_ec = Ecuación(ec, dialecto='vensim')
         parientes = {v for v in obj_ec.variables() if v not in internos}
         inic = getattr(mod.components, nombre_py)()
 

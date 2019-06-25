@@ -24,14 +24,14 @@ class TestSimular(unittest.TestCase):
         mod = ModeloPrueba(unid_tiempo='días')
         res = mod.simular(t=EspecTiempo(10, '2001-01-01'))['Escala']
         pdt.assert_index_equal(
-            res.vals.indexes[_('tiempo')], pd.date_range('2001-01-01', periods=11), check_names=False
+            res.vals.indexes[_('fecha')], pd.date_range('2001-01-01', periods=11), check_names=False
         )
 
     def test_paso(símismo):
         mod = ModeloPrueba()
         res = mod.simular(t=EspecTiempo(10, tmñ_paso=2))['Escala']
         npt.assert_equal(res.vals, np.arange(21, step=2).reshape((11, 1)))
-        npt.assert_equal(res.vals.indexes[_('tiempo')], np.arange(21, step=2))
+        npt.assert_equal(res.vals.indexes[_('fecha')], np.arange(21, step=2))
 
     def test_paso_inválido(símismo):
         mod = ModeloPrueba()
@@ -49,7 +49,7 @@ class TestSimular(unittest.TestCase):
         res = mod.simular(t=EspecTiempo(10, '2001-01-01', guardar_cada=2))['Escala']
         npt.assert_equal(res.vals, np.arange(11, step=2).reshape((6, 1)))
         pdt.assert_index_equal(
-            res.vals.indexes[_('tiempo')], pd.date_range('2001-01-01', periods=6, freq='2D'), check_names=False
+            res.vals.indexes[_('fecha')], pd.date_range('2001-01-01', periods=6, freq='2D'), check_names=False
         )
 
 

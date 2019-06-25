@@ -34,11 +34,13 @@ class Lugar(object):
         símismo.ord_niveles = OrdNiveles(símismo)
 
     def lugares(símismo, en=None, nivel=None):
+        if isinstance(nivel, (str, Nivel)):
+            nivel = [nivel]
         if en is None:
             buscar_en = símismo
         else:
             buscar_en = símismo[en]
-        return {lg for lg in buscar_en if (nivel is None or lg.nivel == nivel)}
+        return {lg for lg in buscar_en if (nivel is None or lg.nivel in nivel)}
 
     def buscar_nombre(símismo, nombre, nivel=None):
         for lg in símismo:
@@ -46,11 +48,13 @@ class Lugar(object):
                 return lg
         raise ValueError(_('Lugar "{nmb}" no encontrado en "{lg}"').format(nmb=nombre, lg=símismo))
 
-    def pariente(símismo, lugar, ord_niveles=None):
+    def pariente(símismo, lugar, ord_niveles=None, todos=False):
         lugar = símismo[lugar]
         ord_niveles = símismo.ord_niveles.resolver(ord_niveles)
         potenciales = [lg for lg in símismo if lugar in lg.sub_lugares and lg.nivel in ord_niveles]
         if potenciales:
+            if todos:
+                return potenciales
             return sorted(potenciales, key=lambda x: ord_niveles.index(str(x.nivel)))[0]
 
     def hijos_inmediatos(símismo, ord_niveles=None):

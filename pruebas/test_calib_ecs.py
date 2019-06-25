@@ -3,8 +3,8 @@ import unittest
 
 import numpy as np
 import numpy.testing as npt
+import pandas as pd
 import scipy.stats as estad
-
 from tinamit.calibs.ec import CalibradorEcOpt, CalibradorEcBayes
 from tinamit.datos.bd import BD
 from tinamit.datos.fuente import FuenteDic
@@ -39,8 +39,10 @@ class TestCalibrador(unittest.TestCase):
         cls.clbrds = {ll: v(ec=ec, paráms=list(cls.paráms)) for ll, v in calibradores.items()}
 
         datos_y = cls.paráms['a'] * datos_x + cls.paráms['b'] + np.random.normal(0, 0.1, n_obs)
-
-        cls.bd_datos = BD(fuentes=FuenteDic({'y': datos_y, 'x': datos_x}, 'Datos generados'))
+        fchs = pd.date_range(0, periods=n_obs)
+        cls.bd_datos = BD(
+            fuentes=FuenteDic({'y': datos_y, 'x': datos_x, 'f': fchs}, 'Datos generados', fechas='f')
+        )
 
     def test_calibración_sencilla(símismo):
         líms = {
@@ -83,7 +85,10 @@ class TestCalibGeog(unittest.TestCase):
 
         cls.clbrds = {ll: v(ec=cls.ec, paráms=['a', 'b']) for ll, v in calibradores.items()}
 
-        cls.bd = BD(FuenteDic({'lugar': lugares, 'x': x, 'y': y}, 'Datos geográficos', lugares='lugar'))
+        fchs = pd.date_range(0, periods=len(x))
+        cls.bd = BD(FuenteDic(
+            {'lugar': lugares, 'x': x, 'y': y, 'f': fchs}, 'Datos geográficos', lugares='lugar', fechas='f')
+        )
 
         cls.lugar = gen_lugares(arch_csv_geog, nivel_base='País', nombre='Iximulew')
 

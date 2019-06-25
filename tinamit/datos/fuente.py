@@ -4,7 +4,6 @@ import os
 import numpy as np
 import pandas as pd
 import xarray as xr
-
 from tinamit.config import _
 from tinamit.cositas import detectar_codif
 from எண்ணிக்கை import எண்ணுக்கு as எ
@@ -35,7 +34,9 @@ class Fuente(object):
             )
         else:
             vals = xr.Dataset(
-                {vr: ('n', símismo._vec_var(símismo._resolver_nombre(vr))) for vr in vars_interés},
+                {vr: ('n', símismo._vec_var(símismo._resolver_nombre(vr)))
+                 for vr in vars_interés if vr in símismo.variables
+                 },
                 coords=coords
             )
 
@@ -69,16 +70,21 @@ class Fuente(object):
         coords = {}
         lugar = símismo.obt_lugar()
         fecha = símismo.obt_fecha()
-        if isinstance(lugar, (np.ndarray, pd.Series)):
+        if isinstance(lugar, str) or lugar is None:
+            lugar = lugar or ''
+            coords[_('lugar')] = ('n', np.full(símismo.n_obs(), lugar))
+        else:
             coords[_('lugar')] = ('n', lugar)
-        else:
-            coords[_('lugar')] = lugar
         if isinstance(fecha, (np.ndarray, pd.Series, pd.DatetimeIndex)):
-            coords[_('tiempo')] = ('n', fecha)
+            coords[_('fecha')] = ('n', fecha)
         else:
-            coords[_('tiempo')] = fecha
+            fecha = fecha or pd.NaT
+            coords[_('fecha')] = ('n', np.full(símismo.n_obs(), fecha))
 
         return coords
+
+    def n_obs(símismo):
+        return símismo._vec_var(símismo.variables[0], tx=True).size
 
     def _vec_var(símismo, var, tx=False):
         raise NotImplementedError
@@ -95,11 +101,12 @@ class Fuente(object):
         if criteria is None:
             return vals
         criteria = pd.to_datetime(criteria)
-        fechas = vals[_('tiempo')]
+        if isinstance(criteria, pd.Timestamp):
+            criteria = criteria.to_datetime64()
+        fechas = vals[_('fecha')]
         if isinstance(criteria, tuple) and len(criteria) == 2:
             cond = np.logical_and(np.less_equal(fechas, criteria[1]), np.greater_equal(fechas, criteria[0]))
         else:
-            criteria = [criteria] if isinstance(criteria, pd.Timestamp) else criteria
             cond = fechas.isin(criteria)
         return vals.where(cond, drop=True)
 

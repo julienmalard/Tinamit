@@ -5,10 +5,9 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
+import tinamit.datos.fuente as fnt
 import xarray as xr
 import xarray.testing as xrt
-
-import tinamit.datos.fuente as fnt
 from tinamit.config import _
 from tinamit.datos.bd import BD
 
@@ -62,21 +61,21 @@ class TestFuentes(unittest.TestCase):
     def test_fechas_columna(símismo):
         fechas = ['1947-8-14', '1947-8-15']
         fuente = fnt.FuentePandas(pd.DataFrame({'a': [1, 2], 'f': fechas}), 'prueba', fechas='f')
-        lista_fechas_igual(fuente.obt_vals('a')[_('tiempo')].values, fechas)
+        lista_fechas_igual(fuente.obt_vals('a')[_('fecha')].values, fechas)
 
     def test_fechas_texto_año(símismo):
         fuente = fnt.FuentePandas(pd.DataFrame({'a': [1, 2]}), 'prueba', fechas='1966')
-        lista_fechas_igual(fuente.obt_vals('a')[_('tiempo')].values, [ft.date(1966, 1, 1)] * 2)
+        lista_fechas_igual(fuente.obt_vals('a')[_('fecha')].values, [ft.date(1966, 1, 1)] * 2)
 
     def test_fechas_ft(símismo):
         fecha = ft.date(1966, 1, 1)
         fuente = fnt.FuentePandas(pd.DataFrame({'a': [1, 2]}), 'prueba', fechas=fecha)
-        lista_fechas_igual(fuente.obt_vals('a')[_('tiempo')].values, [fecha] * 2)
+        lista_fechas_igual(fuente.obt_vals('a')[_('fecha')].values, [fecha] * 2)
 
     def test_fecha_texto(símismo):
         fecha = '1966-7-21'
         fuente = fnt.FuentePandas(pd.DataFrame({'a': [1, 2]}), 'prueba', fechas=fecha)
-        lista_fechas_igual(fuente.obt_vals('a')[_('tiempo')].values, [fecha] * 2)
+        lista_fechas_igual(fuente.obt_vals('a')[_('fecha')].values, [fecha] * 2)
 
     def test_fechas_error(símismo):
         with símismo.assertRaises(KeyError):
@@ -91,7 +90,7 @@ class TestFuentes(unittest.TestCase):
     def test_lugares_texto(símismo):
         fuente = fnt.FuentePandas(pd.DataFrame({'a': [1, 2]}), 'prueba', lugares='708')
         lugares_fuente = fuente.obt_vals('a')[_('lugar')].values.tolist()
-        símismo.assertEqual(lugares_fuente, '708')
+        símismo.assertEqual(lugares_fuente, ['708', '708'])
 
 
 class TestBD(unittest.TestCase):
@@ -119,23 +118,24 @@ class TestBD(unittest.TestCase):
 
     def test_obt_datos_fecha_única(símismo):
         res = símismo.bd.obt_vals('var_completo', fechas='2000')
-        símismo.assertTrue(fechas_en_rango(res[_('tiempo')], ['2000-1-1'] * 2))
+        símismo.assertTrue(fechas_en_rango(res[_('fecha')], ['2000-1-1', '2000-12-31']))
+        npt.assert_equal(res.values, [2, 1])
 
     def test_obt_datos_fecha_lista(símismo):
         res = símismo.bd.obt_vals('var_completo', fechas=['2000', '2002'])
-        símismo.assertTrue(fechas_en_lista(res[_('tiempo')], ['2000-01-01', '2002-01-01']))
+        símismo.assertTrue(fechas_en_lista(res[_('fecha')], ['2000-01-01', '2002-01-01']))
 
     def test_obt_datos_fecha_rango(símismo):
         res = símismo.bd.obt_vals('var_completo', fechas=('2000', '2002-6-1'))
-        símismo.assertTrue(fechas_en_rango(res[_('tiempo')], ('2000-1-1', '2002-6-1')))
+        símismo.assertTrue(fechas_en_rango(res[_('fecha')], ('2000-1-1', '2002-6-1')))
 
     def test_interpol_no_necesaria(símismo):
         res = símismo.bd.interpolar('var_completo', fechas=('2000', '2002-1-1'), lugares='708')
 
         ref = símismo.bd.obt_vals('var_completo', lugares='708')
         xrt.assert_equal(
-            res.where(res['tiempo'].isin(pd.to_datetime(('2000', '2002-1-1'))), drop=True),
-            ref.where(ref['tiempo'].isin(pd.to_datetime(('2000', '2002-1-1'))), drop=True)
+            res.where(res[_('fecha')].isin(pd.to_datetime(('2000', '2002-1-1'))), drop=True),
+            ref.where(ref[_('fecha')].isin(pd.to_datetime(('2000', '2002-1-1'))), drop=True)
         )
 
     def test_interpol_con_fecha_única(símismo):
@@ -143,7 +143,7 @@ class TestBD(unittest.TestCase):
 
         # Verificar interpolaciones
         vals = res.where(
-            np.logical_and(res[_('lugar')] == '7', res[_('tiempo')] == np.datetime64('2001-01-01')),
+            np.logical_and(res[_('lugar')] == '7', res[_('fecha')] == np.datetime64('2001-01-01')),
             drop=True
         )
         npt.assert_allclose(vals['var_completo'].values, 2.500684)
@@ -151,8 +151,8 @@ class TestBD(unittest.TestCase):
 
     def test_interpol_con_fecha_rango(símismo):
         l_vars = ['var_incompleto', 'var_completo']
-        res = símismo.bd.interpolar(l_vars, fechas=('2000', '2002-6-1')).dropna('n', how='any')
-        npt.assert_allclose(res['var_incompleto'].values, [15., 20., 26.67, 10., 28.05, 30.], rtol=0.01)
+        res = símismo.bd.interpolar(l_vars, fechas=('2000', '2002-6-1'))
+        npt.assert_allclose(res['var_incompleto'].sel(lugar='7'), [np.nan, 20, 26.67, 28.0, 30], rtol=0.01)
 
 
 def _a_conj(bd, var):

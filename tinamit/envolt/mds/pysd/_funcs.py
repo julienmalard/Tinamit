@@ -1,4 +1,5 @@
 import os
+from ast import literal_eval
 
 import pysd
 from tinamit.cositas import arch_más_recién
@@ -20,4 +21,8 @@ def gen_mod_pysd(archivo):
 def obt_paso_mod_pysd(mod):
     doc = mod.components.time_step.__doc__
     partes = doc.split()
-    return partes[partes.index('Units:')+1]
+    return decodar(partes[partes.index('Units:')+1])
+
+
+def decodar(tx):
+    return literal_eval(tx).decode('unicode_escape')

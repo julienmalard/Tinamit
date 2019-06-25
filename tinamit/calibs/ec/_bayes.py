@@ -24,7 +24,6 @@ class CalibradorEcBayes(CalibradorEc):
 
         # Leer los variables de la ecuación.
         vars_x, var_y = símismo._extraer_vars()
-
         # Todas las observaciones
         obs = símismo._obt_datos(bd, vars_interés=vars_x + [var_y], corresp_vars=corresp_vars)
 
@@ -43,7 +42,10 @@ class CalibradorEcBayes(CalibradorEc):
 
             # Primero, crear una lista de las relaciones jerárquicas, el cual se necesita para crear el modelo
             # jerárquico bayes.
-            lugs = lugar.lugares()
+            lugs = [lg for lg in lugar.lugares() if lg.nivel in ord_niveles]
+            primer_nivel = lugar.ord_niveles.resolver(ord_niveles)[0]
+            obs = obs.where(obs[_('lugar')].isin([x.cód for x in lugar.lugares(nivel=primer_nivel)]), drop=True)
+
             nvs_jerarq = [[lugar]]
             while len(lugs):
                 for lug in nvs_jerarq[-1]:
@@ -54,7 +56,7 @@ class CalibradorEcBayes(CalibradorEc):
             for í, nv in enumerate(nvs_jerarq):
                 nv[:] = [
                     lg for lg in nv
-                    if (obs['lugar'].isin([x.cód for x in lg.lugares()]).sum()
+                    if (obs[_('lugar')].isin([x.cód for x in lg.lugares()]).sum()
                         and ((í == len(nvs_jerarq) - 1) or any(
                                 lg is lugar.pariente(x, ord_niveles) for x in nvs_jerarq[í + 1]))
                         )
@@ -62,17 +64,19 @@ class CalibradorEcBayes(CalibradorEc):
 
             í_nv_jerarquía = []
             for í, nv in enumerate(nvs_jerarq[1:]):
-                í_nv_jerarquía.append([nvs_jerarq[í].index(lugar.pariente(lg)) for lg in nv])
+                í_nv_jerarquía.append([nvs_jerarq[í].index(lugar.pariente(lg, ord_niveles=ord_niveles)) for lg in nv])
 
             í_datos = np.array(
-                [next(i for i, lg in enumerate(nvs_jerarq[-1]) if x == lg.cód) for x in obs['lugar'].values.tolist()]
+                [next(i for i, lg in enumerate(nvs_jerarq[-1]) if x == lg.cód or
+                      any(p == lg for p in lugar.pariente(x, ord_niveles=ord_niveles, todos=True))) for x in
+                 obs[_('lugar')].values.tolist()
+                 ]
             )
             # Generar el modelo bayes
             mod_bayes_jrq = símismo.ec.gen_mod_bayes(
                 líms_paráms=líms_paráms, obs_x=obs[vars_x], obs_y=obs[var_y],
                 aprioris=None, binario=False, nv_jerarquía=í_nv_jerarquía,
                 í_datos=í_datos
-
             )
             prms_extras = [
                 'mu_{p}_nv_{í}'.format(í=í_nv, p=p) for í_nv in range(len(nvs_jerarq) - 1) for p in símismo.paráms
