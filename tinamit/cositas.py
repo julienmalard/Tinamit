@@ -4,7 +4,7 @@ import shutil
 import tempfile
 from datetime import datetime, date
 from warnings import warn as avisar
-import xarray as xr
+
 import numpy as np
 from chardet import UniversalDetector
 
@@ -162,30 +162,31 @@ def cargar_json(arch, codif='UTF-8'):
         return json.load(d)
 
 
-def jsonificar(o, r=None):
-    if isinstance(o, dict):
-        r = {}
-        for ll, v in o.items():
-            if isinstance(v, (dict, list)):
-                r[ll] = jsonificar(v)
-            elif isinstance(v, np.ndarray):
-                r[ll] = v.tolist()
-            elif isinstance(v, (xr.Dataset, xr.DataArray)):
-                r[ll] = v.to_dict()
-            else:
-                r[ll] = v
-    elif isinstance(o, list):
-        r = []
-        for v in o:
-            if isinstance(v, (dict, list)):
-                r.append(jsonificar(v))
-            elif isinstance(v, np.ndarray):
-                r.append(v.tolist())
-            elif isinstance(v, (xr.Dataset, xr.DataArray)):
-                r.append(v.to_dict())
-            else:
-                r.append(v)
-    return r
+def jsonificar(dic, redond=None):
+    nuevo = {}
+    for ll, v in dic.items():
+        if isinstance(v, dict):
+            nuevo[ll] = jsonificar(v, redond=redond)
+        elif isinstance(v, np.ndarray):
+            if redond:
+                v = v.round(redond)
+            nuevo[ll] = v.tolist()
+        else:
+            nuevo[ll] = v
+
+    return nuevo
+
+
+def numpyficar(dic):
+    nuevo = {}
+    for ll, v in dic.items():
+        if isinstance(v, dict):
+            nuevo[ll] = numpyficar(v)
+        elif isinstance(v, list):
+            nuevo[ll] = np.array(v)
+        else:
+            nuevo[ll] = v
+    return nuevo
 
 
 def _gen_fecha(f):

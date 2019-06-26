@@ -1,3 +1,6 @@
+import xarray as xr
+from tinamit.datos.bd import BD
+
 from ._utils import eval_funcs
 
 
@@ -6,10 +9,14 @@ class ValidadorMod(object):
         símismo.mod = mod
 
     def validar(símismo, t, datos, paráms=None, funcs=None):
+        if not isinstance(datos, xr.Dataset):
+            datos = datos if isinstance(datos, BD) else BD(datos)
+            datos = datos.obt_vals()
         funcs = funcs or list(eval_funcs)
-        vars_interés = list(datos)
-        res = símismo.mod.simular(t=t, vals_extern=paráms, vars_interés=vars_interés)
-        valid = {str(r): _valid_res(r, datos[str(r)], funcs) for r in res}
+
+        res = símismo.mod.simular(t=t, vals_extern=paráms, vars_interés=datos.data_vars)
+
+        valid = {str(r): _valid_res(r, datos[str(r)].values, funcs) for r in res}
         return valid
 
 

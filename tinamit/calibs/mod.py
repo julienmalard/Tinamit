@@ -15,9 +15,12 @@ class CalibradorMod(object):
         símismo.mod = mod
 
     def calibrar(símismo, líms_paráms, datos, método='epm', n_iter=300, vars_obs=None):
-        datos = BD(datos)
-        vars_obs = vars_obs or datos.variables
-        obs = datos.obt_vals(vars_obs)
+        # Para hacer: limpiar comunicación de datos entre calibrador y CalibradorGeog, y también con validadores
+        if isinstance(datos, xr.Dataset):
+            obs = datos
+        else:
+            datos = datos if isinstance(datos, BD) else BD(datos)
+            obs = datos.obt_vals(vars_obs)
 
         return símismo._efec_calib(líms_paráms=líms_paráms, método=método, n_iter=n_iter, obs=obs)
 

@@ -1,8 +1,11 @@
 import os
 import unittest
 
+import pandas as pd
 from tinamit.calibs.mod import CalibradorModSpotPy
 from tinamit.calibs.valid import ValidadorMod
+from tinamit.datos.bd import BD
+from tinamit.datos.fuente import FuenteDic
 from tinamit.envolt.mds import gen_mds
 from tinamit.geog.simul import SimuladorGeog, CalibradorGeog, ValidadorGeog
 
@@ -34,7 +37,12 @@ class TestCalibModelo(unittest.TestCase):
             vals_extern=cls.paráms,
             vars_interés=['Individuos Suceptibles', 'Individuos Infectados', 'Individuos Resistentes']
         )
-        cls.datos = {ll: v[:, 0] for ll, v in simul.a_dic().items()}  # Para hacer: dimensiones múltiples
+        fchs = pd.date_range(0, periods=101)
+        datos = {ll: v[:, 0] for ll, v in simul.a_dic().items()}  # Para hacer: dimensiones múltiples,
+        datos['f'] = fchs
+        cls.datos = FuenteDic(
+            datos, 'Datos geográficos', lugares='lugar', fechas='f'
+        )
 
     def test_calibrar_validar(símismo):
         calibs = CalibradorModSpotPy(símismo.mod).calibrar(
@@ -66,8 +74,13 @@ class TestCalibModeloEspacial(unittest.TestCase):
             t=100, vals_geog=cls.paráms,
             vars_interés=['Individuos Suceptibles', 'Individuos Infectados', 'Individuos Resistentes']
         )
-        # Para hacer: dimensiones múltiples
-        cls.datos = {lg: {ll: v[:, 0] for ll, v in simul[lg].a_dic().items()} for lg in cls.paráms}
+        fchs = pd.date_range(0, periods=101)
+
+        # Para hacer: dimensiones múltiples,
+        datos = {lg: {'f': fchs, **{ll: v[:, 0] for ll, v in simul[lg].a_dic().items()}} for lg in cls.paráms}
+        cls.datos = BD([
+            FuenteDic(datos[lg], 'Datos geográficos', lugares=lg, fechas='f') for lg in cls.paráms
+        ])
 
     def test_calib_valid_espacial(símismo):
         calib = CalibradorGeog(símismo.mod).calibrar(t=100, datos=símismo.datos, líms_paráms=líms_paráms, n_iter=50)

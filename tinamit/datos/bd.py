@@ -15,6 +15,9 @@ class BD(object):
         símismo.fuentes = [_gen_fuente(f) for f in fuentes]
         símismo.variables = list(set((v for f in símismo.fuentes for v in f.variables)))
 
+        símismo.lugares = np.unique(np.concatenate([np.unique(fnt.obt_lugar()) for fnt in símismo.fuentes]))
+        símismo.fechas = np.unique(np.concatenate([np.unique(fnt.obt_fecha()) for fnt in símismo.fuentes]))
+
     def obt_vals(símismo, vars_interés=None, lugares=None, fechas=None):
         """
 
@@ -33,9 +36,13 @@ class BD(object):
             vars_interés = [vars_interés]
             vr_único = True
 
+        if vars_interés is None:
+            vars_interés = símismo.variables
+
         l_vals_fnts = [f.obt_vals(vars_interés=vars_interés, lugares=lugares, fechas=fechas) for f in símismo.fuentes]
-        v_lugares = np.unique(np.concatenate([v[_('lugar')].dropna('n') for v in l_vals_fnts]+[['']]))
-        v_fechas = np.unique(np.concatenate([v[_('fecha')].dropna('n') for v in l_vals_fnts]+[[np.datetime64('NaT')]]))
+        v_lugares = np.unique(np.concatenate([v[_('lugar')].dropna('n') for v in l_vals_fnts] + [['']]))
+        v_fechas = np.unique(
+            np.concatenate([v[_('fecha')].dropna('n') for v in l_vals_fnts] + [[np.datetime64('NaT')]]))
         v_lugares.sort()
         v_fechas.sort()
 
@@ -83,8 +90,13 @@ class BD(object):
         datos = datos.unstack()
         datos = datos.reindex(fecha=np.concatenate((datos[_('fecha')].values, np.array(pd.to_datetime(nuevas_fechas)))))
         datos = datos.sortby(_('fecha'))
+        datos = datos.interpolate_na(_('fecha')).stack(n=[_('fecha'), _('lugar')])
 
-        return datos.interpolate_na(_('fecha')).stack(n=[_('fecha'), _('lugar')])
+        if extrap:
+            datos = datos.bfill(_('fecha'))
+            datos = datos.ffill(_('fecha'))
+
+        return datos
 
 
 def _gen_fuente(fnt, nombre=None, lugares=None, fechas=None):
