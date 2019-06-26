@@ -1,4 +1,5 @@
 import csv
+import datetime as ft
 import os
 
 import numpy as np
@@ -13,20 +14,21 @@ class Fuente(object):
 
     def __init__(símismo, nombre, variables, lugares=None, fechas=None):
         símismo.nombre = nombre
-        símismo.lugares = lugares
+
         símismo.variables = [vr for vr in variables if vr not in [lugares, fechas]]
 
         símismo._equiv_nombres = {}
 
-        try:
-            símismo.fechas = pd.to_datetime(fechas)
-        except ValueError:
-            símismo.fechas = fechas
+        fechas = fechas or pd.NaT
+        símismo.n_obs = símismo._vec_var(símismo.variables[0], tx=True).size
+
+        símismo.lugares = símismo._obt_lugar(lugares)
+        símismo.fechas = símismo._obt_fecha(fechas)
 
     def obt_vals(símismo, vars_interés, lugares=None, fechas=None):
         vars_interés = vars_interés or símismo.variables
 
-        coords = símismo._gen_coords()
+        coords = {_('lugar'): ('n', símismo.lugares), _('fecha'): ('n', símismo.fechas)}
         if isinstance(vars_interés, str):
             vals = xr.DataArray(
                 símismo._vec_var(símismo._resolver_nombre(vars_interés)),
@@ -42,20 +44,29 @@ class Fuente(object):
 
         return símismo._filtrar_lugares(símismo._filtrar_fechas(vals, fechas), lugares)
 
-    def obt_lugar(símismo):
-        if isinstance(símismo.lugares, str):
+    def _obt_lugar(símismo, lugares):
+        lugares = lugares or ''
+        if isinstance(lugares, str):
             try:
-                return símismo._vec_var(símismo.lugares, tx=True)
+                lugares = símismo._vec_var(lugares, tx=True)
+            except KeyError:
+                return np.full(símismo.n_obs, lugares)
+
+        return lugares
+
+    def _obt_fecha(símismo, fechas):
+        if isinstance(fechas, str):
+            try:
+                fechas = símismo._vec_var(fechas, tx=True)
             except KeyError:
                 pass
-        return símismo.lugares
+            fechas = pd.to_datetime(fechas)
+        if isinstance(fechas, pd.Timestamp):
+            fechas = np.full(símismo.n_obs, fechas.to_datetime64())
+        elif isinstance(fechas, (ft.date, ft.datetime)):
+            fechas = np.full(símismo.n_obs, fechas).astype(ft.datetime)
 
-    def obt_fecha(símismo):
-        if isinstance(símismo.fechas, str):
-            fechas = símismo._vec_var(símismo.fechas, tx=True)
-        else:
-            fechas = símismo.fechas
-        return pd.to_datetime(fechas, infer_datetime_format=True)
+        return fechas
 
     def equiv_nombre(símismo, var, equiv):
         símismo._equiv_nombres[equiv] = var
@@ -65,26 +76,6 @@ class Fuente(object):
             símismo._equiv_nombres[var]
         except KeyError:
             return var
-
-    def _gen_coords(símismo):
-        coords = {}
-        lugar = símismo.obt_lugar()
-        fecha = símismo.obt_fecha()
-        if isinstance(lugar, str) or lugar is None:
-            lugar = lugar or ''
-            coords[_('lugar')] = ('n', np.full(símismo.n_obs(), lugar))
-        else:
-            coords[_('lugar')] = ('n', lugar)
-        if isinstance(fecha, (np.ndarray, pd.Series, pd.DatetimeIndex)):
-            coords[_('fecha')] = ('n', fecha)
-        else:
-            fecha = fecha or pd.NaT
-            coords[_('fecha')] = ('n', np.full(símismo.n_obs(), fecha))
-
-        return coords
-
-    def n_obs(símismo):
-        return símismo._vec_var(símismo.variables[0], tx=True).size
 
     def _vec_var(símismo, var, tx=False):
         raise NotImplementedError
@@ -139,12 +130,15 @@ class FuenteCSV(Fuente):
             lector = csv.DictReader(d)
 
             for n_f, f in enumerate(lector):
-                if tx:
-                    val = f[var].strip()
-
-                else:
-                    val = எ(f[var].strip()) if f[var].strip() not in símismo.cód_vacío else np.nan
-
+                val = f[var].strip()
+                if not tx:
+                    if val in símismo.cód_vacío:
+                        val = np.nan
+                    else:
+                        try:
+                            val = எ(val)
+                        except ValueError:
+                            pass
                 l_datos.append(val)
 
         return np.array(l_datos)

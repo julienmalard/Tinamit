@@ -78,7 +78,7 @@ class TestFuentes(unittest.TestCase):
         lista_fechas_igual(fuente.obt_vals('a')[_('fecha')].values, [fecha] * 2)
 
     def test_fechas_error(símismo):
-        with símismo.assertRaises(KeyError):
+        with símismo.assertRaises(ValueError):
             fnt.FuentePandas(pd.DataFrame({'a': [1, 2]}), 'prueba', fechas='No soy una columna').obt_vals('a')
 
     def test_lugares_columna(símismo):

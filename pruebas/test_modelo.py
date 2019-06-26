@@ -113,17 +113,17 @@ class TestSimulConDatos(unittest.TestCase):
     def test_t_fecha_extern_xr_fecha(símismo):
         extern = {
             'Vacío': xr.DataArray(
-                np.arange(11), coords={'tiempo': pd.date_range('2000-01-01', periods=11)}, dims=['tiempo']
+                np.arange(11), coords={_('fecha'): pd.date_range('2000-01-01', periods=11)}, dims=[_('fecha')]
             )
         }
         símismo._simul_con_extern(extern, ref=np.arange(11))
 
     def test_t_fecha_extern_xr_num(símismo):
-        extern = {'Vacío': xr.DataArray(np.arange(11), coords={'tiempo': np.arange(11)}, dims=['tiempo'])}
+        extern = {'Vacío': xr.DataArray(np.arange(11), coords={_('fecha'): np.arange(11)}, dims=[_('fecha')])}
         símismo._simul_con_extern(extern, ref=np.arange(11))
 
     def test_t_fecha_extern_bd_xr(símismo):
-        extern = xr.Dataset({'Vacío': ('tiempo', np.arange(11))}, coords={'tiempo': np.arange(11)})
+        extern = xr.Dataset({'Vacío': (_('fecha'), np.arange(11))}, coords={_('fecha'): np.arange(11)})
         símismo._simul_con_extern(extern, ref=np.arange(11))
 
     def test_t_numérico(símismo):

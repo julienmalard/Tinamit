@@ -40,12 +40,13 @@ class CalibradorEcBayes(CalibradorEc):
         if jerárquico:
             # Si estamos implementando un modelo jerárquico...
 
-            # Primero, crear una lista de las relaciones jerárquicas, el cual se necesita para crear el modelo
-            # jerárquico bayes.
+            ord_niveles = lugar.ord_niveles.resolver(ord_niveles)
             lugs = [lg for lg in lugar.lugares() if lg.nivel in ord_niveles]
-            primer_nivel = lugar.ord_niveles.resolver(ord_niveles)[0]
+            primer_nivel = ord_niveles[0]
             obs = obs.where(obs[_('lugar')].isin([x.cód for x in lugar.lugares(nivel=primer_nivel)]), drop=True)
 
+            # Primero, crear una lista de las relaciones jerárquicas, el cual se necesita para crear el modelo
+            # jerárquico bayes.
             nvs_jerarq = [[lugar]]
             while len(lugs):
                 for lug in nvs_jerarq[-1]:

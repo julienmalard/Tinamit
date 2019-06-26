@@ -15,8 +15,8 @@ class BD(object):
         símismo.fuentes = [_gen_fuente(f) for f in fuentes]
         símismo.variables = list(set((v for f in símismo.fuentes for v in f.variables)))
 
-        símismo.lugares = np.unique(np.concatenate([np.unique(fnt.obt_lugar()) for fnt in símismo.fuentes]))
-        símismo.fechas = np.unique(np.concatenate([np.unique(fnt.obt_fecha()) for fnt in símismo.fuentes]))
+        símismo.lugares = np.unique(np.concatenate([np.unique(fnt.lugares) for fnt in símismo.fuentes]))
+        símismo.fechas = np.unique(np.concatenate([np.unique(fnt.fechas) for fnt in símismo.fuentes]))
 
     def obt_vals(símismo, vars_interés=None, lugares=None, fechas=None):
         """
