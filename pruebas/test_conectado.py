@@ -77,7 +77,7 @@ class TestConectado(unittest.TestCase):
             with símismo.subTest(mod=ll):
                 t_final = 10
                 ref = {
-                    'lago_%i' % i: mod.simular(t_final, vals_extern={'Nivel lago inicial': i}, vars_interés='Lago')
+                    'lago_%i' % i: mod.simular(t_final, extern={'Nivel lago inicial': i}, vars_interés='Lago')
                     for i in [50, 2000]
                 }
 

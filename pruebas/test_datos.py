@@ -119,7 +119,7 @@ class TestBD(unittest.TestCase):
     def test_obt_datos_fecha_única(símismo):
         res = símismo.bd.obt_vals('var_completo', fechas='2000')
         símismo.assertTrue(fechas_en_rango(res[_('fecha')], ['2000-1-1', '2000-12-31']))
-        npt.assert_equal(res.values, [2, 1])
+        npt.assert_equal(res.values, [1, 2])
 
     def test_obt_datos_fecha_lista(símismo):
         res = símismo.bd.obt_vals('var_completo', fechas=['2000', '2002'])
@@ -152,7 +152,7 @@ class TestBD(unittest.TestCase):
     def test_interpol_con_fecha_rango(símismo):
         l_vars = ['var_incompleto', 'var_completo']
         res = símismo.bd.interpolar(l_vars, fechas=('2000', '2002-6-1'))
-        npt.assert_allclose(res['var_incompleto'].sel(lugar='7'), [np.nan, 20, 26.67, 28.0, 30], rtol=0.01)
+        npt.assert_allclose(res['var_incompleto'].sel(lugar='7'), [20, 28.05], rtol=0.01)
 
 
 def _a_conj(bd, var):

@@ -71,6 +71,12 @@ class TiempoCalendario(Tiempo):
 
     def eje(símismo):
         paso = símismo.fact_conv * símismo.guardar_cada * símismo.tmñ_paso
+        if símismo.unid_paso == 'mes':
+            eje = pd.to_datetime([
+                símismo.f_inic + relativedelta(months=i)
+                for i in range(0, símismo.n_pasos // símismo.guardar_cada + 1, paso)
+            ])
+            return eje
         return pd.date_range(
             símismo.f_inic, periods=símismo.n_pasos // símismo.guardar_cada + 1,
             freq=str(paso) + _a_unid_pandas[símismo.unid_paso]
@@ -127,6 +133,9 @@ def _a_unid_tnmt(unid):
 
 
 _a_unid_ft = {
+    'año': 'años',
+    'mes': 'months',
+    'semana': 'weeks',
     'día': 'days',
     'hora': 'hours',
     'minuto': 'minutes',

@@ -1,5 +1,5 @@
-from tinamit.mod.var import Variable
 from tinamit.mod import VariablesMod
+from tinamit.mod.var import Variable
 
 
 class VariablesMDS(VariablesMod):
@@ -47,6 +47,10 @@ class VarNivel(VarMDS):
         super().__init__(
             nombre, unid, ec=ec, parientes=parientes, inic=inic, subs=subs, líms=líms, info=info, ingr=False, egr=True
         )
+        símismo.var_inic = None
+
+    def estab_var_inic(símismo, var_inic):
+        símismo.var_inic = var_inic
 
 
 class VarAuxiliar(VarMDS):

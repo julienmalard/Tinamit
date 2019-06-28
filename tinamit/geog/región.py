@@ -54,7 +54,7 @@ class Lugar(object):
         potenciales = [lg for lg in símismo if lugar in lg.sub_lugares and lg.nivel in ord_niveles]
         if potenciales:
             if todos:
-                return potenciales
+                return sorted(potenciales, key=lambda x: ord_niveles.index(str(x.nivel)))
             return sorted(potenciales, key=lambda x: ord_niveles.index(str(x.nivel)))[0]
 
     def hijos_inmediatos(símismo, ord_niveles=None):
@@ -86,7 +86,7 @@ class OrdNiveles(object):
         ords = []
         for sb in sub_ords:
             for i, nv in enumerate(sb):
-                if i > (len(ords)-1):
+                if i > (len(ords) - 1):
                     ords.append(nv)
                 else:
                     ant = ords[i]
@@ -98,10 +98,12 @@ class OrdNiveles(object):
         símismo.ords = (*ords, lugar.nivel)
 
     def resolver(símismo, orden=None):
-        orden = orden or []
+        if orden is None:
+            return [x if isinstance(x, Nivel) else x[0] for x in símismo.ords]
+
         if isinstance(orden, (str, Nivel)):
             orden = [orden]
-        return [x if isinstance(x, Nivel) else next((y for y in x if y in orden), x[0]) for x in símismo.ords]
+        return orden
 
     def __contains__(símismo, itema):
         for x in símismo.ords:

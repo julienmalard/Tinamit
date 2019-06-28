@@ -93,7 +93,7 @@ class TestSimulConDatos(unittest.TestCase):
     @staticmethod
     def _simul_con_extern(extern, ref, var_ref='Vacío', fecha=True):
         f_inic = '2000-01-01' if fecha else None
-        res = ModeloPrueba(unid_tiempo='días').simular(t=EspecTiempo(10, f_inic=f_inic), vals_extern=extern)
+        res = ModeloPrueba(unid_tiempo='días').simular(t=EspecTiempo(10, f_inic=f_inic), extern=extern)
         npt.assert_equal(res[var_ref].vals.values.reshape(np.array(ref).shape), ref)
 
     def test_t_fecha_extern_núm(símismo):
@@ -133,4 +133,4 @@ class TestSimulConDatos(unittest.TestCase):
     def test_t_numérico_extern_fecha(símismo):
         extern = pd.DataFrame(data={'Vacío': np.arange(4)}, index=pd.date_range('2000-01-02', '2000-01-05'))
         with símismo.assertRaises(TypeError):
-            ModeloPrueba(unid_tiempo='días').simular(t=EspecTiempo(10), vals_extern=extern)
+            ModeloPrueba(unid_tiempo='días').simular(t=EspecTiempo(10), extern=extern)

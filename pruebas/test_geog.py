@@ -67,7 +67,7 @@ class TestRegión(unittest.TestCase):
 
     def test_hijos(símismo):
         símismo.assertSetEqual(
-            {x.cód for x in símismo.guate.hijos_inmediatos(ord_niveles=['Territorio'])},
+            {x.cód for x in símismo.guate.hijos_inmediatos(ord_niveles=['Territorio', 'Municipio', 'País'])},
             {x.cód for x in list(símismo.depts.values()) + list(símismo.terrs.values()) + [símismo.munis['3']]}
         )
 
@@ -158,7 +158,7 @@ class TestMapaResultados(unittest.TestCase):
     def test_mapa_de_simul(símismo):
         frm = FormaDinámicaNumérica(arch_frm_numérica, col_id='Id')
         extern = {'Vacío': np.arange(len(frm.ids))}
-        res = ModeloPrueba(dims=(215,)).simular(t=10, vals_extern=extern)
+        res = ModeloPrueba(dims=(215,)).simular(t=10, extern=extern)
         dibujar_mapa_de_res(forma_dinámica=frm, res=res, var='Vacío', t=3, directorio=símismo.dir_)
 
     def test_mapa_de_simul_grupo(símismo):

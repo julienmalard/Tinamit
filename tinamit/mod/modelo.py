@@ -53,13 +53,12 @@ class Modelo(object):
 
         raise NotImplementedError
 
-    def simular(símismo, t, nombre='Tinamït', vals_extern=None, clima=None, vars_interés=None):
-        if not isinstance(t, EspecTiempo):
-            t = EspecTiempo(t)
+    def simular(símismo, t, nombre='Tinamït', extern=None, clima=None, vars_interés=None):
+        t = t if isinstance(t, EspecTiempo) else EspecTiempo(t)
 
         corrida = Corrida(
             nombre, t=t.gen_tiempo(símismo.unidad_tiempo()),
-            extern=gen_extern(vals_extern),
+            extern=gen_extern(extern),
             vars_mod=símismo.variables,
             vars_interés=vars_interés,
             clima=clima

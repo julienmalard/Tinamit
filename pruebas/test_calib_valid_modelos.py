@@ -34,7 +34,7 @@ class TestCalibModelo(unittest.TestCase):
 
         simul = cls.mod.simular(
             t=100,
-            vals_extern=cls.paráms,
+            extern=cls.paráms,
             vars_interés=['Individuos Suceptibles', 'Individuos Infectados', 'Individuos Resistentes']
         )
         fchs = pd.date_range(0, periods=101)

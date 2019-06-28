@@ -251,8 +251,6 @@ def escribir_archivo(dic_paráms, nombre_arch_contenido, nombre_arch_plantilla, 
     dic_config = {}
     with open(nombre_arch_contenido, 'w') as archContenido, open(nombre_arch_plantilla, 'r') as arch_plantilla:
         for templatelínea in arch_plantilla:
-            # print('building línea {} of file {}'.format(k, nombre_arch_plantilla))
-            # k+=1
             if templatelínea[0] == '!':
                 tupla_config = literal_eval(templatelínea[1:].strip())
                 dic_config[tupla_config[0]] = tupla_config[1]
@@ -290,7 +288,6 @@ def escribir_archivo(dic_paráms, nombre_arch_contenido, nombre_arch_plantilla, 
 def central(*args):  # pragma: sin cobertura
     if args[1] == '-r':
         dic_paráms = leer_archivo(args[2], args[3])
-        print(dic_paráms[args[4]])
     elif args[1] == '-c':
         dic_paráms = leer_archivo(args[2], args[3])
         escribir_archivo(dic_paráms, args[4], args[5])

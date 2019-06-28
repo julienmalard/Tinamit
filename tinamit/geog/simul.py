@@ -1,3 +1,5 @@
+from tqdm import tqdm
+
 from tinamit.calibs.mod import CalibradorModSpotPy
 from tinamit.calibs.valid import ValidadorMod
 from tinamit.config import _
@@ -9,9 +11,10 @@ class SimuladorGeog(object):
 
     def simular(símismo, t, vals_geog, vals_const=None, vars_interés=None):
         vals_const = vals_const or {}
+
         res = {
             lg: símismo.mod.simular(
-                t=t, vals_extern=dict(**vals_const, **vls_lg), vars_interés=vars_interés
+                t=t, extern=dict(**vals_const, **vls_lg), vars_interés=vars_interés
             ) for lg, vls_lg in vals_geog.items()
         }
         return res
@@ -39,16 +42,32 @@ class ValidadorGeog(object):
     def __init__(símismo, mod):
         símismo.mod = mod
 
-    def validar(símismo, t, datos, paráms=None, funcs=None):
-        vals_datos = datos.obt_vals()
+    def validar(símismo, t, datos, paráms=None, funcs=None, vars_extern=None, corresp_vars=None):
+
+        vars_interés = [x for x in datos.variables if _reversar_var(x, corresp_vars) in símismo.mod.variables]
+
+        vals_datos = datos.obt_vals(vars_interés)
 
         valids = {}
-        for lg in datos.lugares:
+        for lg in tqdm(datos.lugares):
             prms_lg = paráms[lg] if lg in paráms else {}
-            # if isinstance(t, TiempoCalendario):
-            # datos_inic = datos.interpolar('Población', fechas=qij)
-            # prms_lg.update(datos_inic)
             datos_lg = vals_datos.where(vals_datos[_('lugar')] == lg, drop=True)
-            valids[lg] = ValidadorMod(símismo.mod).validar(t, datos=datos_lg, paráms=prms_lg, funcs=funcs)
+
+            if datos_lg.sizes['n']:
+                valids[lg] = ValidadorMod(símismo.mod).validar(
+                    t, datos=datos_lg, paráms=prms_lg, funcs=funcs, vars_extern=vars_extern, corresp_vars=corresp_vars
+                )
 
         return valids
+
+
+def _resolver_var(var, corresp_vars):
+    if not corresp_vars or var not in corresp_vars:
+        return var
+    return corresp_vars[var]
+
+
+def _reversar_var(var, corresp_vars):
+    if not corresp_vars:
+        return var
+    return next((ll for ll, v in corresp_vars.items() if v == var), var)

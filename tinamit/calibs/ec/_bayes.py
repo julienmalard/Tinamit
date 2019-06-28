@@ -43,7 +43,9 @@ class CalibradorEcBayes(CalibradorEc):
             ord_niveles = lugar.ord_niveles.resolver(ord_niveles)
             lugs = [lg for lg in lugar.lugares() if lg.nivel in ord_niveles]
             primer_nivel = ord_niveles[0]
-            obs = obs.where(obs[_('lugar')].isin([x.cód for x in lugar.lugares(nivel=primer_nivel)]), drop=True)
+            obs = obs.where(obs[_('lugar')].isin([
+                h.cód for x in lugar.lugares(nivel=primer_nivel) for h in x
+            ]), drop=True)
 
             # Primero, crear una lista de las relaciones jerárquicas, el cual se necesita para crear el modelo
             # jerárquico bayes.
@@ -62,7 +64,6 @@ class CalibradorEcBayes(CalibradorEc):
                                 lg is lugar.pariente(x, ord_niveles) for x in nvs_jerarq[í + 1]))
                         )
                 ]
-
             í_nv_jerarquía = []
             for í, nv in enumerate(nvs_jerarq[1:]):
                 í_nv_jerarquía.append([nvs_jerarq[í].index(lugar.pariente(lg, ord_niveles=ord_niveles)) for lg in nv])
@@ -120,7 +121,6 @@ class CalibradorEcBayes(CalibradorEc):
                     resultados[lg.cód] = _calibrar_mod_bayes(
                         mod_bayes=mod_bayes, paráms=símismo.paráms, obs=obs_lg, ops=ops
                     )
-
         return resultados
 
 

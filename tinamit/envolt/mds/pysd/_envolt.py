@@ -1,9 +1,9 @@
 from ast import literal_eval
 
 import numpy as np
+
 from tinamit.calibs.sintx.ec import Ecuación
 from tinamit.envolt.mds.pysd._funcs import decodar
-
 from ._funcs import gen_mod_pysd, obt_paso_mod_pysd
 from ._vars import VarPySDAuxiliar, VarPySDNivel, VarPySDConstante, VariablesPySD
 from .._envolt import ModeloMDS
@@ -56,7 +56,7 @@ class ModeloPySD(ModeloMDS):
         if símismo.corrida.extern is not None:
             paráms = {
                 vr: vl.squeeze().to_pandas()
-                for vr, vl in símismo.corrida.extern.obt_vals(t.eje(), var=símismo.variables).items()
+                for vr, vl in símismo.corrida.extern.obt_vals(t, var=símismo.variables).items()
             }
         else:
             paráms = {}
@@ -64,6 +64,8 @@ class ModeloPySD(ModeloMDS):
         if símismo.corrida.clima is not None:
             vars_clima = símismo.corrida.clima.obt_todos_vals(t.eje(), vars_clima=símismo.vars_clima)
             paráms.update(vars_clima)
+
+        símismo._proc_paráms(paráms)
 
         t_inic_mod = símismo.mod.time._t
         res_pysd = símismo.mod.run(
@@ -83,6 +85,12 @@ class ModeloPySD(ModeloMDS):
 
     def paralelizable(símismo):
         return True
+
+    def _proc_paráms(símismo, prms):
+        for p in list(prms):
+            v = símismo.variables[p]
+            if isinstance(v, VarPySDNivel) and v.var_inic:
+                prms[v.var_inic.nombre] = prms.pop(p)
 
 
 def _gen_vars(mod):
@@ -105,7 +113,7 @@ def _gen_vars(mod):
         inic = getattr(mod.components, nombre_py)()
 
         try:
-            getattr(mod.components, 'integ_' + nombre_py)
+            getattr(mod.components, '_integ_' + nombre_py)
             nivel = True
 
         except AttributeError:
@@ -124,5 +132,15 @@ def _gen_vars(mod):
             )
 
         l_vars.append(var)
+
+    for vr in l_vars:
+        if isinstance(vr, VarPySDNivel):
+            # para hacer: no funciona con XMILE, solamente con vensim (.mdl)
+            args_integ = Ecuación(vr.ec).sacar_args_func('INTEG', 2)
+            if args_integ:
+                arg_inic = args_integ[1]
+                vr.estab_var_inic(next((
+                    v for v in l_vars if v.nombre == arg_inic
+                ), None))
 
     return VariablesPySD(l_vars)

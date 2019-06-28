@@ -1,11 +1,10 @@
 import os
-from itertools import product
 
 import numpy as np
 import pandas as pd
 import xarray as xr
-from tinamit.config import _
 
+from tinamit.config import _
 from .fuente import FuentePandas, FuenteDic, FuenteVarXarray, FuenteBaseXarray, FuenteCSV
 
 
@@ -39,64 +38,25 @@ class BD(object):
         if vars_interés is None:
             vars_interés = símismo.variables
 
-        l_vals_fnts = [f.obt_vals(vars_interés=vars_interés, lugares=lugares, fechas=fechas) for f in símismo.fuentes]
-        v_lugares = np.unique(np.concatenate([v[_('lugar')].dropna('n') for v in l_vals_fnts] + [['']]))
-        v_fechas = np.unique(
-            np.concatenate([v[_('fecha')].dropna('n') for v in l_vals_fnts] + [[np.datetime64('NaT')]]))
-        v_lugares.sort()
-        v_fechas.sort()
-
-        vals = xr.Dataset(
-            data_vars={
-                vr: ((_('lugar'), _('fecha')), np.full((v_lugares.size, v_fechas.size), np.nan)) for vr in vars_interés
-            },
-            coords={_('lugar'): v_lugares, _('fecha'): v_fechas}
-        )
-        for lg, fch in product(v_lugares, v_fechas):
-            fnts_lg_fch = [
-                v.where(np.logical_and(
-                    np.isnat(v['fecha']) if np.isnat(fch) else v['fecha'] == fch,
-                    v['lugar'] == lg), drop=True) for v in l_vals_fnts
-                if len(v.data_vars)
-            ]
-            bd_lg_fch = xr.auto_combine(fnts_lg_fch)
-            if not bd_lg_fch.sizes['n']:
-                continue
-            for vr in vars_interés:
-                try:
-                    vl = bd_lg_fch[vr].values[0]
-                except KeyError:
-                    vl = None
-                if vl is not None and vl != np.nan:
-                    índs = {}
-                    if not np.isnat(fch):
-                        índs[_('fecha')] = fch
-                    if lg:
-                        índs[_('lugar')] = lg
-                    vals[vr].loc[índs] = vl
-
-        vals = vals.stack(n=[_('fecha'), _('lugar')])
-        vals = vals.dropna('n', how='all')
+        l_vals_fnts = [
+            f.obt_vals(vars_interés=vars_interés, lugares=lugares, fechas=fechas) for f in símismo.fuentes
+        ]
+        l_vals_fnts = [v for v in l_vals_fnts if v.data_vars]
+        vals = xr.merge(l_vals_fnts)
 
         return vals[vars_interés[0]] if vr_único else vals
 
     def interpolar(símismo, vars_interés, fechas, lugares=None, extrap=False):
+
         datos = símismo.obt_vals(vars_interés=vars_interés, lugares=lugares, fechas=None)
+        if datos['n'].size:
+            datos = interpolar_xr(datos, fechas=fechas)
 
-        # Las nuevas fechas de interés que hay que a la base de datos
-        if not isinstance(fechas, (tuple, list)):
-            fechas = [fechas]
-        nuevas_fechas = [x for x in pd.DatetimeIndex(fechas) if not (datos[_('fecha')] == x.to_datetime64()).any()]
-        datos = datos.unstack()
-        datos = datos.reindex(fecha=np.concatenate((datos[_('fecha')].values, np.array(pd.to_datetime(nuevas_fechas)))))
-        datos = datos.sortby(_('fecha'))
-        datos = datos.interpolate_na(_('fecha')).stack(n=[_('fecha'), _('lugar')])
+            if extrap:
+                datos = datos.bfill(_('fecha'))
+                datos = datos.ffill(_('fecha'))
 
-        if extrap:
-            datos = datos.bfill(_('fecha'))
-            datos = datos.ffill(_('fecha'))
-
-        return datos
+            return datos
 
 
 def _gen_fuente(fnt, nombre=None, lugares=None, fechas=None):
@@ -121,3 +81,14 @@ def _gen_fuente(fnt, nombre=None, lugares=None, fechas=None):
             raise ValueError(_('Formato de base de datos "{}" no reconocido.').format(ext))
 
     return fnt
+
+
+def interpolar_xr(m, fechas):
+    fechas = [fechas] if not isinstance(fechas, (tuple, list)) else fechas
+    m = m.unstack()
+    if m.sizes[_('fecha')] > 1:
+        m = m.interpolate_na(_('fecha')).interp(
+            {_('fecha'): pd.DatetimeIndex(fechas)}
+        ).fillna(m)
+    m = m.dropna(_('lugar'), how='all')
+    return m.stack(n=[_('lugar'), _('fecha')])

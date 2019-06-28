@@ -21,6 +21,7 @@ class ResultadosSimul(object):
         símismo.nombre = nombre
         símismo.t = t
         símismo.res_vars = {str(v): ResultadosVar(v, t) for v in vars_interés}
+        # Para hacer: implementar xr.Dataset una vez se coordinen los nombres de dimensiones de variables
 
     def actualizar(símismo):
         for v in símismo:
@@ -102,6 +103,16 @@ class ResultadosVar(object):
 
     def a_dic(símismo):
         return símismo.vals.values
+
+    def interpolar(símismo, fechas):
+        eje_ant = símismo.vals[_('fecha')]
+        nuevas_fechas = fechas.values[~np.isin(fechas.values, eje_ant.values)]
+        vals = símismo.vals
+        if nuevas_fechas.size:
+            vals = vals.reindex(fecha=np.concatenate((eje_ant.values, nuevas_fechas)))
+            vals = vals.sortby(_('fecha'))
+            vals = vals.interpolate_na(_('fecha'))
+        return vals.where(vals[_('fecha')].isin(fechas), drop=True)
 
     def __str__(símismo):
         return str(símismo.var)

@@ -26,6 +26,7 @@ class Extern(object):
 
     @staticmethod
     def _obt_a_t(m_xr, t, interpol):
+        m_xr = m_xr.unstack()
         tiempo_xr = m_xr[_('fecha')]
         if np.issubdtype(tiempo_xr.dtype, np.datetime64):
             if isinstance(t, Tiempo):

@@ -55,7 +55,7 @@ class OpsSimulGrupoCombin(PlantillaOpsSimulGrupo):
 
     def __iter__(símismo):
         ops = itertools.product(*símismo.opciones.values())
-        nmbs = ['t', 'vals_extern', 'clima']
+        nmbs = ['t', 'extern', 'clima']
         for i, op in enumerate(ops):
             yield {
                 **{n: o for n, o in zip(nmbs, op)},
@@ -69,7 +69,7 @@ class OpsSimulGrupo(PlantillaOpsSimulGrupo):
         símismo.nombre = nombre
 
         args = {
-            't': t, 'vals_extern': vals_extern, 'clima': clima, 'vars_interés': vars_interés
+            't': t, 'extern': vals_extern, 'clima': clima, 'vars_interés': vars_interés
         }
         if not isinstance(nombre, str):
             args['nombre'] = nombre

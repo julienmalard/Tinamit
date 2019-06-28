@@ -41,7 +41,7 @@ class Fuente(object):
                  },
                 coords=coords
             )
-
+        vals = vals.set_index(n=['lugar', 'fecha'])
         return símismo._filtrar_lugares(símismo._filtrar_fechas(vals, fechas), lugares)
 
     def _obt_lugar(símismo, lugares):

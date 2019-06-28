@@ -95,7 +95,7 @@ class _ModSpotPy(object):
 
     def simulation(símismo, x):
         res = símismo.mod.simular(
-            t=símismo.t_final, vars_interés=símismo.vars_interés, vals_extern=dict(zip(símismo.nombres_paráms, x))
+            t=símismo.t_final, vars_interés=símismo.vars_interés, extern=dict(zip(símismo.nombres_paráms, x))
         )
         m_res = np.array([res[v].vals for v in símismo.vars_interés]).T
 
