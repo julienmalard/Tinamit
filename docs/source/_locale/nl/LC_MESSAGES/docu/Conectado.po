@@ -204,7 +204,7 @@ msgstr ""
 msgid ""
 "El diccionario de nombres de variables para cambiar. Hay que prefijar cada "
 "nombre de variable con el nombre del submodelo en en cual se ubica "
-"(separados con un ``_``), para que Tinamit sepa en cuál submodelo se ubica "
+"(separados con un ``_``), para que Tinamït sepa en cuál submodelo se ubica "
 "cada variable."
 msgstr ""
 
@@ -256,7 +256,7 @@ msgstr ""
 #: tinamit.Conectado.SuperConectado.estab_conv_tiempo:1
 msgid ""
 "Esta función establece la conversión de tiempo entre los dos modelos (útil "
-"para unidades que Tinamit no reconoce)."
+"para unidades que Tinamït no reconoce)."
 msgstr ""
 
 #: ../../../tinamit/Conectado.py:docstring of
@@ -395,7 +395,7 @@ msgstr ""
 
 #: ../../../tinamit/Conectado.py:docstring of
 #: tinamit.Conectado.SuperConectado.simular:9
-msgid "El nombre de la corrida.  El valor automático es ``Corrida Tinamit``."
+msgid "El nombre de la corrida.  El valor automático es ``Corrida Tinamït``."
 msgstr ""
 
 #: ../../../tinamit/Conectado.py:docstring of

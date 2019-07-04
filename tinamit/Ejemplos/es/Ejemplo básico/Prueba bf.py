@@ -37,5 +37,5 @@ class Envoltura(ModeloBF):
     def unidad_tiempo(símismo):
         return "Meses"
 
-    def cerrar_modelo(símismo):
+    def cerrar(símismo):
         pass

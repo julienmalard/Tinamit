@@ -1,111 +1,120 @@
-import inspect
 import os
 import unittest
 
 import numpy as np
 from numpy import testing as npt
 
-import tinamit.EnvolturasBF
-from pruebas.recursos.BF.prueba_bf import ModeloPrueba
-from tinamit.BF import EnvolturaBF
-from tinamit.BF import ModeloDeterminado
+from pruebas.recursos.bf.prueba_bf import PruebaBF
+from pruebas.recursos.bf.variantes import EjDeterminado, EjBloques, EjIndeterminado
+from tinamit.envolt.bf import gen_bf, ModeloBF
 
 dir_act = os.path.split(__file__)[0]
-arch_bf = os.path.join(dir_act, 'recursos/BF/prueba_bf.py')
+arch_bf = os.path.join(dir_act, 'recursos/bf/prueba_mod.py')
 
 
-# Comprobar que el modelo BF de prueba corre corectamente
-class Test_ModeloSenc(unittest.TestCase):
-    """
-    Verifica el funcionamiento de los programas de MDS.
-    """
-
+class TestModeloDeter(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # Generar la Envoltura BF
-        cls.envltmodelo = EnvolturaBF(arch_bf)
+        cls.res = EjDeterminado(tmñ_ciclo=5).simular(50)
 
-        # Información sobre los variables del modelo de prueba
-        cls.info_vars = {
-            'Lluvia': {'unidades': 'm3/año', 'líms': (0, None), 'val_inic': 2.3},
-            'Lago': {'unidades': 'm3', 'líms': (0, None)},
-            'Escala': {'unidades': '', 'líms': (0, None)},
-            'Vacío': {'unidades': 'm3/año', 'líms': (0, None), 'val_inic': 15}
-        }  # type: dict[str, dict]
+    def test_paso(símismo):
+        npt.assert_equal(símismo.res['paso'].vals.values.flatten(), np.arange(51))
 
-        # Iniciar variables
-        vals_inic = {vr: d['val_inic'] for vr, d in cls.info_vars.items() if 'val_inic' in d}
+    def test_ciclo(símismo):
+        npt.assert_equal(símismo.res['ciclo'].vals.values.flatten(), np.concatenate(([0], np.repeat(np.arange(1, 11), 5))))
 
-        # Correr el modelo para 200 pasos, guardando los egresos del variable "Lago"
-        cls.envltmodelo.simular(t_final=200, vals_inic=vals_inic, vars_interés=['Escala', 'Lluvia'])
+    def test_i_en_ciclo(símismo):
+        npt.assert_equal(símismo.res['i_en_ciclo'].vals.values.flatten(), np.concatenate(([4], np.tile(np.arange(5), 10))))
 
-    def test_leer_vars(símismo):
-        """
-        Comprobar que los variables se leyeron correctamente.
-        """
-        símismo.assertDictEqual(símismo.envltmodelo.variables, símismo.envltmodelo.modelo.variables)
 
-    def test_unid_tiempo(símismo):
-        """
-        Comprobar que las unidades de tiempo se leyeron correctamente.
-        """
-        símismo.assertEqual('años', símismo.envltmodelo.unidad_tiempo())
+class TestModeloIndeter(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.res = EjIndeterminado(rango_n=(3, 7)).simular(50)
 
-    def test_cambiar_vals_inic_constante(símismo):
-        """
-        Comprobar que los valores iniciales se establecieron correctamente.
-        """
+    def test_paso(símismo):
+        npt.assert_equal(símismo.res['paso'].vals.values.flatten(), np.arange(51))
 
-        símismo.assertEqual(
-            símismo.envltmodelo.obt_val_actual_var('Vacío'),
-            símismo.info_vars['Vacío']['val_inic']
+    def test_ciclo(símismo):
+        ciclo = símismo.res['ciclo'].vals.values.flatten()
+        npt.assert_equal(np.unique(ciclo), np.arange(len(np.unique(ciclo))))
+        símismo.assertTrue(all(np.sum(ciclo == c) <= 7 for c in np.unique(ciclo)))
+
+
+class TestModeloBloques(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.res = EjBloques(tmñ_bloques=[3, 4, 5]).simular(36)
+
+    def test_paso(símismo):
+        npt.assert_equal(símismo.res['paso'].vals.values.flatten(), np.arange(37))
+
+    def test_ciclo(símismo):
+        npt.assert_equal(
+            símismo.res['ciclo'].vals.values.flatten(), np.concatenate(([0], np.repeat(np.arange(1, 4), 12)))
         )
 
-    def test_cambiar_vals_inic_var_dinámico(símismo):
-        """
-        Comprobar que los valores iniciales de variables cuyos valores cambian aparezcan correctamente en
-        los resultados.
-        """
-
-        símismo.assertEqual(
-            símismo.envltmodelo.leer_resultados('Lluvia')['Lluvia'][0],
-            símismo.info_vars['Lluvia']['val_inic']
+    def test_bloque(símismo):
+        npt.assert_equal(
+            símismo.res['bloque'].vals.values.flatten(),
+            np.concatenate(([2], np.tile(np.repeat([0, 1, 2], [3, 4, 5]), 3)))
         )
 
-    def test_simul(símismo):
-        """
-        Asegurarse que la simulación dió los resultados esperados.
-        """
-
-        val_simulado = símismo.envltmodelo.leer_resultados('Escala')['Escala']
-
-        npt.assert_array_equal(val_simulado, np.arange(0, 201))
-
-    def test_nombre_inválido(símismo):
-        """
-        Asegurarse que nombres inválidos para modelos se corrijan automáticamente.
-        """
-
-        mod = EnvolturaBF(arch_bf, nombre='Nombre_inválido')
-
-        símismo.assertNotIn('_', mod.nombre)
+    def test_i_en_ciclo(símismo):
+        npt.assert_equal(
+            símismo.res['i_en_ciclo'].vals.values.flatten(), np.concatenate(([11], np.tile(np.arange(12), 3)))
+        )
 
 
-# Comprobar que la EnvolturasBF pueda leer el modelo BF de prueba en todas las formas posibles para cargar un modelo BF.
-class Test_CrearEnvolturaBF(unittest.TestCase):
-    def test_crear_desde_archivo(símismo):
-        # Comprobar creación de la envoltura desde un fuente que contiene un modelo BF.
-        envlt = EnvolturaBF(arch_bf)
-        símismo.assertIsInstance(envlt, EnvolturaBF)
+class TestGenAuto(unittest.TestCase):
+    def test_instancia(símismo):
+        mod = gen_bf(PruebaBF())
+        símismo.assertIsInstance(mod, ModeloBF)
 
-    def test_crear_desde_clase(símismo):
-        # Comprobar creación de la envoltura desde una clase de modelo BF.
-        envlt = EnvolturaBF(ModeloPrueba)
-        símismo.assertIsInstance(envlt, EnvolturaBF)
+    def test_clase(símismo):
+        mod = gen_bf(PruebaBF)
+        símismo.assertIsInstance(mod, ModeloBF)
 
-    def test_crear_desde_modelobf(símismo):
-        # Comprobar creación de la envoltura directamente desde un modelo BF.
-        modelo_bf = ModeloPrueba()
-        envlt = EnvolturaBF(modelo_bf)
-        símismo.assertIsInstance(envlt, EnvolturaBF)
+    def test_archivo_instancia(símismo):
+        mod = gen_bf(símismo._obt_recurso('arch_instancia.py'))
+        símismo.assertIsInstance(mod, ModeloBF)
 
+    def test_archivo_clase(símismo):
+        mod = gen_bf(símismo._obt_recurso('arch_clase.py'))
+        símismo.assertIsInstance(mod, ModeloBF)
+
+    def test_archivo_instancia_no_identificada(símismo):
+        mod = gen_bf(símismo._obt_recurso('arch_instancia_no_identificada.py'))
+        símismo.assertIsInstance(mod, ModeloBF)
+
+    def test_archivo_clase_no_identificada(símismo):
+        mod = gen_bf(símismo._obt_recurso('arch_clase_no_identificada.py'))
+        símismo.assertIsInstance(mod, ModeloBF)
+
+    def test_archivo_múltiples(símismo):
+        mod = gen_bf(símismo._obt_recurso('arch_múltiples.py'))
+        símismo.assertIsInstance(mod, ModeloBF)
+
+    def test_archivo_múltiples_no_identificada(símismo):
+        mod = gen_bf(símismo._obt_recurso('arch_múltiples_no_identificada.py'))
+        símismo.assertIsInstance(mod, ModeloBF)
+
+    def test_archivo_vacío(símismo):
+        with símismo.assertRaises(AttributeError):
+            gen_bf(símismo._obt_recurso('arch_vacío.py'))
+
+    def test_tipo_no_válido(símismo):
+        with símismo.assertRaises(TypeError):
+            gen_bf(123)
+
+    def test_archivo_no_existe(símismo):
+        with símismo.assertRaises(FileNotFoundError):
+            gen_bf('નમસ્તે')
+
+    def test_archivo_no_python(símismo):
+        with símismo.assertRaises(ValueError):
+            gen_bf(símismo._obt_recurso('no_python.txt'))
+
+    @staticmethod
+    def _obt_recurso(archivo):
+        return os.path.join('recursos/bf/_prbs_arch', archivo)

@@ -1,26 +1,23 @@
 import os
 import unittest
-from collections import Counter
 
-import numpy as np
 import numpy.testing as npt
+import xarray.testing as xrt
 
-from pruebas.recursos.BF.prueba_bf import ModeloPrueba
-from pruebas.recursos.BF.variantes import EjBloques, EjDeterminado, EjIndeterminado
+from pruebas.recursos.mod.prueba_mod import ModeloAlea
 from pruebas.test_mds import generar_modelos_prueba, limpiar_mds
-from tinamit.BF import EnvolturaBF
-from tinamit.Conectado import Conectado, SuperConectado
-from tinamit.EnvolturasMDS import ModeloPySD, generar_mds
-from tinamit.Unidades import trads
+from tinamit.conect import Conectado, SuperConectado
+from tinamit.envolt.bf import gen_bf
+from tinamit.mod import OpsSimulGrupo
+from tinamit.unids import trads
 
 dir_act = os.path.split(__file__)[0]
-arch_bf = os.path.join(dir_act, 'recursos/BF/prueba_bf.py')
-arch_mds = os.path.join(dir_act, 'recursos/MDS/prueba_senc.mdl')
-arch_mod_vacío = os.path.join(dir_act, 'recursos/MDS/prueba_vacía.mdl')
+arch_bf = os.path.join(dir_act, 'recursos/bf/prueba_bf.py')
+arch_mds = os.path.join(dir_act, 'recursos/mds/prueba_senc_mdl.mdl')
 
 
 # Comprobar Conectado
-class Test_Conectado(unittest.TestCase):
+class TestConectado(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -30,22 +27,17 @@ class Test_Conectado(unittest.TestCase):
 
         # Generar las instancias de los modelos individuales y conectados
         cls.mods_mds = generar_modelos_prueba()
-        cls.mod_bf = EnvolturaBF(arch_bf)
 
-        cls.modelos = {ll: Conectado() for ll in cls.mods_mds}  # type: dict[str, Conectado]
+        cls.modelos = {ll: Conectado(bf=gen_bf(arch_bf), mds=mod) for ll, mod in cls.mods_mds.items()}
 
         # Agregar traducciones necesarias.
         trads.agregar_trad('year', 'año', leng_trad='es', leng_orig='en')
         trads.agregar_trad('month', 'mes', leng_trad='es', leng_orig='en')
 
         # Conectar los modelos
-        for mds, mod_con in cls.modelos.items():
-            mod_con.estab_bf(cls.mod_bf)
-            mod_con.estab_mds(cls.mods_mds[mds])
-
-            mod_con.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)
-            mod_con.conectar(var_mds='Lago', var_bf='Lago', mds_fuente=True)
-            mod_con.conectar(var_mds='Aleatorio', var_bf='Aleatorio', mds_fuente=False)
+        for mod in cls.modelos.values():
+            mod.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)
+            mod.conectar(var_mds='Lago', var_bf='Lago', mds_fuente=True)
 
     def test_reinic_vals(símismo):
         """
@@ -54,25 +46,27 @@ class Test_Conectado(unittest.TestCase):
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                egr1 = mod.simular(t_final=100, vars_interés=list(mod.variables))
-                egr2 = mod.simular(t_final=100, vars_interés=list(mod.variables))
+                egr1 = mod.simular(100, vars_interés=list(mod.variables))
+                egr2 = mod.simular(100, vars_interés=list(mod.variables))
 
-                for var in egr1.data_vars:
-                    if 'Aleatorio' not in var:
-                        npt.assert_array_equal(egr1[var].values, egr2[var].values, err_msg=var)
+                for r1, r2 in zip(egr1, egr2):
+                    xrt.assert_equal(r1.vals, r2.vals)
 
-    def test_intercambio_de_variables_en_simular(símismo):
+    def test_intercambio_de_variables(símismo):
         """
         Asegurarse que valores intercambiados tengan valores iguales en los resultados de ambos modelos.
         """
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                egr = mod.simular(t_final=100)
+                res = mod.simular(100)
 
-                npt.assert_array_equal(egr['bf_Aleatorio'], egr['mds_Aleatorio'], err_msg='Aleatorio')
-                npt.assert_array_equal(egr['bf_Lluvia'], egr['mds_Lluvia'], err_msg='Lluvia')
-                npt.assert_array_equal(egr['bf_Lago'], egr['mds_Lago'], err_msg='Lago')
+                npt.assert_array_equal(
+                    res['bf']['Lluvia'].vals.values.flatten(), res['mds']['Lluvia'].vals.values.flatten()
+                )
+                npt.assert_array_equal(
+                    res['bf']['Lago'].vals.values.flatten(), res['mds']['Lago'].vals.values.flatten()
+                )
 
     def test_simular_grupo(símismo):
         """
@@ -81,98 +75,24 @@ class Test_Conectado(unittest.TestCase):
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                t_final = 100
-                referencia = {}
-                mod.simular(t_final=t_final, vals_inic={'Nivel lago inicial': 50}, vars_interés='Lago')
-                referencia['lago_50'] = mod.leer_resultados('Lago')
+                t_final = 10
+                ref = {
+                    'lago_%i' % i: mod.simular(t_final, extern={'Nivel lago inicial': i}, vars_interés='Lago')
+                    for i in [50, 2000]
+                }
 
-                mod.simular(t_final=t_final, vals_inic={'Nivel lago inicial': 2000}, vars_interés='Lago')
-                referencia['lago_2000'] = mod.leer_resultados('Lago')
-
-                resultados = mod.simular_grupo(
-                    t_final=t_final,
-                    vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
+                ops = OpsSimulGrupo(
+                    t_final, vals_extern=[{'Nivel lago inicial': 50}, {'Nivel lago inicial': 2000}],
+                    nombre=['lago_50', 'lago_2000'],
                     vars_interés='Lago'
                 )
+                resultados = mod.simular_grupo(ops)
 
-                for c in resultados:
-                    npt.assert_allclose(referencia[c]['mds_Lago'], resultados[c]['mds_Lago'], rtol=0.001)
-
-    def test_simular_grupo_con_paralelo(símismo):
-        """
-        Comprobamos que :func:`SuperConectado.simular_grupo` funcione igual con o sin paralelización.
-
-        """
-        mod = símismo.modelos['PySDVensim']
-
-        t_final = 100
-
-        sin_paral = mod.simular_grupo(
-            t_final=t_final,
-            vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
-            vars_interés='Lago',
-            paralelo=False
-        )
-
-        con_paral = mod.simular_grupo(
-            t_final=t_final,
-            vals_inic={'lago_50': {'Nivel lago inicial': 50}, 'lago_2000': {'Nivel lago inicial': 2000}},
-            vars_interés='Lago',
-            paralelo=True
-        )
-
-        for c in sin_paral:
-            npt.assert_allclose(sin_paral[c]['mds_Lago'], con_paral[c]['mds_Lago'], rtol=0.001)
-
-    def test_simular_grupo_inicvals_por_submodelo(símismo):
-        """
-        Asegurarse que podamos especificar valores iniciales por submodelo en un diccionario.
-        """
-        mod = símismo.modelos['PySDVensim']
-
-        t_final = 100
-        vals_inic = {'mds_Nivel lago inicial': 50}
-        ref = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
-
-        vals_inic = {'mds': {'Nivel lago inicial': 50}}
-        res = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
-
-        for c in res:
-            npt.assert_allclose(ref[c]['mds_Lago'], res[c]['mds_Lago'], rtol=0.001)
-
-    def test_simular_grupo_inicvals_por_corrida_y_submodelo(símismo):
-        """
-        Simular corridas en grupo con valores iniciales especificadas por submodelo en un diccionario.
-        """
-        mod = símismo.modelos['PySDVensim']
-
-        t_final = 100
-        vals_inic = {'50': {'mds_Nivel lago inicial': 50}}
-        ref = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
-
-        vals_inic = {'50': {'mds': {'Nivel lago inicial': 50}}}
-        res = mod.simular_grupo(t_final=t_final, vals_inic=vals_inic, vars_interés='Lago')
-
-        for c in res:
-            npt.assert_allclose(ref[c]['mds_Lago'], res[c]['mds_Lago'], rtol=0.001)
-
-    def test_inic_vals_por_nombre_completo(símismo):
-        mod = símismo.modelos['PySDVensim']
-        vals_inic = {'mds_Nivel lago inicial': 50}
-        res = mod.simular(100, vals_inic=vals_inic, vars_interés='Nivel lago inicial')
-        símismo.assertEqual(res['mds_Nivel lago inicial'][0], 50)
-
-    def test_inic_vals_por_nombre_en_submodelo(símismo):
-        mod = símismo.modelos['PySDVensim']
-        vals_inic = {'Nivel lago inicial': 40}
-        res = mod.simular(100, vals_inic=vals_inic, vars_interés='Nivel lago inicial')
-        símismo.assertEqual(res['mds_Nivel lago inicial'][0], 40)
-
-    def test_inic_vals_por_submodelo_y_nombre(símismo):
-        mod = símismo.modelos['PySDVensim']
-        vals_inic = {'mds': {'Nivel lago inicial': 30}}
-        res = mod.simular(100, vals_inic=vals_inic, vars_interés='Nivel lago inicial')
-        símismo.assertEqual(res['mds_Nivel lago inicial'][0], 30)
+                for c in ref:
+                    npt.assert_allclose(
+                        ref[c]['bf']['Lago'].vals.values.flatten(),
+                        resultados[c]['bf']['Lago'].vals.values.flatten(), rtol=0.001
+                    )
 
     @classmethod
     def tearDownClass(cls):
@@ -183,7 +103,7 @@ class Test_Conectado(unittest.TestCase):
         limpiar_mds()
 
 
-class Test_3ModelosConectados(unittest.TestCase):
+class Test3ModelosConectados(unittest.TestCase):
     """
     Comprobar 3+ modelos conectados.
     """
@@ -195,26 +115,26 @@ class Test_3ModelosConectados(unittest.TestCase):
         """
 
         # Crear los 3 modelos
-        bf = EnvolturaBF(arch_bf, nombre='bf')
-        tercio = ModeloPySD(arch_mod_vacío, nombre='tercio')
-        mds = ModeloPySD(arch_mds, nombre='mds')
+        mod_1 = ModeloAlea(nombre='modelo 1')
+        mod_2 = ModeloAlea(nombre='modelo 2')
+        mod_3 = ModeloAlea(nombre='modelo 3')
 
         # El Conectado
-        conectado = SuperConectado()
-        for m in [bf, mds, tercio]:
-            conectado.agregar_modelo(m)
+        conectado = SuperConectado([mod_1, mod_2, mod_3])
 
         # Conectar variables entre dos de los modelos por el intermediario del tercero.
-        conectado.conectar_vars(var_fuente='Aleatorio', modelo_fuente='bf',
-                                var_recip='Aleatorio', modelo_recip='tercio')
-        conectado.conectar_vars(var_fuente='Aleatorio', modelo_fuente='tercio',
-                                var_recip='Aleatorio', modelo_recip='mds')
+        conectado.conectar_vars(
+            var_fuente='Aleatorio', modelo_fuente='modelo 1', var_recip='Vacío', modelo_recip='modelo 2'
+        )
+        conectado.conectar_vars(
+            var_fuente='Vacío', modelo_fuente='modelo 2', var_recip='Vacío', modelo_recip='modelo 3'
+        )
 
         # Simular
-        res = conectado.simular(100, vars_interés=['bf_Aleatorio', 'mds_Aleatorio'])
+        res = conectado.simular(10, vars_interés=[mod_1.variables['Aleatorio'], mod_3.variables['Vacío']])
 
         # Comprobar que los resultados son iguales.
-        npt.assert_allclose(res['bf_Aleatorio'], res['mds_Aleatorio'], rtol=0.001)
+        xrt.assert_equal(res['modelo 1']['Aleatorio'].vals, res['modelo 3']['Vacío'].vals)
 
     def test_conexión_jerárquica(símismo):
         """
@@ -224,213 +144,24 @@ class Test_3ModelosConectados(unittest.TestCase):
         """
 
         # Los tres modelos
-        bf = EnvolturaBF(arch_bf, nombre='bf')
-        tercio = ModeloPySD(arch_mod_vacío, nombre='tercio')
-        mds = ModeloPySD(arch_mds, nombre='mds')
+        mod_1 = ModeloAlea(nombre='modelo 1')
+        mod_2 = ModeloAlea(nombre='modelo 2')
+        mod_3 = ModeloAlea(nombre='modelo 3')
 
         # El primer Conectado
-        conectado_sub = SuperConectado(nombre='sub')
-        conectado_sub.agregar_modelo(tercio)
-        conectado_sub.agregar_modelo(mds)
+        conectado_sub = SuperConectado(nombre='sub', modelos=[mod_1, mod_2])
         conectado_sub.conectar_vars(
-            var_fuente='Aleatorio', modelo_fuente='tercio',
-            var_recip='Aleatorio', modelo_recip='mds'
+            var_fuente='Aleatorio', modelo_fuente='modelo 1', var_recip='Vacío', modelo_recip='modelo 2'
         )
 
         # El segundo Conectado
-        conectado = SuperConectado()
-        conectado.agregar_modelo(bf)
-        conectado.agregar_modelo(conectado_sub)
+        conectado = SuperConectado([conectado_sub, mod_3])
         conectado.conectar_vars(
-            var_fuente='Aleatorio', modelo_fuente='bf',
-            var_recip='tercio_Aleatorio', modelo_recip='sub'
+            var_fuente=mod_2.variables['Vacío'], var_recip='Vacío', modelo_recip='modelo 3'
         )
 
         # Correr la simulación
-        res = conectado.simular(100, vars_interés=['bf_Aleatorio', 'sub_mds_Aleatorio'])
+        res = conectado.simular(10, vars_interés=[mod_1.variables['Aleatorio'], mod_3.variables['Vacío']])
 
         # Verificar que los resultados sean iguales.
-        npt.assert_allclose(res['bf_Aleatorio'], res['sub_mds_Aleatorio'], rtol=0.001)
-
-    @classmethod
-    def tearDownClass(cls):
-        """
-        Limpiar todos los archivos temporarios.
-        """
-
-        limpiar_mds()
-
-
-class Test_GenerarConectado(unittest.TestCase):
-
-    def test_generar_con_submodelos(símismo):
-        mds = generar_mds(archivo=arch_mds)
-        bf = ModeloPrueba(unid_tiempo='mes')
-        cnctd = Conectado(bf, mds)
-        símismo.assertSetEqual(set(cnctd.modelos), {'mds', 'bf'})
-
-    def test_generar_sin_submodelos(símismo):
-        mds = generar_mds(archivo=arch_mds)
-        bf = ModeloPrueba(unid_tiempo='mes')
-        cnctd = Conectado()
-        cnctd.estab_bf(bf)
-        cnctd.estab_mds(mds)
-        símismo.assertSetEqual(set(cnctd.modelos), {'mds', 'bf'})
-
-
-class Test_ConversionesUnidadesTiempo(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.mds = generar_mds(archivo=arch_mds)
-
-    def test_unidades_tiempo_iguales(símismo):
-        bf = ModeloPrueba(unid_tiempo='mes')
-        cnctd = Conectado(bf, símismo.mds)
-        cnctd.conectar(var_mds='Aleatorio', var_bf='Escala', mds_fuente=False)
-        res = cnctd.simular(10, vars_interés=['bf_Escala', 'mds_Aleatorio'])
-        npt.assert_array_equal(res['mds_Aleatorio'], np.arange(11))
-
-    def test_unidades_tiempo_mes_y_día(símismo):
-        bf = ModeloPrueba(unid_tiempo='días')
-        cnctd = Conectado(bf, símismo.mds)
-        cnctd.conectar(var_mds='Aleatorio', var_bf='Escala', mds_fuente=False)
-        res = cnctd.simular(10, vars_interés=['bf_Escala', 'mds_Aleatorio'])
-        npt.assert_array_equal(res['mds_Aleatorio'], np.arange(11 * 30, step=30))
-
-    def test_unidades_con_tiempo_no_definida(símismo):
-        bf = ModeloPrueba(unid_tiempo='महिने')
-        cnctd = Conectado(bf, símismo.mds)
-        cnctd.conectar(var_mds='Aleatorio', var_bf='Escala', mds_fuente=False)
-        res = cnctd.simular(10, vars_interés=['bf_Escala', 'mds_Aleatorio'])
-        npt.assert_array_equal(res['mds_Aleatorio'], np.arange(11))
-
-    def test_unidades_tiempo_definidas(símismo):
-        bf = ModeloPrueba(unid_tiempo='દિવસ')
-        cnctd = Conectado(bf, símismo.mds)
-        cnctd.conectar(var_mds='Aleatorio', var_bf='Escala', mds_fuente=False)
-        cnctd.estab_conv_unid_tiempo(unid_ref='día', unid='દિવસ')
-        res = cnctd.simular(10, vars_interés=['bf_Escala', 'mds_Aleatorio'])
-        npt.assert_array_equal(res['mds_Aleatorio'], np.arange(11 * 30, step=30))
-
-    @classmethod
-    def tearDownClass(cls):
-        limpiar_mds()
-
-
-class Test_ConectarConModelosImpacientes(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.n_ciclos = 3
-        cls.tmñ_ciclo = 12
-        cls.tmñ_blqs = [1, 3, 8]
-
-        det = 'det'
-        indet = 'indet'
-        blq = 'blq'
-
-        unid_tiempo = 'meses'
-
-        cls.mods_bf = {
-            det: EjDeterminado(nombre=det, n=cls.tmñ_ciclo, unid_tiempo=unid_tiempo),
-            indet: EjIndeterminado(nombre=indet, rango_n=(2, 10), unid_tiempo=unid_tiempo),
-            blq: EjBloques(nombre=blq, blqs=cls.tmñ_blqs, unid_tiempo=unid_tiempo)
-        }
-
-        mod_base = ModeloPrueba(nombre='base', unid_tiempo=unid_tiempo)
-        cls.mods_cnct = {nmbr: SuperConectado(modelos=[mod_base, bf]) for nmbr, bf in cls.mods_bf.items()}
-
-        for nmbr, mod in cls.mods_cnct.items():
-            bf = cls.mods_bf[nmbr]
-            mod.conectar_vars('ciclo', modelo_fuente=bf, var_recip='Vacío', modelo_recip=mod_base)
-            mod.conectar_vars('pasito', modelo_fuente=bf, var_recip='Vacío2', modelo_recip=mod_base)
-            mod.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_último', modelo_recip=bf)
-            mod.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_suma', modelo_recip=bf)
-            mod.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_prom', modelo_recip=bf)
-            mod.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_máx', modelo_recip=bf)
-            mod.conectar_vars('Escala', modelo_fuente=mod_base, var_recip='ingr_directo', modelo_recip=bf)
-
-            if nmbr == 'blq':
-                mod.conectar_vars('bloque', modelo_fuente=bf, var_recip='Vacío3', modelo_recip=mod_base)
-
-            bf.estab_proces_ingr('ingr_último', 'último')
-            bf.estab_proces_ingr('ingr_suma', 'suma')
-            bf.estab_proces_ingr('ingr_prom', 'prom')
-            bf.estab_proces_ingr('ingr_máx', 'máx')
-
-        cls.res = {nmbr: mod.simular(t_final=cls.tmñ_ciclo * cls.n_ciclos) for nmbr, mod in cls.mods_cnct.items()}
-        escala = [np.arange(c * cls.tmñ_ciclo + 1, c * cls.tmñ_ciclo + cls.tmñ_ciclo + 1) for c in
-                  range(cls.n_ciclos)]
-        tmñ_ciclos_indet = np.array([x for x in Counter(cls.res[indet]['indet_ciclo'].values).values()])
-        tmñ_ciclos_indet[0] -= 1
-        cumsum_indet = np.cumsum([x for x in tmñ_ciclos_indet])
-        escala_indet = [np.arange(cumsum_indet[i] + 1, x + 1) for i, x in enumerate(cumsum_indet[1:])]
-        cls.escala = {
-            det: escala, blq: escala, indet: escala_indet
-        }
-        cls.tmñ_ciclo_mods = {det: [cls.tmñ_ciclo] * cls.n_ciclos, blq: [cls.tmñ_ciclo] * cls.n_ciclos,
-                              indet: tmñ_ciclos_indet[1:]}
-
-    def _simular_proc_ingr(símismo, mod, f):
-        return [0] * símismo.tmñ_ciclo_mods[mod][0] + [x for j, i in enumerate(símismo.escala[mod][:-1]) for x in
-                                                       [f(i)] * símismo.tmñ_ciclo_mods[mod][j + 1]]
-
-    def test_de_mod_impac_por_ciclo(símismo):
-        for nmbr, res in símismo.res.items():
-            with símismo.subTest(mod=nmbr):
-                npt.assert_equal(
-                    res['base_Vacío'].values,
-                    [-1] + [x for i in range(len(símismo.tmñ_ciclo_mods[nmbr])) for x in
-                            [i] * símismo.tmñ_ciclo_mods[nmbr][i]]
-                )
-
-    def test_de_mod_impac_por_bloque(símismo):
-
-        res = símismo.res['blq']
-        npt.assert_equal(
-            res['base_Vacío3'].values[1:],
-            np.tile(np.repeat(range(len(símismo.tmñ_blqs)), símismo.tmñ_blqs), símismo.n_ciclos)
-        )
-
-    def test_de_mod_impac_por_pasito(símismo):
-        for nmbr, res in símismo.res.items():
-            with símismo.subTest(mod=nmbr):
-                npt.assert_equal(
-                    res['base_Vacío2'].values, [0] + [x for i in símismo.tmñ_ciclo_mods[nmbr] for x in range(i)]
-                )
-
-    def test_hacia_mod_impac_último(símismo):
-        for nmbr, res in símismo.res.items():
-            with símismo.subTest(mod=nmbr):
-                npt.assert_equal(
-                    res['{}_egr_último'.format(nmbr)].values[1:], símismo._simular_proc_ingr(nmbr, lambda x: x[-1]))
-
-    def test_hacia_mod_impac_suma(símismo):
-        for nmbr, res in símismo.res.items():
-            with símismo.subTest(mod=nmbr):
-                npt.assert_equal(res['{}_egr_suma'.format(nmbr)].values[1:], símismo._simular_proc_ingr(nmbr, np.sum))
-
-    def test_hacia_mod_impac_prom(símismo):
-        for nmbr, res in símismo.res.items():
-            with símismo.subTest(mod=nmbr):
-                npt.assert_equal(res['{}_egr_prom'.format(nmbr)].values[1:], símismo._simular_proc_ingr(nmbr, np.mean))
-
-    def test_hacia_mod_impac_máx(símismo):
-        for nmbr, res in símismo.res.items():
-            with símismo.subTest(mod=nmbr):
-                npt.assert_equal(res['{}_egr_máx'.format(nmbr)].values[1:], símismo._simular_proc_ingr(nmbr, np.max))
-
-    def test_hacia_mod_impac_directo(símismo):
-        for nmbr, res in símismo.res.items():
-
-            with símismo.subTest(mod=nmbr):
-                if nmbr == 'indet':
-                    npt.assert_equal(
-                        res['{}_ingr_directo'.format(nmbr)].values,
-                        res['{}_ingr_último'.format(nmbr)].values
-                    )
-                else:
-                    npt.assert_equal(
-                        res['{}_ingr_directo'.format(nmbr)].values[1:],
-                        [x for i in símismo.escala[nmbr] for x in i]
-                    )
+        xrt.assert_equal(res['sub']['modelo 1']['Aleatorio'].vals, res['modelo 3']['Vacío'].vals)

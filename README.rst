@@ -8,7 +8,7 @@
 .. image:: https://travis-ci.org/julienmalard/Tinamit.svg?branch=master
    :target: https://travis-ci.org/julienmalard/Tinamit
 
-.. image:: https://ci.appveyor.com/api/projects/status/3s1ppuilm0vioa3p/branch/master?svg=true
+.. image:: https://ci.appveyor.com/api/projects/status/3s1ppuilm0vioa3p?svg=true
    :target: https://ci.appveyor.com/project/julienmalard/tinamit
 
 .. image:: https://coveralls.io/repos/github/julienmalard/Tinamit/badge.svg?branch=master
@@ -20,13 +20,13 @@
    
 .. image:: https://api.codeclimate.com/v1/badges/cd1b1bf43ee40c270604/maintainability
    :target: https://codeclimate.com/github/julienmalard/Tinamit/maintainability
-   :alt: Mantenimiento del código
+   :alt: Maintainability
 
 Tinamit
 =======
 Programa para conectar modelos socioeconómicos (dinámicas de los sistemas) con modelos biofísicos.
 
-Tinamit permite la conexión rápida, flexible y reproducible de modelos con:
+Tinamït permite la conexión rápida, flexible y reproducible de modelos con:
 
 * Un interfaz (IGU) para los que no quieren escribir código.
 * Un libreria (IPA) para las que sí.

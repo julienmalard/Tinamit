@@ -150,7 +150,7 @@ msgstr ""
 #: ../../../tinamit/BF.py:docstring of tinamit.BF.ModeloBF:1
 msgid ""
 "Se debe desarrollar una subclase de esta clase para cada tipo modelo "
-"biofísico que se quiere volver compatible con Tinamit."
+"biofísico que se quiere volver compatible con Tinamït."
 msgstr ""
 
 #: ../../../tinamit/BF.py:docstring of

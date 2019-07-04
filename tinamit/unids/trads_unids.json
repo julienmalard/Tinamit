@@ -1,0 +1,1672 @@
+[
+  {
+    "en": {
+      "pr": "hertz",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "imperial_gallon",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "revolutions_per_minute",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "link",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "yard",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "radian",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "stere",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "kip_per_square_inch",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "refrigeration_ton",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "rads",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "us_ton",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "poundal",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "furlong",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "boltzmann_constant",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "weber",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "volt",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "ohm",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "imperial_fluid_ounce",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "imperial_pint",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "tesla",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "footh2o",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "meter",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "dry_gallon",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "bar",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "teaspoon",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "lumen",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "cc",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "pica",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "wien_frequency_displacement_law_constant",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "cubic_foot",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "vacuum_permeability",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "imperial_fluid_drachm",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "oil_barrel",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "synodic_month",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "boiler_horsepower",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "short_ton",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "unit_pole",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "bit",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "elementary_charge",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "hectare",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "electric_horsepower",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "quarter",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "rydberg_constant",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "byte",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "physical_faraday",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "chain",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "degr",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "foot_h2o",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "gallon",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "horsepower",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "thm",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "gamma",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "month",
+      "sn": []
+    },
+    "es": {
+      "pr": "mes",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "pixels_per_centimeter",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "acre",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "hour",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "planck_constant",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "bits_per_pixel",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "poise",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "pascal",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "gill",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "fortnight",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "peak_sun_hour",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "imperial_cup",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "arcsecond",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "force_gram",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "cubic_yard",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "gy",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "survey_foot",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "square_yard",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "knot",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "inch",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "cmh2o",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "inch_h2o_60f",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "sidereal_hour",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "acre_foot",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "oersted",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "metric_horsepower",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "h2o",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "metric_ton",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "rutherford",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "light_year",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "farad",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "international_steam_table_calorie",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "z_0",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "mph",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "pi",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "toe",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "degree",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "millenium",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "cup",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "proton_mass",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "liter",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "work_year",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "apothecary_pound",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "common_year",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "bushel",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "faraday",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "barn",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "newton",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "roentgen",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "bag",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "nautical_mile",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "tex",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "day",
+      "sn": []
+    },
+    "es": {
+      "pr": "día",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "grain",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "maxwell",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "fathom",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "us_therm",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "water_4c",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "parsec",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "imperial_bushel",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "kelvin",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "technical_atmosphere",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "year",
+      "sn": []
+    },
+    "es": {
+      "pr": "año",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "ton_tnt",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "rod",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "candela",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "avogadro_number",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "erg",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "julian_year",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "point",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "lux",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "beer_barrel",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "gilbert",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "cmil",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "imperial_gill",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "league",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "watt",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "siemens",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "leap_year",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "watt_hour",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "troy_pound",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "shake",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "dtex",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "ounce",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "square_rod",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "speed_of_light",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "uk_ton",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "torr",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "square_mile",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "imperial_quart",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "atomic_mass_unit",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "ampere",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "statmho",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "inch_hg_60f",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "eon",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "rhe",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "sidereal_second",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "fluid_dram",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "henry",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "long_ton",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "atmosphere",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "statfarad",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "tablespoon",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "stone",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "standard_liter_per_minute",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "barrel",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "uk_hundredweight",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "molar_gas_constant",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "water_60f",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "dry_quart",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "turn",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "mole",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "vacuum_permittivity",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "long_hunderweight",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "cm_hg",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "mile",
+      "sn": []
+    }
+  },
+  {
+    "cak": {
+      "pr": "paj",
+      "sn": []
+    },
+    "en": {
+      "pr": "pound",
+      "sn": []
+    },
+    "es": {
+      "pr": "libra",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "hydraulic_horsepower",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "are",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "angstrom",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "rem",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "darcy",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "joule",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "dyne",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "carat",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "work_month",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "in_hg",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "calorie",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "hogshead",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "apothecary_ounce",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "mercury_60f",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "inch_h2o_39f",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "gregorian_year",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "imperial_barrel",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "ampere_turn",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "bq",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "tropical_month",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "force_ounce",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "electron_volt",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "kph",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "hg",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "us_hundredweight",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "degc",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "second",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "cubic_inch",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "sidereal_minute",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "langley",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "stathenry",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "btu",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "denier",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "astronomical_unit",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "hbar",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "fine_structure_constant",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "apothecary_dram",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "dry_pint",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "steradian",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "peck",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "sidereal_day",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "pound_force_per_square_inch",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "arcminute",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "imperial_peck",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "degf",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "mm_hg",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "force_ton",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "pixels_per_inch",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "force_pound",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "chemical_faraday",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "esu",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "pint",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "square_foot",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "hartree",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "barye",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "coulomb",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "sidereal_month",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "short_hunderdweight",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "pennyweight",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "gauss",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "force_kilogram",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "kip",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "quadrillion_btu",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "esu_per_second",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "gram",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "dry_barrel",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "us_statute_mile",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "pixel",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "statohm",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "minim",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "week",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "stokes",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "count",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "newtonian_constant_of_gravitation",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "quart",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "shot",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "scruple",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "curie",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "statvolt",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "survey_mile",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "square_inch",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "minute",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "standard_gravity",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "fluid_ounce",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "sidereal_year",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "foot",
+      "sn": [
+        "feet"
+      ]
+    }
+  },
+  {
+    "en": {
+      "pr": "stefan_boltzmann_constant",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "neutron_mass",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "troy_ounce",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "electron_mass",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "baud",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "thou",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "drachm",
+      "sn": []
+    }
+  },
+  {
+    "en": {
+      "pr": "counts_per_second",
+      "sn": []
+    }
+  },
+  {
+    "cak": {
+      "pr": "",
+      "sn": []
+    },
+    "en": {
+      "pr": "jute",
+      "sn": []
+    },
+    "es": {
+      "pr": "",
+      "sn": []
+    }
+  },
+  {
+    "cak": {
+      "pr": "",
+      "sn": []
+    },
+    "en": {
+      "pr": "ne",
+      "sn": []
+    },
+    "es": {
+      "pr": "",
+      "sn": []
+    }
+  },
+  {
+    "cak": {
+      "pr": "",
+      "sn": []
+    },
+    "en": {
+      "pr": "katal",
+      "sn": []
+    },
+    "es": {
+      "pr": "",
+      "sn": []
+    }
+  },
+  {
+    "cak": {
+      "pr": "",
+      "sn": []
+    },
+    "en": {
+      "pr": "nm",
+      "sn": []
+    },
+    "es": {
+      "pr": "",
+      "sn": []
+    }
+  },
+  {
+    "cak": {
+      "pr": "",
+      "sn": []
+    },
+    "en": {
+      "pr": "molar",
+      "sn": []
+    },
+    "es": {
+      "pr": "",
+      "sn": []
+    }
+  }
+]

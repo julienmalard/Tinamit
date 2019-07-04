@@ -2,8 +2,10 @@ import json
 import os
 import shutil
 import tempfile
+from datetime import datetime, date
 from warnings import warn as avisar
 
+import numpy as np
 from chardet import UniversalDetector
 
 
@@ -65,37 +67,14 @@ def valid_nombre_arch(nombre):
         Un nombre de fuente válido.
     """
 
-    for x in ['\\', '/', '\|', ':' '*', '?', '"', '>', '<']:
+    for x in ['\\', '/', '|', ':' '*', '?', '"', '>', '<']:
         nombre = nombre.replace(x, '_')
 
     return nombre.strip()
 
 
-def verificar_dirección_arch(archivo):
-    """
-    Verificar que existe un archivo, y devuelve la dirrección absoluta. Muy útil para importaciones relativas.
-
-    Parameters
-    ----------
-    archivo : str
-        El archivo para verificar.
-
-    Returns
-    -------
-    str
-        La dirrección absoluta del archivo.
-
-    Raises
-    ------
-    FileNotFoundError
-        Si el archivo no existe.
-
-    """
-    dir_completa = os.path.abspath(archivo)
-    if not os.path.isfile(dir_completa):
-        from tinamit.config import _
-        raise FileNotFoundError(_('No se encuentra el archivo "{}"').format(os.path.abspath(archivo)))
-    return dir_completa
+def arch_más_recién(arch1, arch2):
+    return os.path.getmtime(arch1) > os.path.getmtime(arch2)
 
 
 def guardar_json(obj, arch):
@@ -181,3 +160,43 @@ def cargar_json(arch, codif='UTF-8'):
 
     with open(arch, 'r', encoding=codif) as d:
         return json.load(d)
+
+
+def jsonificar(dic, redond=None):
+    nuevo = {}
+    for ll, v in dic.items():
+        if isinstance(v, dict):
+            nuevo[ll] = jsonificar(v, redond=redond)
+        elif isinstance(v, np.ndarray):
+            if redond:
+                v = v.round(redond)
+            nuevo[ll] = v.tolist()
+        else:
+            nuevo[ll] = v
+
+    return nuevo
+
+
+def numpyficar(dic):
+    nuevo = {}
+    for ll, v in dic.items():
+        if isinstance(v, dict):
+            nuevo[ll] = numpyficar(v)
+        elif isinstance(v, list):
+            nuevo[ll] = np.array(v)
+        else:
+            nuevo[ll] = v
+    return nuevo
+
+
+def _gen_fecha(f):
+    if f is None:
+        return
+    elif isinstance(f, str):
+        return datetime.strptime(f, '%Y-%m-%d')
+    elif isinstance(f, datetime):
+        return f
+    elif isinstance(f, date):
+        return datetime(f.year, f.month, f.day)
+    else:
+        raise TypeError(type(f))

@@ -1,0 +1,297 @@
+
+ SAHYSMOD: A predictive computation method for soil and groundwater,
+ salinity and the watertable depth in agricultural lands using
+ varying hydrologic conditions and watermanagement options.
+ The first version of the ILRI working group:
+ K.V.G.K. Rao, R.J. Oosterbaan, J. Boonstra, H. Ramnandanlal, and R.A.L. Kselik,
+ was regularly updated by R.J. Oosterbaan
+ and he brought it from DOS to Windows. Consult the manual.
+
+  YEAR:      0    Name of output file:   D:\Thesis\pythonProject\Tinamit\tinamit\Calib\459anew2.out
+  ************
+  Season:    1    Duration:    6.0  months.
+  ************
+  Polygon:   1    X (cm):  252.000      Y (cm):  525.000
+                                     Area (m2): 4410000.000
+  It  =  9.89E-002    Is  =  0.00E+000    IaA =  9.00E-002    IaB =      -    
+  FfA =  9.99E-001    FfB =      -        FfT =  9.55E-001    Io  =  3.39E-002
+  JsA =  4.73E-001    JsB =      -        EaU =  9.21E-002
+  LrA =  0.00E+000    LRB =      -        LrU =  1.69E-002    RrT =  1.69E-005
+  RrA =  3.56E-004    RrB =      -        RrU =  0.00E+000    RrT =  3.56E-004
+  Gti =  5.65E-004    Gto =  0.00E+000    Qv  =  8.66E-003
+  Gqi =  3.02E-001    Gqo =  0.00E+000    Gaq =  1.36E-001    Gnt =  1.37E-001
+  Gd  =      -        Ga  =      -        Gb  =      -        Gw =  1.66E-001
+  Dw  =  1.89E+000    Hw  =  1.43E+002    Hq  =      -    
+  Sto =      -        Zs  =      -    
+  A   =  9.99E-001    B   =      -        U   =      -    
+  Uc  =      -        Kr  =   4
+  CrA =      -        CrB =      -        CrU =      -        Cr4 =  1.87E+001
+  C1* =      -        C2* =      -        C3* =      -    
+  Cxf =  2.31E+000    Cxa =      -        Cxb =      -        Cqf =  1.97E+000
+  Cti =  2.31E+000    Cqi =  1.97E+000
+  Ci  =  1.00E+000    Cd  =      -        Cw  =  1.97E+000
+ #
+  YEAR:      0    Name of output file:   D:\Thesis\pythonProject\Tinamit\tinamit\Calib\459anew2.out
+  ************
+  Season:    1    Duration:    6.0  months.
+  ************
+  Polygon:   2    X (cm):  252.000      Y (cm):  504.000
+                                     Area (m2): 4410000.000
+  It  =  9.91E-002    Is  =  0.00E+000    IaA =  8.50E-002    IaB =  1.27E-001
+  FfA =  6.00E-001    FfB =  6.00E-001    FfT =  5.74E-001    Io  =  3.37E-002
+  FfA =  6.00E-001    FfB =  6.00E-001    FfT =  5.74E-001    Io  =  3.37E-002
+  LrA =  7.76E-002    LrB =  9.44E-002    LrU =  4.36E-002    LrT =  7.96E-002
+  RrA =  0.00E+000    RrB =  0.00E+000    RrU =  0.00E+000    RrT =  0.00E+000
+  Gti =  0.00E+000    Gto =  0.00E+000    Qv  =  8.86E-002
+  Gqi =  2.14E-001    Gqo =  9.06E-002    Gaq = -4.24E-002    Gnt = -4.24E-002
+  Gd  =      -        Ga  =      -        Gb  =      -        Gw =  1.66E-001
+  Dw  =  4.23E+000    Hw  =  1.44E+002    Hq  =      -    
+  Sto =      -        Zs  =      -    
+  A   =  8.75E-001    B   =  1.24E-001    U   =      -    
+  Uc  =      -        Kr  =   4
+  CrA =      -        CrB =      -        CrU =      -        Cr4 =  9.30E-001
+  C1* =      -        C2* =      -        C3* =      -    
+  Cxf =  9.58E-001    Cxa =      -        Cxb =      -        Cqf =  1.90E+000
+  Cti =  9.58E-001    Cqi =  1.90E+000
+  Ci  =  1.00E+000    Cd  =      -        Cw  =  1.90E+000
+ #
+  YEAR:      0    Name of output file:   D:\Thesis\pythonProject\Tinamit\tinamit\Calib\459anew2.out
+  ************
+  Season:    1    Duration:    6.0  months.
+  ************
+  Polygon:   3    X (cm):  231.000      Y (cm):  483.000
+                                     Area (m2): 4410000.000
+  It  =  9.89E-002    Is  =  0.00E+000    IaA =  9.40E-002    IaB =  1.41E-001
+  FfA =  6.00E-001    FfB =  6.00E-001    FfT =  5.55E-001    Io  =  2.43E-002
+  FfA =  6.00E-001    FfB =  6.00E-001    FfT =  5.55E-001    Io  =  2.43E-002
+  LrA =  8.12E-002    LrB =  1.00E-001    LrU =  4.36E-002    LrT =  7.96E-002
+  RrA =  0.00E+000    RrB =  0.00E+000    RrU =  0.00E+000    RrT =  0.00E+000
+  Gti =  0.00E+000    Gto =  0.00E+000    Qv  =  8.86E-002
+  Gqi =  2.03E-001    Gqo =  1.66E-001    Gaq = -1.17E-001    Gnt = -1.17E-001
+  Gd  =      -        Ga  =      -        Gb  =      -        Gw =  1.54E-001
+  Dw  =  3.20E+000    Hw  =  1.43E+002    Hq  =      -    
+  Sto =      -        Zs  =      -    
+  A   =  9.07E-001    B   =  3.30E-002    U   =  6.00E-002
+  Uc  =      -        Kr  =   4
+  CrA =      -        CrB =      -        CrU =      -        Cr4 =  1.49E+000
+  C1* =      -        C2* =      -        C3* =      -    
+  Cxf =  1.49E+000    Cxa =      -        Cxb =      -        Cqf =  2.00E+000
+  Cti =  1.49E+000    Cqi =  2.00E+000
+  Ci  =  1.00E+000    Cd  =      -        Cw  =  2.00E+000
+ #
+  YEAR:      0    Name of output file:   D:\Thesis\pythonProject\Tinamit\tinamit\Calib\459anew2.out
+  ************
+  Season:    2    Duration:    6.0  months.
+  ************
+  Polygon:   1    X (cm):  252.000      Y (cm):  525.000
+                                     Area (m2): 4410000.000
+  It  =  5.04E-001    Is  =  3.04E-001    IaA =  2.73E-001    IaB =  4.78E-001
+  FfA =  6.10E-001    FfB =  7.61E-001    FfT =  7.02E-001    Io  =  0.00E+000
+  JsA =  9.56E-001    JsB =  6.30E-001    EaU =      -    
+  LrA =  2.10E-001    LrB =  1.78E-001    LrU =      -        LrT =  1.81E-001
+  RrA =  0.00E+000    RrB =  0.00E+000    RrU =      -        RrT =  0.00E+000
+  Gti =  3.69E-004    Gto =  0.00E+000    Qv  =  2.29E-001
+  Gqi =  2.70E-001    Gqo =  0.00E+000    Gaq =  2.01E-002    Gnt =  2.05E-002
+  Gd  =      -        Ga  =      -        Gb  =      -        Gw =  2.50E-001
+  Dw  =  1.89E+000    Hw  =  1.43E+002    Hq  =      -    
+  Sto =      -        Zs  =      -    
+  A   =  1.04E-001    B   =  8.95E-001    U   =      -    
+  Uc  =      -        Kr  =   4
+  CrA =      -        CrB =      -        CrU =      -        Cr4 =  1.87E+001
+  C1* =      -        C2* =      -        C3* =      -    
+  Cxf =  2.31E+000    Cxa =      -        Cxb =      -        Cqf =  1.97E+000
+  Cti =  2.31E+000    Cqi =  1.97E+000
+  Ci  =  1.00E+000    Cd  =      -        Cw  =  1.97E+000
+ #
+  YEAR:      0    Name of output file:   D:\Thesis\pythonProject\Tinamit\tinamit\Calib\459anew2.out
+  ************
+  Season:    2    Duration:    6.0  months.
+  ************
+  Polygon:   2    X (cm):  252.000      Y (cm):  504.000
+                                     Area (m2): 4410000.000
+  It  =  5.04E-001    Is  =  3.04E-001    IaA =  3.22E-001    IaB =  5.64E-001
+  FfA =  5.85E-001    FfB =  6.00E-001    FfT =  5.57E-001    Io  =  0.00E+000
+  JsA =  1.00E+000    JsB =  5.55E-001    EaU =      -    
+  LrA =  2.44E-001    LrB =  3.32E-001    LrU =      -        LrT =  2.92E-001
+  RrA =  0.00E+000    RrB =  0.00E+000    RrU =      -        RrT =  0.00E+000
+  Gti =  0.00E+000    Gto =  0.00E+000    Qv  =  3.40E-001
+  Gqi =  1.48E-001    Gqo =  8.92E-002    Gaq = -1.91E-001    Gnt = -1.91E-001
+  Gd  =      -        Ga  =      -        Gb  =      -        Gw =  2.50E-001
+  Dw  =  4.23E+000    Hw  =  1.44E+002    Hq  =      -    
+  Sto =      -        Zs  =      -    
+  A   =  4.46E-001    B   =  5.53E-001    U   =      -    
+  Uc  =      -        Kr  =   4
+  CrA =      -        CrB =      -        CrU =      -        Cr4 =  9.30E-001
+  C1* =      -        C2* =      -        C3* =      -    
+  Cxf =  9.58E-001    Cxa =      -        Cxb =      -        Cqf =  1.90E+000
+  Cti =  9.58E-001    Cqi =  1.90E+000
+  Ci  =  1.00E+000    Cd  =      -        Cw  =  1.90E+000
+ #
+  YEAR:      0    Name of output file:   D:\Thesis\pythonProject\Tinamit\tinamit\Calib\459anew2.out
+  ************
+  Season:    2    Duration:    6.0  months.
+  ************
+  Polygon:   3    X (cm):  231.000      Y (cm):  483.000
+                                     Area (m2): 4410000.000
+  It  =  5.04E-001    Is  =  3.19E-001    IaA =  3.16E-001    IaB =  5.52E-001
+  FfA =  5.91E-001    FfB =  6.00E-001    FfT =  5.48E-001    Io  =  0.00E+000
+  FfA =  5.91E-001    FfB =  6.00E-001    FfT =  5.48E-001    Io  =  0.00E+000
+  LrA =  2.38E-001    LrB =  3.27E-001    LrU =  1.06E-001    LrT =  2.90E-001
+  RrA =  0.00E+000    RrB =  0.00E+000    RrU =  0.00E+000    RrT =  0.00E+000
+  Gti =  0.00E+000    Gto =  0.00E+000    Qv  =  3.38E-001
+  Gqi =  2.10E-001    Gqo =  1.39E-001    Gaq = -1.60E-001    Gnt = -1.60E-001
+  Gd  =      -        Ga  =      -        Gb  =      -        Gw =  2.31E-001
+  Dw  =  3.20E+000    Hw  =  1.43E+002    Hq  =      -    
+  Sto =      -        Zs  =      -    
+  A   =  2.66E-001    B   =  6.73E-001    U   =  6.10E-002
+  Uc  =      -        Kr  =   4
+  CrA =      -        CrB =      -        CrU =      -        Cr4 =  1.49E+000
+  C1* =      -        C2* =      -        C3* =      -    
+  Cxf =  1.49E+000    Cxa =      -        Cxb =      -        Cqf =  2.00E+000
+  Cti =  1.49E+000    Cqi =  2.00E+000
+  Ci  =  1.00E+000    Cd  =      -        Cw  =  2.00E+000
+ #
+  YEAR:      1    Name of output file:   D:\Thesis\pythonProject\Tinamit\tinamit\Calib\459anew2.out
+  ************
+  Season:    1    Duration:    6.0  months.
+  ************
+  Polygon:   1    X (cm):  252.000      Y (cm):  525.000
+                                     Area (m2): 4410000.000
+  It  =  9.89E-002    Is  =  0.00E+000    IaA =  9.00E-002    IaB =      -    
+  FfA =  8.74E-001    FfB =      -        FfT =  8.36E-001    Io  =  3.10E+000
+  JsA =  5.32E-001    JsB =      -        EaU =  9.53E-003
+  LrA =  0.00E+000    LRB =      -        LrU =  9.95E-002    RrT =  9.95E-005
+  RrA =  5.00E-002    RrB =      -        RrU =  0.00E+000    RrT =  4.99E-002
+  Gti =  5.00E-004    Gto =  1.65E-007    Qv  = -4.08E-002
+  Gqi =  2.41E-001    Gqo =  7.48E-004    Gaq =  7.41E-002    Gnt =  7.46E-002
+  Gd  =      -        Ga  =      -        Gb  =      -        Gw =  1.66E-001
+  Dw  =  1.76E+000    Hw  =  1.43E+002    Hq  =      -    
+  Sto =      -        Zs  =      -    
+  A   =  9.99E-001    B   =      -        U   =      -    
+  Uc  =      -        Kr  =   4
+  CrA =      -        CrB =      -        CrU =      -        Cr4 =  1.90E+001
+  C1* =      -        C2* =      -        C3* =      -    
+  Cxf =  2.17E+000    Cxa =      -        Cxb =      -        Cqf =  1.97E+000
+  Cti =  1.06E+000    Cqi =  1.32E+000
+  Ci  =  1.00E+000    Cd  =      -        Cw  =  0.00E+000
+ #
+  YEAR:      1    Name of output file:   D:\Thesis\pythonProject\Tinamit\tinamit\Calib\459anew2.out
+  ************
+  Season:    1    Duration:    6.0  months.
+  ************
+  Polygon:   2    X (cm):  252.000      Y (cm):  504.000
+                                     Area (m2): 4410000.000
+  It  =  9.91E-002    Is  =  0.00E+000    IaA =  8.50E-002    IaB =  1.27E-001
+  FfA =  6.00E-001    FfB =  6.00E-001    FfT =  5.74E-001    Io  =  3.08E+000
+  FfA =  6.00E-001    FfB =  6.00E-001    FfT =  5.74E-001    Io  =  3.08E+000
+  LrA =  7.76E-002    LrB =  9.44E-002    LrU =  4.36E-002    LrT =  7.96E-002
+  RrA =  0.00E+000    RrB =  0.00E+000    RrU =  0.00E+000    RrT =  0.00E+000
+  Gti =  0.00E+000    Gto =  4.70E-006    Qv  =  8.86E-002
+  Gqi =  2.03E-001    Gqo =  9.66E-002    Gaq = -5.98E-002    Gnt = -5.98E-002
+  Gd  =      -        Ga  =      -        Gb  =      -        Gw =  1.66E-001
+  Dw  =  4.15E+000    Hw  =  1.44E+002    Hq  =      -    
+  Sto =      -        Zs  =      -    
+  A   =  8.75E-001    B   =  1.24E-001    U   =      -    
+  Uc  =      -        Kr  =   4
+  CrA =      -        CrB =      -        CrU =      -        Cr4 =  9.56E-001
+  C1* =      -        C2* =      -        C3* =      -    
+  Cxf =  9.52E-001    Cxa =      -        Cxb =      -        Cqf =  1.90E+000
+  Cti =  0.00E+000    Cqi =  8.79E-001
+  Ci  =  1.00E+000    Cd  =      -        Cw  =  0.00E+000
+ #
+  YEAR:      1    Name of output file:   D:\Thesis\pythonProject\Tinamit\tinamit\Calib\459anew2.out
+  ************
+  Season:    1    Duration:    6.0  months.
+  ************
+  Polygon:   3    X (cm):  231.000      Y (cm):  483.000
+                                     Area (m2): 4410000.000
+  It  =  9.89E-002    Is  =  0.00E+000    IaA =  9.40E-002    IaB =  1.41E-001
+  FfA =  6.00E-001    FfB =  6.00E-001    FfT =  5.55E-001    Io  =  2.22E+000
+  FfA =  6.00E-001    FfB =  6.00E-001    FfT =  5.55E-001    Io  =  2.22E+000
+  LrA =  8.12E-002    LrB =  1.00E-001    LrU =  4.36E-002    LrT =  7.96E-002
+  RrA =  0.00E+000    RrB =  0.00E+000    RrU =  0.00E+000    RrT =  0.00E+000
+  Gti =  0.00E+000    Gto =  0.00E+000    Qv  =  8.86E-002
+  Gqi =  2.25E-001    Gqo =  1.69E-001    Gaq = -9.79E-002    Gnt = -9.79E-002
+  Gd  =      -        Ga  =      -        Gb  =      -        Gw =  1.54E-001
+  Dw  =  3.20E+000    Hw  =  1.43E+002    Hq  =      -    
+  Sto =      -        Zs  =      -    
+  A   =  9.07E-001    B   =  3.30E-002    U   =  6.00E-002
+  Uc  =      -        Kr  =   4
+  CrA =      -        CrB =      -        CrU =      -        Cr4 =  1.45E+000
+  C1* =      -        C2* =      -        C3* =      -    
+  Cxf =  1.48E+000    Cxa =      -        Cxb =      -        Cqf =  2.00E+000
+  Cti =  0.00E+000    Cqi =  1.55E+000
+  Ci  =  1.00E+000    Cd  =      -        Cw  =  0.00E+000
+ #
+  YEAR:      1    Name of output file:   D:\Thesis\pythonProject\Tinamit\tinamit\Calib\459anew2.out
+  ************
+  Season:    2    Duration:    6.0  months.
+  ************
+  Polygon:   1    X (cm):  252.000      Y (cm):  525.000
+                                     Area (m2): 4410000.000
+  It  =  4.94E-001    Is  =  2.94E-001    IaA =  2.73E-001    IaB =  4.78E-001
+  FfA =  6.19E-001    FfB =  9.04E-001    FfT =  8.38E-001    Io  =  0.00E+000
+  JsA =  9.70E-001    JsB =  7.49E-001    EaU =      -    
+  LrA =  2.05E-001    LrB =  7.14E-002    LrU =      -        LrT =  8.52E-002
+  RrA =  0.00E+000    RrB =  0.00E+000    RrU =      -        RrT =  0.00E+000
+  Gti =  3.45E-004    Gto =  5.51E-005    Qv  =  1.23E-001
+  Gqi =  1.62E-001    Gqo =  4.91E-002    Gaq = -1.37E-001    Gnt = -1.37E-001
+  Gd  =      -        Ga  =      -        Gb  =      -        Gw =  2.50E-001
+  Dw  =  1.52E+000    Hw  =  1.44E+002    Hq  =      -    
+  Sto =      -        Zs  =      -    
+  A   =  1.04E-001    B   =  8.95E-001    U   =      -    
+  Uc  =      -        Kr  =   4
+  CrA =      -        CrB =      -        CrU =      -        Cr4 =  1.75E+001
+  C1* =      -        C2* =      -        C3* =      -    
+  Cxf =  8.13E+000    Cxa =      -        Cxb =      -        Cqf =  1.98E+000
+  Cti =  1.08E+000    Cqi =  1.54E+000
+  Ci  =  1.39E+000    Cd  =      -        Cw  =  1.97E+000
+ #
+  YEAR:      1    Name of output file:   D:\Thesis\pythonProject\Tinamit\tinamit\Calib\459anew2.out
+  ************
+  Season:    2    Duration:    6.0  months.
+  ************
+  Polygon:   2    X (cm):  252.000      Y (cm):  504.000
+                                     Area (m2): 4410000.000
+  It  =  5.04E-001    Is  =  3.04E-001    IaA =  3.22E-001    IaB =  5.64E-001
+  FfA =  5.85E-001    FfB =  6.00E-001    FfT =  5.57E-001    Io  =  0.00E+000
+  JsA =  1.00E+000    JsB =  5.55E-001    EaU =      -    
+  LrA =  2.44E-001    LrB =  3.32E-001    LrU =      -        LrT =  2.92E-001
+  RrA =  0.00E+000    RrB =  0.00E+000    RrU =      -        RrT =  0.00E+000
+  Gti =  0.00E+000    Gto =  8.63E-005    Qv  =  3.40E-001
+  Gqi =  1.23E-001    Gqo =  1.47E-001    Gaq = -2.74E-001    Gnt = -2.74E-001
+  Gd  =      -        Ga  =      -        Gb  =      -        Gw =  2.50E-001
+  Dw  =  3.84E+000    Hw  =  1.44E+002    Hq  =      -    
+  Sto =      -        Zs  =      -    
+  A   =  4.46E-001    B   =  5.53E-001    U   =      -    
+  Uc  =      -        Kr  =   4
+  CrA =      -        CrB =      -        CrU =      -        Cr4 =  1.41E+000
+  C1* =      -        C2* =      -        C3* =      -    
+  Cxf =  1.25E+000    Cxa =      -        Cxb =      -        Cqf =  1.90E+000
+  Cti =  0.00E+000    Cqi =  1.37E+000
+  Ci  =  1.36E+000    Cd  =      -        Cw  =  1.90E+000
+ #
+  YEAR:      1    Name of output file:   D:\Thesis\pythonProject\Tinamit\tinamit\Calib\459anew2.out
+  ************
+  Season:    2    Duration:    6.0  months.
+  ************
+  Polygon:   3    X (cm):  231.000      Y (cm):  483.000
+                                     Area (m2): 4410000.000
+  It  =  5.04E-001    Is  =  3.19E-001    IaA =  3.16E-001    IaB =  5.52E-001
+  FfA =  5.91E-001    FfB =  6.00E-001    FfT =  5.48E-001    Io  =  0.00E+000
+  FfA =  5.91E-001    FfB =  6.00E-001    FfT =  5.48E-001    Io  =  0.00E+000
+  LrA =  2.38E-001    LrB =  3.27E-001    LrU =  1.06E-001    LrT =  2.90E-001
+  RrA =  0.00E+000    RrB =  0.00E+000    RrU =  0.00E+000    RrT =  0.00E+000
+  Gti =  0.00E+000    Gto =  0.00E+000    Qv  =  3.38E-001
+  Gqi =  1.44E-001    Gqo =  2.64E-001    Gaq = -3.51E-001    Gnt = -3.51E-001
+  Gd  =      -        Ga  =      -        Gb  =      -        Gw =  2.31E-001
+  Dw  =  2.70E+000    Hw  =  1.44E+002    Hq  =      -    
+  Sto =      -        Zs  =      -    
+  A   =  2.66E-001    B   =  6.73E-001    U   =  6.10E-002
+  Uc  =      -        Kr  =   4
+  CrA =      -        CrB =      -        CrU =      -        Cr4 =  1.68E+000
+  C1* =      -        C2* =      -        C3* =      -    
+  Cxf =  1.56E+000    Cxa =      -        Cxb =      -        Cqf =  2.00E+000
+  Cti =  0.00E+000    Cqi =  2.04E+000
+  Ci  =  1.37E+000    Cd  =      -        Cw  =  2.00E+000
+ #

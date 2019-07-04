@@ -1,17 +1,21 @@
 import os
 import unittest
 
+import numpy as np
 import numpy.testing as npt
+import pandas as pd
 import xarray.testing as xrt
 
-from tinamit.EnvolturasMDS import ModeloVensim, ModeloPySD, generar_mds
-from tinamit.MDS import EnvolturaMDS
-
+from tinamit.envolt.mds import ModeloVensimDLL, ModeloPySD, ModeloMDS, gen_mds, \
+    ErrorNoInstalado
 # Los tipos de modelos DS que queremos comprobar.
+from tinamit.mod import EspecTiempo
+
 tipos_modelos = {
-    'PySDVensim': {'envlt': ModeloPySD, 'prueba': 'recursos/MDS/prueba_senc.mdl'},
-    'PySD_XMILE': {'envlt': ModeloPySD, 'prueba': 'recursos/MDS/prueba_senc_.xmile'},
-    'dllVensim': {'envlt': ModeloVensim, 'prueba': 'recursos/MDS/prueba_senc.vpm'}
+    'PySD_Vensim': {'envlt': ModeloPySD, 'prueba': 'recursos/mds/prueba_senc_mdl.mdl'},
+    'PySD_XMILE': {'envlt': ModeloPySD, 'prueba': 'recursos/mds/prueba_senc_xml.xmile'},
+    'PySD_Py': {'envlt': ModeloPySD, 'prueba': 'recursos/mds/prueba_senc_py.py'},
+    'dllVensim': {'envlt': ModeloVensimDLL, 'prueba': 'recursos/mds/prueba_senc_vpm.vpm'}
 }
 
 # Agregar la ubicación del fuente actual
@@ -21,18 +25,18 @@ for d_m in tipos_modelos.values():
 
 
 def generar_modelos_prueba():
-    mods = {}  # type: dict[str, EnvolturaMDS]
+    mods = {}
     for nmb, dic in tipos_modelos.items():
-        mod = dic['envlt'](dic['prueba'])
-        if mod.instalado():
-            mods[nmb] = mod
+        cls = dic['envlt']
+        if cls.instalado():
+            mods[nmb] = cls(dic['prueba'])
 
     return mods
 
 
-class Test_ModeloSenc(unittest.TestCase):
+class TestLeerModelos(unittest.TestCase):
     """
-    Verifica el funcionamiento de los programas de MDS.
+    Verifica el funcionamiento de los programas de mds.
     """
 
     @classmethod
@@ -43,21 +47,13 @@ class Test_ModeloSenc(unittest.TestCase):
 
         # Información sobre los variables del modelo de prueba
         cls.info_vars = {
-            'Lluvia': {'unidades': 'm3/mes', 'líms': (0, None)},
-            'Nivel lago inicial': {'unidades': 'm3', 'líms': (0, None), 'val_inic': 1450},
-            'Flujo río': {'unidades': 'm3/mes', 'líms': (0, None)},
-            'Lago': {'unidades': 'm3', 'líms': (0, None)},
-            'Evaporación': {'unidades': 'm3/mes', 'líms': (0, None)},
-            'Aleatorio': {'unidades': 'Sdmn', 'líms': (0, 1), 'val_inic': 2.3},
-        }  # type: dict[str, dict]
-
-        # Para cada modelo...
-        for mod in cls.modelos.values():
-            # Los variables iniciales
-            vals_inic = {vr: d['val_inic'] for vr, d in cls.info_vars.items() if 'val_inic' in d}
-
-            # Correr el modelo para 200 pasos, guardando los egresos del variable "Lago"
-            mod.simular(t_final=200, vals_inic=vals_inic, vars_interés=['Lago', 'Aleatorio', 'Nivel lago inicial'])
+            'Lluvia': {'unidades': 'm3/mes', 'líms': (0, np.inf)},
+            'Nivel lago inicial': {'unidades': 'm3', 'líms': (0, np.inf)},
+            'Flujo río': {'unidades': 'm3/mes', 'líms': (0, np.inf)},
+            'Lago': {'unidades': 'm3', 'líms': (0, np.inf)},
+            'Evaporación': {'unidades': 'm3/mes', 'líms': (0, np.inf)},
+            'Aleatorio': {'unidades': 'Sdmn', 'líms': (0, 1)},
+        }
 
     def test_leer_vars(símismo):
         """
@@ -65,54 +61,8 @@ class Test_ModeloSenc(unittest.TestCase):
         """
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                vars_modelo = set(mod.variables)
+                vars_modelo = {str(vr) for vr in mod.variables}
                 símismo.assertSetEqual(set(símismo.info_vars), vars_modelo)
-
-    def test_iniciales(símismo):
-        ref = {'Nivel lago inicial'}
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                iniciales = mod.iniciales()
-                símismo.assertSetEqual(set(iniciales), ref)
-
-    def test_niveles(símismo):
-        ref = {'Lago'}
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                niveles = mod.niveles()
-                símismo.assertSetEqual(set(niveles), ref)
-
-    def test_constantes(símismo):
-        ref = {'Aleatorio', 'Lluvia'}
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                constantes = mod.constantes()
-                símismo.assertSetEqual(set(constantes), ref)
-
-    def test_flujos(símismo):
-        ref = {'Flujo río', 'Evaporación'}
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                flujos = mod.flujos()
-                símismo.assertSetEqual(set(flujos), ref)
-
-    def test_auxiliares(símismo):
-        ref = set()
-
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                auxiliares = mod.auxiliares()
-                símismo.assertSetEqual(set(auxiliares), ref)
-
-    def test_parientes(símismo):
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                símismo.assertSetEqual(set(mod.parientes('Lago')), {'Evaporación', 'Flujo río', 'Nivel lago inicial'})
-
-    def test_hijos(símismo):
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                símismo.assertSetEqual(set(mod.hijos('Lluvia')), {'Flujo río'})
 
     def test_unid_tiempo(símismo):
         """
@@ -129,7 +79,7 @@ class Test_ModeloSenc(unittest.TestCase):
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                símismo.assertTrue(len(mod.obt_info_var(v)) > 0 for v in mod.variables)
+                símismo.assertTrue(len(mod.variables[v].info) > 0 for v in mod.variables)
 
     def test_leer_unidades(símismo):
         """
@@ -140,7 +90,7 @@ class Test_ModeloSenc(unittest.TestCase):
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                unids_mod = {v: mod.obt_unidades_var(v).lower() for v in mod.variables}
+                unids_mod = {str(v): mod.variables[v].unid.lower() for v in mod.variables}
                 símismo.assertDictEqual(unids, unids_mod)
 
     def test_leer_líms(símismo):
@@ -152,87 +102,8 @@ class Test_ModeloSenc(unittest.TestCase):
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                unids_mod = {v: mod.obt_lims_var(v) for v in mod.variables}
+                unids_mod = {str(v): mod.variables[v].líms for v in mod.variables}
                 símismo.assertDictEqual(unids, unids_mod)
-
-    def test_cmb_vals_inic_constante(símismo):
-        """
-        Comprobar que los valores iniciales se establecieron correctamente en el diccionario interno.
-        """
-
-        for ll, mod in símismo.modelos.items():
-            v = 'Nivel lago inicial'
-            d_v = símismo.info_vars[v]
-
-            with símismo.subTest(mod=ll):
-                símismo.assertEqual(mod.obt_val_actual_var(v), d_v['val_inic'])
-
-    def test_cmb_vals_inic_constante_en_resultados(símismo):
-        """
-        Comprobar que los valores iniciales se establecieron correctamente en los resultados.
-        """
-
-        for ll, mod in símismo.modelos.items():
-            v = 'Nivel lago inicial'
-            d_v = símismo.info_vars[v]
-
-            with símismo.subTest(mod=ll):
-                npt.assert_array_equal(mod.leer_resultados(v)[v], d_v['val_inic'])
-
-    def test_cambiar_vals_inic_var_dinámico(símismo):
-        """
-        Asegurarse que los valores iniciales de variables dinámicos aparezcan en el paso 0 de los resultados.
-        """
-
-        for ll, mod in símismo.modelos.items():
-            v = 'Aleatorio'
-            d_v = símismo.info_vars[v]
-
-            with símismo.subTest(mod=ll):
-                símismo.assertEqual(mod.leer_resultados(v)[v][0], d_v['val_inic'])
-
-    def test_cambiar_vals_inic_nivel(símismo):
-        """
-        Comprobar que valores iniciales pasados a un variable de valor inicial aparezcan en los resultados también.
-        """
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                símismo.assertEqual(
-                    mod.leer_resultados('Lago')['Lago'].values[0],
-                    símismo.info_vars['Nivel lago inicial']['val_inic']
-                )
-
-    def test_resultados_simul(símismo):
-        """
-        Assegurarse que la simulación dió los resultados esperados.
-        """
-
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                # Leer el resultado del último día de simulación pára el variable "Lago"
-                val_simulado = mod.leer_resultados('Lago')['Lago'].values[-1]
-
-                # Debería ser aproximativamente igual a 100
-                símismo.assertEqual(round(val_simulado, 3), 100)
-
-    def test_escribir_leer_arch_resultados(símismo):
-        for ll, mod in símismo.modelos.items():
-            for frmt in ['.json', '.csv']:
-                with símismo.subTest(mod=ll, frmt=frmt):
-                    arch = ll + '_prb'
-                    mod.guardar_resultados(nombre=arch, frmt=frmt)
-                    leídos = EnvolturaMDS.leer_arch_resultados(archivo=arch, var='Lago')
-                    refs = mod.leer_resultados('Lago')
-                    xrt.assert_identical(leídos, refs)
-                    os.remove(arch + frmt)
-
-    def test_leer_resultados_vdf_vensim(símismo):
-
-        if 'dllVensim' in símismo.modelos:
-            mod = símismo.modelos['dllVensim']
-            leídos = mod.leer_arch_resultados(archivo=mod.corrida_activa + '.vdf', var='Lago')
-            refs = mod.leer_resultados(var='Lago')
-            xrt.assert_allclose(leídos, refs, rtol=1e-3)
 
     @classmethod
     def tearDownClass(cls):
@@ -243,39 +114,119 @@ class Test_ModeloSenc(unittest.TestCase):
         limpiar_mds()
 
 
-class Test_OpcionesSimul(unittest.TestCase):
-    """
-    Verifica el funcionamiento de las simulaciones de de MDS.
-    """
-
+class TestSimular(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
 
         # Generar las instancias de los modelos
         cls.modelos = generar_modelos_prueba()
+        cls.vals_inic = {
+            'Nivel lago inicial': 1450,
+            'Aleatorio': 2.3,
+        }
+
+        cls.res = {}
+        for nmb, mod in cls.modelos.items():
+            # Correr el modelo para 200 pasos, guardando los egresos del variable "Lago"
+            cls.res[nmb] = mod.simular(
+                t=200, extern=cls.vals_inic, vars_interés=['Lago', 'Aleatorio', 'Nivel lago inicial']
+            )
+
+    def test_cmb_vals_inic_constante_en_resultados(símismo):
+        """
+        Comprobar que los valores iniciales se establecieron correctamente en los resultados.
+        """
+
+        for nmb, res in símismo.res.items():
+            v = 'Nivel lago inicial'
+
+            with símismo.subTest(mod=nmb):
+                npt.assert_array_equal(res[v].vals, símismo.vals_inic[v])
+
+    def test_cambiar_vals_inic_var_dinámico(símismo):
+        """
+        Asegurarse que los valores iniciales de variables dinámicos aparezcan en el paso 0 de los resultados.
+        """
+
+        for nmb, res in símismo.res.items():
+            v = 'Aleatorio'
+            with símismo.subTest(mod=nmb):
+                símismo.assertEqual(res[v].vals[0], símismo.vals_inic[v])
+
+    def test_cambiar_vals_inic_nivel(símismo):
+        """
+        Comprobar que valores iniciales pasados a un variable de valor inicial aparezcan en los resultados también.
+        """
+        for nmb, res in símismo.res.items():
+            with símismo.subTest(mod=nmb):
+                símismo.assertEqual(
+                    res['Lago'].vals.values[0],
+                    símismo.vals_inic['Nivel lago inicial']
+                )
+
+    def test_resultados_simul(símismo):
+        """
+        Assegurarse que la simulación dió los resultados esperados.
+        """
+
+        for nmb, res in símismo.res.items():
+            with símismo.subTest(mod=nmb):
+                # Leer el resultado del último día de simulación pára el variable "Lago"
+                val_simulado = res['Lago'].vals.values[-1]
+
+                # Debería ser aproximativamente igual a 100
+                símismo.assertEqual(np.round(val_simulado, 3), 100)
 
     def test_simul_con_paso_2(símismo):
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                res_paso_2 = mod.simular(t_final=100, paso=2, vars_interés=['Lago'])['Lago']
-                res_paso_1 = mod.simular(t_final=100, paso=1, vars_interés=['Lago'])['Lago'][::2]
-                npt.assert_array_equal(res_paso_1, res_paso_2)
 
-    def test_simul_con_paso_inválido(símismo):
-        with símismo.assertRaises(ValueError):
-            list(símismo.modelos.values())[0].simular(t_final=100, paso=0)
+        for nmb, mod in símismo.modelos.items():
+            res_paso_1 = símismo.res[nmb]['Lago'].vals.values[::2]
+            res_paso_2 = mod.simular(
+                t=EspecTiempo(100, tmñ_paso=2), extern=símismo.vals_inic, vars_interés=['Lago']
+            )['Lago'].vals.values
+            npt.assert_allclose(res_paso_2, res_paso_1, rtol=0.001)
+
+    def test_simul_guardar_cada_2(símismo):
+
+        for nmb, mod in símismo.modelos.items():
+            res_paso_1 = símismo.res[nmb]['Lago'].vals.values[::2]
+            res_paso_2 = mod.simular(
+                t=EspecTiempo(200, guardar_cada=2), extern=símismo.vals_inic, vars_interés=['Lago']
+            )['Lago'].vals.values
+            npt.assert_equal(res_paso_1, res_paso_2)
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Limpiar todos los archivos temporarios.
+        """
+
+        limpiar_mds()
+
+
+class TestSimulExpres(unittest.TestCase):
 
     def test_simul_exprés(símismo):
-        for ll, mod in símismo.modelos.items():
-            with símismo.subTest(mod=ll):
-                mod.combin_pasos = False
-                res_por_paso = mod.simular(t_final=100, paso=1, vars_interés=['Lago'])['Lago']
-                mod.combin_pasos = True
-                res_exprés = mod.simular(t_final=100, paso=1, vars_interés=['Lago'])['Lago']
-                npt.assert_allclose(res_por_paso, res_exprés, 1e-3)
+        for nmb, mod in generar_modelos_prueba().items():
+            with símismo.subTest(mod=nmb):
+                extern = pd.DataFrame({'Lluvia': np.arange(10)}, index=np.arange(10))
+                res_exprés = mod.simular(12, extern=extern)
+                mod._correr_hasta_final = lambda: None
+                res_por_paso = mod.simular(12, extern=extern)
+
+                for res_var_exp, res_var_paso in zip(res_exprés, res_por_paso):
+                    xrt.assert_equal(res_var_exp.vals, res_var_paso.vals)
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Limpiar todos los archivos temporarios.
+        """
+
+        limpiar_mds()
 
 
-class Test_GenerarMDS(unittest.TestCase):
+class TestGenerarMDS(unittest.TestCase):
     """
     Verifica el funcionamiento del generado automático de modelos DS.
     """
@@ -288,42 +239,34 @@ class Test_GenerarMDS(unittest.TestCase):
         for m, d in tipos_modelos.items():
             with símismo.subTest(ext=os.path.splitext(d['prueba'])[1], envlt=d['envlt'].__name__):
                 try:
-                    mod = generar_mds(d['prueba'])  # Generar el modelo
-                    símismo.assertIsInstance(mod, EnvolturaMDS)
-                except ValueError:
-                    # No hay problema si el MDS no se pudo leer en la computadora actual. De pronto no estaba instalado.
+                    mod = gen_mds(d['prueba'])  # Generar el modelo
+                    símismo.assertIsInstance(mod, ModeloMDS)
+                except ErrorNoInstalado:
+                    # No hay problema si el mds no se pudo leer en la computadora actual. De pronto no estaba instalado.
                     pass
 
-    def test_generación_auto_mds_con_error_extensión(símismo):
+    def test_error_extensión(símismo):
         """
         Comprobar que extensiones no reconocidas devuelvan un error.
         """
 
-        with símismo.assertRaises(ValueError):
-            generar_mds(os.path.join(dir_act, 'recursos/MDS/Modelo con extensión no reconocida.வணக்கம்'))
+        with símismo.assertRaises(ErrorNoInstalado):
+            gen_mds('recursos/mds/Modelo con extensión no reconocida.வணக்கம்')
 
-    def test_generación_auto_mds_con_motor_especificado(símismo):
-        """
-        Comprobar la generación de modelos DS con el motor de simulación especificado.
-        """
-
-        mod = generar_mds(tipos_modelos['PySDVensim']['prueba'], motor=ModeloPySD)
-        símismo.assertIsInstance(mod, ModeloPySD)
-
-        if ModeloVensim(tipos_modelos['dllVensim']['prueba']).instalado():
-            mod = generar_mds(tipos_modelos['PySDVensim']['prueba'], motor=ModeloVensim)
-            símismo.assertIsInstance(mod, ModeloVensim)
-
-    def test_generación_auto_mds_modelo_erróneo(símismo):
+    def test_modelo_erróneo(símismo):
         """
         Asegurarse que un fuente erróneo devuelva un error.
         """
 
         with símismo.assertRaises(FileNotFoundError):
-            generar_mds('recursos/MDS/Yo no existo.mdl')
+            gen_mds('Yo no existo.mdl')
+
+    @classmethod
+    def tearDownClass(cls):
+        limpiar_mds()
 
 
-def limpiar_mds(direc='./recursos/MDS'):
+def limpiar_mds(direc='./recursos/mds'):
     """
     Limpiamos todos los documentos temporarios generados por los programas de modelos DS.
     """
@@ -331,7 +274,11 @@ def limpiar_mds(direc='./recursos/MDS'):
         for a in c[2]:
             ext = os.path.splitext(a)[1]
             try:
-                if ext in ['.2mdl', '.vdf', '.py', '.csv']:
+                if ext in ['.2mdl', '.vdf', '.csv'] or (ext == '.py' and any(
+                        os.path.isfile(os.path.join(direc, os.path.splitext(a)[0] + e))
+                        for e in ['.xmile', '.xml', '.mdl']
+                )):
                     os.remove(os.path.join(direc, a))
+
             except (FileNotFoundError, PermissionError):
                 pass

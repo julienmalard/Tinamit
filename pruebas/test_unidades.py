@@ -1,8 +1,7 @@
-import sys
 import unittest
 
-import tinamit.Unidades.trads as trads
-from tinamit.Unidades.conv import convertir
+import tinamit.unids.trads as trads
+from tinamit.unids.conv import convertir
 
 
 class Test_ConvertirUnidades(unittest.TestCase):
@@ -11,11 +10,11 @@ class Test_ConvertirUnidades(unittest.TestCase):
     """
 
     def test_convertir_unids_equivalentes(símismo):
-        # Unidades equivalentes deberían dar un factor de conversión de 1.
+        # unids equivalentes deberían dar un factor de conversión de 1.
         símismo.assertEqual(convertir('m2/d', 'm3/d/m'), 1)
 
     def test_convertir_unids_iguales(símismo):
-        # Unidades idénticas deberían dar un factor de conversión de 1.
+        # unids idénticas deberían dar un factor de conversión de 1.
         símismo.assertEqual(convertir('colibrís', 'colibrís'), 1)
 
     def test_convertir_con_traducción_necesaria(símismo):

@@ -17,3 +17,5 @@ spotpy
 xarray
 chardet
 pysd
+ennikkai
+taqdir

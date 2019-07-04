@@ -1,13 +1,10 @@
 import math
 import unittest
 
-import numpy as np
-import xarray as xr
-
-from tinamit.Análisis.sintaxis import Ecuación
+from tinamit.calibs.sintx.ec import Ecuación
 
 
-class Test_AnalizarEc(unittest.TestCase):
+class TestAnalizarEc(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.ecs = {
@@ -148,51 +145,3 @@ class Test_AnalizarEc(unittest.TestCase):
     def test_obt_coef_ec_múltiple(símismo):
         ec = Ecuación('y=a*(x+b+a)')
         símismo.assertIsNone(ec.coef_de('y'))
-
-
-class Test_Normalizar(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.obs_x = xr.Dataset({'x': ('n', np.random.normal(0, 2, 100))})
-        cls.obs_y = xr.DataArray(np.random.normal(0, 10, 100))
-
-    def test_normalizar(símismo):
-        ec = Ecuación('y=a*x+b')
-
-        escls_prms, líms_norm, x_norm, y_norm = ec.normalizar(
-            líms_paráms={'a': (0, 1)}, obs_x=símismo.obs_x, obs_y=símismo.obs_y
-        )
-        símismo.assertAlmostEqual(x_norm['x'].values.std(), 1)
-        símismo.assertTupleEqual(líms_norm['a'], (0, 1 * símismo.obs_x['x'].values.std()))
-
-    def test_normalizar_div(símismo):
-        ec = Ecuación('y=x/a+b')
-        escls_prms, líms_norm, x_norm, y_norm = ec.normalizar(
-            líms_paráms={'a': (0, 1)}, obs_x=símismo.obs_x, obs_y=símismo.obs_y
-        )
-        símismo.assertAlmostEqual(x_norm['x'].values.std(), 1)
-        símismo.assertTupleEqual(líms_norm['a'], (0, 1 / símismo.obs_x['x'].values.std()))
-
-    def test_normalizar_y(símismo):
-        ec = Ecuación('y=a*(x+b)')
-        escls_prms, líms_norm, x_norm, y_norm = ec.normalizar(
-            líms_paráms={'a': (0, 1)}, obs_x=símismo.obs_x, obs_y=símismo.obs_y
-        )
-        símismo.assertAlmostEqual(y_norm.values.std(), 1)
-        símismo.assertTupleEqual(líms_norm['a'], (0, 1 / símismo.obs_y.values.std()))
-
-    def test_normalizar_y_div(símismo):
-        ec = Ecuación('y=a/(x+b)')
-        escls_prms, líms_norm, x_norm, y_norm = ec.normalizar(
-            líms_paráms={'a': (0, 1)}, obs_x=símismo.obs_x, obs_y=símismo.obs_y
-        )
-        símismo.assertAlmostEqual(y_norm.values.std(), 1)
-        símismo.assertTupleEqual(líms_norm['a'], (0, 1 / símismo.obs_y.values.std()))
-
-    def test_normalizar_y_coef_recipr(símismo):
-        ec = Ecuación('y=(x+b)/a')
-        escls_prms, líms_norm, x_norm, y_norm = ec.normalizar(
-            líms_paráms={'a': (0, 1)}, obs_x=símismo.obs_x, obs_y=símismo.obs_y
-        )
-        símismo.assertAlmostEqual(y_norm.values.std(), 1)
-        símismo.assertTupleEqual(líms_norm['a'], (0, 1 * símismo.obs_y.values.std()))

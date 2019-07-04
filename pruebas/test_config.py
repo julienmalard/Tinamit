@@ -1,70 +1,46 @@
 import unittest
 
-from tinamit.config import obt_val_config, poner_val_config, borrar_var_config, cambiar_lengua
+from tinamit.config import conf, trads
 
 
-class Test_Config(unittest.TestCase):
+class TestConfig(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        conf['prueba'] = 1
+
     def test_obt_val_config(símismo):
-        val = obt_val_config('leng')
-        símismo.assertIsInstance(val, str)
-
-    def test_obt_val_config_con_condición(símismo):
-        def cond(x):
-            return True
-
-        símismo.assertIsInstance(obt_val_config('leng', cond=cond), str)
-
-    def test_obt_val_config_con_condición_falsa(símismo):
-        def cond(x):
-            return False
-
-        símismo.assertIs(obt_val_config('leng', cond=cond, mnsj_err=''), None)
-
-    def test_obt_val_config_con_auto(símismo):
-        símismo.assertEqual(obt_val_config('jaja', respaldo='abc'), 'abc')
-
-    def test_obt_val_config_con_auto_y_cond(símismo):
-        def cond(x):
-            return x[0] == 'a'
-
-        símismo.assertEqual(obt_val_config('leng', cond=cond, respaldo=['cba', 'abc']), 'abc')
-
-    def test_poner_val_config(símismo):
-        poner_val_config('prueba', 'JAJA')
-        símismo.assertEqual('JAJA', obt_val_config('prueba'))
+        símismo.assertEqual(conf['prueba'], 1)
 
     def test_obt_val_config_anidada(símismo):
-        poner_val_config(['prueba', 'prueba2'], '¡aquí estoy!')
-        símismo.assertEqual('¡aquí estoy!', obt_val_config(['prueba', 'prueba2']))
+        conf['prueba2', 'prueba3'] = '¡aquí estoy!'
+        símismo.assertEqual('¡aquí estoy!', conf['prueba2', 'prueba3'])
 
     def test_borrrar_config_no_existe(símismo):
         with símismo.assertRaises(KeyError):
-            borrar_var_config('Yo no existo')
+            conf.borrar('Yo no existo')
 
     @classmethod
     def tearDownClass(cls):
-        try:
-            borrar_var_config('prueba')
-        except KeyError:
-            pass
+        conf.borrar('prueba')
+        conf.borrar('prueba2')
 
 
-class Test_CambiarLengua(unittest.TestCase):
+class TestCambiarLengua(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.leng = obt_val_config('leng')
-        cls.lengs_aux = obt_val_config('lengs_aux')
+        cls.leng = trads.idioma()
+        cls.lengs_aux = trads.auxiliares()
 
     def test_cambiar_leng(símismo):
-        cambiar_lengua('tzj')
-        símismo.assertEqual(obt_val_config('leng'), 'tzj')
+        trads.cambiar_idioma('tzj')
+        símismo.assertEqual(trads.idioma(), 'tzj')
 
     def test_cambiar_lengs_aux(símismo):
-        cambiar_lengua('த', auxiliares='हिं')
-        símismo.assertEqual(obt_val_config('leng'), 'த')
-        símismo.assertListEqual(obt_val_config('lengs_aux'), ['हिं'])
+        trads.cambiar_aux('हिं')
+        símismo.assertListEqual(trads.auxiliares(), ['हिं'])
 
     @classmethod
     def tearDownClass(cls):
-        cambiar_lengua(cls.leng, auxiliares=cls.lengs_aux)
+        trads.cambiar_idioma(cls.leng)
+        trads.cambiar_aux(cls.lengs_aux)
