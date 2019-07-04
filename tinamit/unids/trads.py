@@ -206,7 +206,7 @@ def agregar_trad(unid, trad, leng_trad, leng_orig=None, guardar=True):
         act_arch_trads(l_dic_trads)
 
 
-def agregar_sinónimos(unid, sinónimos, leng, guardar=True):
+def agregar_sinónimos(unid, sinónimos, leng, guardar=False):
     """
     Agrega sinónimos a una unidad.
 

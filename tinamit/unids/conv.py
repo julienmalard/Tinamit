@@ -94,6 +94,10 @@ def convertir(de, a, val=1, lengua=None):
     return cant_convtd
 
 
+def nueva_unidad(unid, ref, conv):
+    regu.define('{unid} = {ref}*{conv}'.format(unid=unid, ref=ref, conv=conv))
+
+
 def definir_en_regu(unid, base):
     """
     Esta funcion define una nueva unidad en el registro de unidades.
