@@ -1,9 +1,10 @@
 import numpy as np
+import pandas as pd
 import xarray as xr
-
 from tinamit.config import _
-from tinamit.datos.bd import BD, interpolar_xr
+from tinamit.datos.bd import BD
 from tinamit.mod import EspecTiempo
+
 from ._utils import eval_funcs
 
 
@@ -17,7 +18,7 @@ class ValidadorMod(object):
         if not isinstance(datos, xr.Dataset):
             datos = datos if isinstance(datos, BD) else BD(datos)
             datos = datos.obt_vals(
-                [x for x in datos.variables if _reversar_var(x, corresp_vars) in símismo.mod.variables]
+                buscar_vars_interés(símismo.mod, datos, corresp_vars)
             )
 
         funcs = funcs or list(eval_funcs)
@@ -25,46 +26,55 @@ class ValidadorMod(object):
         if not isinstance(vars_extern, list):
             vars_extern = [vars_extern]
 
-        vars_interés = [x for x in datos.data_vars if _reversar_var(x, corresp_vars) in símismo.mod.variables]
-        vars_extern = [x for x in vars_interés if _reversar_var(x, corresp_vars) in vars_extern]
-        vars_valid = [x for x in vars_interés if x not in vars_extern]
+        vars_interés = buscar_vars_interés(símismo.mod, datos, corresp_vars)
+        vars_valid = [v for v in vars_interés if v not in vars_extern]
 
-        vals_extern = datos[vars_extern]
-        extern = {vr: vals_extern[vr] for vr in vars_extern}
+        vals_extern = datos[list({_resolver_var(v, corresp_vars) for v in vars_extern})]
+        extern = {vr: vals_extern[_resolver_var(vr, corresp_vars)] for vr in vars_extern}
 
-        if t.f_inic is not None:
+        # if t.f_inic is not None:
 
-            datos_inic = interpolar_xr(datos, t.f_inic)
-            if datos_inic.sizes['n']:
-                for vr in vars_interés:
-                    if vr not in extern:
-                        extern[vr] = datos_inic[vr].values
+        #     datos_inic = interpolar_xr(datos, t.f_inic)
+        #     if datos_inic.sizes['n']:
+        #         for vr in vars_interés:
+        #             if vr not in extern:
+        #                 extern[vr] = datos_inic[_resolver_var(vr, corresp_vars)].values
 
         res = símismo.mod.simular(t=t, extern={**paráms, **extern}, vars_interés=vars_valid)
 
-        vals_calib = datos[vars_valid]
+        vals_calib = datos[list({_resolver_var(v, corresp_vars) for v in vars_valid})]
         # Para hacer: si implementamos Dataset en ResultadosSimul este se puede combinar en una línea
         valid = {}
         for r in res:
+            vr_datos = _resolver_var(str(r), corresp_vars)
             eje = r.vals[_('fecha')].values
             buenas_fechas = np.logical_and(eje[0] <= vals_calib[_('fecha')], vals_calib[_('fecha')] <= eje[-1])
-            datos_r = vals_calib[str(r)].where(buenas_fechas, drop=True).dropna('n')
-            if datos_r.sizes['n']:
+            datos_r = vals_calib[vr_datos].where(buenas_fechas, drop=True).dropna('n')
+            if datos_r.sizes['n'] > 1:
                 fechas_obs = datos_r[_('fecha')]
                 interpoladas = r.interpolar(fechas=fechas_obs)
-                valid[str(r)] = _valid_res(datos_r.values, interpoladas.values, funcs)
+                valid[str(r)] = _valid_res(
+                    datos_r.values, interpoladas.values, pd.to_datetime(datos_r[_('fecha')].values), funcs
+                )
         return valid
 
 
-def _valid_res(obs, res, funcs):
+def _valid_res(obs, res, fechas, funcs):
     vlds = {}
     for f in funcs:
-        vlds[f] = eval_funcs[f.lower()](obs, res[:, 0])  # para hacer: dimensiones múltiples
+        vlds[f] = eval_funcs[f.lower()](obs, res[:, 0], fechas)  # para hacer: dimensiones múltiples
     return vlds
 
 
-# Para hacer: duplicado de simul.py
-def _reversar_var(var, corresp_vars):
-    if not corresp_vars:
+def _resolver_var(var, corresp_vars):
+    if not corresp_vars or var not in corresp_vars:
         return var
-    return next((ll for ll, v in corresp_vars.items() if v == var), var)
+    return corresp_vars[var]
+
+
+def buscar_vars_interés(mod, datos, corresp_vars):
+    return [v.nombre for v in mod.variables if _resolver_var(v.nombre, corresp_vars) in datos.variables]
+
+
+def vars_datos_interés(mod, datos, corresp_vars):
+    return {_resolver_var(v, corresp_vars) for v in buscar_vars_interés(mod, datos, corresp_vars=corresp_vars)}
