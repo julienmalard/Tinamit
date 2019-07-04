@@ -202,25 +202,15 @@ def _obt_val_var_unidim(mod, var):
     return struct.unpack('f', mem_inter)[0]
 
 
-def vdf_a_csv(mod, archivo_vdf=None, archivo_csv=None):
-    if archivo_csv is None:
-        archivo_csv = archivo_vdf
-
-    # En Vensim, "!" quiere decir la corrida activa
-    archivo_vdf = archivo_vdf or '!'
-    archivo_csv = archivo_csv or '!'
+def vdf_a_csv(mod, archivo_csv):
 
     # Vensim hace la conversión para nosotr@s
     cmd_vensim(
         mod.vensim_command,
         'MENU>VDF2CSV|{archVDF}|{archCSV}'.format(
-            archVDF=archivo_vdf + '.vdf', archCSV=archivo_csv + '.csv'
+            archVDF='!.vdf', archCSV='!.csv'  # En Vensim, "!" quiere decir la corrida activa
         ).encode()
     )
-
-    # Re-aplicar la corrida activa
-    if archivo_csv == '!':
-        archivo_csv = corrida_activa
 
     # Cortar el último paso de simulación. Tinamït siempre corre simulaciones de Vensim para 1 paso adicional
     # para permitir que valores de variables conectados se puedan actualizar.
@@ -352,7 +342,7 @@ def _verificar_nombre(nombre):
 
 
 def obt_val_var(mod, var, subs):
-    if subs is None:
+    if not subs:
         # Si el variable no tiene dimensiones (subscriptos)...
 
         # Leer su valor.

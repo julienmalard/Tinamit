@@ -151,7 +151,7 @@ class TestSimular(unittest.TestCase):
         for nmb, res in símismo.res.items():
             v = 'Aleatorio'
             with símismo.subTest(mod=nmb):
-                símismo.assertEqual(res[v].vals[0], símismo.vals_inic[v])
+                npt.assert_allclose(res[v].vals[0].values, símismo.vals_inic[v], rtol=0.0001)
 
     def test_cambiar_vals_inic_nivel(símismo):
         """

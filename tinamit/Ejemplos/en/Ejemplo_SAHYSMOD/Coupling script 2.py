@@ -1,9 +1,12 @@
 import os
 
-from tinamit.Conectado import Conectado
+from tinamit.conect import Conectado
 
-from tinamit.Ejemplos.en.Ejemplo_SAHYSMOD.SAHYSMOD import Envoltura
-from tinamit.Geog_.Geog import Lugar, Geografía
+from tinamit.geog.mapa import dibujar_mapa, FormaDinámicaNumérica, Agua, Calle, FormaEstática, Bosque, Ciudad
+from tinamit.envolt.mds import gen_mds
+from tinamit.envolt.bf.sahysmod import ModeloSAHYSMOD
+from tinamit.mod import EspecTiempo
+from tinamit.unids.conv import nueva_unidad
 
 if __name__ == '__main__':
     use_simple = True
@@ -11,18 +14,15 @@ if __name__ == '__main__':
 
     base_dir = os.path.dirname(os.path.realpath(__file__))
 
-    # 0. Site geography
-    Rechna_Doab = Geografía(nombre='Rechna Doab')
-
     base_dir_shp = os.path.join(base_dir, 'Shape_files')
     # Rechna_Doab.agregar_frm_regiones(os.path.join(base_dir_shp, 'Internal_Polygon.shp'), col_id='Polygon_ID')
 
-    Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'External_Polygon.shp'), color='#edf4da')
-    Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'RIVR.shp'), tipo='agua')
-    Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'CNL_Arc.shp'), tipo='agua', llenar=False)
-    Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'Forst_polygon.shp'), tipo='bosque')
-    Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'buildup_Polygon.shp'), tipo='ciudad')
-    Rechna_Doab.agregar_forma(os.path.join(base_dir_shp, 'road.shp'), tipo='calle')
+    baher = FormaEstática(os.path.join(base_dir_shp, 'External_Polygon.shp'), color='#edf4da', llenar=False, alpha=1)
+    driya = Agua(os.path.join(base_dir_shp, 'RIVR.shp'))
+    naher = Agua(os.path.join(base_dir_shp, 'CNL_Arc.shp'))
+    jngl = Bosque(os.path.join(base_dir_shp, 'Forst_polygon.shp'))
+    shr = Ciudad(os.path.join(base_dir_shp, 'buildup_Polygon.shp'))
+    srk = Calle(os.path.join(base_dir_shp, 'road.shp'))
 
     # 1. Simple runs
     runs_simple = {'CWU': {'Capacity per tubewell': 100.8, 'Fw': 0.8, 'Policy Canal lining': 0,
@@ -68,12 +68,10 @@ if __name__ == '__main__':
 
     # 3. Now create the model
     # Create a coupled model instance
-    modelo = Conectado()
-
-    # Establish SDM and Biofisical model paths. The Biofisical model path must point to the Python wrapper for the model
-    modelo.estab_mds(os.path.join(os.path.split(__file__)[0], 'Vensim', 'Tinamit_Rechna.vpm'))
-    modelo.estab_bf(Envoltura)
-    modelo.estab_conv_unid_tiempo(unid='season', unid_ref='mes', factor=6)
+    mds = gen_mds(os.path.join(os.path.split(__file__)[0], 'Vensim', 'Tinamit_Rechna.vpm'))
+    bf = ModeloSAHYSMOD('495anew1.inp')
+    modelo = Conectado(bf, mds)
+    nueva_unidad('season', 'month', 6)
 
     # Couple models(Change variable names as needed)
     modelo.conectar(var_mds='Soil salinity Tinamit CropA', mds_fuente=False, var_bf="CrA - Root zone salinity crop A")
@@ -106,12 +104,11 @@ if __name__ == '__main__':
             print('Runing model {}.\n-----------------'.format(name))
 
             # Simulate the coupled model
-            modelo.simular(paso=1, t_final=40, vals_inic=run,
-                           nombre=name)  # time step and final time are in months
+            modelo.simular(40, extern=run, nombre=name)  # time step and final time are in months
 
             # Draw maps
-            modelo.dibujar_mapa(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
-            modelo.dibujar_mapa(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
+            # modelo.dibujar_mapa(geog=Rechna_Doab, corrida=name, var='Watertable depth Tinamit', directorio='Maps')
+            # modelo.dibujar_mapa(geog=Rechna_Doab, corrida=name, var='Soil salinity Tinamit CropA', directorio='Maps')
     else:
         # Climate change runs
         location = Lugar(lat=32.178207, long=73.217391, elev=217)

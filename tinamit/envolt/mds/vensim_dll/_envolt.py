@@ -30,11 +30,15 @@ class ModeloVensimDLL(ModeloMDS):
         return f.obt_unid_tiempo(símismo.mod)
 
     def iniciar_modelo(símismo, corrida):
+        símismo.corrida = corrida
+        corrida.variables.reinic()
+
         t = corrida.t
         # En Vensim, tenemos que incializar los valores de variables no editables antes de empezar la simulación.
+        no_editables = [str(v) for v in símismo.variables.no_editables()]
         if corrida.extern:
             símismo.cambiar_vals(
-                {vr: vl.values for vr, vl in corrida.obt_extern_act().items() if vr in símismo.variables.no_editables()}
+                {vr: vl.values for vr, vl in corrida.obt_extern_act().items() if vr in no_editables}
             )
         if corrida.clima:
             símismo.cambiar_vals(
@@ -44,22 +48,28 @@ class ModeloVensimDLL(ModeloMDS):
         f.inic_modelo(símismo.mod, paso=t.tmñ_paso, n_pasos=t.n_pasos, nombre_corrida=str(corrida))
 
         # Aplicar los valores iniciales de variables editables
-        símismo.variables.cambiar_vals(
-            {var: val for var, val in corrida.obt_extern_act(var=símismo.variables.editables())}
-        )
+        if corrida.extern:
+            símismo.cambiar_vals(
+                {var: val for var, val in
+                 corrida.obt_extern_act(var=[str(v) for v in símismo.variables.editables()]).items()}
+            )
 
         # Debe venir después de `f.inic_modelo()` sino no obtenemos datos para los variables
         símismo._leer_vals_de_vensim()
 
         símismo.inicializado = True
-        super().iniciar_modelo(corrida)
+
+        corrida.actualizar_res()
+        # NO llamamos a super() porque ya hicimos todo aquí. Se tenía que reimplementar para poder separar
+        # la actualización de variables dinámicos y constantes en Vensim DLL.
 
     def incrementar(símismo, rebanada):
         corrida = símismo.corrida
         # Establecer el paso.
-        if corrida != símismo.paso:
-            f.estab_paso(símismo.mod, corrida)
-            símismo.paso = corrida
+        paso = corrida.t.tmñ_paso
+        if paso != símismo.paso:
+            f.estab_paso(símismo.mod, paso)
+            símismo.paso = paso
 
         f.avanzar_modelo(símismo.mod)
         símismo._leer_vals_de_vensim(rebanada.resultados.variables())
@@ -68,8 +78,6 @@ class ModeloVensimDLL(ModeloMDS):
 
     def cambiar_vals(símismo, valores):
         super().cambiar_vals(valores)
-        if not símismo.inicializado:
-            return
 
         for var, val in valores.items():
             # Para cada variable para cambiar...
@@ -106,7 +114,7 @@ class ModeloVensimDLL(ModeloMDS):
         f.cerrar_vensim(símismo.mod)
 
         #
-        f.vdf_a_csv(símismo.mod)
+        f.vdf_a_csv(símismo.mod, símismo.corrida.nombre)
 
     @classmethod
     def instalado(cls):
@@ -187,6 +195,7 @@ def _gen_vars(mod):
             dims = (len(subs),)  # Para hacer: permitir más de 1 dimensión
         else:
             dims = (1,)
+            subs = None
         inic = np.zeros(dims)
 
         # Leer la ecuación del variable, sus hijos y sus parientes directamente de Vensim
