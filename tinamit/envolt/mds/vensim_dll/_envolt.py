@@ -158,7 +158,7 @@ def _gen_vars(mod):
         'Subscript Constant'
     ]
 
-    for var, tipo_var in vars_y_tipos:
+    for var, tipo_var in vars_y_tipos.items():
         # Para cada variable...
 
         # No incluir los variables de verificación (pruebas de modelo) Vensim, de subscriptos, de datos, etc.
