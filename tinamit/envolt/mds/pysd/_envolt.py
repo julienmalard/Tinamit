@@ -56,8 +56,7 @@ class ModeloPySD(ModeloMDS):
         if símismo.corrida.extern is not None:
             paráms = {
                 vr: vl.squeeze().to_pandas()
-                # para hacer: ¿con o sin t.eje()?
-                for vr, vl in símismo.corrida.extern.obt_vals(t, var=símismo.variables).items()
+                for vr, vl in símismo.corrida.extern.obt_vals(t.eje(), f_inic=t.f_inic, var=símismo.variables).items()
             }
         else:
             paráms = {}

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import xarray as xr
-
+from dateutil.relativedelta import relativedelta as deltarelativo
 from tinamit.config import _
 from .tiempo import Tiempo
 from .var import Variable
@@ -12,7 +12,7 @@ class Extern(object):
         símismo.interpol = interpol
         símismo._vals = vals_vars
 
-    def obt_vals(símismo, t, var=None):
+    def obt_vals(símismo, t, f_inic=None, var=None):
         vals = símismo._vals
 
         if var is not None:
@@ -20,36 +20,35 @@ class Extern(object):
                 var = [var]
             vals = {vr: vl for vr, vl in vals.items() if vr in var}
 
-        vals = {vr: símismo._obt_a_t(vl, t, símismo.interpol) for vr, vl in vals.items()}
+        vals = {vr: símismo._obt_a_t(vl, t, f_inic, símismo.interpol) for vr, vl in vals.items()}
 
         return {vr: vl for vr, vl in vals.items() if not np.all(np.isnan(vl))}
 
     @staticmethod
-    def _obt_a_t(m_xr, t, interpol):
+    def _obt_a_t(m_xr, t, f_inic, interpol):
+        # para hacer: simplificar y hacer más elegante
         m_xr = m_xr.unstack()
-        tiempo_xr = m_xr[_('fecha')]
-        if np.issubdtype(tiempo_xr.dtype, np.datetime64):
+        if np.issubdtype(m_xr[_('fecha')].dtype, np.datetime64):
             if isinstance(t, Tiempo):
                 f = t.fecha()
-            elif isinstance(t, tuple):
-                f = t[1]
             else:
                 f = t
-            if interpol and len(tiempo_xr) > 1:
+            if interpol and m_xr.sizes[_('fecha')] > 1:
                 return m_xr.interp(**{_('fecha'): f})
             try:
                 return m_xr.sel(**{_('fecha'): f})
             except (KeyError, IndexError):
                 return np.nan
+
         if isinstance(t, Tiempo):
             i = t.í
-        elif isinstance(t, tuple):
-            i = t[0]
         elif isinstance(t, (int, float)):
             i = t
+        elif isinstance(t, pd.DatetimeIndex) and f_inic:
+                i = [(j-f_inic).days for j in t if (j-f_inic).days in m_xr[_('fecha')]]
         else:
             i = [j for j in t if j in m_xr[_('fecha')]]
-        if interpol and len(tiempo_xr) > 1:
+        if interpol and m_xr.sizes[_('fecha')] > 1:
             return m_xr.interp(**{_('fecha'): i})
         try:
             return m_xr[i]

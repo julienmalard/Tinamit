@@ -180,20 +180,22 @@ class TestSimular(unittest.TestCase):
     def test_simul_con_paso_2(símismo):
 
         for nmb, mod in símismo.modelos.items():
-            res_paso_1 = símismo.res[nmb]['Lago'].vals.values[::2]
-            res_paso_2 = mod.simular(
-                t=EspecTiempo(100, tmñ_paso=2), extern=símismo.vals_inic, vars_interés=['Lago']
-            )['Lago'].vals.values
-            npt.assert_allclose(res_paso_2, res_paso_1, rtol=0.001)
+            with símismo.subTest(mod=nmb):
+                res_paso_1 = símismo.res[nmb]['Lago'].vals.values[::2]
+                res_paso_2 = mod.simular(
+                    t=EspecTiempo(100, tmñ_paso=2), extern=símismo.vals_inic, vars_interés=['Lago']
+                )['Lago'].vals.values
+                npt.assert_allclose(res_paso_2, res_paso_1, rtol=0.001)
 
     def test_simul_guardar_cada_2(símismo):
 
         for nmb, mod in símismo.modelos.items():
-            res_paso_1 = símismo.res[nmb]['Lago'].vals.values[::2]
-            res_paso_2 = mod.simular(
-                t=EspecTiempo(200, guardar_cada=2), extern=símismo.vals_inic, vars_interés=['Lago']
-            )['Lago'].vals.values
-            npt.assert_equal(res_paso_1, res_paso_2)
+            with símismo.subTest(mod=nmb):
+                res_paso_1 = símismo.res[nmb]['Lago'].vals.values[::2]
+                res_paso_2 = mod.simular(
+                    t=EspecTiempo(200, guardar_cada=2), extern=símismo.vals_inic, vars_interés=['Lago']
+                )['Lago'].vals.values
+                npt.assert_equal(res_paso_1, res_paso_2)
 
     @classmethod
     def tearDownClass(cls):

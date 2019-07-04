@@ -95,7 +95,7 @@ def convertir(de, a, val=1, lengua=None):
 
 
 def nueva_unidad(unid, ref, conv):
-    regu.define('{unid} = {ref}*{conv}'.format(unid=unid, ref=ref, conv=conv))
+    regu.define('{unid} = {ref} * {conv}'.format(unid=unid, ref=ref, conv=conv))
 
 
 def definir_en_regu(unid, base):

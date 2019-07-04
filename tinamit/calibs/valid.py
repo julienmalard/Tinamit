@@ -30,7 +30,8 @@ class ValidadorMod(object):
         vars_valid = [v for v in vars_interés if v not in vars_extern]
 
         vals_extern = datos[list({_resolver_var(v, corresp_vars) for v in vars_extern})]
-        extern = {vr: vals_extern[_resolver_var(vr, corresp_vars)] for vr in vars_extern}
+        extern = {vr: vals_extern[_resolver_var(vr, corresp_vars)].dropna('n') for vr in vars_extern}
+        extern = {ll: v for ll, v in extern.items() if v.sizes['n']}
 
         # if t.f_inic is not None:
 
@@ -47,15 +48,17 @@ class ValidadorMod(object):
         valid = {}
         for r in res:
             vr_datos = _resolver_var(str(r), corresp_vars)
-            eje = r.vals[_('fecha')].values
-            buenas_fechas = np.logical_and(eje[0] <= vals_calib[_('fecha')], vals_calib[_('fecha')] <= eje[-1])
-            datos_r = vals_calib[vr_datos].where(buenas_fechas, drop=True).dropna('n')
-            if datos_r.sizes['n'] > 1:
-                fechas_obs = datos_r[_('fecha')]
-                interpoladas = r.interpolar(fechas=fechas_obs)
-                valid[str(r)] = _valid_res(
-                    datos_r.values, interpoladas.values, pd.to_datetime(datos_r[_('fecha')].values), funcs
-                )
+            vals_calib_vr = vals_calib[vr_datos].dropna('n')
+            if vals_calib_vr.sizes['n']:
+                eje = r.vals[_('fecha')].values
+                buenas_fechas = np.logical_and(eje[0] <= vals_calib_vr[_('fecha')], vals_calib_vr[_('fecha')] <= eje[-1])
+                datos_r = vals_calib[vr_datos].where(buenas_fechas, drop=True).dropna('n')
+                if datos_r.sizes['n'] > 1:
+                    fechas_obs = datos_r[_('fecha')]
+                    interpoladas = r.interpolar(fechas=fechas_obs)
+                    valid[str(r)] = _valid_res(
+                        datos_r.values, interpoladas.values, pd.to_datetime(datos_r[_('fecha')].values), funcs
+                    )
         return valid
 
 

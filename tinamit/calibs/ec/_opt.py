@@ -134,7 +134,7 @@ def _optimizar(func, líms_paráms, obs_x, obs_y, inic=None, **ops):
         f_ajusto = eval_funcs[med_ajusto.lower()]
 
         # Devolver el ajusto de la función con los parámetros actuales.
-        return -f_ajusto(func(prm, obs_x), obs_y)  # SpotPy maximiza pero nosotr@s aquí minimizamos
+        return -f_ajusto(func(prm, obs_x), obs_y, f=None)  # SpotPy maximiza pero nosotr@s aquí minimizamos
 
     # Generar los estimos iniciales, si necesario
     if inic is not None:

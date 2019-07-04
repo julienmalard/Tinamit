@@ -105,7 +105,7 @@ class _ModSpotPy(object):
         return símismo.obs_norm
 
     def objectivefunction(símismo, simulation, evaluation, params=None):
-        return símismo.func(evaluation, simulation)
+        return símismo.func(evaluation, simulation, f=None)
 
     def _aplastar(símismo, datos):
         if isinstance(datos, xr.Dataset):

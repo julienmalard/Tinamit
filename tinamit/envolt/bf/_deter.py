@@ -29,6 +29,32 @@ class ModeloDeterminado(ModeloImpaciente):
 
         super().incrementar(rebanada)
 
+    def _act_vals_clima(símismo, f_0, f_1):
+
+        # Solamante hay que cambiar los datos si es el principio de un nuevo ciclo.
+        if símismo.paso_en_ciclo == 0:
+
+            # La fecha inicial
+            f_inic = f_0
+
+            for b, tmñ in enumerate(símismo.tmñ_bloques):
+                # Para cada bloque...
+
+                # La fecha final
+                base_t, factor = símismo._unid_tiempo_python()
+                f_final = f_0 + deltarelativo(**{base_t: tmñ * factor})
+
+                # Calcular los datos
+                datos = símismo.corrida.clima.combin_datos(vars_clima=símismo.vars_clima, f_inic=f_0, f_final=f_1)
+
+                # Aplicar los valores de variables calculados
+                for var, datos_vrs in símismo.vars_clima.items():
+                    # Guardar el valor para esta estación
+                    símismo.matrs_ingr[var][b, ...] = datos[var_clima] * conv
+
+                # Avanzar la fecha
+                f_inic = f_final
+
     def avanzar_modelo(símismo, n_ciclos):
         raise NotImplementedError
 

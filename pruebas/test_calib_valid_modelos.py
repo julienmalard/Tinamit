@@ -7,7 +7,7 @@ from tinamit.calibs.valid import ValidadorMod
 from tinamit.datos.bd import BD
 from tinamit.datos.fuente import FuenteDic
 from tinamit.envolt.mds import gen_mds
-from tinamit.geog.simul import SimuladorGeog, CalibradorGeog, ValidadorGeog
+from tinamit.calibs.geog_mod import SimuladorGeog, CalibradorGeog, ValidadorGeog
 
 dir_act = os.path.split(__file__)[0]
 arch_mds = os.path.join(dir_act, 'recursos/mds/mod_enferm.mdl')
