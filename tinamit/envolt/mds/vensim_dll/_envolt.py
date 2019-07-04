@@ -32,15 +32,20 @@ class ModeloVensimDLL(ModeloMDS):
     def iniciar_modelo(símismo, corrida):
         t = corrida.t
         # En Vensim, tenemos que incializar los valores de variables no editables antes de empezar la simulación.
-        símismo.variables.cambiar_vals(
-            {var: val for var, val in corrida.extern.obt_vals(var=símismo.variables.no_editables())}
-        )
+        if corrida.extern:
+            símismo.cambiar_vals(
+                {vr: vl.values for vr, vl in corrida.obt_extern_act().items() if vr in símismo.variables.no_editables()}
+            )
+        if corrida.clima:
+            símismo.cambiar_vals(
+                {vr: vl.values for vr, vl in corrida.clima.obt_todos_vals(t, símismo.vars_clima).items()}
+            )
 
         f.inic_modelo(símismo.mod, paso=t.paso, n_pasos=t.n_pasos, nombre_corrida=str(corrida))
 
         # Aplicar los valores iniciales de variables editables
         símismo.variables.cambiar_vals(
-            {var: val for var, val in corrida.extern.obt_vals(var=símismo.variables.editables())}
+            {var: val for var, val in corrida.obt_extern_act(var=símismo.variables.editables().items())}
         )
 
         # Debe venir después de `f.inic_modelo()` sino no obtenemos datos para los variables
