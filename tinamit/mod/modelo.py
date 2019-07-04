@@ -139,7 +139,7 @@ class Modelo(object):
 
         if símismo.corrida.clima and símismo.vars_clima:
             t = símismo.corrida.t
-            símismo._act_vals_clima(t.fecha(), t.fecba_próxima())
+            símismo._act_vals_clima(t.fecha(), t.fecha_próxima())
 
     def cerrar(símismo):
         """
@@ -177,7 +177,7 @@ class Modelo(object):
 
         for op in auto:
             if cond is None or cond(op):
-                conf_mods[cls.__name__][llave] = op
+                conf_mods[cls.__name__, llave] = op
                 return op
 
         if mnsj_err:
