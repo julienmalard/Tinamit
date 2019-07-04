@@ -41,7 +41,7 @@ class ModeloVensimDLL(ModeloMDS):
                 {vr: vl.values for vr, vl in corrida.clima.obt_todos_vals(t, símismo.vars_clima).items()}
             )
 
-        f.inic_modelo(símismo.mod, paso=t.paso, n_pasos=t.n_pasos, nombre_corrida=str(corrida))
+        f.inic_modelo(símismo.mod, paso=t.tmñ_paso, n_pasos=t.n_pasos, nombre_corrida=str(corrida))
 
         # Aplicar los valores iniciales de variables editables
         símismo.variables.cambiar_vals(
