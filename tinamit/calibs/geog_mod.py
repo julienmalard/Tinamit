@@ -1,8 +1,8 @@
+from tinamit.config import _
 from tqdm import tqdm
 
-from tinamit.calibs.mod import CalibradorModSpotPy
-from tinamit.calibs.valid import ValidadorMod
-from tinamit.config import _
+from .mod import CalibradorModSpotPy
+from .valid import ValidadorMod, vars_datos_interés
 
 
 class SimuladorGeog(object):
@@ -44,7 +44,7 @@ class ValidadorGeog(object):
 
     def validar(símismo, t, datos, paráms=None, funcs=None, vars_extern=None, corresp_vars=None):
 
-        vars_interés = [x for x in datos.variables if _reversar_var(x, corresp_vars) in símismo.mod.variables]
+        vars_interés = vars_datos_interés(símismo.mod, datos, corresp_vars=corresp_vars)
 
         vals_datos = datos.obt_vals(vars_interés)
 
@@ -59,15 +59,3 @@ class ValidadorGeog(object):
                 )
 
         return valids
-
-
-def _resolver_var(var, corresp_vars):
-    if not corresp_vars or var not in corresp_vars:
-        return var
-    return corresp_vars[var]
-
-
-def _reversar_var(var, corresp_vars):
-    if not corresp_vars:
-        return var
-    return next((ll for ll, v in corresp_vars.items() if v == var), var)

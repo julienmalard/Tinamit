@@ -27,12 +27,13 @@ def calc_máx_trz(trz):
         return np.nan
 
 
-def _anlz_tendencia(o, s):
-    x = np.arange(len(o))
+def _anlz_tendencia(o, s, f):
+    # para hacer: con eje tiempo
+    x = (f - f[0]).days
     pend_obs = estad.linregress(x, o)[0]
     pend_sim = estad.linregress(x, s)[0]
 
-    return (pend_obs > 0) is (pend_sim > 0)
+    return {'obs': pend_obs, 'sim': pend_sim, 'correcta': (pend_obs > 0) is (pend_sim > 0)}
 
 
 algs_spotpy = {
@@ -51,13 +52,13 @@ algs_spotpy = {
 }
 
 eval_funcs = {
-    'ens': spt_f.nashsutcliffe,
-    'rcep': lambda o, s: -spt_f.rmse(o, s),
-    'corresp': spt_f.agreementindex,
-    'ekg': spt_f.kge,
-    'r2': spt_f.rsquared,
-    'rcnep': lambda o, s: -spt_f.rrmse(o, s),
-    'log p': spt_f.log_p,
-    'verosimil_gaus': spt_l.gaussianLikelihoodMeasErrorOut,
+    'ens': lambda o, s, f: spt_f.nashsutcliffe(o, s),
+    'rcep': lambda o, s, f: -spt_f.rmse(o, s),
+    'corresp': lambda o, s, f: spt_f.agreementindex(o, s),
+    'ekg': lambda o, s, f: spt_f.kge(o, s),
+    'r2': lambda o, s, f: spt_f.rsquared(o, s),
+    'rcnep': lambda o, s, f: -spt_f.rrmse(o, s),
+    'log p': lambda o, s, f: spt_f.log_p(o, s),
+    'verosimil_gaus': lambda o, s, f: spt_l.gaussianLikelihoodMeasErrorOut(o, s),
     'tendencia': _anlz_tendencia
 }

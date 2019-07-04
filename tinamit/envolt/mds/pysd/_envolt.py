@@ -1,9 +1,9 @@
 from ast import literal_eval
 
 import numpy as np
-
 from tinamit.calibs.sintx.ec import Ecuación
 from tinamit.envolt.mds.pysd._funcs import decodar
+
 from ._funcs import gen_mod_pysd, obt_paso_mod_pysd
 from ._vars import VarPySDAuxiliar, VarPySDNivel, VarPySDConstante, VariablesPySD
 from .._envolt import ModeloMDS
@@ -41,7 +41,7 @@ class ModeloPySD(ModeloMDS):
             return_timestamps=devolv, return_columns=[v.nombre_py for v in rebanada.resultados.variables()]
         )
 
-        # Guardar valores iniciales para niveles
+        # Guardar valores iniciales
         for v in rebanada.resultados.variables():
             rebanada.resultados[v].vals[símismo.paso_act - 1] = res[v.nombre_py][símismo.paso_act - 1]
 
@@ -56,6 +56,7 @@ class ModeloPySD(ModeloMDS):
         if símismo.corrida.extern is not None:
             paráms = {
                 vr: vl.squeeze().to_pandas()
+                # para hacer: ¿con o sin t.eje()?
                 for vr, vl in símismo.corrida.extern.obt_vals(t, var=símismo.variables).items()
             }
         else:
@@ -89,8 +90,10 @@ class ModeloPySD(ModeloMDS):
     def _proc_paráms(símismo, prms):
         for p in list(prms):
             v = símismo.variables[p]
-            if isinstance(v, VarPySDNivel) and v.var_inic:
-                prms[v.var_inic.nombre] = prms.pop(p)
+            if isinstance(v, VarPySDNivel):
+                val = prms.pop(p)
+                if v.var_inic:
+                    prms[v.var_inic.nombre] = val
 
 
 def _gen_vars(mod):
