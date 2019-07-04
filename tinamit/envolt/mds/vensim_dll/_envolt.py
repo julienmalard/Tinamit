@@ -18,6 +18,7 @@ class ModeloVensimDLL(ModeloMDS):
     se pueda emplear en Tinamït.
     Necesitarás la versión DSS de Vensim para que funcione.
     """
+    ext = ['.vpm']
 
     def __init__(símismo, archivo, nombre='mds'):
         símismo.inicializado = False
