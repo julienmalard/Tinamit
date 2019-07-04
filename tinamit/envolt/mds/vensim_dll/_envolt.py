@@ -52,6 +52,7 @@ class ModeloVensimDLL(ModeloMDS):
         símismo._leer_vals_de_vensim()
 
         símismo.inicializado = True
+        super().iniciar_modelo(corrida)
 
     def incrementar(símismo, rebanada):
         corrida = símismo.corrida
