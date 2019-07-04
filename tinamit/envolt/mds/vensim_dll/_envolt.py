@@ -45,7 +45,7 @@ class ModeloVensimDLL(ModeloMDS):
 
         # Aplicar los valores iniciales de variables editables
         símismo.variables.cambiar_vals(
-            {var: val for var, val in corrida.obt_extern_act(var=símismo.variables.editables().items())}
+            {var: val for var, val in corrida.obt_extern_act(var=símismo.variables.editables())}
         )
 
         # Debe venir después de `f.inic_modelo()` sino no obtenemos datos para los variables
