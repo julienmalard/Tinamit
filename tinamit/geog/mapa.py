@@ -211,8 +211,8 @@ class FormaDinámicaNombrada(FormaDinámica):
 
 
 class Agua(FormaEstática):
-    def __init__(símismo, archivo):
-        super().__init__(archivo=archivo, color='#A5BFDD', llenar=True, alpha=0.5)
+    def __init__(símismo, archivo, llenar=True):
+        super().__init__(archivo=archivo, color='#A5BFDD', llenar=llenar, alpha=0.5)
 
 
 class Calle(FormaEstática):
