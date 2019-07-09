@@ -45,8 +45,11 @@ class VarPaso(Variable):
     def obt_val(símismo):
         return símismo._matr_paso[símismo.paso]
 
-    def poner_vals_paso(símismo, val):
-        símismo._matr_paso[:] = val.reshape(*símismo._matr_paso.shape)  # reformar para variables unidimensionales
+    def poner_vals_paso(símismo, val, paso=None):
+        paso = paso or slice(None, None)
+
+        # reformar para variables unidimensionales
+        símismo._matr_paso[paso] = val.reshape(*símismo._matr_paso[paso].shape)
 
     def obt_vals_paso(símismo):
         return símismo._matr_paso

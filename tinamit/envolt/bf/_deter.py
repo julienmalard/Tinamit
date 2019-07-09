@@ -1,5 +1,8 @@
 import math as mat
 
+from dateutil.relativedelta import relativedelta as deltarelativo
+from tinamit.mod.tiempo import a_unid_tnmt
+
 from ._impac import ModeloImpaciente, VariablesModImpaciente, VarPaso
 
 
@@ -30,29 +33,25 @@ class ModeloDeterminado(ModeloImpaciente):
         super().incrementar(rebanada)
 
     def _act_vals_clima(símismo, f_0, f_1):
+        # Actualizar datos de clima
+        if símismo.corrida.clima and símismo.vars_clima and símismo.paso_en_ciclo == 0:
+            t = símismo.corrida.t
+            f_inic = t.fecha()
 
-        # Solamante hay que cambiar los datos si es el principio de un nuevo ciclo.
-        if símismo.paso_en_ciclo == 0:
-
-            # La fecha inicial
-            f_inic = f_0
-
-            for b, tmñ in enumerate(símismo.tmñ_bloques):
-                # Para cada bloque...
-
-                # La fecha final
-                base_t, factor = símismo._unid_tiempo_python()
-                f_final = f_0 + deltarelativo(**{base_t: tmñ * factor})
+            for i in range(1, símismo.tmñ_ciclo):
+                base_t, factor = a_unid_tnmt(símismo.unidad_tiempo())
+                f_final = f_inic + deltarelativo(**{base_t: factor})
 
                 # Calcular los datos
-                datos = símismo.corrida.clima.combin_datos(vars_clima=símismo.vars_clima, f_inic=f_0, f_final=f_1)
+                datos = símismo.corrida.clima.combin_datos(
+                    vars_clima=símismo.vars_clima, f_inic=f_inic, f_final=f_final
+                )
 
                 # Aplicar los valores de variables calculados
-                for var, datos_vrs in símismo.vars_clima.items():
+                for var, datos_vrs in datos.items():
                     # Guardar el valor para esta estación
-                    símismo.matrs_ingr[var][b, ...] = datos[var_clima] * conv
+                    símismo.variables[var].poner_vals_paso(datos_vrs, paso=i)
 
-                # Avanzar la fecha
                 f_inic = f_final
 
     def avanzar_modelo(símismo, n_ciclos):

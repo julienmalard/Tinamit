@@ -2,6 +2,7 @@ import numpy as np
 from dateutil import relativedelta as deltarelativo
 
 from tinamit.envolt.bf._deter import ModeloDeterminado, VariablesModDeter, VarPasoDeter
+from tinamit.mod.tiempo import a_unid_tnmt
 
 
 class ModeloBloques(ModeloDeterminado):
@@ -18,7 +19,6 @@ class ModeloBloques(ModeloDeterminado):
         super().__init__(tmñ_ciclo=np.sum(símismo.tmñ_bloques), variables=variables, nombre=nombre)
 
     def _act_vals_clima(símismo, f_0, f_1):
-        raise NotImplementedError
 
         # Solamante hay que cambiar los datos si es el principio de un nuevo ciclo.
         if símismo.paso_en_ciclo == 0:
@@ -30,16 +30,18 @@ class ModeloBloques(ModeloDeterminado):
                 # Para cada bloque...
 
                 # La fecha final
-                base_t, factor = símismo._unid_tiempo_python()
-                f_final = f_0 + deltarelativo(**{base_t: tmñ * factor})
+                base_t, factor = a_unid_tnmt(símismo.unidad_tiempo())
+                f_final = f_inic + deltarelativo(**{base_t: tmñ * factor})
 
                 # Calcular los datos
-                datos = símismo.corrida.clima.combin_datos(vars_clima=símismo.vars_clima, f_inic=f_0, f_final=f_1)
+                datos = símismo.corrida.clima.combin_datos(
+                    vars_clima=símismo.vars_clima, f_inic=f_inic, f_final=f_final
+                )
 
                 # Aplicar los valores de variables calculados
-                for var, datos_vrs in símismo.vars_clima.items():
+                for var, datos_vrs in datos.items():
                     # Guardar el valor para esta estación
-                    símismo.matrs_ingr[var][b, ...] = datos[var_clima] * conv
+                    símismo.variables[var].poner_vals_paso(datos_vrs, paso=b)
 
                 # Avanzar la fecha
                 f_inic = f_final

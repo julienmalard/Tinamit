@@ -15,7 +15,7 @@ class Tiempo(object):
         símismo.f_inic = t.f_inic
         símismo.guardar_cada = t.guardar_cada
 
-        símismo.unid_paso, símismo.fact_conv = _a_unid_tnmt(unid_paso)
+        símismo.unid_paso, símismo.fact_conv = a_unid_tnmt(unid_paso)
 
         símismo._convs = {}
 
@@ -83,7 +83,7 @@ class TiempoCalendario(Tiempo):
         )
 
     def pasos_avanzados(símismo, unid):
-        unid, fact = _a_unid_tnmt(unid)
+        unid, fact = a_unid_tnmt(unid)
         if símismo.unid_paso == 'año' and unid == 'mes':
             return 12 * símismo.tmñ_paso * símismo.fact_conv / fact
 
@@ -113,7 +113,7 @@ class EspecTiempo(object):
             return Tiempo(t=símismo, unid_paso=unid_paso)
 
 
-def _a_unid_tnmt(unid):
+def a_unid_tnmt(unid):
     unid = unid.lower()
     aceptables = [
         'año', 'mes', 'semana', 'día', 'hora', 'minuto',
