@@ -34,7 +34,8 @@ class CalibradorEc(object):
     def _obt_datos(bd, vars_interés, corresp_vars):
         corresp_vars = corresp_vars or {}
         vars_bd = [v if v not in corresp_vars else corresp_vars[v] for v in vars_interés]
-        datos = bd.obt_vals(vars_bd)  # para hacer: interpolar fechas
+        datos = bd.interpolar(vars_bd)
+
         return datos.rename(
             {v: ll for ll, v in corresp_vars.items()}
         )

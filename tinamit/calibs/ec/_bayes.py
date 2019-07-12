@@ -26,6 +26,7 @@ class CalibradorEcBayes(CalibradorEc):
         vars_x, var_y = símismo._extraer_vars()
         # Todas las observaciones
         obs = símismo._obt_datos(bd, vars_interés=vars_x + [var_y], corresp_vars=corresp_vars)
+        obs = obs.dropna('n', how='any')
 
         if lugar is None:
             # Si no hay lugares, generar y calibrar el modelo de una vez.

@@ -46,7 +46,7 @@ class BD(object):
 
         return vals[vars_interés[0]] if vr_único else vals
 
-    def interpolar(símismo, vars_interés, fechas, lugares=None, extrap=False):
+    def interpolar(símismo, vars_interés, fechas=None, lugares=None, extrap=False):
 
         datos = símismo.obt_vals(vars_interés=vars_interés, lugares=lugares, fechas=None)
         if datos['n'].size:
@@ -83,12 +83,15 @@ def _gen_fuente(fnt, nombre=None, lugares=None, fechas=None):
     return fnt
 
 
-def interpolar_xr(m, fechas):
-    fechas = [fechas] if not isinstance(fechas, (tuple, list)) else fechas
+def interpolar_xr(m, fechas=None):
     m = m.unstack()
     if m.sizes[_('fecha')] > 1:
-        m = m.interpolate_na(_('fecha')).interp(
-            {_('fecha'): pd.DatetimeIndex(fechas)}
-        ).fillna(m)
+
+        m = m.interpolate_na(_('fecha')).fillna(m)
+        if fechas is not None:
+            fechas = [fechas] if not isinstance(fechas, (tuple, list)) else fechas
+            m = m.interp(
+                {_('fecha'): pd.DatetimeIndex(fechas)}
+            ).fillna(m)
     m = m.dropna(_('lugar'), how='all')
     return m.stack(n=[_('lugar'), _('fecha')])
