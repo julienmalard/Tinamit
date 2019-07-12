@@ -138,7 +138,7 @@ class FuenteCSV(Fuente):
                         try:
                             val = எ(val)
                         except ValueError:
-                            pass
+                            val = float(val)
                 l_datos.append(val)
 
         return np.array(l_datos)
