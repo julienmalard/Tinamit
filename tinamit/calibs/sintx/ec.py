@@ -171,7 +171,7 @@ class Ecuación(object):
 
         def _gen_d_vars_pm_jer():
             dists_base = _gen_d_vars_pm(
-                tmñ=(1,), fmt_nmbrs='mu_{}_nv_0'
+                tmñ=(1,), fmt_nmbrs='mu_{}_nv_0' if len(nv_jerarquía) else '{}'
             )['norm']
 
             egr = {}
