@@ -14,4 +14,4 @@ Publicaciones con Tinamït
 -------------------------
 Publicaciones de estudios que utilizaron Tinamït.
 
-* Todavía estamos esperando. ¿No querrías escribir una, por causalidad?
+* Todavía estamos esperando. ¿No querrías escribir una, por casualidad?

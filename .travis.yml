@@ -5,6 +5,7 @@ os:
   - linux
 install:
   - pip install --upgrade pip setuptools wheel
+  - pip install numpy scipy matplotlib
   - pip install -r reqs.txt
   - pip install coveralls codecov
   - python setup.py sdist bdist_wheel

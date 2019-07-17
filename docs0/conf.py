@@ -69,7 +69,7 @@ master_doc = 'indice'
 
 # General information about the project.
 project = 'tinamït'
-copyright = '2017+, Julien Malard, محمّد اظہر انعام بیگ'
+copyright = '2017, Julien Malard, محمّد اظہر انعام بیگ'
 author = 'Julien Malard, محمّد اظہر انعام بیگ'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -452,6 +452,3 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 # Internacionalización
 locale_dirs = ['_local/']
 gettext_compact = False
-gettext_additional_targets = ['literal-block']
-
-html_scaled_image_link = False

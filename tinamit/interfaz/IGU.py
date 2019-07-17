@@ -1,6 +1,6 @@
 ﻿import tkinter as tk
 
-from tinamit.Conectado import Conectado
+from tinamit.conect import Conectado
 
 from tinamit.interfaz import Cajas as Cj
 from tinamit.interfaz import Formatos as Fm

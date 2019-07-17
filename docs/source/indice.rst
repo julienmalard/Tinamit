@@ -18,7 +18,7 @@ Tinamït permite la conexión rápida, flexible y reproducible de modelos con:
 * Apoyo multilingual en el IGU.
 
 .. note::
-   ¿Encontraste algún error en la documentación? Seguramente es culpa mía. Si es error de español, por favor tenga
+   ¿Encontraste algún error en la documentación? Es culpa mía. Si es error de español, por favor tenga
    la bondad de corregirlo en `GitHub`_. Si es en otro idioma, corrígelo :ref:`así <des_trad>`. ¡Gracias!
 
 ¿Quieres contribuir?
@@ -31,15 +31,25 @@ Contacto: |correo|
 Índice:
 -------
 
-.. toctree::
-   :maxdepth: 1
-   :titlesonly:
 
-   intro
-   instal
-   uso/uso
-   desarrollo/desarrollo
-   ejemplos/ejemplos
-   pubs
-   docu/docu
-   agradecimientos
+.. toctree::
+   :maxdepth: 2
+   :caption: General
+
+   general/intro
+   general/instal
+   general/pubs
+   general/agrad
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Tutorial
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Desarrollo
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Referencia
+
