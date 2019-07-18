@@ -13,6 +13,9 @@ Envolturas incluidas en Tinamït:
   en formato `.mdl` de Vensim, tanto como el estándar `.xmile` (utilizado, entre otros, por Stella).
 * **Vensim**: Un programa de MDS bastante popular. Desafortunadamente, requiere la versión pagada (DSS) para conectar
   con Tinamït. Ver su `página oficial <http://vensim.com/>`_.
+  Con Vensim, primero hay que ir a cada variable en tu modelo Vensim que quieres que pueda recibir valores
+  desde el modelo biofísico y escoger ``Gaming`` como tipo de variable. Después, hay que publicar el modelo en formato
+  `.vpm`.
 
 Modelos BF
 ==========

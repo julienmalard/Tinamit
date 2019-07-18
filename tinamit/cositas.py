@@ -129,7 +129,7 @@ def guardar_archivo(arch, contenido):
             # En casos de documentos en distintos discos, debemos emplear `shutil` en vez.
             shutil.move(temp.name, arch)
 
-    except (PermissionError, FileNotFoundError):  # pragma: sin cobertura
+    except (PermissionError, FileNotFoundError, OSError):  # pragma: sin cobertura
         # Necesario en el caso de corridas en paralelo en Windows. Sin este, la reimportación de Tinamït ocasionada
         # por varias corridas paralelas al mismo tiempo puede causar que el mismo documento se escriba por dos procesos
         # al mismo tiempo, el cual trava el sistema.

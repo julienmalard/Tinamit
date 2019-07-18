@@ -1,0 +1,17 @@
+numpy
+scipy
+matplotlib
+pandas
+python_dateutil
+regex
+lark-parser
+lxml
+pint
+pyshp==1.*
+pillow
+spotpy
+xarray
+chardet
+pysd
+ennikkai
+taqdir
