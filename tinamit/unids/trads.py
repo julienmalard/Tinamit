@@ -81,7 +81,10 @@ def act_arch_trads(l_d_t):
 
     # Guardar el diccionario de traducciones si hubieron modificaciones
     if hash(str(l_d_t)) != antes:
-        guardar_json(obj=l_d_t, arch=_archivo_trads)
+        try:
+            guardar_json(obj=l_d_t, arch=_archivo_trads)
+        except OSError:
+            pass
 
 
 def trad_unid(unid, leng_final, leng_orig=None, falla_silencio=True):
