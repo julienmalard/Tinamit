@@ -8,11 +8,11 @@ from tinamit.config import _
 from tinamit.mod import Variable
 from . import _funcs as f
 from ._vars import VarAuxEditable, VariablesModVensimDLL
-from .._envolt import ModeloMDS
+from .._envolt import ModeloDS
 from .._vars import VarNivel, VarConstante, VarInic, VarAuxiliar
 
 
-class ModeloVensimDLL(ModeloMDS):
+class ModeloVensimDLL(ModeloDS):
     """
     Esta es la envoltura para modelos de tipo Vensim. Puede leer y controlar cualquier modelo Vensim para que
     se pueda emplear en Tinamït.

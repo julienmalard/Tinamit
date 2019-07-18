@@ -6,9 +6,8 @@ Tinamït es un proyecto de fuente abierta. Las personas e instituciones siguient
 Autores del código
 ------------------
 
-* Julien Malard (`Sitio internet <https://www.researchgate.net/profile/Julien_Malard>`_)
-* محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig, `Sitio internet <https://www.researchgate.net/profile/Azhar_Baig>`_)
-
+* `Julien Malard <https://www.researchgate.net/profile/Julien_Malard>`_
+* `محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig) <https://www.researchgate.net/profile/Azhar_Baig>`_
 
 Autores de envolturas
 ---------------------
@@ -17,7 +16,6 @@ Gracias a los siguientes por escribir envolturas específicas a los modelos biof
 
 SAHYSMOD
 ^^^^^^^^
-
 * محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)
 * Julien Malard
 
@@ -39,12 +37,12 @@ Instituciones afiliadas
 
 Los autores de Tinamït están afiliados con las instituciones siguientes:
 
-.. image:: imágenes/Logos_inst/Logo_McGill_IGFS.jpg
+.. image:: /_estático/imágenes/Logos_inst/Logo_McGill_IGFS.jpg
    :width: 200
    :align: center
    :alt: Logo McGill
 
-.. image:: imágenes/Logos_inst/Logo_IARNA.jpg
+.. image:: /_estático/imágenes/Logos_inst/Logo_IARNA.jpg
    :width: 200
    :align: center
    :alt: Logo IARNA URL

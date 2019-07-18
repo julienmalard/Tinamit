@@ -15,11 +15,6 @@ Modelos DS
 Tinamït queda compatible con modelos escritos con los programas siguientes. Siempre puedes
 :ref:`escribir más <des_mds>`.
 
-* **Vensim**: Un programa de MDS bastante popular. Desafortunadamente, requiere la versión pagada (DSS) para conectar
-  con Tinamït. Ver su `página oficial <http://vensim.com/>`_ y la :class:`envoltura <tinamit.EnvolturaMDS.ModeloVensim>`.
-* **Stella**: Otro programa bastante popular. Ver su `página oficial <https://www.iseesystems.com/
-  store/products/stella-architect.aspx>`_ aquí. Envoltura todavía en trabajo.
-
 Modelos BF
 ----------
 Cada envoltura agrega compatibilidad con un tipo de modelo biofísico distinto. Notar que Tinamït no viene con estos
@@ -48,12 +43,10 @@ Traducciones
 ¡Siempre querremos traducciones para hacer de Tinamït una herramienta aún más accesible! Se pueden
 :ref:`traducir <des_trad>` el interfaz y la documentación de Tinamït en tu lengua preferida.
 
-
 Cómo compartir tus inovaciones
 ------------------------------
-La manera más fácil (para mi) es que te inscribas en GitHub, creas una nueva rama de Tinamït, le agreges tu contribución
+La manera más fácil es que te inscribas en GitHub, creas una nueva rama de Tinamït, le agreges tu contribución
 y después la combinemos con la rama central del proyecto.
-La manera más fácil para ti es probablemente mandarme tu nuevo código por correo electrónico (|correo|).
 
 Unos apuntos para cuándo vas a compartir una nueva envoltura:
 

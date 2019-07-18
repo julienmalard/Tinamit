@@ -18,7 +18,7 @@ def gen_bf(mod):
     elif isinstance(mod, str):
         return _extraer_de_archivo(mod)
     raise TypeError(
-        _('Debes dar o una instancia o subclase de `ModeloMDS`, o la dirección de un archivo que contiene una.')
+        _('Debes dar o una instancia o subclase de `ModeloDS`, o la dirección de un archivo que contiene una.')
     )
 
 

@@ -6,10 +6,10 @@ from tinamit.envolt.mds.pysd._funcs import decodar
 
 from ._funcs import gen_mod_pysd, obt_paso_mod_pysd
 from ._vars import VarPySDAuxiliar, VarPySDNivel, VarPySDConstante, VariablesPySD
-from .._envolt import ModeloMDS
+from .._envolt import ModeloDS
 
 
-class ModeloPySD(ModeloMDS):
+class ModeloPySD(ModeloDS):
     ext = ['.mdl', '.xmile', '.xml', '.py']
 
     def __init__(símismo, archivo, nombre='mds'):

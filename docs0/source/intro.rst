@@ -28,13 +28,6 @@ que volver a meterse de nuevo a descifrar todo el código. Lo que no es un punto
 una profesional en, digamos, agricultura o política que el modelo que vas a construir con ella será muy fácil
 utilizar después de que te vayas.
 
-.. figure:: imágenes/Estructura_concep.png
-   :align: center
-   :alt: Diagrama de la estructura conceptual de Tinamït.
-   
-   Figura 1
-
-   Diagrama de la estructura conceptual de Tinamït.
 
 Por eso se inventó Tinamït, el programa gratis y libre para hacer todo eso para ti. Viene con:
 

@@ -1,7 +1,7 @@
 from ...mod import Modelo
 
 
-class ModeloMDS(Modelo):
+class ModeloDS(Modelo):
     ext = []
 
     def __init__(símismo, variables, nombre='mds'):

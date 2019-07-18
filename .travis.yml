@@ -13,7 +13,7 @@ install:
 script:
   - rm -r tinamit
   - cd pruebas
-  - nosetests --with-coverage --cover-package=tinamit
+  - coverage run -m unittest
 after_success:
   - coveralls --rcfile=.coveragerc
   - codecov
