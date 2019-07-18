@@ -41,10 +41,10 @@ Funciones y atributos opcionales:
 
 .. warning::
    Tu implementación de :func:`~tinamit.Modelo.incrementar` **debe** incluir una llamada a
-   `super().incrementar(rebanada)` al final para que valores de parámetros externos y de clima se actualicen
+   ``super().incrementar(rebanada)`` al final para que valores de parámetros externos y de clima se actualicen
    correctamente.
    Igualmente, cualquier reimplementación de :func:`~tinamit.Modelo.iniciar_modelo` **debe** incluir una llamada a
-   `super().iniciar_modelo(corrida)` al final.
+   ``super().iniciar_modelo(corrida)`` al final.
 
 En la función :func:`~tinamit.Modelo.incrementar`, se puede acceder los variables del modelo con
 `símismo.variables["nombre del variable"]`, obtener su valor con :func:`~tinamit.mod.Variable.obt_val`, y cambiar

@@ -1,6 +1,6 @@
 Envolturas MDS
 ==============
-Envolturas para modelos de dinámicas de sistemas son subclases de :class:`tinamit.envolt.mds.ModeloMDS`.
+Envolturas para modelos de dinámicas de sistemas son subclases de :class:`~tinamit.envolt.mds.ModeloMDS`.
 
 .. note::
    Las envolturas para modelos DS son **universales**. Es decir, la misma envoltura funcionará para todos los modelos
@@ -13,7 +13,7 @@ Funciones y atributos para implementar:
 
 #. :func:`~tinamit.Modelo.unidad_tiempo`: Devuelve la unidad de tiempo del modelo.
 #. :func:`~tinamit.Modelo.incrementar`: Avanza el modelo.
-#. :func:`~tinamit.Modelo.__init__`: Inicializa el modelo. En la llamada a `super().__init__` debes incluir un objeto :class:`~tinamit.envolt.mds.VariablesMDS` con los variables del modelo.
+#. :func:`~tinamit.Modelo.__init__`: Inicializa el modelo. En la llamada a ``super().__init__`` debes incluir un objeto :class:`~tinamit.envolt.mds.VariablesMDS` con los variables del modelo.
 #. :func:`~tinamit.Modelo.cambiar_vals`: No estríctamente necesario, pero la casi totalidad de modelos DS necesitarán tomar acción específica para cambiar valores de variables en el modelo externo.
 #. `ModeloDS.ext`: Una lista de las extensiones de archivo que se pueden leer por la envoltura.
 
@@ -27,11 +27,11 @@ Funciones y atributos opcionales:
 
 .. warning::
    Tu implementación de :func:`~tinamit.Modelo.incrementar` **debe** incluir una llamada a
-   `super().incrementar(rebanada)` al final para que valores de parámetros externos y de clima se actualicen
+   ``super().incrementar(rebanada)`` al final para que valores de parámetros externos y de clima se actualicen
    correctamente.
    Igualmente, cualquier reimplementación de :func:`~tinamit.Modelo.iniciar_modelo` **debe** incluir una llamada a
-   `super().iniciar_modelo(corrida)` al final, y  :func:`~tinamit.Modelo.cambiar_vals` una a
-   `super().cambiar_vals(valores)`.
+   ``super().iniciar_modelo(corrida)`` al final, y  :func:`~tinamit.Modelo.cambiar_vals` una a
+   ``super().cambiar_vals(valores)``.
 
 Cada variable en :class:`~tinamit.envolt.mds.VariablesMDS` debe ser uno de :class:`~tinamit.envolt.mds.VarConstante`,
 :class:`~tinamit.envolt.mds.VarInic`, :class:`~tinamit.envolt.mds.VarNivel`, o :class:`~tinamit.envolt.mds.VarAuxiliar.

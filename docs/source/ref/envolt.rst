@@ -5,7 +5,7 @@ Si quieres agregar una nueva, `contáctenos <https://github.com/julienmalard/Tin
 y la podremos :doc:`desarrollar juntos </des/envolt_bf>`.
 
 Modelos DS
-==========
+----------
 Envolturas incluidas en Tinamït:
 
 * **PySD**: Implementación de modelos DS en puro Python. Más rápido que Vensim, pero no incluye todas las
@@ -18,10 +18,10 @@ Envolturas incluidas en Tinamït:
   `.vpm`.
 
 Modelos BF
-==========
+----------
 Envolturas incluidas en Tinamït:
 
-* **SAHYSMOD**: Modelo de salinidad de suelos. Ver su `documentación <https://www.waterlog.info/sahysmod.htm>`.
+* **SAHYSMOD**: Modelo de salinidad de suelos. Ver su `documentación <https://www.waterlog.info/sahysmod.htm>`_.
   Para uso con Tinamït deberás descargar una versión especial modificada para funcionar desde la línea
   de comanda `aquí <https://github.com/AzharInam/Sahysmod-SourceCode/releases>`_
   (quieres el ``SahysModConsole.exe``).
