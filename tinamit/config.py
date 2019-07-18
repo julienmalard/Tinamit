@@ -68,8 +68,10 @@ class Config(OpsConfig):
         auto.update(val_arch)
 
         super().__init__(pariente=None,valores=auto)
-
-        símismo.guardar()
+        try:
+            símismo.guardar()
+        except OSError:
+            pass
 
     def reinic(símismo):
         símismo.valores = OpsConfig(pariente=símismo, valores=símismo.val_auto)
