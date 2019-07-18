@@ -31,7 +31,7 @@ class Lugar(object):
         símismo.nombre = nombre
         símismo.sub_lugares = set(sub_lugares or [])
 
-        símismo.ord_niveles = OrdNiveles(símismo)
+        símismo.ord_niveles = _OrdNiveles(símismo)
 
     def lugares(símismo, en=None, nivel=None):
         if isinstance(nivel, (str, Nivel)):
@@ -79,7 +79,7 @@ class Lugar(object):
         return símismo.nombre
 
 
-class OrdNiveles(object):
+class _OrdNiveles(object):
     def __init__(símismo, lugar):
 
         sub_ords = list(set(sub.ord_niveles.ords for sub in lugar.sub_lugares))
