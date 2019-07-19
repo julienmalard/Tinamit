@@ -19,7 +19,8 @@ class Fuente(object):
 
         símismo._equiv_nombres = {}
 
-        fechas = fechas or pd.NaT
+        if fechas is None:
+            fechas = pd.NaT
         símismo.n_obs = símismo._vec_var(símismo.variables[0], tx=True).size
 
         símismo.lugares = símismo._obt_lugar(lugares)

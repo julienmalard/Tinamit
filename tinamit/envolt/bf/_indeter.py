@@ -45,7 +45,5 @@ class VarPasoIndeter(VarPaso):
         super().__init__(nombre, unid, ingr, egr, tmñ_ciclo=1, inic=inic, líms=líms, info=info)
 
     def poner_vals_paso(símismo, val, paso=None):
-        # para hacer: ¿incecesario reimplementar esta función?
-        paso = paso or slice(None, None)
-        
-        símismo._matr_paso[paso] = val
+        # para hacer: ¿incecesario reimplementar esta función?        
+        símismo._matr_paso = val

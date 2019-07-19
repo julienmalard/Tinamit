@@ -3,7 +3,8 @@ import pandas as pd
 import xarray as xr
 from tinamit.config import _
 from tinamit.datos.bd import BD
-from tinamit.mod import EspecTiempo
+from tinamit.mod.extern import relativizar_eje
+from tinamit.tiempo.tiempo import EspecTiempo
 
 from ._utils import eval_funcs
 
@@ -51,7 +52,9 @@ class ValidadorMod(object):
             vals_calib_vr = vals_calib[vr_datos].dropna('n')
             if vals_calib_vr.sizes['n']:
                 eje = r.vals[_('fecha')].values
-                buenas_fechas = np.logical_and(eje[0] <= vals_calib_vr[_('fecha')], vals_calib_vr[_('fecha')] <= eje[-1])
+                eje_obs = pd.to_datetime(vals_calib_vr[_('fecha')].values)
+                eje_res = relativizar_eje(eje, eje_obs)
+                buenas_fechas = xr.DataArray(np.logical_and(eje_res[0] <= eje_obs, eje_obs <= eje_res[-1]), dims='n')
                 datos_r = vals_calib[vr_datos].where(buenas_fechas, drop=True).dropna('n')
                 if datos_r.sizes['n'] > 1:
                     fechas_obs = datos_r[_('fecha')]
