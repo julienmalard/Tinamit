@@ -60,13 +60,13 @@ class TestAnalizarEc(unittest.TestCase):
 
     def test_ec_de_MDS(símismo):
         ec = Ecuación('y=IF THEN ELSE (MAX (x, 0)>a, 5, 3)', dialecto='vensim')
-        símismo.assertEquals(ec.a_python(paráms=['a'])([1], {'x': 2}), 5)
+        símismo.assertEqual(ec.a_python(paráms=['a'])([1], {'x': 2}), 5)
 
     def test_ec_con_nombre(símismo):
         ec = Ecuación('x*3', nombre='y')
         ec2 = Ecuación('y=x*3')
-        símismo.assertEquals(str(ec), str(ec2))
-        símismo.assertEquals(ec.nombre, ec2.nombre)
+        símismo.assertEqual(str(ec), str(ec2))
+        símismo.assertEqual(ec.nombre, ec2.nombre)
 
     def test_ec_sin_nombre(símismo):
         símismo.assertIsNone(Ecuación('x*3').nombre)
@@ -76,11 +76,11 @@ class TestAnalizarEc(unittest.TestCase):
         ec_2 = '2*b'
         ec_3 = '3'
         ec = Ecuación(ec_1, otras_ecs={'a': ec_2, 'b': ec_3})
-        símismo.assertEquals(ec.a_python(paráms=[])([], {'x': 2}), 12)
+        símismo.assertEqual(ec.a_python(paráms=[])([], {'x': 2}), 12)
 
     def test_ec_nombres_equiv(símismo):
         ec = Ecuación('y=a*x + b', nombres_equiv={'x': 'X'})
-        símismo.assertEquals(ec.a_python(paráms=['a', 'b'])([4, 5], {'X': 2}), 13)
+        símismo.assertEqual(ec.a_python(paráms=['a', 'b'])([4, 5], {'X': 2}), 13)
 
     def test_sacar_args(símismo):
         ec = Ecuación('y=1/f(a, x, 2*b)')
@@ -92,19 +92,19 @@ class TestAnalizarEc(unittest.TestCase):
 
     def test_obt_coef_var(símismo):
         ec = Ecuación('y=1/f(a, b*x, 2*c)')
-        símismo.assertEquals(ec.coef_de('x'), ('b', False))
+        símismo.assertEqual(ec.coef_de('x'), ('b', False))
 
     def test_obt_coef_var_neg(símismo):
         ec = Ecuación('y=1/f(a, -b*x, 2*c)')
-        símismo.assertEquals(ec.coef_de('x'), ('b', False))
+        símismo.assertEqual(ec.coef_de('x'), ('b', False))
 
     def test_obt_coef_var_div_coef(símismo):
         ec = Ecuación('y=a+x/b')
-        símismo.assertEquals(ec.coef_de('x'), ('b', True))
+        símismo.assertEqual(ec.coef_de('x'), ('b', True))
 
     def test_obt_coef_var_dos_veces(símismo):
         ec = Ecuación('y=a*x + máx(2, a*x)')
-        símismo.assertEquals(ec.coef_de('x'), ('a', False))
+        símismo.assertEqual(ec.coef_de('x'), ('a', False))
 
     def test_obt_coef_var_dos_veces_incompat(símismo):
         ec = Ecuación('y=a*x + b*x')
@@ -128,19 +128,19 @@ class TestAnalizarEc(unittest.TestCase):
 
     def test_obt_coef_var_div(símismo):
         ec = Ecuación('y=a+b/x')
-        símismo.assertEquals(ec.coef_de('x'), ('b', True))
+        símismo.assertEqual(ec.coef_de('x'), ('b', True))
 
     def test_obt_coef_ec(símismo):
         ec = Ecuación('y=a*(x+b)')
-        símismo.assertEquals(ec.coef_de('y'), ('a', True))  # Inverso porque a y "y" son de lados opuestos del "="
+        símismo.assertEqual(ec.coef_de('y'), ('a', True))  # Inverso porque a y "y" son de lados opuestos del "="
 
     def test_obt_coef_ec_div_coef(símismo):
         ec = Ecuación('y=(x+b)/a')
-        símismo.assertEquals(ec.coef_de('y'), ('a', False))
+        símismo.assertEqual(ec.coef_de('y'), ('a', False))
 
     def test_obt_coef_ec_div(símismo):
         ec = Ecuación('y=a/(x+b)')
-        símismo.assertEquals(ec.coef_de('y'), ('a', True))
+        símismo.assertEqual(ec.coef_de('y'), ('a', True))
 
     def test_obt_coef_ec_múltiple(símismo):
         ec = Ecuación('y=a*(x+b+a)')
