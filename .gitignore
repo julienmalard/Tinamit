@@ -19,10 +19,6 @@ site.cfg
 dist/
 build/
 
-# Documentación #
-#################
-docs/.tx/*
-
 # Archivos de VENSIM #
 ######################
 *.vdf
