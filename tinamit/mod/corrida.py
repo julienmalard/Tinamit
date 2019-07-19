@@ -23,7 +23,7 @@ class Corrida(object):
 
     def obt_extern_act(símismo, var=None):
         if símismo.extern:
-            return símismo.extern.obt_vals(símismo.t, var=var)
+            return {vr: vl.values[0] for vr, vl in símismo.extern.obt_vals(símismo.t, var=var).items()}
 
     def __str__(símismo):
         return símismo.nombre

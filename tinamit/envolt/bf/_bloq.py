@@ -2,7 +2,7 @@ import numpy as np
 from dateutil import relativedelta as deltarelativo
 
 from tinamit.envolt.bf._deter import ModeloDeterminado, VariablesModDeter, VarPasoDeter
-from tinamit.mod.tiempo import a_unid_tnmt
+from tinamit.tiempo.tiempo import a_unid_tnmt
 
 
 class ModeloBloques(ModeloDeterminado):

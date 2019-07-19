@@ -62,9 +62,9 @@ class Fuente(object):
                 pass
             fechas = pd.to_datetime(fechas)
         if isinstance(fechas, pd.Timestamp):
-            fechas = np.full(símismo.n_obs, fechas.to_datetime64())
+            fechas = pd.to_datetime(np.full(símismo.n_obs, fechas.to_datetime64()))
         elif isinstance(fechas, (ft.date, ft.datetime)):
-            fechas = np.full(símismo.n_obs, fechas).astype(ft.datetime)
+            fechas = pd.to_datetime(np.full(símismo.n_obs, fechas).astype(ft.datetime))
 
         return fechas
 

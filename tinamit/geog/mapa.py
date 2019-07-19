@@ -5,13 +5,32 @@ import shapefile as sf
 from matplotlib import colors, cm
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
-
+from matplotlib.axes import Axes
 from tinamit.config import _
 from tinamit.cositas import detectar_codif
+
 from ..mod import ResultadosSimul
 
 
 def dibujar_mapa(formas, archivo=None, título=None):
+    """
+    Dibuja un mapa.
+
+    Parameters
+    ----------
+    formas: list of Forma
+        Las formas para incluir.
+    archivo: str
+        Dónde hay que guardar el gráfico. Si es ``None``, no se guardará el gráfico.
+    título: str
+        El título del mapa.
+
+    Returns
+    -------
+    Axes
+        Los ejes del gráfico.
+    """
+
     formas = [formas] if isinstance(formas, Forma) else formas
 
     fig = Figura()
@@ -30,6 +49,28 @@ def dibujar_mapa(formas, archivo=None, título=None):
 
 
 def dibujar_mapa_de_res(forma_dinámica, res, var, t, escala=None, título='', directorio=None, otras_formas=None):
+    """
+    Dibujar los resultados de una simulación en un mapa.
+
+    Parameters
+    ----------
+    forma_dinámica: FormaDinámica
+        La forma cuyos colores variarán según los resultados.
+    res:
+    var: str
+        El variable de interés.
+    t: int or tuple or range or list
+        Los tiempos a los cuales queremos graficar los resultados.
+    escala: tuple
+        El rango para aplicar colores. Si es ``None``, se aplicará según los datos de los resultados.
+    título: str
+        El título del gráfico.
+    directorio: str
+        Dónnde hay que guardar el gráfico.
+    otras_formas: list of FormaEstática
+        Las otras formas (estáticas) para incluir en el gráfico.
+
+    """
     título = título or res.nombre
     directorio = directorio or título
     otras_formas = otras_formas or []
@@ -57,7 +98,7 @@ def dibujar_mapa_de_res(forma_dinámica, res, var, t, escala=None, título='', d
             return {lg: _extr_i(res_lg[var].vals, i) for lg, res_lg in res.items()}
 
     if isinstance(t, int):
-        pasos = range(t, t+1)
+        pasos = range(t, t + 1)
     else:
         pasos = t
 
@@ -71,6 +112,9 @@ def dibujar_mapa_de_res(forma_dinámica, res, var, t, escala=None, título='', d
 
 
 class Forma(object):
+    """
+    Clase pariente para todas las formas que se pueden dibujar.
+    """
     def __init__(símismo, archivo, llenar, alpha):
         codif = detectar_codif(os.path.splitext(archivo)[0] + '.dbf')
         símismo.forma = sf.Reader(archivo, encoding=codif)
@@ -78,6 +122,17 @@ class Forma(object):
         símismo.alpha = alpha
 
     def dibujar(símismo, ejes, fig):
+        """
+        Agrega la forma a la figura.
+
+        Parameters
+        ----------
+        ejes:
+            Los ejes de la figura.
+        fig:
+            La figura.
+
+        """
         raise NotImplementedError
 
     def _dibujar_frm(símismo, ejes, color):
@@ -107,6 +162,10 @@ class Forma(object):
 
 
 class FormaEstática(Forma):
+    """
+    Clase de base para formas estáticas en el mapa, cuyos colores no cambian.
+    """
+
     def __init__(símismo, archivo, color, llenar, alpha):
         símismo.color = color
         super().__init__(archivo, llenar=llenar, alpha=alpha)
@@ -116,7 +175,25 @@ class FormaEstática(Forma):
 
 
 class FormaDinámica(Forma):
+    """
+    Forma cuyos colores se asignan según valores numéricos.
+    """
+
     def __init__(símismo, archivo, escala_colores=None, llenar=True, alpha=1):
+        """
+
+        Parameters
+        ----------
+        archivo: str
+            El archivo ``.shp``.
+        escala_colores: list or tuple or str or int or None
+            Lista de dos colores para establecer una escala de colores. Si es un solo color, se agregará el color
+            blanco. Si es ``-1``, se inverserán los colores automáticos.
+        llenar: bool
+            Si hay que llenar la forma o simplement delinear su contorno.
+        alpha: float or int
+            La opacidad del interior de la forma. Solamente aplica si ``llenar`` est ``False``.
+        """
         super().__init__(archivo, llenar=llenar, alpha=alpha)
 
         símismo.escala_colores = símismo._resolver_colores(escala_colores)
@@ -125,6 +202,18 @@ class FormaDinámica(Forma):
         símismo.escala = None
 
     def estab_valores(símismo, valores, escala_valores=None, unidades=None):
+        """
+        Establece los valores para colorar.
+
+        Parameters
+        ----------
+        valores: np.ndarray or dict
+            Los valores para dibujar. Debe ser del mismo tamaño que el archivo ``.shp`` en ``archivo``.
+        escala_valores: tuple or list or None
+            La escala para el rango de colores. Si es ``None``, se ajustará el rango según de los valores dados.
+        unidades: str, optional
+            Las unidades.
+        """
         símismo.unidades = unidades
 
         símismo._llenar_valores(valores)
@@ -181,8 +270,28 @@ class FormaDinámica(Forma):
 
 
 class FormaDinámicaNumérica(FormaDinámica):
+    """
+    Forma dinámica cuyos valores se asignan a los polígonos de la forma ``.shp`` por su orden en la matriz de valores.
+    """
 
     def __init__(símismo, archivo, col_id=None, escala_colores=None, llenar=True, alpha=1):
+        """
+
+        Parameters
+        ----------
+        archivo: str
+            El archivo ``.shp``.
+        col_id: str, optional
+            La columna con el número de cada polígono en la forma ``.shp``. Si es ``None``, se asiñará número según
+            su orden en la forma ``.shp``.
+        escala_colores: list or tuple or str or int or None
+            Lista de dos colores para establecer una escala de colores. Si es un solo color, se agregará el color
+            blanco. Si es ``-1``, se inverserán los colores automáticos.
+        llenar: bool
+            Si hay que llenar la forma o simplement delinear su contorno.
+        alpha: float or int
+            La opacidad del interior de la forma. Solamente aplica si ``llenar`` est ``False``.
+        """
         super().__init__(archivo, escala_colores, llenar, alpha)
 
         if col_id is not None:
@@ -199,7 +308,28 @@ class FormaDinámicaNumérica(FormaDinámica):
 
 
 class FormaDinámicaNombrada(FormaDinámica):
+    """
+    Forma dinámica cuyos valores se asignan a los polígonos de la forma ``.shp`` por su llave en el diccionario de
+    valores.
+    """
+
     def __init__(símismo, archivo, col_id, escala_colores=None, llenar=True, alpha=1):
+        """
+
+        Parameters
+        ----------
+        archivo: str
+            La archivo ``.shp``.
+        col_id: str
+            La columna en el archivo ``.shp`` con el nomrbe de cada polígono.
+        escala_colores: list or tuple or str or int or None
+            Lista de dos colores para establecer una escala de colores. Si es un solo color, se agregará el color
+            blanco. Si es ``-1``, se inverserán los colores automáticos.
+        llenar: bool
+            Si hay que llenar la forma o simplement delinear su contorno.
+        alpha: float or int
+            La opacidad del interior de la forma. Solamente aplica si ``llenar`` est ``False``.
+        """
         super().__init__(archivo, escala_colores, llenar, alpha)
         símismo.ids = [str(x) for x in símismo._extraer_col(col_id)]
 
@@ -211,26 +341,55 @@ class FormaDinámicaNombrada(FormaDinámica):
 
 
 class Agua(FormaEstática):
+    """
+    Representa áreas de agua.
+    """
+
     def __init__(símismo, archivo, llenar=True):
+        """
+
+        Parameters
+        ----------
+        archivo: str
+            El archivo ``.shp``.
+        llenar: bool
+            Si hay que llenar el cuerpo de agua o no.
+        """
         super().__init__(archivo=archivo, color='#A5BFDD', llenar=llenar, alpha=0.5)
 
 
 class Calle(FormaEstática):
+    """
+    Representa calles.
+    """
+
     def __init__(símismo, archivo):
         super().__init__(archivo=archivo, color='#A5BFDD', llenar=False, alpha=1)
 
 
 class Ciudad(FormaEstática):
+    """
+    Representa áreas urbanas.
+    """
+
     def __init__(símismo, archivo):
         super().__init__(archivo=archivo, color='#FB9A99', llenar=True, alpha=1)
 
 
 class Bosque(FormaEstática):
+    """
+    Representa áreas con bosque.
+    """
+
     def __init__(símismo, archivo):
         super().__init__(archivo=archivo, color='#33A02C', llenar=True, alpha=0.7)
 
 
 class OtraForma(FormaEstática):
+    """
+    Representa otras áreas no representadas por las otras formas disonibles.
+    """
+
     def __init__(símismo, archivo):
         super().__init__(archivo=archivo, color='#FFECB3', llenar=True, alpha=1)
 

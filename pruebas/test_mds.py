@@ -6,10 +6,10 @@ import numpy.testing as npt
 import pandas as pd
 import xarray.testing as xrt
 
-from tinamit.envolt.mds import ModeloVensimDLL, ModeloPySD, ModeloMDS, gen_mds, \
+from tinamit.envolt.mds import ModeloVensimDLL, ModeloPySD, ModeloDS, gen_mds, \
     ErrorNoInstalado
 # Los tipos de modelos DS que queremos comprobar.
-from tinamit.mod import EspecTiempo
+from tinamit.tiempo.tiempo import EspecTiempo
 
 tipos_modelos = {
     'PySD_Vensim': {'envlt': ModeloPySD, 'prueba': 'recursos/mds/prueba_senc_mdl.mdl'},
@@ -157,6 +157,7 @@ class TestSimular(unittest.TestCase):
         """
         Comprobar que valores iniciales pasados a un variable de valor inicial aparezcan en los resultados también.
         """
+
         for nmb, res in símismo.res.items():
             with símismo.subTest(mod=nmb):
                 símismo.assertEqual(
@@ -242,7 +243,7 @@ class TestGenerarMDS(unittest.TestCase):
             with símismo.subTest(ext=os.path.splitext(d['prueba'])[1], envlt=d['envlt'].__name__):
                 try:
                     mod = gen_mds(d['prueba'])  # Generar el modelo
-                    símismo.assertIsInstance(mod, ModeloMDS)
+                    símismo.assertIsInstance(mod, ModeloDS)
                 except ErrorNoInstalado:
                     # No hay problema si el mds no se pudo leer en la computadora actual. De pronto no estaba instalado.
                     pass

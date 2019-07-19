@@ -21,7 +21,7 @@ def gen_mod_pysd(archivo):
 def obt_paso_mod_pysd(mod):
     doc = mod.components.time_step.__doc__
     partes = doc.split()
-    return decodar(partes[partes.index('Units:')+1])
+    return partes[partes.index('Units:') + 1]
 
 
 def decodar(tx):

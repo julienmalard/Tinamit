@@ -8,7 +8,7 @@ import xarray as xr
 
 from pruebas.recursos.mod.prueba_mod import ModeloPrueba
 from tinamit.config import trads
-from tinamit.mod import EspecTiempo
+from tinamit.tiempo.tiempo import EspecTiempo
 from tinamit.mod import OpsSimulGrupoCombin, OpsSimulGrupo
 
 _ = trads.trad

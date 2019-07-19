@@ -28,7 +28,8 @@ deben implementar las funciones siguientes:
 
 #. :func:`~tinamit.Modelo.unidad_tiempo`: Devuelve la unidad de tiempo del modelo.
 #. :func:`~tinamit.Modelo.incrementar`: Avanza el modelo.
-#. :func:`~tinamit.Modelo.__init__`: Inicializa el modelo. En la llamada a `super().__init__` debes incluir un objeto :class:`~tinamit.mod.VariablesMod` con los variables del modelo.
+#. :func:`~tinamit.Modelo.__init__`: Inicializa el modelo. En la llamada a ``super().__init__`` debes incluir
+   un objeto :class:`~tinamit.mod.VariablesMod` con los variables del modelo.
 
 Funciones y atributos opcionales:
 

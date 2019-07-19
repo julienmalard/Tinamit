@@ -9,7 +9,7 @@ from tinamit.config import _, conf_mods
 from .corrida import Corrida, Rebanada
 from .extern import gen_extern
 from .res import ResultadosGrupo
-from .tiempo import EspecTiempo
+from ..tiempo.tiempo import EspecTiempo
 from .vars_mod import VariablesMod
 
 
@@ -110,7 +110,8 @@ class Modelo(object):
 
         if corrida.extern:
             símismo.cambiar_vals(
-                {vr: vl.values for vr, vl in corrida.obt_extern_act().items() if vr in símismo.variables})
+                {vr: vl for vr, vl in corrida.obt_extern_act().items() if vr in símismo.variables}
+            )
         if corrida.clima:
             símismo.cambiar_vals(
                 {vr: vl.values for vr, vl in corrida.clima.obt_todos_vals(símismo.vars_clima).items()})
@@ -135,7 +136,7 @@ class Modelo(object):
 
     def incrementar(símismo, rebanada):
         if símismo.corrida.extern:
-            símismo.cambiar_vals({vr: vl.values for vr, vl in símismo.corrida.obt_extern_act().items()})
+            símismo.cambiar_vals(símismo.corrida.obt_extern_act())
 
         if símismo.corrida.clima and símismo.vars_clima:
             t = símismo.corrida.t

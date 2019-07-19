@@ -1,6 +1,6 @@
 """
 Python model "prueba_senc_mdl.py"
-Translated using PySD version 0.10.0
+Translated using PySD version 0.9.0
 """
 from __future__ import division
 import numpy as np
@@ -27,26 +27,15 @@ _namespace = {
     'TIME STEP': 'time_step'
 }
 
-__pysd_version__ = "0.10.0"
-
-__data = {'scope': None, 'time': lambda: 0}
-
-
-def _init_outer_references(data):
-    for key in data:
-        __data[key] = data[key]
-
-
-def time():
-    return __data['time']()
+__pysd_version__ = "0.9.0"
 
 
 @cache('step')
 def aleatorio():
     """
-    Real Name: b'Aleatorio'
-    Original Eqn: b'GAME ( 0)'
-    Units: b'Sdmn'
+    Real Name: Aleatorio
+    Original Eqn: GAME ( 0)
+    Units: Sdmn
     Limits: (0.0, 1.0)
     Type: component
 
@@ -58,9 +47,9 @@ def aleatorio():
 @cache('step')
 def evaporación():
     """
-    Real Name: b'Evaporaci\\xf3n'
-    Original Eqn: b'0.1*Lago'
-    Units: b'm3/mes'
+    Real Name: Evaporación
+    Original Eqn: 0.1*Lago
+    Units: m3/mes
     Limits: (0.0, None)
     Type: component
 
@@ -72,9 +61,9 @@ def evaporación():
 @cache('step')
 def flujo_río():
     """
-    Real Name: b'Flujo r\\xedo'
-    Original Eqn: b'Lluvia'
-    Units: b'm3/mes'
+    Real Name: Flujo río
+    Original Eqn: Lluvia
+    Units: m3/mes
     Limits: (0.0, None)
     Type: component
 
@@ -86,23 +75,23 @@ def flujo_río():
 @cache('step')
 def lago():
     """
-    Real Name: b'Lago'
-    Original Eqn: b'INTEG ( Flujo r\\xedo-Evaporaci\\xf3n, Nivel lago inicial)'
-    Units: b'm3'
+    Real Name: Lago
+    Original Eqn: INTEG ( Flujo río-Evaporación, Nivel lago inicial)
+    Units: m3
     Limits: (0.0, None)
     Type: component
 
     b'La cantidad de agua en el lago.'
     """
-    return _integ_lago()
+    return integ_lago()
 
 
 @cache('step')
 def lluvia():
     """
-    Real Name: b'Lluvia'
-    Original Eqn: b'GAME ( 10)'
-    Units: b'm3/mes'
+    Real Name: Lluvia
+    Original Eqn: GAME ( 10)
+    Units: m3/mes
     Limits: (0.0, None)
     Type: component
 
@@ -114,9 +103,9 @@ def lluvia():
 @cache('run')
 def nivel_lago_inicial():
     """
-    Real Name: b'Nivel lago inicial'
-    Original Eqn: b'1500'
-    Units: b'm3'
+    Real Name: Nivel lago inicial
+    Original Eqn: 1500
+    Units: m3
     Limits: (0.0, None)
     Type: constant
 
@@ -128,9 +117,9 @@ def nivel_lago_inicial():
 @cache('run')
 def final_time():
     """
-    Real Name: b'FINAL TIME'
-    Original Eqn: b'200'
-    Units: b'mes'
+    Real Name: FINAL TIME
+    Original Eqn: 200
+    Units: mes
     Limits: (None, None)
     Type: constant
 
@@ -142,9 +131,9 @@ def final_time():
 @cache('run')
 def initial_time():
     """
-    Real Name: b'INITIAL TIME'
-    Original Eqn: b'0'
-    Units: b'mes'
+    Real Name: INITIAL TIME
+    Original Eqn: 0
+    Units: mes
     Limits: (None, None)
     Type: constant
 
@@ -156,9 +145,9 @@ def initial_time():
 @cache('step')
 def saveper():
     """
-    Real Name: b'SAVEPER'
-    Original Eqn: b'TIME STEP'
-    Units: b'mes'
+    Real Name: SAVEPER
+    Original Eqn: TIME STEP
+    Units: mes
     Limits: (0.0, None)
     Type: component
 
@@ -170,9 +159,9 @@ def saveper():
 @cache('run')
 def time_step():
     """
-    Real Name: b'TIME STEP'
-    Original Eqn: b'1'
-    Units: b'mes'
+    Real Name: TIME STEP
+    Original Eqn: 1
+    Units: mes
     Limits: (0.0, None)
     Type: constant
 
@@ -181,4 +170,4 @@ def time_step():
     return 1
 
 
-_integ_lago = functions.Integ(lambda: flujo_río() - evaporación(), lambda: nivel_lago_inicial())
+integ_lago = functions.Integ(lambda: flujo_río() - evaporación(), lambda: nivel_lago_inicial())

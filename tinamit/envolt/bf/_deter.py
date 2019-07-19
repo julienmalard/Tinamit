@@ -1,7 +1,7 @@
 import math as mat
 
 from dateutil.relativedelta import relativedelta as deltarelativo
-from tinamit.mod.tiempo import a_unid_tnmt
+from tinamit.tiempo.tiempo import a_unid_tnmt
 
 from ._impac import ModeloImpaciente, VariablesModImpaciente, VarPaso
 
