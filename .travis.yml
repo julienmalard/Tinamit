@@ -17,6 +17,11 @@ script:
 after_success:
   - coveralls --rcfile=.coveragerc
   - codecov
+  - cd ..
+  - cd docs
+  - if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then sh .tx/tx.sh push; sh .tx/tx.sh pull;
+    fi
+  - cd ..
 deploy:
   provider: pypi
   user: julien.malard
