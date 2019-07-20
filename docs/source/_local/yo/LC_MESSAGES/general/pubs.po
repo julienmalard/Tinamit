@@ -1,0 +1,57 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Language-Team: Yoruba (https://www.transifex.com/qatikon/teams/70565/yo/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: yo\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../source/general/pubs.rst:2
+msgid "Publicaciones"
+msgstr ""
+
+#: ../../source/general/pubs.rst:3
+msgid ""
+"Aquí compartimos publicaciones, en todos y cualquier idioma, que decriben o "
+"utilizaron Tinamït."
+msgstr ""
+
+#: ../../source/general/pubs.rst:6
+msgid "Publicaciones acerca de Tinamït"
+msgstr ""
+
+#: ../../source/general/pubs.rst:7
+msgid "Publicaciones describiendo Tinamït y sus funcionalidades."
+msgstr ""
+
+#: ../../source/general/pubs.rst:9
+msgid ""
+"Malard JJ, Inam A, Hassanzadeh E, Adamowski J, Tuy HA, H Melgar-Quiñonez. "
+"Development of a software tool for rapid, reproducible, and stakeholder-"
+"friendly dynamic coupling of system dynamics and physically-based models. "
+"*Environmental Modelling & Software*, 96:410-420. DOI: "
+"10.1016/j.envsoft.2017.06.053"
+msgstr ""
+
+#: ../../source/general/pubs.rst:14
+msgid "Publicaciones con Tinamït"
+msgstr ""
+
+#: ../../source/general/pubs.rst:15
+msgid "Publicaciones de estudios que utilizaron Tinamït."
+msgstr ""
+
+#: ../../source/general/pubs.rst:17
+msgid "Todavía estamos esperando. ¿No querrías escribir una, por casualidad?"
+msgstr ""

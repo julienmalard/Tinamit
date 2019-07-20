@@ -1,0 +1,133 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+# Translators:
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2019
+# AzharInam <muhammad.baig@mail.mcgill.ca>, 2019
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Last-Translator: AzharInam <muhammad.baig@mail.mcgill.ca>, 2019\n"
+"Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ur\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../../source/general/agrad.rst:2
+msgid "Agradecimientos"
+msgstr "شکریہ."
+
+#: ../../source/general/agrad.rst:4
+msgid ""
+"Tinamït es un proyecto de fuente abierta. Las personas e instituciones "
+"siguientes hicieron posible su desarrollo."
+msgstr ""
+"ٹنامٹ ایک کھلا ذریعہ منصوبہ ہے. مندرجہ ذیل لوگوں اور اداروں کی کاوشوں کی "
+"بدولت اس کی تخلیق ممکن ہو‏ ئی۔"
+
+#: ../../source/general/agrad.rst:7
+msgid "Autores del código"
+msgstr "کوڈ کے تخلیق کار۔"
+
+#: ../../source/general/agrad.rst:9
+msgid "`Julien Malard <https://www.researchgate.net/profile/Julien_Malard>`_"
+msgstr ""
+
+#: ../../source/general/agrad.rst:10
+msgid ""
+"`محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig) "
+"<https://www.researchgate.net/profile/Azhar_Baig>`_"
+msgstr ""
+
+#: ../../source/general/agrad.rst:13
+msgid "Autores de envolturas"
+msgstr "سانچے کے تخلیق کار"
+
+#: ../../source/general/agrad.rst:14
+msgid ""
+"Gracias a los siguientes por escribir envolturas específicas a los modelos "
+"biofísicos siguientes (nota: escribimos las *envolturas* para que estos "
+"modelos sean compatibles con Tinamït, ¡no escribimos los modelos sí mismos!)"
+msgstr ""
+"مندرجہ ذیل حیاتی طبیعیات ماڈلز کےسانچےلکھنے لئے مندرجہ ذیل تخلیق کاروں کا "
+"شکریہ: (نوٹ: ہم نے ان حیاتی طبیعیات ماڈلز کو سماجی معاشی ماڈلز بذريعہ ٹینامٹ"
+" ) (جوڑنے کے لئے٭ سانچے٭ بناے ہیں۔ حیاتی طبیعیات ماڈلز کی تخلیق کار ی میں "
+"ھمارا کوی کردار نہيں ھے"
+
+#: ../../source/general/agrad.rst:18
+msgid "SAHYSMOD"
+msgstr "ساھیسماڈ"
+
+#: ../../source/general/agrad.rst:19
+msgid "محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)"
+msgstr "محمّد اظہر انعام بیگ"
+
+#: ../../source/general/agrad.rst:20
+msgid "Julien Malard"
+msgstr "ژولئں ملار (Julien Malard)"
+
+#: ../../source/general/agrad.rst:23
+msgid "Traductores"
+msgstr "مترجم"
+
+#: ../../source/general/agrad.rst:24
+msgid ""
+"Cuando se habrán traducido Tinamït y su documentación, los agradecimientos "
+"irán aquí."
+msgstr ""
+"ٹینامٹ اور اس کی دستاويز کا ترجمہ کرنے والوں کی خدمات کا يھاں اعتراف کیا جاۓ"
+" گا"
+
+#: ../../source/general/agrad.rst:27
+msgid "Financiamiento"
+msgstr "شکریہ"
+
+#: ../../source/general/agrad.rst:28
+msgid ""
+"Los organismos siguientes contribuyeron apoyo financiero a uno o más de los "
+"autores del código mientras trabajaban en el desarrollo de Tinamït:"
+msgstr ""
+"مندرجہ ذیل اداروں نے ٹنامیٹ کی تياری پر کام کرنے والے  مصنفین کو مالی امداد "
+"فراہم کی۔"
+
+#: ../../source/general/agrad.rst:31
+msgid ""
+"`Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) "
+"<https://www.nserc-crsng.gc.ca>`_"
+msgstr ""
+"`قدرتی سائنس اور انجینئرنگ ریسرچ کونسل کینیڈا (سی آر ایس این جی) "
+"<https://www.nserc-crsng.gc.ca>`_"
+
+#: ../../source/general/agrad.rst:32
+msgid ""
+"`Centre de recherches pour le développement international du Canada (CRDI) "
+"<https://www.idrc.ca/fr>`_"
+msgstr ""
+"`کینیڈا انٹرنیشنل ڈویلپمنٹ ریسرچ سینٹر (سی آر ڈی آئی, CRDI) "
+"<https://www.idrc.ca/fr>`_"
+
+#: ../../source/general/agrad.rst:33
+msgid ""
+"`Fonds de recherche Nature et technologies du Québec (Canada) (FQRNT) "
+"<http://www.frqnt.gouv.qc.ca/accueil>`_"
+msgstr ""
+"`قدرتی تحقيق اور ٹیکنالوجی تحقيق فنڈ (کینیڈا) (FQRNT) "
+"<http://www.frqnt.gouv.qc.ca/accueil>`_"
+
+#: ../../source/general/agrad.rst:36
+msgid "Instituciones afiliadas"
+msgstr "منسلک ادارے"
+
+#: ../../source/general/agrad.rst:38
+msgid ""
+"Los autores de Tinamït están afiliados con las instituciones siguientes:"
+msgstr "ٹینامٹ کے تخلیق کارمندرجہ ذیل اداروں سے منسلک ہیں"

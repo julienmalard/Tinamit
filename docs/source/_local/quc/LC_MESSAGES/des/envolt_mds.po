@@ -1,0 +1,158 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Language-Team: K'iche' (https://www.transifex.com/qatikon/teams/70565/quc/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: quc\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../../source/des/envolt_mds.rst:2
+msgid "Envolturas MDS"
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:3
+msgid ""
+"Envolturas para modelos de dinámicas de sistemas son subclases de "
+":class:`~tinamit.envolt.mds.ModeloMDS`."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:6
+msgid ""
+"Las envolturas para modelos DS son **universales**. Es decir, la misma "
+"envoltura funcionará para todos los modelos creados con el mismo programa "
+"(p. ej., Vensim), no importe el contenido del modelo sí mismo."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:10
+msgid "Cómo crear tu envoltura"
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:12
+msgid "Funciones y atributos para implementar:"
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:14
+msgid ""
+":func:`~tinamit.Modelo.unidad_tiempo`: Devuelve la unidad de tiempo del "
+"modelo."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:15
+msgid ":func:`~tinamit.Modelo.incrementar`: Avanza el modelo."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:16
+msgid ""
+":func:`~tinamit.Modelo.__init__`: Inicializa el modelo. En la llamada a "
+"``super().__init__`` debes incluir un objeto "
+":class:`~tinamit.envolt.mds.VariablesMDS` con los variables del modelo."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:17
+msgid ""
+":func:`~tinamit.Modelo.cambiar_vals`: No estríctamente necesario, pero la "
+"casi totalidad de modelos DS necesitarán tomar acción específica para "
+"cambiar valores de variables en el modelo externo."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:18
+msgid ""
+"`ModeloDS.ext`: Una lista de las extensiones de archivo que se pueden leer "
+"por la envoltura."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:20
+msgid "Funciones y atributos opcionales:"
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:22
+msgid ""
+":func:`~tinamit.Modelo.paralelizable`: Indica si el modelo se puede "
+"paralelizar para ahorar tiempo."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:23
+msgid ""
+":func:`~tinamit.Modelo.iniciar_modelo`: Acciones llamadas justo antes de la "
+"simulación."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:24
+msgid ""
+":func:`~tinamit.Modelo.cerrar`: Efectua acciones de limpieza al final de una"
+" simulación."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:25
+msgid ""
+":func:`~tinamit.Modelo._correr_hasta_final`: Permite el modelo de combinar "
+"pasos de simulación cuando posible para ser más rápido."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:26
+msgid ""
+":func:`~tinamit.Modelo.instalado`: Verifica si el modelo correspondiendo a "
+"la envoltura está instalado en la computadora o no."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:29
+msgid ""
+"Tu implementación de :func:`~tinamit.Modelo.incrementar` **debe** incluir "
+"una llamada a ``super().incrementar(rebanada)`` al final para que valores de"
+" parámetros externos y de clima se actualicen correctamente. Igualmente, "
+"cualquier reimplementación de :func:`~tinamit.Modelo.iniciar_modelo` "
+"**debe** incluir una llamada a ``super().iniciar_modelo(corrida)`` al final,"
+" y  :func:`~tinamit.Modelo.cambiar_vals` una a "
+"``super().cambiar_vals(valores)``."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:36
+msgid ""
+"Cada variable en :class:`~tinamit.envolt.mds.VariablesMDS` debe ser uno de "
+":class:`~tinamit.envolt.mds.VarConstante`, "
+":class:`~tinamit.envolt.mds.VarInic`, :class:`~tinamit.envolt.mds.VarNivel`,"
+" o :class:`~tinamit.envolt.mds.VarAuxiliar."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:40
+msgid "Autogeneración"
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:41
+msgid ""
+"La función :func:`~tinamit.envolt.mds.gen_mds` de Tinamït puede escoger "
+"automáticamente la envoltura más apropriada para un archivo dado de modelo "
+"DS según el atributo `ModeloMDS.ext` de cada clase de envoltura. Puedes "
+"llamar la función :func:`~tinamit.envolt.mds.registrar_envolt_mds` para "
+"registrar tu nueva clase de modelo DS en Tinamït, y "
+":func:`~tinamit.envolt.mds.olvidar_envolt_mds` para quitarla."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:46
+msgid ""
+"Si estás modificando el código fuente de Tinamït, puedes agregar tu clase a "
+"`tinamit.envolt.mds._auto._subclases` para que se tome automáticamente en "
+"cuenta."
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:50
+msgid "Distribución"
+msgstr ""
+
+#: ../../source/des/envolt_mds.rst:51
+msgid ""
+"Puedes compartir tu nueva envoltura como paquete Python independiente. "
+"Igualmente puedes contribuirlo al código fuente de Tinamït, después de cual "
+"todas las usuarias de Tinamït podrán acceder tu envoltura."
+msgstr ""
