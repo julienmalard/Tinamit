@@ -14,7 +14,7 @@ commit_translation_files() {
   echo "add"
   git add source/_local/*.po
   echo "commit"
-  git commit -m "Translation update from Transifex" -m "[ci skip]"
+  git commit -m "Actualización de traducciones de Transifex" -m "[ci skip]"
 }
 
 push_translation_files() {

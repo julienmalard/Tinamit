@@ -3,6 +3,9 @@ python:
   - '3.6'
 os:
   - linux
+env:
+  global:
+  - TX_BRANCH="master"
 install:
   - pip install --upgrade pip setuptools wheel
   - pip install transifex-client sphinx sphinx-intl
