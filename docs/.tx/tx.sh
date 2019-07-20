@@ -12,7 +12,7 @@ commit_translation_files() {
   echo "checkout"
   git checkout -b transifex
   echo "add"
-  git add source/_locale/*.po
+  git add source/_local/*.po
   echo "commit"
   git commit -m "Translation update from Transifex" -m "[ci skip]"
 }
