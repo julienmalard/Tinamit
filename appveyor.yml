@@ -8,6 +8,10 @@ install:
   - "%PYTHON%\\python.exe -m pip install --upgrade pip"
   - "%PYTHON%\\python.exe -m pip install --upgrade setuptools"
   - "%PYTHON%\\python.exe -m pip install --upgrade wheel"
+  - "git clone https://github.com/julienmalard/ennikkai.git"
+  - ps: cd ennikkai
+  - "%PYTHON%\\python.exe setup.py -q install"
+  - ps: cd ..
   - "git clone https://github.com/julienmalard/taqdir.git"
   - ps: cd taqdir
   - "%PYTHON%\\python.exe setup.py -q install"
