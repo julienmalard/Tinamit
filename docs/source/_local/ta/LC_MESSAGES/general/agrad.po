@@ -1,0 +1,129 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+# Translators:
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2019
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
+"Language-Team: Tamil (https://www.transifex.com/qatikon/teams/70565/ta/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ta\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../../source/general/agrad.rst:2
+msgid "Agradecimientos"
+msgstr "இவர்களுக்கு நன்றி..."
+
+#: ../../source/general/agrad.rst:4
+msgid ""
+"Tinamït es un proyecto de fuente abierta. Las personas e instituciones "
+"siguientes hicieron posible su desarrollo."
+msgstr ""
+"தீநாமித் ஒரு திறந்த மூல மென்பொருள் உள்ளது. இந்த மக்கள் மற்றும் நிலையங்களால் "
+"அதனுடைய வளர்ச்சி சாத்தியமாக உள்ளது."
+
+#: ../../source/general/agrad.rst:7
+msgid "Autores del código"
+msgstr "கணினி மாதிரி எழுத்தாளர்கள்"
+
+#: ../../source/general/agrad.rst:9
+msgid "`Julien Malard <https://www.researchgate.net/profile/Julien_Malard>`_"
+msgstr ""
+
+#: ../../source/general/agrad.rst:10
+msgid ""
+"`محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig) "
+"<https://www.researchgate.net/profile/Azhar_Baig>`_"
+msgstr ""
+
+#: ../../source/general/agrad.rst:13
+msgid "Autores de envolturas"
+msgstr "உறை எழுத்தாளர்கள்"
+
+#: ../../source/general/agrad.rst:14
+msgid ""
+"Gracias a los siguientes por escribir envolturas específicas a los modelos "
+"biofísicos siguientes (nota: escribimos las *envolturas* para que estos "
+"modelos sean compatibles con Tinamït, ¡no escribimos los modelos sí mismos!)"
+msgstr ""
+"உயிர் இயற்பியல் மாதிரிகளுக்கு குறிப்பிட்ட உறைகள் எழுதிறதற்கு இவர்களுக்கு "
+"நன்றி. குறிப்பு - இவர்களால் இந்த *மாதிரிகளுக்கு தினாமித்தின் உறைகள்* "
+"எழதப்பட்டன, இவர்களால் இந்த மாதிரிகள் எழதப்பட்டதில்லை."
+
+#: ../../source/general/agrad.rst:18
+msgid "SAHYSMOD"
+msgstr "ஸாஹிஸ்மாட்"
+
+#: ../../source/general/agrad.rst:19
+msgid "محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)"
+msgstr "محمّد اظہر انعام بیگ (முஹாம்மத் அஸ்ஹார் இனாம் பாயிக்)"
+
+#: ../../source/general/agrad.rst:20
+msgid "Julien Malard"
+msgstr "ஜூலீஎன் மாலார்"
+
+#: ../../source/general/agrad.rst:23
+msgid "Traductores"
+msgstr "மொழிபெயர்ப்பாளர்கள்"
+
+#: ../../source/general/agrad.rst:24
+msgid ""
+"Cuando se habrán traducido Tinamït y su documentación, los agradecimientos "
+"irán aquí."
+msgstr ""
+"தினாமித் மற்றும் இதையின் ஆவண்களின் மொழிபெயர்ப்பு செய்யும் அளவில், "
+"மொழிபெயர்ப்பாளர்களுக்கு இங்கு நன்றி எழுதுவோம். "
+
+#: ../../source/general/agrad.rst:27
+msgid "Financiamiento"
+msgstr "நிதிகள்..."
+
+#: ../../source/general/agrad.rst:28
+msgid ""
+"Los organismos siguientes contribuyeron apoyo financiero a uno o más de los "
+"autores del código mientras trabajaban en el desarrollo de Tinamït:"
+msgstr "இந்த நிலையங்களால் தீனாமித் எழுத்தாளர்களுக்கு நிதி கிடைத்தவிட்டது."
+
+#: ../../source/general/agrad.rst:31
+msgid ""
+"`Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) "
+"<https://www.nserc-crsng.gc.ca>`_"
+msgstr ""
+"`கனடா அரசங்க இற்கை அறிவியல் மற்றும் பொறியியல் ஆராய்ச்சி சபை (CRSNG) "
+"<https://www.nserc-crsng.gc.ca>`_"
+
+#: ../../source/general/agrad.rst:32
+msgid ""
+"`Centre de recherches pour le développement international du Canada (CRDI) "
+"<https://www.idrc.ca/fr>`_"
+msgstr ""
+"`கனடா அரசங்க சர்வதேச வளர்ச்சி ஆராய்ச்சி மையம் (CRDI) "
+"<https://www.idrc.ca/fr>`_"
+
+#: ../../source/general/agrad.rst:33
+msgid ""
+"`Fonds de recherche Nature et technologies du Québec (Canada) (FQRNT) "
+"<http://www.frqnt.gouv.qc.ca/accueil>`_"
+msgstr ""
+"`கிபெக் அரச்ங்கம் இற்கை மற்றும் தொழில்நுட்ப ஆராய்ச்சி நிதி மையம் (கனடா) "
+"(FQRNT) <http://www.frqnt.gouv.qc.ca/accueil>`_"
+
+#: ../../source/general/agrad.rst:36
+msgid "Instituciones afiliadas"
+msgstr "சேர்க்கப்பெற்ற நிலையங்கள்"
+
+#: ../../source/general/agrad.rst:38
+msgid ""
+"Los autores de Tinamït están afiliados con las instituciones siguientes:"
+msgstr "தீநாமித்தின் எழத்துவர்கள் இந்த நிறுவனங்களுடுன் இணைந்துள்ளன."

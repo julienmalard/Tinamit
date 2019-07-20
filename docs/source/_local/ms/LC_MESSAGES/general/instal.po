@@ -1,0 +1,64 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Language-Team: Malay (https://www.transifex.com/qatikon/teams/70565/ms/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ms\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../source/general/instal.rst:2
+msgid "Instalación"
+msgstr ""
+
+#: ../../source/general/instal.rst:3
+msgid ""
+"La instalación debería ser sencilla. Primero necesitarás `Python 3.6+ "
+"<(https://www.python.org/downloads)>`_. Después, puedes instalar Tinamït en "
+"la terminal con:"
+msgstr ""
+
+#: ../../source/general/instal.rst:6
+msgid ":command:`pip install tinamit`"
+msgstr ""
+
+#: ../../source/general/instal.rst:9
+msgid ""
+"Windows `todavía <https://github.com/pypa/pip/pull/5712>`_ está causando "
+"complicaciones con programas no escritos en inglés (sí, en 2019). Si "
+"encuentras problemas, no hesites en `pedir ayuda "
+"<https://github.com/julienmalard/Tinamit/issues/new/choose>`_; por eso "
+"existe la comunidad."
+msgstr ""
+
+#: ../../source/general/instal.rst:13
+msgid ""
+"Si quieres la versión más recién (en desarrollo), puedes obtenerla de GitHub"
+" directamente con:"
+msgstr ""
+
+#: ../../source/general/instal.rst:15
+msgid ""
+":command:`pip install git+git://github.com/julienmalard/tinamit.git@master`"
+msgstr ""
+
+#: ../../source/general/instal.rst:19
+msgid ""
+"Si tienes Windows, es posible que tengas que instalar el ``C++ "
+"redistributable`` de `aquí <https://support.microsoft.com/es-gt/help/2977003"
+"/the-latest-supported-visual-c-downloads>`_. Toma la versión terminando en "
+"``…x86.exe`` si tienes Python de 32 bits y en ``…x64.exe`` si tienes "
+"**Python** (no Windows) de 64 bits. Después, instálalo. Por razones "
+"obscuras, ``SciPy``, un paquete requerido por Tinamït, no funciona en "
+"Windows sin éste."
+msgstr ""

@@ -1,0 +1,421 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Language-Team: Persian (https://www.transifex.com/qatikon/teams/70565/fa/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fa\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: ../../source/des/envolt_bf.rst:2
+msgid "Envolturas BF"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:3
+msgid ""
+"Cada modelo BF requiere la presencia de una envoltura especial que maneja su"
+" interacción (simulación, intercambio de variables) con Tinamït."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:7
+msgid ""
+"Todas las envolturas son subclases de :class:`~tinamit.envolt.bf.ModeloBF`. "
+"No obstante, Tinamït viene con clases especiales para simplificar tu vida "
+"con casos de modelos más compicados."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:11
+msgid ""
+"¿Cómo escoger la clase pariente? Si tu modelo da resultados con el mismo "
+"paso de tiempo con el cual puede avanzar (por ejemplo, da resultados "
+"mensuales y avanza con paso mensual), entonces es un :ref:`modelo sencillo "
+"<mod_sencillo>`. Si da resultados con paso más pequeño que el paso con el "
+"cual puede avanzar (por ejemplo, un modelo hidrológico que simula 1 año a la"
+" vez pero después devuelve resultados diarios), entonces es un :ref:`modelo "
+"determinado <mod_deter>`."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:16
+msgid ""
+"Si tu modelo tiene subdivisiones temporales adicionales (p. ej., SAHYSMOD "
+"simula por un año, pero después devuelve datos por `estaciones` de duración "
+"de entre 1 a 12 meses), entonces es un :ref:`modelo bloques <mod_bloq>`."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:19
+msgid ""
+"Y, por fin, si no sabes antes de simular cuánto tiempo va a simular (p. ej.,"
+" modelos de cultivos que corren hacia la cosecha), entonces tienes un "
+":ref:`modelo indeterminado <mod_indeter>`."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:25
+msgid "Modelos Sencillos"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:26
+msgid ""
+"Siendo modelos sencillos, las envolturas basadas directamente en "
+":class:`~tinamit.envolt.bf.ModeloBF` solamente deben implementar las "
+"funciones siguientes:"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:29
+msgid ""
+":func:`~tinamit.Modelo.unidad_tiempo`: Devuelve la unidad de tiempo del "
+"modelo."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:30
+msgid ":func:`~tinamit.Modelo.incrementar`: Avanza el modelo."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:31
+msgid ""
+":func:`~tinamit.Modelo.__init__`: Inicializa el modelo. En la llamada a "
+"``super().__init__`` debes incluir un objeto "
+":class:`~tinamit.mod.VariablesMod` con los variables del modelo."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:34
+msgid "Funciones y atributos opcionales:"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:36
+msgid ""
+":func:`~tinamit.Modelo.paralelizable`: Indica si el modelo se puede "
+"paralelizar para ahorar tiempo."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:37
+msgid ""
+":func:`~tinamit.Modelo.iniciar_modelo`: Acciones llamadas justo antes de la "
+"simulación."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:38
+msgid ""
+":func:`~tinamit.Modelo.cerrar`: Efectua acciones de limpieza al final de una"
+" simulación."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:39
+msgid ""
+":func:`~tinamit.Modelo._correr_hasta_final`: Permite el modelo de combinar "
+"pasos de simulación cuando posible para ser más rápido."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:40
+msgid ""
+":func:`~tinamit.Modelo.instalado`: Verifica si el modelo correspondiendo a "
+"la envoltura está instalado en la computadora o no."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:41
+msgid ""
+"`Modelo.idioma_orig`: Indica el idioma de los nombres de variables del "
+"modelo."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:44
+msgid ""
+"Tu implementación de :func:`~tinamit.Modelo.incrementar` **debe** incluir "
+"una llamada a ``super().incrementar(rebanada)`` al final para que valores de"
+" parámetros externos y de clima se actualicen correctamente. Igualmente, "
+"cualquier reimplementación de :func:`~tinamit.Modelo.iniciar_modelo` "
+"**debe** incluir una llamada a ``super().iniciar_modelo(corrida)`` al final."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:50
+msgid ""
+"En la función :func:`~tinamit.Modelo.incrementar`, se puede acceder los "
+"variables del modelo con `símismo.variables[\"nombre del variable\"]`, "
+"obtener su valor con :func:`~tinamit.mod.Variable.obt_val`, y cambiar su "
+"valor con :func:`~tinamit.mod.Variable.poner_val`:"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:54
+msgid ""
+"lago = símismo.variables['Lago']\n"
+"val_lago = lago.obt_val()\n"
+"\n"
+"nuevo_valor = 100\n"
+"lago.poner_val(nuevo_valor)"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:66
+msgid "Modelos Determinados"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:67
+msgid ""
+"Modelos determinados (:class:`~tinamit.envolt.bf.ModeloDeterminado`) simulan"
+" por un periodo fijo, y después devuelven egresos de manera retroactiva. "
+"Muchos modelos biofísicos (SWAT, DSSAT, STICS) funcionan (o pueden "
+"funcionar) así."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:70
+msgid ""
+"El paso del modelo sigue siendo la unidad de tiempo de los egresos (p. ej., "
+"días), y se agrega el concepto de un ``ciclo``, o el tiempo mínimo que se "
+"puede efectuar una simulación (p. ej., 1 año)."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:73 ../../source/des/envolt_bf.rst:107
+#: ../../source/des/envolt_bf.rst:129
+msgid "Funciones obligatorias:"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:75
+msgid ""
+":func:`~tinamit.ModeloDeterminado.unidad_tiempo`: Devuelve la unidad de "
+"tiempo de los **egresos** del modelo."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:76
+msgid ""
+":func:`~tinamit.ModeloDeterminado.avanzar_modelo`: Avanza el modelo de un "
+"cierto número de **ciclos**."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:77
+msgid ""
+":func:`~tinamit.ModeloDeterminado.__init__`: Inicializa el modelo. En la "
+"llamada a `super().__init__` debes incluir un objeto "
+":class:`~tinamit.envolt.bf.VariablesModDeter` con los variables del modelo."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:80
+msgid ""
+"No se implementa :func:`~tinamit.Modelo.incrementar` en modelos "
+"determinados. Tinamït lo implementa automáticamente y llama "
+":func:`~tinamit.Modelo.avanzar_modelo` en los momentos oportunos de la "
+"simulación."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:83
+msgid ""
+"Modelos determinados pueden tener variables que cambian con el paso "
+"(:class:`~tinamit.envolt.bf.VarPasoDeter`) y otros que cambian con el ciclo "
+"(:class:`~tinamit.mod.Variable`). Ambos se pueden pasar al "
+":class:`~tinamit.envolt.bf.VariablesModDeter` de la inicialización."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:87
+msgid ""
+"Para cambiar los valores de :class:`~tinamit.envolt.bf.VarPasoDeter` en la "
+"función :func:`~tinamit.Modelo.avanzar_modelo`, se llama "
+":class:`~tinamit.envolt.bf.VarPaso.poner_vals_paso` con una matriz de "
+"valores para todos los pasos en el ciclo presente. Para obtener su valor en "
+"el paso actual, se llama :class:`~tinamit.envolt.bf.VarPaso.obt_val`, o sino"
+" :class:`~tinamit.envolt.bf.VarPaso.obt_vals_paso` para obtener la matriz de"
+" sus valores para todos los pasos en el ciclo actual."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:95
+msgid ""
+"Tinamït se encarga de actualizar los valores de los variables por paso según"
+" el paso actual del modelo."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:97 ../../source/des/envolt_bf.rst:120
+#: ../../source/des/envolt_bf.rst:142
+msgid ""
+"Igualmente pueden implementar todas las funciones opcionales de "
+":class:`~tinamit.envolt.bf.ModeloBF`."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:102
+msgid "Modelos Bloques"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:103
+msgid ""
+"Modelos bloques (:class:`~tinamit.envolt.bf.ModeloBloques`) son una subclase"
+" de (:class:`~tinamit.envolt.bf.ModeloDeterminado`). Además de pasos y "
+"ciclos, tienen el concepto de `bloques`. En su simulación, un ciclo contiene"
+" varios bloques hechos de cantidades variables de pasos."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:109
+msgid ""
+":func:`~tinamit.ModeloBloques.unidad_tiempo`: Devuelve la unidad de tiempo "
+"de **base** de los **egresos** del modelo. Por ejemplo, si el modelo simula "
+"por año y devuelve datos por tres estaciones de 4, 5 y 3 meses, entonces la "
+"unidad de tiempo sería `mes`."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:110
+msgid ""
+":func:`~tinamit.ModeloBloques.avanzar_modelo`: Avanza el modelo de un cierto"
+" número de **ciclos**."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:111
+msgid ""
+":func:`~tinamit.ModeloBloques.__init__`: Inicializa el modelo. En la llamada"
+" a `super().__init__` debes incluir un objeto "
+":class:`~tinamit.envolt.bf.VariablesModBloques` con los variables del "
+"modelo."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:113
+msgid ""
+"Modelos bloques pueden tener variables bloques "
+"(:class:`~tinamit.envolt.bf.VariablesModBloques`), igual que variables que "
+"cambian con el paso (:class:`~tinamit.envolt.bf.VarPasoDeter`) y otros que "
+"cambian con el ciclo (:class:`~tinamit.mod.Variable`)."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:118
+msgid ""
+"Tinamït actualiza automáticamente el paso, el bloque y el ciclo de sus "
+"variables (con los valores, por supuesto)."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:125
+msgid "Modelos Indeterminados"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:126
+msgid ""
+"Modelos indeterminados (:class:`~tinamit.envolt.bf.ModeloIndeterminado`) "
+"avanzan por periodos de tiempo indeterminados cada vez que se simulan. "
+"Tienen el concepto de ciclos, pero el tamaño del ciclo varia entre "
+"simulaciones."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:131
+msgid ""
+":func:`~tinamit.ModeloIndeterminado.unidad_tiempo`: Devuelve la unidad de "
+"tiempo de los **egresos** del modelo."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:132
+msgid ":func:`~tinamit.ModeloIndeterminado.mandar_modelo`: Avanza el modelo."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:133
+msgid ""
+":func:`~tinamit.ModeloIndeterminado.__init__`: Inicializa el modelo. En la "
+"llamada a `super().__init__` debes incluir un objeto "
+":class:`~tinamit.envolt.bf.VariablesModIndeterminado` con los variables del "
+"modelo."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:135
+msgid ""
+"En :class:`~tinamit.envolt.bf.VariablesModIndeterminado`, se pueden incluir "
+"variables cuyos valores cambian con el paso "
+"(:class:`~tinamit.envolt.bf.VarPasoIndeter`), tanto como variables cuyos "
+"valores quedan constantes adentro del mismo ciclo "
+"(:class:`~tinamit.mod.Variable`)."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:139
+msgid ""
+"En :func:`~tinamit.ModeloIndeterminado.mandar_modelo`, se puede utilizar las"
+" mismas funciones que con modelos determinados para establecer y acceder los"
+" valores de los variables."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:145
+msgid "Variables clima"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:146
+msgid ""
+"Si tu modelo incluye variables climáticos, puedes especificarlos con la "
+"función :func:`~tinamit.Modelo.conectar_var_clima` en el `__init__()` de la "
+"clase. Tinamït se encargará de la actualización del valor del variables "
+"cuando se efectua una simulación con clima activado."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:151
+msgid ""
+"Si tu modelo requiere datos de manera más sofisticada (por ejemplo, DSSAT "
+"debe guardar en un archivo externo todos los datos climáticos *antes* de "
+"empezar la simulación), puedes acceder el objeto de "
+":class:`~tinamit.mod.clima.Clima` de la corrida actual (si hay) con "
+"`símismo.corrida.clima` y llamar sus funciones "
+":func:`~tinamit.mod.clima.Clima.obt_datos` o "
+":func:`~tinamit.mod.clima.Clima.obt_todos_vals`."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:157
+msgid "Configuración"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:158
+msgid ""
+"Puedes incluir variables de configuración en tu envoltura (p. ej., la "
+"ubicación de un archivo ejecutable). Se obtiene el valor con "
+":func:`~tinamit.Modelo.obt_conf`, y usuarias pueden establecer su valor con "
+"`MiEnvoltura.estab_conf(\"llave\", \"valor\")`. Por ejemplo:"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:162
+msgid ""
+"from tinamit.envolt.sahysmod.bf import ModeloSAHYSMOD\n"
+"ModeloSAHYSMOD.estab_conf(\"exe\", \"C:\\\\Camino\\\\hacia\\\\mi\\\\SAHYSMODConsole.exe\")"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:168
+msgid "Pruebas"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:169
+msgid ""
+"Siempre es buena idea tener pruebas para saber si tu envoltura funciona bien"
+" o no. Tinamït te permite integrar pruebas de lectura de datos, de lectura "
+"de egresos y de simulación con tus envolturas."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:172
+msgid ""
+"Puedes implementar las funciones "
+":func:`~tinamit.envolt.bf.ModeloBF.prb_ingreso`, "
+":func:`~tinamit.envolt.bf.ModeloBF.prb_egreso`,  o "
+":func:`~tinamit.envolt.bf.ModeloBF.prb_simul` para tu modelo."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:175
+msgid ""
+"Después, puedes integrar las funciones "
+":func:`~tinamit.mod.prbs.verificar_leer_ingr`, "
+":func:`~tinamit.mod.prbs.verificar_leer_egr`, y "
+":func:`~tinamit.mod.prbs.verificar_simul` con tus pruebas automáticas para "
+"comprobar que todo están bien con tu envoltura. La primera vez que corren "
+"las pruebas, Tinamït guardará en el disco los resultados de la lectura de "
+"datos y de la simulación. Asegúrate que estén correctos los variables. Si, "
+"en el futuro, tu envoltura ya no da los mismos resultados, Tinamït te "
+"avisará de un error."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:183
+msgid ""
+"Estas funciones se aplican automáticamente a todas las envolturas incluidas "
+"con la distribución de Tinamït."
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:187
+msgid "Distribución"
+msgstr ""
+
+#: ../../source/des/envolt_bf.rst:188
+msgid ""
+"Puedes compartir tu nueva envoltura como paquete Python independiente. "
+"Igualmente puedes contribuirlo al código fuente de Tinamït, después de cual "
+"todas las usuarias de Tinamït podrán acceder tu envoltura."
+msgstr ""

@@ -1,0 +1,392 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Language-Team: Dutch (https://www.transifex.com/qatikon/teams/70565/nl/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../../source/ref/ipa/mapas.rst:2
+msgid "Mapas"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.Agua:1
+msgid "Representa áreas de agua."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.Agua:5
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica:5
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNombrada:6
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNumérica:5
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa:7
+msgid "archivo: str"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.Agua:6
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica:6
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNumérica:6
+msgid "El archivo ``.shp``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.Agua:7
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica:10
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNombrada:13
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNumérica:13
+msgid "llenar: bool"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.Agua:8
+msgid "Si hay que llenar el cuerpo de agua o no."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.Bosque:1
+msgid "Representa áreas con bosque."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.Calle:1
+msgid "Representa calles."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.Ciudad:1
+msgid "Representa áreas urbanas."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.Forma:1
+msgid "Clase pariente para todas las formas que se pueden dibujar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.Forma.dibujar:1
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica.dibujar:1
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaEstática.dibujar:1
+msgid "Agrega la forma a la figura."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.Forma.dibujar:5
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica.dibujar:5
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaEstática.dibujar:5
+msgid "ejes:"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.Forma.dibujar:6
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica.dibujar:6
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaEstática.dibujar:6
+msgid "Los ejes de la figura."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.Forma.dibujar:7
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica.dibujar:7
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaEstática.dibujar:7
+msgid "fig:"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.Forma.dibujar:8
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica.dibujar:8
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaEstática.dibujar:8
+msgid "La figura."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica:1
+msgid "Forma cuyos colores se asignan según valores numéricos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica:8
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNombrada:11
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNumérica:11
+msgid "escala_colores: list or tuple or str or int or None"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica:8
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNombrada:11
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNumérica:11
+msgid ""
+"Lista de dos colores para establecer una escala de colores. Si es un solo "
+"color, se agregará el color blanco. Si es ``-1``, se inverserán los colores "
+"automáticos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica:11
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNombrada:14
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNumérica:14
+msgid "Si hay que llenar la forma o simplement delinear su contorno."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica:14
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNombrada:15
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNumérica:15
+msgid "alpha: float or int"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica:13
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNombrada:16
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNumérica:16
+msgid ""
+"La opacidad del interior de la forma. Solamente aplica si ``llenar`` est "
+"``False``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica.estab_valores:1
+msgid "Establece los valores para colorar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica.estab_valores:5
+msgid "valores: np.ndarray or dict"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica.estab_valores:6
+msgid ""
+"Los valores para dibujar. Debe ser del mismo tamaño que el archivo ``.shp`` "
+"en ``archivo``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica.estab_valores:7
+msgid "escala_valores: tuple or list or None"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica.estab_valores:8
+msgid ""
+"La escala para el rango de colores. Si es ``None``, se ajustará el rango "
+"según de los valores dados."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica.estab_valores:9
+msgid "unidades: str, optional"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámica.estab_valores:10
+msgid "Las unidades."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNombrada:1
+msgid ""
+"Forma dinámica cuyos valores se asignan a los polígonos de la forma ``.shp``"
+" por su llave en el diccionario de valores."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNombrada:7
+msgid "La archivo ``.shp``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNombrada:8
+msgid "col_id: str"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNombrada:9
+msgid "La columna en el archivo ``.shp`` con el nomrbe de cada polígono."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNumérica:1
+msgid ""
+"Forma dinámica cuyos valores se asignan a los polígonos de la forma ``.shp``"
+" por su orden en la matriz de valores."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNumérica:8
+msgid "col_id: str, optional"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaDinámicaNumérica:8
+msgid ""
+"La columna con el número de cada polígono en la forma ``.shp``. Si es "
+"``None``, se asiñará número según su orden en la forma ``.shp``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.FormaEstática:1
+msgid ""
+"Clase de base para formas estáticas en el mapa, cuyos colores no cambian."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.OtraForma:1
+msgid ""
+"Representa otras áreas no representadas por las otras formas disonibles."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa:1
+msgid "Dibuja un mapa."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa:5
+msgid "formas: list of Forma"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa:6
+msgid "Las formas para incluir."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa:8
+msgid ""
+"Dónde hay que guardar el gráfico. Si es ``None``, no se guardará el gráfico."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa:10
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa_de_res:14
+msgid "título: str"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa:10
+msgid "El título del mapa."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa:14
+msgid "Axes"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa:15
+msgid "Los ejes del gráfico."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa_de_res:1
+msgid "Dibujar los resultados de una simulación en un mapa."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa_de_res:5
+msgid "forma_dinámica: FormaDinámica"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa_de_res:6
+msgid "La forma cuyos colores variarán según los resultados."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa_de_res:7
+msgid "res: var: str"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa_de_res:9
+msgid "El variable de interés."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa_de_res:10
+msgid "t: int or tuple or range or list"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa_de_res:11
+msgid "Los tiempos a los cuales queremos graficar los resultados."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa_de_res:12
+msgid "escala: tuple"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa_de_res:13
+msgid ""
+"El rango para aplicar colores. Si es ``None``, se aplicará según los datos "
+"de los resultados."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa_de_res:15
+msgid "El título del gráfico."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa_de_res:16
+msgid "directorio: str"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa_de_res:17
+msgid "Dónnde hay que guardar el gráfico."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa_de_res:18
+msgid "otras_formas: list of FormaEstática"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/geog/mapa.pydocstring
+#: of tinamit.geog.mapa.dibujar_mapa_de_res:19
+msgid "Las otras formas (estáticas) para incluir en el gráfico."
+msgstr ""

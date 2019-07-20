@@ -1,0 +1,112 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Language-Team: Yoruba (https://www.transifex.com/qatikon/teams/70565/yo/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: yo\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../source/general/agrad.rst:2
+msgid "Agradecimientos"
+msgstr ""
+
+#: ../../source/general/agrad.rst:4
+msgid ""
+"Tinamït es un proyecto de fuente abierta. Las personas e instituciones "
+"siguientes hicieron posible su desarrollo."
+msgstr ""
+
+#: ../../source/general/agrad.rst:7
+msgid "Autores del código"
+msgstr ""
+
+#: ../../source/general/agrad.rst:9
+msgid "`Julien Malard <https://www.researchgate.net/profile/Julien_Malard>`_"
+msgstr ""
+
+#: ../../source/general/agrad.rst:10
+msgid ""
+"`محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig) "
+"<https://www.researchgate.net/profile/Azhar_Baig>`_"
+msgstr ""
+
+#: ../../source/general/agrad.rst:13
+msgid "Autores de envolturas"
+msgstr ""
+
+#: ../../source/general/agrad.rst:14
+msgid ""
+"Gracias a los siguientes por escribir envolturas específicas a los modelos "
+"biofísicos siguientes (nota: escribimos las *envolturas* para que estos "
+"modelos sean compatibles con Tinamït, ¡no escribimos los modelos sí mismos!)"
+msgstr ""
+
+#: ../../source/general/agrad.rst:18
+msgid "SAHYSMOD"
+msgstr ""
+
+#: ../../source/general/agrad.rst:19
+msgid "محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)"
+msgstr ""
+
+#: ../../source/general/agrad.rst:20
+msgid "Julien Malard"
+msgstr ""
+
+#: ../../source/general/agrad.rst:23
+msgid "Traductores"
+msgstr ""
+
+#: ../../source/general/agrad.rst:24
+msgid ""
+"Cuando se habrán traducido Tinamït y su documentación, los agradecimientos "
+"irán aquí."
+msgstr ""
+
+#: ../../source/general/agrad.rst:27
+msgid "Financiamiento"
+msgstr ""
+
+#: ../../source/general/agrad.rst:28
+msgid ""
+"Los organismos siguientes contribuyeron apoyo financiero a uno o más de los "
+"autores del código mientras trabajaban en el desarrollo de Tinamït:"
+msgstr ""
+
+#: ../../source/general/agrad.rst:31
+msgid ""
+"`Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) "
+"<https://www.nserc-crsng.gc.ca>`_"
+msgstr ""
+
+#: ../../source/general/agrad.rst:32
+msgid ""
+"`Centre de recherches pour le développement international du Canada (CRDI) "
+"<https://www.idrc.ca/fr>`_"
+msgstr ""
+
+#: ../../source/general/agrad.rst:33
+msgid ""
+"`Fonds de recherche Nature et technologies du Québec (Canada) (FQRNT) "
+"<http://www.frqnt.gouv.qc.ca/accueil>`_"
+msgstr ""
+
+#: ../../source/general/agrad.rst:36
+msgid "Instituciones afiliadas"
+msgstr ""
+
+#: ../../source/general/agrad.rst:38
+msgid ""
+"Los autores de Tinamït están afiliados con las instituciones siguientes:"
+msgstr ""

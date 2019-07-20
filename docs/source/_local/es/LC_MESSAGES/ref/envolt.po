@@ -1,0 +1,105 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/ref/envolt.rst:2
+msgid "Referencia de envolturas"
+msgstr "Referencia de envolturas"
+
+#: ../../source/ref/envolt.rst:3
+msgid ""
+"Abajo puedes encontrar información sobre todas las envolturas que vienen con"
+" Tinamït. Si quieres agregar una nueva, `contáctenos "
+"<https://github.com/julienmalard/Tinamit/issues/new/choose>`_ y la podremos "
+":doc:`desarrollar juntos </des/envolt_bf>`."
+msgstr ""
+"Abajo puedes encontrar información sobre todas las envolturas que vienen con"
+" Tinamït. Si quieres agregar una nueva, `contáctenos "
+"<https://github.com/julienmalard/Tinamit/issues/new/choose>`_ y la podremos "
+":doc:`desarrollar juntos </des/envolt_bf>`."
+
+#: ../../source/ref/envolt.rst:8
+msgid "Modelos DS"
+msgstr "Modelos DS"
+
+#: ../../source/ref/envolt.rst:9 ../../source/ref/envolt.rst:22
+msgid "Envolturas incluidas en Tinamït:"
+msgstr "Envolturas incluidas en Tinamït:"
+
+#: ../../source/ref/envolt.rst:11
+msgid ""
+"**PySD**: Implementación de modelos DS en puro Python. Más rápido que "
+"Vensim, pero no incluye todas las funcionalidades (por el momento). Ver su "
+"`documentación <https://pysd.readthedocs.io/>`_ aquí. Puede leer modelos en "
+"formato `.mdl` de Vensim, tanto como el estándar `.xmile` (utilizado, entre "
+"otros, por Stella)."
+msgstr ""
+"**PySD**: Implementación de modelos DS en puro Python. Más rápido que "
+"Vensim, pero no incluye todas las funcionalidades (por el momento). Ver su "
+"`documentación <https://pysd.readthedocs.io/>`_ aquí. Puede leer modelos en "
+"formato `.mdl` de Vensim, tanto como el estándar `.xmile` (utilizado, entre "
+"otros, por Stella)."
+
+#: ../../source/ref/envolt.rst:14
+msgid ""
+"**Vensim**: Un programa de MDS bastante popular. Desafortunadamente, "
+"requiere la versión pagada (DSS) para conectar con Tinamït. Ver su `página "
+"oficial <http://vensim.com/>`_. Con Vensim, primero hay que ir a cada "
+"variable en tu modelo Vensim que quieres que pueda recibir valores desde el "
+"modelo biofísico y escoger ``Gaming`` como tipo de variable. Después, hay "
+"que publicar el modelo en formato `.vpm`."
+msgstr ""
+"**Vensim**: Un programa de MDS bastante popular. Desafortunadamente, "
+"requiere la versión pagada (DSS) para conectar con Tinamït. Ver su `página "
+"oficial <http://vensim.com/>`_. Con Vensim, primero hay que ir a cada "
+"variable en tu modelo Vensim que quieres que pueda recibir valores desde el "
+"modelo biofísico y escoger ``Gaming`` como tipo de variable. Después, hay "
+"que publicar el modelo en formato `.vpm`."
+
+#: ../../source/ref/envolt.rst:21
+msgid "Modelos BF"
+msgstr "Modelos BF"
+
+#: ../../source/ref/envolt.rst:24
+msgid ""
+"**SAHYSMOD**: Modelo de salinidad de suelos. Ver su `documentación "
+"<https://www.waterlog.info/sahysmod.htm>`_. Para uso con Tinamït deberás "
+"descargar una versión especial modificada para funcionar desde la línea de "
+"comanda `aquí <https://github.com/AzharInam/Sahysmod-SourceCode/releases>`_ "
+"(quieres el ``SahysModConsole.exe``)."
+msgstr ""
+"**SAHYSMOD**: Modelo de salinidad de suelos. Ver su `documentación "
+"<https://www.waterlog.info/sahysmod.htm>`_. Para uso con Tinamït deberás "
+"descargar una versión especial modificada para funcionar desde la línea de "
+"comanda `aquí <https://github.com/AzharInam/Sahysmod-SourceCode/releases>`_ "
+"(quieres el ``SahysModConsole.exe``)."
+
+#: ../../source/ref/envolt.rst:29
+msgid "Envolturas planeadas:"
+msgstr "Envolturas planeadas:"
+
+#: ../../source/ref/envolt.rst:31
+msgid "**PCSE**: Modelo de cultivos en puro Python."
+msgstr "**PCSE**: Modelo de cultivos en puro Python."
+
+#: ../../source/ref/envolt.rst:32
+msgid "**DSSAT**: Modelo de cultivos bien popular."
+msgstr "**DSSAT**: Modelo de cultivos bien popular."
+
+#: ../../source/ref/envolt.rst:33
+msgid "**SWAT+**: Modelo hidrológico."
+msgstr "**SWAT+**: Modelo hidrológico."
