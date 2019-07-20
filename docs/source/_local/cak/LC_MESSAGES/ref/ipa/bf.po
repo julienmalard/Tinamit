@@ -1,0 +1,66 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Language-Team: Kaqchikel (https://www.transifex.com/qatikon/teams/70565/cak/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: cak\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../../source/ref/ipa/bf.rst:2
+msgid "Modelos Biofísicos"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF.unidad_tiempo:1
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf._deter.ModeloDeterminado.unidad_tiempo:1
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_bloq.pydocstring
+#: of tinamit.envolt.bf._bloq.ModeloBloques.unidad_tiempo:1
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf._indeter.ModeloIndeterminado.unidad_tiempo:1
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf._impac.ModeloImpaciente.unidad_tiempo:1
+msgid "Esta función debe devolver la unidad de tiempo empleada por el modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF.unidad_tiempo:5
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf._deter.ModeloDeterminado.unidad_tiempo:5
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_bloq.pydocstring
+#: of tinamit.envolt.bf._bloq.ModeloBloques.unidad_tiempo:5
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf._indeter.ModeloIndeterminado.unidad_tiempo:5
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf._impac.ModeloImpaciente.unidad_tiempo:5
+msgid "str"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF.unidad_tiempo:6
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf._deter.ModeloDeterminado.unidad_tiempo:6
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_bloq.pydocstring
+#: of tinamit.envolt.bf._bloq.ModeloBloques.unidad_tiempo:6
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf._indeter.ModeloIndeterminado.unidad_tiempo:6
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf._impac.ModeloImpaciente.unidad_tiempo:6
+msgid "La unidad de tiempo (p. ej., 'meses', 'مہینہ', etc.)"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_bloq.pydocstring
+#: of tinamit.envolt.bf._bloq.ModeloBloques:3
+msgid "variables: VariablesModBloques nombre: str"
+msgstr ""

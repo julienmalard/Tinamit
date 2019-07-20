@@ -1,0 +1,58 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Language-Team: Yoruba (https://www.transifex.com/qatikon/teams/70565/yo/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: yo\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../source/general/intro.rst:2
+msgid "Introducción"
+msgstr ""
+
+#: ../../source/general/intro.rst:3
+msgid ""
+"La modelización :abbr:`DS (Dinámicas de Sistemas)` es una manera popular de "
+"hacer modelos **participativos** y **visuales** para el manejo ambiental y "
+"socio-económico. `Vensim <https://vensim.com/>` y `Stella "
+"<https://www.iseesystems.com/store/products/stella-architect.aspx>` son "
+"programas populares y tienen versiones grátis."
+msgstr ""
+
+#: ../../source/general/intro.rst:8
+msgid ""
+"No obstante, la inclusión de procesos ambientales or :abbr:`BF (biofísicos)`"
+" se complica en modelos :abbr:`DS (Dinámicas de Sistemas)`. Y de verdad no "
+"deberías tener que contruir un modelo hidrológico o de cultivos en el "
+"ambiente :abbr:`DS (Dinámicas de Sistemas)` solamente porque quieres ver los"
+" impactos de tu modelo socio-económico :abbr:`DS (Dinámicas de Sistemas)` en"
+" el ambiente y vice-versa [1]_. Ya existen muchos modelos :abbr:`BF "
+"(biofísicos)` que lo hacen para ti ([2]_, [3]_, [4]_."
+msgstr ""
+
+#: ../../source/general/intro.rst:14
+msgid ""
+"¿Pero cómo conectar un modelo :abbr:`DS (Dinámicas de Sistemas)` con un "
+":abbr:`BF (biofísicos)`? Por eso existe Tinamït. Empieza con nuestros "
+"tutoriales :doc:`aquí </tutorial/conex>` o, aún mejor, con la "
+":doc:`instalción </general/instal>`."
+msgstr ""
+
+#: ../../source/general/intro.rst:22
+msgid "Figura 1"
+msgstr ""
+
+#: ../../source/general/intro.rst:24
+msgid "Diagrama de la estructura conceptual de Tinamït."
+msgstr ""

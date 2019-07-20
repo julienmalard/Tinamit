@@ -1,0 +1,40 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Language-Team: Dutch (https://www.transifex.com/qatikon/teams/70565/nl/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../../source/des/trad.rst:2
+msgid "Traducir"
+msgstr ""
+
+#: ../../source/des/trad.rst:4
+msgid ""
+"¿Quieres leer este en tu propia lengua? La documentación de Tinamït se "
+"traduce de manera colaborativa. Puedes utilizar el servidor Transifex o "
+"Zanata (syncronisamos los dos, así que no hay problema cuál eliges):"
+msgstr ""
+
+#: ../../source/des/trad.rst:7
+msgid ""
+"Zanata: `Empezar ahora "
+"<https://translate.zanata.org/project/view/tinamit>`_."
+msgstr ""
+
+#: ../../source/des/trad.rst:8
+msgid ""
+"Transifex: `Empezar ahora <https://www.transifex.com/qatikon/tinamit>`_."
+msgstr ""

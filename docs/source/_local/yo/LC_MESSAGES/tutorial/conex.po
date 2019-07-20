@@ -1,0 +1,102 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Language-Team: Yoruba (https://www.transifex.com/qatikon/teams/70565/yo/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: yo\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../source/tutorial/conex.rst:2
+msgid "Conectar modelos"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:7
+msgid "Ejemplo muy básico"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:8
+msgid ""
+"También es un ejemplo un poco estúpido. Pero demuestra muy bien cómo "
+"funciona Tinamït, y no tienes que instalar cualquier modelo biofísico "
+"externo para que te funcione, así que empecemos con este. ::"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:11
+msgid ""
+"import os\n"
+"from tinamit.Conectado import Conectado\n"
+"\n"
+"modelo = Conectado()\n"
+"directorio = os.path.dirname(__file__)\n"
+"modelo.estab_mds(os.path.join(directorio, \"Prueba dll.vpm\"))\n"
+"modelo.estab_bf(os.path.join(directorio, 'Prueba bf.py'))\n"
+"modelo.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)\n"
+"modelo.conectar(var_mds='Bosques', var_bf='Bosque', mds_fuente=True)\n"
+"modelo.simular(paso=1, tiempo_final=100, nombre_corrida='Corrida_Tinamït')"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:22
+msgid "Tomémoslo línea por línea. Primero, importamos Tinamït. ::"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:24
+msgid ""
+"import os\n"
+"from tinamit.Conectado import Conectado"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:27
+msgid "Segundo, conectamos los variables biofísicos y de DS::"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:29
+msgid ""
+"directorio = os.path.dirname(__file__)\n"
+"modelo.estab_mds(os.path.join(directorio, \"Prueba dll.vpm\"))\n"
+"modelo.estab_bf(os.path.join(directorio, 'Prueba bf.py'))"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:33
+msgid ""
+"Tenemos unos modelos muy sencillos. El modelo DS determina, dado la lluvia, "
+"la cantidad de pesca posible y su impacto en la necesidad de explotar "
+"recursos del bosque."
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:40
+msgid ""
+"Del otro lado, el \"modelo\" biofísico nos da la precipitación según la "
+"cubertura forestal. Vamos a conectar los variables necesarios::"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:43
+msgid ""
+"modelo.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)\n"
+"modelo.conectar(var_mds='Bosques', var_bf='Bosque', mds_fuente=True)"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:46
+msgid ""
+"Y corremos la simulación para 100 meses. ¡Allí está! Ya puedes visualizar "
+"los resultados directamente en Vensim. ¿Ves que cambió la lluvia?::"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:49
+msgid ""
+"modelo.simular(paso=1, tiempo_final=100, nombre_corrida='Corrida_Tinamït')"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:53
+msgid "Unidades de tiempo"
+msgstr ""
