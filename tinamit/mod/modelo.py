@@ -4,13 +4,13 @@ from multiprocessing import Pool as Reserva
 from warnings import warn as avisar
 
 import numpy as np
-
 from tinamit.config import _, conf_mods
+
 from .corrida import Corrida, Rebanada
 from .extern import gen_extern
 from .res import ResultadosGrupo
-from ..tiempo.tiempo import EspecTiempo
 from .vars_mod import VariablesMod
+from ..tiempo.tiempo import EspecTiempo
 
 
 class Modelo(object):
@@ -112,9 +112,12 @@ class Modelo(object):
             símismo.cambiar_vals(
                 {vr: vl for vr, vl in corrida.obt_extern_act().items() if vr in símismo.variables}
             )
-        if corrida.clima:
+        if corrida.clima and símismo.vars_clima:
+            t = símismo.corrida.t
+            corrida.clima.inicializar(t)
             símismo.cambiar_vals(
-                {vr: vl.values for vr, vl in corrida.clima.obt_todos_vals(símismo.vars_clima).items()})
+                corrida.clima.combin_datos(t.fecha(), t.fecha_próxima()-1, símismo.vars_clima)
+            )
         corrida.actualizar_res()
 
     def correr(símismo):
@@ -140,7 +143,7 @@ class Modelo(object):
 
         if símismo.corrida.clima and símismo.vars_clima:
             t = símismo.corrida.t
-            símismo._act_vals_clima(t.fecha(), t.fecha_próxima())
+            símismo._act_vals_clima(t.fecha(), t.fecha_próxima()-1)
 
     def cerrar(símismo):
         """
@@ -222,7 +225,7 @@ class Modelo(object):
     def __str__(símismo):
         return símismo.nombre
 
-    def conectar_var_clima(símismo, var, var_clima, conv, combin=None):
+    def conectar_var_clima(símismo, var, var_clima, conv, combin='prom'):
         """
         Conecta un variable climático.
 
@@ -234,8 +237,9 @@ class Modelo(object):
             El nombre oficial del variable climático.
         conv : number
             La conversión entre el variable clima en Tinamït y el variable correspondiente en el modelo.
-        combin : str
-            Si este variable se debe adicionar o tomar el promedio entre varios pasos.
+        combin : str or function or None
+            Si este variable se debe adicionar o tomar el promedio entre varios pasos. Puede ser ``prom``, ``total``,
+            o una función. Si es ``None``, se tomará el último día en el caso de pasos de más de 1 día.
         """
 
         combins = {

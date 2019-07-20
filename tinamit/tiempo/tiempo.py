@@ -61,13 +61,15 @@ class TiempoCalendario(Tiempo):
         unid_ft = _a_unid_ft[símismo.unid_paso]
         return símismo.f_inic + relativedelta(**{unid_ft: símismo.í * símismo.fact_conv})
 
-    def fecha_próxima(símismo):
+    def delta_relativo(símismo, n_pasos):
         if símismo.unid_paso in ['año', 'mes']:
-            delta = relativedelta(**{símismo.unid_paso: símismo.tmñ_paso * símismo.fact_conv})
-            return símismo.fecha() + delta
+            return relativedelta(**{_a_unid_ft[símismo.unid_paso]: n_pasos * símismo.tmñ_paso * símismo.fact_conv})
 
-        n_días = convertir(símismo.unid_paso, a='día', val=símismo.tmñ_paso * símismo.fact_conv)
-        return símismo.fecha() + relativedelta(days=n_días)
+        n_días = convertir(símismo.unid_paso, a='día', val=n_pasos * símismo.tmñ_paso * símismo.fact_conv)
+        return relativedelta(days=n_días)
+
+    def fecha_próxima(símismo):
+        return símismo.fecha() + símismo.delta_relativo(n_pasos=1)
 
     def eje(símismo):
         paso = símismo.fact_conv * símismo.guardar_cada * símismo.tmñ_paso
@@ -88,8 +90,8 @@ class TiempoCalendario(Tiempo):
             return 12 * símismo.tmñ_paso * símismo.fact_conv / fact
 
         if símismo.unid_paso in ['año', 'mes']:
-            delta = relativedelta(**{símismo.unid_paso: símismo.tmñ_paso * símismo.fact_conv / fact})
-            n_días = (símismo.fecha() - delta).days
+            delta = relativedelta(**{_a_unid_ft[símismo.unid_paso]: símismo.tmñ_paso * símismo.fact_conv / fact})
+            n_días = (símismo.fecha() - (símismo.fecha() - delta)).days
             return convertir('día', a=unid, val=n_días)
 
         return convertir(símismo.unid_paso, a=unid, val=símismo.tmñ_paso * símismo.fact_conv / fact)
@@ -133,7 +135,7 @@ def a_unid_tnmt(unid):
 
 
 _a_unid_ft = {
-    'año': 'años',
+    'año': 'years',
     'mes': 'months',
     'semana': 'weeks',
     'día': 'days',
@@ -145,6 +147,8 @@ _a_unid_ft = {
 }
 
 _a_unid_pandas = {
+    'año': 'A',
+    'mes': 'M',
     'día': 'D',
     'hora': 'H',
     'minuto': 'min',

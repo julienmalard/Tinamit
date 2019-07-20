@@ -1,7 +1,9 @@
 import random
 
-from tinamit.mod import VariablesMod, Variable, Modelo
 import numpy as np
+
+from tinamit.mod import VariablesMod, Variable, Modelo
+
 
 class ModeloPrueba(Modelo):
 
