@@ -177,8 +177,8 @@ html_static_path = ['_estático']
 
 
 def setup(app):
-    app.add_stylesheet('tema.css')
-    app.add_stylesheet('cambios.css')
+    app.add_stylesheet('css/tema.css')
+    app.add_stylesheet('css/cambios.css')
     app.add_javascript('javascript.js')
 
 
