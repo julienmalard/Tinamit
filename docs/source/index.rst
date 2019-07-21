@@ -1,8 +1,5 @@
 Tinamït
 =======
-.. image:: /_estático/imágenes/Logos/Logo_Tinamit_transp.png
-   :scale: 80%
-   :alt: Logo muy bonito. :)
 
 .. image:: https://badge.fury.io/py/tinamit.svg
    :target: https://badge.fury.io/py/tinamit
@@ -23,6 +20,11 @@ Tinamït
 .. image:: https://api.codeclimate.com/v1/badges/cd1b1bf43ee40c270604/maintainability
    :target: https://codeclimate.com/github/julienmalard/Tinamit/maintainability
    :alt: Maintainability
+
+
+.. image:: /_estático/imágenes/Logos/Logo_Tinamit_transp.png
+   :scale: 80%
+   :alt: Logo muy bonito. :)
 
 Tinamït es un programa para conectar modelos socioeconómicos (dinámicas de los sistemas) con modelos biofísicos.
 
