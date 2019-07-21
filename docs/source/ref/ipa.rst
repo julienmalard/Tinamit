@@ -12,3 +12,5 @@ Interfaz de Programación
    ipa/pruebas
    ipa/result
    ipa/var
+   ipa/geog
+   ipa/mapas

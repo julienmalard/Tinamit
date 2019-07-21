@@ -1,0 +1,12 @@
+.wy-menu-vertical header, .wy-menu-vertical p.caption {
+	color: #25a24e;
+	font-size: 95%;
+}
+.wy-side-nav-search
+{
+	color: #cacaca;
+	background: #E9EDE4;
+}
+.wy-side-nav-search input[type=text] {
+	border-color: #716EA1;
+}
