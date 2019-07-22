@@ -6,6 +6,7 @@ import pandas as pd
 import spotpy as sp
 import xarray as xr
 
+from tinamit.cositas import detectar_codif
 from tinamit.datos.bd import BD
 from ._utils import calc_máx_trz, algs_spotpy, eval_funcs
 
@@ -42,7 +43,8 @@ class CalibradorModSpotPy(CalibradorMod):
             muestreador.sample(repetitions=n_iter, runs_after_convergence=200)
         else:
             muestreador.sample(n_iter)
-        egr_spotpy = pd.read_csv(temp.name + '.csv')
+        codif = detectar_codif(temp.name + '.csv')
+        egr_spotpy = pd.read_csv(temp.name + '.csv', encoding=codif)
 
         cols_prm = [c for c in egr_spotpy.columns if c.startswith('par')]
         probs = egr_spotpy['like1']
