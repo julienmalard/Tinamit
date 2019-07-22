@@ -36,8 +36,8 @@ class TestConectado(unittest.TestCase):
 
         # Conectar los modelos
         for mod in cls.modelos.values():
-            mod.conectar(var_ds='Lluvia', var_bf='Lluvia', mds_fuente=False)
-            mod.conectar(var_ds='Lago', var_bf='Lago', mds_fuente=True)
+            mod.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)
+            mod.conectar(var_mds='Lago', var_bf='Lago', mds_fuente=True)
 
     def test_reinic_vals(símismo):
         """
