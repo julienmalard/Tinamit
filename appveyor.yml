@@ -22,4 +22,5 @@ install:
 build: false
 
 test_script:
-  - "%PYTHON%\\python.exe -m unittest pruebas"
+  - ps: cd pruebas
+  - "%PYTHON%\\python.exe -m unittest"
