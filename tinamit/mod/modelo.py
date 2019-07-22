@@ -115,8 +115,8 @@ class Modelo(object):
         if corrida.clima and símismo.vars_clima:
             t = símismo.corrida.t
             corrida.clima.inicializar(t)
-            símismo.cambiar_vals(
-                corrida.clima.combin_datos(t.fecha(), t.fecha_próxima()-1, símismo.vars_clima)
+            símismo._act_vals_clima(
+                t.fecha(), t.fecha_próxima() - 1
             )
         corrida.actualizar_res()
 

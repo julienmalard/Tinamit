@@ -1,5 +1,14 @@
-Modelos Biofísicos
-==================
+Modelos BF
+==========
+
+Autogeneración
+--------------
+
+.. automodule:: tinamit.envolt.bf._auto
+   :members:
+
+Modelos disponibles
+-------------------
 
 .. autoclass:: tinamit.envolt.bf.ModeloBF
    :members:

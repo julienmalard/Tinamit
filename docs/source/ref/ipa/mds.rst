@@ -1,13 +1,16 @@
-Modelos de Dinámicas de Sistemas
-================================
-
-.. automodule:: tinamit.envolt.mds._envolt
-   :members:
+Modelos DS
+==========
 
 Autogeneración
 --------------
 
 .. automodule:: tinamit.envolt.mds._auto
+   :members:
+
+Modlos disponibles
+------------------
+
+.. automodule:: tinamit.envolt.mds._envolt
    :members:
 
 Variables

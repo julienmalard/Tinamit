@@ -58,12 +58,12 @@ class Tiempo(object):
 
 class TiempoCalendario(Tiempo):
     def fecha(símismo):
-        unid_ft = _a_unid_ft[símismo.unid_paso]
+        unid_ft = a_unid_ft[símismo.unid_paso]
         return símismo.f_inic + relativedelta(**{unid_ft: símismo.í * símismo.fact_conv})
 
     def delta_relativo(símismo, n_pasos):
         if símismo.unid_paso in ['año', 'mes']:
-            return relativedelta(**{_a_unid_ft[símismo.unid_paso]: n_pasos * símismo.tmñ_paso * símismo.fact_conv})
+            return relativedelta(**{a_unid_ft[símismo.unid_paso]: n_pasos * símismo.tmñ_paso * símismo.fact_conv})
 
         n_días = convertir(símismo.unid_paso, a='día', val=n_pasos * símismo.tmñ_paso * símismo.fact_conv)
         return relativedelta(days=n_días)
@@ -90,11 +90,11 @@ class TiempoCalendario(Tiempo):
             return 12 * símismo.tmñ_paso * símismo.fact_conv / fact
 
         if símismo.unid_paso in ['año', 'mes']:
-            delta = relativedelta(**{_a_unid_ft[símismo.unid_paso]: símismo.tmñ_paso * símismo.fact_conv / fact})
+            delta = relativedelta(**{a_unid_ft[símismo.unid_paso]: símismo.tmñ_paso * símismo.fact_conv / fact})
             n_días = (símismo.fecha() - (símismo.fecha() - delta)).days
-            return convertir('día', a=unid, val=n_días)
+            return int(convertir('día', a=unid, val=n_días))
 
-        return convertir(símismo.unid_paso, a=unid, val=símismo.tmñ_paso * símismo.fact_conv / fact)
+        return int(convertir(símismo.unid_paso, a=unid, val=símismo.tmñ_paso * símismo.fact_conv / fact))
 
 
 class EspecTiempo(object):
@@ -134,7 +134,7 @@ def a_unid_tnmt(unid):
         _('La unidad de tiempo "{}" no se pudo convertir a años, meses, días, horas, minutos o secundos.').format(unid))
 
 
-_a_unid_ft = {
+a_unid_ft = {
     'año': 'years',
     'mes': 'months',
     'semana': 'weeks',

@@ -134,7 +134,7 @@ class Conectado(SuperConectado):
         símismo.bf = gen_bf(bf)
         símismo.mds = gen_mds(mds) if isinstance(mds, str) else mds
 
-        super().__init__([bf, mds], nombre=nombre)
+        super().__init__([símismo.bf, símismo.mds], nombre=nombre)
 
     def conectar(símismo, var_mds, var_bf, mds_fuente, conv=None):
         """

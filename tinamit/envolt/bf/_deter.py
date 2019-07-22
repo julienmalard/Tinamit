@@ -1,7 +1,7 @@
 import math as mat
 
 from dateutil.relativedelta import relativedelta as deltarelativo
-from tinamit.tiempo.tiempo import a_unid_tnmt
+from tinamit.tiempo.tiempo import a_unid_tnmt, a_unid_ft
 
 from ._impac import ModeloImpaciente, VariablesModImpaciente, VarPaso
 
@@ -38,13 +38,29 @@ class ModeloDeterminado(ModeloImpaciente):
             t = símismo.corrida.t
             f_inic = t.fecha()
 
+            vars_clim_paso = {
+                vr: d for vr, d in símismo.vars_clima.items() if isinstance(símismo.variables[vr], VarPasoDeter)
+            }
+            vars_clim_ciclo = {vr: d for vr, d in símismo.vars_clima.items() if vr not in vars_clim_paso}
+
+            base_t, factor = a_unid_tnmt(símismo.unidad_tiempo())
+
+            f_final = f_inic + deltarelativo(**{a_unid_ft[base_t]: factor * símismo.tmñ_ciclo})
+
+            datos_ciclo = símismo.corrida.clima.combin_datos(
+                vars_clima=vars_clim_ciclo, f_inic=f_inic, f_final=f_final
+            )
+            for var, vl in datos_ciclo.items():
+                # Guardar el valor para esta estación
+                símismo.variables[var].poner_val(vl)
+
             for i in range(1, símismo.tmñ_ciclo):
-                base_t, factor = a_unid_tnmt(símismo.unidad_tiempo())
-                f_final = f_inic + deltarelativo(**{base_t: factor})
+
+                f_final = f_inic + deltarelativo(**{a_unid_ft[base_t]: factor})
 
                 # Calcular los datos
                 datos = símismo.corrida.clima.combin_datos(
-                    vars_clima=símismo.vars_clima, f_inic=f_inic, f_final=f_final
+                    vars_clima=vars_clim_paso, f_inic=f_inic, f_final=f_final
                 )
 
                 # Aplicar los valores de variables calculados

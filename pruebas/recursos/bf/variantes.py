@@ -20,7 +20,8 @@ class EjDeterminado(ModeloDeterminado):
             VarPasoDeter(
                 'i_en_ciclo', unid=None, ingr=False, egr=True, inic=tmñ_ciclo - 1, tmñ_ciclo=tmñ_ciclo, líms=(0, None)
             ),
-            VarPasoDeter('ingreso', unid=None, ingr=True, egr=False, tmñ_ciclo=tmñ_ciclo, líms=(0, None))
+            VarPasoDeter('ingreso', unid=None, ingr=True, egr=False, tmñ_ciclo=tmñ_ciclo, líms=(0, None)),
+            Variable('ingreso_ciclo', unid=None, ingr=True, egr=False, líms=(None, None))
         ])
 
     def unidad_tiempo(símismo):
@@ -51,9 +52,11 @@ class EjBloques(ModeloBloques):
             ),
             VarPasoDeter('paso', unid=None, ingr=False, egr=True, tmñ_ciclo=tmñ_ciclo, líms=(0, None)),
             VarPasoDeter(
-                'i_en_ciclo', unid=None, ingr=False, egr=True, tmñ_ciclo=tmñ_ciclo, inic=tmñ_ciclo - 1, líms=(0, None)
+                'i_en_ciclo', unid=None, ingr=False, egr=True, tmñ_ciclo=tmñ_ciclo, inic=tmñ_ciclo - 1, líms=(0, None),
             ),
-            Variable('ingreso', unid=None, ingr=True, egr=False, líms=(0, None))
+            Variable('ingreso', unid=None, ingr=True, egr=False, líms=(0, None)),
+            VarPasoDeter('ingreso_paso', unid=None, ingr=True, egr=False, tmñ_ciclo=tmñ_ciclo, líms=(0, None)),
+            VarBloque('ingreso_bloque', unid=None, ingr=True, egr=False, tmñ_bloques=tmñ_bloques, líms=(0, None))
         ], tmñ_bloques=tmñ_bloques)
 
     def unidad_tiempo(símismo):
@@ -90,5 +93,5 @@ class EjIndeterminado(ModeloIndeterminado):
         n = np.random.randint(*símismo.rango_n)
         símismo.variables['ciclo'] += 1
         paso = símismo.variables['paso'].obt_val()
-        símismo.variables['paso'].poner_vals_paso(np.arange(paso+1, n+paso+1))
+        símismo.variables['paso'].poner_vals_paso(np.arange(paso + 1, n + paso + 1))
         return n

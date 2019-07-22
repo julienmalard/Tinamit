@@ -15,6 +15,7 @@ class ModeloBloques(ModeloDeterminado):
         variables: VariablesModBloques
         nombre: str
         """
+
         símismo.tmñ_bloques = variables.tmñ_bloques
         super().__init__(tmñ_ciclo=np.sum(símismo.tmñ_bloques), variables=variables, nombre=nombre)
 
