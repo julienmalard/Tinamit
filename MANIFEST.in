@@ -1,6 +1,6 @@
 recursive-include tinamit *.vpm *.json *.png *.jpg *.gif *.txt *.g *.inp *.tmpl *.py *.xlsx *.xls *.odc *.csv *.mo *.out
 
-recursive-include tinamit/Ejemplos
+recursive-include tinamit/ejemplos
 recursive-include pruebas/recursos/bf *.py
 recursive-include pruebas/recursos/datos *.csv
 recursive-include pruebas/recursos/frm *.dbf *.prj *.sbn *.sbx *.shp *.shx
