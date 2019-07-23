@@ -13,6 +13,4 @@ Uso de datos
    from tinamit.conect import Conectado
    from tinamit.ejemplos import obt_ejemplo
 
-   mds = obt_ejemplo('básico/mds_bosques.mdl')
-
    plt.plot(np.arange(10))
