@@ -22,4 +22,4 @@ python:
   install:
     - requirements: docs/readthedocs.reqs.txt
     - requirements: reqs.txt
-  system_packages: true
+  system_packages: false

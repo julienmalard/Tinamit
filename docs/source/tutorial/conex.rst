@@ -122,8 +122,63 @@ Tinamït reconoce las unidades de tiempo siguientes: ``año``, ``mes``, ``semana
 
 3+ modelos
 ----------
-Si
+Si tienes más que 2 modelos para conectar, también es fácil con la clase
+:class:`~tinamit.conect._envolt.SuperConectado`. Se pueden conectar de manera horizontal o jerárquica, cómo prefieres.
+
+Horizontal
+----------
+Se pueden conectar modelos individuales de manera "horizontal" en un solo modelo
+:class:`~tinamit.conect._envolt.SuperConectado`.
 
 .. code-block:: python
 
    from tinamit.conectado import SuperConectado
+
+   # Crear los 3 modelos
+   mod_1 = MiModelo1(nombre='modelo 1')
+   mod_2 = MiModelo2(nombre='modelo 2')
+   mod_3 = MiModelo3(nombre='modelo 3')
+
+   # El Conectado
+   conectado = SuperConectado([mod_1, mod_2, mod_3])
+
+   # Conectar variables entre dos de los modelos por el intermediario del tercero.
+   conectado.conectar_vars(
+       var_fuente='Var 1', modelo_fuente='modelo 1', var_recip='Var 2', modelo_recip='modelo 2'
+   )
+   conectado.conectar_vars(
+       var_fuente='Var 2', modelo_fuente='modelo 2', var_recip='Var 3', modelo_recip='modelo 3'
+   )
+
+   # Simular
+   res = conectado.simular(10, vars_interés=[mod_1.variables['Var 1'], mod_3.variables['Var 3']])
+
+Los variables ``Var 1`` del ``modelo 1`` y ``Var 3`` del ``modelo 3`` ahora tendrán valores idénticos a través de la
+simulación.
+
+Jerárquica
+----------
+También se pueden anidar modelos adentro de otros.
+
+.. code-block:: python
+   # Los tres modelos
+   mod_1 = MiModelo1(nombre='modelo 1')
+   mod_2 = MiModelo2(nombre='modelo 2')
+   mod_3 = MiModelo3(nombre='modelo 3')
+
+   # El primer Conectado
+   conectado_sub = SuperConectado(nombre='sub', modelos=[mod_1, mod_2])
+   conectado_sub.conectar_vars(
+       var_fuente='Var 1', modelo_fuente='modelo 1', var_recip='Var 2', modelo_recip='modelo 2'
+   )
+
+   # El segundo Conectado
+   conectado = SuperConectado([conectado_sub, mod_3])
+   conectado.conectar_vars(
+       var_fuente=mod_2.variables['Var2'], var_recip='Var 3', modelo_recip='modelo 3'
+   )
+
+   # Correr la simulación
+   res = conectado.simular(10, vars_interés=[mod_1.variables['Var 1'], mod_3.variables['Var 2']])
+
+Este código dará resultados idénticos a los del ejemplo horizontal arriba.
