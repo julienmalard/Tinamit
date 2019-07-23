@@ -1,7 +1,7 @@
 Instalación
 ===========
-La instalación debería ser sencilla. Primero necesitarás `Python 3.6+ <(https://www.python.org/downloads)>`_.
-Después, puedes instalar Tinamït en la terminal con:
+La instalación debería ser sencilla. Primero necesitarás la versión más recién de
+`Python 3 <(https://www.python.org/downloads)>`_ Después, puedes instalar Tinamït en la terminal con:
 
    :command:`pip install tinamit`
 

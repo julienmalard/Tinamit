@@ -35,14 +35,13 @@ needs_sphinx = '1.5.1'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'numpydoc',
     'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.imgmath',
-    'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
-    'matplotlib.sphinxext.plot_directive'
+    'sphinx.ext.intersphinx',
+    'matplotlib.sphinxext.plot_directive',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

@@ -10,12 +10,12 @@ Envolturas incluidas en Tinamït:
 
 * **PySD**: Implementación de modelos DS en puro Python. Más rápido que Vensim, pero no incluye todas las
   funcionalidades (por el momento). Ver su `documentación <https://pysd.readthedocs.io/>`_ aquí. Puede leer modelos
-  en formato `.mdl` de Vensim, tanto como el estándar `.xmile` (utilizado, entre otros, por Stella).
+  en formato ``.mdl`` de Vensim, tanto como el estándar ``.xmile`` (utilizado, entre otros, por Stella).
 * **Vensim**: Un programa de MDS bastante popular. Desafortunadamente, requiere la versión pagada (DSS) para conectar
-  con Tinamït. Ver su `página oficial <http://vensim.com/>`_.
+  con Tinamït. Ver su `página oficial <http://vensim.com/>`_. Además, solamente funciona en Windows.
   Con Vensim, primero hay que ir a cada variable en tu modelo Vensim que quieres que pueda recibir valores
   desde el modelo biofísico y escoger ``Gaming`` como tipo de variable. Después, hay que publicar el modelo en formato
-  `.vpm`.
+  ``.vpm``.
 
 Modelos BF
 ----------
@@ -28,6 +28,6 @@ Envolturas incluidas en Tinamït:
 
 Envolturas planeadas:
 
-* **PCSE**: Modelo de cultivos en puro Python.
-* **DSSAT**: Modelo de cultivos bien popular.
-* **SWAT+**: Modelo hidrológico.
+* **PCSE**: Modelo de cultivos en puro Python, ver su `documentación <https://pcse.readthedocs.io/en/stable/>`_.
+* **DSSAT**: Modelo de cultivos bien popular. `Descarga grátis <https://dssat.net/>`_.
+* **SWAT+**: Modelo hidrológico, gratis y de fuente abierta. Descarga `aquí <https://swat.tamu.edu/software/plus/>`_.

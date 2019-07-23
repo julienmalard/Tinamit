@@ -6,12 +6,12 @@ y **visuales** para el manejo ambiental y socio-económico. `Vensim <https://ven
 grátis.
 
 No obstante, la inclusión de procesos ambientales o :abbr:`BF (biofísicos)` se complica en modelos
-:abbr:`DS (Dinámicas de Sistemas)`. Y de verdad no deberías tener que contruir un modelo hidrológico o de cultivos
-en el ambiente :abbr:`DS (Dinámicas de Sistemas)` solamente porque quieres ver los impactos de tu modelo
-socio-económico :abbr:`DS (Dinámicas de Sistemas)` en el ambiente y vice-versa [1]_. Ya existen
-muchos modelos :abbr:`BF (biofísicos)` que lo hacen para ti ([2]_, [3]_, [4]_).
+DS. Y de verdad no deberías tener que contruir un modelo hidrológico o de cultivos
+en el ambiente DS solamente porque quieres ver los impactos de tu modelo
+socio-económico DS en el ambiente y vice-versa [1]_. Ya existen
+muchos modelos BF que lo hacen para ti ([2]_, [3]_, [4]_).
 
-¿Pero cómo conectar un modelo :abbr:`DS (Dinámicas de Sistemas)` con un :abbr:`BF (biofísico)`? Por eso existe
+¿Pero cómo conectar un modelo DS con un BF? Por eso existe
 Tinamït. Empieza con nuestros tutoriales :doc:`aquí </tutorial/conex>` o, aún mejor, con la
 :doc:`instalción </general/instal>`.
 
