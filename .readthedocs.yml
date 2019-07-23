@@ -20,5 +20,5 @@ formats: all
 python:
   version: 3.7
   install:
-    - requirements: docs/reqs.txt
+    - requirements: docs/readthedocs.reqs.txt
     - requirements: reqs.txt
