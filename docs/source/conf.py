@@ -34,13 +34,12 @@ import tinamit
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    # 'numpydoc',
     'sphinx.ext.doctest',
     'sphinx.ext.coverage',
     'sphinx.ext.imgmath',
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
-    'matplotlib.sphinxext.plot_directive',
+    'matplotlib.sphinxext.plot_directive'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

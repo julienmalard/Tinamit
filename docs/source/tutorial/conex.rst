@@ -53,6 +53,11 @@ Del otro lado, el "modelo" biofísico nos da la precipitación según la cubertu
 Tambiém comparemos a una corrida sin conexión para ver el impacto de incluir las relaciones entre ambiente y
 humano.
 
+.. note::
+
+   Siendo subclases de :class:`~tinamit.mod.Modelo`, modelos BF (:class:`~tinamit.envolt.bf._envolt.ModeloBF`) y
+   DS (:class:`~tinamit.envolt.mds._envolt.ModeloDS`) también se pueden simular de manera independiente.
+
 .. plot::
    :include-source: True
    :context: close-figs
@@ -77,10 +82,48 @@ humano.
    eje2.set_title('Lluvia')
    eje2.set_xlabel('Meses')
 
+Opciones de tiempo
+------------------
+Si quieres más control sobre los detalles del eje de tiempo, puedes pasar un objeto
+:class:`~tinamit.tiempo.tiempo.EspecTiempo` a la función :func:`~tinamit.mod.Modelo.simular`. Allí puedes especificar
+no solo el número de paso sino también una fecha inicial (útil para corridas con datos o clima externo), el tamaño
+de cada paso, y la frequencia con cual se guardan los resultados.
+
+.. code-block:: python
+
+   from tinamit.tiempo.tiempo import EspecTiempo
+
+   t = EspecTiempo(100, f_inic='2000-01-01', tmñ_paso=1, guardar_cada=1)
+   modelo.simular(t)
 
 Unidades de tiempo
 ------------------
+Tinamït se encargará de convertir entre unidades de tiempo para ti si difieren entre tus modelos. No obstante,
+si uno de tus modelos tiene unidad de tiempo no convencional o está en un idioma que Tinamït no reconoce, puede
+ser que tengas que especificar la conversión manualmente con :func:`~tinamit.unids.nueva_unidad`,
+:func:`~tinamit.unids.agregar_trad` o :func:`~tinamit.unids.agregar_sinónimos`.
 
+.. code-block:: python
+
+   from tinamit.unids import nueva_unidad, , agregar_sinónimos
+    
+   # Una estación tiene 4 meses
+   nueva_unidad(unid='Estación', ref='Mes', conv=4)
+
+   # "día" se dice "நாள்" en Tamil
+   agregar_trad('día', 'நாள்', leng_trad='த', leng_orig='es', guardar=True)
+
+   # "தினம்" también quiere decir "día" en Tamil
+   agregar_sinónimos('நாள்', "தினம்", leng='த', guardar=True)
+
+
+Tinamït reconoce las unidades de tiempo siguientes: ``año``, ``mes``, ``semana``, ``día``, ``hora``, ``minuto``,
+``secundo``, ``microsecundo``, ``millisecundo``, y ``nanosecundo``.
 
 3+ modelos
 ----------
+Si
+
+.. code-block:: python
+
+   from tinamit.conectado import SuperConectado
