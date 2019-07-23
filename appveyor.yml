@@ -18,6 +18,7 @@ install:
   - "%PYTHON%\\python.exe setup.py -q install"
   - ps: cd ..
   - "%PYTHON%\\python.exe -m pip install -r reqs.txt"
+  - "%PYTHON%\\python.exe -m pip install -r reqs.op.txt"
   - "%PYTHON%\\python.exe setup.py -q install"
 
 build: false
