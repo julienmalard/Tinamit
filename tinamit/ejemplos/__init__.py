@@ -1,5 +1,5 @@
-from pkg_resources import resource_filename
+from pkg_resources import resource_string
 
 
 def obt_ejemplo(arch):
-    return resource_filename(__name__, arch)
+    return resource_string('tinamit.ejemplos', arch)
