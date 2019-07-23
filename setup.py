@@ -65,7 +65,7 @@ setup(
     # include_package_data=True,
     package_data={
         '': ['**/*' + ext for ext in [
-            '.dbf', '.prj', '.sbn', '.sbx', '.shp', '.shx', '.csv', '.vpm', '.mdl', '.xmile', '.py', '.mdl'
+            '.dbf', '.prj', '.sbn', '.sbx', '.shp', '.shx', '.csv', '.vpm', '.mdl', '.xmile', '.py', '.mdl', '.txt'
         ]],
     }
 )
