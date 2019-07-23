@@ -23,5 +23,5 @@ python:
     - requirements: docs/readthedocs.reqs.txt
     - requirements: reqs.txt
     - method: setuptools
-      path: tinamit
+      path: .
   system_packages: false
