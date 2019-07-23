@@ -62,6 +62,7 @@ setup(
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Programming Language :: Python :: 3 :: Only',
     ],
+    # include_package_data=True,
     package_data={
         '': ['**/*' + ext for ext in [
             '.dbf', '.prj', '.sbn', '.sbx', '.shp', '.shx', '.csv', '.vpm', '.mdl', '.xmile', '.py', '.mdl'

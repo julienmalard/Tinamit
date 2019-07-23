@@ -161,6 +161,7 @@ Jerárquica
 También se pueden anidar modelos adentro de otros.
 
 .. code-block:: python
+
    # Los tres modelos
    mod_1 = MiModelo1(nombre='modelo 1')
    mod_2 = MiModelo2(nombre='modelo 2')
