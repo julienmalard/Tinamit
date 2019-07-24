@@ -4,11 +4,11 @@ from multiprocessing import Pool as Reserva
 from warnings import warn as avisar
 
 import numpy as np
-from tinamit.config import _, conf_mods
 
+from tinamit.config import _, conf_mods
 from .corrida import Corrida, Rebanada
 from .extern import gen_extern
-from .res import ResultadosGrupo
+from .res import ResultadosGrupo, ResultadosSimul
 from .vars_mod import VariablesMod
 from ..tiempo.tiempo import EspecTiempo
 
@@ -54,6 +54,27 @@ class Modelo(object):
         raise NotImplementedError
 
     def simular(símismo, t, nombre='Tinamït', extern=None, clima=None, vars_interés=None):
+        """
+        
+        Parameters
+        ----------
+        t: int or EspecTiempo
+            La especificación del eje de tiempo. Si es ``int``, significará el número de pasos.
+        nombre: str
+            El nombre de la corrida.
+        extern: Extern or pd.DataFrame or xr.Dataset or dict
+            Valores externos para la simulación.
+        clima: Clima
+            El clima de la simulación.
+        vars_interés: list
+            Los variables para incluir en los resultados
+
+        Returns
+        -------
+        ResultadosSimul
+
+        """
+
         t = t if isinstance(t, EspecTiempo) else EspecTiempo(t)
 
         corrida = Corrida(
@@ -71,6 +92,22 @@ class Modelo(object):
         return corrida.resultados
 
     def simular_grupo(símismo, ops_grupo, nombre='Tinamït', paralelo=False):
+        """
+        Efectua un grupo de simulaciones. Muy útil para accelerar corridas múltiples.
+
+        Parameters
+        ----------
+        ops_grupo: PlantillaOpsSimulGrupo
+            Las opciones de simulación en grupo.
+        nombre: str
+            El nombre de la simulación.
+        paralelo: bool
+            Si se simula en paralelo o no. Si el modelo no soporte corridas en paralelo, se ignorará este argumento.
+
+        Returns
+        -------
+        ResultadosGrupo
+        """
 
         if paralelo and not símismo.paralelizable():
             avisar(_(
@@ -105,6 +142,17 @@ class Modelo(object):
         return res_grupo
 
     def iniciar_modelo(símismo, corrida):
+        """
+        Inicia la simulación. En general no llamarías esta función directamente.
+        
+        No se te olvide una llamada al ``super`` cuando reimplementas esta función.
+        
+        Parameters
+        ----------
+        corrida: Corrida
+            La corrida.
+
+        """
         símismo.corrida = corrida
         corrida.variables.reinic()
 
@@ -121,6 +169,10 @@ class Modelo(object):
         corrida.actualizar_res()
 
     def correr(símismo):
+        """
+        Efectuar una simulación ya inicializada. En general, no llamarías esta función directamente.
+        
+        """
         intento = símismo._correr_hasta_final()
         if intento is not None:
             símismo.corrida.resultados.poner_vals_t(intento)
@@ -135,20 +187,40 @@ class Modelo(object):
                 símismo.corrida.actualizar_res()
 
     def _correr_hasta_final(símismo):
+        """
+        Implementar si tu modelo puede correr de una vez hasta el final de la simulación, y después devolver los 
+        resultados a cada paso de tiempo. Sirve a accelerar simulaciones no conectadas.
+        
+        Returns
+        -------
+        dict
+            Un diccionario con matrices de los variables de egreso. Eje 0 debe ser el eje de tiempo.
+
+        """
         return None
 
     def incrementar(símismo, rebanada):
+        """
+        Incrementa el modelo. En general, no llamarías esta función directamente.
+        
+        No se te olvide una llamada al ``super`` cuando reimplementas esta función.
+        
+        Parameters
+        ----------
+        rebanada: Rebanada
+            La rebanada del incremento.
+
+        """
         if símismo.corrida.extern:
             símismo.cambiar_vals(símismo.corrida.obt_extern_act())
 
         if símismo.corrida.clima and símismo.vars_clima:
             t = símismo.corrida.t
-            símismo._act_vals_clima(t.fecha(), t.fecha_próxima()-1)
+            símismo._act_vals_clima(t.fecha(), t.fecha_próxima() - 1)
 
     def cerrar(símismo):
         """
-        Esta función debe tomar las acciones necesarias para terminar la simulación y cerrar el modelo, si aplica.
-        Si no aplica, usar ``pass``.
+        Esta función toma acciones necesarias para terminar la simulación y cerrar el modelo, si aplica.
         """
         pass
 
@@ -167,6 +239,25 @@ class Modelo(object):
 
     @classmethod
     def obt_conf(cls, llave, auto=None, cond=None, mnsj_err=None):
+        """
+        Obtiene un valor de configuración de la subclase de modelo.
+        
+        Parameters
+        ----------
+        llave: str
+            El parámetro de configuración.
+        auto: str or int or float or list or bool or dict
+            Un valor automático a aplicar si no se encuentra en el diccionario de configuración.
+        cond:
+            Una condición para validar el valor; si no pasa la condición, se tratará como valor que falta.
+        mnsj_err:
+            Un mensaje de aviso para devolver al usuario si no se encuentra el valor.
+
+        Returns
+        -------
+        str, int, float, list, bool, dict
+            El valor de configuración
+        """
 
         auto = auto or []
         if isinstance(auto, str):
@@ -189,6 +280,17 @@ class Modelo(object):
 
     @classmethod
     def estab_conf(cls, llave, valor):
+        """
+        Establece un valor de configuración.
+        
+        Parameters
+        ----------
+        llave: str
+            El parámetro de configuración.
+        valor: str or int or float or list or bool or dict
+            El valor del parámetro.
+
+        """
         conf_mods[cls.__name__, llave] = valor
 
     @classmethod
@@ -209,11 +311,15 @@ class Modelo(object):
         """
         Indica si el modelo actual se puede paralelizar de manera segura o no. Si implementas una subclase
         paralelizable, reimplementar esta función para devolver ``True``.
+        
         ¿No sabes si es paralelizable tu modelo?
-        Si el modelo se puede paralelizar (con corridas de nombres distintos) sin encontrar dificultades
-        técnicas (sin riesgo que las corridas paralelas terminen escribiendo en los mismos archivos de egreso),
-        entonces sí es paralelizable tu modelo.
-
+        
+        **Respuesta larga**: Si el modelo se puede paralelizar (con corridas de nombres distintos) sin encontrar 
+        dificultades técnicas (sin riesgo que las corridas paralelas terminen escribiendo en los mismos archivos de 
+        egreso), entonces sí es paralelizable tu modelo.
+        
+        **Respuesta rápida**: 95% seguro que sí.
+        
         Returns
         -------
         bool:
@@ -221,9 +327,6 @@ class Modelo(object):
         """
 
         return False
-
-    def __str__(símismo):
-        return símismo.nombre
 
     def conectar_var_clima(símismo, var, var_clima, conv, combin='prom'):
         """
@@ -271,6 +374,9 @@ class Modelo(object):
         datos = símismo.corrida.clima.combin_datos(vars_clima=símismo.vars_clima, f_inic=f_0, f_final=f_1)
 
         símismo.cambiar_vals(valores=datos)
+
+    def __str__(símismo):
+        return símismo.nombre
 
 
 def _correr_modelo(x):
