@@ -26,8 +26,8 @@ Del otro lado, el "modelo" biofísico nos da la precipitación según la cubertu
    from tinamit.conect import Conectado
    from tinamit.ejemplos import obt_ejemplo
 
-   mds = obt_ejemplo('básico/mds_bosques.mdl')
-   bf = obt_ejemplo('básico/bf_bosques.py')
+   mds = obt_ejemplo('sencillo/mds_bosques.mdl')
+   bf = obt_ejemplo('sencillo/bf_bosques.py')
 
    modelo = Conectado(bf=bf, mds=mds)
 
@@ -126,7 +126,7 @@ Si tienes más que 2 modelos para conectar, también es fácil con la clase
 :class:`~tinamit.conect._envolt.SuperConectado`. Se pueden conectar de manera horizontal o jerárquica, cómo prefieres.
 
 Horizontal
-----------
+^^^^^^^^^^
 Se pueden conectar modelos individuales de manera "horizontal" en un solo modelo
 :class:`~tinamit.conect._envolt.SuperConectado`.
 
@@ -157,7 +157,7 @@ Los variables ``Var 1`` del ``modelo 1`` y ``Var 3`` del ``modelo 3`` ahora tend
 simulación.
 
 Jerárquica
-----------
+^^^^^^^^^^
 También se pueden anidar modelos adentro de otros.
 
 .. code-block:: python
