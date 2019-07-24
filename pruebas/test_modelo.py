@@ -58,24 +58,24 @@ class TestSimularGrupo(unittest.TestCase):
     def test_simular_grupo(símismo):
         vals_extern = [{'Escala': 1}, {'Escala': 2}]
         mod = ModeloPrueba()
-        ops = OpsSimulGrupo(5, vals_extern=vals_extern)
+        ops = OpsSimulGrupo(5, extern=vals_extern)
         res = mod.simular_grupo(ops)
         for corr, vl in zip(res.values(), vals_extern):
             símismo.assertEqual(corr['Escala'].vals.values[0], vl['Escala'])
 
     def test_simular_grupo_combin(símismo):
         mod = ModeloPrueba()
-        ops = OpsSimulGrupoCombin([5, 6], vals_extern=[{'Escala': 1}, {'Escala': 2}])
+        ops = OpsSimulGrupoCombin([5, 6], extern=[{'Escala': 1}, {'Escala': 2}])
         res = mod.simular_grupo(ops)
         símismo.assertEqual(len(res), 4)
 
     def test_simular_grupo_tmñ_erróneo(símismo):
         with símismo.assertRaises(ValueError):
-            OpsSimulGrupo([5, 6, 7], vals_extern=[{'Escala': 1}, {'Escala': 2}])
+            OpsSimulGrupo([5, 6, 7], extern=[{'Escala': 1}, {'Escala': 2}])
 
     def test_simular_paralelo(símismo):
         mod = ModeloPrueba()
-        ops = OpsSimulGrupoCombin(5, vals_extern=[{'Escala': 1}, {'Escala': 2}])
+        ops = OpsSimulGrupoCombin(5, extern=[{'Escala': 1}, {'Escala': 2}])
         sin_paralelo = mod.simular_grupo(ops)
         con_paralelo = mod.simular_grupo(ops, paralelo=True)
         símismo.assertEqual(sin_paralelo, con_paralelo)
@@ -83,7 +83,7 @@ class TestSimularGrupo(unittest.TestCase):
     def test_simular_grupo_con_lista_nombres(símismo):
         mod = ModeloPrueba()
         nombres = ['corrida 1', 'corrida 2']
-        ops = OpsSimulGrupo(5, vals_extern=[{'Escala': 1}, {'Escala': 2}], nombre=nombres)
+        ops = OpsSimulGrupo(5, extern=[{'Escala': 1}, {'Escala': 2}], nombre=nombres)
         res = mod.simular_grupo(ops)
         símismo.assertSetEqual(set(nombres), set(res))
 

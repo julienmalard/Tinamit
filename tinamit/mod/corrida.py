@@ -37,6 +37,9 @@ class Rebanada(object):
 
 
 class PlantillaOpsSimulGrupo(object):
+    """
+    Clase pariente para especificaciones de corridas en grupo.
+    """
     def __init__(símismo, **argsll):
         símismo.opciones = argsll
 
@@ -49,9 +52,13 @@ class PlantillaOpsSimulGrupo(object):
 
 
 class OpsSimulGrupoCombin(PlantillaOpsSimulGrupo):
-    def __init__(símismo, t, vals_extern=None, clima=None, vars_interés=None, nombre='Tinamït'):
+    """
+    Corridas en grupo que generan todas las combinaciones posibles de las opciones de simulación especificadas.
+    """
+    
+    def __init__(símismo, t, extern=None, clima=None, vars_interés=None, nombre='Tinamït'):
         símismo.nombre = nombre
-        super().__init__(t=t, vals_extern=vals_extern, clima=clima, vars_interés=vars_interés)
+        super().__init__(t=t, extern=extern, clima=clima, vars_interés=vars_interés)
 
     def __iter__(símismo):
         ops = itertools.product(*símismo.opciones.values())
@@ -64,12 +71,16 @@ class OpsSimulGrupoCombin(PlantillaOpsSimulGrupo):
 
 
 class OpsSimulGrupo(PlantillaOpsSimulGrupo):
+    """
+    Corridas en grupo sin combinaciones (las primeras opciones de cada parámetro se corrirán juntas en una
+    simulación, seguidas por las segundas, etc.).
+    """
 
-    def __init__(símismo, t, vals_extern=None, clima=None, vars_interés=None, nombre='Tinamït'):
+    def __init__(símismo, t, extern=None, clima=None, vars_interés=None, nombre='Tinamït'):
         símismo.nombre = nombre
 
         args = {
-            't': t, 'extern': vals_extern, 'clima': clima, 'vars_interés': vars_interés
+            't': t, 'extern': extern, 'clima': clima, 'vars_interés': vars_interés
         }
         if not isinstance(nombre, str):
             args['nombre'] = nombre

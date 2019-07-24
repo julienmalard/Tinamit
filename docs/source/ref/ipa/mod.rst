@@ -1,5 +1,5 @@
 Modelo
 ======
 
-.. autoclass::tinamit.mod.Modelo
+.. autoclass::tinamit.mod.modelo.Modelo
    :members:

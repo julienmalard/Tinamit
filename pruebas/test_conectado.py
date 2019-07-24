@@ -82,7 +82,7 @@ class TestConectado(unittest.TestCase):
                 }
 
                 ops = OpsSimulGrupo(
-                    t_final, vals_extern=[{'Nivel lago inicial': 50}, {'Nivel lago inicial': 2000}],
+                    t_final, extern=[{'Nivel lago inicial': 50}, {'Nivel lago inicial': 2000}],
                     nombre=['lago_50', 'lago_2000'],
                     vars_interés='Lago'
                 )

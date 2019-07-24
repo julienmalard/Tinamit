@@ -6,8 +6,8 @@ Interfaz de Programación
    :caption: IPA
 
    ipa/bf
-   ipa/conect
    ipa/mds
+   ipa/conect
    ipa/mod
    ipa/pruebas
    ipa/result

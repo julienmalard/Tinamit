@@ -78,9 +78,11 @@ humano.
    eje1.ticklabel_format(axis='y', style='sci', scilimits=(0,0))
 
    eje2.plot(res_conex['mds']['Lluvia'].vals)
-   eje2.plot(res_bf['Lluvia'].vals, label='Individual')
+   eje2.plot(res_bf['Lluvia'].vals)
    eje2.set_title('Lluvia')
    eje2.set_xlabel('Meses')
+
+   f.legend()
 
 Opciones de tiempo
 ------------------

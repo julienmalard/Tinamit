@@ -162,7 +162,7 @@ class TestMapaResultados(unittest.TestCase):
         dibujar_mapa_de_res(forma_dinámica=frm, res=res, var='Vacío', t=3, directorio=símismo.dir_)
 
     def test_mapa_de_simul_grupo(símismo):
-        ops = OpsSimulGrupo(t=3, vals_extern=[{'Vacío': 1}, {'Vacío': 3}], nombre=['701', '101'])
+        ops = OpsSimulGrupo(t=3, extern=[{'Vacío': 1}, {'Vacío': 3}], nombre=['701', '101'])
         res = ModeloPrueba().simular_grupo(ops)
 
         frm = FormaDinámicaNombrada(arch_frm_nombrada, col_id='COD_MUNI')

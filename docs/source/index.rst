@@ -1,9 +1,11 @@
 .. image:: /_estático/imágenes/Logos/Logo_Tinamit_transp.png
    :scale: 80%
    :alt: Logo muy bonito. :)
+   :align: center
 
-Tinamït
-=======
+
+¡Bienvenidoas a la documentación de Tinamït!
+============================================
 
 .. image:: https://badge.fury.io/py/tinamit.svg
    :target: https://badge.fury.io/py/tinamit
@@ -63,6 +65,7 @@ Contacto: Julien Malard: julien.malard@mail.mcgill.ca
 
    tutorial/conex
    tutorial/clima
+   tutorial/grupos
    tutorial/mapas
    tutorial/datos
    tutorial/bloques
