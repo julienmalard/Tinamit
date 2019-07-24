@@ -13,4 +13,4 @@ Uso de datos
    from tinamit.conect import Conectado
    from tinamit.ejemplos import obt_ejemplo
 
-   plt.plot(np.arange(10))
+

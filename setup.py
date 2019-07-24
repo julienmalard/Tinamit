@@ -51,10 +51,6 @@ setup(
         'spotpy',
         'ennikkai'
     ],
-
-    dependency_links=[
-        "git+git://github.com/julienmalard/pysd.git",
-    ],
     setup_requires=['Babel', 'polib'],
     zip_safe=False,
 

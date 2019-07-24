@@ -1,4 +1,4 @@
-recursive-include tinamit *.vpm *.json *.txt *.g *.py *.odc *.csv *.mo *.out
+recursive-include tinamit *.vpm *.json *.txt *.g *.py *.odc *.csv *.mo *.out *.mdl *.py
 
 graft tinamit/ejemplos
 graft pruebas/recursos
