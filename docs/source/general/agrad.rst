@@ -21,7 +21,10 @@ SAHYSMOD
 
 Traductores
 -----------
-Cuando se habrán traducido Tinamït y su documentación, los agradecimientos irán aquí.
+* اردو: محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)
+* தமிழ்: Julien Malard
+* हिंदी: Julien Malard
+* français: Julien Malard
 
 Financiamiento
 --------------

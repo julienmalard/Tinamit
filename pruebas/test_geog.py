@@ -5,7 +5,9 @@ import tempfile
 import unittest
 
 import numpy as np
+
 from pruebas.recursos.mod.prueba_mod import ModeloPrueba
+from tinamit.ejemplos import obt_ejemplo
 from tinamit.geog.mapa import dibujar_mapa, dibujar_mapa_de_res, \
     Calle, Ciudad, Bosque, OtraForma, Agua, \
     FormaDinámicaNumérica, FormaDinámicaNombrada
@@ -14,13 +16,9 @@ from tinamit.mod import OpsSimulGrupo
 
 dir_act = os.path.split(__file__)[0]
 arch_csv_geog = os.path.join(dir_act, 'recursos/datos/prueba_geog.csv')
-arch_frm_nombrada = os.path.join(dir_act, 'recursos/frm/munis.shp')
-arch_frm_numérica = os.path.join(dir_act, 'recursos/frm/frm_numérica.shp')
-arch_frm_otra = os.path.join(dir_act, 'recursos/frm/otra_frm.shp')
-
-arch_clim_diario = os.path.join(dir_act, 'recursos/datos/clim_diario.csv')
-arch_clim_mensual = os.path.join(dir_act, 'recursos/datos/clim_mensual.csv')
-arch_clim_anual = os.path.join(dir_act, 'recursos/datos/clim_anual.csv')
+arch_frm_nombrada = obt_ejemplo('formas/munis.shp')
+arch_frm_numérica = obt_ejemplo('formas/frm_numérica.shp')
+arch_frm_otra = obt_ejemplo('formas/otra_frm.shp')
 
 
 class TestRegión(unittest.TestCase):
