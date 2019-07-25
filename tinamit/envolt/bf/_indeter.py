@@ -2,6 +2,9 @@ from ._impac import ModeloImpaciente, VarPaso, VariablesModImpaciente
 
 
 class ModeloIndeterminado(ModeloImpaciente):
+    """
+    La clase pariente para todos modelos que avanzan por un número indeterminado de pasos a cada corrida.
+    """
 
     def __init__(símismo, variables, nombre='bf'):
         super().__init__(tmñ_ciclo=1, variables=variables, nombre=nombre)
@@ -36,10 +39,17 @@ class ModeloIndeterminado(ModeloImpaciente):
 
 
 class VariablesModIndeterminado(VariablesModImpaciente):
+    """
+    Representa los variables de un modelo :class:`~tinamit.envolt.bf._indeter.ModeloIndeterminado`.
+    """
     pass
 
 
 class VarPasoIndeter(VarPaso):
+    """
+    Representa un variable de un modelo :class:`~tinamit.envolt.bf._indeter.ModeloIndeterminado` cuyo valor
+    cambia a cada paso (y no solamente a cada ciclo).
+    """
 
     def __init__(símismo, nombre, unid, ingr, egr, inic=0, líms=None, info=''):
         super().__init__(nombre, unid, ingr, egr, tmñ_ciclo=1, inic=inic, líms=líms, info=info)

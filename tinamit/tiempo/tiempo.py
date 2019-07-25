@@ -8,7 +8,18 @@ from tinamit.unids.conv import convertir
 
 
 class Tiempo(object):
+    """
+    La base temporal para cada simulación.
+    """
     def __init__(símismo, t, unid_paso):
+        """
+
+        Parameters
+        ----------
+        t: EspecTiempo
+        unid_paso: str
+            La unidad de tiempo.
+        """
 
         símismo.tmñ_paso = t.tmñ_paso
         símismo.n_pasos = t.n_pasos
@@ -22,21 +33,54 @@ class Tiempo(object):
         símismo.í = 0
 
     def t_guardar(símismo):
+        """
+        Si estamos en un paso del cual guardaremos los resultados.
+        Returns
+        -------
+        bool
+        """
         return not (símismo.í * símismo.tmñ_paso % símismo.guardar_cada)
 
     def pasos_avanzados(símismo, unid):
+        """
+        El número de pasos avanzados desde el último incremento.
+
+        Parameters
+        ----------
+        unid: str
+            La unidad en la cual querremos la respuesta.
+
+        Returns
+        -------
+        int
+        """
         return símismo._obt_fact_conv(unid) * símismo.fact_conv * símismo.tmñ_paso
 
     def fecha(símismo):
         pass
 
     def avanzar(símismo):
+        """
+        Avanzar el tiempo, si no hemos llegado ya al final de la simulación.
+        Returns
+        -------
+        bool
+            ``False`` si llegamos al final de la simulación, ``True`` si no.
+
+        """
         if símismo.í < símismo.n_pasos:
             símismo.í += 1
             return símismo.í
         return False
 
     def eje(símismo):
+        """
+        El eje temporal.
+
+        Returns
+        -------
+        np.ndarray
+        """
         return np.arange(
             símismo.n_pasos * símismo.tmñ_paso + 1,
             step=símismo.guardar_cada * símismo.tmñ_paso
@@ -58,10 +102,31 @@ class Tiempo(object):
 
 class TiempoCalendario(Tiempo):
     def fecha(símismo):
+        """
+        La fecha actual.
+
+        Returns
+        -------
+        datetime.datetime
+
+        """
         unid_ft = a_unid_ft[símismo.unid_paso]
         return símismo.f_inic + relativedelta(**{unid_ft: símismo.í * símismo.fact_conv})
 
     def delta_relativo(símismo, n_pasos):
+        """
+        Devuelve un objeto de diferenci de tiempo para el número de pasos especificados.
+
+        Parameters
+        ----------
+        n_pasos: int
+            El número de pasos para avanzar.
+
+        Returns
+        -------
+        relativedelta
+
+        """
         if símismo.unid_paso in ['año', 'mes']:
             return relativedelta(**{a_unid_ft[símismo.unid_paso]: n_pasos * símismo.tmñ_paso * símismo.fact_conv})
 
@@ -69,6 +134,13 @@ class TiempoCalendario(Tiempo):
         return relativedelta(days=n_días)
 
     def fecha_próxima(símismo):
+        """
+        La próxima fecha que vendrá.
+
+        Returns
+        -------
+        datetime.datetime
+        """
         return símismo.fecha() + símismo.delta_relativo(n_pasos=1)
 
     def eje(símismo):
@@ -98,7 +170,23 @@ class TiempoCalendario(Tiempo):
 
 
 class EspecTiempo(object):
+    """
+    Objeto para especificar opciones de tiempo para la simulación.
+    """
     def __init__(símismo, n_pasos, f_inic=None, tmñ_paso=1, guardar_cada=1):
+        """
+
+        Parameters
+        ----------
+        n_pasos: int
+            El número de pasos en la simulación.
+        f_inic: str or datetime.datetime or datetime.date
+            La fecha inicial, si hay.
+        tmñ_paso: int
+            El tamaño de cada paso.
+        guardar_cada:
+            La frequencia para guardar resultados.
+        """
 
         if (int(tmñ_paso) != tmñ_paso) or (tmñ_paso < 1):
             raise ValueError(_('`tmñ_paso` debe ser un número entero superior a 0.'))
@@ -109,6 +197,19 @@ class EspecTiempo(object):
         símismo.guardar_cada = guardar_cada
 
     def gen_tiempo(símismo, unid_paso):
+        """
+        Genera un objeto :class:`Tiempo` con las especificaciones.
+
+        Parameters
+        ----------
+        unid_paso: str
+            La unidad de paso de la simulación.
+
+        Returns
+        -------
+        Tiempo
+
+        """
         if símismo.f_inic:
             return TiempoCalendario(t=símismo, unid_paso=unid_paso)
         else:
@@ -116,6 +217,19 @@ class EspecTiempo(object):
 
 
 def a_unid_tnmt(unid):
+    """
+    Convierte una unidad de tiempo a una de las reconocidas por Tinamït.
+
+    Parameters
+    ----------
+    unid: str
+
+    Returns
+    -------
+    tuple[str, float]
+        La unidad Tinamït y el factor de conversión.
+    """
+
     unid = unid.lower()
     aceptables = [
         'año', 'mes', 'semana', 'día', 'hora', 'minuto',

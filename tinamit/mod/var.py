@@ -4,7 +4,28 @@ from tinamit.config import _
 
 
 class Variable(object):
+    """La clase más general para variables de modelos en Tinamït."""
+
     def __init__(símismo, nombre, unid, ingr, egr, inic=0, líms=None, info=''):
+        """
+
+        Parameters
+        ----------
+        nombre: str
+            El nombre del variable.
+        unid: str
+            Las unidades del variable.
+        ingr: bool
+            Si es un ingreso al modelo.
+        egr: bool
+            Si es un egreso del modelo.
+        inic: int or float or np.ndarray
+            El valor inicial del modelo.
+        líms: tuple
+            Los límites del variable.
+        info: str
+            Descripción detallada del variable.
+        """
         if not (ingr or egr):
             raise ValueError(_('Si no es variable ingreso, debe ser egreso.'))
         símismo.nombre = nombre
@@ -19,6 +40,15 @@ class Variable(object):
         símismo._val = símismo.inic.astype(float)
 
     def poner_val(símismo, val):
+        """
+        Establece el valor del variable.
+
+        Parameters
+        ----------
+        val: int or float or np.ndarray
+            El nuevo valor.
+
+        """
 
         if isinstance(val, np.ndarray):
             existen = np.invert(np.isnan(val))  # No cambiamos nuevos valores que faltan
@@ -27,9 +57,15 @@ class Variable(object):
             símismo._val[:] = val
 
     def obt_val(símismo):
+        """
+        Devuelve el valor del variable.
+        """
         return símismo._val  # para disuadir modificaciones directas a `símismo._val`
 
     def reinic(símismo):
+        """
+        Reinicializa el variable a su valor pre-simulación.
+        """
         símismo._val[:] = símismo.inic
 
     def __iadd__(símismo, otro):

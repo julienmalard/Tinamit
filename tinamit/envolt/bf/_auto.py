@@ -10,6 +10,19 @@ from ._envolt import ModeloBF
 
 
 def gen_bf(mod):
+    """
+    Genera un modelo BF desde un archivo o una subclase de ModeloBF.
+
+    Parameters
+    ----------
+    mod: str or type or ModeloBF
+
+    Returns
+    -------
+    ModeloBF
+        Una instancia del modelo BF.
+    """
+
     if isinstance(mod, ModeloBF):
         return mod
     elif callable(mod):

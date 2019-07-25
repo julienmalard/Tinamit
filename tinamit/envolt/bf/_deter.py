@@ -7,6 +7,9 @@ from ._impac import ModeloImpaciente, VariablesModImpaciente, VarPaso
 
 
 class ModeloDeterminado(ModeloImpaciente):
+    """
+    La clase pariente para todos modelos que correr por un número predeterminado de pasos a cada simulación.
+    """
 
     def incrementar(símismo, rebanada):
         # Para simplificar el código un poco.
@@ -71,6 +74,15 @@ class ModeloDeterminado(ModeloImpaciente):
                 f_inic = f_final
 
     def avanzar_modelo(símismo, n_ciclos):
+        """
+        Avanzar el modelo por un número determinado de ciclos.
+
+        Parameters
+        ----------
+        n_ciclos: int
+            El número de ciclos que hay que avanzar.
+
+        """
         raise NotImplementedError
 
     def unidad_tiempo(símismo):
@@ -78,10 +90,17 @@ class ModeloDeterminado(ModeloImpaciente):
 
 
 class VariablesModDeter(VariablesModImpaciente):
+    """
+    Representa los variables de un modelo :class:`~tinamit.envolt.bf._deter.Determinado`.
+    """
     pass
 
 
 class VarPasoDeter(VarPaso):
+    """
+    Un variable de un modelo :class:`~tinamit.envolt.bf._deter.Determinado` que toma un valor distinto a cada
+    paso (y no solamente a cada ciclo de simulación).
+    """
 
     def __init__(símismo, nombre, unid, ingr, egr, tmñ_ciclo, inic=0, líms=None, info=''):
         super().__init__(nombre, unid, ingr, egr, tmñ_ciclo=tmñ_ciclo, inic=inic, líms=líms, info=info)
