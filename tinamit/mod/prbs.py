@@ -9,15 +9,14 @@ from tinamit.cositas import guardar_json, jsonificar, cargar_json
 
 def verificar_leer_ingr(caso, cls):
     """
+    Verifica que una envoltura lee bien sus datos de ingreso.
 
     Parameters
     ----------
     caso: unittest.TestCase
-
-    cls
-
-    Returns
-    -------
+        El caso de prueba.
+    cls:
+        La clase del modelo para comprobar.
 
     """
     info_prb = cls.prb_ingreso()
@@ -37,6 +36,17 @@ def verificar_leer_ingr(caso, cls):
 
 
 def verificar_leer_egr(caso, cls):
+    """
+    Verifica que una envoltura lee bien sus datos de egreso.
+
+    Parameters
+    ----------
+    caso: unittest.TestCase
+        El caso de prueba.
+    cls:
+        La clase del modelo para comprobar.
+
+    """
     info_prb = cls.prb_egreso()
     if info_prb:
         arch, f_leer = info_prb
@@ -50,6 +60,17 @@ def verificar_leer_egr(caso, cls):
 
 
 def verificar_simul(caso, cls):
+    """
+    Verifica que una envoltura simula bien. No correrá si no está instalada la envoltura.
+
+    Parameters
+    ----------
+    caso: unittest.TestCase
+        El caso de prueba.
+    cls:
+        La clase del modelo para comprobar.
+
+    """
     arch_ingr = cls.prb_simul()
     if arch_ingr and cls.instalado():
         mod = cls(arch_ingr)

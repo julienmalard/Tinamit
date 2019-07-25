@@ -1,9 +1,9 @@
 Conectado
 =========
 
-.. autoclass::tinamit.conect.Conectado
+.. autoclass::tinamit.conect._mod.Conectado
    :members:
 
 
-.. autoclass::tinamit.conect.SuperConectado
+.. autoclass::tinamit.conect._mod.SuperConectado
    :members:

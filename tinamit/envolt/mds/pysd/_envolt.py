@@ -10,6 +10,9 @@ from .._envolt import ModeloDS
 
 
 class ModeloPySD(ModeloDS):
+    """
+    Envoltura para modelos PySD.
+    """
     ext = ['.mdl', '.xmile', '.xml', '.py']
 
     def __init__(símismo, archivo, nombre='mds'):
