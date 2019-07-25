@@ -34,7 +34,7 @@ import tinamit
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'numpydoc',
+    'sphinx.ext.napoleon',
     'sphinx.ext.doctest',
     'sphinx.ext.coverage',
     'sphinx.ext.imgmath',
