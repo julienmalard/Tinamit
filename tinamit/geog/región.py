@@ -7,7 +7,19 @@ from tinamit.cositas import detectar_codif
 
 
 class Nivel(object):
+    """
+    Un nivel geográfico (p. ej, ``municipio`` o ``departamento``.
+    """
     def __init__(símismo, nombre, subniveles=None):
+        """
+
+        Parameters
+        ----------
+        nombre: str
+            El nombre del nivel.
+        subniveles: list of str
+            Lista de subniveles.
+        """
         símismo.nombre = nombre
         símismo.subniveles = subniveles
 
@@ -25,7 +37,23 @@ class Nivel(object):
 
 
 class Lugar(object):
+    """
+    Un lugar dado en una geografía.
+    """
     def __init__(símismo, nombre, nivel, cód=None, sub_lugares=None):
+        """
+
+        Parameters
+        ----------
+        nombre: str
+            El nombre del lugar.
+        nivel: Nivel
+            El nivel geográfico correspondiente.
+        cód: str
+            El identificador único de este lugar. Si es ``None``, se tomará su nombre como identificador.
+        sub_lugares:
+            Lugares que se encuentre adentro de este.
+        """
         símismo.cód = cód or nombre
         símismo.nivel = nivel
         símismo.nombre = nombre
@@ -34,6 +62,19 @@ class Lugar(object):
         símismo.ord_niveles = _OrdNiveles(símismo)
 
     def lugares(símismo, en=None, nivel=None):
+        """
+        Devolver los sublugares presentes en este lugar.
+
+        Parameters
+        ----------
+        en: str or Lugar
+            Sublugar al cual limitir la búsqueda.
+        nivel:
+
+        Returns
+        -------
+
+        """
         if isinstance(nivel, (str, Nivel)):
             nivel = [nivel]
         if en is None:

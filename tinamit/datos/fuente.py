@@ -11,6 +11,9 @@ from எண்ணிக்கை import எண்ணுக்கு as எ
 
 
 class Fuente(object):
+    """
+    La clase pariente para fuentes de datos.
+    """
 
     def __init__(símismo, nombre, variables, lugares=None, fechas=None):
         símismo.nombre = nombre
@@ -79,6 +82,20 @@ class Fuente(object):
             return var
 
     def _vec_var(símismo, var, tx=False):
+        """
+        Devuelve un vector de los valores de un variable.
+
+        Parameters
+        ----------
+        var: str
+            El nombre del variable.
+        tx: bool
+            Si quieres formato de texto o numérico.
+
+        Returns
+        -------
+        np.ndarray
+        """
         raise NotImplementedError
 
     @staticmethod
@@ -107,7 +124,26 @@ class Fuente(object):
 
 
 class FuenteCSV(Fuente):
+    """
+    Fuente para archivos ``.csv``.
+    """
     def __init__(símismo, archivo, nombre=None, lugares=None, fechas=None, cód_vacío=None):
+        """
+
+        Parameters
+        ----------
+        archivo: str
+            El archivo con los datos.
+        nombre: str
+            El nombre de la fuente.
+        lugares: str or np.ndarray or list
+            Los lugares que corresponden a los datos. Puede se nombre de una columna en el csv, el nombre de un
+            lugar de cual vienen todos los datos, o una lista de los lugares.
+        fechas: str or np.ndarray or list or datetime.datetime
+            Las fechas de los datos.
+        cód_vacío:
+            Código para identificar variables que faltan. ``NA`` y ``NaN`` ya están reconocidos.
+        """
         nombre = nombre or os.path.splitext(os.path.split(archivo)[1])[0]
         símismo.archivo = archivo
         símismo.codif = detectar_codif(archivo, máx_líneas=1)
@@ -146,8 +182,25 @@ class FuenteCSV(Fuente):
 
 
 class FuenteDic(Fuente):
+    """
+    Fuente de datos en forma de diccionario.
+    """
 
     def __init__(símismo, dic, nombre, lugares=None, fechas=None):
+        """
+
+        Parameters
+        ----------
+        dic: dict
+            El diccionario con los datos.
+        nombre: str
+            El nombre de la fuente.
+        lugares: str or np.ndarray or list
+            Los lugares que corresponden a los datos. Puede se nombre de una llave en el dictionario, el nombre de un
+            lugar de cual vienen todos los datos, o una lista de los lugares.
+        fechas: str or np.ndarray or list or datetime.datetime
+            Las fechas de los datos.
+        """
         símismo.dic = dic
         super().__init__(nombre, variables=list(símismo.dic), lugares=lugares, fechas=fechas)
 
@@ -156,8 +209,25 @@ class FuenteDic(Fuente):
 
 
 class FuenteVarXarray(Fuente):
+    """
+    Fuente para datos en formato de ``DataArray`` de ``xarray``.
+    """
 
     def __init__(símismo, obj, nombre, lugares=None, fechas=None):
+        """
+
+        Parameters
+        ----------
+        obj: xarray.DataArray
+            Los datos
+        nombre: str
+            El nombre de la fuente.
+        lugares: str or np.ndarray or list
+            Los lugares que corresponden a los datos. Puede se nombre de una columna en el ``DataArray``, el nombre de
+            un lugar de cual vienen todos los datos, o una lista de los lugares.
+        fechas: str or np.ndarray or list or datetime.datetime
+            Las fechas de los datos.
+        """
         símismo.obj = obj
         super().__init__(nombre, variables=[símismo.obj.name], lugares=lugares, fechas=fechas)
 
@@ -166,8 +236,24 @@ class FuenteVarXarray(Fuente):
 
 
 class FuenteBaseXarray(Fuente):
-
+    """
+    Fuente para datos en formato de ``Dataset`` de ``xarray``.
+    """
     def __init__(símismo, obj, nombre, lugares=None, fechas=None):
+        """
+
+        Parameters
+        ----------
+        obj: xarray.Dataset
+            Los datos
+        nombre: str
+            El nombre de la fuente.
+        lugares: str or np.ndarray or list
+            Los lugares que corresponden a los datos. Puede se nombre de una columna en el ``Dataset``, el nombre de un
+            lugar de cual vienen todos los datos, o una lista de los lugares.
+        fechas: str or np.ndarray or list or datetime.datetime
+            Las fechas de los datos.
+        """
         símismo.obj = obj
         super().__init__(nombre, variables=list(símismo.obj.data_vars), lugares=lugares, fechas=fechas)
 
@@ -176,7 +262,24 @@ class FuenteBaseXarray(Fuente):
 
 
 class FuentePandas(Fuente):
+    """
+    Fuente para datos en formato de ``DataFrame`` de ``xarray``.
+    """
     def __init__(símismo, obj, nombre, lugares=None, fechas=None):
+        """
+
+        Parameters
+        ----------
+        obj: xarray.DataArray
+            Los datos
+        nombre: str
+            El nombre de la fuente.
+        lugares: str or np.ndarray or list
+            Los lugares que corresponden a los datos. Puede se nombre de una columna en el ``Dataset``, el nombre de un
+            lugar de cual vienen todos los datos, o una lista de los lugares.
+        fechas: str or np.ndarray or list or datetime.datetime
+            Las fechas de los datos.
+        """
         símismo.obj = obj
         super().__init__(nombre, variables=list(símismo.obj), lugares=lugares, fechas=fechas)
 

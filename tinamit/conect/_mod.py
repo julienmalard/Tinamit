@@ -20,7 +20,7 @@ class SuperConectado(Modelo):
     """
 
     def __init__(símismo, modelos, nombre='SuperConectado'):
-        símismo.modelos = ModelosConectados(modelos)
+        símismo.modelos = _ModelosConectados(modelos)
         símismo.conexiones = ConexionesVars()
 
         super().__init__(variables=VariablesConectado(símismo.modelos), nombre=nombre)
@@ -129,6 +129,10 @@ class SuperConectado(Modelo):
 
 
 class Conectado(SuperConectado):
+    """
+    Un modelo que conecta un :class:`~tinamit.envolt.mds._envolt.ModeloDS` con un
+    :class:`~tinamit.envolt.bf._envolt.ModeloBF`.
+    """
 
     def __init__(símismo, bf, mds, nombre='conectado'):
         símismo.bf = gen_bf(bf)
@@ -182,7 +186,7 @@ class Conectado(SuperConectado):
         símismo.desconectar_vars(var_fuente=var_mds, modelo_fuente=símismo.mds)
 
 
-class ModelosConectados(object):
+class _ModelosConectados(object):
     def __init__(símismo, modelos):
         símismo._modelos = {str(m): m for m in modelos}
         if len(símismo._modelos) != len(modelos):

@@ -9,6 +9,9 @@ from .fuente import FuentePandas, FuenteDic, FuenteVarXarray, FuenteBaseXarray, 
 
 
 class BD(object):
+    """
+    Una base de datos combina varias :class:`Fuente`s.
+    """
     def __init__(símismo, fuentes):
         fuentes = [fuentes] if not isinstance(fuentes, (list, tuple)) else fuentes
         símismo.fuentes = [_gen_fuente(f) for f in fuentes]
@@ -19,16 +22,21 @@ class BD(object):
 
     def obt_vals(símismo, vars_interés=None, lugares=None, fechas=None):
         """
+        Devuelve los valores de unos variables de interés.
 
         Parameters
         ----------
-        vars_interés
-        lugares
-        fechas
+        vars_interés: str or list
+            Los variables de interés.
+        lugares: list
+            Lugares de interés.
+        fechas: tuple or list
+
 
         Returns
         -------
         xr.DataArray, xr.Dataset
+            ``xr.DataArray`` si ``vars_interés`` es ``str``, ``xr.Dataset`` si ``vars_interés`` es ``list``.
         """
         vr_único = False
         if isinstance(vars_interés, str):

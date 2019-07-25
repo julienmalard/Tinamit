@@ -3,16 +3,16 @@ Calibraciones
 
 Ecuaciones
 ----------
-.. autoclass:: tinamit.calibs.sintx.ec._ec.CalibradorEc
+.. autoclass:: tinamit.calibs.ec._ec.CalibradorEc
    :members:
 
-.. autoclass:: tinamit.calibs.sintx.ec._opt.CalibradorEcOpt
+.. autoclass:: tinamit.calibs.ec._opt.CalibradorEcOpt
    :members:
 
-.. autoclass:: tinamit.calibs.sintx.ec._bayes.CalibradorEcBayes
+.. autoclass:: tinamit.calibs.ec._bayes.CalibradorEcBayes
    :members:
 
-.. autoclass:: tinamit.calibs.sintx.ec.Ecuación
+.. autoclass:: tinamit.calibs.ec._ec.Ecuación
    :members:
 
 Modelos

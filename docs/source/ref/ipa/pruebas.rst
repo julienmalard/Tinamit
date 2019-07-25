@@ -1,5 +1,5 @@
 Pruebas
 =======
 
-.. automodule::tinamit.mod.prbs
+.. automodule:: tinamit.mod.prbs
    :members:
