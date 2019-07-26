@@ -1,6 +1,7 @@
-from tinamit.config import _
 from tqdm import tqdm
 
+from tinamit.config import _
+from tinamit.mod import OpsSimulGrupo
 from .mod import CalibradorModSpotPy
 from .valid import ValidadorMod, vars_datos_interés
 
@@ -12,12 +13,11 @@ class SimuladorGeog(object):
     def simular(símismo, t, vals_geog, vals_const=None, vars_interés=None):
         vals_const = vals_const or {}
 
-        res = {
-            lg: símismo.mod.simular(
-                t=t, extern=dict(**vals_const, **vls_lg), vars_interés=vars_interés
-            ) for lg, vls_lg in vals_geog.items()
-        }
-        return res
+        ops = OpsSimulGrupo(
+            t=t, extern=[dict(**vals_const, **vls_lg) for vls_lg in vals_geog.values()],
+            vars_interés=vars_interés, nombre=list(vals_geog)
+        )
+        return símismo.mod.simular_grupo(ops_grupo=ops)
 
 
 class CalibradorGeog(object):
