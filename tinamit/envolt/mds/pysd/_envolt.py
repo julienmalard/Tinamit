@@ -1,9 +1,10 @@
 from ast import literal_eval
 
 import numpy as np
+import pandas as pd
+
 from tinamit.calibs.sintx.ec import Ecuación
 from tinamit.envolt.mds.pysd._funcs import decodar
-
 from ._funcs import gen_mod_pysd, obt_paso_mod_pysd
 from ._vars import VarPySDAuxiliar, VarPySDNivel, VarPySDConstante, VariablesPySD
 from .._envolt import ModeloDS
@@ -56,11 +57,21 @@ class ModeloPySD(ModeloDS):
 
     def _correr_hasta_final(símismo):
         t = símismo.corrida.t
+
+        t_inic_mod = símismo.mod.time._t
+        eje_pysd = np.arange(
+            t_inic_mod, t_inic_mod + t.n_pasos * t.tmñ_paso + 1, t.guardar_cada * t.tmñ_paso
+        )
+
         if símismo.corrida.extern is not None:
+            vals_extern = símismo.corrida.extern.obt_vals(t.eje(), var=símismo.variables)
             paráms = {
                 vr: vl.squeeze().to_pandas()
-                for vr, vl in símismo.corrida.extern.obt_vals(t.eje(), var=símismo.variables).items()
+                for vr, vl in vals_extern.items()
             }
+            for ll, v in paráms.items():
+                if isinstance(v, pd.Series):
+                    v.index = eje_pysd[t.eje().isin(v.index.values)]
         else:
             paráms = {}
 
@@ -70,12 +81,9 @@ class ModeloPySD(ModeloDS):
 
         símismo._proc_paráms(paráms)
 
-        t_inic_mod = símismo.mod.time._t
         res_pysd = símismo.mod.run(
             params=paráms,
-            return_timestamps=np.arange(
-                t_inic_mod, t_inic_mod + t.n_pasos * t.tmñ_paso + 1, t.guardar_cada * t.tmñ_paso
-            )
+            return_timestamps=eje_pysd
         )
         return {vr: res_pysd[str(vr)].values for vr in símismo.corrida.resultados.variables()}
 
