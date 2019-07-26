@@ -58,7 +58,8 @@ class OpsSimulGrupoCombin(PlantillaOpsSimulGrupo):
     
     def __init__(símismo, t, extern=None, clima=None, vars_interés=None, nombre='Tinamït'):
         símismo.nombre = nombre
-        super().__init__(t=t, extern=extern, clima=clima, vars_interés=vars_interés)
+        símismo.vars_interés = vars_interés
+        super().__init__(t=t, extern=extern, clima=clima)
 
     def __iter__(símismo):
         ops = itertools.product(*símismo.opciones.values())
@@ -66,7 +67,8 @@ class OpsSimulGrupoCombin(PlantillaOpsSimulGrupo):
         for i, op in enumerate(ops):
             yield {
                 **{n: o for n, o in zip(nmbs, op)},
-                'nombre': '{}_{}'.format(símismo.nombre, str(i))
+                'nombre': '{}_{}'.format(símismo.nombre, str(i)),
+                'vars_interés': símismo.vars_interés
             }
 
 
@@ -78,9 +80,10 @@ class OpsSimulGrupo(PlantillaOpsSimulGrupo):
 
     def __init__(símismo, t, extern=None, clima=None, vars_interés=None, nombre='Tinamït'):
         símismo.nombre = nombre
+        símismo.vars_interés = vars_interés
 
         args = {
-            't': t, 'extern': extern, 'clima': clima, 'vars_interés': vars_interés
+            't': t, 'extern': extern, 'clima': clima
         }
         if not isinstance(nombre, str):
             args['nombre'] = nombre
@@ -103,4 +106,5 @@ class OpsSimulGrupo(PlantillaOpsSimulGrupo):
         for i in range(símismo.tmñ_ops):
             yield {
                 **{n: op[i] if len(op) > 1 else op[0] for n, op in símismo.opciones.items()},
+                'vars_interés': símismo.vars_interés
             }
