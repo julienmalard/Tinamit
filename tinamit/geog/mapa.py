@@ -6,13 +6,14 @@ from matplotlib import colors, cm
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
 from matplotlib.axes import Axes
+import matplotlib.pyplot as dib
 from tinamit.config import _
 from tinamit.cositas import detectar_codif
 
-from ..mod import ResultadosSimul
+from ..mod import ResultadosSimul, ResultadosGrupo
 
 
-def dibujar_mapa(formas, archivo=None, título=None):
+def dibujar_mapa(formas, archivo=None, título=None, fig=None):
     """
     Dibuja un mapa.
 
@@ -24,17 +25,20 @@ def dibujar_mapa(formas, archivo=None, título=None):
         Dónde hay que guardar el gráfico. Si es ``None``, no se guardará el gráfico.
     título: str
         El título del mapa.
+    fig: matplotlib.Figure
+        Figura para dibujar el mapa.
 
     Returns
     -------
-    Axes
-        Los ejes del gráfico.
+    tuple[Figure, Axes]
+        La figura y sus ejes.
     """
 
     formas = [formas] if isinstance(formas, Forma) else formas
 
-    fig = Figura()
-    TelaFigura(fig)
+    if not fig:
+        fig = Figura()
+        TelaFigura(fig)
     ejes = fig.add_subplot(111)
     ejes.set_aspect('equal')
 
@@ -45,10 +49,12 @@ def dibujar_mapa(formas, archivo=None, título=None):
     if archivo:
         fig.savefig(archivo, dpi=500)
 
-    return ejes
+    return fig, ejes
 
 
-def dibujar_mapa_de_res(forma_dinámica, res, var, t, escala=None, título='', directorio=None, otras_formas=None):
+def dibujar_mapa_de_res(
+        forma_dinámica, res, var, t, escala=None, título='', directorio=None, otras_formas=None
+):
     """
     Dibujar los resultados de una simulación en un mapa.
 
@@ -56,7 +62,8 @@ def dibujar_mapa_de_res(forma_dinámica, res, var, t, escala=None, título='', d
     ----------
     forma_dinámica: FormaDinámica
         La forma cuyos colores variarán según los resultados.
-    res:
+    res: ResultadosSimul or ResultadosGrupo
+        Los resultados para dibujar.
     var: str
         El variable de interés.
     t: int or tuple or range or list
@@ -67,13 +74,14 @@ def dibujar_mapa_de_res(forma_dinámica, res, var, t, escala=None, título='', d
         El título del gráfico.
     directorio: str
         Dónnde hay que guardar el gráfico.
-    otras_formas: list of FormaEstática
+    otras_formas: list of FormaEstática or FormaEstática
         Las otras formas (estáticas) para incluir en el gráfico.
 
     """
     título = título or res.nombre
-    directorio = directorio or título
     otras_formas = otras_formas or []
+    if isinstance(otras_formas, FormaEstática):
+        otras_formas = [otras_formas]
 
     def _extr_i(matr, i):
         return matr[i] if isinstance(i, int) else matr.sel(**{_('fecha'): i}).values
@@ -104,11 +112,12 @@ def dibujar_mapa_de_res(forma_dinámica, res, var, t, escala=None, título='', d
 
     for i_p in pasos:
         título_i = '{}_{}'.format(título, i_p)
-        arch_i = os.path.join(directorio, título_i)
         res_i = _extr_res_i(i_p)
         forma_dinámica.estab_valores(res_i, escala_valores=escala, unidades=unids)
 
-        dibujar_mapa([forma_dinámica, *otras_formas], archivo=arch_i, título=título_i)
+        arch_i = os.path.join(directorio, título_i) if directorio is not None else None
+        fig_i = None if directorio else dib.figure()
+        dibujar_mapa([forma_dinámica, *otras_formas], archivo=arch_i, título=título_i, fig=fig_i)
 
 
 class Forma(object):
@@ -239,7 +248,7 @@ class FormaDinámica(Forma):
         cpick.set_array(np.array([]))
 
         v_cols = mapa_color(vals_norm)
-        v_cols[np.isnan(vals_norm)] = 0
+        v_cols[np.isnan(vals_norm)] = 1
 
         símismo._dibujar_frm(ejes=ejes, color=v_cols)
 
@@ -355,7 +364,16 @@ class Agua(FormaEstática):
         llenar: bool
             Si hay que llenar el cuerpo de agua o no.
         """
-        super().__init__(archivo=archivo, color='#A5BFDD', llenar=llenar, alpha=0.5)
+        super().__init__(archivo=archivo, color='#A5BFDD', llenar=llenar, alpha=0.8)
+
+
+class Bosque(FormaEstática):
+    """
+    Representa áreas con bosque.
+    """
+
+    def __init__(símismo, archivo):
+        super().__init__(archivo=archivo, color='#33A02C', llenar=True, alpha=0.7)
 
 
 class Calle(FormaEstática):
@@ -374,15 +392,6 @@ class Ciudad(FormaEstática):
 
     def __init__(símismo, archivo):
         super().__init__(archivo=archivo, color='#FB9A99', llenar=True, alpha=1)
-
-
-class Bosque(FormaEstática):
-    """
-    Representa áreas con bosque.
-    """
-
-    def __init__(símismo, archivo):
-        super().__init__(archivo=archivo, color='#33A02C', llenar=True, alpha=0.7)
 
 
 class OtraForma(FormaEstática):
