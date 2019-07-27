@@ -11,10 +11,39 @@ except ImportError:  # pragma: sin cobertura
 
 
 class CalibradorEcBayes(CalibradorEc):
+    """
+    Calibrador de ecuaciones con inferencia bayesiana.
+    """
 
     def calibrar(
             símismo, bd, lugar=None, líms_paráms=None, ops=None, corresp_vars=None, ord_niveles=None, jerárquico=True
     ):
+        """
+        Efectua una calibración bayesiana para cada lugar en ``Lugar`` según los datos en ``bd``.
+
+        Parameters
+        ----------
+        bd: BD
+            La base de datos con observaciones para los variables en la ecuación.
+        lugar: Lugar
+            El lugar cuyos sublugares hay que calibrar; si es ``None`` se calibrará la ecuación con todos
+            los datos en ``bd`` sin tener su lugar en cuenta.
+        líms_paráms: list
+            Límites teoréticos para los parámetros.
+        ops: dict
+            Opciones que se pasarán directamente a la función de calibración.
+        corresp_vars: dict
+            Diccionario de correspondencia entre los nombres de los variables en ``bd`` y sus nombres en la ecuación.
+        ord_niveles: list
+            Desambiguación del orden de niveles.
+        jerárquico: bool
+            Si empleamos inferencia bayesiana jerárquica o normal.
+
+        Returns
+        -------
+        dict
+            Diccionario con las calibraciones de cada lugar.
+        """
 
         # Si no tenemos PyMC3, no podemos hacer inferencia bayesiana.
         if pm is None:

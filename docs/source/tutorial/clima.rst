@@ -52,9 +52,9 @@ directamente al parámetro ``ذرائع`` de taqdir.
 
 .. code-block:: python
 
-   from تقدیر.ذرائع import جےسن
+   from تقدیر.ذرائع import جےسن as Json
 
-   fuente = جےسن('DatosDeMiEstaciónClimáticaPrivadaQueNoVoyACompartirConNadie.json', 31.569, 74.355, 100)
+   fuente = Json('DatosDeMiEstaciónClimáticaPrivadaQueNoVoyACompartirConNadie.json', 31.569, 74.355, 100)
 
    mod.simular(t, clima=Clima(lat=31.569, long=74.355, elev=10, escenario='8.5', fuentes=(fuente,)))
 

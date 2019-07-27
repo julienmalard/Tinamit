@@ -3,7 +3,26 @@ from ..sintx.ec import Ecuación
 
 
 class CalibradorEc(object):
+    """
+    Clase pariente para implementaciones de calibradores de ecuaciones.
+    """
+
     def __init__(símismo, ec, paráms, nombre=None, dialecto='tinamït'):
+        """
+
+        Parameters
+        ----------
+        ec: str or Ec
+            La ecuación para calibrar.
+        paráms: list
+            La lista de nombres de parámetros en la ecuación (variables que hay que calibrar).
+        nombre: str
+            El nombre del variable dependiente en la ecuación. Obligatorio si la ecuación no especifica variable
+            independiente sí misma (p. ej., ``x * b + a`` en vez de ``y = x * b + a``.
+        dialecto: str
+            El dialecto de la ecuación. Puede ser ``tinamït`` o ``vensim``.
+        """
+
         símismo.ec = ec if isinstance(ec, Ecuación) else Ecuación(ec, nombre=nombre, dialecto=dialecto)
         símismo.paráms = paráms
 
@@ -41,4 +60,29 @@ class CalibradorEc(object):
         )
 
     def calibrar(símismo, bd, lugar=None, líms_paráms=None, ops=None, corresp_vars=None, ord_niveles=None):
+        """
+        Efectua la calibración.
+
+        Parameters
+        ----------
+        bd: BD
+            La base de datos con observaciones para los variables en la ecuación.
+        lugar: Lugar
+            El lugar cuyos sublugares hay que calibrar; si es ``None`` se calibrará la ecuación con todos
+            los datos en ``bd`` sin tener su lugar en cuenta.
+        líms_paráms: list
+            Límites teoréticos para los parámetros.
+        ops: dict
+            Opciones que se pasarán directamente a la función de calibración.
+        corresp_vars: dict
+            Diccionario de correspondencia entre los nombres de los variables en ``bd`` y sus nombres en la ecuación.
+        ord_niveles: list
+            Desambiguación del orden de niveles.
+
+        Returns
+        -------
+        dict
+            Diccionario con las calibraciones de cada lugar.
+        """
+
         raise NotImplementedError

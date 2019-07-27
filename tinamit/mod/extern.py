@@ -10,11 +10,38 @@ from .var import Variable
 
 
 class Extern(object):
+    """
+    Datos externos para simulaciones.
+    """
+
     def __init__(símismo, vals_vars, interpol=True):
+        """
+
+        Parameters
+        ----------
+        vals_vars: dict[str, xr.DataArray]
+            Diccionario de los valores de los variables.
+        interpol: bool
+            Si se puede interpolar los datos.
+        """
         símismo.interpol = interpol
         símismo._vals = vals_vars
 
     def obt_vals(símismo, t, var=None):
+        """
+        Devuelve los valores de uno o más variables.
+
+        Parameters
+        ----------
+        t
+            El tiempo de interés.
+        var: str or Variable or list
+            Los variables de interés.
+
+        Returns
+        -------
+        dict[str, xr.DataArray]
+        """
         vals = símismo._vals
 
         if var is not None:
@@ -40,6 +67,21 @@ class Extern(object):
 
 
 def gen_extern(datos, interpol=True):
+    """
+    Transforma datos en objeto :class:`~tinamit.extern.Extern`.
+
+    Parameters
+    ----------
+    datos: Extern, pd.DataFrame or xr.Dataset or dict
+        Los datos.
+    interpol: bool
+        Si se pueden interpolar los datos.
+
+    Returns
+    -------
+    Extern
+
+    """
     if isinstance(datos, Extern):
         return datos
 

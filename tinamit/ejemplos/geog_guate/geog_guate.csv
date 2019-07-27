@@ -1,0 +1,371 @@
+Departamento  ,Territorio   ,Municipio                  ,Código
+              ,Territorio 1 ,                           ,T1
+              ,Territorio 2 ,                           ,T2
+              ,Territorio 3 ,                           ,T3
+              ,Territorio 4 ,                           ,T4
+              ,Territorio 5 ,                           ,T5
+              ,Territorio 6 ,                           ,T6
+              ,Territorio 7 ,                           ,T7
+              ,Territorio 8 ,                           ,T8
+              ,Territorio 9 ,                           ,T9
+              ,Territorio 10,                           ,T10
+GUATEMALA     ,             ,                           ,1
+EL PROGRESO   ,             ,                           ,2
+SACATEPÉQUEZ  ,             ,                           ,3
+CHIMALTENANGO ,             ,                           ,4
+ESCUINTLA     ,             ,                           ,5
+SANTA ROSA    ,             ,                           ,6
+SOLOLÁ        ,             ,                           ,7
+TOTONICAPÁN   ,             ,                           ,8
+QUETZALTENANGO,             ,                           ,9
+SUCHITEPEQUEZ ,             ,                           ,10
+RETALHULEU    ,             ,                           ,11
+SAN MARCOS    ,             ,                           ,12
+HUEHUETENANGO ,             ,                           ,13
+QUICHÉ        ,             ,                           ,14
+BAJA VERAPAZ  ,             ,                           ,15
+ALTA VERAPAZ  ,             ,                           ,16
+PETÉN         ,             ,                           ,17
+IZABAL        ,             ,                           ,18
+ZACAPA        ,             ,                           ,19
+CHIQUIMULA    ,             ,                           ,20
+JALAPA        ,             ,                           ,21
+JUTIAPA       ,             ,                           ,22
+1             ,T10          ,GUATEMALA                  ,101
+1             ,T9           ,SANTA CATARINA PINULA      ,102
+1             ,T9           ,SAN JOSÉ PINULA            ,103
+1             ,T5           ,SAN JOSÉ DEL GOLFO         ,104
+1             ,T5           ,PALENCIA                   ,105
+1             ,T9           ,CHINAUTLA                  ,106
+1             ,T9           ,SAN PEDRO AYAMPUC          ,107
+1             ,T10          ,MIXCO                      ,108
+1             ,T9           ,SAN PEDRO SACATEPÉQUEZ     ,109
+1             ,T9           ,SAN JUAN SACATEPÉQUEZ      ,110
+1             ,T5           ,SAN RAYMUNDO               ,111
+1             ,T5           ,CHUARRANCHO                ,112
+1             ,T9           ,FRAIJANES                  ,113
+1             ,T9           ,AMATITLÁN                  ,114
+1             ,T10          ,VILLA NUEVA                ,115
+1             ,T9           ,VILLA CANALES              ,116
+1             ,T9           ,PETAPA                     ,117
+2             ,T5           ,GUASTATOYA                 ,201
+2             ,T5           ,MORAZÁN                    ,202
+2             ,T5           ,SAN AGUSTÍN ACASAGUASTLÁN  ,203
+2             ,T5           ,SAN CRISTÓBAL ACASGUASTLAN ,204
+2             ,T5           ,EL JÍCARO                  ,205
+2             ,T5           ,SANSARE                    ,206
+2             ,T5           ,SANARATE                   ,207
+2             ,T5           ,SAN ANTONIO LA PAZ         ,208
+3             ,T9           ,ANTIGUA GUATEMALA          ,301
+3             ,T9           ,JOCOTENANGO                ,302
+3             ,T5           ,PASTORES                   ,303
+3             ,T6           ,SUMPANGO                   ,304
+3             ,T6           ,SANTO DOMINGO XENACOJ      ,305
+3             ,T6           ,SANTIAGO SACATEPÞQUEZ      ,306
+3             ,T9           ,SAN BARTOLOMÉ MILPAS ALTAS ,307
+3             ,T9           ,SAN LUCAS SACATEPÉQUEZ     ,308
+3             ,T9           ,SANTA LUCÍA MILPAS ALTAS   ,309
+3             ,T5           ,MAGDALENA MILPAS ALTAS     ,310
+3             ,T6           ,SANTA MARÍA DE JESÚS       ,311
+3             ,T5           ,CIUDAD VIEJA               ,312
+3             ,T5           ,SAN MIGUEL DUEÑAS          ,313
+3             ,T7           ,ALOTENANGO                 ,314
+3             ,T9           ,SAN ANTONIO AGUAS CALIENTES,315
+3             ,T9           ,SANTA CATARINA BARAHONA    ,316
+4             ,T9           ,CHIMALTENANGO              ,401
+4             ,T1           ,SAN JOSÉ POAQUIL           ,402
+4             ,T1           ,SAN MARTÍN JILOTEPEQUE     ,403
+4             ,T6           ,COMALAPA                   ,404
+4             ,T6           ,SANTA APOLONIA             ,405
+4             ,T1           ,TECPÁN GUATEMALA           ,406
+4             ,T6           ,PATZÚN                     ,407
+4             ,T7           ,POCHUTA                    ,408
+4             ,T6           ,PATZICÍA                   ,409
+4             ,T6           ,SANTA CRUZ BALANYÁ         ,410
+4             ,T1           ,ACATENANGO                 ,411
+4             ,T7           ,YEPOCAPA                   ,412
+4             ,T6           ,SAN ANDRÉS IZTAPA          ,413
+4             ,T6           ,PARRAMOS                   ,414
+4             ,T5           ,ZARAGOZA                   ,415
+4             ,T9           ,EL TEJAR                   ,416
+5             ,T3           ,ESCUINTLA                  ,501
+5             ,T7           ,SANTA LUCIA COTZULMALGUAPA ,502
+5             ,T7           ,LA DEMOCRACIA              ,503
+5             ,T7           ,SIQUINALÁ                  ,504
+5             ,T4           ,MASAGUA                    ,505
+5             ,T4           ,TIQUISATE                  ,506
+5             ,T4           ,LA GOMERA                  ,507
+5             ,T4           ,GUANAGAZAPA                ,508
+5             ,T7           ,SAN JOSÉ                   ,509
+5             ,T7           ,IZTAPA                     ,510
+5             ,T9           ,PALÍN                      ,511
+5             ,T4           ,SAN VICENTE PACAYA         ,512
+5             ,T4           ,NUEVA CONCEPCIÓN           ,513
+6             ,T5           ,CUILAPA                    ,601
+6             ,T5           ,BARBERENA                  ,602
+6             ,T4           ,SANTA ROSA DE LIMA         ,603
+6             ,T4           ,CASILLAS                   ,604
+6             ,T4           ,SAN RAFAEL LAS FLORES      ,605
+6             ,T4           ,ORATORIO                   ,606
+6             ,T4           ,SAN JUAN TECUACO           ,607
+6             ,T4           ,CHIQUIMULILLA              ,608
+6             ,T4           ,TAXISCO                    ,609
+6             ,T4           ,SANTA MARÍA IXHUATÁN       ,610
+6             ,T5           ,GUAZACAPÁN                 ,611
+6             ,T5           ,SANTA CRUZ NARANJO         ,612
+6             ,T4           ,PUEBLO NUEVO VIÑAS         ,613
+6             ,T4           ,NUEVA SANTA ROSA           ,614
+7             ,T1           ,SOLOLÁ                     ,701
+7             ,T6           ,SAN JOSÉ CHACAYÁ           ,702
+7             ,T9           ,SANTA MARÍA VISITACIÓN     ,703
+7             ,T6           ,SANTA LUCÍA UTATLÁN        ,704
+7             ,T1           ,NAHUALÁ                    ,705
+7             ,T1           ,SANTA CATARINA IXTAHUACÁN  ,706
+7             ,T6           ,SANTA CLARA LA LAGUNA      ,707
+7             ,T1           ,CONCEPCIÓN                 ,708
+7             ,T6           ,SAN ANDRÉS SEMETABAJ       ,709
+7             ,T9           ,PANAJACHEL                 ,710
+7             ,T1           ,SANTA CATARINA PALAPÓ      ,711
+7             ,T6           ,SAN ANTONIO PALAPÓ         ,712
+7             ,T6           ,SAN LUCAS TOLIMÁN          ,713
+7             ,T1           ,SANTA CRUZ LA LAGUNA       ,714
+7             ,T1           ,SAN PABLO LA LAGUNA        ,715
+7             ,T6           ,SAN MARCOS LA LAGUNA       ,716
+7             ,T6           ,SAN JUAN LA LAGUNA         ,717
+7             ,T9           ,SAN PEDRO LA LAGUNA        ,718
+7             ,T6           ,SANTIAGO ATITLÁN           ,719
+8             ,T9           ,TOTONICAPÁN                ,801
+8             ,T6           ,SAN CRISTÓBAL TOTONICAPÁN  ,802
+8             ,T6           ,SAN FRANCISCO EL ALTO      ,803
+8             ,T6           ,SAN ANDRÉS XECUL           ,804
+8             ,T1           ,MOMOSTENANGO               ,805
+8             ,T1           ,SANTA MARÍA CHIQUIMULA     ,806
+8             ,T1           ,SANTA LUCIA LA REFORMA     ,807
+8             ,T1           ,SAN BARTOLO                ,808
+9             ,T9           ,QUETZALTENANGO             ,901
+9             ,T5           ,SALCAJÁ                    ,902
+9             ,T9           ,OLINTEPEQUE                ,903
+9             ,T5           ,SAN CARLOS SIJA            ,904
+9             ,T4           ,SIBILIA                    ,905
+9             ,T1           ,CABRICÁN                   ,906
+9             ,T1           ,CAJOLÁ                     ,907
+9             ,T1           ,SAN MIGUEL SIGÜILA         ,908
+9             ,T6           ,SAN JUAN OSTUNCALCO        ,909
+9             ,T9           ,SAN MATEO                  ,910
+9             ,T1           ,CONCEPCIÓN CHIQUIRICHAPA   ,911
+9             ,T1           ,SAN MARTÍN SACATEPÉQUEZ    ,912
+9             ,T6           ,ALMOLONGA                  ,913
+9             ,T9           ,CANTEL                     ,914
+9             ,T1           ,HUITÁN                     ,915
+9             ,T1           ,ZUNIL                      ,916
+9             ,T7           ,COLOMBA                    ,917
+9             ,T6           ,SAN FRANCISCO LA UNIÓN     ,918
+9             ,T7           ,EL PALMAR                  ,919
+9             ,T7           ,COATEPEQUE                 ,920
+9             ,T7           ,GÉNOVA                     ,921
+9             ,T7           ,FLORES COSTA CUCA          ,922
+9             ,T9           ,LA ESPERANZA               ,923
+9             ,T1           ,PALESTINA DE LOS ALTOS     ,924
+10            ,T9           ,MAZATENANGO                ,1001
+10            ,T7           ,CUYOTENANGO                ,1002
+10            ,T7           ,SAN FRANCISCO ZAPOTITLÁN   ,1003
+10            ,T7           ,SAN BERNANDINO             ,1004
+10            ,T7           ,SAN JOSÉ EL IDOLO          ,1005
+10            ,T7           ,SANTO DOMINGO SUCHITEPÉQUEZ,1006
+10            ,T4           ,SAN LORENZO                ,1007
+10            ,T7           ,SAMAYAC                    ,1008
+10            ,T7           ,SAN PABLO JOCOPILA         ,1009
+10            ,T7           ,SAN ANTONIO SUCHITEPÉQUEZ  ,1010
+10            ,T7           ,SAN MIGUEL PANAN           ,1011
+10            ,T7           ,SAN GABRIEL                ,1012
+10            ,T7           ,CHICACAO                   ,1013
+10            ,T7           ,PATULUL                    ,1014
+10            ,T7           ,SANTA BARBARA              ,1015
+10            ,T7           ,SAN JUAN BAUTISTA          ,1016
+10            ,T7           ,SANTO TOMAS LA UNIÓN       ,1017
+10            ,T7           ,ZUNILITO                   ,1018
+10            ,T7           ,PUEBLO NUEVO               ,1019
+10            ,T7           ,RÍO BRAVO                  ,1020
+10            ,             ,SAN JOSÉ LA MÁQUINA        ,1021
+11            ,T3           ,RETALHULEU                 ,1101
+11            ,T7           ,SAN SEBASTIÁN              ,1102
+11            ,T7           ,SANTA CRUZ MULUÁ           ,1103
+11            ,T7           ,SAN MARTÍN ZAPOTITLÁN      ,1104
+11            ,T7           ,SAN FELIPE RETALHULEU      ,1105
+11            ,T4           ,SAN ANDRÉS VILLA SECA      ,1106
+11            ,T4           ,CHAMPERICO                 ,1107
+11            ,T7           ,NUEVO SAN CARLOS           ,1108
+11            ,T7           ,EL ASINTAL                 ,1109
+12            ,T9           ,SAN MARCOS                 ,1201
+12            ,T9           ,SAN PEDRO SACATEPÉQUEZ     ,1202
+12            ,T4           ,SAN ANTONIO SACATEPÉQUEZ   ,1203
+12            ,T1           ,COMITANCILLO               ,1204
+12            ,T1           ,SAN MIGUEL IXTAHUACAN      ,1205
+12            ,T1           ,CONCEPCIÓN TUTUAPA         ,1206
+12            ,T1           ,TACANÁ                     ,1207
+12            ,T4           ,SIBINAL                    ,1208
+12            ,T1           ,TAJUMULCO                  ,1209
+12            ,T4           ,TEJUTLA                    ,1210
+12            ,T7           ,SAN RAFAEL PIE DE LA CUESTA,1211
+12            ,T7           ,NUEVO PROGRESO             ,1212
+12            ,T7           ,EL TUMBADOR                ,1213
+12            ,T7           ,EL RODEO                   ,1214
+12            ,T7           ,MALACATÁN                  ,1215
+12            ,T7           ,CATARINA                   ,1216
+12            ,T7           ,AYUTLA                     ,1217
+12            ,T4           ,OCÓS                       ,1218
+12            ,T7           ,SAN PABLO                  ,1219
+12            ,T7           ,EL QUETZAL                 ,1220
+12            ,T7           ,LA REFORMA                 ,1221
+12            ,T7           ,PAJAPITA                   ,1222
+12            ,T1           ,IXCHIGUÁN                  ,1223
+12            ,T4           ,SAN JOSÉ OJETENAM          ,1224
+12            ,T4           ,SAN CRISTOBAL CUCHO        ,1225
+12            ,T1           ,SIPACAPA                   ,1226
+12            ,T5           ,ESQUIPULAS PALO GORDO      ,1227
+12            ,T4           ,RÍO BLANCO                 ,1228
+12            ,T4           ,SAN LORENZO                ,1229
+12            ,             ,LA BLANCA                  ,1230
+13            ,T9           ,HUEHUETENANGO              ,1301
+13            ,T2           ,CHIANTLA                   ,1302
+13            ,T5           ,MALACATANCITO              ,1303
+13            ,T1           ,CUILCO                     ,1304
+13            ,T2           ,NENTÓN                     ,1305
+13            ,T1           ,SAN PEDRO NECTA            ,1306
+13            ,T1           ,JACALTENANGO               ,1307
+13            ,T1           ,SOLOMA                     ,1308
+13            ,T1           ,SAN IDELFONSO IXTAHUACÁN   ,1309
+13            ,T7           ,SANTA BÁRBARA              ,1310
+13            ,T8           ,LA LIBERTAD                ,1311
+13            ,T7           ,LA DEMOCRACIA              ,1312
+13            ,T1           ,SAN MIGUEL ACATÁN          ,1313
+13            ,T1           ,SAN RAFAEL INDEPENDENCIA   ,1314
+13            ,T1           ,TODOS SANTOS CUCHUMATÁN    ,1315
+13            ,T1           ,SAN JUAN ATITÁN            ,1316
+13            ,T1           ,SANTA EULALIA              ,1317
+13            ,T1           ,SAN MATEO IXTATÁN          ,1318
+13            ,T1           ,COLOTENANGO                ,1319
+13            ,T1           ,SAN SEBASTIÁN HUEHUETENANGO,1320
+13            ,T2           ,TECTITÁN                   ,1321
+13            ,T1           ,CONCEPCIÓN HUISTA          ,1322
+13            ,T1           ,SAN JUAN IXCOY             ,1323
+13            ,T4           ,SAN ANTONIO HUISTA         ,1324
+13            ,T1           ,SAN SEBASTIÁN COATÁN       ,1325
+13            ,T2           ,BARILLAS                   ,1326
+13            ,T1           ,AGUACATÁN                  ,1327
+13            ,T1           ,SAN RAFAEL PÉTZAL          ,1328
+13            ,T1           ,SAN GASPAR IXCHIL          ,1329
+13            ,T1           ,SANTIAGO CHIMALTENANGO     ,1330
+13            ,T4           ,SANTA ANA HUISTA           ,1331
+13            ,             ,UNIÓN CANTINIL             ,1332
+14            ,T9           ,SANTA CRUZ DEL QUICHÉ      ,1401
+14            ,T1           ,CHICHÉ                     ,1402
+14            ,T1           ,CHINIQUE                   ,1403
+14            ,T1           ,ZACUALPA                   ,1404
+14            ,T2           ,CHAJUL                     ,1405
+14            ,T1           ,CHICHICASTENANGO           ,1406
+14            ,T1           ,PATZITÉ                    ,1407
+14            ,T1           ,SAN ANTONIO ILOTENANGO     ,1408
+14            ,T1           ,SAN PEDRO JOCOPILAS        ,1409
+14            ,T1           ,CUNÉN                      ,1410
+14            ,T1           ,SAN JUAN COTZAL            ,1411
+14            ,T1           ,JOYABAJ                    ,1412
+14            ,T1           ,NEBAJ                      ,1413
+14            ,T1           ,SAN ANDRÉS SAJCABAJA       ,1414
+14            ,T2           ,USPANTÁN                   ,1415
+14            ,T1           ,SACAPULAS                  ,1416
+14            ,T1           ,SAN BARTOLOMÉ JOCOTENANGO  ,1417
+14            ,T4           ,CANILLÁ                    ,1418
+14            ,T2           ,CHICAMÁN                   ,1419
+14            ,T2           ,PLAYA GRANDE-IXCÁN         ,1420
+14            ,T5           ,PACHALUM                   ,1421
+15            ,T5           ,SALAMÁ                     ,1501
+15            ,T5           ,SAN MIGUEL CHICAJ          ,1502
+15            ,T5           ,RABINAL                    ,1503
+15            ,T2           ,CUBULCO                    ,1504
+15            ,T5           ,GRANADOS                   ,1505
+15            ,T5           ,EL CHOL                    ,1506
+15            ,T5           ,SAN JERÓNIMO               ,1507
+15            ,T2           ,PURULHÁ                    ,1508
+16            ,T2           ,COBÁN                      ,1601
+16            ,T1           ,SANTA CRUZ VERAPAZ         ,1602
+16            ,T1           ,SAN CRISTÓBAL VERAPAZ      ,1603
+16            ,T1           ,TACTIC                     ,1604
+16            ,T1           ,TAMAHÚ                     ,1605
+16            ,T2           ,TUCURÚ                     ,1606
+16            ,T2           ,PANZÓS                     ,1607
+16            ,T2           ,SENAHÚ                     ,1608
+16            ,T2           ,SAN PEDRO CARCHÁ           ,1609
+16            ,T1           ,SAN JUAN CHAMELCO          ,1610
+16            ,T2           ,LANQUÍN                    ,1611
+16            ,T2           ,CAHABÓN                    ,1612
+16            ,T2           ,CHISEC                     ,1613
+16            ,T2           ,CHAHAL                     ,1614
+16            ,T2           ,FRAY BARTOLOMÉ DE LAS CASAS,1615
+16            ,T2           ,SANTA CATALINA LA TINTA    ,1616
+16            ,T2           ,RAXRUHÁ                    ,1617
+17            ,T8           ,FLORES                     ,1701
+17            ,T8           ,SAN JOSÉ                   ,1702
+17            ,T9           ,SAN BENITO                 ,1703
+17            ,T8           ,SAN ANDRÉS                 ,1704
+17            ,T8           ,LA LIBERTAD                ,1705
+17            ,T3           ,SAN FRANCISCO              ,1706
+17            ,T3           ,SANTA ANA                  ,1707
+17            ,T8           ,DOLORES                    ,1708
+17            ,T8           ,SAN LUIS                   ,1709
+17            ,T8           ,SAYAXCHÉ                   ,1710
+17            ,T8           ,MELCHOR DE MENCOS          ,1711
+17            ,T3           ,POPTÚN                     ,1712
+17            ,             ,LAS CRUCES                 ,1713
+17            ,             ,EL CHAL                    ,1714
+18            ,T3           ,PUERTO BARRIOS             ,1801
+18            ,T2           ,LIVINGSTÓN                 ,1802
+18            ,T2           ,EL ESTOR                   ,1803
+18            ,T3           ,MORALES                    ,1804
+18            ,T3           ,LOS AMATES                 ,1805
+19            ,T5           ,ZACAPA                     ,1901
+19            ,T5           ,ESTANZUELA                 ,1902
+19            ,T5           ,RIO HONDO                  ,1903
+19            ,T3           ,GUALÁN                     ,1904
+19            ,T5           ,TECULUTÁN                  ,1905
+19            ,T5           ,USUMATLÁN                  ,1906
+19            ,T5           ,CABAÑAS                    ,1907
+19            ,T5           ,SAN DIEGO                  ,1908
+19            ,T7           ,LA UNIÓN                   ,1909
+19            ,T5           ,HUITÉ                      ,1910
+19            ,             ,SAN JORGE                  ,1911
+20            ,T5           ,CHIQUIMULA                 ,2001
+20            ,T5           ,SAN JOSÉ LA ARADA          ,2002
+20            ,T4           ,SAN JUAN ERMITA            ,2003
+20            ,T2           ,JOCOTÁN                    ,2004
+20            ,T3           ,CAMOTÁN                    ,2005
+20            ,T3           ,OLOPA                      ,2006
+20            ,T3           ,ESQUIPULAS                 ,2007
+20            ,T5           ,CONCEPCIÓN LAS MINAS       ,2008
+20            ,T5           ,QUETZALTEPEQUE             ,2009
+20            ,T5           ,SAN JACINTO                ,2010
+20            ,T5           ,IPALA                      ,2011
+21            ,T5           ,JALAPA                     ,2101
+21            ,T3           ,SAN PEDRO PINULA           ,2102
+21            ,T5           ,SAN LUIS JILOTEPEQUE       ,2103
+21            ,T5           ,SAN MANUEL CHAPARRÓN       ,2104
+21            ,T4           ,SAN CARLOS ALZATATE        ,2105
+21            ,T5           ,MONJAS                     ,2106
+21            ,T4           ,MATAQUESCUINTLA            ,2107
+22            ,T3           ,JUTIAPA                    ,2201
+22            ,T5           ,EL PROGRESO                ,2202
+22            ,T5           ,SANTA CATARINA MITA        ,2203
+22            ,T5           ,AGUA BLANCA                ,2204
+22            ,T5           ,ASUNCIÓN MITA              ,2205
+22            ,T4           ,YUPILTEPEQUE               ,2206
+22            ,T5           ,ATESCATEMPA                ,2207
+22            ,T5           ,JEREZ                      ,2208
+22            ,T4           ,EL ADELANTO                ,2209
+22            ,T4           ,ZAPOTITLÁN                 ,2210
+22            ,T4           ,COMAPA                     ,2211
+22            ,T5           ,JALPATAGUA                 ,2212
+22            ,T4           ,CONGUACO                   ,2213
+22            ,T4           ,MOYUTA                     ,2214
+22            ,T4           ,PASACO                     ,2215
+22            ,T5           ,SAN JOSÉ ACATEMPA          ,2216
+22            ,T5           ,QUESADA                    ,2217

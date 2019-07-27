@@ -38,7 +38,7 @@ Funciones y atributos opcionales:
 #. :func:`~tinamit.Modelo.cerrar`: Efectua acciones de limpieza al final de una simulación.
 #. :func:`~tinamit.Modelo._correr_hasta_final`: Permite el modelo de combinar pasos de simulación cuando posible para ser más rápido.
 #. :func:`~tinamit.Modelo.instalado`: Verifica si el modelo correspondiendo a la envoltura está instalado en la computadora o no.
-#. `Modelo.idioma_orig`: Indica el idioma de los nombres de variables del modelo.
+#. ``Modelo.idioma_orig``: Indica el idioma de los nombres de variables del modelo.
 
 .. warning::
    Tu implementación de :func:`~tinamit.Modelo.incrementar` **debe** incluir una llamada a

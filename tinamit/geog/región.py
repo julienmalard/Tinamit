@@ -17,7 +17,7 @@ class Nivel(object):
         ----------
         nombre: str
             El nombre del nivel.
-        subniveles: list of str
+        subniveles: list of Nivel
             Lista de subniveles.
         """
         símismo.nombre = nombre
@@ -69,11 +69,12 @@ class Lugar(object):
         ----------
         en: str or Lugar
             Sublugar al cual limitir la búsqueda.
-        nivel:
+        nivel: Nivel or str or list
+            Opción para limitir los resultados a uno o más niveles.
 
         Returns
         -------
-
+        set[Lugar]
         """
         if isinstance(nivel, (str, Nivel)):
             nivel = [nivel]
@@ -84,12 +85,44 @@ class Lugar(object):
         return {lg for lg in buscar_en if (nivel is None or lg.nivel in nivel)}
 
     def buscar_nombre(símismo, nombre, nivel=None):
+        """
+        Devuelve el sublugar con el nombre dado.
+
+        Parameters
+        ----------
+        nombre: str
+            El nombre del lugar deseado.
+        nivel: Nivel or str
+            Desambiguación en el caso que hayan múltiples lugares con el mismo nombre en distintos niveles.
+
+        Returns
+        -------
+        Lugar
+
+        """
         for lg in símismo:
             if lg.nombre == nombre and (nivel is None or lg.nivel == nivel):
                 return lg
         raise ValueError(_('Lugar "{nmb}" no encontrado en "{lg}"').format(nmb=nombre, lg=símismo))
 
     def pariente(símismo, lugar, ord_niveles=None, todos=False):
+        """
+        Obtener el pariente de un sublugar dado.
+
+        Parameters
+        ----------
+        lugar: str or Lugar
+            Un sublugar cuyo pariente queremos.
+        ord_niveles: list
+            Desambiguación para lugares con niveles paralelos.
+        todos: bool
+            Si queremos todos los parientes del lugar, o solamente el más cercaco.
+
+        Returns
+        -------
+        Lugar
+
+        """
         lugar = símismo[lugar]
         ord_niveles = símismo.ord_niveles.resolver(ord_niveles)
         potenciales = [lg for lg in símismo if lugar in lg.sub_lugares and lg.nivel in ord_niveles]
@@ -99,6 +132,20 @@ class Lugar(object):
             return sorted(potenciales, key=lambda x: ord_niveles.index(str(x.nivel)))[0]
 
     def hijos_inmediatos(símismo, ord_niveles=None):
+        """
+        Devuelve los hijos inmediatos de este ``Lugar``.
+
+        Parameters
+        ----------
+        ord_niveles: list
+            Desambiguación para lugares con niveles paralelos.
+
+        Returns
+        -------
+        list[Lugar]
+
+        """
+
         return [lg for lg in símismo if símismo.pariente(lg, ord_niveles=ord_niveles) == símismo]
 
     def __iter__(símismo):
@@ -154,6 +201,31 @@ class _OrdNiveles(object):
 
 
 def gen_lugares(archivo, nivel_base, nombre=None, col_cód='Código'):
+    """
+    Genera un lugar con todos los niveles y sublugares asociados desde un archivo ``.csv``.
+
+    Cada columna en el ``.csv`` debe empezar con el nombre de un nivel, con la excepción de la columna ``col_cód``,
+    la cual tendrá el código identificador único de cada lugar.
+
+    Cada fila representa un lugar, con su **nombre** en la columna correspondiendo al nivel de este lugar y
+    el **código** del lugar pariente en las otras columnas. Si un nivel no se aplica a un lugar (por ejemplo,
+    un departamento no tendrá municipio pariente), se deja vacía la célula.
+
+    Parameters
+    ----------
+    archivo: str
+        El archivo ``.csv``.
+    nivel_base: str
+        El el nivel más alto. Por ejemplo, si tu csv entero representa un país, sería ``país``.
+    nombre: str
+        El nombre del lugar correspondiendo al nivel más alto. Por ejemplo, "Guatemala".
+    col_cód: str
+        El nombre de la columna con los códigos de cada sublugar.
+
+    Returns
+    -------
+    Lugar
+    """
     codif_csv = detectar_codif(archivo)
     nombre = nombre or os.path.splitext(os.path.split(nombre)[1])[0]
 

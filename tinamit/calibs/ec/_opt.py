@@ -10,12 +10,42 @@ from tinamit.geog.región import Lugar
 
 
 class CalibradorEcOpt(CalibradorEc):
+    """
+    Calibrador de ecuaciones con algoritmo de optimización.
+    """
 
-    def __init__(símismo, ec, paráms):
-        super().__init__(ec, paráms)
+    def __init__(símismo, ec, paráms, nombre=None, dialecto='tinamït'):
+
+        super().__init__(ec, paráms, nombre=nombre, dialecto=dialecto)
+
         símismo.f_python = símismo.ec.a_python(paráms=símismo.paráms)
 
     def calibrar(símismo, bd, lugar=None, líms_paráms=None, ops=None, corresp_vars=None, ord_niveles=None):
+        """
+        Efectua una calibración para cada lugar en ``Lugar`` según los datos en ``bd``.
+
+        Parameters
+        ----------
+        bd: BD
+            La base de datos con observaciones para los variables en la ecuación.
+        lugar: Lugar
+            El lugar cuyos sublugares hay que calibrar; si es ``None`` se calibrará la ecuación con todos
+            los datos en ``bd`` sin tener su lugar en cuenta.
+        líms_paráms: list
+            Límites teoréticos para los parámetros.
+        ops: dict
+            Opciones que se pasarán directamente a la función de calibración.
+        corresp_vars: dict
+            Diccionario de correspondencia entre los nombres de los variables en ``bd`` y sus nombres en la ecuación.
+        ord_niveles: list
+            Desambiguación del orden de niveles.
+
+        Returns
+        -------
+        dict
+            Diccionario con las calibraciones de cada lugar.
+        """
+
         ops = ops or {}
 
         líms_paráms = símismo._gen_líms_paráms(líms_paráms)

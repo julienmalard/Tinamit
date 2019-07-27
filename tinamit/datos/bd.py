@@ -5,14 +5,21 @@ import pandas as pd
 import xarray as xr
 from tinamit.config import _
 
-from .fuente import FuentePandas, FuenteDic, FuenteVarXarray, FuenteBaseXarray, FuenteCSV
+from .fuente import FuentePandas, FuenteDic, FuenteVarXarray, FuenteBaseXarray, FuenteCSV, Fuente
 
 
 class BD(object):
     """
-    Una base de datos combina varias :class:`Fuente`s.
+    Una base de datos combina varias :class:`~tinamit.datos.fuente.Fuente`.
     """
     def __init__(símismo, fuentes):
+        """
+
+        Parameters
+        ----------
+        fuentes: Fuente or list
+            Las fuentes de la base de datos.
+        """
         fuentes = [fuentes] if not isinstance(fuentes, (list, tuple)) else fuentes
         símismo.fuentes = [_gen_fuente(f) for f in fuentes]
         símismo.variables = list(set((v for f in símismo.fuentes for v in f.variables)))
@@ -31,7 +38,6 @@ class BD(object):
         lugares: list
             Lugares de interés.
         fechas: tuple or list
-
 
         Returns
         -------
@@ -54,11 +60,30 @@ class BD(object):
 
         return vals[vars_interés[0]] if vr_único else vals
 
-    def interpolar(símismo, vars_interés, fechas=None, lugares=None, extrap=False):
+    def interpolar(símismo, vars_interés, lugares=None, fechas=None, extrap=False):
+        """
+        Interpola datos por fecha, tomando el lugar en cuenta.
 
-        datos = símismo.obt_vals(vars_interés=vars_interés, lugares=lugares, fechas=None)
+        Parameters
+        ----------
+        vars_interés: str or list
+            Los variables de interés.
+        lugares: list
+            Lugares de interés.
+        fechas: list or str or datetime.datetime
+            Las fechas de interés.
+        extrap: bool
+            Si hay que extrapolar también.
+
+        Returns
+        -------
+        xr.DataArray, xr.Dataset
+            ``xr.DataArray`` si ``vars_interés`` es ``str``, ``xr.Dataset`` si ``vars_interés`` es ``list``.
+        """
+
+        datos = símismo.obt_vals(vars_interés=vars_interés, lugares=lugares)
         if datos['n'].size:
-            datos = interpolar_xr(datos, fechas=fechas)
+            datos = _interpolar_xr(datos, fechas=fechas)
 
             if extrap:
                 datos = datos.bfill(_('fecha'))
@@ -91,7 +116,7 @@ def _gen_fuente(fnt, nombre=None, lugares=None, fechas=None):
     return fnt
 
 
-def interpolar_xr(m, fechas=None):
+def _interpolar_xr(m, fechas=None):
     m = m.unstack()
     if m.sizes[_('fecha')] > 1:
 

@@ -38,15 +38,15 @@ taza de infección = 0.005
 
 infecciones=
 	MIN(contactos entre suceptibles e infectados * taza de infección, Individuos Suceptibles)
-	~	Person/Year
+	~	Person/Day
 	~		|
 
 taza de contacto = 100
-	~	1/Year [0,500]
+	~	1/Day [0,500]
 	~		|
 
 FINAL TIME  = 2010
-	~	Year
+	~	Day
 	~	   The final time for the simulation.
 	|
 
@@ -55,12 +55,12 @@ número inicial infectado = 10
 	~		|
 
 INITIAL TIME  = 1960
-	~	Year
+	~	Day
 	~	   The initial time for the simulation.
 	|
 
 contactos con suceptibles = Individuos Suceptibles * taza de contacto
-	~	Person/Year
+	~	Person/Day
 	~		|
 
 Individuos Suceptibles= INTEG (
@@ -71,16 +71,16 @@ Individuos Suceptibles= INTEG (
 
 contactos entre suceptibles e infectados = contactos con suceptibles *
                        fracción población infectada
-	~	Person/Year
+	~	Person/Day
 	~		|
 
 SAVEPER = TIME STEP
-	~	Year
+	~	Day
 	~	  The frequency with which data are saved.
 	|
 
 TIME STEP  = 0.5
-	~	Year
+	~	Day
 	~	   The time step for the simulation.
 	|
 

@@ -15,7 +15,7 @@ from tinamit.geog.región import Nivel, Lugar, gen_lugares
 from tinamit.mod import OpsSimulGrupo
 
 dir_act = os.path.split(__file__)[0]
-arch_csv_geog = os.path.join(dir_act, 'recursos/datos/prueba_geog.csv')
+arch_csv_geog = obt_ejemplo('geog_guate/geog_guate.csv')
 arch_frm_nombrada = obt_ejemplo('formas/munis.shp')
 arch_frm_numérica = obt_ejemplo('formas/frm_numérica.shp')
 arch_frm_otra = obt_ejemplo('formas/otra_frm.shp')

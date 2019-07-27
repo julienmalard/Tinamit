@@ -79,12 +79,12 @@ class Tiempo(object):
 
         Returns
         -------
-        np.ndarray
+        pd.Index
         """
-        return np.arange(
+        return pd.Index(np.arange(
             símismo.n_pasos * símismo.tmñ_paso + 1,
             step=símismo.guardar_cada * símismo.tmñ_paso
-        )
+        ))
 
     def _obt_fact_conv(símismo, unid):
 

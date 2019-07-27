@@ -10,10 +10,45 @@ from ._utils import eval_funcs
 
 
 class ValidadorMod(object):
+    """
+    Clase para efectuar validaciones de un modelo.
+    """
     def __init__(símismo, mod):
+        """
+
+        Parameters
+        ----------
+        mod: Modelo
+            El modelo para validar.
+        """
         símismo.mod = mod
 
     def validar(símismo, t, datos, paráms=None, funcs=None, vars_extern=None, corresp_vars=None):
+        """
+        Efectua la validación.
+
+        Parameters
+        ----------
+        t: int or EspecTiempo
+            La especificación de tiempo para la validación.
+        datos: xr.Dataset or xr.DataArray or str or pd.DataFrame or dict or Fuente or list
+            La base de datos para la validación.
+        paráms: dict
+            Diccionario de los parámetros calibrados para cada lugar.
+        funcs: list
+            Funciones de validación para aplicar a los resultados.
+        vars_extern: str or list or Variable
+            Variable(s) exógenos cuyos valores se tomarán de la base de datos para alimentar la simulación y con
+            los cuales por supuesto no se validará el modelo.
+        corresp_vars:
+            Diccionario de correspondencia entre nombres de valores en el modelo y en la base de datos.
+
+        Returns
+        -------
+        dict
+            Validación por variable.
+
+        """
 
         t = t if isinstance(t, EspecTiempo) else EspecTiempo(t)
         if not isinstance(datos, xr.Dataset):
@@ -33,14 +68,6 @@ class ValidadorMod(object):
         vals_extern = datos[list({_resolver_var(v, corresp_vars) for v in vars_extern})]
         extern = {vr: vals_extern[_resolver_var(vr, corresp_vars)].dropna('n') for vr in vars_extern}
         extern = {ll: v for ll, v in extern.items() if v.sizes['n']}
-
-        # if t.f_inic is not None:
-
-        #     datos_inic = interpolar_xr(datos, t.f_inic)
-        #     if datos_inic.sizes['n']:
-        #         for vr in vars_interés:
-        #             if vr not in extern:
-        #                 extern[vr] = datos_inic[_resolver_var(vr, corresp_vars)].values
 
         res = símismo.mod.simular(t=t, extern={**paráms, **extern}, vars_interés=vars_valid)
 

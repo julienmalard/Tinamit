@@ -164,15 +164,15 @@ class Modelo(object):
             t = símismo.corrida.t
             corrida.clima.inicializar(t)
             símismo._act_vals_clima(
-                t.fecha(), t.fecha_próxima() - 1
+                t.fecha(), t.fecha_próxima() - 1 * t.fecha().freq
             )
         corrida.actualizar_res()
 
     def correr(símismo):
         """
         Efectuar una simulación ya inicializada. En general, no llamarías esta función directamente.
-        
         """
+
         intento = símismo._correr_hasta_final()
         if intento is not None:
             símismo.corrida.resultados.poner_vals_t(intento)
@@ -216,7 +216,7 @@ class Modelo(object):
 
         if símismo.corrida.clima and símismo.vars_clima:
             t = símismo.corrida.t
-            símismo._act_vals_clima(t.fecha(), t.fecha_próxima() - 1)
+            símismo._act_vals_clima(t.fecha(), t.fecha_próxima() - 1 * t.fecha().freq)
 
     def cerrar(símismo):
         """

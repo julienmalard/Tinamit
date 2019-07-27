@@ -68,7 +68,8 @@ Contacto: Julien Malard: julien.malard@mail.mcgill.ca
    tutorial/grupos
    tutorial/mapas
    tutorial/datos
-   tutorial/bloques
+   tutorial/calibs
+   tutorial/geog
 
 .. toctree::
    :maxdepth: 2

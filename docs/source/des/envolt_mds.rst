@@ -15,7 +15,7 @@ Funciones y atributos para implementar:
 #. :func:`~tinamit.Modelo.incrementar`: Avanza el modelo.
 #. :func:`~tinamit.Modelo.__init__`: Inicializa el modelo. En la llamada a ``super().__init__`` debes incluir un objeto :class:`~tinamit.envolt.mds.VariablesMDS` con los variables del modelo.
 #. :func:`~tinamit.Modelo.cambiar_vals`: No estríctamente necesario, pero la casi totalidad de modelos DS necesitarán tomar acción específica para cambiar valores de variables en el modelo externo.
-#. `ModeloDS.ext`: Una lista de las extensiones de archivo que se pueden leer por la envoltura.
+#. ``ModeloDS.ext``: Una lista de las extensiones de archivo que se pueden leer por la envoltura.
 
 Funciones y atributos opcionales:
 

@@ -9,6 +9,7 @@ from tinamit.calibs.ec import CalibradorEcOpt, CalibradorEcBayes
 from tinamit.datos.bd import BD
 from tinamit.datos.fuente import FuenteDic
 from tinamit.geog.región import gen_lugares
+from tinamit.ejemplos import obt_ejemplo
 
 try:
     import pymc3 as pm
@@ -17,7 +18,7 @@ except ImportError:
     pm = thn = None
 
 dir_act = os.path.split(__file__)[0]
-arch_csv_geog = os.path.join(dir_act, 'recursos/datos/prueba_geog.csv')
+arch_csv_geog = obt_ejemplo('geog_guate/geog_guate.csv')
 arch_mds = os.path.join(dir_act, 'recursos/mds/prueba_para_calib.mdl')
 
 calibradores = {'opt': CalibradorEcOpt, 'bayes': CalibradorEcBayes}
@@ -87,8 +88,8 @@ class TestCalibGeog(unittest.TestCase):
 
         fchs = pd.date_range(0, periods=len(x))
         cls.bd = BD(FuenteDic(
-            {'lugar': lugares, 'x': x, 'y': y, 'f': fchs}, 'Datos geográficos', lugares='lugar', fechas='f')
-        )
+            {'lugar': lugares, 'x': x, 'y': y, 'f': fchs}, 'Datos geográficos', lugares='lugar', fechas='f'
+        ))
 
         cls.lugar = gen_lugares(arch_csv_geog, nivel_base='País', nombre='Iximulew')
 

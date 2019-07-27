@@ -12,10 +12,30 @@ from ._utils import calc_máx_trz, algs_spotpy, eval_funcs
 
 
 class CalibradorMod(object):
+    """
+    Clase pariente para cada calibrador de modelo.
+    """
     def __init__(símismo, mod):
         símismo.mod = mod
 
     def calibrar(símismo, líms_paráms, datos, método='epm', n_iter=300, vars_obs=None):
+        """
+        Efectuar la calibración.
+
+        Parameters
+        ----------
+        líms_paráms: dict
+            Diccionario de cada parámetro con sus límites teoréticos.
+        datos: xr.Dataset or xr.DataArray or str or pd.DataFrame or dict or Fuente or list or BD
+            Los datos para la calibración.
+        método
+        n_iter
+        vars_obs
+
+        Returns
+        -------
+
+        """
         # Para hacer: limpiar comunicación de datos entre calibrador y CalibradorGeog, y también con validadores
         if isinstance(datos, xr.Dataset):
             obs = datos
@@ -43,8 +63,8 @@ class CalibradorModSpotPy(CalibradorMod):
             muestreador.sample(repetitions=n_iter, runs_after_convergence=200)
         else:
             muestreador.sample(n_iter)
-        codif = detectar_codif(temp.name + '.csv')
-        egr_spotpy = pd.read_csv(temp.name + '.csv', encoding=codif)
+
+        egr_spotpy = pd.read_csv(temp.name + '.csv', encoding='utf8')
 
         cols_prm = [c for c in egr_spotpy.columns if c.startswith('par')]
         probs = egr_spotpy['like1']

@@ -8,10 +8,11 @@ from tinamit.calibs.valid import ValidadorMod
 from tinamit.datos.bd import BD
 from tinamit.datos.fuente import FuenteDic
 from tinamit.envolt.mds import gen_mds
+from tinamit.ejemplos import obt_ejemplo
 
 dir_act = os.path.split(__file__)[0]
-arch_mds = os.path.join(dir_act, 'recursos/mds/mod_enferm.mdl')
-arch_csv_geog = os.path.join(dir_act, 'recursos/datos/prueba_geog.csv')
+arch_mds = obt_ejemplo('enfermedad/mod_enferm.mdl')
+arch_csv_geog = obt_ejemplo('geog_guate/geog_guate.csv')
 
 líms_paráms = {
     'taza de contacto': (0, 100),
@@ -39,7 +40,7 @@ class TestCalibModelo(unittest.TestCase):
         )
         datos = {ll: v[:, 0] for ll, v in simul.a_dic().items()}  # Para hacer: dimensiones múltiples,
         cls.datos = FuenteDic(
-            datos, 'Datos geográficos', lugares='lugar', fechas=np.arange(101)
+            datos, 'Datos', fechas=np.arange(101)
         )
 
     def test_calibrar_validar(símismo):

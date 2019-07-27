@@ -270,7 +270,7 @@ class FuentePandas(Fuente):
 
         Parameters
         ----------
-        obj: xarray.DataArray
+        obj: pd.DataFrame
             Los datos
         nombre: str
             El nombre de la fuente.

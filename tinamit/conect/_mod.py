@@ -130,7 +130,7 @@ class SuperConectado(Modelo):
 
 class Conectado(SuperConectado):
     """
-    Un modelo que conecta un :class:`~tinamit.envolt.mds._envolt.ModeloDS` con un
+    Un modelo que conecta un :class:`~tinamit.envolt.mds.ModeloDS` con un
     :class:`~tinamit.envolt.bf._envolt.ModeloBF`.
     """
 

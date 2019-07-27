@@ -47,7 +47,7 @@ distintas políticas con varios escenarios de cambios climáticos.
 
    t = EspecTiempo(365*50, f_inic='2020-01-01')
 
-   ops = OpsSimulGrupoCombin(t=t, clima=[clima_malo, clima_peor, clima_fritos])
+   ops = OpsSimulGrupoCombin(t=t, extern=vals_extern, clima=[clima_malo, clima_peor, clima_fritos])
    res = mod.simular_grupo(ops)
 
    # Para ver cuáles combinaciones corresponden con cada resultado (en orden)

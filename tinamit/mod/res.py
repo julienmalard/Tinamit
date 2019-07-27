@@ -9,6 +9,9 @@ from .var import Variable
 
 
 class ResultadosGrupo(dict):
+    """
+    Resultados de una simulación por grupo.
+    """
 
     def __init__(símismo, nombre):
         símismo.nombre = nombre
@@ -16,6 +19,9 @@ class ResultadosGrupo(dict):
 
 
 class ResultadosSimul(object):
+    """
+    Resultados de una simulación.
+    """
 
     def __init__(símismo, nombre, t, vars_interés):
         símismo.nombre = nombre
@@ -28,6 +34,16 @@ class ResultadosSimul(object):
             v.actualizar()
 
     def guardar(símismo, frmt='json', l_vars=None):
+        """
+        Guarda los resultados en un archivo.
+
+        Parameters
+        ----------
+        frmt: str
+            El formato deseado. Puede ser ``json`` o ``csv``.
+        l_vars:
+            La lista de variables de interés.
+        """
 
         if l_vars is None:
             l_vars = list(símismo)
@@ -60,6 +76,13 @@ class ResultadosSimul(object):
             raise ValueError(_('Formato de resultados "{}" no reconocido.').format(frmt))
 
     def a_dic(símismo):
+        """
+        Convierte los resultados en diccionario.
+
+        Returns
+        -------
+        dict
+        """
         return {v: r.a_dic() for v, r in símismo.res_vars.items()}
 
     def variables(símismo):
@@ -84,6 +107,9 @@ class ResultadosSimul(object):
 
 
 class ResultadosVar(object):
+    """
+    Los resultados de un variable.
+    """
     def __init__(símismo, var, t):
         símismo.var = var
         símismo.t = t
