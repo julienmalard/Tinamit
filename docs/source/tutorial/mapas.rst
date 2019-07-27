@@ -92,7 +92,9 @@ Por el momento, tienes:
    :include-source: True
    :context: close-figs
 
-   from tinamit.geog.mapa import Agua
+   from tinamit.geog.mapa import Agua, Calle
 
+   calles = Calle(obt_ejemplo('rechna_doab/calle.shp'))
+   río = Agua(obt_ejemplo('rechna_doab/río.shp'))
    canales = Agua(obt_ejemplo('rechna_doab/canal.shp'), llenar=False)
-   dibujar_mapa_de_res(forma_dinámica=frm, otras_formas=canales, res=res, var='Bosques', t=10)
+   dibujar_mapa_de_res(forma_dinámica=frm, otras_formas=[calles, canales, río], res=res, var='Bosques', t=10)

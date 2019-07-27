@@ -40,9 +40,8 @@ class TestCalibrador(unittest.TestCase):
         cls.clbrds = {ll: v(ec=ec, paráms=list(cls.paráms)) for ll, v in calibradores.items()}
 
         datos_y = cls.paráms['a'] * datos_x + cls.paráms['b'] + np.random.normal(0, 0.1, n_obs)
-        fchs = pd.date_range(0, periods=n_obs)
         cls.bd_datos = BD(
-            fuentes=FuenteDic({'y': datos_y, 'x': datos_x, 'f': fchs}, 'Datos generados', fechas='f')
+            fuentes=FuenteDic({'y': datos_y, 'x': datos_x, 'f': np.arange(n_obs)}, 'Datos generados', fechas='f')
         )
 
     def test_calibración_sencilla(símismo):

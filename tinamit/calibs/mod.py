@@ -5,9 +5,8 @@ import numpy as np
 import pandas as pd
 import spotpy as sp
 import xarray as xr
-
-from tinamit.cositas import detectar_codif
 from tinamit.datos.bd import BD
+
 from ._utils import calc_máx_trz, algs_spotpy, eval_funcs
 
 
@@ -15,6 +14,7 @@ class CalibradorMod(object):
     """
     Clase pariente para cada calibrador de modelo.
     """
+
     def __init__(símismo, mod):
         símismo.mod = mod
 
@@ -46,6 +46,21 @@ class CalibradorMod(object):
         return símismo._efec_calib(líms_paráms=líms_paráms, método=método, n_iter=n_iter, obs=obs)
 
     def _efec_calib(símismo, líms_paráms, método, n_iter, obs):
+        """
+        Efectua la calibración.
+
+        Parameters
+        ----------
+        líms_paráms: dict
+            Diccionario de cada parámetro con sus límites teoréticos.
+        método
+        n_iter
+        obs: xr.Dataset
+
+        Returns
+        -------
+
+        """
         raise NotImplementedError
 
 

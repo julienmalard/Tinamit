@@ -67,7 +67,7 @@ Bases de datos
 Para calibraciones y validaciones, puedes utilizar bases de datos, las cuales te permiten combinar varias fuentes
 de datos además de especificar datos geográficos.
 
-En Tinamït, una base de datos (:class:`~tinamit.datos.bd.BD`) está compuesto de una a más fuentes
+En Tinamït, una base de datos (:class:`~tinamit.datos.bd.BD`) está compuesta de una o más fuentes
 (:class:`~tinamit.datos.fuente.Fuente`). Fuentes pueden representar datos en formato ``.csv``
 (:class:`~tinamit.datos.fuente.FuenteCSV`), diccionarios (:class:`~tinamit.datos.fuente.FuenteDic`),
 ``Dataset`` o ``DataArray`` de ``xarray`` (:class:`~tinamit.datos.fuente.FuenteBaseXarray` y

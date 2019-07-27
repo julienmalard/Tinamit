@@ -2,7 +2,7 @@
 Individuos Infectados= INTEG (
 	infecciones-Recuperación,
 		número inicial infectado)
-	~	Person
+	~	Persona
 	~		|
 
 Individuos Resistentes= INTEG (
@@ -14,7 +14,7 @@ Individuos Resistentes= INTEG (
 
 población total=
 	Individuos Suceptibles + Individuos Infectados + Individuos Resistentes
-	~	Person
+	~	Persona
 	~		|
 
 Recuperación=
@@ -38,7 +38,7 @@ taza de infección = 0.005
 
 infecciones=
 	MIN(contactos entre suceptibles e infectados * taza de infección, Individuos Suceptibles)
-	~	Person/Day
+	~	Persona/Day
 	~		|
 
 taza de contacto = 100
@@ -51,7 +51,7 @@ FINAL TIME  = 2010
 	|
 
 número inicial infectado = 10
-	~	Person [0,100]
+	~	Persona [0,100]
 	~		|
 
 INITIAL TIME  = 1960
@@ -60,18 +60,18 @@ INITIAL TIME  = 1960
 	|
 
 contactos con suceptibles = Individuos Suceptibles * taza de contacto
-	~	Person/Day
+	~	Persona/Day
 	~		|
 
 Individuos Suceptibles= INTEG (
 	-infecciones,
 		1000)
-	~	Person
+	~	Persona
 	~		|
 
 contactos entre suceptibles e infectados = contactos con suceptibles *
                        fracción población infectada
-	~	Person/Day
+	~	Persona/Day
 	~		|
 
 SAVEPER = TIME STEP

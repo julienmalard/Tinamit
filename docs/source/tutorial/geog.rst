@@ -65,17 +65,13 @@ Cada :class:`~tinamit.geog.región.Nivel` en tu geografía corresponderá a un n
    lentamente la calibración y tus resultados no valdrán nada de todo modo. Siempre es buena idea visualmente
    comparar los resultados con los datos.
 
-Calibraciones con inferencia bayesiana se hacen con el calibrador :class:`~tinamit.calibs.ec.CalibradorEcBayes`.
-Casos sencillos con muchos datos disponibles generalmente se pueden resolver mucho más rápido con optimización
-normal con el calibrador :class:`~tinamit.calibs.ec.CalibradorEcOpt`.
-
 En este ejemplo, emplearemos optimización normal y supondremos que tenemos datos de
 
 .. code-block:: python
 
    from tinamit.calibs.ec import CalibradorEcOpt
 
-   # Generaremos unos datos artificiales (sí, hacemos trampa).
+
 
 
 El mismo ejemplo con calibración bayesiana se vería así.
