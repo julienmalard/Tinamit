@@ -364,7 +364,7 @@ class Agua(FormaEstática):
         llenar: bool
             Si hay que llenar el cuerpo de agua o no.
         """
-        super().__init__(archivo=archivo, color='#1249DD', llenar=llenar, alpha=0.5)
+        super().__init__(archivo=archivo, color='#13A6DD', llenar=llenar, alpha=0.5)
 
 
 class Bosque(FormaEstática):

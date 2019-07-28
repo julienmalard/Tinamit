@@ -65,27 +65,20 @@ Cada :class:`~tinamit.geog.región.Nivel` en tu geografía corresponderá a un n
    lentamente la calibración y tus resultados no valdrán nada de todo modo. Siempre es buena idea visualmente
    comparar los resultados con los datos.
 
-En este ejemplo, emplearemos optimización normal y supondremos que tenemos datos de
-
-.. code-block:: python
-
-   from tinamit.calibs.ec import CalibradorEcOpt
-
-
-
-
-El mismo ejemplo con calibración bayesiana se vería así.
-
-.. code-block:: python
-
-   from tinamit.calibs.ec import CalibradorEcBayes
-
+Simplemente puedes pasar un objeto :class:`~tinamit.geog.región.Lugar` a :class:`~tinamit.calibs.ec.CalibradorEcOpt`
+o al :class:`~tinamit.calibs.ec.CalibradorEcBayes` (ver :doc:`calibs`).
 
 Modelos
 ^^^^^^^
-También se pueden calibrar modelos enteros en vez de ecuación por ecuación.
+Calibraciones geográficas se pueden también aplicar al nivel del modelo entero.
 
 .. code-block:: python
+
+   import numpy as np
+
+   from tinamit.calibs.geog_mod import SimuladorGeog, CalibradorGeog
+   from tinamit.datos.bd import BD
+   from tinamit.datos.fuente import FuenteDic
 
    paráms = {
             '708': {
@@ -98,6 +91,21 @@ También se pueden calibrar modelos enteros en vez de ecuación por ecuación.
             }
    }
 
+   # Unos datos artificiales
+   simul = SimuladorGeog(mds).simular(
+       t=100, vals_geog=paráms,
+       vars_interés=['Individuos Suceptibles', 'Individuos Infectados', 'Individuos Resistentes']
+   )
+   datos = {
+       lg: {ll: v[:, 0] for ll, v in simul[lg].a_dic().items()} for lg in paráms
+   }
+
+   datos = BD([
+       FuenteDic(datos[lg], 'Datos geográficos', lugares=lg, fechas=np.arange(101)) for lg in paráms
+   ])
+
+   calib = CalibradorGeog(mds).calibrar(t=100, datos=datos, líms_paráms=líms_paráms, n_iter=50)
+
 
 Validación
 ----------
@@ -105,7 +113,9 @@ Se puede validar una calibración geográfica con la clase :class:`~tinamit.cali
 
 .. code-block:: python
 
-   valid = ValidadorGeog(mod).validar(
+   from tinamit.calibs.geog_mod import ValidadorGeog
+
+   valid = ValidadorGeog(mds).validar(
             t=100, datos=datos,
-            paráms={lg: {prm: trz['mejor'] for prm, trz in calib[lg].items()} for lg in símismo.paráms}
+            paráms={lg: {prm: trz['mejor'] for prm, trz in calib[lg].items()} for lg in paráms}
    )

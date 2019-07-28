@@ -28,12 +28,10 @@ con distintas tazas de contacto para cada departamento de Guatemala.
 
    from tinamit.ejemplos import obt_ejemplo
    from tinamit.envolt.mds import gen_mds
-   from tinamit.geog.región import gen_lugares
    from tinamit.geog.mapa import FormaDinámicaNombrada, dibujar_mapa_de_res
    from tinamit.mod import OpsSimulGrupo
 
    mds = gen_mds(obt_ejemplo('enfermedad/mod_enferm.mdl'))
-   guate = gen_lugares(obt_ejemplo('geog_guate/geog_guate.csv'), nivel_base='País', nombre='Iximulew')
    forma_deptos = obt_ejemplo('geog_guate/deptos.shp')
 
    ops = OpsSimulGrupo(
