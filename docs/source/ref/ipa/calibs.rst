@@ -3,25 +3,37 @@ Calibraciones
 
 Ecuaciones
 ----------
-.. autoclass:: tinamit.calibs.ec._ec.CalibradorEc
+.. autoclass:: tinamit.calibs.ec.CalibradorEc
    :members:
 
-.. autoclass:: tinamit.calibs.ec._opt.CalibradorEcOpt
+.. autoclass:: tinamit.calibs.ec.CalibradorEcOpt
    :members:
 
-.. autoclass:: tinamit.calibs.ec._bayes.CalibradorEcBayes
+.. autoclass:: tinamit.calibs.ec.CalibradorEcBayes
    :members:
 
-.. autoclass:: tinamit.calibs.ec._ec.Ecuación
+.. autoclass:: tinamit.calibs.ec.Ecuación
    :members:
 
 Modelos
 -------
-.. automodule:: tinamit.calibs.geog_mod
+.. autoclass:: tinamit.calibs.geog_mod.SimuladorGeog
    :members:
 
-.. automodule:: tinamit.calibs.mod
+.. autoclass:: tinamit.calibs.geog_mod.CalibradorGeog
    :members:
 
-.. automodule:: tinamit.calibs.valid
+.. autoclass:: tinamit.calibs.geog_mod.ValidadorGeog
+   :members:
+
+.. autoclass:: tinamit.calibs.CalibradorMod
+   :members:
+
+.. autoclass:: tinamit.calibs.CalibradorModSpotPy
+   :members:
+
+.. autoclass:: tinamit.calibs.CalibradorMod
+   :members:
+
+.. autoclass:: tinamit.calibs.valid.ValidadorMod
    :members:

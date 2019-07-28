@@ -3,26 +3,37 @@ Modelos DS
 
 Autogeneración
 --------------
-
 .. automodule:: tinamit.envolt.mds._auto
    :members:
 
 Modelos disponibles
 -------------------
-
-.. automodule:: tinamit.envolt.mds._envolt
+.. autoclass:: tinamit.envolt.mds.ModeloDS
    :members:
 
-.. autoclass:: tinamit.envolt.mds.pysd._envolt.ModeloPySD
+.. autoclass:: tinamit.envolt.mds.pysd.ModeloPySD
    :members:
 
-.. autoclass:: tinamit.envolt.mds.vensim_dll._envolt.ModeloVensimDLL
+.. autoclass:: tinamit.envolt.mds.vensim_dll.ModeloVensimDLL
    :members:
 
 
 Variables
 ---------
-
-.. automodule:: tinamit.envolt.mds._vars
+.. autoclass:: tinamit.envolt.mds.VarAuxiliar
    :members:
 
+.. autoclass:: tinamit.envolt.mds.VarConstante
+   :members:
+
+.. autoclass:: tinamit.envolt.mds.VarInic
+   :members:
+
+.. autoclass:: tinamit.envolt.mds.VarNivel
+   :members:
+
+.. autoclass:: tinamit.envolt.mds.VarMDS
+   :members:
+
+.. autoclass:: tinamit.envolt.mds.VariablesMDS
+   :members:

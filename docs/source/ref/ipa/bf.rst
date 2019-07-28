@@ -3,24 +3,22 @@ Modelos BF
 
 Autogeneración
 --------------
-
-.. automodule:: tinamit.envolt.bf._auto
+.. autofunction:: tinamit.envolt.bf.gen_bf
    :members:
 
 Modelos disponibles
 -------------------
-
 .. autoclass:: tinamit.envolt.bf.ModeloBF
    :members:
 
-.. automodule:: tinamit.envolt.bf._deter
+.. autoclass:: tinamit.envolt.bf.ModeloDeterminado
    :members:
 
-.. automodule:: tinamit.envolt.bf._bloq
+.. autoclass:: tinamit.envolt.bf.ModeloBloques
    :members:
 
-.. automodule:: tinamit.envolt.bf._indeter
+.. autoclass:: tinamit.envolt.bf.ModeloIndeterminado
    :members:
 
-.. automodule:: tinamit.envolt.bf._impac
+.. autoclass:: tinamit.envolt.bf.ModeloImpaciente
    :members:

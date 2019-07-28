@@ -55,8 +55,8 @@ humano.
 
 .. note::
 
-   Siendo subclases de :class:`~tinamit.mod.Modelo`, modelos BF (:class:`~tinamit.envolt.bf._envolt.ModeloBF`) y
-   DS (:class:`~tinamit.envolt.mds._envolt.ModeloDS`) también se pueden simular de manera independiente.
+   Siendo subclases de :class:`~tinamit.mod.Modelo`, modelos BF (:class:`~tinamit.envolt.bf.ModeloBF`) y
+   DS (:class:`~tinamit.envolt.mds.ModeloDS`) también se pueden simular de manera independiente.
 
 .. plot::
    :include-source: True
@@ -125,12 +125,12 @@ Tinamït reconoce las unidades de tiempo siguientes: ``año``, ``mes``, ``semana
 3+ modelos
 ----------
 Si tienes más que 2 modelos para conectar, también es fácil con la clase
-:class:`~tinamit.conect._envolt.SuperConectado`. Se pueden conectar de manera horizontal o jerárquica, cómo prefieres.
+:class:`~tinamit.conect.SuperConectado`. Se pueden conectar de manera horizontal o jerárquica, cómo prefieres.
 
 Horizontal
 ^^^^^^^^^^
 Se pueden conectar modelos individuales de manera "horizontal" en un solo modelo
-:class:`~tinamit.conect._envolt.SuperConectado`.
+:class:`~tinamit.conect.SuperConectado`.
 
 .. code-block:: python
 
