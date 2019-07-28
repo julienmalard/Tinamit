@@ -364,7 +364,7 @@ class Agua(FormaEstática):
         llenar: bool
             Si hay que llenar el cuerpo de agua o no.
         """
-        super().__init__(archivo=archivo, color='#A5BFDD', llenar=llenar, alpha=0.8)
+        super().__init__(archivo=archivo, color='#1249DD', llenar=llenar, alpha=0.5)
 
 
 class Bosque(FormaEstática):
@@ -382,7 +382,7 @@ class Calle(FormaEstática):
     """
 
     def __init__(símismo, archivo):
-        super().__init__(archivo=archivo, color='#A5BFDD', llenar=False, alpha=1)
+        super().__init__(archivo=archivo, color='#585763', llenar=False, alpha=1)
 
 
 class Ciudad(FormaEstática):
