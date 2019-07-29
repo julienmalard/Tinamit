@@ -36,6 +36,9 @@ class ModeloDeterminado(ModeloImpaciente):
         super().incrementar(rebanada)
 
     def _act_vals_clima(símismo, f_0, f_1):
+
+        super()._act_vals_clima(f_0, f_1=f_1)
+
         # Actualizar datos de clima
         if símismo.corrida.clima and símismo.vars_clima and símismo.paso_en_ciclo == 0:
             t = símismo.corrida.t

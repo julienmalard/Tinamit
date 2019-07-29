@@ -370,7 +370,6 @@ class Modelo(object):
         f_1 : ft.date | ft.datetime
             La próxima fecha.
         """
-
         datos = símismo.corrida.clima.combin_datos(vars_clima=símismo.vars_clima, f_inic=f_0, f_final=f_1)
 
         símismo.cambiar_vals(valores=datos)
