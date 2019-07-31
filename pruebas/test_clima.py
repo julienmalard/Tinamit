@@ -70,29 +70,53 @@ class TestClimaBFs(TestCase):
         mod.conectar_var_clima('ingreso_ciclo', 'بارش', conv=1, combin='total')
         mod.conectar_var_clima('ingreso', 'بارش', conv=1, combin='total')
 
+        """
+        Vamos a repetir los datos de los variables climáticos para paso = 0 y paso = 1. De pronto hay mejor solución,
+        pero por el momento parece ser la mejor manera de asegurarse que var.obt_vals_paso() funcione corectamente.
+        """
+        ref_paso = símismo.lluvia[:360]
+        ref_ciclo = np.repeat(np.array([
+            np.sum(símismo.lluvia[x * 30:x * 30 + 30]) for x in range(12)
+        ]), 30)
+
+        pruebas = {
+            'ingreso_ciclo': ref_ciclo,
+            'ingreso': ref_paso
+        }
+
         res = mod.simular(EspecTiempo(30 * 12 - 1, f_inic=símismo.fechas[0]), clima=símismo.clima)
 
-        ref = np.repeat(np.array([
-            np.sum(símismo.lluvia[x * 30:x * 30 + 30]) for x in range(0, 12)
-        ]), 30)
-        npt.assert_equal(res['ingreso_ciclo'].vals[:, 0], ref)
-
-        npt.assert_equal(res['ingreso'].vals[:, 0], símismo.lluvia[:360])
+        for prb, ref in pruebas.items():
+            with símismo.subTest(prb):
+                npt.assert_equal(res[prb].vals[:, 0].values, ref)
 
     def test_bloques(símismo):
-        mod = EjBloques(tmñ_bloques=[4, 5, 3], unid_tiempo='meses')
+        tmñ_bloques = [4, 5, 3]
+        mod = EjBloques(tmñ_bloques=tmñ_bloques, unid_tiempo='meses')
         mod.conectar_var_clima('ingreso_paso', 'بارش', conv=1, combin='total')
         mod.conectar_var_clima('ingreso_bloque', 'بارش', conv=1, combin='total')
         mod.conectar_var_clima('ingreso', 'بارش', conv=1, combin='total')
 
-        res = mod.simular(EspecTiempo(30 * 12 - 1, f_inic=símismo.fechas[0]), clima=símismo.clima)
+        n_días = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        sum_cum = np.cumsum(np.append([0], n_días))
+        ref_paso = np.array([
+            np.sum(símismo.lluvia[sum_cum[x]:sum_cum[x + 1]]) for x in range(12)
+        ])
 
-        n_días = [0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-        sum_cum = np.cumsum(n_días)
-        ref = np.repeat(np.array([
-            np.sum(símismo.lluvia[sum_cum[x]:sum_cum[x+1]]) for x in range(0, 12)
-        ]), n_días[1:])
-        npt.assert_equal(res['ingreso_ciclo'].vals[:, 0], ref)
+        sum_cum_bloq = np.cumsum(np.append([0], tmñ_bloques))
+        ref_bloques = np.repeat(np.array([
+            np.sum(símismo.lluvia[sum_cum[sum_cum_bloq[i]]: sum_cum[sum_cum_bloq[i + 1]]])
+            for i in range(len(sum_cum_bloq) - 1)
+        ]), tmñ_bloques)
+        ref_ciclo = np.sum(símismo.lluvia[:np.sum(n_días)])
 
-        npt.assert_equal(res['ingreso_bloque'].vals[:, 0], símismo.lluvia[:360])
-        npt.assert_equal(res['ingreso'].vals[:, 0], símismo.lluvia[:360])
+        pruebas = {
+            'ingreso': ref_ciclo,
+            'ingreso_paso': ref_paso,
+            'ingreso_bloque': ref_bloques
+        }
+
+        res = mod.simular(EspecTiempo(11, f_inic=símismo.fechas[0]), clima=símismo.clima)
+        for prb, ref in pruebas.items():
+            with símismo.subTest(prb):
+                npt.assert_equal(res[prb].vals[:, 0].values, ref)

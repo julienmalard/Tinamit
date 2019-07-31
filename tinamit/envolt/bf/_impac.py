@@ -112,6 +112,9 @@ class VarPaso(Variable):
         # reformar para variables unidimensionales
         símismo._matr_paso[paso] = val.reshape(*símismo._matr_paso[paso].shape)
 
+        # También hay que actualizar el variable paso
+        super().poner_val(símismo._matr_paso[símismo.paso])
+
     def obt_vals_paso(símismo):
         """
         Obtener los valores del variable a todos los pasos del ciclo actual.

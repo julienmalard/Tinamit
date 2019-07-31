@@ -62,7 +62,7 @@ class ModeloDeterminado(ModeloImpaciente):
             for var, vl in datos_ciclo.items():
                 símismo.variables[var].poner_val(vl)
 
-            for i in range(-1, símismo.tmñ_ciclo-1):
+            for i in range(símismo.tmñ_ciclo):
 
                 f_final = f_inic + deltarelativo(**{a_unid_ft[base_t]: factor}) - un_día
 

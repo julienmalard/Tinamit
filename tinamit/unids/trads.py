@@ -2,10 +2,10 @@ import json
 import os
 from itertools import chain as cadena
 
+import babel
 import pint
 import pkg_resources
 from pint import UnitRegistry
-
 from tinamit.config import _
 from tinamit.cositas import guardar_json, cargar_json
 
@@ -63,7 +63,7 @@ def act_arch_trads(l_d_t):
     # Agregar las unidades de Pint que faltan
     for u in unids_faltan:  # pragma: sin cobertura
         d_u = {'en': {'pr': u, 'sn': []}}
-        d_u.update({l: {'pr': '', 'sn': []} for l in lengs if l != 'en'})
+        d_u.update({lng: {'pr': '', 'sn': []} for lng in lengs if lng != 'en'})
         l_d_t.append(d_u)
 
     # Limpiar el diccionario de traducciones
@@ -99,6 +99,8 @@ def trad_unid(unid, leng_final, leng_orig=None, falla_silencio=True):
         La lengua a la cual traducir.
     leng_orig : str
         La lengua original de la unidad. Si no se especifica, se intentará adivinarla.
+    falla_silencio: bool
+        Si hay que devolver un error si no se encontró traducción.
 
     Returns
     -------
@@ -300,7 +302,7 @@ def _buscar_d_unid(unid, leng=None):
         if leng is None:
             raise ValueError(_('La unidad "{}" no existe en cualquier lengua conocida.').format(unid))
         else:
-            raise ValueError(_('La unidad "{u}" no existe en la lengua "{l}".').format(u=unid, l=leng))
+            raise ValueError(_('La unidad "{u}" no existe en la lengua "{lng}".').format(u=unid, lng=leng))
 
     # Devolver el diccionario de unidad encontrado.
     return d_unid
@@ -335,8 +337,6 @@ def buscar_singular(u):
 
 
 # Actualizar las traducciones al importar este módulo
-import babel
-
 if os.path.getmtime(babel.__file__) > os.path.getmtime(_archivo_trads):
     act_arch_trads(l_d_t=l_dic_trads)
 básicas = {
@@ -344,5 +344,5 @@ básicas = {
     'year': 'año',
     'day': 'día'
 }
-for u, t in básicas.items():
-    agregar_trad(u, t, leng_trad='es', leng_orig='en')
+for ll, v in básicas.items():
+    agregar_trad(ll, v, leng_trad='es', leng_orig='en')

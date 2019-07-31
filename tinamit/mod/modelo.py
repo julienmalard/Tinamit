@@ -358,7 +358,7 @@ class Modelo(object):
             'conv': conv
         }
 
-    def _act_vals_clima(símismo, f_0, f_1):
+    def _act_vals_clima(símismo, f_0, f_1, vars_clima=None):
         """
         Actualiza los variables climáticos. Esta función es la automática para cada modelo. Si necesitas algo más
         complicado (como, por ejemplo, predicciones por estación), la puedes cambiar en tu subclase.
@@ -369,8 +369,10 @@ class Modelo(object):
             La fecha actual.
         f_1 : ft.date | ft.datetime
             La próxima fecha.
+        vars_clima : dict
         """
-        datos = símismo.corrida.clima.combin_datos(vars_clima=símismo.vars_clima, f_inic=f_0, f_final=f_1)
+        vars_clima = vars_clima or símismo.vars_clima
+        datos = símismo.corrida.clima.combin_datos(vars_clima=vars_clima, f_inic=f_0, f_final=f_1)
 
         símismo.cambiar_vals(valores=datos)
 

@@ -19,33 +19,43 @@ class ModeloBloques(ModeloDeterminado):
         símismo.tmñ_bloques = variables.tmñ_bloques
         super().__init__(tmñ_ciclo=np.sum(símismo.tmñ_bloques), variables=variables, nombre=nombre)
 
-    def _act_vals_clima(símismo, f_0, f_1):
+    def _act_vals_clima(símismo, f_0, f_1, vars_clima=None):
 
-        # Solamante hay que cambiar los datos si es el principio de un nuevo ciclo.
-        if símismo.corrida.clima and símismo.vars_clima and símismo.paso_en_ciclo == 0:
+        vars_clima = vars_clima or símismo.vars_clima
 
-            # La fecha inicial
-            f_inic = f_0
+        # Actualizar datos de clima
+        p = símismo.paso_en_ciclo
 
-            for b, tmñ in enumerate(símismo.tmñ_bloques):
-                # Para cada bloque...
+        if símismo.corrida.clima and vars_clima and p == (símismo.tmñ_ciclo - 1):
+            t = símismo.corrida.t
+            f_inic = t.fecha()
 
-                # La fecha final
-                base_t, factor = a_unid_tnmt(símismo.unidad_tiempo())
-                f_final = f_inic + deltarelativo(**{a_unid_ft[base_t]: tmñ * factor})
+            un_día = deltarelativo(days=1)
+
+            vars_clim_bloque = {
+                vr: d for vr, d in vars_clima.items() if isinstance(símismo.variables[vr], VarBloque)
+            }
+            vars_otros = {vr: d for vr, d in vars_clima.items() if vr not in vars_clim_bloque}
+
+            super()._act_vals_clima(f_0=f_0, f_1=f_1, vars_clima=vars_otros)
+
+            base_t, factor = a_unid_tnmt(símismo.unidad_tiempo())
+
+            for i, b in enumerate(símismo.tmñ_bloques):
+
+                f_final = f_inic + deltarelativo(**{a_unid_ft[base_t]: factor * b}) - un_día
 
                 # Calcular los datos
                 datos = símismo.corrida.clima.combin_datos(
-                    vars_clima=símismo.vars_clima, f_inic=f_inic, f_final=f_final
+                    vars_clima=vars_clim_bloque, f_inic=f_inic, f_final=f_final
                 )
 
                 # Aplicar los valores de variables calculados
                 for var, datos_vrs in datos.items():
                     # Guardar el valor para esta estación
-                    símismo.variables[var].poner_vals_paso(datos_vrs, paso=b)
+                    símismo.variables[var].poner_vals_paso(datos_vrs, paso=i)
 
-                # Avanzar la fecha
-                f_inic = f_final
+                f_inic = f_final + un_día
 
     def unidad_tiempo(símismo):
         raise NotImplementedError
