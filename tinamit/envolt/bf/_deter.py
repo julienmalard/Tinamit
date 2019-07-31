@@ -35,23 +35,26 @@ class ModeloDeterminado(ModeloImpaciente):
 
         super().incrementar(rebanada)
 
-    def _act_vals_clima(símismo, f_0, f_1):
+    def _act_vals_clima(símismo, f_0, f_1, vars_clima=None):
 
+        vars_clima = vars_clima or símismo.vars_clima
         # Actualizar datos de clima
         p = símismo.paso_en_ciclo
 
-        if símismo.corrida.clima and símismo.vars_clima and p == (símismo.tmñ_ciclo - 1):
+        if símismo.corrida.clima and vars_clima and p == (símismo.tmñ_ciclo - 1):
             t = símismo.corrida.t
             f_inic = t.fecha()
 
+            un_día = deltarelativo(days=1)
+
             vars_clim_paso = {
-                vr: d for vr, d in símismo.vars_clima.items() if isinstance(símismo.variables[vr], VarPasoDeter)
+                vr: d for vr, d in vars_clima.items() if isinstance(símismo.variables[vr], VarPasoDeter)
             }
-            vars_clim_ciclo = {vr: d for vr, d in símismo.vars_clima.items() if vr not in vars_clim_paso}
+            vars_clim_ciclo = {vr: d for vr, d in vars_clima.items() if vr not in vars_clim_paso}
 
             base_t, factor = a_unid_tnmt(símismo.unidad_tiempo())
 
-            f_final = f_inic + deltarelativo(**{a_unid_ft[base_t]: factor * símismo.tmñ_ciclo - 1})
+            f_final = f_inic + deltarelativo(**{a_unid_ft[base_t]: factor * símismo.tmñ_ciclo}) - un_día
 
             datos_ciclo = símismo.corrida.clima.combin_datos(
                 vars_clima=vars_clim_ciclo, f_inic=f_inic, f_final=f_final
@@ -61,7 +64,7 @@ class ModeloDeterminado(ModeloImpaciente):
 
             for i in range(-1, símismo.tmñ_ciclo-1):
 
-                f_final = f_inic + deltarelativo(**{a_unid_ft[base_t]: factor}) - deltarelativo(days=1)
+                f_final = f_inic + deltarelativo(**{a_unid_ft[base_t]: factor}) - un_día
 
                 # Calcular los datos
                 datos = símismo.corrida.clima.combin_datos(
@@ -73,7 +76,7 @@ class ModeloDeterminado(ModeloImpaciente):
                     # Guardar el valor para esta estación
                     símismo.variables[var].poner_vals_paso(datos_vrs, paso=i)
 
-                f_inic = f_final + deltarelativo(days=1)
+                f_inic = f_final + un_día
 
     def avanzar_modelo(símismo, n_ciclos):
         """
