@@ -13,7 +13,7 @@ class Variable(object):
         ----------
         nombre: str
             El nombre del variable.
-        unid: str
+        unid: str or None
             Las unidades del variable.
         ingr: bool
             Si es un ingreso al modelo.

@@ -3,7 +3,7 @@ from unittest import TestCase
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
-from pruebas.recursos.bf.variantes import EjDeterminado
+from pruebas.recursos.bf.variantes import EjDeterminado, EjBloques
 from pruebas.recursos.mod.prueba_mod import ModeloPrueba
 from tinamit.mod.clima import Clima
 from tinamit.tiempo.tiempo import EspecTiempo
@@ -70,14 +70,29 @@ class TestClimaBFs(TestCase):
         mod.conectar_var_clima('ingreso_ciclo', 'بارش', conv=1, combin='total')
         mod.conectar_var_clima('ingreso', 'بارش', conv=1, combin='total')
 
-        res = mod.simular(EspecTiempo(30*12-1, f_inic=símismo.fechas[0]), clima=símismo.clima)
+        res = mod.simular(EspecTiempo(30 * 12 - 1, f_inic=símismo.fechas[0]), clima=símismo.clima)
 
         ref = np.repeat(np.array([
             np.sum(símismo.lluvia[x * 30:x * 30 + 30]) for x in range(0, 12)
         ]), 30)
         npt.assert_equal(res['ingreso_ciclo'].vals[:, 0], ref)
 
-        npt.assert_equal(res['ingreso'].vals[:, 0], símismo.lluvia[:13])
+        npt.assert_equal(res['ingreso'].vals[:, 0], símismo.lluvia[:360])
 
     def test_bloques(símismo):
-        raise NotImplementedError
+        mod = EjBloques(tmñ_bloques=[4, 5, 3], unid_tiempo='meses')
+        mod.conectar_var_clima('ingreso_paso', 'بارش', conv=1, combin='total')
+        mod.conectar_var_clima('ingreso_bloque', 'بارش', conv=1, combin='total')
+        mod.conectar_var_clima('ingreso', 'بارش', conv=1, combin='total')
+
+        res = mod.simular(EspecTiempo(30 * 12 - 1, f_inic=símismo.fechas[0]), clima=símismo.clima)
+
+        n_días = [0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        sum_cum = np.cumsum(n_días)
+        ref = np.repeat(np.array([
+            np.sum(símismo.lluvia[sum_cum[x]:sum_cum[x+1]]) for x in range(0, 12)
+        ]), n_días[1:])
+        npt.assert_equal(res['ingreso_ciclo'].vals[:, 0], ref)
+
+        npt.assert_equal(res['ingreso_bloque'].vals[:, 0], símismo.lluvia[:360])
+        npt.assert_equal(res['ingreso'].vals[:, 0], símismo.lluvia[:360])

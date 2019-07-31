@@ -43,7 +43,8 @@ class EjBloques(ModeloBloques):
 
     @staticmethod
     def _gen_vars(tmñ_bloques):
-        tmñ_ciclo = np.sum(tmñ_bloques)
+        # noinspection PyTypeChecker
+        tmñ_ciclo = np.sum(tmñ_bloques)  # type: int
         return VariablesModBloques([
             Variable('ciclo', unid=None, ingr=False, egr=True, líms=(0, None)),
             VarBloque(

@@ -1,8 +1,8 @@
 import numpy as np
-from dateutil import relativedelta as deltarelativo
+from dateutil.relativedelta import relativedelta as deltarelativo
 
 from tinamit.envolt.bf._deter import ModeloDeterminado, VariablesModDeter, VarPasoDeter
-from tinamit.tiempo.tiempo import a_unid_tnmt
+from tinamit.tiempo.tiempo import a_unid_tnmt, a_unid_ft
 
 
 class ModeloBloques(ModeloDeterminado):
@@ -22,7 +22,7 @@ class ModeloBloques(ModeloDeterminado):
     def _act_vals_clima(símismo, f_0, f_1):
 
         # Solamante hay que cambiar los datos si es el principio de un nuevo ciclo.
-        if símismo.paso_en_ciclo == 0:
+        if símismo.corrida.clima and símismo.vars_clima and símismo.paso_en_ciclo == 0:
 
             # La fecha inicial
             f_inic = f_0
@@ -32,7 +32,7 @@ class ModeloBloques(ModeloDeterminado):
 
                 # La fecha final
                 base_t, factor = a_unid_tnmt(símismo.unidad_tiempo())
-                f_final = f_inic + deltarelativo(**{base_t: tmñ * factor})
+                f_final = f_inic + deltarelativo(**{a_unid_ft[base_t]: tmñ * factor})
 
                 # Calcular los datos
                 datos = símismo.corrida.clima.combin_datos(

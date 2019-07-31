@@ -37,10 +37,10 @@ class ModeloDeterminado(ModeloImpaciente):
 
     def _act_vals_clima(símismo, f_0, f_1):
 
-        super()._act_vals_clima(f_0, f_1=f_1)
-
         # Actualizar datos de clima
-        if símismo.corrida.clima and símismo.vars_clima and símismo.paso_en_ciclo == 0:
+        p = símismo.paso_en_ciclo
+
+        if símismo.corrida.clima and símismo.vars_clima and p == (símismo.tmñ_ciclo - 1):
             t = símismo.corrida.t
             f_inic = t.fecha()
 
@@ -51,18 +51,17 @@ class ModeloDeterminado(ModeloImpaciente):
 
             base_t, factor = a_unid_tnmt(símismo.unidad_tiempo())
 
-            f_final = f_inic + deltarelativo(**{a_unid_ft[base_t]: factor * símismo.tmñ_ciclo})
+            f_final = f_inic + deltarelativo(**{a_unid_ft[base_t]: factor * símismo.tmñ_ciclo - 1})
 
             datos_ciclo = símismo.corrida.clima.combin_datos(
                 vars_clima=vars_clim_ciclo, f_inic=f_inic, f_final=f_final
             )
             for var, vl in datos_ciclo.items():
-                # Guardar el valor para esta estación
                 símismo.variables[var].poner_val(vl)
 
-            for i in range(1, símismo.tmñ_ciclo):
+            for i in range(-1, símismo.tmñ_ciclo-1):
 
-                f_final = f_inic + deltarelativo(**{a_unid_ft[base_t]: factor})
+                f_final = f_inic + deltarelativo(**{a_unid_ft[base_t]: factor}) - deltarelativo(days=1)
 
                 # Calcular los datos
                 datos = símismo.corrida.clima.combin_datos(
@@ -74,7 +73,7 @@ class ModeloDeterminado(ModeloImpaciente):
                     # Guardar el valor para esta estación
                     símismo.variables[var].poner_vals_paso(datos_vrs, paso=i)
 
-                f_inic = f_final
+                f_inic = f_final + deltarelativo(days=1)
 
     def avanzar_modelo(símismo, n_ciclos):
         """

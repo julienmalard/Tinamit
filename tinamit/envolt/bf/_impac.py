@@ -67,7 +67,7 @@ class VarPaso(Variable):
         ----------
         nombre: str
             El nombre del variable.
-        unid: str
+        unid: str or None
             Las unidades del variable.
         ingr: bool
             Si es un ingreso al modelo.
@@ -85,7 +85,7 @@ class VarPaso(Variable):
         super().__init__(nombre, unid, ingr, egr, inic=inic, líms=líms, info=info)
         símismo._matr_paso = np.zeros((tmñ_ciclo, *símismo._val.shape))
         símismo._matr_paso[:] = símismo.inic
-        símismo.paso = 0
+        símismo.paso = -1
 
     def poner_val(símismo, val):
         símismo._matr_paso[símismo.paso] = val
@@ -107,7 +107,7 @@ class VarPaso(Variable):
             El paso al cual poner el nuevo valor del variable.
 
         """
-        paso = paso or slice(None, None)
+        paso = paso if paso is not None else slice(None, None)
 
         # reformar para variables unidimensionales
         símismo._matr_paso[paso] = val.reshape(*símismo._matr_paso[paso].shape)
@@ -137,6 +137,6 @@ class VarPaso(Variable):
 
     def reinic(símismo):
 
-        símismo.paso = 0
+        símismo.paso = -1
         símismo._matr_paso[:] = símismo.inic
         super().reinic()
