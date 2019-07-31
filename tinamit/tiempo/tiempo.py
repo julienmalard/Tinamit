@@ -164,9 +164,9 @@ class TiempoCalendario(Tiempo):
         if símismo.unid_paso in ['año', 'mes']:
             delta = relativedelta(**{a_unid_ft[símismo.unid_paso]: símismo.tmñ_paso * símismo.fact_conv / fact})
             n_días = (símismo.fecha() - (símismo.fecha() - delta)).days
-            return int(convertir('día', a=unid, val=n_días))
+            return round(convertir('día', a=unid, val=n_días))
 
-        return int(convertir(símismo.unid_paso, a=unid, val=símismo.tmñ_paso * símismo.fact_conv / fact))
+        return round(convertir(símismo.unid_paso, a=unid, val=símismo.tmñ_paso * símismo.fact_conv / fact))
 
 
 class EspecTiempo(object):
