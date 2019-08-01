@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Language-Team: Tz’utujil (https://www.transifex.com/qatikon/teams/70565/tzj/)\n"
 "MIME-Version: 1.0\n"
@@ -25,27 +25,24 @@ msgstr ""
 msgid ""
 "La modelización :abbr:`DS (Dinámicas de Sistemas)` es una manera popular de "
 "hacer modelos **participativos** y **visuales** para el manejo ambiental y "
-"socio-económico. `Vensim <https://vensim.com/>` y `Stella "
-"<https://www.iseesystems.com/store/products/stella-architect.aspx>` son "
+"socio-económico. `Vensim <https://vensim.com/>`_ y `Stella "
+"<https://www.iseesystems.com/store/products/stella-architect.aspx>`_ son "
 "programas populares y tienen versiones grátis."
 msgstr ""
 
 #: ../../source/general/intro.rst:8
 msgid ""
-"No obstante, la inclusión de procesos ambientales or :abbr:`BF (biofísicos)`"
-" se complica en modelos :abbr:`DS (Dinámicas de Sistemas)`. Y de verdad no "
-"deberías tener que contruir un modelo hidrológico o de cultivos en el "
-"ambiente :abbr:`DS (Dinámicas de Sistemas)` solamente porque quieres ver los"
-" impactos de tu modelo socio-económico :abbr:`DS (Dinámicas de Sistemas)` en"
-" el ambiente y vice-versa [1]_. Ya existen muchos modelos :abbr:`BF "
-"(biofísicos)` que lo hacen para ti ([2]_, [3]_, [4]_."
+"No obstante, la inclusión de procesos ambientales o :abbr:`BF (biofísicos)` "
+"se complica en modelos DS. Y de verdad no deberías tener que contruir un "
+"modelo hidrológico o de cultivos en el ambiente DS solamente porque quieres "
+"ver los impactos de tu modelo socio-económico DS en el ambiente y vice-versa"
+" [1]_. Ya existen muchos modelos BF que lo hacen para ti ([2]_, [3]_, [4]_)."
 msgstr ""
 
 #: ../../source/general/intro.rst:14
 msgid ""
-"¿Pero cómo conectar un modelo :abbr:`DS (Dinámicas de Sistemas)` con un "
-":abbr:`BF (biofísicos)`? Por eso existe Tinamït. Empieza con nuestros "
-"tutoriales :doc:`aquí </tutorial/conex>` o, aún mejor, con la "
+"¿Pero cómo conectar un modelo DS con un BF? Por eso existe Tinamït. Empieza "
+"con nuestros tutoriales :doc:`aquí </tutorial/conex>` o, aún mejor, con la "
 ":doc:`instalción </general/instal>`."
 msgstr ""
 
@@ -55,4 +52,26 @@ msgstr ""
 
 #: ../../source/general/intro.rst:24
 msgid "Diagrama de la estructura conceptual de Tinamït."
+msgstr ""
+
+#: ../../source/general/intro.rst:27
+msgid ""
+"Jeong H, Adamowski J. 2016. A system dynamics based socio-hydrological model"
+" for agricultural wastewater reuse at the watershed scaleAgricultural Water "
+"Management, 171: 89-107. https://doi.org/10.1016/j.agwat.2016.03.019"
+msgstr ""
+
+#: ../../source/general/intro.rst:30
+msgid "SWAT+. https://swat.tamu.edu/software/plus/"
+msgstr ""
+
+#: ../../source/general/intro.rst:32
+msgid "SAHYSMOD. https://www.waterlog.info/sahysmod.htm"
+msgstr ""
+
+#: ../../source/general/intro.rst:35
+msgid ""
+"Jones, J.W., G. Hoogenboom, C.H. Porter, K.J. Boote, W.D. Batchelor, L.A. "
+"Hunt, P.W. Wilkens, U. Singh, A.J. Gijsman, and J.T. Ritchie. 2003. DSSAT "
+"Cropping System Model. European Journal of Agronomy 18:235-265."
 msgstr ""

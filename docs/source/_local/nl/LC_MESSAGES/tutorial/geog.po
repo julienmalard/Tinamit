@@ -1,0 +1,200 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
+"PO-Revision-Date: 2019-08-01 11:33+0000\n"
+"Language-Team: Dutch (https://www.transifex.com/qatikon/teams/70565/nl/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../../source/tutorial/geog.rst:2
+msgid "Geografía"
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:3
+msgid ""
+"Tinamït cuenta con funcionalidades de datos geográficos para simulaciones, "
+"calibraciones y validaciones."
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:6
+msgid "Especificación"
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:7
+msgid ""
+"Primero tenemos que especificar nuestra geografía. Ésta está compuesta de "
+"lugares (:class:`~tinamit.geog.región.Lugar`) de distintos niveles "
+"(:class:`~tinamit.geog.región.Nivel`). Por ejemplo, en el nivel "
+"departamental podremos encontrar varios muninicipios."
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:11
+msgid ""
+"from tinamit.geog.región import Nivel, Lugar\n"
+"\n"
+"muni = Nivel('Municipio')\n"
+"dept = Nivel('Departamento', subniveles=muni)\n"
+"terr = Nivel('Territorio', subniveles=muni)\n"
+"país = Nivel('País', subniveles=[dept, terr])\n"
+"\n"
+"muni1, muni2, muni3 = [Lugar('Muni%i' % i, nivel=muni, cód='M' + str(i)) for i in range(1, 4)]\n"
+"\n"
+"dept1 = Lugar('Dept1', nivel=dept, cód='D1', sub_lugares=[muni1, muni2])\n"
+"dept2 = Lugar('Dept2', nivel=dept, cód='D2', sub_lugares=[muni3])\n"
+"terr1 = Lugar('Terr1', nivel=terr, cód='T1', sub_lugares=[muni1])\n"
+"terr2 = Lugar('Terr2', nivel=terr, cód='T2', sub_lugares=[muni2])\n"
+"\n"
+"guate = Lugar(\n"
+"    'Guatemala', sub_lugares={muni1, muni2, muni3, dept1, dept2, terr1, terr2},\n"
+"    nivel=país\n"
+")"
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:33
+msgid ""
+"O, para ahorar tiempo con geografías más complejas, puedes emplear la "
+"función :func:`~tinamit.geog.región.gen_lugares`, que genera un lugar "
+"automáticamente a base de un archivo de ``.csv``."
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:36
+msgid ""
+"from tinamit.geog.región import gen_lugares\n"
+"from tinamit.ejemplos import obt_ejemplo\n"
+"\n"
+"guate = gen_lugares(obt_ejemplo('geog_guate/geog_guate.csv'), nivel_base='País', nombre='Iximulew')"
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:44
+msgid ""
+"Puedes especificar niveles paralelos. Por ejemplo, aquí ``Departamento`` y "
+"``Territorio`` son dos maneras alternativas de agrupar los municipios de "
+"Guatemala."
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:48
+msgid "Calibración"
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:49
+msgid ""
+"Se pueden calibrar modelos según datos geográficos. El resultado será una "
+"calibración distinta para cada lugar para el cual tienes datos."
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:53
+msgid "Ecuaciones"
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:54
+msgid ""
+"Tinamït tiene funcionalidades **experimentales** para calibrar ecuaciones "
+"con inferencia bayesiana jerárquica. Esta funcionalidad permite al modelo "
+"inferir valores el regiones para las cuales tienes muy poco (o hacia no) "
+"datos. Funciona por calibrar los variables al nivel más alto (por ejemplo, "
+"nacional) y después ajustar sus estimos para cada sublugar según la "
+"disponibilidad de datos."
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:59
+msgid ""
+"Cada :class:`~tinamit.geog.región.Nivel` en tu geografía corresponderá a un "
+"nivel distinto en el modelo jerárquico."
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:62
+msgid ""
+"La calibración con inferencia bayesiana jerárquica es muy emocionante pero "
+"también todavía **experimental**."
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:64
+msgid ""
+"Si tus ecuaciones no están bien definidas o si su forma no corresponde con "
+"la de los datos, correrá muy lentamente la calibración y tus resultados no "
+"valdrán nada de todo modo. Siempre es buena idea visualmente comparar los "
+"resultados con los datos."
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:68
+msgid ""
+"Simplemente puedes pasar un objeto :class:`~tinamit.geog.región.Lugar` a "
+":class:`~tinamit.calibs.ec.CalibradorEcOpt` o al "
+":class:`~tinamit.calibs.ec.CalibradorEcBayes` (ver :doc:`calibs`)."
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:72
+msgid "Modelos"
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:73
+msgid ""
+"Calibraciones geográficas se pueden también aplicar al nivel del modelo "
+"entero."
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:75
+msgid ""
+"import numpy as np\n"
+"\n"
+"from tinamit.calibs.geog_mod import SimuladorGeog, CalibradorGeog\n"
+"from tinamit.datos.bd import BD\n"
+"from tinamit.datos.fuente import FuenteDic\n"
+"\n"
+"paráms = {\n"
+"         '708': {\n"
+"             'taza de contacto': 81.25, 'taza de infección': 0.007, 'número inicial infectado': 22.5,\n"
+"             'taza de recuperación': 0.0375\n"
+"         },\n"
+"         '1010': {\n"
+"             'taza de contacto': 50, 'taza de infección': 0.005, 'número inicial infectado': 40,\n"
+"             'taza de recuperación': 0.050\n"
+"         }\n"
+"}\n"
+"\n"
+"# Unos datos artificiales\n"
+"simul = SimuladorGeog(mds).simular(\n"
+"    t=100, vals_geog=paráms,\n"
+"    vars_interés=['Individuos Suceptibles', 'Individuos Infectados', 'Individuos Resistentes']\n"
+")\n"
+"datos = {\n"
+"    lg: {ll: v[:, 0] for ll, v in simul[lg].a_dic().items()} for lg in paráms\n"
+"}\n"
+"\n"
+"datos = BD([\n"
+"    FuenteDic(datos[lg], 'Datos geográficos', lugares=lg, fechas=np.arange(101)) for lg in paráms\n"
+"])\n"
+"\n"
+"calib = CalibradorGeog(mds).calibrar(t=100, datos=datos, líms_paráms=líms_paráms, n_iter=50)"
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:111
+msgid "Validación"
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:112
+msgid ""
+"Se puede validar una calibración geográfica con la clase "
+":class:`~tinamit.calibs.geog_mod.ValidadorGeog`."
+msgstr ""
+
+#: ../../source/tutorial/geog.rst:114
+msgid ""
+"from tinamit.calibs.geog_mod import ValidadorGeog\n"
+"\n"
+"valid = ValidadorGeog(mds).validar(\n"
+"         t=100, datos=datos,\n"
+"         paráms={lg: {prm: trz['mejor'] for prm, trz in calib[lg].items()} for lg in paráms}\n"
+")"
+msgstr ""

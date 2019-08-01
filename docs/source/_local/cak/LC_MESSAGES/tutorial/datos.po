@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Language-Team: Kaqchikel (https://www.transifex.com/qatikon/teams/70565/cak/)\n"
 "MIME-Version: 1.0\n"
@@ -19,4 +19,125 @@ msgstr ""
 
 #: ../../source/tutorial/datos.rst:2
 msgid "Uso de datos"
+msgstr ""
+
+#: ../../source/tutorial/datos.rst:3
+msgid ""
+"Puedes utilizar datos externos en Tinamït para especificar valores de "
+"variables en simulaciones, para alimentar calibraciones, y para efectuar "
+"validaciones."
+msgstr ""
+
+#: ../../source/tutorial/datos.rst:7
+msgid "Datos exógenos"
+msgstr ""
+
+#: ../../source/tutorial/datos.rst:8
+msgid ""
+"Puedes especificar valores de parámetros o de variables externos en el "
+"transcurso de una simulación. ٓAquí vamos a hacer una simulación con un "
+"modelo sencillo de contagión de una enfermedad."
+msgstr ""
+
+#: ../../source/tutorial/datos.rst:2
+msgid ""
+"import matplotlib.pyplot as plt\n"
+"\n"
+"from tinamit.ejemplos import obt_ejemplo\n"
+"from tinamit.envolt.mds import gen_mds\n"
+"\n"
+"mds = gen_mds(obt_ejemplo('enfermedad/mod_enferm.mdl'))\n"
+"\n"
+"extern = {'número inicial infectado': 15}\n"
+"res = mds.simular(t=100, extern=extern)\n"
+"\n"
+"# Visualizar\n"
+"plt.plot(res['Individuos Infectados'].vals)\n"
+"plt.title('Población infectada')\n"
+"plt.xlabel('Días')\n"
+"plt.ylabel('Personas')"
+msgstr ""
+
+#: ../../source/tutorial/datos.rst:23
+msgid ""
+"(`Source code <../tutorial/datos-1.py>`__, `png "
+"<../tutorial/datos-1.png>`__, `hires.png <../tutorial/datos-1.hires.png>`__,"
+" `pdf <../tutorial/datos-1.pdf>`__)"
+msgstr ""
+
+#: ../../source/tutorial/datos.rst:31
+msgid ""
+"Igualmente podemos pasar datos que varían temporalmente. Por ejemplo, la "
+"taza de infección puede variar a través de la epidemía."
+msgstr ""
+
+#: ../../source/tutorial/datos.rst:2
+msgid ""
+"from tinamit.tiempo import EspecTiempo\n"
+"import numpy as np\n"
+"import pandas as pd\n"
+"\n"
+"extern = pd.DataFrame(\n"
+"    data={'taza de infección': np.arange(0.001, 0.005, (0.005-0.001)/100)},\n"
+"    index=pd.date_range('2000-01-01', periods=100)\n"
+")\n"
+"res_base = mds.simular(t=EspecTiempo(100, f_inic='2000-01-01'))\n"
+"res_extern = mds.simular(t=EspecTiempo(100, f_inic='2000-01-01'), extern=extern)\n"
+"\n"
+"# Visualizar\n"
+"plt.plot(res_base['Individuos Infectados'].vals, label='Constante')\n"
+"plt.plot(res_extern['Individuos Infectados'].vals, label='Variable')\n"
+"\n"
+"plt.legend()\n"
+"plt.title('Población infectada')\n"
+"plt.xlabel('Días')\n"
+"plt.ylabel('Personas')"
+msgstr ""
+
+#: ../../source/tutorial/datos.rst:27
+msgid ""
+"(`Source code <../tutorial/datos-2.py>`__, `png "
+"<../tutorial/datos-2.png>`__, `hires.png <../tutorial/datos-2.hires.png>`__,"
+" `pdf <../tutorial/datos-2.pdf>`__)"
+msgstr ""
+
+#: ../../source/tutorial/datos.rst:58
+msgid ""
+"Si quieres más control sobre el uso de variables externos, puedes utilizar "
+"la función :func:`~tinamit.mod.extern.gen_extern` para generar un objeto "
+":class:`~tinamit.mod.extern.Extern` que puedes pasar al parámetro "
+"``extern``."
+msgstr ""
+
+#: ../../source/tutorial/datos.rst:63
+msgid ""
+"Se puede utilizar datos en formato de ``dict``, ``pd.DataFrame`` o "
+"``xr.Dataset``."
+msgstr ""
+
+#: ../../source/tutorial/datos.rst:66
+msgid "Bases de datos"
+msgstr ""
+
+#: ../../source/tutorial/datos.rst:67
+msgid ""
+"Para calibraciones y validaciones, puedes utilizar bases de datos, las "
+"cuales te permiten combinar varias fuentes de datos además de especificar "
+"datos geográficos."
+msgstr ""
+
+#: ../../source/tutorial/datos.rst:70
+msgid ""
+"En Tinamït, una base de datos (:class:`~tinamit.datos.bd.BD`) está compuesta"
+" de una o más fuentes (:class:`~tinamit.datos.fuente.Fuente`). Fuentes "
+"pueden representar datos en formato ``.csv`` "
+"(:class:`~tinamit.datos.fuente.FuenteCSV`), diccionarios "
+"(:class:`~tinamit.datos.fuente.FuenteDic`), ``Dataset`` o ``DataArray`` de "
+"``xarray`` (:class:`~tinamit.datos.fuente.FuenteBaseXarray` y "
+":class:`~tinamit.datos.fuente.FuenteVarXarray`, respectivamente), o un "
+"``DataFrame`` de ``pandas`` (:class:`~tinamit.datos.fuente.FuentePandas`)."
+msgstr ""
+
+#: ../../source/tutorial/datos.rst:77
+msgid "Ver :doc:`calibs` y :doc:`geog` para más detalles."
 msgstr ""

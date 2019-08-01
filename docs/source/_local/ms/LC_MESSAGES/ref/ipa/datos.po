@@ -1,0 +1,225 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
+"PO-Revision-Date: 2019-08-01 11:32+0000\n"
+"Language-Team: Malay (https://www.transifex.com/qatikon/teams/70565/ms/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ms\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../source/ref/ipa/datos.rst:2
+msgid "Datos"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.Fuente:1
+msgid "La clase pariente para fuentes de datos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteBaseXarray:1
+msgid "Fuente para datos en formato de ``Dataset`` de ``xarray``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteBaseXarray:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteCSV:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteDic:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuentePandas:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteVarXarray:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.interpolar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.obt_vals:0
+msgid "Parámetros"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteBaseXarray:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuentePandas:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteVarXarray:3
+msgid "Los datos"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteBaseXarray:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteCSV:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteDic:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuentePandas:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteVarXarray:5
+msgid "El nombre de la fuente."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteBaseXarray:7
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuentePandas:7
+msgid ""
+"Los lugares que corresponden a los datos. Puede se nombre de una columna en "
+"el ``Dataset``, el nombre de un lugar de cual vienen todos los datos, o una "
+"lista de los lugares."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteBaseXarray:10
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteCSV:10
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteDic:10
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuentePandas:10
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteVarXarray:10
+msgid "Las fechas de los datos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteCSV:1
+msgid "Fuente para archivos ``.csv``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteCSV:3
+msgid "El archivo con los datos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteCSV:7
+msgid ""
+"Los lugares que corresponden a los datos. Puede se nombre de una columna en "
+"el csv, el nombre de un lugar de cual vienen todos los datos, o una lista de"
+" los lugares."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteCSV:12
+msgid ""
+"Código para identificar variables que faltan. ``NA`` y ``NaN`` ya están "
+"reconocidos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteDic:1
+msgid "Fuente de datos en forma de diccionario."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteDic:3
+msgid "El diccionario con los datos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteDic:7
+msgid ""
+"Los lugares que corresponden a los datos. Puede se nombre de una llave en el"
+" dictionario, el nombre de un lugar de cual vienen todos los datos, o una "
+"lista de los lugares."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuentePandas:1
+msgid "Fuente para datos en formato de ``DataFrame`` de ``xarray``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteVarXarray:1
+msgid "Fuente para datos en formato de ``DataArray`` de ``xarray``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
+#: of tinamit.datos.fuente.FuenteVarXarray:7
+msgid ""
+"Los lugares que corresponden a los datos. Puede se nombre de una columna en "
+"el ``DataArray``, el nombre de un lugar de cual vienen todos los datos, o "
+"una lista de los lugares."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD:1
+msgid ""
+"Una base de datos combina varias :class:`~tinamit.datos.fuente.Fuente`."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD:3
+msgid "Las fuentes de la base de datos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.interpolar:1
+msgid "Interpola datos por fecha, tomando el lugar en cuenta."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.interpolar:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.obt_vals:3
+msgid "Los variables de interés."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.interpolar:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.obt_vals:5
+msgid "Lugares de interés."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.interpolar:7
+msgid "Las fechas de interés."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.interpolar:9
+msgid "Si hay que extrapolar también."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.interpolar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.obt_vals:0
+msgid "Devuelve"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.interpolar:12
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.obt_vals:10
+msgid ""
+"``xr.DataArray`` si ``vars_interés`` es ``str``, ``xr.Dataset`` si "
+"``vars_interés`` es ``list``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.interpolar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.obt_vals:0
+msgid "Tipo del valor devuelto"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
+#: of tinamit.datos.bd.BD.obt_vals:1
+msgid "Devuelve los valores de unos variables de interés."
+msgstr ""

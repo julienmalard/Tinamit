@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Language-Team: Tz’utujil (https://www.transifex.com/qatikon/teams/70565/tzj/)\n"
 "MIME-Version: 1.0\n"
@@ -19,4 +19,54 @@ msgstr ""
 
 #: ../../source/ref/ipa/result.rst:2
 msgid "Resultados"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/res.pydocstring
+#: of tinamit.mod.res.ResultadosGrupo:1
+msgid "Resultados de una simulación por grupo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/res.pydocstring
+#: of tinamit.mod.res.ResultadosSimul:1
+msgid "Resultados de una simulación."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/res.pydocstring
+#: of tinamit.mod.res.ResultadosSimul.a_dic:1
+msgid "Convierte los resultados en diccionario."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/res.pydocstring
+#: of tinamit.mod.res.ResultadosSimul.a_dic:0
+msgid "Devuelve"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/res.pydocstring
+#: of tinamit.mod.res.ResultadosSimul.a_dic:0
+msgid "Tipo del valor devuelto"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/res.pydocstring
+#: of tinamit.mod.res.ResultadosSimul.guardar:1
+msgid "Guarda los resultados en un archivo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/res.pydocstring
+#: of tinamit.mod.res.ResultadosSimul.guardar:0
+msgid "Parámetros"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/res.pydocstring
+#: of tinamit.mod.res.ResultadosSimul.guardar:3
+msgid "El formato deseado. Puede ser ``json`` o ``csv``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/res.pydocstring
+#: of tinamit.mod.res.ResultadosSimul.guardar:5
+msgid "La lista de variables de interés."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/res.pydocstring
+#: of tinamit.mod.res.ResultadosVar:1
+msgid "Los resultados de un variable."
 msgstr ""

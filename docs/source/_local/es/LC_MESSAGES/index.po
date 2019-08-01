@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,49 +16,41 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../source/index.rst:29 ../../source/index.rst:29
+#: ../../source/index.rst:53 ../../source/index.rst:53
 msgid "General"
 msgstr "General"
 
-#: ../../source/index.rst:38 ../../source/index.rst:38
+#: ../../source/index.rst:62 ../../source/index.rst:62
 msgid "Tutorial"
 msgstr "Tutorial"
 
-#: ../../source/index.rst:48 ../../source/index.rst:48
+#: ../../source/index.rst:74 ../../source/index.rst:74
 msgid "Desarrollo"
 msgstr "Desarrollo"
 
-#: ../../source/index.rst:56 ../../source/index.rst:56
+#: ../../source/index.rst:82 ../../source/index.rst:82
 msgid "Referencia"
 msgstr "Referencia"
 
-#: ../../source/index.rst:2
-msgid "Tinamït"
-msgstr "Tinamït"
-
-#: ../../source/index.rst:3
-msgid ""
-"Tinamït es un programa para conectar modelos socioeconómicos (dinámicas de "
-"los sistemas) con modelos biofísicos."
-msgstr ""
-"Tinamït es un programa para conectar modelos socioeconómicos (dinámicas de "
-"los sistemas) con modelos biofísicos."
-
-#: ../../source/index.rst:5
-msgid ""
-"Tinamït permite la conexión rápida, flexible y reproducible de modelos con:"
-msgstr ""
-"Tinamït permite la conexión rápida, flexible y reproducible de modelos con:"
-
-#: ../../source/index.rst:7
-msgid "Un interfaz (IGU) para los que no quieren escribir código."
-msgstr "Un interfaz (IGU) para los que no quieren escribir código."
-
 #: ../../source/index.rst:8
-msgid "Una libreria (IPA) para las que sí."
-msgstr "Una libreria (IPA) para las que sí."
+msgid "¡Bienvenidoas a la documentación de Tinamït!"
+msgstr "¡Bienvenidoas a la documentación de Tinamït!"
 
-#: ../../source/index.rst:9
+#: ../../source/index.rst:30
+msgid ""
+"Tinamït es un programa para conectar modelos socioeconómicos (dinámicas de "
+"los sistemas) con modelos biofísicos."
+msgstr ""
+"Tinamït es un programa para conectar modelos socioeconómicos (dinámicas de "
+"los sistemas) con modelos biofísicos."
+
+#: ../../source/index.rst:32
+msgid ""
+"Tinamït permite la conexión rápida, flexible y reproducible de modelos con:"
+msgstr ""
+"Tinamït permite la conexión rápida, flexible y reproducible de modelos con:"
+
+#: ../../source/index.rst:34
 msgid ""
 "Una estructura fácil para conectar modelos en menos de 10 líneas (en vez de "
 "cientos)."
@@ -66,15 +58,15 @@ msgstr ""
 "Una estructura fácil para conectar modelos en menos de 10 líneas (en vez de "
 "cientos)."
 
-#: ../../source/index.rst:10
+#: ../../source/index.rst:35
 msgid "Manejo automático de diferencias en escalas temporales y unidades."
 msgstr "Manejo automático de diferencias en escalas temporales y unidades."
 
-#: ../../source/index.rst:11
+#: ../../source/index.rst:36
 msgid "Conexión con bases de datos para calibración y validación de modelos."
 msgstr "Conexión con bases de datos para calibración y validación de modelos."
 
-#: ../../source/index.rst:12
+#: ../../source/index.rst:37
 msgid ""
 "Una estructura transparente para que todos puedan agregar modelos y "
 "recursos."
@@ -82,11 +74,7 @@ msgstr ""
 "Una estructura transparente para que todos puedan agregar modelos y "
 "recursos."
 
-#: ../../source/index.rst:13
-msgid "Apoyo multilingual en el IGU."
-msgstr "Apoyo multilingual en el IGU."
-
-#: ../../source/index.rst:16
+#: ../../source/index.rst:40
 msgid ""
 "¿Encontraste algún error en la documentación? Es culpa mía. Si es error de "
 "español, por favor tenga la bondad de corregirlo en `GitHub "
@@ -98,11 +86,11 @@ msgstr ""
 "<https://github.com/julienmalard/tinamit/issues>`_. Si es en otro idioma, "
 "corrígelo :doc:`así </des/trad>`. ¡Gracias!"
 
-#: ../../source/index.rst:21
+#: ../../source/index.rst:45
 msgid "¿Quieres contribuir?"
 msgstr "¿Quieres contribuir?"
 
-#: ../../source/index.rst:22
+#: ../../source/index.rst:46
 msgid ""
 "Puedes **agregar modelos**, desarrollar **nuevas funcionalidades**, o ayudar"
 " a **traducir Tinamït** en tu lengua preferida."
@@ -110,10 +98,10 @@ msgstr ""
 "Puedes **agregar modelos**, desarrollar **nuevas funcionalidades**, o ayudar"
 " a **traducir Tinamït** en tu lengua preferida."
 
-#: ../../source/index.rst:24
+#: ../../source/index.rst:48
 msgid "Contacto: Julien Malard: julien.malard@mail.mcgill.ca"
 msgstr "Contacto: Julien Malard: julien.malard@mail.mcgill.ca"
 
-#: ../../source/index.rst:27
+#: ../../source/index.rst:51
 msgid "Índice:"
 msgstr "Índice:"

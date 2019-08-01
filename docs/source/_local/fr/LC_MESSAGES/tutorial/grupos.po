@@ -1,0 +1,96 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
+"PO-Revision-Date: 2019-08-01 11:33+0000\n"
+"Language-Team: French (https://www.transifex.com/qatikon/teams/70565/fr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: ../../source/tutorial/grupos.rst:2
+msgid "Simulaciones en grupo"
+msgstr ""
+
+#: ../../source/tutorial/grupos.rst:3
+msgid ""
+"Si tienes muchas simulaciones para efectuar, puedes ahorar tiempo por "
+"hacerlas por grupos con la función :func:`~tinamit.mod.Modelo.simular_grupo`"
+" y un objeto de simulaciones por grupos "
+"(:class:`~tinamit.mod.corrida.OpsSimulGrupo`). Igualmente se pueden "
+"paralelizar las corridas para ahorar más tiempo."
+msgstr ""
+
+#: ../../source/tutorial/grupos.rst:8
+msgid ""
+"from tinamit.mod import OpsSimulGrupo\n"
+"from tinamit.envolt.mds import gen_mds\n"
+"\n"
+"mod = gen_mds('Mi modelo.xmile')\n"
+"\n"
+"vals_extern = [{'Política 1': 0, 'Política 2': 1}, {'Política 1': 1, 'Política 2': 0}]\n"
+"\n"
+"ops = OpsSimulGrupo(t=[100, 150], extern=vals_extern)\n"
+"res = mod.simular_grupo(ops)"
+msgstr ""
+
+#: ../../source/tutorial/grupos.rst:20
+msgid ""
+"En el ejemplo arriba, simularemos el modelo con ``Política 2`` para 100 "
+"pasos, y con ``Política 1`` por 150 pasos."
+msgstr ""
+
+#: ../../source/tutorial/grupos.rst:23
+msgid ""
+"Cada opción con valores múltiples debe ser una lista, y cada lista presente "
+"en las opciones debe tener el mismo tamaño."
+msgstr ""
+
+#: ../../source/tutorial/grupos.rst:26
+msgid ""
+"Opciones que no se especificaron en formato de lista se aplicarán a todas "
+"las corridas. En el ejemplo abajo, cada política se correrá por 100 pasos."
+msgstr ""
+
+#: ../../source/tutorial/grupos.rst:29
+msgid "res = mod.simular_grupo(OpsSimulGrupo(t=100, extern=vals_extern))"
+msgstr ""
+
+#: ../../source/tutorial/grupos.rst:34
+msgid "Combinaciones"
+msgstr ""
+
+#: ../../source/tutorial/grupos.rst:35
+msgid ""
+"También se puede ejecutar todas las combinaciones posibles para las opciones"
+" de simulación con un objeto "
+":class:`~tinamit.mod.corrida.OpsSimulGrupoCombin`. Por ejemplo, puedes "
+"simular todas las combinaciones de distintas políticas con varios escenarios"
+" de cambios climáticos."
+msgstr ""
+
+#: ../../source/tutorial/grupos.rst:40
+msgid ""
+"from tinamit.mod.clima import Clima\n"
+"\n"
+"clima_malo = Clima(lat=31.569, long=74.355, elev=10, escenario='2.6')\n"
+"clima_peor = Clima(lat=31.569, long=74.355, elev=10, escenario='4.5')\n"
+"clima_fritos = Clima(lat=31.569, long=74.355, elev=10, escenario='8.5')\n"
+"\n"
+"t = EspecTiempo(365*50, f_inic='2020-01-01')\n"
+"\n"
+"ops = OpsSimulGrupoCombin(t=t, extern=vals_extern, clima=[clima_malo, clima_peor, clima_fritos])\n"
+"res = mod.simular_grupo(ops)\n"
+"\n"
+"# Para ver cuáles combinaciones corresponden con cada resultado (en orden)\n"
+"list(ops)"
+msgstr ""

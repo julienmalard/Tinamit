@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/qatikon/teams/70565/zh_CN/)\n"
 "MIME-Version: 1.0\n"
@@ -68,8 +68,8 @@ msgstr ""
 
 #: ../../source/des/envolt_mds.rst:18
 msgid ""
-"`ModeloDS.ext`: Una lista de las extensiones de archivo que se pueden leer "
-"por la envoltura."
+"``ModeloDS.ext``: Una lista de las extensiones de archivo que se pueden leer"
+" por la envoltura."
 msgstr ""
 
 #: ../../source/des/envolt_mds.rst:20

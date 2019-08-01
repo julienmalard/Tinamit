@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Language-Team: Yoruba (https://www.transifex.com/qatikon/teams/70565/yo/)\n"
 "MIME-Version: 1.0\n"
@@ -19,4 +19,196 @@ msgstr ""
 
 #: ../../source/ref/ipa/geog.rst:2
 msgid "Geografía"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar:1
+msgid "Un lugar dado en una geografía."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.buscar_nombre:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.hijos_inmediatos:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.lugares:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.pariente:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Nivel:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.gen_lugares:0
+msgid "Parámetros"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar:3
+msgid "El nombre del lugar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar:5
+msgid "El nivel geográfico correspondiente."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar:7
+msgid ""
+"El identificador único de este lugar. Si es ``None``, se tomará su nombre "
+"como identificador."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar:9
+msgid "Lugares que se encuentre adentro de este."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.buscar_nombre:1
+msgid "Devuelve el sublugar con el nombre dado."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.buscar_nombre:3
+msgid "El nombre del lugar deseado."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.buscar_nombre:5
+msgid ""
+"Desambiguación en el caso que hayan múltiples lugares con el mismo nombre en"
+" distintos niveles."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.buscar_nombre:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.hijos_inmediatos:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.lugares:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.pariente:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.gen_lugares:0
+msgid "Devuelve"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.buscar_nombre:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.hijos_inmediatos:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.lugares:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.pariente:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.gen_lugares:0
+msgid "Tipo del valor devuelto"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.hijos_inmediatos:1
+msgid "Devuelve los hijos inmediatos de este ``Lugar``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.hijos_inmediatos:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.pariente:5
+msgid "Desambiguación para lugares con niveles paralelos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.lugares:1
+msgid "Devolver los sublugares presentes en este lugar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.lugares:3
+msgid "Sublugar al cual limitir la búsqueda."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.lugares:5
+msgid "Opción para limitir los resultados a uno o más niveles."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.pariente:1
+msgid "Obtener el pariente de un sublugar dado."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.pariente:3
+msgid "Un sublugar cuyo pariente queremos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Lugar.pariente:7
+msgid "Si queremos todos los parientes del lugar, o solamente el más cercaco."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Nivel:1
+msgid "Un nivel geográfico (p. ej, ``municipio`` o ``departamento``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Nivel:3
+msgid "El nombre del nivel."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.Nivel:5
+msgid "Lista de subniveles."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.gen_lugares:1
+msgid ""
+"Genera un lugar con todos los niveles y sublugares asociados desde un "
+"archivo ``.csv``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.gen_lugares:3
+msgid ""
+"Cada columna en el ``.csv`` debe empezar con el nombre de un nivel, con la "
+"excepción de la columna ``col_cód``, la cual tendrá el código identificador "
+"único de cada lugar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.gen_lugares:6
+msgid ""
+"Cada fila representa un lugar, con su **nombre** en la columna "
+"correspondiendo al nivel de este lugar y el **código** del lugar pariente en"
+" las otras columnas. Si un nivel no se aplica a un lugar (por ejemplo, un "
+"departamento no tendrá municipio pariente), se deja vacía la célula."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.gen_lugares:10
+msgid "El archivo ``.csv``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.gen_lugares:12
+msgid ""
+"El el nivel más alto. Por ejemplo, si tu csv entero representa un país, "
+"sería ``país``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.gen_lugares:14
+msgid ""
+"El nombre del lugar correspondiendo al nivel más alto. Por ejemplo, "
+"\"Guatemala\"."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/geog/región.pydocstring
+#: of tinamit.geog.región.gen_lugares:16
+msgid "El nombre de la columna con los códigos de cada sublugar."
 msgstr ""

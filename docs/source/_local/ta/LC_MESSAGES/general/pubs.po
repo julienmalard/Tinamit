@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Tamil (https://www.transifex.com/qatikon/teams/70565/ta/)\n"
@@ -41,28 +41,29 @@ msgstr "தீநாமித்தை பற்றி வெளியீடு�
 msgid "Publicaciones describiendo Tinamït y sus funcionalidades."
 msgstr "தீநாமித் மற்றும் தீநாமித்தின் செயல்பாடுகளை விவரிக்கும் வெளியீடுகள்."
 
-#: ../../source/general/pubs.rst:9
+#: ../../source/general/pubs.rst:10
 msgid ""
-"Malard JJ, Inam A, Hassanzadeh E, Adamowski J, Tuy HA, H Melgar-Quiñonez. "
-"Development of a software tool for rapid, reproducible, and stakeholder-"
-"friendly dynamic coupling of system dynamics and physically-based models. "
-"*Environmental Modelling & Software*, 96:410-420. DOI: "
-"10.1016/j.envsoft.2017.06.053"
+"Si publicas algún trabajo el el cual utilizasre Tinamït, puedes citar este "
+"artículo. ¡Gracias! :)"
 msgstr ""
-"Malard JJ, Inam A, Hassanzadeh E, Adamowski J, Tuy HA, H Melgar-Quiñonez. "
+
+#: ../../source/general/pubs.rst:12
+msgid ""
+"Malard JJ, Inam A, Hassanzadeh E, Adamowski J, Tuy HA, Melgar-Quiñonez H. "
 "Development of a software tool for rapid, reproducible, and stakeholder-"
 "friendly dynamic coupling of system dynamics and physically-based models. "
-"*Environmental Modelling & Software*, 96:410-420. DOI: "
-"10.1016/j.envsoft.2017.06.053"
+"*Environmental Modelling & Software*, 96:410-420. "
+"https://doi.org/10.1016/j.envsoft.2017.06.053"
+msgstr ""
 
-#: ../../source/general/pubs.rst:14
+#: ../../source/general/pubs.rst:17
 msgid "Publicaciones con Tinamït"
 msgstr "தீநாமித்துடன் செய்யபட்ட வெளியீடுகள்"
 
-#: ../../source/general/pubs.rst:15
+#: ../../source/general/pubs.rst:18
 msgid "Publicaciones de estudios que utilizaron Tinamït."
 msgstr "தீநாமித்தை பயண் செய்யும் ஆராய்ச்சியின் வெளியீடுகள்."
 
-#: ../../source/general/pubs.rst:17
+#: ../../source/general/pubs.rst:20
 msgid "Todavía estamos esperando. ¿No querrías escribir una, por casualidad?"
 msgstr ""
