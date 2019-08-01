@@ -1,36 +1,36 @@
 language: python
 python:
-  - '3.7'
+- '3.7'
 os:
-  - linux
+- linux
 env:
   global:
   - TX_BRANCH="master"
 install:
-  - pip install --upgrade pip setuptools wheel
-  - pip install transifex-client sphinx sphinx-intl
-  - pip install -r reqs.txt
-  - pip install -r reqs.op.txt
-  - pip install coveralls codecov
-  - python setup.py sdist bdist_wheel
-  - pip install .[tinamit]
+- pip install --upgrade pip setuptools wheel
+- pip install transifex-client sphinx sphinx-intl
+- pip install -r reqs.txt
+- pip install -r reqs.op.txt
+- pip install coveralls codecov
+- python setup.py sdist bdist_wheel
+- pip install .[tinamit]
 script:
-  - rm -r tinamit
-  - cd pruebas
-  - coverage run -m unittest
+- rm -r tinamit
+- cd pruebas
+- coverage run -m unittest
 after_success:
-  - coveralls --rcfile=.coveragerc
-  - codecov
-  - cd ..
-  - cd docs
-  - if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then sh .tx/tx.sh push; sh .tx/tx.sh pull;
-    fi
-  - cd ..
+- coveralls --rcfile=.coveragerc
+- codecov
+- cd ..
+- cd docs
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then sh .tx/tx.sh push; sh .tx/tx.sh pull;
+  fi
+- cd ..
 deploy:
   provider: pypi
   user: julien.malard
   password:
-    secure: B4rOmJIMAOhRx9OMQMApoRcnaytHQsQSMqhdBheoxO4h7xF2WZGBzQf/Z1nAF258Dwx4tmlc9GHcKy3awFChYJiO9qDbbyTa4hs7MviWjDmtO11EmylPOwOd3GDGVJLMojOZDhnCNOgfpzJ0W+Ypl74akSsIEn3NOObSQNBMUNU9zMBQT/gwD3f3klWdO5DUDUungqvp1XPJ9Dq55BdweJ0JgM9iIJ129rml95UCafUNKmXe3EuUqfJh1GQtBaniWuwUBnLGTrzZ2egk2bmwmcupsWnnCbCc+0RfdJ3/o0y4+PxQ0hCxp+BKKYxwdrqyIJZ+u0adibVX1l+Bggdp7254vTj0EYtDVXdiC1kx6yyZUFONhDBusvdnVV8SBx8wYwTggu/Lb8nyQr7j6qgoKKrSik19LkWSmrXMJKBas9FXX7KGRVL0JAzrV0y91yOKHfhaQa/9MjHtffSbZoXLAFkhisyZlgFWHLw+MRnWmnH4NXZ6WdmIStE7DA3N/7OhxguXOQb+8zB4r/b7GTH4bil7JIqAZPfc0O1BC9N5jeKKSFimOoumjRWBbdvva4iawysIwZ/VepjnhGfcCkha+eewpDq4uYpCVHE1YAOZpZWyNo0u2BvrWLEOb1ft3Xvev6qx9ebX8brxmsl2xfetGdzQNLyYPCmvjSoeMNb0SWE=
+    secure: KMduIxTdaiNc9gAQoMxhGvjurwwSND59LCoysKGPeGQIgB1ebh8NAcsN7RCoQhAVt9t/xZjpUUX6IRn+K4g/Mp2Jvs1Zr9ITd4gapB+fGZrzd+qB4wMEjM1tHKPXzFYkfsGEn3xQpG/mqwvjHtOP9NFhLit1tClIJExrHoDH0OSvdiFVfzX72COO0gWM0cWGQxIarB1is6Z5EA+K6yQ+iBSNXFrYjXoonCGlbmNUFRXCa/D5FOBy5U7kk7EOdHDxnqvf50BoAn8zsMb5rfKWoxI03hkcdzjUDYpYV/xjHv/t7zWO6vdloOmg88Q6KahjLH+fJogXKXjX0lGB6mLbMZnn9hNSYH6ttGcNelS33eIQROyEhiFOztqsaU8T88y9wLPL3gv+QJrejq2qvq/wd5iFDb1Kr5WFeonHX6Q1TAqOfouupefnbyLiYlylqJ+cAZOp2/9qyS0Qu5xQRhwwOMZC3OotTGUu4WUBJPnvnIpmEJ1x23VfV6uB2/JoSgRFhVnF/6ZHZJju6haGsqG99usqcoGtYmV6bFx4SW1Y5/6rYzIiev06evbCpAs3b+qYvf86xGZ0vm7CsghH0lvH9ui/zA1fcez/BgYNQwS9VRPV53mgArHOdB6SQWcdx07XD4+D6eWK/O9mDcfbHhtNay+WCXHa9z9khKdMSYg8ebc=
   distributions: sdist bdist_wheel
   skip_existing: true
   on:

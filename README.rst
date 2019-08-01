@@ -52,16 +52,12 @@ Es muy sencillo.
 
     from tinamit.Conectado import Conectado
 
-    modelo = Conectado()
-
-    modelo.estab_mds('Prueba dll.vpm')
-    modelo.estab_bf('Prueba bf.py')
+    modelo = Conectado('Prueba bf.py', 'Prueba dll.vpm')
 
     modelo.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)
     modelo.conectar(var_mds='Bosques', var_bf='Bosques', mds_fuente=True)
 
-    res = modelo.simular(paso=1, t_final=100, nombre_corrida='Corrida_Tinamit')
-    print(res)
+    res = modelo.simular(100, nombre='Corrida_Tinamit')
 
 
 Autores
