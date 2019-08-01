@@ -1,0 +1,371 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+# Translators:
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2019
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
+"PO-Revision-Date: 2019-08-01 11:32+0000\n"
+"Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
+"Language-Team: Kaqchikel (https://www.transifex.com/qatikon/teams/70565/cak/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: cak\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../../source/ref/ipa/calibs.rst:2
+msgid "Calibraciones"
+msgstr ""
+
+#: ../../source/ref/ipa/calibs.rst:5
+msgid "Ecuaciones"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc:1
+msgid "Clase pariente para implementaciones de calibradores de ecuaciones."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc.calibrar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt.calibrar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes.calibrar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.SimuladorGeog:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.SimuladorGeog.simular:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.CalibradorGeog:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.ValidadorGeog:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.ValidadorGeog.validar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/valid.pydocstring
+#: of tinamit.calibs.valid.ValidadorMod:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/valid.pydocstring
+#: of tinamit.calibs.valid.ValidadorMod.validar:0
+msgid "Parámetros"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes:3
+msgid "La ecuación para calibrar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes:5
+msgid ""
+"La lista de nombres de parámetros en la ecuación (variables que hay que "
+"calibrar)."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc:7
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes:7
+msgid ""
+"El nombre del variable dependiente en la ecuación. Obligatorio si la "
+"ecuación no especifica variable independiente sí misma (p. ej., ``x * b + "
+"a`` en vez de ``y = x * b + a``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc:10
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes:10
+msgid "El dialecto de la ecuación. Puede ser ``tinamït`` o ``vensim``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc.calibrar:1
+msgid "Efectua la calibración."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc.calibrar:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt.calibrar:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes.calibrar:3
+msgid "La base de datos con observaciones para los variables en la ecuación."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc.calibrar:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt.calibrar:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes.calibrar:5
+msgid ""
+"El lugar cuyos sublugares hay que calibrar; si es ``None`` se calibrará la "
+"ecuación con todos los datos en ``bd`` sin tener su lugar en cuenta."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc.calibrar:8
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt.calibrar:8
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes.calibrar:8
+msgid "Límites teoréticos para los parámetros."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc.calibrar:10
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt.calibrar:10
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes.calibrar:10
+msgid "Opciones que se pasarán directamente a la función de calibración."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc.calibrar:12
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt.calibrar:12
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes.calibrar:12
+msgid ""
+"Diccionario de correspondencia entre los nombres de los variables en ``bd`` "
+"y sus nombres en la ecuación."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc.calibrar:14
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt.calibrar:14
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes.calibrar:14
+msgid "Desambiguación del orden de niveles."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc.calibrar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt.calibrar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes.calibrar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.SimuladorGeog.simular:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.ValidadorGeog.validar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/valid.pydocstring
+#: of tinamit.calibs.valid.ValidadorMod.validar:0
+msgid "Devuelve"
+msgstr "Niya"
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc.calibrar:17
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt.calibrar:17
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes.calibrar:19
+msgid "Diccionario con las calibraciones de cada lugar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
+#: of tinamit.calibs.ec.CalibradorEc.calibrar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt.calibrar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes.calibrar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.SimuladorGeog.simular:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.ValidadorGeog.validar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/valid.pydocstring
+#: of tinamit.calibs.valid.ValidadorMod.validar:0
+msgid "Tipo del valor devuelto"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt:1
+msgid "Calibrador de ecuaciones con algoritmo de optimización."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt.calibrar:1
+msgid ""
+"Efectua una calibración para cada lugar en ``Lugar`` según los datos en "
+"``bd``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes:1
+msgid "Calibrador de ecuaciones con inferencia bayesiana."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes.calibrar:1
+msgid ""
+"Efectua una calibración bayesiana para cada lugar en ``Lugar`` según los "
+"datos en ``bd``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcBayes.calibrar:16
+msgid "Si empleamos inferencia bayesiana jerárquica o normal."
+msgstr ""
+
+#: ../../source/ref/ipa/calibs.rst:19
+msgid "Modelos"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.SimuladorGeog:1
+msgid "Simulador geográfico."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.SimuladorGeog:3
+msgid "El modelo para simular."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.SimuladorGeog.simular:1
+msgid "Efectua una simulación geográfica."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.SimuladorGeog.simular:3
+msgid "El eje de tiempo para la simulación."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.SimuladorGeog.simular:5
+msgid "Diccionario de cada lugar con sus valores de parámetros."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.SimuladorGeog.simular:7
+msgid "Valores de parámetros cuyos valores no cambian según el lugar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.SimuladorGeog.simular:9
+msgid "Los variables cuyos resultados nos interesan."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.SimuladorGeog.simular:11
+msgid "Si se puede simular en paralelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.CalibradorGeog:1
+msgid "Objeto para efectuar calibraciones geográficas."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.CalibradorGeog:3
+msgid "El modelo para calibrar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.CalibradorGeog:5
+msgid "Una subclase de :class:`~tinamit.calibs.mod.CalibradorMod`."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.ValidadorGeog:1
+msgid "Objeto para correr validaciones de calibraciones geográficas."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.ValidadorGeog:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/valid.pydocstring
+#: of tinamit.calibs.valid.ValidadorMod:3
+msgid "El modelo para validar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.ValidadorGeog.validar:1
+msgid "Efectuar la validación."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.ValidadorGeog.validar:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/valid.pydocstring
+#: of tinamit.calibs.valid.ValidadorMod.validar:3
+msgid "La especificación de tiempo para la validación."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.ValidadorGeog.validar:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/valid.pydocstring
+#: of tinamit.calibs.valid.ValidadorMod.validar:5
+msgid "La base de datos para la validación."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.ValidadorGeog.validar:7
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/valid.pydocstring
+#: of tinamit.calibs.valid.ValidadorMod.validar:7
+msgid "Diccionario de los parámetros calibrados para cada lugar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.ValidadorGeog.validar:9
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/valid.pydocstring
+#: of tinamit.calibs.valid.ValidadorMod.validar:9
+msgid "Funciones de validación para aplicar a los resultados."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.ValidadorGeog.validar:11
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/valid.pydocstring
+#: of tinamit.calibs.valid.ValidadorMod.validar:11
+msgid ""
+"Variable(s) exógenos cuyos valores se tomarán de la base de datos para "
+"alimentar la simulación y con los cuales por supuesto no se validará el "
+"modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.ValidadorGeog.validar:14
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/valid.pydocstring
+#: of tinamit.calibs.valid.ValidadorMod.validar:14
+msgid ""
+"Diccionario de correspondencia entre nombres de valores en el modelo y en la"
+" base de datos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
+#: of tinamit.calibs.geog_mod.ValidadorGeog.validar:16
+msgid ""
+"Diccionario de la validación del modelo para cada variable con datos en cada"
+" lugar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/valid.pydocstring
+#: of tinamit.calibs.valid.ValidadorMod:1
+msgid "Clase para efectuar validaciones de un modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/valid.pydocstring
+#: of tinamit.calibs.valid.ValidadorMod.validar:1
+msgid "Efectua la validación."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/valid.pydocstring
+#: of tinamit.calibs.valid.ValidadorMod.validar:16
+msgid "Validación por variable."
+msgstr ""

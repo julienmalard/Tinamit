@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Language-Team: Dutch (https://www.transifex.com/qatikon/teams/70565/nl/)\n"
 "MIME-Version: 1.0\n"
@@ -25,7 +25,7 @@ msgstr ""
 msgid ""
 "¿Quieres leer este en tu propia lengua? La documentación de Tinamït se "
 "traduce de manera colaborativa. Puedes utilizar el servidor Transifex o "
-"Zanata (syncronisamos los dos, así que no hay problema cuál eliges):"
+"Zanata (syncronizamos los dos, así que no hay problema cuál eliges):"
 msgstr ""
 
 #: ../../source/des/trad.rst:7
@@ -37,4 +37,25 @@ msgstr ""
 #: ../../source/des/trad.rst:8
 msgid ""
 "Transifex: `Empezar ahora <https://www.transifex.com/qatikon/tinamit>`_."
+msgstr ""
+
+#: ../../source/des/trad.rst:11
+msgid "Para manejadoras"
+msgstr ""
+
+#: ../../source/des/trad.rst:12
+msgid ""
+"El página de integración contínua `Travis CI <https://travis-"
+"ci.org/julienmalard/Tinamit>`_ de Tinamït está configurada para "
+"automáticamente mandar cambios en el texto para traducir a Transifex, y para"
+" obtener las nuevas traducciones disponibles en Transifex, cada vez que se "
+"hace un cambio a la rama ``master`` del proyecto en GitHub."
+msgstr ""
+
+#: ../../source/des/trad.rst:16
+msgid ""
+"Las nuevas traducciones se mandarán por Travis CI a una nueva rama llamada "
+"``Transifex`` en GitHub; puedes incorporarla con la rama ``master`` y "
+"después aparecerán automágicamente las traducciones en la documentación en "
+"línea."
 msgstr ""

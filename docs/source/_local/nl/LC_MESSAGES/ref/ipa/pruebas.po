@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Language-Team: Dutch (https://www.transifex.com/qatikon/teams/70565/nl/)\n"
 "MIME-Version: 1.0\n"
@@ -19,4 +19,48 @@ msgstr ""
 
 #: ../../source/ref/ipa/pruebas.rst:2
 msgid "Pruebas"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/prbs.pydocstring
+#: of tinamit.mod.prbs.verificar_leer_egr:1
+msgid "Verifica que una envoltura lee bien sus datos de egreso."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/prbs.pydocstring
+#: of tinamit.mod.prbs.verificar_leer_egr:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/prbs.pydocstring
+#: of tinamit.mod.prbs.verificar_leer_ingr:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/prbs.pydocstring
+#: of tinamit.mod.prbs.verificar_simul:0
+msgid "Parámetros"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/prbs.pydocstring
+#: of tinamit.mod.prbs.verificar_leer_egr:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/prbs.pydocstring
+#: of tinamit.mod.prbs.verificar_leer_ingr:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/prbs.pydocstring
+#: of tinamit.mod.prbs.verificar_simul:3
+msgid "El caso de prueba."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/prbs.pydocstring
+#: of tinamit.mod.prbs.verificar_leer_egr:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/prbs.pydocstring
+#: of tinamit.mod.prbs.verificar_leer_ingr:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/prbs.pydocstring
+#: of tinamit.mod.prbs.verificar_simul:5
+msgid "La clase del modelo para comprobar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/prbs.pydocstring
+#: of tinamit.mod.prbs.verificar_leer_ingr:1
+msgid "Verifica que una envoltura lee bien sus datos de ingreso."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/prbs.pydocstring
+#: of tinamit.mod.prbs.verificar_simul:1
+msgid ""
+"Verifica que una envoltura simula bien. No correrá si no está instalada la "
+"envoltura."
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -158,10 +158,10 @@ msgstr ""
 
 #: ../../source/des/envolt_bf.rst:41
 msgid ""
-"`Modelo.idioma_orig`: Indica el idioma de los nombres de variables del "
+"``Modelo.idioma_orig``: Indica el idioma de los nombres de variables del "
 "modelo."
 msgstr ""
-"`Modelo.idioma_orig`: Indica el idioma de los nombres de variables del "
+"``Modelo.idioma_orig``: Indica el idioma de los nombres de variables del "
 "modelo."
 
 #: ../../source/des/envolt_bf.rst:44

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: French (https://www.transifex.com/qatikon/teams/70565/fr/)\n"
@@ -37,13 +37,15 @@ msgstr "Autheurs du codes"
 
 #: ../../source/general/agrad.rst:9
 msgid "`Julien Malard <https://www.researchgate.net/profile/Julien_Malard>`_"
-msgstr ""
+msgstr "`Julien Malard <https://www.researchgate.net/profile/Julien_Malard>`_"
 
 #: ../../source/general/agrad.rst:10
 msgid ""
 "`محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig) "
 "<https://www.researchgate.net/profile/Azhar_Baig>`_"
 msgstr ""
+"`محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig) "
+"<https://www.researchgate.net/profile/Azhar_Baig>`_"
 
 #: ../../source/general/agrad.rst:13
 msgid "Autores de envolturas"
@@ -58,59 +60,75 @@ msgstr ""
 
 #: ../../source/general/agrad.rst:18
 msgid "SAHYSMOD"
-msgstr ""
+msgstr "SAHYSMOD"
 
 #: ../../source/general/agrad.rst:19
 msgid "محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)"
-msgstr ""
+msgstr "محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)"
 
 #: ../../source/general/agrad.rst:20
 msgid "Julien Malard"
-msgstr ""
+msgstr "Julien Malard"
 
 #: ../../source/general/agrad.rst:23
 msgid "Traductores"
-msgstr "Traducteurs"
+msgstr "Traductrices et traducteurs"
 
 #: ../../source/general/agrad.rst:24
-msgid ""
-"Cuando se habrán traducido Tinamït y su documentación, los agradecimientos "
-"irán aquí."
+msgid "اردو: محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)"
+msgstr ""
+
+#: ../../source/general/agrad.rst:25
+msgid "தமிழ்: Julien Malard"
+msgstr ""
+
+#: ../../source/general/agrad.rst:26
+msgid "हिंदी: Julien Malard"
 msgstr ""
 
 #: ../../source/general/agrad.rst:27
-msgid "Financiamiento"
+msgid "français: Julien Malard"
 msgstr ""
 
-#: ../../source/general/agrad.rst:28
+#: ../../source/general/agrad.rst:30
+msgid "Financiamiento"
+msgstr "Financement"
+
+#: ../../source/general/agrad.rst:31
 msgid ""
 "Los organismos siguientes contribuyeron apoyo financiero a uno o más de los "
 "autores del código mientras trabajaban en el desarrollo de Tinamït:"
 msgstr ""
 
-#: ../../source/general/agrad.rst:31
+#: ../../source/general/agrad.rst:34
 msgid ""
 "`Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) "
 "<https://www.nserc-crsng.gc.ca>`_"
 msgstr ""
+"`Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) "
+"<https://www.nserc-crsng.gc.ca>`_"
 
-#: ../../source/general/agrad.rst:32
+#: ../../source/general/agrad.rst:35
 msgid ""
 "`Centre de recherches pour le développement international du Canada (CRDI) "
 "<https://www.idrc.ca/fr>`_"
 msgstr ""
+"`Centre de recherches pour le développement international du Canada (CRDI) "
+"<https://www.idrc.ca/fr>`_"
 
-#: ../../source/general/agrad.rst:33
+#: ../../source/general/agrad.rst:36
 msgid ""
 "`Fonds de recherche Nature et technologies du Québec (Canada) (FQRNT) "
 "<http://www.frqnt.gouv.qc.ca/accueil>`_"
 msgstr ""
+"`Fonds de recherche Nature et technologies du Québec (Canada) (FQRNT) "
+"<http://www.frqnt.gouv.qc.ca/accueil>`_"
 
-#: ../../source/general/agrad.rst:36
+#: ../../source/general/agrad.rst:39
 msgid "Instituciones afiliadas"
 msgstr "Institutions affiliées"
 
-#: ../../source/general/agrad.rst:38
+#: ../../source/general/agrad.rst:41
 msgid ""
 "Los autores de Tinamït están afiliados con las instituciones siguientes:"
 msgstr ""

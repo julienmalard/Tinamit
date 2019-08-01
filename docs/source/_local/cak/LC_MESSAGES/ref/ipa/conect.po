@@ -3,13 +3,17 @@
 # This file is distributed under the same license as the tinamït package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
+# Translators:
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2019
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Kaqchikel (https://www.transifex.com/qatikon/teams/70565/cak/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,4 +23,176 @@ msgstr ""
 
 #: ../../source/ref/ipa/conect.rst:2
 msgid "Conectado"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado:1
+msgid ""
+"Un modelo que conecta un :class:`~tinamit.envolt.mds.ModeloDS` con un "
+":class:`~tinamit.envolt.bf._envolt.ModeloBF`."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado.conectar:1
+msgid ""
+"Una función para conectar variables entre el modelo biofísico y el modelo "
+"DS."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado.conectar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado.desconectar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.cambiar_vals:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.incrementar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.iniciar_modelo:0
+msgid "Parámetros"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado.conectar:3
+msgid "El nombre del variable en el modelo DS."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado.conectar:5
+msgid "El nombre del variable correspondiente en el modelo biofísico."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado.conectar:7
+msgid ""
+"Si ``True``, el modelo DS es el modelo fuente para la conexión. Sino, será "
+"el modelo biofísico."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado.conectar:9
+msgid "El factor de conversión entre los variables."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado.desconectar:1
+msgid ""
+"Esta función deshacer una conexión entre el modelo biofísico y el modelo DS."
+" Se especifica la conexión por el nombre del variable en el modelo DS."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado.desconectar:4
+msgid "El nombre del variable conectado en el modelo DS."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado:1
+msgid ""
+"Esta clase representa el más alto nivel posible de modelo conectado. Tiene "
+"la función muy útil de poder conectar instancias de sí misma, así "
+"permitiendo la conexión de números arbitrarios de modelos anidados."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.cambiar_vals:1
+msgid "Esta función cambia el valor de uno o más variables del modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.cambiar_vals:3
+msgid "Un diccionario de variables y sus valores para cambiar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.cerrar:1
+msgid ""
+"Esta función toma acciones necesarias para terminar la simulación y cerrar "
+"el modelo, si aplica."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.incrementar:1
+msgid ""
+"Incrementa el modelo. En general, no llamarías esta función directamente."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.incrementar:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.iniciar_modelo:3
+msgid ""
+"No se te olvide una llamada al ``super`` cuando reimplementas esta función."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.incrementar:5
+msgid "La rebanada del incremento."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.iniciar_modelo:1
+msgid ""
+"Inicia la simulación. En general no llamarías esta función directamente."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.iniciar_modelo:5
+msgid "La corrida."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.paralelizable:1
+msgid ""
+"Indica si el modelo actual se puede paralelizar de manera segura o no. Si "
+"implementas una subclase paralelizable, reimplementar esta función para "
+"devolver ``True``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.paralelizable:4
+msgid "¿No sabes si es paralelizable tu modelo?"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.paralelizable:6
+msgid ""
+"**Respuesta larga**: Si el modelo se puede paralelizar (con corridas de "
+"nombres distintos) sin encontrar dificultades técnicas (sin riesgo que las "
+"corridas paralelas terminen escribiendo en los mismos archivos de egreso), "
+"entonces sí es paralelizable tu modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.paralelizable:10
+msgid "**Respuesta rápida**: 95% seguro que sí."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.paralelizable:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.unidad_tiempo:0
+msgid "Devuelve"
+msgstr "Niya"
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.paralelizable:12
+msgid "Si el modelo es paralelizable o no."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.paralelizable:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.unidad_tiempo:0
+msgid "Tipo del valor devuelto"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.unidad_tiempo:1
+msgid "Esta función debe devolver la unidad de tiempo empleada por el modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado.unidad_tiempo:3
+msgid "La unidad de tiempo (p. ej., 'meses', 'مہینہ', etc.)"
 msgstr ""

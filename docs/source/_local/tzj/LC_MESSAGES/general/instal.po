@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Language-Team: Tz’utujil (https://www.transifex.com/qatikon/teams/70565/tzj/)\n"
 "MIME-Version: 1.0\n"
@@ -23,9 +23,9 @@ msgstr ""
 
 #: ../../source/general/instal.rst:3
 msgid ""
-"La instalación debería ser sencilla. Primero necesitarás `Python 3.6+ "
-"<(https://www.python.org/downloads)>`_. Después, puedes instalar Tinamït en "
-"la terminal con:"
+"La instalación debería ser sencilla. Primero necesitarás la versión más "
+"recién de `Python 3 <(https://www.python.org/downloads)>`_ Después, puedes "
+"instalar Tinamït en la terminal con:"
 msgstr ""
 
 #: ../../source/general/instal.rst:6

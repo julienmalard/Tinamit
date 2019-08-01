@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:49+0000\n"
 "Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Tamil (https://www.transifex.com/qatikon/teams/70565/ta/)\n"
@@ -21,27 +21,27 @@ msgstr ""
 "Language: ta\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../../source/index.rst:29 ../../source/index.rst:29
+#: ../../source/index.rst:53 ../../source/index.rst:53
 msgid "General"
 msgstr ""
 
-#: ../../source/index.rst:38 ../../source/index.rst:38
+#: ../../source/index.rst:62 ../../source/index.rst:62
 msgid "Tutorial"
 msgstr ""
 
-#: ../../source/index.rst:48 ../../source/index.rst:48
+#: ../../source/index.rst:74 ../../source/index.rst:74
 msgid "Desarrollo"
 msgstr "வளர்ச்சி"
 
-#: ../../source/index.rst:56 ../../source/index.rst:56
+#: ../../source/index.rst:82 ../../source/index.rst:82
 msgid "Referencia"
 msgstr ""
 
-#: ../../source/index.rst:2
-msgid "Tinamït"
-msgstr "தீநாமித்"
+#: ../../source/index.rst:8
+msgid "¡Bienvenidoas a la documentación de Tinamït!"
+msgstr ""
 
-#: ../../source/index.rst:3
+#: ../../source/index.rst:30
 msgid ""
 "Tinamït es un programa para conectar modelos socioeconómicos (dinámicas de "
 "los sistemas) con modelos biofísicos."
@@ -49,36 +49,28 @@ msgstr ""
 "தீனாமித் என்று செய்நிரலால் சமூக பொருளாதார அமைப்பு இயக்கவியல் மற்றும் உயிர் "
 "இயற்பியல் மாதிரிகளை இணைக்கட்டும்."
 
-#: ../../source/index.rst:5
+#: ../../source/index.rst:32
 msgid ""
 "Tinamït permite la conexión rápida, flexible y reproducible de modelos con:"
 msgstr ""
 "தீனாமித்தால் மாதிரிகள் வேகமான, நெகிழ்வான மற்றும் நம்பக்கமான முறையால் "
 "சேர்க்கப்படும்."
 
-#: ../../source/index.rst:7
-msgid "Un interfaz (IGU) para los que no quieren escribir código."
-msgstr "கணினி குறியீடு எழுத வேண்டாதவர்களுக்கு ஒரு வரைகலை இடைமுகம்."
-
-#: ../../source/index.rst:8
-msgid "Una libreria (IPA) para las que sí."
-msgstr ""
-
-#: ../../source/index.rst:9
+#: ../../source/index.rst:34
 msgid ""
 "Una estructura fácil para conectar modelos en menos de 10 líneas (en vez de "
 "cientos)."
 msgstr "பத்து குறியீடு வரிக்குள்ளே மாதிரிகளை இணைக்கிறதற்கு சுலபமான அமைப்பு."
 
-#: ../../source/index.rst:10
+#: ../../source/index.rst:35
 msgid "Manejo automático de diferencias en escalas temporales y unidades."
 msgstr ""
 
-#: ../../source/index.rst:11
+#: ../../source/index.rst:36
 msgid "Conexión con bases de datos para calibración y validación de modelos."
 msgstr ""
 
-#: ../../source/index.rst:12
+#: ../../source/index.rst:37
 msgid ""
 "Una estructura transparente para que todos puedan agregar modelos y "
 "recursos."
@@ -86,11 +78,7 @@ msgstr ""
 "வெளிப்படையான அமைப்பு, அப்படி புது மாதிரிகளை மற்றும் வளங்களை சேர்க்க "
 "எல்லோருக்கும் சுலபமாக இருக்கும்."
 
-#: ../../source/index.rst:13
-msgid "Apoyo multilingual en el IGU."
-msgstr "பல்மொழி வரைகலை இடைமுகம்"
-
-#: ../../source/index.rst:16
+#: ../../source/index.rst:40
 msgid ""
 "¿Encontraste algún error en la documentación? Es culpa mía. Si es error de "
 "español, por favor tenga la bondad de corregirlo en `GitHub "
@@ -98,20 +86,20 @@ msgid ""
 "corrígelo :doc:`así </des/trad>`. ¡Gracias!"
 msgstr ""
 
-#: ../../source/index.rst:21
+#: ../../source/index.rst:45
 msgid "¿Quieres contribuir?"
 msgstr "உங்களுக்க பங்களிக்க வேண்டுமா."
 
-#: ../../source/index.rst:22
+#: ../../source/index.rst:46
 msgid ""
 "Puedes **agregar modelos**, desarrollar **nuevas funcionalidades**, o ayudar"
 " a **traducir Tinamït** en tu lengua preferida."
 msgstr ""
 
-#: ../../source/index.rst:24
+#: ../../source/index.rst:48
 msgid "Contacto: Julien Malard: julien.malard@mail.mcgill.ca"
 msgstr ""
 
-#: ../../source/index.rst:27
+#: ../../source/index.rst:51
 msgid "Índice:"
 msgstr "சுட்டுவரிசை"
