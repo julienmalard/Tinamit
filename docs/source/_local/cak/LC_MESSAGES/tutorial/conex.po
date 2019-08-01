@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Language-Team: Kaqchikel (https://www.transifex.com/qatikon/teams/70565/cak/)\n"
 "MIME-Version: 1.0\n"
@@ -21,82 +21,258 @@ msgstr ""
 msgid "Conectar modelos"
 msgstr ""
 
-#: ../../source/tutorial/conex.rst:7
+#: ../../source/tutorial/conex.rst:5
 msgid "Ejemplo muy básico"
 msgstr ""
 
-#: ../../source/tutorial/conex.rst:8
+#: ../../source/tutorial/conex.rst:6
 msgid ""
-"También es un ejemplo un poco estúpido. Pero demuestra muy bien cómo "
+"Empezaremos con un modelo bastante sencillo. Pero demuestra muy bien cómo "
 "funciona Tinamït, y no tienes que instalar cualquier modelo biofísico "
-"externo para que te funcione, así que empecemos con este. ::"
+"externo para que te funcione, así que empecemos con este."
 msgstr ""
 
-#: ../../source/tutorial/conex.rst:11
+#: ../../source/tutorial/conex.rst:9
+msgid "Primero vamos a utilizar este modelo de dinámicas de sistemas:"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:15
 msgid ""
-"import os\n"
-"from tinamit.Conectado import Conectado\n"
+"El modelo DS determina, dado la lluvia, la cantidad de pesca posible y su "
+"impacto en la necesidad de explotar recursos del bosque."
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:18
+msgid ""
+"Del otro lado, el \"modelo\" biofísico nos da la precipitación según la "
+"cubertura forestal."
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:2
+msgid ""
+"import matplotlib.pyplot as plt\n"
 "\n"
-"modelo = Conectado()\n"
-"directorio = os.path.dirname(__file__)\n"
-"modelo.estab_mds(os.path.join(directorio, \"Prueba dll.vpm\"))\n"
-"modelo.estab_bf(os.path.join(directorio, 'Prueba bf.py'))\n"
+"from tinamit.conect import Conectado\n"
+"from tinamit.ejemplos import obt_ejemplo\n"
+"\n"
+"mds = obt_ejemplo('sencillo/mds_bosques.mdl')\n"
+"bf = obt_ejemplo('sencillo/bf_bosques.py')\n"
+"\n"
+"modelo = Conectado(bf=bf, mds=mds)\n"
+"\n"
+"# Vamos a conectar los variables necesarios\n"
 "modelo.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)\n"
-"modelo.conectar(var_mds='Bosques', var_bf='Bosque', mds_fuente=True)\n"
-"modelo.simular(paso=1, tiempo_final=100, nombre_corrida='Corrida_Tinamït')"
+"modelo.conectar(var_mds='Bosques', var_bf='Bosques', mds_fuente=True)\n"
+"\n"
+"# Y simulamos\n"
+"res_conex = modelo.simular(200)\n"
+"\n"
+"# Visualizar\n"
+"f, (eje1, eje2) = plt.subplots(1, 2)\n"
+"eje1.plot(res_conex['mds']['Bosques'].vals)\n"
+"eje1.set_title('Bosques')\n"
+"eje1.set_xlabel('Meses')\n"
+"\n"
+"eje2.plot(res_conex['mds']['Lluvia'].vals)\n"
+"eje2.set_title('Lluvia')\n"
+"eje2.set_xlabel('Meses')\n"
+"\n"
+"eje1.ticklabel_format(axis='y', style='sci', scilimits=(0,0))"
 msgstr ""
 
-#: ../../source/tutorial/conex.rst:22
-msgid "Tomémoslo línea por línea. Primero, importamos Tinamït. ::"
-msgstr ""
-
-#: ../../source/tutorial/conex.rst:24
+#: ../../source/tutorial/conex.rst:36
 msgid ""
-"import os\n"
-"from tinamit.Conectado import Conectado"
+"(`Source code <../tutorial/conex-1.py>`__, `png "
+"<../tutorial/conex-1.png>`__, `hires.png <../tutorial/conex-1.hires.png>`__,"
+" `pdf <../tutorial/conex-1.pdf>`__)"
 msgstr ""
 
-#: ../../source/tutorial/conex.rst:27
-msgid "Segundo, conectamos los variables biofísicos y de DS::"
+#: ../../source/tutorial/conex.rst:53
+msgid ""
+"Tambiém comparemos a una corrida sin conexión para ver el impacto de incluir"
+" las relaciones entre ambiente y humano."
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:58
+msgid ""
+"Siendo subclases de :class:`~tinamit.mod.Modelo`, modelos BF "
+"(:class:`~tinamit.envolt.bf.ModeloBF`) y DS "
+"(:class:`~tinamit.envolt.mds.ModeloDS`) también se pueden simular de manera "
+"independiente."
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:2
+msgid ""
+"from tinamit.envolt.mds import gen_mds\n"
+"from tinamit.envolt.bf import gen_bf\n"
+"\n"
+"res_mds = gen_mds(mds).simular(200, nombre='Corrida_MDS')\n"
+"res_bf = gen_bf(bf).simular(200, nombre='Corrida_BF')\n"
+"\n"
+"# Visualizar\n"
+"f, (eje1, eje2) = plt.subplots(1, 2)\n"
+"eje1.plot(res_conex['mds']['Bosques'].vals, label='Conectado')\n"
+"eje1.plot(res_mds['Bosques'].vals, label='Individual')\n"
+"eje1.set_title('Bosques')\n"
+"eje1.set_xlabel('Meses')\n"
+"\n"
+"eje1.ticklabel_format(axis='y', style='sci', scilimits=(0,0))\n"
+"\n"
+"eje2.plot(res_conex['mds']['Lluvia'].vals)\n"
+"eje2.plot(res_bf['Lluvia'].vals)\n"
+"eje2.set_title('Lluvia')\n"
+"eje2.set_xlabel('Meses')\n"
+"\n"
+"f.legend()"
 msgstr ""
 
 #: ../../source/tutorial/conex.rst:29
 msgid ""
-"directorio = os.path.dirname(__file__)\n"
-"modelo.estab_mds(os.path.join(directorio, \"Prueba dll.vpm\"))\n"
-"modelo.estab_bf(os.path.join(directorio, 'Prueba bf.py'))"
+"(`Source code <../tutorial/conex-2.py>`__, `png "
+"<../tutorial/conex-2.png>`__, `hires.png <../tutorial/conex-2.hires.png>`__,"
+" `pdf <../tutorial/conex-2.pdf>`__)"
 msgstr ""
 
-#: ../../source/tutorial/conex.rst:33
+#: ../../source/tutorial/conex.rst:88
+msgid "Opciones de tiempo"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:89
 msgid ""
-"Tenemos unos modelos muy sencillos. El modelo DS determina, dado la lluvia, "
-"la cantidad de pesca posible y su impacto en la necesidad de explotar "
-"recursos del bosque."
+"Si quieres más control sobre los detalles del eje de tiempo, puedes pasar un"
+" objeto :class:`~tinamit.tiempo.tiempo.EspecTiempo` a la función "
+":func:`~tinamit.mod.Modelo.simular`. Allí puedes especificar no solo el "
+"número de paso sino también una fecha inicial (útil para corridas con datos "
+"o clima externo), el tamaño de cada paso, y la frequencia con cual se "
+"guardan los resultados."
 msgstr ""
 
-#: ../../source/tutorial/conex.rst:40
+#: ../../source/tutorial/conex.rst:94
 msgid ""
-"Del otro lado, el \"modelo\" biofísico nos da la precipitación según la "
-"cubertura forestal. Vamos a conectar los variables necesarios::"
+"from tinamit.tiempo.tiempo import EspecTiempo\n"
+"\n"
+"t = EspecTiempo(100, f_inic='2000-01-01', tmñ_paso=1, guardar_cada=1)\n"
+"modelo.simular(t)"
 msgstr ""
 
-#: ../../source/tutorial/conex.rst:43
-msgid ""
-"modelo.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)\n"
-"modelo.conectar(var_mds='Bosques', var_bf='Bosque', mds_fuente=True)"
-msgstr ""
-
-#: ../../source/tutorial/conex.rst:46
-msgid ""
-"Y corremos la simulación para 100 meses. ¡Allí está! Ya puedes visualizar "
-"los resultados directamente en Vensim. ¿Ves que cambió la lluvia?::"
-msgstr ""
-
-#: ../../source/tutorial/conex.rst:49
-msgid ""
-"modelo.simular(paso=1, tiempo_final=100, nombre_corrida='Corrida_Tinamït')"
-msgstr ""
-
-#: ../../source/tutorial/conex.rst:53
+#: ../../source/tutorial/conex.rst:102
 msgid "Unidades de tiempo"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:103
+msgid ""
+"Tinamït se encargará de convertir entre unidades de tiempo para ti si "
+"difieren entre tus modelos. No obstante, si uno de tus modelos tiene unidad "
+"de tiempo no convencional o está en un idioma que Tinamït no reconoce, puede"
+" ser que tengas que especificar la conversión manualmente con "
+":func:`~tinamit.unids.nueva_unidad`, :func:`~tinamit.unids.agregar_trad` o "
+":func:`~tinamit.unids.agregar_sinónimos`."
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:108
+msgid ""
+"from tinamit.unids import nueva_unidad, , agregar_sinónimos\n"
+"\n"
+"# Una estación tiene 4 meses\n"
+"nueva_unidad(unid='Estación', ref='Mes', conv=4)\n"
+"\n"
+"# \"día\" se dice \"நாள்\" en Tamil\n"
+"agregar_trad('día', 'நாள்', leng_trad='த', leng_orig='es', guardar=True)\n"
+"\n"
+"# \"தினம்\" también quiere decir \"día\" en Tamil\n"
+"agregar_sinónimos('நாள்', \"தினம்\", leng='த', guardar=True)"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:122
+msgid ""
+"Tinamït reconoce las unidades de tiempo siguientes: ``año``, ``mes``, "
+"``semana``, ``día``, ``hora``, ``minuto``, ``secundo``, ``microsecundo``, "
+"``millisecundo``, y ``nanosecundo``."
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:126
+msgid "3+ modelos"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:127
+msgid ""
+"Si tienes más que 2 modelos para conectar, también es fácil con la clase "
+":class:`~tinamit.conect.SuperConectado`. Se pueden conectar de manera "
+"horizontal o jerárquica, cómo prefieres."
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:131
+msgid "Horizontal"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:132
+msgid ""
+"Se pueden conectar modelos individuales de manera \"horizontal\" en un solo "
+"modelo :class:`~tinamit.conect.SuperConectado`."
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:135
+msgid ""
+"from tinamit.conectado import SuperConectado\n"
+"\n"
+"# Crear los 3 modelos\n"
+"mod_1 = MiModelo1(nombre='modelo 1')\n"
+"mod_2 = MiModelo2(nombre='modelo 2')\n"
+"mod_3 = MiModelo3(nombre='modelo 3')\n"
+"\n"
+"# El Conectado\n"
+"conectado = SuperConectado([mod_1, mod_2, mod_3])\n"
+"\n"
+"# Conectar variables entre dos de los modelos por el intermediario del tercero.\n"
+"conectado.conectar_vars(\n"
+"    var_fuente='Var 1', modelo_fuente='modelo 1', var_recip='Var 2', modelo_recip='modelo 2'\n"
+")\n"
+"conectado.conectar_vars(\n"
+"    var_fuente='Var 2', modelo_fuente='modelo 2', var_recip='Var 3', modelo_recip='modelo 3'\n"
+")\n"
+"\n"
+"# Simular\n"
+"res = conectado.simular(10, vars_interés=[mod_1.variables['Var 1'], mod_3.variables['Var 3']])"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:158
+msgid ""
+"Los variables ``Var 1`` del ``modelo 1`` y ``Var 3`` del ``modelo 3`` ahora "
+"tendrán valores idénticos a través de la simulación."
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:162
+msgid "Jerárquica"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:163
+msgid "También se pueden anidar modelos adentro de otros."
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:165
+msgid ""
+"# Los tres modelos\n"
+"mod_1 = MiModelo1(nombre='modelo 1')\n"
+"mod_2 = MiModelo2(nombre='modelo 2')\n"
+"mod_3 = MiModelo3(nombre='modelo 3')\n"
+"\n"
+"# El primer Conectado\n"
+"conectado_sub = SuperConectado(nombre='sub', modelos=[mod_1, mod_2])\n"
+"conectado_sub.conectar_vars(\n"
+"    var_fuente='Var 1', modelo_fuente='modelo 1', var_recip='Var 2', modelo_recip='modelo 2'\n"
+")\n"
+"\n"
+"# El segundo Conectado\n"
+"conectado = SuperConectado([conectado_sub, mod_3])\n"
+"conectado.conectar_vars(\n"
+"    var_fuente=mod_2.variables['Var2'], var_recip='Var 3', modelo_recip='modelo 3'\n"
+")\n"
+"\n"
+"# Correr la simulación\n"
+"res = conectado.simular(10, vars_interés=[mod_1.variables['Var 1'], mod_3.variables['Var 2']])"
+msgstr ""
+
+#: ../../source/tutorial/conex.rst:187
+msgid ""
+"Este código dará resultados idénticos a los del ejemplo horizontal arriba."
 msgstr ""

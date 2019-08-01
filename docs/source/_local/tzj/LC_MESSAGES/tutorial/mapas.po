@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Language-Team: Tz’utujil (https://www.transifex.com/qatikon/teams/70565/tzj/)\n"
 "MIME-Version: 1.0\n"
@@ -19,4 +19,171 @@ msgstr ""
 
 #: ../../source/tutorial/mapas.rst:2
 msgid "Mapas"
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:3
+msgid ""
+"Tinamït viene con algunas funcionalidades para dibujar mapas de resultados "
+"de simulación. Todos los mapas están compuestos de objetos "
+":class:`~tinamit.geog.mapa.Forma`. Cada :class:`~tinamit.geog.mapa.Forma` "
+"está vinculada con un archivo ``.shp``."
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:8
+msgid "Formas dinámicas"
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:9
+msgid ""
+"Formas dinámicas (:class:`~tinamit.geog.mapa.FormaDinámica`) son las formas "
+"cuyos colores varían según los resultados de una simulación. Incluyen "
+":class:`~tinamit.geog.mapa.FormaDinámicaNumérica`, la cual toma sus valores "
+"en formato de ``np.ndarray`` o de lista, y "
+":class:`~tinamit.geog.mapa.FormaDinámicaNombrada`, la cual quiere sus datos "
+"en formato de diccionario."
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:14
+msgid ""
+"Los mapas se pueden dibujar desde una matriz de un variable multidimensional"
+" en un modelo, o sino de una simulación de grupo donde cada simulación "
+"individual representa otra región en el mapa. Ambas situaciones se manejan "
+"por :func:`~tinamit.geog.mapa.dibujar_mapa_de_res`."
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:19
+msgid "Simulaciones por grupo"
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:20
+msgid ""
+"En este ejemplo, correremos un modelo de epidemiología con distintas tazas "
+"de contacto para cada departamento de Guatemala."
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:2
+msgid ""
+"import numpy as np\n"
+"\n"
+"from tinamit.ejemplos import obt_ejemplo\n"
+"from tinamit.envolt.mds import gen_mds\n"
+"from tinamit.geog.mapa import FormaDinámicaNombrada, dibujar_mapa_de_res\n"
+"from tinamit.mod import OpsSimulGrupo\n"
+"\n"
+"mds = gen_mds(obt_ejemplo('enfermedad/mod_enferm.mdl'))\n"
+"forma_deptos = obt_ejemplo('geog_guate/deptos.shp')\n"
+"\n"
+"ops = OpsSimulGrupo(\n"
+"    t=50,\n"
+"    extern=[{'taza de contacto': np.random.random() * 500} for i in range(1, 23)],\n"
+"    nombre=[str(i) for i in range(1, 23)]\n"
+")\n"
+"res = mds.simular_grupo(ops, nombre='Epidemiología')\n"
+"\n"
+"frm = FormaDinámicaNombrada(forma_deptos, col_id='COD_DEP', escala_colores=-1)\n"
+"dibujar_mapa_de_res(forma_dinámica=frm, res=res, var='Individuos Infectados', t=16)"
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:27
+msgid ""
+"(`Source code <../tutorial/mapas-1.py>`__, `png "
+"<../tutorial/mapas-1.png>`__, `hires.png <../tutorial/mapas-1.hires.png>`__,"
+" `pdf <../tutorial/mapas-1.pdf>`__)"
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:48
+msgid ""
+"El nombre de cada simulación en el grupo debe corresponder con el nombre de "
+"una forma en el archivo ``.shp`` tal como especificado en la columna "
+"``col_id``."
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:51
+msgid ""
+"Alternativamente, puedes utilizar una "
+":class:`~tinamit.geog.mapa.FormaDinámicaNumérica`; en ese caso se asiñarán "
+"los resultados a las formas según su orden en ``OpsSimulGrupo``, nada más."
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:55
+msgid "Variables multidimensionales"
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:56
+msgid ""
+"Aplicaremos un modelo sencillo de bosques y lluvia a un mapa de la región "
+"del Rechna Doab (رچنا دوآب) en Pakistán. Este mapa divide la región en 215 "
+"polígonos, cada cual corresponde a un punto en el variable ``Bosque`` "
+"multidimensional."
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:2
+msgid ""
+"from tinamit.ejemplos.sencillo.bf_bosques import PruebaBF\n"
+"from tinamit.geog.mapa import FormaDinámicaNumérica\n"
+"\n"
+"mod = PruebaBF(215)\n"
+"polígonos = obt_ejemplo('rechna_doab/polígonos.shp')\n"
+"\n"
+"extern = {'Bosques': np.random.random(215)*1e6}\n"
+"res = mod.simular(t=10, extern=extern, nombre='Cobertura forestal')\n"
+"\n"
+"frm = FormaDinámicaNumérica(polígonos, col_id='Id')\n"
+"dibujar_mapa_de_res(forma_dinámica=frm, res=res, var='Bosques', t=10)"
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:19
+msgid ""
+"(`Source code <../tutorial/mapas-2.py>`__, `png "
+"<../tutorial/mapas-2.png>`__, `hires.png <../tutorial/mapas-2.hires.png>`__,"
+" `pdf <../tutorial/mapas-2.pdf>`__)"
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:78
+msgid "Formas estáticas"
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:79
+msgid ""
+"También puedes agregar formas estáticas "
+"(:class:`~tinamit.geog.mapa.FormaEstática`), que no depienden de los "
+"resultados de una simulación y que se agregan solamente por razones "
+"estéticas."
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:82
+msgid "Por el momento, tienes:"
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:84
+msgid "Cuerpos de agua: :class:`~tinamit.geog.mapa.Agua`"
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:85
+msgid "Bosques: :class:`~tinamit.geog.mapa.Bosque`"
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:86
+msgid "Calles: :class:`~tinamit.geog.mapa.Calle`"
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:87
+msgid "Zonas urbanas: :class:`~tinamit.geog.mapa.Ciudad`"
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:2
+msgid ""
+"from tinamit.geog.mapa import Agua, Calle\n"
+"\n"
+"calles = Calle(obt_ejemplo('rechna_doab/calle.shp'))\n"
+"río = Agua(obt_ejemplo('rechna_doab/río.shp'))\n"
+"canales = Agua(obt_ejemplo('rechna_doab/canal.shp'), llenar=False)\n"
+"dibujar_mapa_de_res(forma_dinámica=frm, otras_formas=[calles, canales, río], res=res, var='Bosques', t=10)"
+msgstr ""
+
+#: ../../source/tutorial/mapas.rst:14
+msgid ""
+"(`Source code <../tutorial/mapas-3.py>`__, `png "
+"<../tutorial/mapas-3.png>`__, `hires.png <../tutorial/mapas-3.hires.png>`__,"
+" `pdf <../tutorial/mapas-3.pdf>`__)"
 msgstr ""

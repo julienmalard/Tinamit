@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/qatikon/teams/70565/zh_CN/)\n"
 "MIME-Version: 1.0\n"
@@ -69,44 +69,54 @@ msgid "Traductores"
 msgstr ""
 
 #: ../../source/general/agrad.rst:24
-msgid ""
-"Cuando se habrán traducido Tinamït y su documentación, los agradecimientos "
-"irán aquí."
+msgid "اردو: محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)"
+msgstr ""
+
+#: ../../source/general/agrad.rst:25
+msgid "தமிழ்: Julien Malard"
+msgstr ""
+
+#: ../../source/general/agrad.rst:26
+msgid "हिंदी: Julien Malard"
 msgstr ""
 
 #: ../../source/general/agrad.rst:27
+msgid "français: Julien Malard"
+msgstr ""
+
+#: ../../source/general/agrad.rst:30
 msgid "Financiamiento"
 msgstr ""
 
-#: ../../source/general/agrad.rst:28
+#: ../../source/general/agrad.rst:31
 msgid ""
 "Los organismos siguientes contribuyeron apoyo financiero a uno o más de los "
 "autores del código mientras trabajaban en el desarrollo de Tinamït:"
 msgstr ""
 
-#: ../../source/general/agrad.rst:31
+#: ../../source/general/agrad.rst:34
 msgid ""
 "`Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) "
 "<https://www.nserc-crsng.gc.ca>`_"
 msgstr ""
 
-#: ../../source/general/agrad.rst:32
+#: ../../source/general/agrad.rst:35
 msgid ""
 "`Centre de recherches pour le développement international du Canada (CRDI) "
 "<https://www.idrc.ca/fr>`_"
 msgstr ""
 
-#: ../../source/general/agrad.rst:33
+#: ../../source/general/agrad.rst:36
 msgid ""
 "`Fonds de recherche Nature et technologies du Québec (Canada) (FQRNT) "
 "<http://www.frqnt.gouv.qc.ca/accueil>`_"
 msgstr ""
 
-#: ../../source/general/agrad.rst:36
+#: ../../source/general/agrad.rst:39
 msgid "Instituciones afiliadas"
 msgstr ""
 
-#: ../../source/general/agrad.rst:38
+#: ../../source/general/agrad.rst:41
 msgid ""
 "Los autores de Tinamït están afiliados con las instituciones siguientes:"
 msgstr ""

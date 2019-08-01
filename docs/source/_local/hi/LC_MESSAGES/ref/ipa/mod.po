@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Language-Team: Hindi (https://www.transifex.com/qatikon/teams/70565/hi/)\n"
 "MIME-Version: 1.0\n"
@@ -19,4 +19,317 @@ msgstr ""
 
 #: ../../source/ref/ipa/mod.rst:2
 msgid "Modelo"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo:1
+msgid ""
+"Todas las cosas en Tinamit son instancias de `Modelo`, que sea un modelo de "
+"dinámicas de los sistemas, un modelo de cultivos o de suelos o de clima, o "
+"un modelo conectado. Cada tipo de modelo se representa por subclases "
+"específicas. Por eso, la gran mayoría de los métodos definidos aquí se "
+"implementan de manera independiente en cada subclase de `Modelo`."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo:6
+msgid "La función de inicialización de todos modelos, conectados o no."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.cambiar_vals:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.conectar_var_clima:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.estab_conf:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.incrementar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.iniciar_modelo:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.obt_conf:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.simular:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.simular_grupo:0
+msgid "Parámetros"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo:8
+msgid "Los variables del modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo:10
+msgid "El nombre del modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.cambiar_vals:1
+msgid "Esta función cambia el valor de uno o más variables del modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.cambiar_vals:3
+msgid "Un diccionario de variables y sus valores para cambiar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.cerrar:1
+msgid ""
+"Esta función toma acciones necesarias para terminar la simulación y cerrar "
+"el modelo, si aplica."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.conectar_var_clima:1
+msgid "Conecta un variable climático."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.conectar_var_clima:3
+msgid "El nombre interno del variable en el modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.conectar_var_clima:5
+msgid "El nombre oficial del variable climático."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.conectar_var_clima:7
+msgid ""
+"La conversión entre el variable clima en Tinamït y el variable "
+"correspondiente en el modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.conectar_var_clima:9
+msgid ""
+"Si este variable se debe adicionar o tomar el promedio entre varios pasos. "
+"Puede ser ``prom``, ``total``, o una función. Si es ``None``, se tomará el "
+"último día en el caso de pasos de más de 1 día."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.correr:1
+msgid ""
+"Efectuar una simulación ya inicializada. En general, no llamarías esta "
+"función directamente."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.estab_conf:1
+msgid "Establece un valor de configuración."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.estab_conf:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.obt_conf:3
+msgid "El parámetro de configuración."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.estab_conf:5
+msgid "El valor del parámetro."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.incrementar:1
+msgid ""
+"Incrementa el modelo. En general, no llamarías esta función directamente."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.incrementar:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.iniciar_modelo:3
+msgid ""
+"No se te olvide una llamada al ``super`` cuando reimplementas esta función."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.incrementar:5
+msgid "La rebanada del incremento."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.iniciar_modelo:1
+msgid ""
+"Inicia la simulación. En general no llamarías esta función directamente."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.iniciar_modelo:5
+msgid "La corrida."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.instalado:1
+msgid ""
+"Si tu modelo depiende en una instalación de otro programa externo a Tinamït,"
+" puedes reimplementar esta función para devolver ``True`` si el modelo está "
+"instalado y ``False`` sino."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.instalado:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.obt_conf:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.paralelizable:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.simular:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.simular_grupo:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.unidad_tiempo:0
+msgid "Devuelve"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.instalado:4
+msgid "Si el modelo está instalado completamente o no."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.instalado:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.obt_conf:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.paralelizable:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.simular:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.simular_grupo:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.unidad_tiempo:0
+msgid "Tipo del valor devuelto"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.obt_conf:1
+msgid "Obtiene un valor de configuración de la subclase de modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.obt_conf:5
+msgid ""
+"Un valor automático a aplicar si no se encuentra en el diccionario de "
+"configuración."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.obt_conf:7
+msgid ""
+"Una condición para validar el valor; si no pasa la condición, se tratará "
+"como valor que falta."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.obt_conf:8
+msgid ""
+"Un mensaje de aviso para devolver al usuario si no se encuentra el valor."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.obt_conf:10
+msgid "El valor de configuración"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.paralelizable:1
+msgid ""
+"Indica si el modelo actual se puede paralelizar de manera segura o no. Si "
+"implementas una subclase paralelizable, reimplementar esta función para "
+"devolver ``True``."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.paralelizable:4
+msgid "¿No sabes si es paralelizable tu modelo?"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.paralelizable:6
+msgid ""
+"**Respuesta larga**: Si el modelo se puede paralelizar (con corridas de "
+"nombres distintos) sin encontrar dificultades técnicas (sin riesgo que las "
+"corridas paralelas terminen escribiendo en los mismos archivos de egreso), "
+"entonces sí es paralelizable tu modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.paralelizable:10
+msgid "**Respuesta rápida**: 95% seguro que sí."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.paralelizable:12
+msgid "Si el modelo es paralelizable o no."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.simular:1
+msgid ""
+"La especificación del eje de tiempo. Si es ``int``, significará el número de"
+" pasos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.simular:3
+msgid "El nombre de la corrida."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.simular:5
+msgid "Valores externos para la simulación."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.simular:7
+msgid "El clima de la simulación."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.simular:9
+msgid "Los variables para incluir en los resultados"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.simular_grupo:1
+msgid ""
+"Efectua un grupo de simulaciones. Muy útil para accelerar corridas "
+"múltiples."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.simular_grupo:3
+msgid "Las opciones de simulación en grupo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.simular_grupo:5
+msgid "El nombre de la simulación."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.simular_grupo:7
+msgid ""
+"Si se simula en paralelo o no. Si el modelo no soporte corridas en paralelo,"
+" se ignorará este argumento."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.unidad_tiempo:1
+msgid "Esta función debe devolver la unidad de tiempo empleada por el modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/modelo.pydocstring
+#: of tinamit.mod.modelo.Modelo.unidad_tiempo:3
+msgid "La unidad de tiempo (p. ej., 'meses', 'مہینہ', etc.)"
 msgstr ""

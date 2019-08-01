@@ -1,0 +1,165 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
+"PO-Revision-Date: 2019-08-01 11:33+0000\n"
+"Language-Team: Malay (https://www.transifex.com/qatikon/teams/70565/ms/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ms\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../source/tutorial/calibs.rst:2
+msgid "Calibraciones"
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:5
+msgid "Calibrar modelos"
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:6
+msgid ""
+"Tinamït puede calibrar modelos según variables observados. Las calibraciones"
+" se efectuan con calibradores (:class:`~tinamit.calibs.mod.CalibradorMod`), "
+"por ejemplo, :class:`~tinamit.calibs.mod.CalibradorModSpotPy`."
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:9
+msgid ""
+"import numpy as np\n"
+"\n"
+"from tinamit.ejemplos import obt_ejemplo\n"
+"from tinamit.envolt.mds import gen_mds\n"
+"\n"
+"mod = gen_mds(obt_ejemplo('enfermedad/mod_enferm.mdl'))"
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:18
+msgid "Generaremos unos datos artificiales (sí, hacemos trampa)."
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:20
+msgid ""
+"from tinamit.datos.fuente import FuenteDic\n"
+"\n"
+"paráms = {\n"
+"    'taza de contacto': 81.25,\n"
+"    'taza de infección': 0.007,\n"
+"    'número inicial infectado': 22.5,\n"
+"    'taza de recuperación': 0.0375\n"
+"}\n"
+"\n"
+"simul = mod.simular(\n"
+"    t=100, extern=paráms,\n"
+"    vars_interés=['Individuos Suceptibles', 'Individuos Infectados', 'Individuos Resistentes']\n"
+")\n"
+"datos = FuenteDic({ll: v[:, 0] for ll, v in simul.a_dic().items()}, nombre='Datos', fechas=np.arange(101))"
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:37
+msgid "Y efectuamos la calibración."
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:39
+msgid ""
+"from tinamit.calibs.mod import CalibradorModSpotPy\n"
+"\n"
+"líms_paráms={\n"
+"    'taza de contacto': (0, 100),\n"
+"    'taza de infección': (0, 0.02),\n"
+"    'número inicial infectado': (0, 50),\n"
+"    'taza de recuperación': (0, 0.1)\n"
+"}\n"
+"\n"
+"calibs = CalibradorModSpotPy(mod).calibrar(líms_paráms=líms_paráms, datos=datos, n_iter=50)"
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:54
+msgid "Calibrar ecuaciones"
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:55
+msgid ""
+"En el caso de modelos de dinámicas de sistemas, también se pueden calibrar "
+"los parámetros de ecuaciones individuales si tienes los datos necesarios."
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:58
+msgid ""
+"Las calibraciones se pueden hacer con optimización "
+"(:class:`~tinamit.calibs.ec.CalibradorEcOpt`) o con inferencia bayesiana "
+"(:class:`~tinamit.calibs.ec.CalibradorEcBayes`)."
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:62
+msgid ""
+"Casos sencillos con muchos datos disponibles generalmente se pueden resolver"
+" mucho más rápido con optimización normal que con la más sofisticada "
+"inferencia bayesiana."
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:65
+msgid ""
+"El el modelo epidemiológico, el número de contactos con susceptibles se "
+"determina por el número de suceptibles y la taza de contacto según la "
+"ecuación ``contactos con suceptibles = Individuos Suceptibles * taza de "
+"contacto``. Suponiendo que tenemos datos para el número de suceptibles y el "
+"número de contactos, podemos estimar la taza de contacto."
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:70
+msgid ""
+"from tinamit.calibs.ec import CalibradorEcOpt\n"
+"from tinamit.datos.bd import BD\n"
+"from tinamit.datos.fuente import FuenteDic\n"
+"\n"
+"n_obs = 100\n"
+"taza_contacto = 125\n"
+"individuos_suceptibles = np.random.random(n_obs)\n"
+"\n"
+"contactos_con_suceptibles = individuos_suceptibles * taza_contacto + np.random.normal(0, 1, n_obs)\n"
+"bd = BD(\n"
+"    fuentes=FuenteDic({\n"
+"            'contactos con suceptibles': contactos_con_suceptibles,\n"
+"            'Individuos Suceptibles': individuos_suceptibles,\n"
+"            'f': np.arange(n_obs)\n"
+"        },\n"
+"        nombre='Datos generados',\n"
+"        fechas='f'\n"
+"    )\n"
+")\n"
+"\n"
+"calibrador = CalibradorEcOpt(\n"
+"    ec=mod.variables['contactos con suceptibles'].ec, nombre='contactos con suceptibles',\n"
+"    paráms=['taza de contacto']\n"
+")\n"
+"calib_ec = calibrador.calibrar(líms_paráms={'taza de contacto': (0, 200)}, bd=bd)"
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:101
+msgid "Validar"
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:102
+msgid ""
+"Por supuesto, no hay calibración sin validación. (Al menos que tengas que "
+"publicar ya.) Las validaciones se efectuan con "
+":class:`~tinamit.calibs.valid.ValidadorMod`."
+msgstr ""
+
+#: ../../source/tutorial/calibs.rst:105
+msgid ""
+"from tinamit.calibs.valid import ValidadorMod\n"
+"\n"
+"valid = ValidadorMod(mod).validar(\n"
+"    t=100, datos=datos, paráms={prm: trz['mejor'] for prm, trz in calibs.items()}\n"
+")"
+msgstr ""

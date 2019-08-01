@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Language-Team: Dutch (https://www.transifex.com/qatikon/teams/70565/nl/)\n"
 "MIME-Version: 1.0\n"
@@ -18,49 +18,190 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../source/ref/ipa/bf.rst:2
-msgid "Modelos Biofísicos"
+msgid "Modelos BF"
 msgstr ""
 
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: ../../source/ref/ipa/bf.rst:5
+msgid "Autogeneración"
+msgstr ""
+
+#: ../../source/ref/ipa/bf.rst:10
+msgid "Modelos disponibles"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF:1
+msgid "La clase pariente para todos modelos biofísicos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF.prb_egreso:1
+msgid ""
+"Debe devolver la ubicación de un archivo de egresos y una función que lo "
+"puede leer."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF.prb_egreso:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF.prb_ingreso:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF.prb_simul:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF.unidad_tiempo:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.ModeloDeterminado.unidad_tiempo:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_bloq.pydocstring
+#: of tinamit.envolt.bf.ModeloBloques.unidad_tiempo:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf.ModeloIndeterminado.unidad_tiempo:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.ModeloImpaciente.unidad_tiempo:0
+msgid "Devuelve"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF.prb_egreso:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF.prb_ingreso:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF.prb_simul:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF.unidad_tiempo:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.ModeloDeterminado.unidad_tiempo:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_bloq.pydocstring
+#: of tinamit.envolt.bf.ModeloBloques.unidad_tiempo:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf.ModeloIndeterminado.unidad_tiempo:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.ModeloImpaciente.unidad_tiempo:0
+msgid "Tipo del valor devuelto"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF.prb_ingreso:1
+msgid ""
+"Debe devolver la ubicación de un archivo de ingresos y una función que lo "
+"puede leer."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF.prb_simul:1
+msgid ""
+"Debe devolver la ubicación de un archivo de ingresos para correr una "
+"simulación de prueba."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
 #: of tinamit.envolt.bf.ModeloBF.unidad_tiempo:1
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_deter.pydocstring
-#: of tinamit.envolt.bf._deter.ModeloDeterminado.unidad_tiempo:1
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_bloq.pydocstring
-#: of tinamit.envolt.bf._bloq.ModeloBloques.unidad_tiempo:1
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_indeter.pydocstring
-#: of tinamit.envolt.bf._indeter.ModeloIndeterminado.unidad_tiempo:1
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_impac.pydocstring
-#: of tinamit.envolt.bf._impac.ModeloImpaciente.unidad_tiempo:1
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.ModeloDeterminado.unidad_tiempo:1
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_bloq.pydocstring
+#: of tinamit.envolt.bf.ModeloBloques.unidad_tiempo:1
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf.ModeloIndeterminado.unidad_tiempo:1
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.ModeloImpaciente.unidad_tiempo:1
 msgid "Esta función debe devolver la unidad de tiempo empleada por el modelo."
 msgstr ""
 
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_envolt.pydocstring
-#: of tinamit.envolt.bf.ModeloBF.unidad_tiempo:5
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_deter.pydocstring
-#: of tinamit.envolt.bf._deter.ModeloDeterminado.unidad_tiempo:5
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_bloq.pydocstring
-#: of tinamit.envolt.bf._bloq.ModeloBloques.unidad_tiempo:5
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_indeter.pydocstring
-#: of tinamit.envolt.bf._indeter.ModeloIndeterminado.unidad_tiempo:5
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_impac.pydocstring
-#: of tinamit.envolt.bf._impac.ModeloImpaciente.unidad_tiempo:5
-msgid "str"
-msgstr ""
-
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_envolt.pydocstring
-#: of tinamit.envolt.bf.ModeloBF.unidad_tiempo:6
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_deter.pydocstring
-#: of tinamit.envolt.bf._deter.ModeloDeterminado.unidad_tiempo:6
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_bloq.pydocstring
-#: of tinamit.envolt.bf._bloq.ModeloBloques.unidad_tiempo:6
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_indeter.pydocstring
-#: of tinamit.envolt.bf._indeter.ModeloIndeterminado.unidad_tiempo:6
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_impac.pydocstring
-#: of tinamit.envolt.bf._impac.ModeloImpaciente.unidad_tiempo:6
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF.unidad_tiempo:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.ModeloDeterminado.unidad_tiempo:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_bloq.pydocstring
+#: of tinamit.envolt.bf.ModeloBloques.unidad_tiempo:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf.ModeloIndeterminado.unidad_tiempo:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.ModeloImpaciente.unidad_tiempo:3
 msgid "La unidad de tiempo (p. ej., 'meses', 'مہینہ', etc.)"
 msgstr ""
 
-#: ../../../../../../virtualenv/python3.6.7/lib/python3.6/site-packages/tinamit/envolt/bf/_bloq.pydocstring
-#: of tinamit.envolt.bf._bloq.ModeloBloques:3
-msgid "variables: VariablesModBloques nombre: str"
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.ModeloDeterminado:1
+msgid ""
+"La clase pariente para todos modelos que correr por un número predeterminado"
+" de pasos a cada simulación."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.ModeloDeterminado.avanzar_modelo:1
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_bloq.pydocstring
+#: of tinamit.envolt.bf.ModeloBloques.avanzar_modelo:1
+msgid "Avanzar el modelo por un número determinado de ciclos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.ModeloDeterminado.avanzar_modelo:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.ModeloDeterminado.incrementar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_bloq.pydocstring
+#: of tinamit.envolt.bf.ModeloBloques:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_bloq.pydocstring
+#: of tinamit.envolt.bf.ModeloBloques.avanzar_modelo:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf.ModeloIndeterminado.incrementar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.ModeloImpaciente.iniciar_modelo:0
+msgid "Parámetros"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.ModeloDeterminado.avanzar_modelo:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_bloq.pydocstring
+#: of tinamit.envolt.bf.ModeloBloques.avanzar_modelo:3
+msgid "El número de ciclos que hay que avanzar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.ModeloDeterminado.incrementar:1
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf.ModeloIndeterminado.incrementar:1
+msgid ""
+"Incrementa el modelo. En general, no llamarías esta función directamente."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.ModeloDeterminado.incrementar:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf.ModeloIndeterminado.incrementar:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.ModeloImpaciente.iniciar_modelo:3
+msgid ""
+"No se te olvide una llamada al ``super`` cuando reimplementas esta función."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.ModeloDeterminado.incrementar:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf.ModeloIndeterminado.incrementar:5
+msgid "La rebanada del incremento."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf.ModeloIndeterminado:1
+msgid ""
+"La clase pariente para todos modelos que avanzan por un número indeterminado"
+" de pasos a cada corrida."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.ModeloImpaciente:1
+msgid ""
+"La clase pariente para modelos que deben correr por varios pasos al mismo "
+"tiempo, es decir, :class:`~tinamit.envolt.bf._indeter.Indeterminado` y "
+":class:`~tinamit.envolt.bf._deter.Determinado`."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.ModeloImpaciente.iniciar_modelo:1
+msgid ""
+"Inicia la simulación. En general no llamarías esta función directamente."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.ModeloImpaciente.iniciar_modelo:5
+msgid "La corrida."
 msgstr ""

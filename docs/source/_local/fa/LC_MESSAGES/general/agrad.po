@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-20 08:49+0000\n"
+"POT-Creation-Date: 2019-08-01 11:31+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Last-Translator: fateme <sfhashemi85@yahoo.com>, 2019\n"
 "Language-Team: Persian (https://www.transifex.com/qatikon/teams/70565/fa/)\n"
@@ -78,18 +78,26 @@ msgid "Traductores"
 msgstr "مترجمان"
 
 #: ../../source/general/agrad.rst:24
-msgid ""
-"Cuando se habrán traducido Tinamït y su documentación, los agradecimientos "
-"irán aquí."
+msgid "اردو: محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)"
 msgstr ""
-"زمانی که مدل تینامیت و تمامی متون مربوط به آن نوشته شود، سایر قدردانیها در "
-"همین سایت آورده خواهد شد. "
+
+#: ../../source/general/agrad.rst:25
+msgid "தமிழ்: Julien Malard"
+msgstr ""
+
+#: ../../source/general/agrad.rst:26
+msgid "हिंदी: Julien Malard"
+msgstr ""
 
 #: ../../source/general/agrad.rst:27
+msgid "français: Julien Malard"
+msgstr ""
+
+#: ../../source/general/agrad.rst:30
 msgid "Financiamiento"
 msgstr "تامین مالی"
 
-#: ../../source/general/agrad.rst:28
+#: ../../source/general/agrad.rst:31
 msgid ""
 "Los organismos siguientes contribuyeron apoyo financiero a uno o más de los "
 "autores del código mientras trabajaban en el desarrollo de Tinamït:"
@@ -97,7 +105,7 @@ msgstr ""
 "شرکتهایی که در زیر آورده میشود، تامین مالی یک یا چند تن از نویسندگانی که "
 "کدهای برنامه نوشته و مدل را توسعه داده اند، بر عهده داشته اند:"
 
-#: ../../source/general/agrad.rst:31
+#: ../../source/general/agrad.rst:34
 msgid ""
 "`Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) "
 "<https://www.nserc-crsng.gc.ca>`_"
@@ -105,7 +113,7 @@ msgstr ""
 "`دانشکده تحقیقات علوم مهندسی و طبیعی کانادا (CRSNG) <https://www.nserc-"
 "crsng.gc.ca>`_"
 
-#: ../../source/general/agrad.rst:32
+#: ../../source/general/agrad.rst:35
 msgid ""
 "`Centre de recherches pour le développement international du Canada (CRDI) "
 "<https://www.idrc.ca/fr>`_"
@@ -113,7 +121,7 @@ msgstr ""
 "مرکز تحقیقات در حال توسعه بین المللی کانادا (CRDI) "
 "<https://www.idrc.ca/fr>`_"
 
-#: ../../source/general/agrad.rst:33
+#: ../../source/general/agrad.rst:36
 msgid ""
 "`Fonds de recherche Nature et technologies du Québec (Canada) (FQRNT) "
 "<http://www.frqnt.gouv.qc.ca/accueil>`_"
@@ -121,11 +129,11 @@ msgstr ""
 "صندوق تحقیقات طبیعی و تکنولوژی کبک (کانادا) (FQRNT) "
 "<http://www.frqnt.gouv.qc.ca/accueil>`_"
 
-#: ../../source/general/agrad.rst:36
+#: ../../source/general/agrad.rst:39
 msgid "Instituciones afiliadas"
 msgstr "موسسات وابسته"
 
-#: ../../source/general/agrad.rst:38
+#: ../../source/general/agrad.rst:41
 msgid ""
 "Los autores de Tinamït están afiliados con las instituciones siguientes:"
 msgstr "همچنین نویسندگان تینامیت به موسسات زیر وابسته بودند: "
