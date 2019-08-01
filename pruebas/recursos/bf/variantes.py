@@ -18,9 +18,9 @@ class EjDeterminado(ModeloDeterminado):
             Variable('ciclo', unid=None, ingr=False, egr=True, líms=(0, None)),
             VarPasoDeter('paso', unid=None, ingr=False, egr=True, tmñ_ciclo=tmñ_ciclo, líms=(0, None)),
             VarPasoDeter(
-                'i_en_ciclo', unid=None, ingr=False, egr=True, inic=tmñ_ciclo - 1, tmñ_ciclo=tmñ_ciclo, líms=(0, None)
+                'i_en_ciclo', unid=None, ingr=False, egr=True, inic=0, tmñ_ciclo=tmñ_ciclo, líms=(0, None)
             ),
-            VarPasoDeter('ingreso', unid=None, ingr=True, egr=False, tmñ_ciclo=tmñ_ciclo, líms=(0, None)),
+            VarPasoDeter('ingreso_paso', unid=None, ingr=True, egr=False, tmñ_ciclo=tmñ_ciclo, líms=(0, None)),
             Variable('ingreso_ciclo', unid=None, ingr=True, egr=False, líms=(None, None))
         ])
 
@@ -29,7 +29,7 @@ class EjDeterminado(ModeloDeterminado):
 
     def avanzar_modelo(símismo, n_ciclos):
         símismo.variables['ciclo'] += n_ciclos
-        paso = símismo.variables['paso'].obt_val()
+        paso = símismo.variables['paso'].obt_vals_paso()[-1]
         símismo.variables['paso'].poner_vals_paso(np.arange(paso + 1, paso + símismo.tmñ_ciclo + 1))
         símismo.variables['i_en_ciclo'].poner_vals_paso(np.arange(símismo.tmñ_ciclo))
 
@@ -48,14 +48,14 @@ class EjBloques(ModeloBloques):
         return VariablesModBloques([
             Variable('ciclo', unid=None, ingr=False, egr=True, líms=(0, None)),
             VarBloque(
-                'bloque', unid=None, ingr=False, egr=True, tmñ_bloques=tmñ_bloques, inic=len(tmñ_bloques) - 1,
+                'bloque', unid=None, ingr=False, egr=True, tmñ_bloques=tmñ_bloques, inic=0,
                 líms=(0, None)
             ),
             VarPasoDeter('paso', unid=None, ingr=False, egr=True, tmñ_ciclo=tmñ_ciclo, líms=(0, None)),
             VarPasoDeter(
-                'i_en_ciclo', unid=None, ingr=False, egr=True, tmñ_ciclo=tmñ_ciclo, inic=tmñ_ciclo - 1, líms=(0, None),
+                'i_en_ciclo', unid=None, ingr=False, egr=True, tmñ_ciclo=tmñ_ciclo, inic=0, líms=(0, None),
             ),
-            Variable('ingreso', unid=None, ingr=True, egr=False, líms=(0, None)),
+            Variable('ingreso_ciclo', unid=None, ingr=True, egr=False, líms=(0, None)),
             VarPasoDeter('ingreso_paso', unid=None, ingr=True, egr=False, tmñ_ciclo=tmñ_ciclo, líms=(0, None)),
             VarBloque('ingreso_bloque', unid=None, ingr=True, egr=False, tmñ_bloques=tmñ_bloques, líms=(0, None))
         ], tmñ_bloques=tmñ_bloques)
@@ -65,7 +65,7 @@ class EjBloques(ModeloBloques):
 
     def avanzar_modelo(símismo, n_ciclos):
         símismo.variables['ciclo'] += n_ciclos
-        paso = símismo.variables['paso'].obt_val()
+        paso = símismo.variables['paso'].obt_vals_paso()[-1]
         símismo.variables['paso'].poner_vals_paso(np.arange(paso + 1, paso + símismo.tmñ_ciclo + 1))
         símismo.variables['i_en_ciclo'].poner_vals_paso(np.arange(símismo.tmñ_ciclo))
         símismo.variables['bloque'].poner_vals_paso(np.arange(len(símismo.variables.tmñ_bloques)))

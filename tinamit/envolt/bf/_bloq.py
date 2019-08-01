@@ -26,7 +26,7 @@ class ModeloBloques(ModeloDeterminado):
         # Actualizar datos de clima
         p = símismo.paso_en_ciclo
 
-        if símismo.corrida.clima and vars_clima and p == (símismo.tmñ_ciclo - 1):
+        if símismo.corrida.clima and vars_clima and p == 0:
             t = símismo.corrida.t
             f_inic = t.fecha()
 

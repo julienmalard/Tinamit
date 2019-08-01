@@ -24,7 +24,7 @@ class TestModeloDeter(unittest.TestCase):
         npt.assert_equal(símismo.res['ciclo'].vals.values.flatten(), np.concatenate(([0], np.repeat(np.arange(1, 11), 5))))
 
     def test_i_en_ciclo(símismo):
-        npt.assert_equal(símismo.res['i_en_ciclo'].vals.values.flatten(), np.concatenate(([4], np.tile(np.arange(5), 10))))
+        npt.assert_equal(símismo.res['i_en_ciclo'].vals.values.flatten(), np.concatenate((np.tile(np.arange(5), 10), [0])))
 
 
 class TestModeloIndeter(unittest.TestCase):
@@ -57,12 +57,12 @@ class TestModeloBloques(unittest.TestCase):
     def test_bloque(símismo):
         npt.assert_equal(
             símismo.res['bloque'].vals.values.flatten(),
-            np.concatenate(([2], np.tile(np.repeat([0, 1, 2], [3, 4, 5]), 3)))
+            np.concatenate((np.tile(np.repeat([0, 1, 2], [3, 4, 5]), 3), [0]))
         )
 
     def test_i_en_ciclo(símismo):
         npt.assert_equal(
-            símismo.res['i_en_ciclo'].vals.values.flatten(), np.concatenate(([11], np.tile(np.arange(12), 3)))
+            símismo.res['i_en_ciclo'].vals.values.flatten(), np.concatenate((np.tile(np.arange(12), 3), [0]))
         )
 
 

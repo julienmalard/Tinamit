@@ -12,13 +12,13 @@ class ModeloImpaciente(ModeloBF):
     """
 
     def __init__(símismo, tmñ_ciclo, variables, nombre='bf'):
-        símismo.paso_en_ciclo = tmñ_ciclo - 1
+        símismo.paso_en_ciclo = 0
         símismo.tmñ_ciclo = tmñ_ciclo
 
         super().__init__(variables, nombre)
 
     def iniciar_modelo(símismo, corrida):
-        símismo.paso_en_ciclo = símismo.tmñ_ciclo - 1
+        símismo.paso_en_ciclo = 0
         super().iniciar_modelo(corrida)
 
     def unidad_tiempo(símismo):
@@ -85,7 +85,7 @@ class VarPaso(Variable):
         super().__init__(nombre, unid, ingr, egr, inic=inic, líms=líms, info=info)
         símismo._matr_paso = np.zeros((tmñ_ciclo, *símismo._val.shape))
         símismo._matr_paso[:] = símismo.inic
-        símismo.paso = -1
+        símismo.paso = 0
 
     def poner_val(símismo, val):
         símismo._matr_paso[símismo.paso] = val
@@ -140,6 +140,6 @@ class VarPaso(Variable):
 
     def reinic(símismo):
 
-        símismo.paso = -1
+        símismo.paso = 0
         símismo._matr_paso[:] = símismo.inic
         super().reinic()

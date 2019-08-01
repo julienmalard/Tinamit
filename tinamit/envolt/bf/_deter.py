@@ -23,7 +23,7 @@ class ModeloDeterminado(ModeloImpaciente):
         símismo.paso_en_ciclo = p_después
 
         # Si hay que avanzar el modelo externo, lanzar una su simulación aquí.
-        if p_después == 0 or ((p + n_pasos) >= símismo.tmñ_ciclo):
+        if p == 0 or ((p + n_pasos) > símismo.tmñ_ciclo):
             # El número de ciclos para simular
             c = mat.ceil(n_pasos / símismo.tmñ_ciclo)  # type: int
 
@@ -41,7 +41,7 @@ class ModeloDeterminado(ModeloImpaciente):
         # Actualizar datos de clima
         p = símismo.paso_en_ciclo
 
-        if símismo.corrida.clima and vars_clima and p == (símismo.tmñ_ciclo - 1):
+        if símismo.corrida.clima and vars_clima and p == 0:
             t = símismo.corrida.t
             f_inic = t.fecha()
 

@@ -68,7 +68,7 @@ class TestClimaBFs(TestCase):
     def test_deter(símismo):
         mod = EjDeterminado(tmñ_ciclo=30, unid_tiempo='días')
         mod.conectar_var_clima('ingreso_ciclo', 'بارش', conv=1, combin='total')
-        mod.conectar_var_clima('ingreso', 'بارش', conv=1, combin='total')
+        mod.conectar_var_clima('ingreso_paso', 'بارش', conv=1, combin='total')
 
         """
         Vamos a repetir los datos de los variables climáticos para paso = 0 y paso = 1. De pronto hay mejor solución,
@@ -81,7 +81,7 @@ class TestClimaBFs(TestCase):
 
         pruebas = {
             'ingreso_ciclo': ref_ciclo,
-            'ingreso': ref_paso
+            'ingreso_paso': ref_paso
         }
 
         res = mod.simular(EspecTiempo(30 * 12 - 1, f_inic=símismo.fechas[0]), clima=símismo.clima)
@@ -95,7 +95,7 @@ class TestClimaBFs(TestCase):
         mod = EjBloques(tmñ_bloques=tmñ_bloques, unid_tiempo='meses')
         mod.conectar_var_clima('ingreso_paso', 'بارش', conv=1, combin='total')
         mod.conectar_var_clima('ingreso_bloque', 'بارش', conv=1, combin='total')
-        mod.conectar_var_clima('ingreso', 'بارش', conv=1, combin='total')
+        mod.conectar_var_clima('ingreso_ciclo', 'بارش', conv=1, combin='total')
 
         n_días = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
         sum_cum = np.cumsum(np.append([0], n_días))
@@ -111,7 +111,7 @@ class TestClimaBFs(TestCase):
         ref_ciclo = np.sum(símismo.lluvia[:np.sum(n_días)])
 
         pruebas = {
-            'ingreso': ref_ciclo,
+            'ingreso_ciclo': ref_ciclo,
             'ingreso_paso': ref_paso,
             'ingreso_bloque': ref_bloques
         }
