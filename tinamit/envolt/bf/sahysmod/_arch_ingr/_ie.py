@@ -107,6 +107,16 @@ def leer_info_dic_paráms(archivo_fnt):
 
     """
 
+    def list_files(startpath):
+        for root, dirs, files in os.walk(startpath):
+            level = root.replace(startpath, '').count(os.sep)
+            indent = ' ' * 4 * (level)
+            print('{}{}/'.format(indent, os.path.basename(root)))
+            subindent = ' ' * 4 * (level + 1)
+            for f in files:
+                print('{}{}'.format(subindent, f))
+    list_files(os.path.split(archivo_fnt)[0])
+
     # Escoger la plantilla apropiada.
     plantilla_fnt = PLANTILLACSV if archivo_fnt[-3:] == 'csv' else PLANTILLAINP
 

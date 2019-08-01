@@ -1,4 +1,4 @@
-.. image:: tinamit/Interfaz/Imágenes/LogoCent.png
+.. image:: docs/source/_estático/imágenes/Logos/Logo_Tinamit_transp.png
    :scale: 80%
    :alt: Logo muy bonito. :)
 
