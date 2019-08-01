@@ -1,7 +1,7 @@
 import numpy as np
 
-from tinamit.mod.var import Variable
 from tinamit.mod import VariablesMod
+from tinamit.mod.var import Variable
 from ._envolt import ModeloBF
 
 
@@ -12,13 +12,13 @@ class ModeloImpaciente(ModeloBF):
     """
 
     def __init__(símismo, tmñ_ciclo, variables, nombre='bf'):
-        símismo.paso_en_ciclo = 0
+        símismo.paso_en_ciclo = tmñ_ciclo - 1
         símismo.tmñ_ciclo = tmñ_ciclo
 
         super().__init__(variables, nombre)
 
     def iniciar_modelo(símismo, corrida):
-        símismo.paso_en_ciclo = 0
+        símismo.paso_en_ciclo = símismo.tmñ_ciclo - 1
         super().iniciar_modelo(corrida)
 
     def unidad_tiempo(símismo):
@@ -29,6 +29,7 @@ class VariablesModImpaciente(VariablesMod):
     """
     Representa los variables de un modelo :class:`~tinamit.envolt.bf._impac.Impaciente`.
     """
+
     def vars_paso(símismo):
         """
         Devuelve los variables por paso.
@@ -85,7 +86,7 @@ class VarPaso(Variable):
         super().__init__(nombre, unid, ingr, egr, inic=inic, líms=líms, info=info)
         símismo._matr_paso = np.zeros((tmñ_ciclo, *símismo._val.shape))
         símismo._matr_paso[:] = símismo.inic
-        símismo.paso = 0
+        símismo.paso = -1
 
     def poner_val(símismo, val):
         símismo._matr_paso[símismo.paso] = val
@@ -139,7 +140,6 @@ class VarPaso(Variable):
         super().poner_val(símismo._matr_paso[paso])
 
     def reinic(símismo):
-
-        símismo.paso = 0
+        símismo.paso = -1
         símismo._matr_paso[:] = símismo.inic
         super().reinic()
