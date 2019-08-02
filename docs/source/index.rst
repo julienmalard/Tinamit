@@ -34,6 +34,7 @@ Tinamït permite la conexión rápida, flexible y reproducible de modelos con:
 * Una estructura fácil para conectar modelos en menos de 10 líneas (en vez de cientos).
 * Manejo automático de diferencias en escalas temporales y unidades.
 * Conexión con bases de datos para calibración y validación de modelos.
+* Inclusión automática de variables de cambios climáticos con la librería تقدیر (taqdir)
 * Una estructura transparente para que todos puedan agregar modelos y recursos.
 
 .. note::
