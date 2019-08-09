@@ -3,13 +3,17 @@
 # This file is distributed under the same license as the tinamït package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
+# Translators:
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2019
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-01 11:31+0000\n"
+"POT-Creation-Date: 2019-08-09 08:01+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Hindi (https://www.transifex.com/qatikon/teams/70565/hi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,11 +23,11 @@ msgstr ""
 
 #: ../../source/tutorial/conex.rst:2
 msgid "Conectar modelos"
-msgstr ""
+msgstr "प्रतिरूपों की जोड़ाई"
 
 #: ../../source/tutorial/conex.rst:5
 msgid "Ejemplo muy básico"
-msgstr ""
+msgstr "सरल नमूना"
 
 #: ../../source/tutorial/conex.rst:6
 msgid ""
@@ -31,22 +35,27 @@ msgid ""
 "funciona Tinamït, y no tienes que instalar cualquier modelo biofísico "
 "externo para que te funcione, así que empecemos con este."
 msgstr ""
+"हम एक काफी सरल नमूना मे शुरू करेंगे। फिर भी तीनामित के सुविधाऔं अच्छी तरफ़ "
+"से समझाता है। इसके उपर उसको चलाने के लिये आपको अपना संगणक पर किसी बाहरी "
+"वतावरण का प्रतिरूप की स्थापना करने की अवश्यकता होगी नहीं।"
 
 #: ../../source/tutorial/conex.rst:9
 msgid "Primero vamos a utilizar este modelo de dinámicas de sistemas:"
-msgstr ""
+msgstr "हम इस प्रणाली गतिशील का प्रतिरूप का प्रयोग करेंगे।"
 
 #: ../../source/tutorial/conex.rst:15
 msgid ""
 "El modelo DS determina, dado la lluvia, la cantidad de pesca posible y su "
 "impacto en la necesidad de explotar recursos del bosque."
 msgstr ""
+"प्रणाली गतिशील का प्रतिरूप बारिश के अनुसार मछली पकड़ना के मौके और जंगल "
+"संसाधनों का प्रयोग करने की अवश्यकता पर इसका प्रभाव बताता है।"
 
 #: ../../source/tutorial/conex.rst:18
 msgid ""
 "Del otro lado, el \"modelo\" biofísico nos da la precipitación según la "
 "cubertura forestal."
-msgstr ""
+msgstr "हम्हारा वतावरण का प्रतिरूप वन आवरण के अनुसर बारिश बताता है।"
 
 #: ../../source/tutorial/conex.rst:2
 msgid ""
@@ -79,6 +88,34 @@ msgid ""
 "\n"
 "eje1.ticklabel_format(axis='y', style='sci', scilimits=(0,0))"
 msgstr ""
+"import matplotlib.pyplot as plt\n"
+"\n"
+"from tinamit.conect import Conectado as जु़ड़ा_हुआ\n"
+"from tinamit.ejemplos import obt_ejemplo as नमूना_पाना\n"
+"\n"
+"प्रण = नमूना_पाना('sencillo/mds_bosques.mdl')\n"
+"वता = नमूना_पाना('sencillo/bf_bosques.py')\n"
+"\n"
+"प्रतिरूप = जु़ड़ा_हुआ(bf=वता, mds=प्रण)\n"
+"\n"
+"# परिवर्तनशील को जोड़ा देंगे\n"
+"प्रतिरूप.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)\n"
+"प्रतिरूप.conectar(var_mds='Bosques', var_bf='Bosques', mds_fuente=True)\n"
+"\n"
+"# प्रतिरूप चलाना\n"
+"परिणाम_जुड़ी = प्रतिरूप.simular(200)\n"
+"\n"
+"# चित्र\n"
+"चि, (अक्ष१ , अक्ष२) = plt.subplots(1, 2)\n"
+"अक्ष१.plot(परिणाम_जुड़ी['mds']['Bosques'].vals)\n"
+"अक्ष१.set_title('वन आवरण')\n"
+"अक्ष१.set_xlabel('महिने')\n"
+"\n"
+"अक्ष२.plot(res_conex['mds']['Lluvia'].vals)\n"
+"अक्ष२.set_title('बारिश')\n"
+"अक्ष२.set_xlabel('महिने')\n"
+"\n"
+"अक्ष१.ticklabel_format(axis='y', style='sci', scilimits=(0,0))"
 
 #: ../../source/tutorial/conex.rst:36
 msgid ""
@@ -86,12 +123,17 @@ msgid ""
 "<../tutorial/conex-1.png>`__, `hires.png <../tutorial/conex-1.hires.png>`__,"
 " `pdf <../tutorial/conex-1.pdf>`__)"
 msgstr ""
+"(`स्रोत <../tutorial/conex-1.py>`__, `png <../tutorial/conex-1.png>`__, "
+"`hires.png <../tutorial/conex-1.hires.png>`__, `पी डी एफ "
+"<../tutorial/conex-1.pdf>`__)"
 
 #: ../../source/tutorial/conex.rst:53
 msgid ""
 "Tambiém comparemos a una corrida sin conexión para ver el impacto de incluir"
 " las relaciones entre ambiente y humano."
 msgstr ""
+"इसके बाद हम संबध के सिवा प्रतिरूप चला सकते हैं इसे देखने के लिये कि वतावरण "
+"और इनसान के संबध को शामिल करना का क्या। प्रभाव।"
 
 #: ../../source/tutorial/conex.rst:58
 msgid ""
@@ -100,6 +142,10 @@ msgid ""
 "(:class:`~tinamit.envolt.mds.ModeloDS`) también se pueden simular de manera "
 "independiente."
 msgstr ""
+"वतावरण (:class:`~tinamit.envolt.bf.ModeloBF`) और प्रणाली गतिशील "
+"(:class:`~tinamit.envolt.mds.ModeloDS`) के प्रतिरूप दोनों प्रतिरूप "
+"(:class:`~tinamit.mod.Modelo`) के उपवर्ग होने से ये स्वतंत्र तरह से भी चल "
+"सकते हैं।"
 
 #: ../../source/tutorial/conex.rst:2
 msgid ""
@@ -125,6 +171,27 @@ msgid ""
 "\n"
 "f.legend()"
 msgstr ""
+"from tinamit.envolt.mds import gen_mds as प्रण_उत्पन्न\n"
+"from tinamit.envolt.bf import gen_bf as वता_उत्पन्न\n"
+"\n"
+"परिणाम_प्रण = प्रण_उत्पन्न(प्रण).simular(200, nombre='प्रणाली')\n"
+"परिणाम_वता = वता_उत्पन्न(वता).simular(200, nombre='वतावरण')\n"
+"\n"
+"# चित्र\n"
+"चि, (अक्ष१, अक्ष२) = plt.subplots(1, 2)\n"
+"eje1.plot(परिणाम_जुड़ी['mds']['Bosques'].vals, label='जुड़ी हुई')\n"
+"eje1.plot(परिणाम_प्रण['Bosques'].vals, label='स्वतंत्र')\n"
+"eje1.set_title('वन आवरण')\n"
+"eje1.set_xlabel('महिने')\n"
+"\n"
+"eje1.ticklabel_format(axis='y', style='sci', scilimits=(0,0))\n"
+"\n"
+"अक्ष२.plot(परिणाम_जुड़ी['mds']['Lluvia'].vals)\n"
+"अक्ष२.plot(परिणाम_वता['Lluvia'].vals)\n"
+"अक्ष२.set_title('बारिश')\n"
+"अक्ष२.set_xlabel('महिने')\n"
+"\n"
+"चि.legend()"
 
 #: ../../source/tutorial/conex.rst:29
 msgid ""
@@ -132,10 +199,13 @@ msgid ""
 "<../tutorial/conex-2.png>`__, `hires.png <../tutorial/conex-2.hires.png>`__,"
 " `pdf <../tutorial/conex-2.pdf>`__)"
 msgstr ""
+"(`स्रोत <../tutorial/conex-2.py>`__, `png <../tutorial/conex-2.png>`__, "
+"`hires.png <../tutorial/conex-2.hires.png>`__, `पी डी एफ़ "
+"<../tutorial/conex-2.pdf>`__)"
 
 #: ../../source/tutorial/conex.rst:88
 msgid "Opciones de tiempo"
-msgstr ""
+msgstr "समय विकल्प"
 
 #: ../../source/tutorial/conex.rst:89
 msgid ""
@@ -146,6 +216,11 @@ msgid ""
 "o clima externo), el tamaño de cada paso, y la frequencia con cual se "
 "guardan los resultados."
 msgstr ""
+" अगर आप अपना प्रतिरूप के समय के अक्ष के विकल्प पर और भी नियंत्रण चाहती हैं, "
+"तो :class:`~tinamit.tiempo.tiempo.EspecTiempo` नाम का वर्ग का एक वस्तु "
+":func:`~tinamit.mod.Modelo.simular` फलन। को दे सकती हैं। इस तरह से कदम की "
+"संख्या, प्रारंभिक तारिख (बाहरी आंकड़ों या जलवायु की जोड़ाई के लिये उपयोगी), "
+"कदम की आकार, और परिणाम बचाने की आवृत्ति का निर्दिष्ट कर सकती हैं।"
 
 #: ../../source/tutorial/conex.rst:94
 msgid ""
@@ -154,10 +229,14 @@ msgid ""
 "t = EspecTiempo(100, f_inic='2000-01-01', tmñ_paso=1, guardar_cada=1)\n"
 "modelo.simular(t)"
 msgstr ""
+"from tinamit.tiempo.tiempo import EspecTiempo\n"
+"\n"
+"स = EspecTiempo(100, f_inic='२०००-०१-०१', tmñ_paso=1, guardar_cada=1)\n"
+"प्रतिरूप.simular(स)"
 
 #: ../../source/tutorial/conex.rst:102
 msgid "Unidades de tiempo"
-msgstr ""
+msgstr "समय का एकता"
 
 #: ../../source/tutorial/conex.rst:103
 msgid ""
@@ -168,10 +247,16 @@ msgid ""
 ":func:`~tinamit.unids.nueva_unidad`, :func:`~tinamit.unids.agregar_trad` o "
 ":func:`~tinamit.unids.agregar_sinónimos`."
 msgstr ""
+"अगर आपके प्रतिरूप के समय के एकता में अंतर है, तीनामित उनके स्वचालित रूपांतर "
+"करेगा। फिर भी, अगर आपके प्रतिरूप के समय का एकता अपरंपरागत हो या तीनामित को "
+"अज्ञात भाषा में हो, :func:`~tinamit.unids.nueva_unidad`, "
+":func:`~tinamit.unids.agregar_trad` या "
+":func:`~tinamit.unids.agregar_sinónimos` नाम के फलन से आपको रूपांतर का "
+"निर्दिष्ट खुद करने पड़ेगा।"
 
 #: ../../source/tutorial/conex.rst:108
 msgid ""
-"from tinamit.unids import nueva_unidad, , agregar_sinónimos\n"
+"from tinamit.unids import nueva_unidad, agregar_trad, agregar_sinónimos\n"
 "\n"
 "# Una estación tiene 4 meses\n"
 "nueva_unidad(unid='Estación', ref='Mes', conv=4)\n"
@@ -189,10 +274,13 @@ msgid ""
 "``semana``, ``día``, ``hora``, ``minuto``, ``secundo``, ``microsecundo``, "
 "``millisecundo``, y ``nanosecundo``."
 msgstr ""
+"तीनामित को निम्नलिखत समय के एकता समझ आते हैं: ``año``, ``mes``, ``semana``, "
+"``día``, ``hora``, ``minuto``, ``secundo``, ``microsecundo``, "
+"``millisecundo``, एवं ``nanosecundo``."
 
 #: ../../source/tutorial/conex.rst:126
 msgid "3+ modelos"
-msgstr ""
+msgstr "३+ प्रतिरूप"
 
 #: ../../source/tutorial/conex.rst:127
 msgid ""
@@ -200,16 +288,21 @@ msgid ""
 ":class:`~tinamit.conect.SuperConectado`. Se pueden conectar de manera "
 "horizontal o jerárquica, cómo prefieres."
 msgstr ""
+"अगर आप२ प्रतिरूप से ज़्यादा ज़ोड़ाने चाहते हैं, यह भी "
+":class:`~tinamit.conect.SuperConectado` नाम का वर्ग के साथ आसान हो जाता है। "
+"क्षैतिज या श्रेणीबद्ध तरह से जुड़े जा सकते हैं।"
 
 #: ../../source/tutorial/conex.rst:131
 msgid "Horizontal"
-msgstr ""
+msgstr "क्षैतिज"
 
 #: ../../source/tutorial/conex.rst:132
 msgid ""
 "Se pueden conectar modelos individuales de manera \"horizontal\" en un solo "
 "modelo :class:`~tinamit.conect.SuperConectado`."
 msgstr ""
+"विभिन्न प्रतिरूप क्षैतिज तरह से एक ही "
+":class:`~tinamit.conect.SuperConectado` का  प्रतिरूप में जुड़े जा सकते हैं।"
 
 #: ../../source/tutorial/conex.rst:135
 msgid ""
@@ -234,20 +327,42 @@ msgid ""
 "# Simular\n"
 "res = conectado.simular(10, vars_interés=[mod_1.variables['Var 1'], mod_3.variables['Var 3']])"
 msgstr ""
+"from tinamit.conectado import SuperConectado as महाजुड़ा_हुआ\n"
+"\n"
+"# ३ प्रतिरूप बनाना\n"
+"प्रति_१= मेराप्रतिरूप१(nombre='प्रतिरूप १')\n"
+"प्रति_२ = मेराप्रतिरूप२(nombre='प्रतिरूप २')\n"
+"प्रति_३ = मेराप्रतिरूप३(nombre='प्रतिरूप ३')\n"
+"\n"
+"# जुड़ा हूआ प्रतिरूप\n"
+"प्रतिरूप = महाजुड़ा_हुआ([प्रति_१, प्रति_२, प्रति_३])\n"
+"\n"
+"# परिवर्तनशील की जोड़ाई\n"
+"प्रतिरूप.conectar_vars(\n"
+"    var_fuente='Var 1', modelo_fuente='प्रतिरूप १', var_recip='Var 2', modelo_recip='प्रतिरूप २'\n"
+")\n"
+"प्रतिरूप.conectar_vars(\n"
+"    var_fuente='Var 2', modelo_fuente='प्रतिरूप २', var_recip='Var 3', modelo_recip='प्रतिरूप ३'\n"
+")\n"
+"\n"
+"# चलाना\n"
+"परिणाम = प्रतिरूप.simular(10, vars_interés=[प्रति_१.variables['Var 1'], प्रति_३.variables['Var 3']])"
 
 #: ../../source/tutorial/conex.rst:158
 msgid ""
 "Los variables ``Var 1`` del ``modelo 1`` y ``Var 3`` del ``modelo 3`` ahora "
 "tendrán valores idénticos a través de la simulación."
 msgstr ""
+"अब, ``प्रतिरूप १`` का ``Var 1`` नाम का परिवर्तनशील और ``प्रतिरूप ३`` का "
+"``Var 3`` के मूल्य पूरी अनुकार में एक जैसे ही हेंगे।"
 
 #: ../../source/tutorial/conex.rst:162
 msgid "Jerárquica"
-msgstr ""
+msgstr "श्रेणीबद्ध"
 
 #: ../../source/tutorial/conex.rst:163
 msgid "También se pueden anidar modelos adentro de otros."
-msgstr ""
+msgstr "प्रतिरूप एक दूसरे के अंदर भी लगा सकते हैं।"
 
 #: ../../source/tutorial/conex.rst:165
 msgid ""
@@ -269,10 +384,10 @@ msgid ""
 ")\n"
 "\n"
 "# Correr la simulación\n"
-"res = conectado.simular(10, vars_interés=[mod_1.variables['Var 1'], mod_3.variables['Var 2']])"
+"res = conectado.simular(10, vars_interés=[mod_1.variables['Var 1'], mod_3.variables['Var 3']])"
 msgstr ""
 
 #: ../../source/tutorial/conex.rst:187
 msgid ""
 "Este código dará resultados idénticos a los del ejemplo horizontal arriba."
-msgstr ""
+msgstr "३ प्रतिरूप जोड़ाने के दोनों तरह के परिणाम एक ही होंगे।"

@@ -4,17 +4,17 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Julien Malard <julien.malard@mail.mcgill.ca>, 2019
 # AzharInam <muhammad.baig@mail.mcgill.ca>, 2019
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2019
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-01 11:31+0000\n"
+"POT-Creation-Date: 2019-08-09 08:01+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
-"Last-Translator: AzharInam <muhammad.baig@mail.mcgill.ca>, 2019\n"
+"Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -40,13 +40,14 @@ msgstr "کوڈ کے تخلیق کار۔"
 
 #: ../../source/general/agrad.rst:9
 msgid "`Julien Malard <https://www.researchgate.net/profile/Julien_Malard>`_"
-msgstr ""
+msgstr "`ژولیئں ملاغ <https://www.researchgate.net/profile/Julien_Malard>`_"
 
 #: ../../source/general/agrad.rst:10
 msgid ""
 "`محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig) "
 "<https://www.researchgate.net/profile/Azhar_Baig>`_"
 msgstr ""
+"`محمّد اظہر انعام بیگ <https://www.researchgate.net/profile/Azhar_Baig>`_"
 
 #: ../../source/general/agrad.rst:13
 msgid "Autores de envolturas"
@@ -81,19 +82,19 @@ msgstr "مترجم"
 
 #: ../../source/general/agrad.rst:24
 msgid "اردو: محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)"
-msgstr ""
+msgstr "اردو: محمّد اظہر انعام بیگ"
 
 #: ../../source/general/agrad.rst:25
 msgid "தமிழ்: Julien Malard"
-msgstr ""
+msgstr "தமிழ்: ژولیئں ملاغ"
 
 #: ../../source/general/agrad.rst:26
 msgid "हिंदी: Julien Malard"
-msgstr ""
+msgstr "हिंदी: ژولیئں ملاغ"
 
 #: ../../source/general/agrad.rst:27
 msgid "français: Julien Malard"
-msgstr ""
+msgstr "français: ژولیئں ملاغ"
 
 #: ../../source/general/agrad.rst:30
 msgid "Financiamiento"

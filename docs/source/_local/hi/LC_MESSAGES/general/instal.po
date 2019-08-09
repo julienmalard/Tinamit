@@ -3,13 +3,17 @@
 # This file is distributed under the same license as the tinamït package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
+# Translators:
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2019
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-01 11:31+0000\n"
+"POT-Creation-Date: 2019-08-09 08:01+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Hindi (https://www.transifex.com/qatikon/teams/70565/hi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,7 +23,7 @@ msgstr ""
 
 #: ../../source/general/instal.rst:2
 msgid "Instalación"
-msgstr ""
+msgstr "स्थापना"
 
 #: ../../source/general/instal.rst:3
 msgid ""
@@ -27,10 +31,13 @@ msgid ""
 "recién de `Python 3 <(https://www.python.org/downloads)>`_ Después, puedes "
 "instalar Tinamït en la terminal con:"
 msgstr ""
+"स्थापना आसान होनेे चाहिये।  पहले से ही आपको `पाईथोन ३ "
+"<(https://www.python.org/downloads)>`_ के सबसे नये संस्करण की आवश्यकता होगी।"
+" बाद में, संगणक का क्रम रेख में तीनामित का स्थापन ऐसा कर सकती हैं।"
 
 #: ../../source/general/instal.rst:6
 msgid ":command:`pip install tinamit`"
-msgstr ""
+msgstr ":command:`pip install tinamit`"
 
 #: ../../source/general/instal.rst:9
 msgid ""
@@ -40,17 +47,24 @@ msgid ""
 "<https://github.com/julienmalard/Tinamit/issues/new/choose>`_; por eso "
 "existe la comunidad."
 msgstr ""
+"विंडोज़ `अब तक <https://github.com/pypa/pip/pull/5712>`_ सेवय अंग्रेज़ी भाषा"
+" में लिखे हुए क्रमानुदेशण के साथ मुश्किल देता है (हाँ, २०१९ में)। अगर आपको "
+"कोई मुश्किल आती है तो `मदद मांगने "
+"<https://github.com/julienmalard/Tinamit/issues/new/choose>`_ से मत डरना। "
+"हम्हारी समदय इसी लिये बनी हुई है।"
 
 #: ../../source/general/instal.rst:13
 msgid ""
 "Si quieres la versión más recién (en desarrollo), puedes obtenerla de GitHub"
 " directamente con:"
 msgstr ""
+"आपको नवीनतम (विकास का) संस्करण चाहिये तो उसको सीधे गिटहब से पा सकते हैं।"
 
 #: ../../source/general/instal.rst:15
 msgid ""
 ":command:`pip install git+git://github.com/julienmalard/tinamit.git@master`"
 msgstr ""
+":command:`pip install git+git://github.com/julienmalard/tinamit.git@master`"
 
 #: ../../source/general/instal.rst:19
 msgid ""
@@ -62,3 +76,9 @@ msgid ""
 "obscuras, ``SciPy``, un paquete requerido por Tinamït, no funciona en "
 "Windows sin éste."
 msgstr ""
+"अगर आप विंडोड़ पर हैं, हो सकता है कि आपको ``C++ redistributable`` `यहाँ "
+"<https://support.microsoft.com/es-gt/help/2977003/the-latest-supported-"
+"visual-c-downloads>`_ से स्थापना करने पड़ें। अगर आपका **पाईथोन** (विंडोज़ "
+"नहीं) ३२ बिट के हो तो ``…x86.exe`` वाला संचिका चाहिये और अगर पाईथोन ६४ बिट "
+"के हो तो फिर ``…x64.exe`` वाला लेना। इसके बाद उसका। स्थापना कीजिये। अजीब "
+"कारण से, ``SciPy``, जिसका प्रयोग तीनामित करता है, इसके बिना चलेगा नहीं।"

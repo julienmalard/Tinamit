@@ -3,13 +3,17 @@
 # This file is distributed under the same license as the tinamït package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
+# Translators:
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2019
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-01 11:31+0000\n"
+"POT-Creation-Date: 2019-08-09 08:01+0000\n"
 "PO-Revision-Date: 2019-07-20 08:49+0000\n"
+"Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Hindi (https://www.transifex.com/qatikon/teams/70565/hi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,79 +21,98 @@ msgstr ""
 "Language: hi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../../source/index.rst:53 ../../source/index.rst:53
+#: ../../source/index.rst:54 ../../source/index.rst:54
 msgid "General"
-msgstr ""
+msgstr "सामान्य"
 
-#: ../../source/index.rst:62 ../../source/index.rst:62
+#: ../../source/index.rst:63 ../../source/index.rst:63
 msgid "Tutorial"
-msgstr ""
+msgstr "अभ्यास"
 
-#: ../../source/index.rst:74 ../../source/index.rst:74
+#: ../../source/index.rst:75 ../../source/index.rst:75
 msgid "Desarrollo"
-msgstr ""
+msgstr "विकास"
 
-#: ../../source/index.rst:82 ../../source/index.rst:82
+#: ../../source/index.rst:83 ../../source/index.rst:83
 msgid "Referencia"
-msgstr ""
+msgstr "संदर्भ"
 
 #: ../../source/index.rst:8
 msgid "¡Bienvenidoas a la documentación de Tinamït!"
-msgstr ""
+msgstr "तीनामित की प्रलेखन पर आपका स्वाहत हो।"
 
 #: ../../source/index.rst:30
 msgid ""
 "Tinamït es un programa para conectar modelos socioeconómicos (dinámicas de "
 "los sistemas) con modelos biofísicos."
 msgstr ""
+"तीनामित एक कार्यक्रम है जो समाजिक-आर्थशस्त्रिक (प्रणाली के गतिशील) और वतावरण"
+" के प्रतिरूप जोड़ा देता है।"
 
 #: ../../source/index.rst:32
 msgid ""
 "Tinamït permite la conexión rápida, flexible y reproducible de modelos con:"
 msgstr ""
+"तीनामित से प्रतिरूप के संबंध तेज, लचीला औऱ प्रजनन योग्य रास्ता से होता है।"
 
 #: ../../source/index.rst:34
 msgid ""
 "Una estructura fácil para conectar modelos en menos de 10 líneas (en vez de "
 "cientos)."
 msgstr ""
+"सरल संचरना जिस से  क्रमानुदेशन के १० पंक्ति से कम में प्रतिरूपों जोड़ा सकते "
+"हैं।"
 
 #: ../../source/index.rst:35
 msgid "Manejo automático de diferencias en escalas temporales y unidades."
-msgstr ""
+msgstr "समय का पैमाना और एकता में मतभेद का स्वचालित प्रबंध।"
 
 #: ../../source/index.rst:36
 msgid "Conexión con bases de datos para calibración y validación de modelos."
-msgstr ""
+msgstr "प्रतिरूप के अंशांकन और पुष्टीकरण के लिये आंकड़ों के साथ जोड़ाई।"
 
 #: ../../source/index.rst:37
 msgid ""
+"Inclusión automática de variables de cambios climáticos con la librería "
+"تقدیر (taqdir)"
+msgstr ""
+"تقدیر (तकदीर) नाम का पाईथोन क्रमानुदेश से जलवायु परिवर्तन के परिवर्तनशील के "
+"स्वाचलित समावेश।"
+
+#: ../../source/index.rst:38
+msgid ""
 "Una estructura transparente para que todos puedan agregar modelos y "
 "recursos."
-msgstr ""
+msgstr "पार्दशक संरचना तकि सब लोग नये प्रतिरूप और संसाधन जोड़ा सकें।"
 
-#: ../../source/index.rst:40
+#: ../../source/index.rst:41
 msgid ""
 "¿Encontraste algún error en la documentación? Es culpa mía. Si es error de "
 "español, por favor tenga la bondad de corregirlo en `GitHub "
 "<https://github.com/julienmalard/tinamit/issues>`_. Si es en otro idioma, "
 "corrígelo :doc:`así </des/trad>`. ¡Gracias!"
 msgstr ""
-
-#: ../../source/index.rst:45
-msgid "¿Quieres contribuir?"
-msgstr ""
+"प्रलेखन में एक गल्ती है क्या। माफ करना। अगर हिस्पानी भाषा में है, कृप्या "
+"करके उसको `GitHub <https://github.com/julienmalard/tinamit/issues>`_ पर ठीक "
+"कर देना। अगर किसी और भाषा में हो, तो :doc:`ऐसा </des/trad>` सही कर देना। "
+"आपका बहुत धन्यवाद।"
 
 #: ../../source/index.rst:46
+msgid "¿Quieres contribuir?"
+msgstr "योगदान करना चाहती हैं क्या।"
+
+#: ../../source/index.rst:47
 msgid ""
 "Puedes **agregar modelos**, desarrollar **nuevas funcionalidades**, o ayudar"
 " a **traducir Tinamït** en tu lengua preferida."
 msgstr ""
+"**नये प्रतिरूप** जोड़ा सकती हैं, **नये कार्यक्षमते** का विकास कर सकती हैं, "
+"या फिर आपकी पसंदगी भाषा में **तीनामित का अनुवाद** कर सकती हैं।"
 
-#: ../../source/index.rst:48
+#: ../../source/index.rst:49
 msgid "Contacto: Julien Malard: julien.malard@mail.mcgill.ca"
-msgstr ""
+msgstr "संपरक: ज़ूलीएँ मलर: julien.malard@mail.mcgill.ca"
 
-#: ../../source/index.rst:51
+#: ../../source/index.rst:52
 msgid "Índice:"
-msgstr ""
+msgstr "अनुक्रमण:"
