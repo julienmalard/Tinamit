@@ -107,7 +107,7 @@ ser que tengas que especificar la conversión manualmente con :func:`~tinamit.un
 
 .. code-block:: python
 
-   from tinamit.unids import nueva_unidad, , agregar_sinónimos
+   from tinamit.unids import nueva_unidad, agregar_trad, agregar_sinónimos
     
    # Una estación tiene 4 meses
    nueva_unidad(unid='Estación', ref='Mes', conv=4)
@@ -182,6 +182,6 @@ También se pueden anidar modelos adentro de otros.
    )
 
    # Correr la simulación
-   res = conectado.simular(10, vars_interés=[mod_1.variables['Var 1'], mod_3.variables['Var 2']])
+   res = conectado.simular(10, vars_interés=[mod_1.variables['Var 1'], mod_3.variables['Var 3']])
 
 Este código dará resultados idénticos a los del ejemplo horizontal arriba.
