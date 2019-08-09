@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-01 11:31+0000\n"
+"POT-Creation-Date: 2019-08-09 08:01+0000\n"
 "PO-Revision-Date: 2019-07-20 08:49+0000\n"
 "Language-Team: Malay (https://www.transifex.com/qatikon/teams/70565/ms/)\n"
 "MIME-Version: 1.0\n"
@@ -17,19 +17,19 @@ msgstr ""
 "Language: ms\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../source/index.rst:53 ../../source/index.rst:53
+#: ../../source/index.rst:54 ../../source/index.rst:54
 msgid "General"
 msgstr ""
 
-#: ../../source/index.rst:62 ../../source/index.rst:62
+#: ../../source/index.rst:63 ../../source/index.rst:63
 msgid "Tutorial"
 msgstr ""
 
-#: ../../source/index.rst:74 ../../source/index.rst:74
+#: ../../source/index.rst:75 ../../source/index.rst:75
 msgid "Desarrollo"
 msgstr ""
 
-#: ../../source/index.rst:82 ../../source/index.rst:82
+#: ../../source/index.rst:83 ../../source/index.rst:83
 msgid "Referencia"
 msgstr ""
 
@@ -64,11 +64,17 @@ msgstr ""
 
 #: ../../source/index.rst:37
 msgid ""
+"Inclusión automática de variables de cambios climáticos con la librería "
+"تقدیر (taqdir)"
+msgstr ""
+
+#: ../../source/index.rst:38
+msgid ""
 "Una estructura transparente para que todos puedan agregar modelos y "
 "recursos."
 msgstr ""
 
-#: ../../source/index.rst:40
+#: ../../source/index.rst:41
 msgid ""
 "¿Encontraste algún error en la documentación? Es culpa mía. Si es error de "
 "español, por favor tenga la bondad de corregirlo en `GitHub "
@@ -76,20 +82,20 @@ msgid ""
 "corrígelo :doc:`así </des/trad>`. ¡Gracias!"
 msgstr ""
 
-#: ../../source/index.rst:45
+#: ../../source/index.rst:46
 msgid "¿Quieres contribuir?"
 msgstr ""
 
-#: ../../source/index.rst:46
+#: ../../source/index.rst:47
 msgid ""
 "Puedes **agregar modelos**, desarrollar **nuevas funcionalidades**, o ayudar"
 " a **traducir Tinamït** en tu lengua preferida."
 msgstr ""
 
-#: ../../source/index.rst:48
+#: ../../source/index.rst:49
 msgid "Contacto: Julien Malard: julien.malard@mail.mcgill.ca"
 msgstr ""
 
-#: ../../source/index.rst:51
+#: ../../source/index.rst:52
 msgid "Índice:"
 msgstr ""

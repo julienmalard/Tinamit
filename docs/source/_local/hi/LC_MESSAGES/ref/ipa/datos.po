@@ -3,13 +3,17 @@
 # This file is distributed under the same license as the tinamït package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
+# Translators:
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2019
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-01 11:31+0000\n"
+"POT-Creation-Date: 2019-08-09 08:01+0000\n"
 "PO-Revision-Date: 2019-08-01 11:32+0000\n"
+"Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Hindi (https://www.transifex.com/qatikon/teams/70565/hi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -48,7 +52,7 @@ msgstr ""
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
 #: of tinamit.datos.bd.BD.obt_vals:0
 msgid "Parámetros"
-msgstr ""
+msgstr "परिवर्तनशील"
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/fuente.pydocstring
 #: of tinamit.datos.fuente.FuenteBaseXarray:3

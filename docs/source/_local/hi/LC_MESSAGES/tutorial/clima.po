@@ -3,13 +3,17 @@
 # This file is distributed under the same license as the tinamït package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
+# Translators:
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2019
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-01 11:31+0000\n"
+"POT-Creation-Date: 2019-08-09 08:01+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
+"Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Hindi (https://www.transifex.com/qatikon/teams/70565/hi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,13 +23,15 @@ msgstr ""
 
 #: ../../source/tutorial/clima.rst:2
 msgid "Clima"
-msgstr ""
+msgstr "जलवायु"
 
 #: ../../source/tutorial/clima.rst:3
 msgid ""
 "Tinamït puede incorporar datos de clima de manera automática, incluso con "
 "escenarios de cambios climáticos."
 msgstr ""
+"तीनामित स्वचालित रूप से जलवायु के अंकड़ों जोड़ा सकता है, और यह, जलवायु "
+"परिवर्तन के परिदृश्य के साथ भी।"
 
 #: ../../source/tutorial/clima.rst:6
 msgid ""
@@ -34,16 +40,23 @@ msgid ""
 "recomienda que leas su `documentación "
 "<https://taqdir.readthedocs.io/es/latest>`_."
 msgstr ""
+"जलवायु परिवर्तन के आंकड़ों पाने के लिये तीनामित ``تقدیر`` (``तकदीर``) का "
+"प्रयोग करता है। अगर आप जलवायु भविष्यवाणी के साथ बहुत अनुकार करने वाली हैं, "
+"फिर उसके `प्रलेखण <https://taqdir.readthedocs.io/hi/latest>`_ पढ़ने आच्छी "
+"योजना हो सकती है।"
 
 #: ../../source/tutorial/clima.rst:10
 msgid "Especificar variables"
-msgstr ""
+msgstr "परिवर्तनशील के निर्दिष्ट"
 
 #: ../../source/tutorial/clima.rst:11
 msgid ""
 "Si tienes un variable climático en un modelo DS, puedes especificarlo con la"
 " función :func:`~tinamit.Modelo.conectar_var_clima`."
 msgstr ""
+"अगर आपका प्रणाली गतिशील का प्रतिरूप में जलवायु का परिवर्तनशील है, तो "
+":func:`~tinamit.Modelo.conectar_var_clima` नाम का फलन के साथ उसका निर्दिष्ट "
+"कर सकते हैं।"
 
 #: ../../source/tutorial/clima.rst:14
 msgid ""
@@ -53,6 +66,11 @@ msgid ""
 "mod.conectar_var_clima(var='Lluvia', var_clima='بارش', combin='total', conv=0.001)\n"
 "mod.conectar_var_clima(var='Temperatura', var_clima='درجہ_حرارت_اوسط', combin='prom', conv=1)"
 msgstr ""
+"from tinamit.envolt.mds import gen_mds as प्रण_प्रजनन\n"
+"\n"
+"प्रतिरूप = प्रण_प्रजनन('मेरा प्रतिरूप.xmile')\n"
+"प्रतिरूप.conectar_var_clima(var='बारिश', var_clima='بارش', combin='total', conv=0.001)\n"
+"प्रतिरूप.conectar_var_clima(var='तापमान', var_clima='درجہ_حرارت_اوسط', combin='prom', conv=1)"
 
 #: ../../source/tutorial/clima.rst:23
 msgid ""
@@ -61,6 +79,10 @@ msgid ""
 "día. Si es ``prom``, se tomará el promedio; si es ``total``, se tomará el "
 "total de los días incluidos."
 msgstr ""
+"``combin`` नाम का विकल्प इसको निर्दिष्ट करता है कि विभिन्न दिनों के जलवायु "
+"आंकड़ों को कैसा एक साथ इकट्ठे कर देना है अगर प्रतिरूप का समय का कदम १ दिन से"
+" बड़ा है। अगर ``prom`` है, तो औसत की जाएगी, और अगर ``total`` है, तो सारे "
+"शामिल दिनों के मूल्य जुड़े जाएंगे।"
 
 #: ../../source/tutorial/clima.rst:28
 msgid ""
@@ -70,16 +92,24 @@ msgid ""
 "unidad del variable en tu modelo no corresponde a la unidad del variable en "
 "taqdir, tendrás que especificar el factor de conversión en ``conv``."
 msgstr ""
+"``var_clima`` नाम का विकल्प तकदीर को ज्ञात परिवर्तनशील का नाम **होने पड़ता "
+"है** (उसका `प्रलेखन <https://taqdir.readthedocs.io/ur/latest/malumat>`_ "
+"देखना)। इसके अलावा, अगर आपका प्रतिरूप का परिवर्तनशील का एकता तकदीर। का "
+"परिवर्तनशील का एकता से अलग है, तो ``conv`` नाम। का रूपांतरण का कारक का "
+"निर्दिष्ट करने पड़ेगा।"
 
 #: ../../source/tutorial/clima.rst:33
 msgid ""
 "Para modelos BF, la conexión ya debería haberse efectuada en la envoltura "
 "específica al modelo, así que no deberías tener que hacer nada."
 msgstr ""
+"वतावरण के प्रतिरूप के जलवायु परिवर्तनशील के निर्दिष्ट उसी प्रतिरूप के लिफाफा"
+" में पहले से ही किया गया होने चाहिये। तो आपको इसके बारे में कोई चिंता करने "
+"की आवश्यकता नहीं है।"
 
 #: ../../source/tutorial/clima.rst:37
 msgid "Correr"
-msgstr ""
+msgstr "चलाना"
 
 #: ../../source/tutorial/clima.rst:38
 msgid ""
@@ -89,6 +119,11 @@ msgid ""
 "automáticamente los datos de cambios climáticos; ver `aquí "
 "<https://taqdir.readthedocs.io/es/latest/nmune/mrksm5.html>`_)."
 msgstr ""
+"बाद हम :class:`~tinamit.mod.clima.Clima` नाम का वर्ग का एक वस्तु बनाएंगी, "
+"जिस से हम अपना स्थान का जलवायु को निर्दिष्ट करेंगी। जलवायु परिवर्तन का "
+"परिदृश्य (``escenario``) भविष्य के अनुकार के लिये उपयोग होगा (तकदीर जलवायु "
+"परिवर्तन के आंकड़ों खुद पाएगा, `यहाँ "
+"<https://taqdir.readthedocs.io/es/latest/nmune/mrksm5.html>`_ पढ़ना)।"
 
 #: ../../source/tutorial/clima.rst:42
 msgid ""
@@ -98,6 +133,11 @@ msgid ""
 "t = EspecTiempo(365*50, f_inic='2020-01-01')\n"
 "mod.simular(t, clima=mi_clima)"
 msgstr ""
+"from tinamit.mod.clima import Clima as जलवायु\n"
+"\n"
+"मेरा_जलवायु = जलवायु(lat=31.569, long=74.355, elev=10, escenario='८.५')\n"
+"स = EspecTiempo(365*50, f_inic='२०२०-०१-०१')\n"
+"प्रतिरूप.simular(स, clima=मेरा_जलवायु)"
 
 #: ../../source/tutorial/clima.rst:50
 msgid ""
@@ -105,6 +145,9 @@ msgid ""
 "parámetro ``fuentes`` que corresponde directamente al parámetro ``ذرائع`` de"
 " taqdir."
 msgstr ""
+"अगर आपके पास खुद के प्रेक्षण हैं, तो ``fuentes`` नाम का विकल्प में उन्हें "
+"शामिल कर दे सकते हैं, जो सीधे तकदीर का ``ذرائع`` नाम के विकल्प को दिये "
+"जाएंगे।"
 
 #: ../../source/tutorial/clima.rst:53
 msgid ""
@@ -114,6 +157,11 @@ msgid ""
 "\n"
 "mod.simular(t, clima=Clima(lat=31.569, long=74.355, elev=10, escenario='8.5', fuentes=(fuente,)))"
 msgstr ""
+"from تقدیر.ذرائع import جےسن as जेसान\n"
+"\n"
+"स्रोत = जेसान('मेरे खुद के जलवायु के अंकड़ों जो किसी और को भी नहीं देनेवाला हूँ.json', 31.569, 74.355, 100)\n"
+"\n"
+"प्रतिरूप.simular(स, clima=Clima(lat=31.569, long=74.355, elev=10, escenario='८.५', fuentes=(स्रोत,)))"
 
 #: ../../source/tutorial/clima.rst:62
 msgid ""
@@ -121,3 +169,6 @@ msgid ""
 "aprovechar te todas sus funcionalidades (extensión de datos, interpolación "
 "geográfica, desagregación temporal y mucho más)."
 msgstr ""
+"हम आपको तकदीर के प्रलेखन पढ़ने की सिफारिश करते हैं अगर आप उसके सारे "
+"कार्यक्षमते का फाय्दा लेने चाहते हैं (जैसे के आंकड़ा विस्तार, भौगोलिक "
+"प्रक्षेप, समय विघटन और बहुत अधिक)।"
