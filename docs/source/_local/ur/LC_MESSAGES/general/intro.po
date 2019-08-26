@@ -4,16 +4,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# AzharInam <muhammad.baig@mail.mcgill.ca>, 2019
+# Julien Malard <julien.malard@mail.mcgill.ca>, 2019
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-09 08:01+0000\n"
+"POT-Creation-Date: 2019-08-26 19:45+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
-"Last-Translator: AzharInam <muhammad.baig@mail.mcgill.ca>, 2019\n"
+"Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,7 +23,7 @@ msgstr ""
 
 #: ../../source/general/intro.rst:2
 msgid "Introducción"
-msgstr "تعارف."
+msgstr "تعارف"
 
 #: ../../source/general/intro.rst:3
 msgid ""
@@ -52,7 +52,7 @@ msgstr ""
 
 #: ../../source/general/intro.rst:22
 msgid "Figura 1"
-msgstr ""
+msgstr "تصویر ۱"
 
 #: ../../source/general/intro.rst:24
 msgid "Diagrama de la estructura conceptual de Tinamït."
@@ -67,11 +67,11 @@ msgstr ""
 
 #: ../../source/general/intro.rst:30
 msgid "SWAT+. https://swat.tamu.edu/software/plus/"
-msgstr ""
+msgstr "سوات+۔ https://swat.tamu.edu/software/plus/"
 
 #: ../../source/general/intro.rst:32
 msgid "SAHYSMOD. https://www.waterlog.info/sahysmod.htm"
-msgstr ""
+msgstr "ساحسماڈ۔ https://www.waterlog.info/sahysmod.htm"
 
 #: ../../source/general/intro.rst:35
 msgid ""
@@ -79,3 +79,6 @@ msgid ""
 "Hunt, P.W. Wilkens, U. Singh, A.J. Gijsman, and J.T. Ritchie. 2003. DSSAT "
 "Cropping System Model. European Journal of Agronomy 18:235-265."
 msgstr ""
+"Jones, J.W., G. Hoogenboom, C.H. Porter, K.J. Boote, W.D. Batchelor, L.A. "
+"Hunt, P.W. Wilkens, U. Singh, A.J. Gijsman, and J.T. Ritchie. ۲۰۰۳. DSSAT "
+"Cropping System Model. European Journal of Agronomy ۱۸:۲۳۵-۲۶۵."

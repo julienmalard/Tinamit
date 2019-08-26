@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-09 08:01+0000\n"
+"POT-Creation-Date: 2019-08-26 19:45+0000\n"
 "PO-Revision-Date: 2019-08-01 11:32+0000\n"
 "Language-Team: Dutch (https://www.transifex.com/qatikon/teams/70565/nl/)\n"
 "MIME-Version: 1.0\n"
@@ -35,6 +35,8 @@ msgstr ""
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
 #: of tinamit.calibs.ec.CalibradorEc.calibrar:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
 #: of tinamit.calibs.ec.CalibradorEcOpt.calibrar:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
 #: of tinamit.calibs.ec.CalibradorEcBayes:0
@@ -59,6 +61,8 @@ msgstr ""
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
 #: of tinamit.calibs.ec.CalibradorEc:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt:3
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
 #: of tinamit.calibs.ec.CalibradorEcBayes:3
 msgid "La ecuación para calibrar."
@@ -66,6 +70,8 @@ msgstr ""
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
 #: of tinamit.calibs.ec.CalibradorEc:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt:5
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
 #: of tinamit.calibs.ec.CalibradorEcBayes:5
 msgid ""
@@ -75,6 +81,8 @@ msgstr ""
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
 #: of tinamit.calibs.ec.CalibradorEc:7
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt:7
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
 #: of tinamit.calibs.ec.CalibradorEcBayes:7
 msgid ""
@@ -85,6 +93,8 @@ msgstr ""
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_ec.pydocstring
 #: of tinamit.calibs.ec.CalibradorEc:10
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_opt.pydocstring
+#: of tinamit.calibs.ec.CalibradorEcOpt:10
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/ec/_bayes.pydocstring
 #: of tinamit.calibs.ec.CalibradorEcBayes:10
 msgid "El dialecto de la ecuación. Puede ser ``tinamït`` o ``vensim``."
