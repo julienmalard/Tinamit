@@ -134,7 +134,7 @@ def _obt_índ(dts):
     if isinstance(dts, pd.DataFrame):
         return dts.index
     if isinstance(dts, (xr.Dataset, xr.DataArray)):
-        return dts['fecha'].to_pandas().index
+        return dts[_('fecha')].to_pandas().index
     if isinstance(dts, (float, int)):
         return pd.Index([dts])
     if isinstance(dts, np.ndarray):
