@@ -57,11 +57,11 @@ class Extern(object):
     def _obt_a_t(m_xr, t, interpol):
         m_xr = m_xr.unstack()
 
-        t = relativizar_eje(m_xr, t)
+        t_rel = relativizar_eje(m_xr, t)
         if interpol and m_xr.sizes[_('fecha')] > 1:
-            return m_xr.interp(**{_('fecha'): t}).dropna(_('fecha'))
+            return m_xr.interp(**{_('fecha'): t_rel}).dropna(_('fecha'))
         try:
-            return m_xr.reindex({_('fecha'): t}).dropna(_('fecha'))
+            return m_xr.reindex({_('fecha'): t_rel}).dropna(_('fecha'))
         except (KeyError, IndexError):
             return np.nan
 
@@ -72,7 +72,7 @@ def gen_extern(datos, interpol=True):
 
     Parameters
     ----------
-    datos: Extern, pd.DataFrame or xr.Dataset or dict
+    datos: Extern or pd.DataFrame or xr.Dataset or dict
         Los datos.
     interpol: bool
         Si se pueden interpolar los datos.
@@ -82,7 +82,7 @@ def gen_extern(datos, interpol=True):
     Extern
 
     """
-    if isinstance(datos, Extern):
+    if isinstance(datos, Extern) or datos is None:
         return datos
 
     if isinstance(datos, pd.DataFrame):
@@ -92,6 +92,7 @@ def gen_extern(datos, interpol=True):
         return Extern({vr: datos[vr] for vr in datos.data_vars}, interpol)
     elif isinstance(datos, dict):
         return Extern({vr: _a_matr_xr(vl) for vr, vl in datos.items()})
+    raise TypeError(type(datos))
 
 
 def _a_matr_xr(val):
@@ -133,7 +134,7 @@ def _obt_índ(dts):
     if isinstance(dts, pd.DataFrame):
         return dts.index
     if isinstance(dts, (xr.Dataset, xr.DataArray)):
-        return dts.to_pandas().index
+        return dts['fecha'].to_pandas().index
     if isinstance(dts, (float, int)):
         return pd.Index([dts])
     if isinstance(dts, np.ndarray):
