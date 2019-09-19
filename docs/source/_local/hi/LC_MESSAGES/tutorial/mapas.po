@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-09 08:01+0000\n"
+"POT-Creation-Date: 2019-08-26 19:45+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Hindi (https://www.transifex.com/qatikon/teams/70565/hi/)\n"
@@ -32,10 +32,13 @@ msgid ""
 ":class:`~tinamit.geog.mapa.Forma`. Cada :class:`~tinamit.geog.mapa.Forma` "
 "está vinculada con un archivo ``.shp``."
 msgstr ""
+"तीनामित में अनुकार के परिणाम के नक्षे बनाने के कार्यक्षमते मिलेंगे। हर। "
+"नक्षा :class:`~tinamit.geog.mapa.Forma` वर्ग के वस्तु से बना है। हर "
+":class:`~tinamit.geog.mapa.Forma` को एक ``.shp`` का संचिका के साथ संबंध है।"
 
 #: ../../source/tutorial/mapas.rst:8
 msgid "Formas dinámicas"
-msgstr ""
+msgstr "गतिशील आकार"
 
 #: ../../source/tutorial/mapas.rst:9
 msgid ""
@@ -46,6 +49,12 @@ msgid ""
 ":class:`~tinamit.geog.mapa.FormaDinámicaNombrada`, la cual quiere sus datos "
 "en formato de diccionario."
 msgstr ""
+"गतिशील आकार (:class:`~tinamit.geog.mapa.FormaDinámica`) के रंग अनुकार के "
+"परिणाम के अनुसर बदलते हैं। इन में से हैं "
+":class:`~tinamit.geog.mapa.FormaDinámicaNumérica`, जिनके मूल्य "
+"``np.ndarray`` या सुची के रूप में देना है,  और "
+":class:`~tinamit.geog.mapa.FormaDinámicaNombrada`, जिनके मूल्य शब्दकोश में "
+"देना है।"
 
 #: ../../source/tutorial/mapas.rst:14
 msgid ""
@@ -54,16 +63,22 @@ msgid ""
 "individual representa otra región en el mapa. Ambas situaciones se manejan "
 "por :func:`~tinamit.geog.mapa.dibujar_mapa_de_res`."
 msgstr ""
+"नक्षे एक बहुआयामी परिवर्तनशील के आव्यूह या एक समूह अनुकार (जिस में हर एक "
+"अनुकार नक्षा का एक क्षेत्र का प्रतिनिधित्व करता है) से बने जा सकते हैं। "
+"दोनों :func:`~tinamit.geog.mapa.dibujar_mapa_de_res` नाम का फलन के बने जाते "
+"हैं।"
 
 #: ../../source/tutorial/mapas.rst:19
 msgid "Simulaciones por grupo"
-msgstr ""
+msgstr "समूह के अनुकार"
 
 #: ../../source/tutorial/mapas.rst:20
 msgid ""
 "En este ejemplo, correremos un modelo de epidemiología con distintas tazas "
 "de contacto para cada departamento de Guatemala."
 msgstr ""
+"इस नमूना में, हम एक महामारी का प्रतिरूप ग्वाटेमाला के हर एक प्रदेश में "
+"विभिन्न संपर्क के दर के साथ चलाएंगे।"
 
 #: ../../source/tutorial/mapas.rst:2
 msgid ""
@@ -87,6 +102,25 @@ msgid ""
 "frm = FormaDinámicaNombrada(forma_deptos, col_id='COD_DEP', escala_colores=-1)\n"
 "dibujar_mapa_de_res(forma_dinámica=frm, res=res, var='Individuos Infectados', t=16)"
 msgstr ""
+"import numpy as np\n"
+"\n"
+"from tinamit.ejemplos import obt_ejemplo as  नमूना_पाना\n"
+"from tinamit.envolt.mds import gen_mds as प्रण_प्रजनन\n"
+"from tinamit.geog.mapa import FormaDinámicaNombrada as नामित_गतिशील_आकार, dibujar_mapa_de_res as परिणाम_से_नक्षा\n"
+"from tinamit.mod import OpsSimulGrupo as समूह_अनुकार_विकल्प\n"
+"\n"
+"प्रण = प्रण_प्रजनन(नमूना_पाना('enfermedad/mod_enferm.mdl'))\n"
+"प्रदेश_आकार = नमूना_पाना('geog_guate/deptos.shp')\n"
+"\n"
+"विकल्प = समूह_अनुकार_विकल्प(\n"
+"    t=50,\n"
+"    extern=[{'taza de contacto': np.random.random() * 500} for i in range(1, 23)],\n"
+"    nombre=[str(i) for i in range(1, 23)]\n"
+")\n"
+"परिणाम = प्रण.simular_grupo(विकल्प, nombre='Epidemiología')\n"
+"\n"
+"आकार = नामित_गतिशील_आकार(प्रदेश_आकार, col_id='COD_DEP', escala_colores=-1)\n"
+"परिणाम_से_नक्षा(forma_dinámica=आकार, res=परिणाम, var='Individuos Infectados', t=16)"
 
 #: ../../source/tutorial/mapas.rst:27
 msgid ""
@@ -94,6 +128,9 @@ msgid ""
 "<../tutorial/mapas-1.png>`__, `hires.png <../tutorial/mapas-1.hires.png>`__,"
 " `pdf <../tutorial/mapas-1.pdf>`__)"
 msgstr ""
+"(`स्रोत <../tutorial/mapas-1.py>`__, `पी एन जी <../tutorial/mapas-1.png>`__,"
+" `hires.png <../tutorial/mapas-1.hires.png>`__, `पी डी एफ़ "
+"<../tutorial/mapas-1.pdf>`__)"
 
 #: ../../source/tutorial/mapas.rst:48
 msgid ""
@@ -101,6 +138,8 @@ msgid ""
 "una forma en el archivo ``.shp`` tal como especificado en la columna "
 "``col_id``."
 msgstr ""
+"समूह का हर अनुकार का नाम ``.shp`` संचिका में ``col_id`` का स्तंभ में एक आकार"
+" का नाम से बराबर होने चाहिये।"
 
 #: ../../source/tutorial/mapas.rst:51
 msgid ""
@@ -108,10 +147,13 @@ msgid ""
 ":class:`~tinamit.geog.mapa.FormaDinámicaNumérica`; en ese caso se asiñarán "
 "los resultados a las formas según su orden en ``OpsSimulGrupo``, nada más."
 msgstr ""
+"न तो, आप एक :class:`~tinamit.geog.mapa.FormaDinámicaNumérica` का प्रयोग कर "
+"सकती हैं। इस मामले में, प्रणाम और आकार का सौंपा ``OpsSimulGrupo`` में आकार "
+"के क्रम के अनुसार से किया जाएगा। "
 
 #: ../../source/tutorial/mapas.rst:55
 msgid "Variables multidimensionales"
-msgstr ""
+msgstr " बहुआयामी परिवर्तनशील"
 
 #: ../../source/tutorial/mapas.rst:56
 msgid ""
@@ -120,6 +162,10 @@ msgid ""
 "polígonos, cada cual corresponde a un punto en el variable ``Bosque`` "
 "multidimensional."
 msgstr ""
+"हम यहाँ एक सरल वन आवरण और बारिश का प्रतिरूप से पाकिस्तान का रेचना दोआब (رچنا"
+" دوآب) का क्षेत्र का एक नक्षा को लगाएँगे। यह नक्षा क्षेत्र को २१५ विभिन्न "
+"बहुभूज में विभाजित कर देता है, जिसका हर एक बहुभूज ``Bosque`` नाम का बहुआयामी"
+" परिवर्तनशील का एक बंदु का अनुरूप है।"
 
 #: ../../source/tutorial/mapas.rst:2
 msgid ""
@@ -135,6 +181,17 @@ msgid ""
 "frm = FormaDinámicaNumérica(polígonos, col_id='Id')\n"
 "dibujar_mapa_de_res(forma_dinámica=frm, res=res, var='Bosques', t=10)"
 msgstr ""
+"from tinamit.ejemplos.sencillo.bf_bosques import PruebaBF as नमूना_वतावरण\n"
+"from tinamit.geog.mapa import FormaDinámicaNumérica as सूचीबद्ध_गतिशील_आकार\n"
+"\n"
+"प्रतिरूप = नमूना_वतावरण(215)\n"
+"बहुभूज = नमूना_पाना('rechna_doab/polígonos.shp')\n"
+"\n"
+"बाहरी = {'Bosques': np.random.random(215)*1e6}\n"
+"परिणाम = प्रतिरूप.simular(t=10, extern=बाहरी, nombre='वन आवरण')\n"
+"\n"
+"आकार = सूचीबद्ध_गतिशील_आकार(बहुभूज, col_id='Id')\n"
+"परिणाम_से_नक्षा(forma_dinámica=आकार, res=परिणाम, var='Bosques', t=10)"
 
 #: ../../source/tutorial/mapas.rst:19
 msgid ""
@@ -142,10 +199,13 @@ msgid ""
 "<../tutorial/mapas-2.png>`__, `hires.png <../tutorial/mapas-2.hires.png>`__,"
 " `pdf <../tutorial/mapas-2.pdf>`__)"
 msgstr ""
+"(`स्रोत <../tutorial/mapas-2.py>`__, `पी एन जी <../tutorial/mapas-2.png>`__,"
+" `hires.png <../tutorial/mapas-2.hires.png>`__, `पी डी एफ़ "
+"<../tutorial/mapas-2.pdf>`__)"
 
 #: ../../source/tutorial/mapas.rst:78
 msgid "Formas estáticas"
-msgstr ""
+msgstr "स्थिर आकार"
 
 #: ../../source/tutorial/mapas.rst:79
 msgid ""
@@ -154,26 +214,29 @@ msgid ""
 "resultados de una simulación y que se agregan solamente por razones "
 "estéticas."
 msgstr ""
+"स्थिर आकार (:class:`~tinamit.geog.mapa.FormaEstática`) जोड़े जा सकते हैं। "
+"इनको अनुकार के परिणाम के साथ कोई संपर्क नहीं होता और केवल सौंदर्य कारण से "
+"जोड़े जाते हैँ।"
 
 #: ../../source/tutorial/mapas.rst:82
 msgid "Por el momento, tienes:"
-msgstr ""
+msgstr "अब तक, यह उपलब्ध हैं।"
 
 #: ../../source/tutorial/mapas.rst:84
 msgid "Cuerpos de agua: :class:`~tinamit.geog.mapa.Agua`"
-msgstr ""
+msgstr "पानी: :class:`~tinamit.geog.mapa.Agua`"
 
 #: ../../source/tutorial/mapas.rst:85
 msgid "Bosques: :class:`~tinamit.geog.mapa.Bosque`"
-msgstr ""
+msgstr "जंगल: :class:`~tinamit.geog.mapa.Bosque`"
 
 #: ../../source/tutorial/mapas.rst:86
 msgid "Calles: :class:`~tinamit.geog.mapa.Calle`"
-msgstr ""
+msgstr "सड़क: :class:`~tinamit.geog.mapa.Calle`"
 
 #: ../../source/tutorial/mapas.rst:87
 msgid "Zonas urbanas: :class:`~tinamit.geog.mapa.Ciudad`"
-msgstr ""
+msgstr "शहर: :class:`~tinamit.geog.mapa.Ciudad`"
 
 #: ../../source/tutorial/mapas.rst:2
 msgid ""
@@ -184,6 +247,12 @@ msgid ""
 "canales = Agua(obt_ejemplo('rechna_doab/canal.shp'), llenar=False)\n"
 "dibujar_mapa_de_res(forma_dinámica=frm, otras_formas=[calles, canales, río], res=res, var='Bosques', t=10)"
 msgstr ""
+"from tinamit.geog.mapa import Agua as पानी, Calle as सड़क\n"
+"\n"
+"सड़क_प्रणाली = सड़क(नमूना_पाना('rechna_doab/calle.shp'))\n"
+"नदि = पानी(नमूना_पाना('rechna_doab/río.shp'))\n"
+"नहर = पानी(नमूना_पाना('rechna_doab/canal.shp'), llenar=False)\n"
+"परिणाम_से_नक्षा(forma_dinámica=आकार, otras_formas=[सड़क_प्रणाली, नहर, नदि], res=परिणाम, var='Bosques', t=10)"
 
 #: ../../source/tutorial/mapas.rst:14
 msgid ""
@@ -191,3 +260,6 @@ msgid ""
 "<../tutorial/mapas-3.png>`__, `hires.png <../tutorial/mapas-3.hires.png>`__,"
 " `pdf <../tutorial/mapas-3.pdf>`__)"
 msgstr ""
+"(`स्रोत <../tutorial/mapas-3.py>`__, `पी एन जी <../tutorial/mapas-3.png>`__,"
+" `hires.png <../tutorial/mapas-3.hires.png>`__, `पी डी एफ़ "
+"<../tutorial/mapas-3.pdf>`__)"

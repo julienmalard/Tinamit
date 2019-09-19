@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-09 08:01+0000\n"
+"POT-Creation-Date: 2019-08-26 19:45+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Language-Team: K'iche' (https://www.transifex.com/qatikon/teams/70565/quc/)\n"
 "MIME-Version: 1.0\n"
@@ -43,6 +43,10 @@ msgstr ""
 #: of tinamit.envolt.mds._auto.olvidar_envolt_mds:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_auto.pydocstring
 #: of tinamit.envolt.mds._auto.registrar_envolt_mds:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_envolt.pydocstring
+#: of tinamit.envolt.mds.ModeloDS:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/pysd/_envolt.pydocstring
+#: of tinamit.envolt.mds.pysd.ModeloPySD:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/pysd/_envolt.pydocstring
 #: of tinamit.envolt.mds.pysd.ModeloPySD.cambiar_vals:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/pysd/_envolt.pydocstring
@@ -50,11 +54,23 @@ msgstr ""
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/pysd/_envolt.pydocstring
 #: of tinamit.envolt.mds.pysd.ModeloPySD.iniciar_modelo:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/vensim_dll/_envolt.pydocstring
+#: of tinamit.envolt.mds.vensim_dll.ModeloVensimDLL:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/vensim_dll/_envolt.pydocstring
 #: of tinamit.envolt.mds.vensim_dll.ModeloVensimDLL.cambiar_vals:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/vensim_dll/_envolt.pydocstring
 #: of tinamit.envolt.mds.vensim_dll.ModeloVensimDLL.incrementar:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/vensim_dll/_envolt.pydocstring
 #: of tinamit.envolt.mds.vensim_dll.ModeloVensimDLL.iniciar_modelo:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarAuxiliar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarConstante:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarInic:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarNivel:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarMDS:0
 msgid "Parámetros"
 msgstr ""
 
@@ -114,6 +130,33 @@ msgstr ""
 
 #: ../../source/ref/ipa/mds.rst:10
 msgid "Modelos disponibles"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_envolt.pydocstring
+#: of tinamit.envolt.mds.ModeloDS:1
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/pysd/_envolt.pydocstring
+#: of tinamit.envolt.mds.pysd.ModeloPySD:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/vensim_dll/_envolt.pydocstring
+#: of tinamit.envolt.mds.vensim_dll.ModeloVensimDLL:5
+msgid "La función de inicialización de todos modelos, conectados o no."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_envolt.pydocstring
+#: of tinamit.envolt.mds.ModeloDS:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/pysd/_envolt.pydocstring
+#: of tinamit.envolt.mds.pysd.ModeloPySD:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/vensim_dll/_envolt.pydocstring
+#: of tinamit.envolt.mds.vensim_dll.ModeloVensimDLL:7
+msgid "Los variables del modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_envolt.pydocstring
+#: of tinamit.envolt.mds.ModeloDS:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/pysd/_envolt.pydocstring
+#: of tinamit.envolt.mds.pysd.ModeloPySD:7
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/vensim_dll/_envolt.pydocstring
+#: of tinamit.envolt.mds.vensim_dll.ModeloVensimDLL:9
+msgid "El nombre del modelo."
 msgstr ""
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_envolt.pydocstring
@@ -270,6 +313,97 @@ msgstr ""
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
 #: of tinamit.envolt.mds.VarAuxiliar:1
 msgid "Un variable auxiliar."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarAuxiliar:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarConstante:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarInic:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarNivel:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarMDS:3
+msgid "El nombre del variable."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarAuxiliar:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarConstante:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarInic:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarNivel:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarMDS:5
+msgid "Las unidades del variable."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarAuxiliar:7
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarConstante:7
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarInic:7
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarNivel:7
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarMDS:7
+msgid "Si es un ingreso al modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarAuxiliar:9
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarConstante:9
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarInic:9
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarNivel:9
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarMDS:9
+msgid "Si es un egreso del modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarAuxiliar:11
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarConstante:11
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarInic:11
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarNivel:11
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarMDS:11
+msgid "El valor inicial del modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarAuxiliar:13
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarConstante:13
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarInic:13
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarNivel:13
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarMDS:13
+msgid "Los límites del variable."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarAuxiliar:15
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarConstante:15
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarInic:15
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarNivel:15
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring
+#: of tinamit.envolt.mds.VarMDS:15
+msgid "Descripción detallada del variable."
 msgstr ""
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/mds/_vars.pydocstring

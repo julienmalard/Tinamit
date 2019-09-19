@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-09 08:01+0000\n"
+"POT-Creation-Date: 2019-08-26 19:45+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Hindi (https://www.transifex.com/qatikon/teams/70565/hi/)\n"
@@ -31,10 +31,12 @@ msgid ""
 "variables en simulaciones, para alimentar calibraciones, y para efectuar "
 "validaciones."
 msgstr ""
+"तीनामित के अनुकार में परिवर्तनशील के मूल्य के निर्दिष्ट, अंशांकन और "
+"पृष्टिकरण करने के लिये बाहरी आँकड़ों का प्रयोग किया जा सकता हैं।"
 
 #: ../../source/tutorial/datos.rst:7
 msgid "Datos exógenos"
-msgstr ""
+msgstr "बाहरी आँकड़े"
 
 #: ../../source/tutorial/datos.rst:8
 msgid ""
@@ -42,6 +44,8 @@ msgid ""
 "transcurso de una simulación. ٓAquí vamos a hacer una simulación con un "
 "modelo sencillo de contagión de una enfermedad."
 msgstr ""
+"आप अनुकार में प्रतिरूप के विकल्प और बाहरी परिवर्तनशील के मूल्य के निर्दिष्ट "
+"कर सकती हैं। यहाँ हम एक सरल माहामारी के प्रतिरूप से एक अनुकार चलाएँगे।"
 
 #: ../../source/tutorial/datos.rst:2
 msgid ""
@@ -118,10 +122,12 @@ msgid ""
 "Se puede utilizar datos en formato de ``dict``, ``pd.DataFrame`` o "
 "``xr.Dataset``."
 msgstr ""
+"``dict``, ``pd.DataFrame`` या ``xr.Dataset`` के रूप में आँकड़े दिये जा सकते "
+"हैं।"
 
 #: ../../source/tutorial/datos.rst:66
 msgid "Bases de datos"
-msgstr ""
+msgstr "आँकड़ो के स्रोत"
 
 #: ../../source/tutorial/datos.rst:67
 msgid ""
@@ -144,4 +150,4 @@ msgstr ""
 
 #: ../../source/tutorial/datos.rst:77
 msgid "Ver :doc:`calibs` y :doc:`geog` para más detalles."
-msgstr ""
+msgstr "और विवरण चाहें तो :doc:`calibs` और :doc:`geog` देखना।"

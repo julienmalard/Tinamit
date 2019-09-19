@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-09 08:01+0000\n"
+"POT-Creation-Date: 2019-08-26 19:45+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Hindi (https://www.transifex.com/qatikon/teams/70565/hi/)\n"
@@ -23,7 +23,7 @@ msgstr ""
 
 #: ../../source/ref/ipa/conect.rst:2
 msgid "Conectado"
-msgstr ""
+msgstr "जुड़ी हुई"
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.Conectado:1
@@ -31,18 +31,25 @@ msgid ""
 "Un modelo que conecta un :class:`~tinamit.envolt.mds.ModeloDS` con un "
 ":class:`~tinamit.envolt.bf._envolt.ModeloBF`."
 msgstr ""
+"प्रणाली गतिशील (:class:`~tinamit.envolt.mds.ModeloDS`) और वतावरण "
+"(:class:`~tinamit.envolt.bf._envolt.ModeloBF`) के प्रतिरूप जोड़ाने वाला "
+"प्रतिरूप।"
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
-#: of tinamit.conect.Conectado.conectar:1
-msgid ""
-"Una función para conectar variables entre el modelo biofísico y el modelo "
-"DS."
+#: of tinamit.conect.Conectado:4
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado:4
+msgid "La función de inicialización de todos modelos, conectados o no."
 msgstr ""
 
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.Conectado.conectar:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.Conectado.desconectar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.SuperConectado.cambiar_vals:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
@@ -53,9 +60,30 @@ msgid "Parámetros"
 msgstr "परिवर्तनशील"
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado:6
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado:6
+msgid "Los variables del modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado:8
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado:8
+msgid "El nombre del modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado.conectar:1
+msgid ""
+"Una función para conectar variables entre el modelo biofísico y el modelo "
+"DS."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.Conectado.conectar:3
 msgid "El nombre del variable en el modelo DS."
-msgstr ""
+msgstr "प्रणाली गतिशील के प्रतिरूप में परिवर्तनशील का नाम।"
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.Conectado.conectar:5
@@ -139,7 +167,7 @@ msgstr ""
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.SuperConectado.iniciar_modelo:5
 msgid "La corrida."
-msgstr ""
+msgstr "अनुकार"
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.SuperConectado.paralelizable:1
@@ -166,14 +194,14 @@ msgstr ""
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.SuperConectado.paralelizable:10
 msgid "**Respuesta rápida**: 95% seguro que sí."
-msgstr ""
+msgstr "**जल्दी जवाब**: ९५% निश्चित।"
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.SuperConectado.paralelizable:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.SuperConectado.unidad_tiempo:0
 msgid "Devuelve"
-msgstr ""
+msgstr "वापसी"
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.SuperConectado.paralelizable:12
