@@ -117,9 +117,9 @@ def _gen_vars(mod):
             continue
 
         nombre_py = f['Py Name']
-        unid = decodar(f['Unit'])
+        unid = f['Unit']
         líms = literal_eval(f['Lims'])
-        ec = decodar(f['Eqn'])
+        ec = f['Eqn']
         info = decodar(f['Comment'])
         obj_ec = Ecuación(ec, dialecto='vensim')
         parientes = {v for v in obj_ec.variables() if v not in internos}

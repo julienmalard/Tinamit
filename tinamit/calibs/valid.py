@@ -82,7 +82,7 @@ class ValidadorMod(object):
                 eje_obs = pd.to_datetime(vals_calib_vr[_('fecha')].values)
                 eje_res = relativizar_eje(eje, eje_obs)
                 buenas_fechas = xr.DataArray(np.logical_and(eje_res[0] <= eje_obs, eje_obs <= eje_res[-1]), dims='n')
-                datos_r = vals_calib[vr_datos].where(buenas_fechas, drop=True).dropna('n')
+                datos_r = vals_calib_vr.where(buenas_fechas, drop=True).dropna('n')
                 if datos_r.sizes['n'] > 1:
                     fechas_obs = datos_r[_('fecha')]
                     interpoladas = r.interpolar(fechas=fechas_obs)
