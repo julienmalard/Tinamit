@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-09 08:01+0000\n"
+"POT-Creation-Date: 2019-08-26 19:45+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: French (https://www.transifex.com/qatikon/teams/70565/fr/)\n"
@@ -33,16 +33,20 @@ msgid ""
 msgstr ""
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
-#: of tinamit.conect.Conectado.conectar:1
-msgid ""
-"Una función para conectar variables entre el modelo biofísico y el modelo "
-"DS."
+#: of tinamit.conect.Conectado:4
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado:4
+msgid "La función de inicialización de todos modelos, conectados o no."
 msgstr ""
 
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.Conectado.conectar:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.Conectado.desconectar:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.SuperConectado.cambiar_vals:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
@@ -51,6 +55,27 @@ msgstr ""
 #: of tinamit.conect.SuperConectado.iniciar_modelo:0
 msgid "Parámetros"
 msgstr "Paramètres"
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado:6
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado:6
+msgid "Los variables del modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado:8
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.SuperConectado:8
+msgid "El nombre del modelo."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
+#: of tinamit.conect.Conectado.conectar:1
+msgid ""
+"Una función para conectar variables entre el modelo biofísico y el modelo "
+"DS."
+msgstr ""
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/conect/_mod.pydocstring
 #: of tinamit.conect.Conectado.conectar:3
