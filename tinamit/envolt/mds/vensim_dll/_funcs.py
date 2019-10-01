@@ -349,7 +349,7 @@ def obt_val_var(mod, var, subs):
         val = _obt_val_var_unidim(mod, var)
 
     else:
-        val = np.zeros_like(subs)
+        val = np.zeros_like(subs, dtype=float)
         for n, s in enumerate(subs):
             var_s = str(var) + s
 
