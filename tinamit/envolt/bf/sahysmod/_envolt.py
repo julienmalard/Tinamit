@@ -61,6 +61,7 @@ class ModeloSAHYSMOD(ModeloBloques):
         arch_egreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.out')
         arch_ingreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.inp')
 
+        símismo._verificar_estado_vars()
         símismo._escribir_archivo_ingr(n_ciclos=n_ciclos, archivo=arch_ingreso)
 
         # Limpiar archivos de egresos que podrían estar allí
@@ -153,3 +154,19 @@ class ModeloSAHYSMOD(ModeloBloques):
 
         # Y finalmente, escribir el fuente de valores de ingreso
         escribir_desde_dic_paráms(dic_paráms=símismo.dic_ingr, archivo_obj=archivo)
+
+    def _verificar_estado_vars(símismo):
+        
+        # Aquí tenemos que verificar el estado interno de SAHYSMOD porque éste, siendo SAHYSMOD, da mensajes de error
+        # con el mínimo de información posible.
+
+        a = símismo.variables['Area A - Seasonal fraction area crop A']
+        b = símismo.variables['Area B - Seasonal fraction area crop B']
+        fsa = símismo.variables['FsA - Water storage efficiency crop A']
+        fsb = símismo.variables['FsB - Water storage efficiency crop B']
+
+        if np.any(np.logical_and(fsa == -1, a > 0)):
+            raise ValueError(_('Los valores de FsA no pueden faltar en polígonos que tienen superficie con cultivo A.'))
+        
+        if np.any(np.logical_and(fsb == -1, b > 0)):
+            raise ValueError(_('Los valores de FsB no pueden faltar en polígonos que tienen superficie con cultivo B.'))
