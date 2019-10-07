@@ -83,10 +83,13 @@ class VarPaso(Variable):
         info: str
             Descripción detallada del variable.
         """
-        if inic.shape[0] != tmñ_ciclo:
-            raise ValueError(
-                _('El primer eje de inic debe corresponder al tamaño del ciclo en variable {}.').format(nombre)
-            )
+        if isinstance(inic, np.ndarray):
+            if inic.shape[0] != tmñ_ciclo:
+                raise ValueError(
+                    _('El primer eje de inic debe corresponder al tamaño del ciclo en variable {}.').format(nombre)
+                )
+        else:
+            inic = np.full((tmñ_ciclo, 1), inic)
         super().__init__(nombre, unid, ingr, egr, inic=inic[0], líms=líms, info=info)
         símismo.inic = inic
         símismo._matr_paso = np.zeros((tmñ_ciclo, *símismo._val.shape))

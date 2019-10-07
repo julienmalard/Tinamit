@@ -54,7 +54,7 @@ class ModeloSAHYSMOD(ModeloBloques):
     def iniciar_modelo(símismo, corrida):
 
         # Crear un diccionario de trabajo específico a esta corrida.
-        símismo.direc_trabajo = tempfile.mkdtemp('_' + str(corrida))
+        símismo.direc_trabajo = tempfile.mkdtemp('_' + str(hash(corrida)))
         super().iniciar_modelo(corrida)
 
     def avanzar_modelo(símismo, n_ciclos):
