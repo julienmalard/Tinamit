@@ -28,7 +28,7 @@ def leer_arch_egr(archivo, años=None, procesar=True):
                             if var not in dic_datos:
                                 dic_datos[var] = np.full((n_años, n_est, n_polí), np.nan)
                             if len(val):
-                                dic_datos[var][años.index(a), e - 1, p - 1] = val.replace(',', '.')
+                                dic_datos[var][a, e - 1, p - 1] = val.replace(',', '.')
 
                         f = d.readline()
     if procesar:
@@ -121,12 +121,12 @@ def _avanzar_año(d, año=None):
     if año is None:
         while re.match(r'\W*YEAR:\W+[0-9]+\W', f) is None:
             f = d.readline()
-        yield int(re.search(r'\W*YEAR:\W+([0-9]+)', f).groups()[0])
+        yield 0
     else:
-        for a in año:
+        for i, a in enumerate(año):
             while re.match(r'\W*YEAR:\W+%i\W' % a, f) is None:
                 f = d.readline()
-            yield a
+            yield i
 
 
 def _avanzar_a_estación(estación, d):
