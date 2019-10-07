@@ -38,7 +38,10 @@ class VariablesSAHYSMOD(VariablesModBloques):
         return símismo[var].cód
 
     def cód_a_var(símismo, cód):
-        return next(v for v in símismo if v.cód.strip('#') == cód.strip('#'))
+        try:
+            return next(v for v in símismo if v.cód.strip('#').lower() == cód.strip('#').lower())
+        except StopIteration:
+            raise KeyError(cód)
 
 
 def _vars_sahysmod(d_inic, dur_est):
@@ -47,23 +50,17 @@ def _vars_sahysmod(d_inic, dur_est):
     l_vars = []
     for cód, d in _info_vars.items():
         try:
-            vals = d_inic[cód.replace('#', '').upper()]
-            if '#' in cód and vals.shape == (n_est, n_polí):
-                inic = vals[0]
-            else:
-                inic = vals
-                vals = None
+            inic = d_inic[cód.replace('#', '').upper()]
         except KeyError:
-            vals = None
             inic = np.zeros(n_polí)
 
         if '#' in cód:
+            if inic.shape != (n_est, n_polí):
+                inic = np.tile(inic, (2, 1))
             var = VarBloqSAHYSMOD(
                 cód=cód, nombre=d['nombre'], tmñ_bloques=dur_est, unid=d['unid'], ingr=d['ingr'], egr=d['egr'],
                 inic=inic
             )
-            if vals is not None:
-                var.poner_vals_paso(val=vals)
         else:
             var = VarSAHYSMOD(cód=cód, nombre=d['nombre'], unid=d['unid'], ingr=d['ingr'], egr=d['egr'], inic=inic)
 

@@ -35,7 +35,8 @@ class Modelo(object):
             El nombre del modelo.
 
         """
-
+        if not símismo.instalado():
+            raise FileNotFoundError('Modelo {} no instalado.'.format(nombre))
         símismo.nombre = nombre
         símismo.variables = variables
         símismo.corrida = None

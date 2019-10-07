@@ -3,7 +3,7 @@ import numpy as np
 from tinamit.mod import VariablesMod
 from tinamit.mod.var import Variable
 from ._envolt import ModeloBF
-
+from tinamit.config import _
 
 class ModeloImpaciente(ModeloBF):
     """
@@ -83,7 +83,12 @@ class VarPaso(Variable):
         info: str
             Descripción detallada del variable.
         """
-        super().__init__(nombre, unid, ingr, egr, inic=inic, líms=líms, info=info)
+        if inic.shape[0] != tmñ_ciclo:
+            raise ValueError(
+                _('El primer eje de inic debe corresponder al tamaño del ciclo en variable {}.').format(nombre)
+            )
+        super().__init__(nombre, unid, ingr, egr, inic=inic[0], líms=líms, info=info)
+        símismo.inic = inic
         símismo._matr_paso = np.zeros((tmñ_ciclo, *símismo._val.shape))
         símismo._matr_paso[:] = símismo.inic
         símismo.paso = -1
@@ -142,4 +147,4 @@ class VarPaso(Variable):
     def reinic(símismo):
         símismo.paso = -1
         símismo._matr_paso[:] = símismo.inic
-        super().reinic()
+        símismo._val[:] = símismo.inic[0]

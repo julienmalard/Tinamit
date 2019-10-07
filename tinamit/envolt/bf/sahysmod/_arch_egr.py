@@ -28,7 +28,7 @@ def leer_arch_egr(archivo, años=None, procesar=True):
                             if var not in dic_datos:
                                 dic_datos[var] = np.full((n_años, n_est, n_polí), np.nan)
                             if len(val):
-                                dic_datos[var][a, e - 1, p - 1] = val.replace(',', '.')
+                                dic_datos[var][años.index(a), e - 1, p - 1] = val.replace(',', '.')
 
                         f = d.readline()
     if procesar:
@@ -39,37 +39,37 @@ def leer_arch_egr(archivo, años=None, procesar=True):
 
 def procesar_cr(dic):
     # Estos variables, si faltan en el egreso, deberían ser 0 y no NaN
-    for cr in ['CrA', 'CrB', 'CrU', 'Cr4', 'A', 'B', 'U']:
+    for cr in ['cra', 'crb', 'cru', 'cr4', 'a', 'b', 'u']:
         dic[cr][np.isnan(dic[cr])] = 0
 
     # Ajustar la salinidad por la presencia de varios cultivos
-    kr = dic['Kr']
+    kr = dic['kr']
 
     salin_suelo = np.zeros_like(kr)
 
     # Crear una máscara boleana para cada valor potencial de Kr y llenarlo con la salinidad correspondiente
     kr0 = (kr == 0)
     salin_suelo[kr0] = \
-        dic['A'][kr0] * dic['CrA'][kr0] + dic['B'][kr0] * dic['CrB'][kr0] + dic['U'][kr0] * dic['CrU'][kr0]
+        dic['a'][kr0] * dic['cra'][kr0] + dic['b'][kr0] * dic['crb'][kr0] + dic['u'][kr0] * dic['cru'][kr0]
 
     kr1 = (kr == 1)
-    salin_suelo[kr1] = dic['CrU'][kr1] * dic['U'][kr1] + dic['C1*'][kr1] * (1 - dic['U'][kr1])
+    salin_suelo[kr1] = dic['cru'][kr1] * dic['u'][kr1] + dic['c1*'][kr1] * (1 - dic['u'][kr1])
 
     kr2 = (kr == 2)
-    salin_suelo[kr2] = dic['CrA'][kr2] * dic['A'][kr2] + dic['C2*'][kr2] * (1 - dic['A'][kr2])
+    salin_suelo[kr2] = dic['cra'][kr2] * dic['a'][kr2] + dic['c2*'][kr2] * (1 - dic['a'][kr2])
 
     kr3 = (kr == 3)
-    salin_suelo[kr3] = dic['CrB'][kr3] * dic['B'][kr3] + dic['C3*'][kr3] * (1 - dic['B'][kr3])
+    salin_suelo[kr3] = dic['crb'][kr3] * dic['b'][kr3] + dic['c3*'][kr3] * (1 - dic['b'][kr3])
 
     kr4 = (kr == 4)
-    salin_suelo[kr4] = dic['Cr4'][kr4]
+    salin_suelo[kr4] = dic['cr4'][kr4]
 
     para_llenar = [
-        {'másc': kr0, 'cr': ['Cr4']},
-        {'másc': kr1, 'cr': ['CrA', 'CrB', 'Cr4']},
-        {'másc': kr2, 'cr': ['CrB', 'CrU', 'Cr4']},
-        {'másc': kr3, 'cr': ['CrA', 'CrU', 'Cr4']},
-        {'másc': kr4, 'cr': ['CrA', 'CrB', 'CrU']}
+        {'másc': kr0, 'cr': ['cr4']},
+        {'másc': kr1, 'cr': ['cra', 'crb', 'cr4']},
+        {'másc': kr2, 'cr': ['crb', 'cru', 'cr4']},
+        {'másc': kr3, 'cr': ['cra', 'cru', 'cr4']},
+        {'másc': kr4, 'cr': ['cra', 'crb', 'cru']}
     ]
 
     for d in para_llenar:
@@ -80,7 +80,7 @@ def procesar_cr(dic):
             dic[cr][másc] = salin_suelo[másc]
 
     # Aseguarse que no quedamos con áreas que faltan
-    for k in ["A", "B"]:
+    for k in ["a", "b"]:
         dic[k][dic[k] == -1] = 0
 
 
@@ -146,4 +146,4 @@ def _fin_sección(f):
 
 
 def _extraer_vars(f):
-    return re.findall(r'([A-Za-z0-9*#]+)\W+=\W+([0-9.]+(?:E?[+\-0-9]+)?)?', f)
+    return [(vr.lower(), vl) for vr, vl in re.findall(r'([A-Za-z0-9*#]+)\W+=\W+([0-9.]+(?:E?[+\-0-9]+)?)?', f)]
