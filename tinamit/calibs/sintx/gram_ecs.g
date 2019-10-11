@@ -33,7 +33,7 @@ cadena: CADENA
 subs : varsenc ("," varsenc)*
 var: varsenc ["[" subs [EXCL] "]"]
 
-CADENA: /(".+"(?<!\\))/
+CADENA: /(["'].+['"](?<!\\))/
 NOMBRE: ID_EMP [[ID_CONT | " "]* ID_CONT]
 EXCL: "!"
 
