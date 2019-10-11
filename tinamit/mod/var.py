@@ -1,4 +1,5 @@
 import numpy as np
+import xarray as xr
 
 from tinamit.config import _
 
@@ -89,8 +90,12 @@ class Variable(object):
 
 
 def _a_np(val):
+    if isinstance(val, xr.DataArray):
+        val = val.values
     if isinstance(val, np.ndarray):
-        return val
+        if val.shape:
+            return val
+        return np.array([val])
     elif isinstance(val, (int, float, np.number)):
         return np.array([val])
     else:
