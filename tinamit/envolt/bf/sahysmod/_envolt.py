@@ -34,9 +34,11 @@ class ModeloSAHYSMOD(ModeloBloques):
             'exe',
             cond=os.path.isfile,
             mnsj_err=_(
-                'Debes especificar la ubicación del ejecutable SAHYSMOD, p. ej.'
+                '\nDebes especificar la ubicación del ejecutable SAHYSMOD, p. ej.'
                 '\n\tModeloSAHYSMOD.estab_conf("exe", "C:\\Camino\\hacia\\mi\\SAHYSMODConsole.exe")'
                 '\npara poder hacer simulaciones con modelos SAHYSMOD.'
+                '\nSi no instalaste SAHYSMOD, lo puedes conseguir para Linux, Mac o Windows de '
+                'https://github.com/julienmalard/sahysmod-sourcecode.'
             )
         )
 

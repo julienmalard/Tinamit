@@ -140,7 +140,7 @@ def _obt_dll_vensim():
     if sys.platform[:3] != 'win':
         raise OSError(
             _('\nDesafortunadamente, el DLL de Vensim funciona únicamente en Windows.'
-              '\nPuedes intentar la envoltura ModeloPySDMDL con un modelo .mdl en vez.')
+              '\nPuedes intentar la envoltura ModeloPySD con un modelo .mdl en vez.')
         )
     return ctypes.WinDLL(_obt_arch_dll_vensim())
 
