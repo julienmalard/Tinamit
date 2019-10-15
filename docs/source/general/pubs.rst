@@ -7,7 +7,7 @@ Publicaciones acerca de Tinamït
 Publicaciones describiendo Tinamït y sus funcionalidades.
 
 .. note::
-   Si publicas algún trabajo el el cual utilizasre Tinamït, puedes citar este artículo. ¡Gracias! :)
+   Si publicas algún trabajo en el cual utilizaste Tinamït, puedes citar este artículo. ¡Gracias! :)
 
 * Malard JJ, Inam A, Hassanzadeh E, Adamowski J, Tuy HA, Melgar-Quiñonez H. Development of a software tool for rapid,
   reproducible, and stakeholder-friendly dynamic coupling of system dynamics and physically-based models. *Environmental

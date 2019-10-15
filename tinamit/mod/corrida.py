@@ -32,7 +32,6 @@ class Corrida(object):
 class Rebanada(object):
     def __init__(símismo, n_pasos, resultados):
         símismo.n_pasos = n_pasos
-
         símismo.resultados = resultados
 
 

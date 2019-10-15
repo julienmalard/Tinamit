@@ -96,14 +96,14 @@ class ModeloDeterminado(ModeloImpaciente):
 
 class VariablesModDeter(VariablesModImpaciente):
     """
-    Representa los variables de un modelo :class:`~tinamit.envolt.bf._deter.Determinado`.
+    Representa los variables de un modelo :class:`~tinamit.envolt.bf.ModeloDeterminado`.
     """
     pass
 
 
 class VarPasoDeter(VarPaso):
     """
-    Un variable de un modelo :class:`~tinamit.envolt.bf._deter.Determinado` que toma un valor distinto a cada
+    Un variable de un modelo :class:`~tinamit.envolt.bf.ModeloDeterminado` que toma un valor distinto a cada
     paso (y no solamente a cada ciclo de simulación).
     """
 

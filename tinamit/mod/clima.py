@@ -7,6 +7,21 @@ from tinamit.tiempo.tiempo import TiempoCalendario
 
 class Clima(object):
     def __init__(símismo, lat, long, elev=None, fuentes=None, escenario='8.5'):
+        """
+        
+        Parameters
+        ----------
+        lat: float or int
+            La latitud
+        long: float or int
+            La longitud
+        elev: float or int
+            La elevación
+        fuentes: tuple or list
+            Lista de fuentes de datos observados
+        escenario: str or float
+            El escenario climático
+        """
         símismo._lugar = مقام(عرض=lat, طول=long, بلندی=elev)
         símismo.fuentes = fuentes
         símismo.escenario = escenario

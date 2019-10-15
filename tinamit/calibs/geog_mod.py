@@ -65,7 +65,7 @@ class CalibradorGeog(object):
         mod: Modelo
             El modelo para calibrar.
         calibrador: type
-            Una subclase de :class:`~tinamit.calibs.mod.CalibradorMod`.
+            Una subclase de :class:`~tinamit.calibs.CalibradorMod`.
         """
         símismo.mod = mod
         símismo.calibrador = calibrador

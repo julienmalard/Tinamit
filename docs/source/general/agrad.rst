@@ -19,13 +19,6 @@ SAHYSMOD
 * محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)
 * Julien Malard
 
-Traductores
------------
-* اردو: محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)
-* தமிழ்: Julien Malard
-* हिंदी: Julien Malard
-* français: Julien Malard
-
 Financiamiento
 --------------
 Los organismos siguientes contribuyeron apoyo financiero a uno o más de los autores del código mientras trabajaban

@@ -40,14 +40,14 @@ class ModeloIndeterminado(ModeloImpaciente):
 
 class VariablesModIndeterminado(VariablesModImpaciente):
     """
-    Representa los variables de un modelo :class:`~tinamit.envolt.bf._indeter.ModeloIndeterminado`.
+    Representa los variables de un modelo :class:`~tinamit.envolt.bf.ModeloIndeterminado`.
     """
     pass
 
 
 class VarPasoIndeter(VarPaso):
     """
-    Representa un variable de un modelo :class:`~tinamit.envolt.bf._indeter.ModeloIndeterminado` cuyo valor
+    Representa un variable de un modelo :class:`~tinamit.envolt.bf.ModeloIndeterminado` cuyo valor
     cambia a cada paso (y no solamente a cada ciclo).
     """
 

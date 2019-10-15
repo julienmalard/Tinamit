@@ -2,7 +2,7 @@ Simulaciones en grupo
 =====================
 Si tienes muchas simulaciones para efectuar, puedes ahorar tiempo por hacerlas por grupos con la función
 :func:`~tinamit.mod.Modelo.simular_grupo` y un objeto de simulaciones por grupos
-(:class:`~tinamit.mod.corrida.OpsSimulGrupo`). Igualmente se pueden paralelizar las corridas para ahorar más tiempo.
+(:class:`~tinamit.mod.OpsSimulGrupo`). Igualmente se pueden paralelizar las corridas para ahorar más tiempo.
 
 
 .. code-block:: python
@@ -33,7 +33,7 @@ política se correrá por 100 pasos.
 Combinaciones
 -------------
 También se puede ejecutar todas las combinaciones posibles para las opciones de simulación con un objeto
-:class:`~tinamit.mod.corrida.OpsSimulGrupoCombin`. Por ejemplo, puedes simular todas las combinaciones de
+:class:`~tinamit.mod.OpsSimulGrupoCombin`. Por ejemplo, puedes simular todas las combinaciones de
 distintas políticas con varios escenarios de cambios climáticos.
 
 

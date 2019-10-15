@@ -3,11 +3,15 @@ Modelos BF
 
 Autogeneración
 --------------
-.. autofunction:: tinamit.envolt.bf.gen_bf
+.. function:: tinamit.envolt.bf.gen_bf
    :members:
 
 Modelos disponibles
 -------------------
+.. autoclass:: tinamit.envolt.bf.sahysmod.ModeloSAHYSMOD
+
+Plantillas
+----------
 .. autoclass:: tinamit.envolt.bf.ModeloBF
    :members:
 

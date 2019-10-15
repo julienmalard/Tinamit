@@ -10,6 +10,7 @@ Interfaz de Programación
    ipa/conect
    ipa/mod
    ipa/pruebas
+   ipa/clima
    ipa/geog
    ipa/mapas
    ipa/datos

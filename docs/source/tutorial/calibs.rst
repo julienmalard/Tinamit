@@ -4,7 +4,7 @@ Calibraciones
 Calibrar modelos
 ----------------
 Tinamït puede calibrar modelos según variables observados. Las calibraciones se efectuan con calibradores
-(:class:`~tinamit.calibs.mod.CalibradorMod`), por ejemplo, :class:`~tinamit.calibs.mod.CalibradorModSpotPy`.
+(:class:`~tinamit.calibs.CalibradorMod`), por ejemplo, :class:`~tinamit.calibs.CalibradorModSpotPy`.
 
 .. code-block:: python
 

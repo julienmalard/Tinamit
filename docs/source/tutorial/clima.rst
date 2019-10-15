@@ -9,7 +9,7 @@ Tinamït puede incorporar datos de clima de manera automática, incluso con esce
 Especificar variables
 ---------------------
 Si tienes un variable climático en un modelo DS, puedes especificarlo con la función
-:func:`~tinamit.Modelo.conectar_var_clima`.
+:func:`~tinamit.mod.Modelo.conectar_var_clima`.
 
 .. code-block:: python
 

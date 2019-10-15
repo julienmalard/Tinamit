@@ -68,7 +68,7 @@ class Extern(object):
 
 def gen_extern(datos, interpol=True):
     """
-    Transforma datos en objeto :class:`~tinamit.extern.Extern`.
+    Transforma datos en objeto :class:`~tinamit.mod.extern.Extern`.
 
     Parameters
     ----------

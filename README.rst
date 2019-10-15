@@ -50,7 +50,7 @@ Es muy sencillo.
 
     from tinamit.Conectado import Conectado
 
-    modelo = Conectado('Prueba bf.py', 'Prueba dll.vpm')
+    modelo = Conectado('Prueba bf.py', 'Prueba dll.mdl')
 
     modelo.conectar(var_mds='Lluvia', var_bf='Lluvia', mds_fuente=False)
     modelo.conectar(var_mds='Bosques', var_bf='Bosques', mds_fuente=True)

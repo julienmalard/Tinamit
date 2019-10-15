@@ -87,13 +87,13 @@ humano.
 Opciones de tiempo
 ------------------
 Si quieres más control sobre los detalles del eje de tiempo, puedes pasar un objeto
-:class:`~tinamit.tiempo.tiempo.EspecTiempo` a la función :func:`~tinamit.mod.Modelo.simular`. Allí puedes especificar
+:class:`~tinamit.tiempo.EspecTiempo` a la función :func:`~tinamit.mod.Modelo.simular`. Allí puedes especificar
 no solo el número de paso sino también una fecha inicial (útil para corridas con datos o clima externo), el tamaño
 de cada paso, y la frequencia con cual se guardan los resultados.
 
 .. code-block:: python
 
-   from tinamit.tiempo.tiempo import EspecTiempo
+   from tinamit.tiempo import EspecTiempo
 
    t = EspecTiempo(100, f_inic='2000-01-01', tmñ_paso=1, guardar_cada=1)
    modelo.simular(t)

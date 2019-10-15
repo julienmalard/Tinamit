@@ -4,7 +4,7 @@ from tinamit.mod.var import Variable
 
 class VariablesMDS(VariablesMod):
     """
-    Representa los variables de un modelo :class:`~tinamit.envolt.mds._envolt.ModeloDS`.
+    Representa los variables de un modelo :class:`~tinamit.envolt.mds.ModeloDS`.
     """
     def auxiliares(símismo):
         return [v for v in símismo if isinstance(v, VarAuxiliar)]
@@ -24,7 +24,7 @@ class VariablesMDS(VariablesMod):
 
 class VarMDS(Variable):
     """
-    Un variable de un modelo :class:`~tinamit.envolt.mds._envolt.ModeloDS`.
+    Un variable de un modelo :class:`~tinamit.envolt.mds.ModeloDS`.
     """
     def __init__(símismo, nombre, unid, ingr, egr, ec, parientes, inic, subs=None, líms=None, info=''):
         super().__init__(nombre, unid, ingr=ingr, egr=egr, inic=inic, líms=líms, info=info)

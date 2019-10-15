@@ -1,9 +1,9 @@
 Variables
 =========
-.. autoclass:: tinamit.mod.var.Variable
+.. autoclass:: tinamit.mod.Variable
    :members:
 
-.. autoclass:: tinamit.mod.vars_mod.VariablesMod
+.. autoclass:: tinamit.mod.VariablesMod
    :members:
 
 Impacientes

@@ -43,7 +43,7 @@ class ErrorNoInstalado(OSError):
 
 def gen_mds(archivo):
     """
-    Automáticamente generar un :class:`~tinamit.envolt.mds._envolt.ModeloDS` desde un archivo.
+    Automáticamente generar un :class:`~tinamit.envolt.mds.ModeloDS` desde un archivo.
 
     Parameters
     ----------

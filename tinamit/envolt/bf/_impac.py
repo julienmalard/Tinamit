@@ -8,7 +8,7 @@ from ._envolt import ModeloBF
 class ModeloImpaciente(ModeloBF):
     """
     La clase pariente para modelos que deben correr por varios pasos al mismo tiempo, es decir,
-    :class:`~tinamit.envolt.bf._indeter.Indeterminado` y :class:`~tinamit.envolt.bf._deter.Determinado`.
+    :class:`~tinamit.envolt.bf._indeter.Indeterminado` y :class:`~tinamit.envolt.bf.ModeloDeterminado`.
     """
 
     def __init__(símismo, tmñ_ciclo, variables, nombre='bf'):
@@ -27,7 +27,7 @@ class ModeloImpaciente(ModeloBF):
 
 class VariablesModImpaciente(VariablesMod):
     """
-    Representa los variables de un modelo :class:`~tinamit.envolt.bf._impac.Impaciente`.
+    Representa los variables de un modelo :class:`~tinamit.envolt.bf.ModeloImpaciente`.
     """
 
     def vars_paso(símismo):
@@ -57,7 +57,7 @@ class VariablesModImpaciente(VariablesMod):
 
 class VarPaso(Variable):
     """
-    Un variable de un modelo :class:`~tinamit.envolt.bf._impac.Impaciente` cuyo valor cambia con cada paso (y no
+    Un variable de un modelo :class:`~tinamit.envolt.bf.ModeloImpaciente` cuyo valor cambia con cada paso (y no
     solamente con cada ciclo).
     """
 

@@ -131,7 +131,7 @@ class SuperConectado(Modelo):
 class Conectado(SuperConectado):
     """
     Un modelo que conecta un :class:`~tinamit.envolt.mds.ModeloDS` con un
-    :class:`~tinamit.envolt.bf._envolt.ModeloBF`.
+    :class:`~tinamit.envolt.bf.ModeloBF`.
     """
 
     def __init__(símismo, bf, mds, nombre='conectado'):

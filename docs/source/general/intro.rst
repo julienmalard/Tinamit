@@ -13,7 +13,7 @@ muchos modelos BF que lo hacen para ti ([2]_, [3]_, [4]_).
 
 ¿Pero cómo conectar un modelo DS con un BF? Por eso existe
 Tinamït. Empieza con nuestros tutoriales :doc:`aquí </tutorial/conex>` o, aún mejor, con la
-:doc:`instalción </general/instal>`.
+:doc:`instalación </general/instal>`.
 
 .. figure:: /_estático/imágenes/Estructura_concep.png
    :align: center
