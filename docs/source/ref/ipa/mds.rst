@@ -3,11 +3,11 @@ Modelos DS
 
 Autogeneración
 --------------
-.. py:function:: tinamit.envolt.mds.gen_mds
+.. autofunction:: tinamit.envolt.mds.gen_mds
 
-.. py:function:: tinamit.envolt.mds.registrar_envolt_mds
+.. autofunction:: tinamit.envolt.mds.registrar_envolt_mds
 
-.. py:function:: tinamit.envolt.mds.olvidar_envolt_mds
+.. autofunction:: tinamit.envolt.mds.olvidar_envolt_mds
 
 
 Modelos disponibles

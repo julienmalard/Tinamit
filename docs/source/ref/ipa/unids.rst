@@ -1,14 +1,14 @@
 Unidades
 ========
 
-.. py:function:: tinamit.unids.agregar_trad
+.. autofunction:: tinamit.unids.agregar_trad
    :members:
 
-.. py:function:: tinamit.unids.agregar_sinónimos
+.. autofunction:: tinamit.unids.agregar_sinónimos
    :members:
 
-.. py:function:: tinamit.unids.convertir
+.. autofunction:: tinamit.unids.convertir
    :members:
 
-.. py:function:: tinamit.unids.nueva_unidad
+.. autofunction:: tinamit.unids.nueva_unidad
    :members:
