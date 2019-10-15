@@ -23,7 +23,7 @@ Envolturas incluidas en Tinamït:
 
 * **SAHYSMOD**: Modelo de salinidad de suelos. Ver su `documentación <https://www.waterlog.info/sahysmod.htm>`_.
   Para uso con Tinamït deberás descargar una versión especial modificada para funcionar desde la línea
-  de comanda `aquí <https://github.com/AzharInam/Sahysmod-SourceCode/releases>`_
+  de comanda `aquí <https://github.com/julienmalard/Sahysmod-SourceCode/releases>`_
   (quieres el ``SahysModConsole.exe``).
 
 Envolturas planeadas:
