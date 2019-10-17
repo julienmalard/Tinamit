@@ -6,6 +6,13 @@ class VariablesMDS(VariablesMod):
     """
     Representa los variables de un modelo :class:`~tinamit.envolt.mds.ModeloDS`.
     """
+
+    def __init__(símismo, variables):
+        no_mds = [ vr for vr in variables if not isinstance(vr, VarMDS)]
+        if no_mds:
+            raise TypeError('Variables {vrs} deben ser de tipo ``VarMDS``.'.format(vrs=', '.join(no_mds)))
+        super().__init__(variables)
+
     def auxiliares(símismo):
         return [v for v in símismo if isinstance(v, VarAuxiliar)]
 
