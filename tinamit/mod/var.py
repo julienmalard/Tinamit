@@ -51,6 +51,8 @@ class Variable(object):
 
         """
 
+        if isinstance(val, np.ndarray) and val.size == 1:
+            val = val[0]
         if isinstance(val, np.ndarray):
             existen = np.invert(np.isnan(val))  # No cambiamos nuevos valores que faltan
             símismo._val[existen] = val[existen]

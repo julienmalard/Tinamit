@@ -24,35 +24,20 @@ class ModeloVensimDLL(ModeloDS):
         símismo.inicializado = False
         símismo.mod = f.cargar_mod_vensim(_obt_dll_vensim(), archivo)
         símismo.paso = f.obt_paso_inicial(símismo.mod)
+        símismo._cambios_vars = {}
+        símismo._inicializado = False
         super().__init__(_gen_vars(símismo.mod), nombre)
 
     def unidad_tiempo(símismo):
         return f.obt_unid_tiempo(símismo.mod)
 
     def iniciar_modelo(símismo, corrida):
-        símismo.corrida = corrida
-        corrida.variables.reinic()
+        super().iniciar_modelo(corrida)
 
         t = corrida.t
-        # En Vensim, tenemos que incializar los valores de variables no editables antes de empezar la simulación.
-        no_editables = [str(v) for v in símismo.variables.no_editables()]
-        if corrida.extern:
-            símismo.cambiar_vals(
-                {vr: vl.values for vr, vl in corrida.obt_extern_act().items() if vr in no_editables}
-            )
-        if corrida.clima:
-            símismo.cambiar_vals(
-                {vr: vl.values for vr, vl in corrida.clima.obt_todos_vals(t, símismo.vars_clima).items()}
-            )
-
         f.inic_modelo(símismo.mod, paso=t.tmñ_paso, n_pasos=t.n_pasos, nombre_corrida=str(corrida))
 
-        # Aplicar los valores iniciales de variables editables
-        if corrida.extern:
-            símismo.cambiar_vals(
-                {var: val for var, val in
-                 corrida.obt_extern_act(var=[str(v) for v in símismo.variables.editables()]).items()}
-            )
+        símismo.cambiar_vals({})
 
         # Debe venir después de `f.inic_modelo()` sino no obtenemos datos para los variables
         símismo._leer_vals_de_vensim()
@@ -79,6 +64,17 @@ class ModeloVensimDLL(ModeloDS):
     def cambiar_vals(símismo, valores):
         super().cambiar_vals(valores)
 
+        # En Vensim, tenemos que incializar los valores de variables no editables antes de empezar la simulación.
+        editables = [str(v) for v in símismo.variables.editables()]
+
+        if not símismo.inicializado:
+            vals_editables = {vr: vl for vr, vl in valores.items() if vr in editables}
+            símismo._cambios_vars.update(vals_editables)
+            valores = {vr: vl for vr, vl in valores.items() if vr not in editables}
+        else:
+            valores.update(símismo._cambios_vars)
+            símismo._cambios_vars.clear()
+
         for var, val in valores.items():
             # Para cada variable para cambiar...
 
@@ -94,7 +90,7 @@ class ModeloVensimDLL(ModeloDS):
                 # La lista de subscriptos
                 subs = símismo.variables[var].subs
 
-                if isinstance(val, np.ndarray) and val.shape:
+                if isinstance(val, np.ndarray) and val.size > 1:
                     matr = val
                 else:
                     matr = np.empty(len(subs))
@@ -115,6 +111,8 @@ class ModeloVensimDLL(ModeloDS):
 
         #
         f.vdf_a_csv(símismo.mod, símismo.corrida.nombre)
+
+        símismo.inicializado = False
 
     @classmethod
     def instalado(cls):
