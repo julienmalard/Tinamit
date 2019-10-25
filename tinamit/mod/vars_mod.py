@@ -4,8 +4,18 @@ from .var import Variable
 
 
 class VariablesMod(object):
+    """
+    Objeto para organizar los variables de un modelo.
+    """
 
     def __init__(símismo, variables):
+        """
+
+        Parameters
+        ----------
+        variables: list[Variable]
+            Lista de objetos `Variable` que definen los variables del modelo.
+        """
         símismo.variables = {v.nombre: v for v in variables}
         if len(símismo.variables) != len(variables):
             raise ValueError(_('Los variables de un modelo deben todos tener nombre distinto.'))
