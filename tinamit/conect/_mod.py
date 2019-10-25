@@ -102,7 +102,7 @@ class SuperConectado(Modelo):
         for hilo in l_hilo:
             hilo.start()
 
-        # Esperar que los dos hilos hayan terminado
+        # Esperar que todos los hilos hayan terminado
         for hilo in l_hilo:
             hilo.join()
 
