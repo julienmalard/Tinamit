@@ -1,6 +1,7 @@
 import itertools
 
 from tinamit.config import _
+from tinamit.mod.res import ResultadosSimul
 
 
 class Corrida(object):
@@ -30,7 +31,17 @@ class Corrida(object):
 
 
 class Rebanada(object):
+    """Una rebanada del eje de tiempo que corresponde al paso actual."""
     def __init__(símismo, n_pasos, resultados):
+        """
+        Parameters
+        ----------
+        n_pasos: int
+            El número de pasos que debe incrementar el modelo.
+        resultados: ResultadosSimul
+            Objeto de resultados deseados. El modelo tiene que leer los egresos únicamente de los variables de interés
+            presentes en este objeto y guardarlos en `símismo.variables` (otros variables de egreso se pueden ignorar).
+        """
         símismo.n_pasos = n_pasos
         símismo.resultados = resultados
 
@@ -39,6 +50,7 @@ class PlantillaOpsSimulGrupo(object):
     """
     Clase pariente para especificaciones de corridas en grupo.
     """
+
     def __init__(símismo, **argsll):
         símismo.opciones = argsll
 
@@ -54,7 +66,7 @@ class OpsSimulGrupoCombin(PlantillaOpsSimulGrupo):
     """
     Corridas en grupo que generan todas las combinaciones posibles de las opciones de simulación especificadas.
     """
-    
+
     def __init__(símismo, t, extern=None, clima=None, vars_interés=None, nombre='Tinamït'):
         símismo.nombre = nombre
         símismo.vars_interés = vars_interés

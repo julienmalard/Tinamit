@@ -1,8 +1,12 @@
 Modelo
 ======
-
 .. autoclass:: tinamit.mod.Modelo
  :members:
+
+Rebanada
+--------
+.. autoclass:: tinamit.mod.corrida.Rebanada
+   :members:
 
 Opciones de simulación
 ----------------------
