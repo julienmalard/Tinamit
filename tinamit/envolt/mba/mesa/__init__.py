@@ -1,1 +1,1 @@
-from ._envolt import ModeloMesa
+from ._envolt import ModeloMesa, EnvoltModeloMesa

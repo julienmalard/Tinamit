@@ -3,8 +3,8 @@ from mesa import Model
 from mesa.datacollection import DataCollector
 from mesa.space import Grid
 from mesa.time import BaseScheduler
+from tinamit.envolt.utils import _importar_de_arch_python
 
-from ._auto import _gen_modelo
 from .._envolt import ModeloBA
 from .._vars import VarAgenteMBA, VarCuadMBA, VariablesMBA
 
@@ -14,7 +14,7 @@ class ModeloMesa(ModeloBA):
     Envoltura para Modelos basados en agentes (MBA) en Python, con la librería ``mesa``.
     """
 
-    def __init__(símismo, clase_modelo, args_modelo, unid_tiempo, nombre='mesa'):
+    def __init__(símismo, clase_modelo, args_modelo, nombre='mesa'):
         """
 
         Parameters
@@ -23,18 +23,16 @@ class ModeloMesa(ModeloBA):
             La clase del modelo mesa, o el archivo donde se encuentra.
         args_modelo: dict
             Diccionario de argumentos necesarios para inicializar ``clase_modelo``.
-        unid_tiempo: str
-            La unidad de tiempo del modelo.
         nombre: str
             El nombre de tu modelo.
         """
 
-        símismo._unid_tiempo = unid_tiempo
         símismo._clase_mod = _gen_modelo(clase_modelo)
         símismo._args_mod = args_modelo or {}
         símismo._mod = símismo._clase_mod(**símismo._args_mod)
+        símismo._unid_tiempo = símismo._mod.unid_tiempo
 
-        super().__init__(variables=símismo._mod.gen_variables(), nombre=nombre)
+        super().__init__(variables=símismo._mod.variables(), nombre=nombre)
 
     def iniciar_modelo(símismo, corrida):
         # Recrear el modelo mesa, porque al momento no se pueden reinicializar.
@@ -44,7 +42,7 @@ class ModeloMesa(ModeloBA):
 
     def incrementar(símismo, rebanada):
         for i in range(rebanada.n_pasos):
-            símismo._mod.mod.step()
+            símismo._mod.step()
 
         vals_globales = {
             v: símismo._mod.colector.model_vars[v.nombre][-1]
@@ -85,8 +83,15 @@ class ModeloMesa(ModeloBA):
 
 
 class EnvoltModeloMesa(Model):
-    def __init__(símismo):
+    def __init__(símismo, unid_tiempo, **argsll):
+        """
+        Parameters
+        ----------
+         unid_tiempo: str
+            La unidad de tiempo del modelo.
+        """
         super().__init__()
+        símismo.unid_tiempo = unid_tiempo
         símismo.cuad = símismo._obt_atributo(Grid)
         símismo.colector = símismo._obt_atributo(DataCollector)
         símismo.manejador = símismo._obt_atributo(BaseScheduler)
@@ -105,3 +110,16 @@ class EnvoltModeloMesa(Model):
             return next(a for a in símismo.__dict__.values() if isinstance(a, cls))
         except StopIteration:
             return
+
+
+def _gen_modelo(mod):
+    if isinstance(mod, EnvoltModeloMesa):
+        raise TypeError('`mod` debe ser una clase de `mesa.Model`, y no una instancia.')
+    elif callable(mod) and issubclass(mod, EnvoltModeloMesa):
+        return mod
+    elif isinstance(mod, str):
+        return _importar_de_arch_python(mod, clase=EnvoltModeloMesa, nombre='Modelo', instanciar=False)
+    raise ValueError(
+        _('`modelo` debe ser una subclase de tinamit.envolt.mba.mesa.EnvoltModeloMesa, o un archivo '
+          'Python que contiene una, no "{mod}".').format(mod=mod)
+    )
