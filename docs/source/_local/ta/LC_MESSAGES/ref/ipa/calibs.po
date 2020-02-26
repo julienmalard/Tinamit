@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-26 19:45+0000\n"
+"POT-Creation-Date: 2020-02-26 19:46+0000\n"
 "PO-Revision-Date: 2019-08-01 11:32+0000\n"
 "Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Tamil (https://www.transifex.com/qatikon/teams/70565/ta/)\n"
@@ -291,7 +291,7 @@ msgstr ""
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring
 #: of tinamit.calibs.geog_mod.CalibradorGeog:5
-msgid "Una subclase de :class:`~tinamit.calibs.mod.CalibradorMod`."
+msgid "Una subclase de :class:`~tinamit.calibs.CalibradorMod`."
 msgstr ""
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/calibs/geog_mod.pydocstring

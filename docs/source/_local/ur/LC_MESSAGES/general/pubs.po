@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-26 19:45+0000\n"
+"POT-Creation-Date: 2020-02-26 19:46+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Urdu (https://www.transifex.com/qatikon/teams/70565/ur/)\n"
@@ -44,7 +44,7 @@ msgstr "ٹينامٹ اور اس کے افعال کی تشریح کی اشاعت
 
 #: ../../source/general/pubs.rst:10
 msgid ""
-"Si publicas algún trabajo el el cual utilizasre Tinamït, puedes citar este "
+"Si publicas algún trabajo en el cual utilizaste Tinamït, puedes citar este "
 "artículo. ¡Gracias! :)"
 msgstr ""
 

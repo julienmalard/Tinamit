@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-26 19:45+0000\n"
+"POT-Creation-Date: 2020-02-26 19:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,31 +21,51 @@ msgid "Variables"
 msgstr "Variables"
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/var.pydocstring
-#: of tinamit.mod.var.Variable:1
+#: of tinamit.mod.Variable:1
 msgid "La clase más general para variables de modelos en Tinamït."
 msgstr "La clase más general para variables de modelos en Tinamït."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/var.pydocstring
-#: of tinamit.mod.var.Variable:0
+#: of tinamit.mod.Variable:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/var.pydocstring
-#: of tinamit.mod.var.Variable.poner_val:0
+#: of tinamit.mod.Variable.poner_val:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/vars_mod.pydocstring
+#: of tinamit.mod.VariablesMod:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso.act_paso:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso.poner_val:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso.poner_vals_paso:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VariablesModImpaciente:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
 #: of tinamit.envolt.bf.VariablesModImpaciente.act_paso:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
 #: of tinamit.envolt.bf.VarPasoDeter:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.VariablesModDeter:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
 #: of tinamit.envolt.bf.VarPasoIndeter:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
 #: of tinamit.envolt.bf.VarPasoIndeter.poner_vals_paso:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf.VariablesModIndeterminado:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_bloq.pydocstring
 #: of tinamit.envolt.bf.VarBloque:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_bloq.pydocstring
+#: of tinamit.envolt.bf.VariablesModBloques:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_bloq.pydocstring
 #: of tinamit.envolt.bf.VariablesModBloques.act_paso:0
 msgid "Parámetros"
 msgstr "Parámetros"
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/var.pydocstring
-#: of tinamit.mod.var.Variable:3
+#: of tinamit.mod.Variable:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso:4
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
 #: of tinamit.envolt.bf.VarPasoDeter:4
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
@@ -56,7 +76,9 @@ msgid "El nombre del variable."
 msgstr "El nombre del variable."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/var.pydocstring
-#: of tinamit.mod.var.Variable:5
+#: of tinamit.mod.Variable:5
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso:6
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
 #: of tinamit.envolt.bf.VarPasoDeter:6
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
@@ -67,7 +89,9 @@ msgid "Las unidades del variable."
 msgstr "Las unidades del variable."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/var.pydocstring
-#: of tinamit.mod.var.Variable:7
+#: of tinamit.mod.Variable:7
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso:8
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
 #: of tinamit.envolt.bf.VarPasoDeter:8
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
@@ -78,7 +102,9 @@ msgid "Si es un ingreso al modelo."
 msgstr "Si es un ingreso al modelo."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/var.pydocstring
-#: of tinamit.mod.var.Variable:9
+#: of tinamit.mod.Variable:9
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso:10
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
 #: of tinamit.envolt.bf.VarPasoDeter:10
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
@@ -89,7 +115,9 @@ msgid "Si es un egreso del modelo."
 msgstr "Si es un egreso del modelo."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/var.pydocstring
-#: of tinamit.mod.var.Variable:11
+#: of tinamit.mod.Variable:11
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso:14
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
 #: of tinamit.envolt.bf.VarPasoDeter:14
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
@@ -100,7 +128,9 @@ msgid "El valor inicial del modelo."
 msgstr "El valor inicial del modelo."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/var.pydocstring
-#: of tinamit.mod.var.Variable:13
+#: of tinamit.mod.Variable:13
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso:16
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
 #: of tinamit.envolt.bf.VarPasoDeter:16
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
@@ -111,7 +141,9 @@ msgid "Los límites del variable."
 msgstr "Los límites del variable."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/var.pydocstring
-#: of tinamit.mod.var.Variable:15
+#: of tinamit.mod.Variable:15
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso:18
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
 #: of tinamit.envolt.bf.VarPasoDeter:18
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
@@ -122,39 +154,136 @@ msgid "Descripción detallada del variable."
 msgstr "Descripción detallada del variable."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/var.pydocstring
-#: of tinamit.mod.var.Variable.obt_val:1
+#: of tinamit.mod.Variable.obt_val:1
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso.obt_val:1
 msgid "Devuelve el valor del variable."
 msgstr "Devuelve el valor del variable."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/var.pydocstring
-#: of tinamit.mod.var.Variable.poner_val:1
+#: of tinamit.mod.Variable.poner_val:1
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso.poner_val:1
 msgid "Establece el valor del variable."
 msgstr "Establece el valor del variable."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/var.pydocstring
-#: of tinamit.mod.var.Variable.poner_val:3
+#: of tinamit.mod.Variable.poner_val:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso.poner_val:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso.poner_vals_paso:4
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
 #: of tinamit.envolt.bf.VarPasoIndeter.poner_vals_paso:4
 msgid "El nuevo valor."
 msgstr "El nuevo valor."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/var.pydocstring
-#: of tinamit.mod.var.Variable.reinic:1
+#: of tinamit.mod.Variable.reinic:1
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso.reinic:1
 msgid "Reinicializa el variable a su valor pre-simulación."
 msgstr "Reinicializa el variable a su valor pre-simulación."
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/vars_mod.pydocstring
+#: of tinamit.mod.VariablesMod:1
+msgid "Objeto para organizar los variables de un modelo."
+msgstr "Objeto para organizar los variables de un modelo."
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/vars_mod.pydocstring
+#: of tinamit.mod.VariablesMod:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VariablesModImpaciente:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.VariablesModDeter:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf.VariablesModIndeterminado:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_bloq.pydocstring
+#: of tinamit.envolt.bf.VariablesModBloques:1
+msgid "Lista de objetos `Variable` que definen los variables del modelo."
+msgstr "Lista de objetos `Variable` que definen los variables del modelo."
 
 #: ../../source/ref/ipa/var.rst:10
 msgid "Impacientes"
 msgstr "Impacientes"
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso:1
+msgid ""
+"Un variable de un modelo :class:`~tinamit.envolt.bf.ModeloImpaciente` cuyo "
+"valor cambia con cada paso (y no solamente con cada ciclo)."
+msgstr ""
+"Un variable de un modelo :class:`~tinamit.envolt.bf.ModeloImpaciente` cuyo "
+"valor cambia con cada paso (y no solamente con cada ciclo)."
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso:12
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.VarPasoDeter:12
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf.VarPasoIndeter:12
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_bloq.pydocstring
+#: of tinamit.envolt.bf.VarBloque:9
+msgid "El número de pasos en cada ciclo."
+msgstr "El número de pasos en cada ciclo."
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso.act_paso:1
+msgid "Actualiza el paso actual del variable."
+msgstr "Actualiza el paso actual del variable."
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso.act_paso:3
+msgid "El nuevo paso en el ciclo actual."
+msgstr "El nuevo paso en el ciclo actual."
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso.obt_vals_paso:1
+msgid "Obtener los valores del variable a todos los pasos del ciclo actual."
+msgstr "Obtener los valores del variable a todos los pasos del ciclo actual."
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso.obt_vals_paso:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VariablesModImpaciente.vars_paso:0
+msgid "Devuelve"
+msgstr "Devuelve"
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso.obt_vals_paso:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VariablesModImpaciente.vars_paso:0
+msgid "Tipo del valor devuelto"
+msgstr "Tipo del valor devuelto"
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso.poner_vals_paso:1
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf.VarPasoIndeter.poner_vals_paso:1
+msgid ""
+"Establece el valor del variable a un paso dado. Si ``paso`` es ``None``, "
+"``val`` debe ser una matriz donde eje 0 corresponde a todos los pasos del "
+"ciclo."
+msgstr ""
+"Establece el valor del variable a un paso dado. Si ``paso`` es ``None``, "
+"``val`` debe ser una matriz donde eje 0 corresponde a todos los pasos del "
+"ciclo."
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.VarPaso.poner_vals_paso:6
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf.VarPasoIndeter.poner_vals_paso:6
+msgid "El paso al cual poner el nuevo valor del variable."
+msgstr "El paso al cual poner el nuevo valor del variable."
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
 #: of tinamit.envolt.bf.VariablesModImpaciente:1
 msgid ""
 "Representa los variables de un modelo "
-":class:`~tinamit.envolt.bf._impac.Impaciente`."
+":class:`~tinamit.envolt.bf.ModeloImpaciente`."
 msgstr ""
 "Representa los variables de un modelo "
-":class:`~tinamit.envolt.bf._impac.Impaciente`."
+":class:`~tinamit.envolt.bf.ModeloImpaciente`."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
 #: of tinamit.envolt.bf.VariablesModImpaciente.act_paso:1
@@ -175,16 +304,6 @@ msgstr "El paso actual en el ciclo."
 msgid "Devuelve los variables por paso."
 msgstr "Devuelve los variables por paso."
 
-#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
-#: of tinamit.envolt.bf.VariablesModImpaciente.vars_paso:0
-msgid "Devuelve"
-msgstr "Devuelve"
-
-#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
-#: of tinamit.envolt.bf.VariablesModImpaciente.vars_paso:0
-msgid "Tipo del valor devuelto"
-msgstr "Tipo del valor devuelto"
-
 #: ../../source/ref/ipa/var.rst:20
 msgid "Determinados"
 msgstr "Determinados"
@@ -192,31 +311,22 @@ msgstr "Determinados"
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
 #: of tinamit.envolt.bf.VarPasoDeter:1
 msgid ""
-"Un variable de un modelo :class:`~tinamit.envolt.bf._deter.Determinado` que "
+"Un variable de un modelo :class:`~tinamit.envolt.bf.ModeloDeterminado` que "
 "toma un valor distinto a cada paso (y no solamente a cada ciclo de "
 "simulación)."
 msgstr ""
-"Un variable de un modelo :class:`~tinamit.envolt.bf._deter.Determinado` que "
+"Un variable de un modelo :class:`~tinamit.envolt.bf.ModeloDeterminado` que "
 "toma un valor distinto a cada paso (y no solamente a cada ciclo de "
 "simulación)."
-
-#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
-#: of tinamit.envolt.bf.VarPasoDeter:12
-#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
-#: of tinamit.envolt.bf.VarPasoIndeter:12
-#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_bloq.pydocstring
-#: of tinamit.envolt.bf.VarBloque:9
-msgid "El número de pasos en cada ciclo."
-msgstr "El número de pasos en cada ciclo."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
 #: of tinamit.envolt.bf.VariablesModDeter:1
 msgid ""
 "Representa los variables de un modelo "
-":class:`~tinamit.envolt.bf._deter.Determinado`."
+":class:`~tinamit.envolt.bf.ModeloDeterminado`."
 msgstr ""
 "Representa los variables de un modelo "
-":class:`~tinamit.envolt.bf._deter.Determinado`."
+":class:`~tinamit.envolt.bf.ModeloDeterminado`."
 
 #: ../../source/ref/ipa/var.rst:29
 msgid "Indeterminados"
@@ -226,37 +336,21 @@ msgstr "Indeterminados"
 #: of tinamit.envolt.bf.VarPasoIndeter:1
 msgid ""
 "Representa un variable de un modelo "
-":class:`~tinamit.envolt.bf._indeter.ModeloIndeterminado` cuyo valor cambia a"
-" cada paso (y no solamente a cada ciclo)."
+":class:`~tinamit.envolt.bf.ModeloIndeterminado` cuyo valor cambia a cada "
+"paso (y no solamente a cada ciclo)."
 msgstr ""
 "Representa un variable de un modelo "
-":class:`~tinamit.envolt.bf._indeter.ModeloIndeterminado` cuyo valor cambia a"
-" cada paso (y no solamente a cada ciclo)."
-
-#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
-#: of tinamit.envolt.bf.VarPasoIndeter.poner_vals_paso:1
-msgid ""
-"Establece el valor del variable a un paso dado. Si ``paso`` es ``None``, "
-"``val`` debe ser una matriz donde eje 0 corresponde a todos los pasos del "
-"ciclo."
-msgstr ""
-"Establece el valor del variable a un paso dado. Si ``paso`` es ``None``, "
-"``val`` debe ser una matriz donde eje 0 corresponde a todos los pasos del "
-"ciclo."
-
-#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
-#: of tinamit.envolt.bf.VarPasoIndeter.poner_vals_paso:6
-msgid "El paso al cual poner el nuevo valor del variable."
-msgstr "El paso al cual poner el nuevo valor del variable."
+":class:`~tinamit.envolt.bf.ModeloIndeterminado` cuyo valor cambia a cada "
+"paso (y no solamente a cada ciclo)."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
 #: of tinamit.envolt.bf.VariablesModIndeterminado:1
 msgid ""
 "Representa los variables de un modelo "
-":class:`~tinamit.envolt.bf._indeter.ModeloIndeterminado`."
+":class:`~tinamit.envolt.bf.ModeloIndeterminado`."
 msgstr ""
 "Representa los variables de un modelo "
-":class:`~tinamit.envolt.bf._indeter.ModeloIndeterminado`."
+":class:`~tinamit.envolt.bf.ModeloIndeterminado`."
 
 #: ../../source/ref/ipa/var.rst:37
 msgid "Bloques"

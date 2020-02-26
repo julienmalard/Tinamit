@@ -1,0 +1,67 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017+, Julien Malard, محمّد اظہر انعام بیگ
+# This file is distributed under the same license as the tinamït package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tinamït 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-02-26 19:46+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/ref/ipa/clima.rst:2
+msgid "Clima"
+msgstr "Clima"
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/clima.pydocstring
+#: of tinamit.mod.clima.Clima:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/clima.pydocstring
+#: of tinamit.mod.clima.Clima.inicializar:0
+msgid "Parámetros"
+msgstr "Parámetros"
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/clima.pydocstring
+#: of tinamit.mod.clima.Clima:1
+msgid "La latitud"
+msgstr "La latitud"
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/clima.pydocstring
+#: of tinamit.mod.clima.Clima:3
+msgid "La longitud"
+msgstr "La longitud"
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/clima.pydocstring
+#: of tinamit.mod.clima.Clima:5
+msgid "La elevación"
+msgstr "La elevación"
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/clima.pydocstring
+#: of tinamit.mod.clima.Clima:7
+msgid "Lista de fuentes de datos observados"
+msgstr "Lista de fuentes de datos observados"
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/clima.pydocstring
+#: of tinamit.mod.clima.Clima:9
+msgid "El escenario climático"
+msgstr "El escenario climático"
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/clima.pydocstring
+#: of tinamit.mod.clima.Clima.inicializar:1
+msgid ""
+"Por hacer todas las pedidas a ``taqdir`` de una vez al principio, ahoramos "
+"mucho tiempo porque la pedida de datos de ``taqdir`` es bastante lenta."
+msgstr ""
+"Por hacer todas las pedidas a ``taqdir`` de una vez al principio, ahoramos "
+"mucho tiempo porque la pedida de datos de ``taqdir`` es bastante lenta."
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/clima.pydocstring
+#: of tinamit.mod.clima.Clima.inicializar:4
+msgid "El tiempo del cual querremos datos después."
+msgstr "El tiempo del cual querremos datos después."

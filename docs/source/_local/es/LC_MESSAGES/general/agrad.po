@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-26 19:45+0000\n"
+"POT-Creation-Date: 2020-02-26 19:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -71,30 +71,10 @@ msgid "Julien Malard"
 msgstr "Julien Malard"
 
 #: ../../source/general/agrad.rst:23
-msgid "Traductores"
-msgstr "Traductores"
-
-#: ../../source/general/agrad.rst:24
-msgid "اردو: محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)"
-msgstr "اردو: محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)"
-
-#: ../../source/general/agrad.rst:25
-msgid "தமிழ்: Julien Malard"
-msgstr "தமிழ்: Julien Malard"
-
-#: ../../source/general/agrad.rst:26
-msgid "हिंदी: Julien Malard"
-msgstr "हिंदी: Julien Malard"
-
-#: ../../source/general/agrad.rst:27
-msgid "français: Julien Malard"
-msgstr "français: Julien Malard"
-
-#: ../../source/general/agrad.rst:30
 msgid "Financiamiento"
 msgstr "Financiamiento"
 
-#: ../../source/general/agrad.rst:31
+#: ../../source/general/agrad.rst:24
 msgid ""
 "Los organismos siguientes contribuyeron apoyo financiero a uno o más de los "
 "autores del código mientras trabajaban en el desarrollo de Tinamït:"
@@ -102,7 +82,7 @@ msgstr ""
 "Los organismos siguientes contribuyeron apoyo financiero a uno o más de los "
 "autores del código mientras trabajaban en el desarrollo de Tinamït:"
 
-#: ../../source/general/agrad.rst:34
+#: ../../source/general/agrad.rst:27
 msgid ""
 "`Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) "
 "<https://www.nserc-crsng.gc.ca>`_"
@@ -110,7 +90,7 @@ msgstr ""
 "`Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) "
 "<https://www.nserc-crsng.gc.ca>`_"
 
-#: ../../source/general/agrad.rst:35
+#: ../../source/general/agrad.rst:28
 msgid ""
 "`Centre de recherches pour le développement international du Canada (CRDI) "
 "<https://www.idrc.ca/fr>`_"
@@ -118,7 +98,7 @@ msgstr ""
 "`Centre de recherches pour le développement international du Canada (CRDI) "
 "<https://www.idrc.ca/fr>`_"
 
-#: ../../source/general/agrad.rst:36
+#: ../../source/general/agrad.rst:29
 msgid ""
 "`Fonds de recherche Nature et technologies du Québec (Canada) (FQRNT) "
 "<http://www.frqnt.gouv.qc.ca/accueil>`_"
@@ -126,11 +106,11 @@ msgstr ""
 "`Fonds de recherche Nature et technologies du Québec (Canada) (FQRNT) "
 "<http://www.frqnt.gouv.qc.ca/accueil>`_"
 
-#: ../../source/general/agrad.rst:39
+#: ../../source/general/agrad.rst:32
 msgid "Instituciones afiliadas"
 msgstr "Instituciones afiliadas"
 
-#: ../../source/general/agrad.rst:41
+#: ../../source/general/agrad.rst:34
 msgid ""
 "Los autores de Tinamït están afiliados con las instituciones siguientes:"
 msgstr ""

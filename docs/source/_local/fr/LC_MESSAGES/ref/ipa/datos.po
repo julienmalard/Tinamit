@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-26 19:45+0000\n"
+"POT-Creation-Date: 2020-02-26 19:46+0000\n"
 "PO-Revision-Date: 2019-08-01 11:32+0000\n"
 "Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: French (https://www.transifex.com/qatikon/teams/70565/fr/)\n"
@@ -51,6 +51,12 @@ msgstr ""
 #: of tinamit.datos.bd.BD.interpolar:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
 #: of tinamit.datos.bd.BD.obt_vals:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.gen_extern:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.Extern:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.Extern.obt_vals:0
 msgid "Parámetros"
 msgstr "Paramètres"
 
@@ -180,6 +186,8 @@ msgstr ""
 #: of tinamit.datos.bd.BD.interpolar:3
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
 #: of tinamit.datos.bd.BD.obt_vals:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.Extern.obt_vals:4
 msgid "Los variables de interés."
 msgstr ""
 
@@ -204,6 +212,10 @@ msgstr ""
 #: of tinamit.datos.bd.BD.interpolar:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
 #: of tinamit.datos.bd.BD.obt_vals:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.gen_extern:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.Extern.obt_vals:0
 msgid "Devuelve"
 msgstr "Retourne"
 
@@ -220,10 +232,58 @@ msgstr ""
 #: of tinamit.datos.bd.BD.interpolar:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
 #: of tinamit.datos.bd.BD.obt_vals:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.gen_extern:0
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.Extern.obt_vals:0
 msgid "Tipo del valor devuelto"
 msgstr "Type de valeur retournée"
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/datos/bd.pydocstring
 #: of tinamit.datos.bd.BD.obt_vals:1
 msgid "Devuelve los valores de unos variables de interés."
+msgstr ""
+
+#: ../../source/ref/ipa/datos.rst:11
+msgid "Externos"
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.gen_extern:1
+msgid "Transforma datos en objeto :class:`~tinamit.mod.extern.Extern`."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.gen_extern:3
+msgid "Los datos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.gen_extern:5
+msgid "Si se pueden interpolar los datos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.Extern:1
+msgid "Datos externos para simulaciones."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.Extern:3
+msgid "Diccionario de los valores de los variables."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.Extern:5
+msgid "Si se puede interpolar los datos."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.Extern.obt_vals:1
+msgid "Devuelve los valores de uno o más variables."
+msgstr ""
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/mod/extern.pydocstring
+#: of tinamit.mod.extern.Extern.obt_vals:3
+msgid "El tiempo de interés."
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-26 19:45+0000\n"
+"POT-Creation-Date: 2020-02-26 19:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,10 +23,10 @@ msgstr "Envolturas MDS"
 #: ../../source/des/envolt_mds.rst:3
 msgid ""
 "Envolturas para modelos de dinámicas de sistemas son subclases de "
-":class:`~tinamit.envolt.mds.ModeloMDS`."
+":class:`~tinamit.envolt.mds.ModeloDS`."
 msgstr ""
 "Envolturas para modelos de dinámicas de sistemas son subclases de "
-":class:`~tinamit.envolt.mds.ModeloMDS`."
+":class:`~tinamit.envolt.mds.ModeloDS`."
 
 #: ../../source/des/envolt_mds.rst:6
 msgid ""
@@ -48,107 +48,113 @@ msgstr "Funciones y atributos para implementar:"
 
 #: ../../source/des/envolt_mds.rst:14
 msgid ""
-":func:`~tinamit.Modelo.unidad_tiempo`: Devuelve la unidad de tiempo del "
+":func:`~tinamit.mod.Modelo.unidad_tiempo`: Devuelve la unidad de tiempo del "
 "modelo."
 msgstr ""
-":func:`~tinamit.Modelo.unidad_tiempo`: Devuelve la unidad de tiempo del "
+":func:`~tinamit.mod.Modelo.unidad_tiempo`: Devuelve la unidad de tiempo del "
 "modelo."
 
 #: ../../source/des/envolt_mds.rst:15
-msgid ":func:`~tinamit.Modelo.incrementar`: Avanza el modelo."
-msgstr ":func:`~tinamit.Modelo.incrementar`: Avanza el modelo."
+msgid ":func:`~tinamit.mod.Modelo.incrementar`: Avanza el modelo."
+msgstr ":func:`~tinamit.mod.Modelo.incrementar`: Avanza el modelo."
 
 #: ../../source/des/envolt_mds.rst:16
 msgid ""
-":func:`~tinamit.Modelo.__init__`: Inicializa el modelo. En la llamada a "
+":func:`~tinamit.mod.Modelo.__init__`: Inicializa el modelo. En la llamada a "
 "``super().__init__`` debes incluir un objeto "
 ":class:`~tinamit.envolt.mds.VariablesMDS` con los variables del modelo."
 msgstr ""
-":func:`~tinamit.Modelo.__init__`: Inicializa el modelo. En la llamada a "
+":func:`~tinamit.mod.Modelo.__init__`: Inicializa el modelo. En la llamada a "
 "``super().__init__`` debes incluir un objeto "
 ":class:`~tinamit.envolt.mds.VariablesMDS` con los variables del modelo."
-
-#: ../../source/des/envolt_mds.rst:17
-msgid ""
-":func:`~tinamit.Modelo.cambiar_vals`: No estríctamente necesario, pero la "
-"casi totalidad de modelos DS necesitarán tomar acción específica para "
-"cambiar valores de variables en el modelo externo."
-msgstr ""
-":func:`~tinamit.Modelo.cambiar_vals`: No estríctamente necesario, pero la "
-"casi totalidad de modelos DS necesitarán tomar acción específica para "
-"cambiar valores de variables en el modelo externo."
 
 #: ../../source/des/envolt_mds.rst:18
 msgid ""
+":func:`~tinamit.mod.Modelo.cambiar_vals`: No estríctamente necesario, pero "
+"la casi totalidad de modelos DS necesitarán tomar acción específica para "
+"cambiar valores de variables en el modelo externo."
+msgstr ""
+":func:`~tinamit.mod.Modelo.cambiar_vals`: No estríctamente necesario, pero "
+"la casi totalidad de modelos DS necesitarán tomar acción específica para "
+"cambiar valores de variables en el modelo externo."
+
+#: ../../source/des/envolt_mds.rst:19
+msgid ""
 "``ModeloDS.ext``: Una lista de las extensiones de archivo que se pueden leer"
 " por la envoltura."
 msgstr ""
 "``ModeloDS.ext``: Una lista de las extensiones de archivo que se pueden leer"
 " por la envoltura."
 
-#: ../../source/des/envolt_mds.rst:20
+#: ../../source/des/envolt_mds.rst:21
 msgid "Funciones y atributos opcionales:"
 msgstr "Funciones y atributos opcionales:"
 
-#: ../../source/des/envolt_mds.rst:22
-msgid ""
-":func:`~tinamit.Modelo.paralelizable`: Indica si el modelo se puede "
-"paralelizar para ahorar tiempo."
-msgstr ""
-":func:`~tinamit.Modelo.paralelizable`: Indica si el modelo se puede "
-"paralelizar para ahorar tiempo."
-
 #: ../../source/des/envolt_mds.rst:23
 msgid ""
-":func:`~tinamit.Modelo.iniciar_modelo`: Acciones llamadas justo antes de la "
-"simulación."
+":func:`~tinamit.mod.Modelo.paralelizable`: Indica si el modelo se puede "
+"paralelizar para ahorar tiempo."
 msgstr ""
-":func:`~tinamit.Modelo.iniciar_modelo`: Acciones llamadas justo antes de la "
-"simulación."
+":func:`~tinamit.mod.Modelo.paralelizable`: Indica si el modelo se puede "
+"paralelizar para ahorar tiempo."
 
 #: ../../source/des/envolt_mds.rst:24
 msgid ""
-":func:`~tinamit.Modelo.cerrar`: Efectua acciones de limpieza al final de una"
-" simulación."
+":func:`~tinamit.mod.Modelo.iniciar_modelo`: Acciones llamadas justo antes de"
+" la simulación."
 msgstr ""
-":func:`~tinamit.Modelo.cerrar`: Efectua acciones de limpieza al final de una"
-" simulación."
+":func:`~tinamit.mod.Modelo.iniciar_modelo`: Acciones llamadas justo antes de"
+" la simulación."
 
 #: ../../source/des/envolt_mds.rst:25
 msgid ""
-":func:`~tinamit.Modelo._correr_hasta_final`: Permite el modelo de combinar "
-"pasos de simulación cuando posible para ser más rápido."
+":func:`~tinamit.mod.Modelo.cerrar`: Efectua acciones de limpieza al final de"
+" una simulación."
 msgstr ""
-":func:`~tinamit.Modelo._correr_hasta_final`: Permite el modelo de combinar "
-"pasos de simulación cuando posible para ser más rápido."
+":func:`~tinamit.mod.Modelo.cerrar`: Efectua acciones de limpieza al final de"
+" una simulación."
 
 #: ../../source/des/envolt_mds.rst:26
 msgid ""
-":func:`~tinamit.Modelo.instalado`: Verifica si el modelo correspondiendo a "
-"la envoltura está instalado en la computadora o no."
+":func:`~tinamit.mod.Modelo._correr_hasta_final`: Permite el modelo de "
+"combinar pasos de simulación cuando posible para ser más rápido."
 msgstr ""
-":func:`~tinamit.Modelo.instalado`: Verifica si el modelo correspondiendo a "
-"la envoltura está instalado en la computadora o no."
+":func:`~tinamit.mod.Modelo._correr_hasta_final`: Permite el modelo de "
+"combinar pasos de simulación cuando posible para ser más rápido."
 
-#: ../../source/des/envolt_mds.rst:29
+#: ../../source/des/envolt_mds.rst:27
 msgid ""
-"Tu implementación de :func:`~tinamit.Modelo.incrementar` **debe** incluir "
-"una llamada a ``super().incrementar(rebanada)`` al final para que valores de"
-" parámetros externos y de clima se actualicen correctamente. Igualmente, "
-"cualquier reimplementación de :func:`~tinamit.Modelo.iniciar_modelo` "
-"**debe** incluir una llamada a ``super().iniciar_modelo(corrida)`` al final,"
-" y  :func:`~tinamit.Modelo.cambiar_vals` una a "
+":func:`~tinamit.mod.Modelo.instalado`: Verifica si el modelo correspondiendo"
+" a la envoltura está instalado en la computadora o no."
+msgstr ""
+":func:`~tinamit.mod.Modelo.instalado`: Verifica si el modelo correspondiendo"
+" a la envoltura está instalado en la computadora o no."
+
+#: ../../source/des/envolt_mds.rst:30
+msgid ""
+"Tu implementación de :func:`~tinamit.mod.Modelo.incrementar` **debe** "
+"incluir una llamada a ``super().incrementar(rebanada)`` al final para que "
+"valores de parámetros externos y de clima se actualicen correctamente."
+msgstr ""
+"Tu implementación de :func:`~tinamit.mod.Modelo.incrementar` **debe** "
+"incluir una llamada a ``super().incrementar(rebanada)`` al final para que "
+"valores de parámetros externos y de clima se actualicen correctamente."
+
+#: ../../source/des/envolt_mds.rst:34
+msgid ""
+"Igualmente, cualquier reimplementación de "
+":func:`~tinamit.mod.Modelo.iniciar_modelo` **debe** incluir una llamada a "
+"``super().iniciar_modelo(corrida)`` al final, y  "
+":func:`~tinamit.mod.Modelo.cambiar_vals` una a "
 "``super().cambiar_vals(valores)``."
 msgstr ""
-"Tu implementación de :func:`~tinamit.Modelo.incrementar` **debe** incluir "
-"una llamada a ``super().incrementar(rebanada)`` al final para que valores de"
-" parámetros externos y de clima se actualicen correctamente. Igualmente, "
-"cualquier reimplementación de :func:`~tinamit.Modelo.iniciar_modelo` "
-"**debe** incluir una llamada a ``super().iniciar_modelo(corrida)`` al final,"
-" y  :func:`~tinamit.Modelo.cambiar_vals` una a "
+"Igualmente, cualquier reimplementación de "
+":func:`~tinamit.mod.Modelo.iniciar_modelo` **debe** incluir una llamada a "
+"``super().iniciar_modelo(corrida)`` al final, y  "
+":func:`~tinamit.mod.Modelo.cambiar_vals` una a "
 "``super().cambiar_vals(valores)``."
 
-#: ../../source/des/envolt_mds.rst:36
+#: ../../source/des/envolt_mds.rst:38
 msgid ""
 "Cada variable en :class:`~tinamit.envolt.mds.VariablesMDS` debe ser uno de "
 ":class:`~tinamit.envolt.mds.VarConstante`, "
@@ -160,11 +166,11 @@ msgstr ""
 ":class:`~tinamit.envolt.mds.VarInic`, :class:`~tinamit.envolt.mds.VarNivel`,"
 " o :class:`~tinamit.envolt.mds.VarAuxiliar."
 
-#: ../../source/des/envolt_mds.rst:40
+#: ../../source/des/envolt_mds.rst:42
 msgid "Autogeneración"
 msgstr "Autogeneración"
 
-#: ../../source/des/envolt_mds.rst:41
+#: ../../source/des/envolt_mds.rst:43
 msgid ""
 "La función :func:`~tinamit.envolt.mds.gen_mds` de Tinamït puede escoger "
 "automáticamente la envoltura más apropriada para un archivo dado de modelo "
@@ -180,21 +186,21 @@ msgstr ""
 "registrar tu nueva clase de modelo DS en Tinamït, y "
 ":func:`~tinamit.envolt.mds.olvidar_envolt_mds` para quitarla."
 
-#: ../../source/des/envolt_mds.rst:46
+#: ../../source/des/envolt_mds.rst:48
 msgid ""
 "Si estás modificando el código fuente de Tinamït, puedes agregar tu clase a "
-"`tinamit.envolt.mds._auto._subclases` para que se tome automáticamente en "
+"``tinamit.envolt.mds._auto._subclases`` para que se tome automáticamente en "
 "cuenta."
 msgstr ""
 "Si estás modificando el código fuente de Tinamït, puedes agregar tu clase a "
-"`tinamit.envolt.mds._auto._subclases` para que se tome automáticamente en "
+"``tinamit.envolt.mds._auto._subclases`` para que se tome automáticamente en "
 "cuenta."
 
-#: ../../source/des/envolt_mds.rst:50
+#: ../../source/des/envolt_mds.rst:52
 msgid "Distribución"
 msgstr "Distribución"
 
-#: ../../source/des/envolt_mds.rst:51
+#: ../../source/des/envolt_mds.rst:53
 msgid ""
 "Puedes compartir tu nueva envoltura como paquete Python independiente. "
 "Igualmente puedes contribuirlo al código fuente de Tinamït, después de cual "

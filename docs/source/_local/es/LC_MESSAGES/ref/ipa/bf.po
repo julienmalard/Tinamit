@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-26 19:45+0000\n"
+"POT-Creation-Date: 2020-02-26 19:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,22 +28,13 @@ msgstr "Autogeneración"
 msgid "Modelos disponibles"
 msgstr "Modelos disponibles"
 
-#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
-#: of tinamit.envolt.bf.ModeloBF:1
-msgid "La clase pariente para todos modelos biofísicos."
-msgstr "La clase pariente para todos modelos biofísicos."
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/sahysmod/_envolt.pydocstring
+#: of tinamit.envolt.bf.sahysmod.ModeloSAHYSMOD:1
+msgid "Envoltura para modelos SAHYSMOD."
+msgstr "Envoltura para modelos SAHYSMOD."
 
-#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
-#: of tinamit.envolt.bf.ModeloBF:3
-#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
-#: of tinamit.envolt.bf.ModeloDeterminado:3
-#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
-#: of tinamit.envolt.bf.ModeloIndeterminado:3
-#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
-#: of tinamit.envolt.bf.ModeloImpaciente:4
-msgid "La función de inicialización de todos modelos, conectados o no."
-msgstr "La función de inicialización de todos modelos, conectados o no."
-
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/sahysmod/_envolt.pydocstring
+#: of tinamit.envolt.bf.sahysmod.ModeloSAHYSMOD:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
 #: of tinamit.envolt.bf.ModeloBF:0
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
@@ -66,6 +57,26 @@ msgstr "La función de inicialización de todos modelos, conectados o no."
 #: of tinamit.envolt.bf.ModeloImpaciente.iniciar_modelo:0
 msgid "Parámetros"
 msgstr "Parámetros"
+
+#: ../../source/ref/ipa/bf.rst:14
+msgid "Plantillas"
+msgstr "Plantillas"
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF:1
+msgid "La clase pariente para todos modelos biofísicos."
+msgstr "La clase pariente para todos modelos biofísicos."
+
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
+#: of tinamit.envolt.bf.ModeloBF:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_deter.pydocstring
+#: of tinamit.envolt.bf.ModeloDeterminado:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_indeter.pydocstring
+#: of tinamit.envolt.bf.ModeloIndeterminado:3
+#: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
+#: of tinamit.envolt.bf.ModeloImpaciente:4
+msgid "La función de inicialización de todos modelos, conectados o no."
+msgstr "La función de inicialización de todos modelos, conectados o no."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_envolt.pydocstring
 #: of tinamit.envolt.bf.ModeloBF:5
@@ -245,11 +256,11 @@ msgstr ""
 msgid ""
 "La clase pariente para modelos que deben correr por varios pasos al mismo "
 "tiempo, es decir, :class:`~tinamit.envolt.bf._indeter.Indeterminado` y "
-":class:`~tinamit.envolt.bf._deter.Determinado`."
+":class:`~tinamit.envolt.bf.ModeloDeterminado`."
 msgstr ""
 "La clase pariente para modelos que deben correr por varios pasos al mismo "
 "tiempo, es decir, :class:`~tinamit.envolt.bf._indeter.Indeterminado` y "
-":class:`~tinamit.envolt.bf._deter.Determinado`."
+":class:`~tinamit.envolt.bf.ModeloDeterminado`."
 
 #: ../../../../../../virtualenv/python3.7.1/lib/python3.7/site-packages/tinamit/envolt/bf/_impac.pydocstring
 #: of tinamit.envolt.bf.ModeloImpaciente.iniciar_modelo:1

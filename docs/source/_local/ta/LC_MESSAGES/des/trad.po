@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-26 19:45+0000\n"
+"POT-Creation-Date: 2020-02-26 19:46+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Tamil (https://www.transifex.com/qatikon/teams/70565/ta/)\n"
@@ -28,26 +28,16 @@ msgstr "மொழிபெயர்ப்பு செய்ய"
 #: ../../source/des/trad.rst:4
 msgid ""
 "¿Quieres leer este en tu propia lengua? La documentación de Tinamït se "
-"traduce de manera colaborativa. Puedes utilizar el servidor Transifex o "
-"Zanata (syncronizamos los dos, así que no hay problema cuál eliges):"
-msgstr ""
-
-#: ../../source/des/trad.rst:7
-msgid ""
-"Zanata: `Empezar ahora "
-"<https://translate.zanata.org/project/view/tinamit>`_."
+"traduce de manera colaborativa. Puedes utilizar el servidor `Transifex "
+"<https://www.transifex.com/qatikon/tinamit>`_ para contribuir tus "
+"traducciones."
 msgstr ""
 
 #: ../../source/des/trad.rst:8
-msgid ""
-"Transifex: `Empezar ahora <https://www.transifex.com/qatikon/tinamit>`_."
-msgstr ""
-
-#: ../../source/des/trad.rst:11
 msgid "Para manejadoras"
 msgstr ""
 
-#: ../../source/des/trad.rst:12
+#: ../../source/des/trad.rst:9
 msgid ""
 "El página de integración contínua `Travis CI <https://travis-"
 "ci.org/julienmalard/Tinamit>`_ de Tinamït está configurada para "
@@ -56,7 +46,7 @@ msgid ""
 "hace un cambio a la rama ``master`` del proyecto en GitHub."
 msgstr ""
 
-#: ../../source/des/trad.rst:16
+#: ../../source/des/trad.rst:13
 msgid ""
 "Las nuevas traducciones se mandarán por Travis CI a una nueva rama llamada "
 "``Transifex`` en GitHub; puedes incorporarla con la rama ``master`` y "

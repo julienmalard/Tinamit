@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tinamït 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-26 19:45+0000\n"
+"POT-Creation-Date: 2020-02-26 19:46+0000\n"
 "PO-Revision-Date: 2019-07-20 08:50+0000\n"
 "Last-Translator: Julien Malard <julien.malard@mail.mcgill.ca>, 2019\n"
 "Language-Team: Tamil (https://www.transifex.com/qatikon/teams/70565/ta/)\n"
@@ -74,36 +74,16 @@ msgid "Julien Malard"
 msgstr "ஜூலீஎன் மாலார்"
 
 #: ../../source/general/agrad.rst:23
-msgid "Traductores"
-msgstr "மொழிபெயர்ப்பாளர்கள்"
-
-#: ../../source/general/agrad.rst:24
-msgid "اردو: محمّد اظہر انعام بیگ (Muhammad Azhar Inam Baig)"
-msgstr ""
-
-#: ../../source/general/agrad.rst:25
-msgid "தமிழ்: Julien Malard"
-msgstr ""
-
-#: ../../source/general/agrad.rst:26
-msgid "हिंदी: Julien Malard"
-msgstr ""
-
-#: ../../source/general/agrad.rst:27
-msgid "français: Julien Malard"
-msgstr ""
-
-#: ../../source/general/agrad.rst:30
 msgid "Financiamiento"
 msgstr "நிதிகள்..."
 
-#: ../../source/general/agrad.rst:31
+#: ../../source/general/agrad.rst:24
 msgid ""
 "Los organismos siguientes contribuyeron apoyo financiero a uno o más de los "
 "autores del código mientras trabajaban en el desarrollo de Tinamït:"
 msgstr "இந்த நிலையங்களால் தீனாமித் எழுத்தாளர்களுக்கு நிதி கிடைத்தவிட்டது."
 
-#: ../../source/general/agrad.rst:34
+#: ../../source/general/agrad.rst:27
 msgid ""
 "`Conseil de recherches en sciences naturelles et en génie du Canada (CRSNG) "
 "<https://www.nserc-crsng.gc.ca>`_"
@@ -111,7 +91,7 @@ msgstr ""
 "`கனடா அரசங்க இற்கை அறிவியல் மற்றும் பொறியியல் ஆராய்ச்சி சபை (CRSNG) "
 "<https://www.nserc-crsng.gc.ca>`_"
 
-#: ../../source/general/agrad.rst:35
+#: ../../source/general/agrad.rst:28
 msgid ""
 "`Centre de recherches pour le développement international du Canada (CRDI) "
 "<https://www.idrc.ca/fr>`_"
@@ -119,7 +99,7 @@ msgstr ""
 "`கனடா அரசங்க சர்வதேச வளர்ச்சி ஆராய்ச்சி மையம் (CRDI) "
 "<https://www.idrc.ca/fr>`_"
 
-#: ../../source/general/agrad.rst:36
+#: ../../source/general/agrad.rst:29
 msgid ""
 "`Fonds de recherche Nature et technologies du Québec (Canada) (FQRNT) "
 "<http://www.frqnt.gouv.qc.ca/accueil>`_"
@@ -127,11 +107,11 @@ msgstr ""
 "`கிபெக் அரச்ங்கம் இற்கை மற்றும் தொழில்நுட்ப ஆராய்ச்சி நிதி மையம் (கனடா) "
 "(FQRNT) <http://www.frqnt.gouv.qc.ca/accueil>`_"
 
-#: ../../source/general/agrad.rst:39
+#: ../../source/general/agrad.rst:32
 msgid "Instituciones afiliadas"
 msgstr "சேர்க்கப்பெற்ற நிலையங்கள்"
 
-#: ../../source/general/agrad.rst:41
+#: ../../source/general/agrad.rst:34
 msgid ""
 "Los autores de Tinamït están afiliados con las instituciones siguientes:"
 msgstr "தீநாமித்தின் எழத்துவர்கள் இந்த நிறுவனங்களுடுன் இணைந்துள்ளன."
