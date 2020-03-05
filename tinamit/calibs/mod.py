@@ -122,8 +122,8 @@ class _ModSpotPy(object):
         ]
         símismo.nombres_paráms = list(líms_paráms)
         símismo.mod = mod
-        símismo.vars_interés = sorted(list(obs.data_vars))
-        símismo.t_final = len(obs['n']) - 1  # para hacer: arreglar
+        símismo.vars_interés = sorted(list(obs.columns))
+        símismo.t_final = len(obs) - 1  # para hacer: arreglar
 
         símismo.mu_obs = símismo._aplastar(obs.mean())
         símismo.sg_obs = símismo._aplastar(obs.std())

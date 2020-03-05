@@ -125,8 +125,8 @@ class Forma(object):
     Clase pariente para todas las formas que se pueden dibujar.
     """
     def __init__(símismo, archivo, llenar, alpha):
-        codif = detectar_codif(os.path.splitext(archivo)[0] + '.dbf')
-        símismo.forma = sf.Reader(archivo, encoding=codif)
+        # codif = detectar_codif(os.path.splitext(archivo)[0] + '.dbf')
+        símismo.forma = sf.Reader(archivo)  #, encoding=codif)
         símismo.llenar = llenar
         símismo.alpha = alpha
 

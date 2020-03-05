@@ -68,8 +68,8 @@ class TestClimaBFs(TestCase):
 
     def test_deter(símismo):
         mod = EjDeterminado(tmñ_ciclo=30, unid_tiempo='días')
-        mod.conectar_var_clima('ingreso_ciclo', 'بارش', conv=1, combin='total')
-        mod.conectar_var_clima('ingreso_paso', 'بارش', conv=1, combin='total')
+        mod.conectar_var_clima('ingreso_ciclo', 'بارش', conv=1, combin='suma')
+        mod.conectar_var_clima('ingreso_paso', 'بارش', conv=1, combin='suma')
 
         ref_paso = símismo.lluvia[:360]
         ref_ciclo = np.repeat(np.array([
@@ -92,9 +92,9 @@ class TestClimaBFs(TestCase):
     def test_bloques(símismo):
         tmñ_bloques = [4, 5, 3]
         mod = EjBloques(tmñ_bloques=tmñ_bloques, unid_tiempo='meses')
-        mod.conectar_var_clima('ingreso_paso', 'بارش', conv=1, combin='total')
-        mod.conectar_var_clima('ingreso_bloque', 'بارش', conv=1, combin='total')
-        mod.conectar_var_clima('ingreso_ciclo', 'بارش', conv=1, combin='total')
+        mod.conectar_var_clima('ingreso_paso', 'بارش', conv=1, combin='suma')
+        mod.conectar_var_clima('ingreso_bloque', 'بارش', conv=1, combin='suma')
+        mod.conectar_var_clima('ingreso_ciclo', 'بارش', conv=1, combin='suma')
 
         n_días = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
         sum_cum = np.cumsum(np.append([0], n_días))
