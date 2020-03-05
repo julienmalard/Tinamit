@@ -2,9 +2,10 @@ from ast import literal_eval
 
 import numpy as np
 import pandas as pd
-
+import xarray as xr
 from tinamit.calibs.sintx.ec import Ecuación
 from tinamit.envolt.mds.pysd._funcs import decodar
+
 from ._funcs import gen_mod_pysd, obt_paso_mod_pysd
 from ._vars import VarPySDAuxiliar, VarPySDNivel, VarPySDConstante, VariablesPySD
 from .._envolt import ModeloDS
@@ -69,15 +70,15 @@ class ModeloPySD(ModeloDS):
                 vr: vl.squeeze().to_pandas()
                 for vr, vl in vals_extern.items()
             }
-            for ll, v in paráms.items():
-                if isinstance(v, pd.Series):
-                    v.index = eje_pysd[t.eje().isin(v.index.values)]
         else:
             paráms = {}
 
         if símismo.corrida.clima is not None:
             vars_clima = símismo.corrida.clima.obt_todos_vals(t.eje(), vars_clima=símismo.vars_clima)
             paráms.update(vars_clima)
+        for ll, v in paráms.items():
+            if isinstance(v, pd.Series):
+                v.index = eje_pysd[t.eje().isin(v.index.values)]
 
         símismo._proc_paráms(paráms)
 

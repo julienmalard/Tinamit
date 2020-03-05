@@ -4,7 +4,6 @@ import os
 
 import numpy as np
 import pandas as pd
-import xarray as xr
 from tinamit.config import _
 from tinamit.cositas import detectar_codif
 from எண்ணிக்கை import எண்ணுக்கு as எ
@@ -22,8 +21,6 @@ class Fuente(object):
 
         símismo._equiv_nombres = {}
 
-        if fechas is None:
-            fechas = pd.NaT
         símismo.n_obs = símismo._vec_var(símismo.variables[0], tx=True).size
 
         símismo.lugares = símismo._obt_lugar(lugares)
@@ -31,22 +28,22 @@ class Fuente(object):
 
     def obt_vals(símismo, vars_interés, lugares=None, fechas=None):
         vars_interés = vars_interés or símismo.variables
-
-        coords = {_('lugar'): ('n', símismo.lugares), _('fecha'): ('n', símismo.fechas)}
         if isinstance(vars_interés, str):
-            vals = xr.DataArray(
-                símismo._vec_var(símismo._resolver_nombre(vars_interés)),
-                coords=coords, dims='n', name=vars_interés
-            )
-        else:
-            vals = xr.Dataset(
-                {vr: ('n', símismo._vec_var(símismo._resolver_nombre(vr)))
-                 for vr in vars_interés if vr in símismo.variables
-                 },
-                coords=coords
-            )
-        vals = vals.set_index(n=['lugar', 'fecha'])
-        return símismo._filtrar_lugares(símismo._filtrar_fechas(vals, fechas), lugares)
+            vars_interés = [vars_interés]
+
+        coords = {}
+        if símismo.fechas is not None:
+            coords[_('fecha')] = símismo.fechas
+        if símismo.lugares is not None:
+            coords[_('lugar')] = símismo.lugares
+
+        vals = pd.DataFrame({
+            **{vr: símismo._vec_var(símismo._resolver_nombre(vr)) for vr in vars_interés if vr in símismo.variables},
+            **coords
+        })
+        vals = símismo._filtrar_lugares(símismo._filtrar_fechas(vals, fechas), lugares)
+
+        return vals.set_index(list(coords))
 
     def _obt_lugar(símismo, lugares):
         lugares = lugares or ''
@@ -103,7 +100,7 @@ class Fuente(object):
         if criteria is None:
             return vals
         criteria = [criteria] if isinstance(criteria, str) else criteria
-        return vals.where(vals[_('lugar')].isin(criteria), drop=True)
+        return vals[vals[_('lugar')].isin(criteria)]
 
     @staticmethod
     def _filtrar_fechas(vals, criteria):
@@ -127,6 +124,7 @@ class FuenteCSV(Fuente):
     """
     Fuente para archivos ``.csv``.
     """
+
     def __init__(símismo, archivo, nombre=None, lugares=None, fechas=None, cód_vacío=None):
         """
 
@@ -239,6 +237,7 @@ class FuenteBaseXarray(Fuente):
     """
     Fuente para datos en formato de ``Dataset`` de ``xarray``.
     """
+
     def __init__(símismo, obj, nombre, lugares=None, fechas=None):
         """
 
@@ -265,6 +264,7 @@ class FuentePandas(Fuente):
     """
     Fuente para datos en formato de ``DataFrame`` de ``xarray``.
     """
+
     def __init__(símismo, obj, nombre, lugares=None, fechas=None):
         """
 

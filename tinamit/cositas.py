@@ -9,7 +9,7 @@ import numpy as np
 from chardet import UniversalDetector
 
 
-def detectar_codif(archivo, máx_líneas=None, cortar=None):
+def detectar_codif(archivo, máx_líneas=None, cortar=None, cert=0.95, auto='utf-8'):
     """
     Detecta la codificación de un fuente. (Necesario porque todavía existen programas dinosaurios que no entienden
     los milagros de unicódigo.)
@@ -49,8 +49,9 @@ def detectar_codif(archivo, máx_líneas=None, cortar=None):
                 break  # Para si el detector ya está seguro
 
     detector.close()  # Cerrar el detector
-
-    return detector.result['encoding']  # Devolver el resultado
+    if detector.result['confidence'] > cert:
+        return detector.result['encoding']
+    return auto
 
 
 def valid_nombre_arch(nombre):

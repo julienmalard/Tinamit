@@ -98,6 +98,8 @@ def gen_extern(datos, interpol=True):
 def _a_matr_xr(val):
     if isinstance(val, xr.DataArray):
         return val
+    elif isinstance(val, pd.Series):
+        return xr.DataArray(val)
     else:
         if not isinstance(val, np.ndarray):
             val = np.array([val])

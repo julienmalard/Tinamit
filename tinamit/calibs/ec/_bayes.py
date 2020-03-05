@@ -55,7 +55,7 @@ class CalibradorEcBayes(CalibradorEc):
         vars_x, var_y = símismo._extraer_vars()
         # Todas las observaciones
         obs = símismo._obt_datos(bd, vars_interés=vars_x + [var_y], corresp_vars=corresp_vars)
-        obs = obs.dropna('n', how='any')
+        obs = obs.dropna(how='any').reset_index()
 
         if lugar is None:
             # Si no hay lugares, generar y calibrar el modelo de una vez.
@@ -73,9 +73,9 @@ class CalibradorEcBayes(CalibradorEc):
             ord_niveles = lugar.ord_niveles.resolver(ord_niveles)
             lugs = [lg for lg in lugar.lugares() if lg.nivel in ord_niveles]
             primer_nivel = ord_niveles[0]
-            obs = obs.where(obs[_('lugar')].isin([
+            obs = obs[obs[_('lugar')].isin([
                 h.cód for x in lugar.lugares(nivel=primer_nivel) for h in x
-            ]), drop=True)
+            ])]
 
             # Primero, crear una lista de las relaciones jerárquicas, el cual se necesita para crear el modelo
             # jerárquico bayes.
@@ -141,9 +141,9 @@ class CalibradorEcBayes(CalibradorEc):
             sub_lugs.remove(lugar)
 
             for lg in sub_lugs:
-                obs_lg = obs.where(obs['lugar'].isin([x.cód for x in lg.lugares()]), drop=True)
+                obs_lg = obs.loc[obs['lugar'].isin([x.cód for x in lg.lugares()])]
 
-                if len(obs_lg['n']):
+                if len(obs_lg):
                     mod_bayes = símismo.ec.gen_mod_bayes(
                         líms_paráms=líms_paráms, obs_x=obs_lg[vars_x], obs_y=obs_lg[var_y],
                         binario=False, aprioris=None, nv_jerarquía=None
@@ -189,7 +189,7 @@ def _calibrar_mod_bayes(mod_bayes, paráms, obs=None, vars_compartidos=None, ops
     # Crear el diccionarion de argumentos
     ops_auto = {
         'tune': 1000,
-        'nuts_kwargs': {'target_accept': 0.90}
+        'target_accept': 0.90
     }
     ops_auto.update(ops)
 

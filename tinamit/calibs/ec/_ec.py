@@ -1,4 +1,5 @@
 from tinamit.config import _
+
 from ..sintx.ec import Ecuación
 
 
@@ -55,9 +56,7 @@ class CalibradorEc(object):
         vars_bd = [v if v not in corresp_vars else corresp_vars[v] for v in vars_interés]
         datos = bd.interpolar(vars_bd)
 
-        return datos.rename(
-            {v: ll for ll, v in corresp_vars.items()}
-        )
+        return datos.rename(columns={v: ll for ll, v in corresp_vars.items()})
 
     def calibrar(símismo, bd, lugar=None, líms_paráms=None, ops=None, corresp_vars=None, ord_niveles=None):
         """

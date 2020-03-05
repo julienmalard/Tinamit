@@ -1,10 +1,13 @@
 import csv
+import os
 
 import numpy as np
 import xarray as xr
-
+from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
+from matplotlib.figure import Figure as Figura
 from tinamit.config import _
 from tinamit.cositas import valid_nombre_arch, guardar_json
+
 from .var import Variable
 
 
@@ -92,6 +95,10 @@ class ResultadosSimul(object):
         for vr, vl in valores.items():
             símismo[vr].poner_vals_t(vl)
 
+    def dibujar(símismo, directorio):
+        for var in símismo:
+            var.dibujar(directorio)
+
     def __str__(símismo):
         return símismo.nombre
 
@@ -110,6 +117,7 @@ class ResultadosVar(object):
     """
     Los resultados de un variable.
     """
+
     def __init__(símismo, var, t):
         símismo.var = var
         símismo.t = t
@@ -139,6 +147,25 @@ class ResultadosVar(object):
             vals = vals.sortby(_('fecha'))
             vals = vals.interpolate_na(_('fecha'))
         return vals.where(vals[_('fecha')].isin(fechas), drop=True)
+
+    def dibujar(símismo, archivo):
+        fig = Figura()
+        TelaFigura(fig)
+        ejes = fig.add_subplot(111)
+        ejes.plot(símismo.vals)
+
+        ejes.set_xlabel(_('Tiempo'))
+        ejes.set_ylabel(símismo.var.unid)
+        ejes.set_title(símismo.var.nombre)
+
+        fig.autofmt_xdate()
+        if os.path.splitext(archivo)[1] != '.jpg':
+            archivo = os.path.join(archivo, símismo.var.nombre + '.jpg')
+        directorio = os.path.split(archivo)[0]
+        if not os.path.isdir(directorio):
+            os.makedirs(directorio)
+
+        fig.savefig(archivo)
 
     def __str__(símismo):
         return str(símismo.var)

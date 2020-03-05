@@ -24,7 +24,7 @@ class TestClima(TestCase):
 
     def test_diario(símismo):
         mod = ModeloPrueba(unid_tiempo='días')
-        mod.conectar_var_clima('Vacío', 'بارش', conv=1, combin='total')
+        mod.conectar_var_clima('Vacío', 'بارش', conv=1, combin='suma')
 
         res = mod.simular(EspecTiempo(100, f_inic=símismo.fechas[0]), clima=símismo.clima, vars_interés='Vacío')
 
@@ -32,7 +32,7 @@ class TestClima(TestCase):
 
     def test_mensual(símismo):
         mod = ModeloPrueba(unid_tiempo='mes')
-        mod.conectar_var_clima('Vacío', 'بارش', conv=1, combin='total')
+        mod.conectar_var_clima('Vacío', 'بارش', conv=1, combin='suma')
 
         res = mod.simular(EspecTiempo(2, f_inic=símismo.fechas[0]), clima=símismo.clima, vars_interés='Vacío')
 
@@ -44,7 +44,7 @@ class TestClima(TestCase):
 
     def test_anual(símismo):
         mod = ModeloPrueba(unid_tiempo='año')
-        mod.conectar_var_clima('Vacío', 'بارش', conv=1, combin='total')
+        mod.conectar_var_clima('Vacío', 'بارش', conv=1, combin='suma')
 
         res = mod.simular(EspecTiempo(2, f_inic=símismo.fechas[0]), clima=símismo.clima, vars_interés='Vacío')
 

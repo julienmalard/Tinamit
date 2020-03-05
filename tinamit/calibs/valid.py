@@ -1,11 +1,11 @@
 import numpy as np
 import pandas as pd
 import xarray as xr
+
 from tinamit.config import _
 from tinamit.datos.bd import BD
 from tinamit.mod.extern import relativizar_eje
 from tinamit.tiempo.tiempo import EspecTiempo
-
 from ._utils import eval_funcs
 
 
@@ -13,6 +13,7 @@ class ValidadorMod(object):
     """
     Clase para efectuar validaciones de un modelo.
     """
+
     def __init__(símismo, mod):
         """
 
@@ -51,7 +52,7 @@ class ValidadorMod(object):
         """
 
         t = t if isinstance(t, EspecTiempo) else EspecTiempo(t)
-        if not isinstance(datos, xr.Dataset):
+        if not isinstance(datos, pd.DataFrame):
             datos = datos if isinstance(datos, BD) else BD(datos)
             datos = datos.obt_vals(
                 buscar_vars_interés(símismo.mod, datos, corresp_vars)
@@ -65,29 +66,39 @@ class ValidadorMod(object):
         vars_interés = buscar_vars_interés(símismo.mod, datos, corresp_vars)
         vars_valid = [v for v in vars_interés if v not in vars_extern]
 
-        vals_extern = datos[list({_resolver_var(v, corresp_vars) for v in vars_extern})]
-        extern = {vr: vals_extern[_resolver_var(vr, corresp_vars)].dropna('n') for vr in vars_extern}
-        extern = {ll: v for ll, v in extern.items() if v.sizes['n']}
+        vals_extern = datos[list({_resolver_var(v, corresp_vars) for v in vars_extern}) + [_('fecha')]]
+
+        # Para hacer: inter y extrapolación como opción en todas simulaciones, y extrapolación con función según líms
+        if not pd.to_datetime(t.f_inic) in vals_extern[_('fecha')]:
+            vals_extern = vals_extern.append({_('fecha'): pd.to_datetime(t.f_inic)}, ignore_index=True)
+            vals_extern = vals_extern.sort_values(_('fecha'))
+        vals_extern = vals_extern.interpolate().bfill()
+
+        vals_extern = vals_extern.set_index(_('fecha'))
+        extern = {vr: vals_extern[_resolver_var(vr, corresp_vars)].dropna() for vr in vars_extern}
+        extern = {ll: v for ll, v in extern.items() if len(v)}
 
         res = símismo.mod.simular(t=t, extern={**paráms, **extern}, vars_interés=vars_valid)
 
-        vals_calib = datos[list({_resolver_var(v, corresp_vars) for v in vars_valid})]
+        vals_calib = datos[list({_resolver_var(v, corresp_vars) for v in vars_valid}) + [_('fecha')]]
+        vals_calib = vals_calib.set_index(_('fecha'))
         # Para hacer: si implementamos Dataset en ResultadosSimul este se puede combinar en una línea
         valid = {}
         for r in res:
             vr_datos = _resolver_var(str(r), corresp_vars)
-            vals_calib_vr = vals_calib[vr_datos].dropna('n')
-            if vals_calib_vr.sizes['n']:
+            vals_calib_vr = vals_calib[vr_datos].dropna()
+            if len(vals_calib_vr):
                 eje = r.vals[_('fecha')].values
-                eje_obs = pd.to_datetime(vals_calib_vr[_('fecha')].values)
+                eje_obs = pd.to_datetime(vals_calib_vr.index.values)
                 eje_res = relativizar_eje(eje, eje_obs)
-                buenas_fechas = xr.DataArray(np.logical_and(eje_res[0] <= eje_obs, eje_obs <= eje_res[-1]), dims='n')
-                datos_r = vals_calib_vr.where(buenas_fechas, drop=True).dropna('n')
-                if datos_r.sizes['n'] > 1:
-                    fechas_obs = datos_r[_('fecha')]
+                buenas_fechas = np.logical_and(eje_res[0] <= eje_obs, eje_obs <= eje_res[-1])
+                datos_r = vals_calib_vr[buenas_fechas]
+                if len(datos_r) > 1:
+                    fechas_obs = datos_r.index
                     interpoladas = r.interpolar(fechas=fechas_obs)
+                    buenas = np.isfinite(r.interpolar(fechas=fechas_obs)).values[:, 0]
                     valid[str(r)] = _valid_res(
-                        datos_r.values, interpoladas.values, pd.to_datetime(datos_r[_('fecha')].values), funcs
+                        datos_r.values[buenas], interpoladas.values[buenas], datos_r.index[buenas], funcs
                     )
         return valid
 
@@ -100,13 +111,16 @@ def _valid_res(obs, res, fechas, funcs):
 
 
 def _resolver_var(var, corresp_vars):
+    if var.startswith('"'):
+        var = var[1:-1]
     if not corresp_vars or var not in corresp_vars:
         return var
     return corresp_vars[var]
 
 
 def buscar_vars_interés(mod, datos, corresp_vars):
-    return [v.nombre for v in mod.variables if _resolver_var(v.nombre, corresp_vars) in datos.variables]
+    variables = datos.columns if isinstance(datos, pd.DataFrame) else datos.variables
+    return [v.nombre for v in mod.variables if _resolver_var(v.nombre, corresp_vars) in variables]
 
 
 def vars_datos_interés(mod, datos, corresp_vars):

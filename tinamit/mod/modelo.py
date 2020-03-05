@@ -165,7 +165,7 @@ class Modelo(object):
             t = símismo.corrida.t
             corrida.clima.inicializar(t)
             símismo._act_vals_clima(
-                t.fecha(), t.fecha_próxima() - 1 * t.fecha().freq
+                t.fecha(), t.fecha_próxima() - ft.timedelta(1)  # Para hacer: frequencias distintas
             )
         corrida.actualizar_res()
 
@@ -348,7 +348,7 @@ class Modelo(object):
 
         combins = {
             'prom': np.mean,
-            'total': np.sum
+            'suma': np.sum
         }
         if isinstance(combin, str):
             combin = combins[combin.lower()]

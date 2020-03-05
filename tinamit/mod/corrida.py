@@ -8,6 +8,7 @@ class Corrida(object):
     def __init__(símismo, nombre, t, extern, vars_mod, vars_interés, clima):
         símismo.nombre = nombre
         símismo.t = t
+
         símismo.extern = extern
 
         símismo.variables = vars_mod
