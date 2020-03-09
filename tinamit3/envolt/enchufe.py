@@ -12,13 +12,14 @@ from tinamit3.mod.simul import SimulModelo
 class ModeloEnchufe(Modelo):
     @property
     def unids(símismo):
-        pass
+        raise NotImplementedError
 
 
 class SimulEnchufe(SimulModelo):
     HUÉSPED = '127.0.0.1'
 
     def __init__(símismo, modelo):
+        super().__init__(modelo)
 
         símismo._enchufe = e = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         e.bind((símismo.HUÉSPED, 0))
@@ -33,7 +34,7 @@ class SimulEnchufe(SimulModelo):
         pass
 
     def cambiar_var(símismo, var):
-        MensajeMandar(símismo.con, variable=str(var), valor=var.valor).mandar()
+        MensajeCambiar(símismo.con, variable=str(var), valor=var.valor).mandar()
 
     def leer_var(símismo, var):
         val = MensajeLeer(símismo.con, var).mandar()
@@ -49,6 +50,7 @@ class SimulEnchufe(SimulModelo):
             try:
                 símismo.con.close()
             finally:
+                MensajeCerrar().mandar()
                 if símismo.proceso.poll() is None:
                     avisar(_(
                         'Proceso de modelo {} todavía estaba corriendo al final de la simulación.'
@@ -56,76 +58,87 @@ class SimulEnchufe(SimulModelo):
                     símismo.proceso.kill()
 
 
-
 class Mensaje(object):
-    def __init__(símismo, con, contenido):
+    def __init__(símismo, con, contenido=''):
         símismo.con = con
-        símismo.contenido = contenido if isinstance(contenido, )
+        símismo.contenido = contenido if isinstance(contenido, bytes) else contenido.encode('utf8')
 
     @property
     def tipo(símismo):
         raise NotImplementedError
 
     def _encabezado(símismo):
-        return {'tipo': símismo.tipo}
+        return {'tipo': símismo.tipo, 'tamaño': len(símismo.contenido)}
 
     def mandar(símismo):
         encabezado = símismo._encabezado()
         encabezado_bytes = json.dumps(encabezado, ensure_ascii=False).encode('utf8')
 
         # Mandar tmñ encabezado
-        símismo.con.sendall(pack('!i', len(encabezado_bytes)))
+        símismo.con.sendall(pack('i', len(encabezado_bytes)))
         if not símismo.con.recv(4) == 0:
             raise ConnectionError
 
         # Mandar encabezado json
-        símismo.conn.sendall(encabezado_bytes)
+        símismo.con.sendall(encabezado_bytes)
         if not símismo.con.recv(4) == 0:
             raise ConnectionError
 
         # Mandar contenido
-        contenido = símismo.contenido.encode('uft8')
-        if contenido:
-            símismo.con.sendall(contenido)
+        if símismo.contenido:
+            símismo.con.sendall(símismo.contenido)
 
-        return símismo._procesar()
+        return símismo._procesar_respuesta()
+
+    def _procesar_respuesta(símismo):
+        pass
 
 
-class MensajeMandar(Mensaje):
-    tipo = 'MANDAR'
+class MensajeCambiar(Mensaje):
+    tipo = 'cambiar'
 
     def __init__(símismo, enchufe, variable, valor):
         símismo.variable = variable
-        símismo.valor = valor
-        super().__init__(enchufe)
+        super().__init__(enchufe, contenido=valor.to_bytes())
 
-    def _contenido(símismo):
-        return símismo.valor.to_bytes()
+    def _encabezado(símismo):
+        encab = super()._encabezado()
+        encab['var'] = str(símismo.variable)
+        encab['matr'] = símismo.variable.esmatriz
+        return encab
 
 
 class MensajeLeer(Mensaje):
-    tipo = 'LEER'
+    tipo = 'leer'
 
-    def __init__(símismo, enchufe, variable):
+    def __init__(símismo, con, variable):
         símismo.variable = variable
-        super().__init__(enchufe)
+        super().__init__(con)
 
-    def _contenido(símismo):
-        return símismo.variable
+    def _encabezado(símismo):
+        encab = super()._encabezado()
+        encab['var'] = str(símismo.variable)
+        return encab
 
-    def _procesar(símismo):
-        return RecepciónVariable(símismo.enchufe).recibir()
+    def _procesar_respuesta(símismo):
+        return RecepciónVariable(símismo.con).recibir()
 
 
 class MensajeIncrementar(Mensaje):
-    tipo = 'AVANZAR'
+    tipo = 'incr'
 
     def __init__(símismo, enchufe, pasos):
         símismo.pasos = pasos
         super().__init__(enchufe)
 
-    def _contenido(símismo):
-        return símismo.pasos
+    def _encabezado(símismo):
+        encab = super()._encabezado()
+        encab['n_pasos'] = símismo.pasos
+        return encab
+
+
+class MensajeCerrar(Mensaje):
+    tipo = 'cerrar'
 
 
 class Recepción(object):

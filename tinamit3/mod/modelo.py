@@ -1,7 +1,4 @@
-from abc import ABC, abstractmethod
-
-
-class Modelo(ABC):
+class Modelo(object):
     simulador = SimulModelo
 
     def __init__(símismo, nombre, variables):
@@ -16,9 +13,8 @@ class Modelo(ABC):
             sim.correr()
 
     @property
-    @abstractmethod
     def unids(símismo):
-        pass
+        raise NotImplementedError
 
     def __str__(símismo):
         return símismo.nombre
