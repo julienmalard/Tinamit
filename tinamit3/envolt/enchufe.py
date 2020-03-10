@@ -121,7 +121,15 @@ class MensajeLeer(Mensaje):
         return encab
 
     def _procesar_respuesta(símismo):
-        return RecepciónVariable(símismo.con).recibir()
+        val = RecepciónVariable(símismo.con).recibir()
+        if símismo.variable.esmatriz:
+            if isinstance(val, np.ndarray):
+                val = val.reshape(símismo.variable.forma)
+            else:
+                val = np.full(símismo.variable.forma, val)
+        elif isinstance(val, np.ndarray):
+            raise TypeError
+        return val
 
 
 class MensajeIncrementar(Mensaje):
@@ -158,5 +166,4 @@ class Recepción(object):
 class RecepciónVariable(Recepción):
 
     def _procesar(símismo, encabezado, contenido):
-        forma = encabezado['forma']
-        return np.frombuffer(contenido).reshape(forma)
+        return np.frombuffer(contenido)
