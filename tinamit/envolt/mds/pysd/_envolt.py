@@ -30,7 +30,6 @@ class ModeloPySD(ModeloDS):
     def iniciar_modelo(símismo, corrida):
         # Poner los variables y el tiempo a sus valores iniciales
         símismo.mod.reload()
-        símismo.mod.initialize()
         símismo.paso_act = 0
 
         símismo.cont_simul = False
@@ -81,9 +80,17 @@ class ModeloPySD(ModeloDS):
                 v.index = eje_pysd[t.eje().isin(v.index.values)]
 
         símismo._proc_paráms(paráms)
+        iniciales = {}
+        niveles = símismo.variables.niveles()
+        for vr in list(paráms):
+            for nv in niveles:
+                if vr in nv.parientes:
+                    iniciales[str(nv)] = paráms[vr][0]
+                    break
 
         res_pysd = símismo.mod.run(
             params=paráms,
+            initial_condition='o',
             return_timestamps=eje_pysd
         )
         return {vr: res_pysd[str(vr)].values for vr in símismo.corrida.resultados.variables()}

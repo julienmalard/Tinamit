@@ -24,7 +24,7 @@ class ValidadorMod(object):
         """
         símismo.mod = mod
 
-    def validar(símismo, t, datos, paráms=None, funcs=None, vars_extern=None, corresp_vars=None):
+    def validar(símismo, t, datos, paráms=None, funcs=None, vars_extern=None, corresp_vars=None, clima=None):
         """
         Efectua la validación.
 
@@ -78,7 +78,7 @@ class ValidadorMod(object):
         extern = {vr: vals_extern[_resolver_var(vr, corresp_vars)].dropna() for vr in vars_extern}
         extern = {ll: v for ll, v in extern.items() if len(v)}
 
-        res = símismo.mod.simular(t=t, extern={**paráms, **extern}, vars_interés=vars_valid)
+        res = símismo.mod.simular(t=t, extern={**paráms, **extern}, vars_interés=vars_valid, clima=clima)
 
         vals_calib = datos[list({_resolver_var(v, corresp_vars) for v in vars_valid}) + [_('fecha')]]
         vals_calib = vals_calib.set_index(_('fecha'))
