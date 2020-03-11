@@ -106,7 +106,8 @@ class ValidadorMod(object):
 def _valid_res(obs, res, fechas, funcs):
     vlds = {}
     for f in funcs:
-        vlds[f] = eval_funcs[f.lower()](obs, res[:, 0], fechas)  # para hacer: dimensiones múltiples
+        if len(obs) > 1:
+            vlds[f] = eval_funcs[f.lower()](obs, res[:, 0], fechas)  # para hacer: dimensiones múltiples
     return vlds
 
 
