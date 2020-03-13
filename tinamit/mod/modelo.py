@@ -347,8 +347,8 @@ class Modelo(object):
         """
 
         combins = {
-            'prom': np.mean,
-            'suma': np.sum
+            'prom': np.nanmean,
+            'suma': np.nansum
         }
         if isinstance(combin, str):
             combin = combins[combin.lower()]

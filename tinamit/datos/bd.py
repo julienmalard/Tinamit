@@ -12,6 +12,7 @@ class BD(object):
     """
     Una base de datos combina varias :class:`~tinamit.datos.fuente.Fuente`.
     """
+
     def __init__(símismo, fuentes):
         """
 
@@ -127,7 +128,7 @@ def _gen_fuente(fnt, nombre=None, lugares=None, fechas=None):
 
 
 def _interpolar_xr(m, fechas=None):
-    if fechas is not  None:
+    if fechas is not None:
         raise ValueError
     return m.unstack().interpolate().stack()
     if m.sizes[_('fecha')] > 1:
