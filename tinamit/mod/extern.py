@@ -56,8 +56,11 @@ class Extern(object):
     @staticmethod
     def _obt_a_t(m_xr, t, interpol):
         m_xr = m_xr.unstack()
-
         t_rel = relativizar_eje(m_xr, t)
+        # para hacer: arreglar de forma corecta
+        if m_xr['fecha'].values[0] == 0:
+            m_xr['fecha'] = [t.f_inic if isinstance(t, TiempoCalendario) else t[0]]
+            return m_xr
         if interpol and m_xr.sizes[_('fecha')] > 1:
             return m_xr.interp(**{_('fecha'): t_rel}).dropna(_('fecha'))
         try:

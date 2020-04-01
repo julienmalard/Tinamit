@@ -67,7 +67,8 @@ class BD(object):
         l_vals_fnts = [v for v in l_vals_fnts if len(v.columns)]
         vals = l_vals_fnts[0]
         for vl in l_vals_fnts[1:]:
-            vals = vals.join(vl, how='outer')
+            nuevas_cols = [cl for cl in vl.columns if cl not in vals.columns]
+            vals = vals.join(vl[nuevas_cols], how='outer').fillna(vl)
 
         return vals[vars_interés[0]] if vr_único else vals
 
@@ -130,7 +131,7 @@ def _gen_fuente(fnt, nombre=None, lugares=None, fechas=None):
 def _interpolar_xr(m, fechas=None):
     if fechas is not None:
         raise ValueError
-    return m.unstack().interpolate().stack()
+    return m.unstack().interpolate(limit_area='inside').stack()
     if m.sizes[_('fecha')] > 1:
 
         m = m.interpolate_na(_('fecha')).fillna(m)
