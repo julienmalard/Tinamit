@@ -163,6 +163,12 @@ class Lugar(object):
 
         raise KeyError(itema)
 
+    def __contains__(símismo, itema):
+        try:
+            return símismo[itema] is not None
+        except KeyError:
+            return False
+
     def __str__(símismo):
         return símismo.nombre
 
