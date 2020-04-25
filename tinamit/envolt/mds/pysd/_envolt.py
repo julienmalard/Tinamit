@@ -2,7 +2,6 @@ from ast import literal_eval
 
 import numpy as np
 import pandas as pd
-import xarray as xr
 from tinamit.calibs.sintx.ec import Ecuación
 from tinamit.envolt.mds.pysd._funcs import decodar
 
@@ -50,7 +49,10 @@ class ModeloPySD(ModeloDS):
             rebanada.resultados[v].vals[símismo.paso_act - 1] = res[v.nombre_py][símismo.paso_act - 1]
 
         símismo.cont_simul = True
-        símismo.variables.cambiar_vals({v: res[v.nombre_py].values[-1] for v in rebanada.resultados.variables()})
+        res_interés = {v: res[v.nombre_py].values[-1] for v in rebanada.resultados.variables()}
+        símismo.variables.cambiar_vals(
+            {ll: v.item() if isinstance(v, np.ndarray) and v.shape == () else v for ll, v in res_interés.items()}
+        )
 
         símismo.vars_para_cambiar.clear()
         super().incrementar(rebanada)
@@ -104,6 +106,10 @@ class ModeloPySD(ModeloDS):
 
     def paralelizable(símismo):
         return True
+
+    def cerrar(símismo):
+        super().cerrar()
+        símismo.vars_para_cambiar.clear()
 
     def _proc_paráms(símismo, prms):
         for p in list(prms):
