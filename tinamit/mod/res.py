@@ -6,7 +6,7 @@ import xarray as xr
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
 from tinamit.config import _
-from tinamit.cositas import valid_nombre_arch, guardar_json
+from tinamit.cositas import valid_nombre_arch, guardar_json, jsonificar
 
 from .var import Variable
 
@@ -36,7 +36,7 @@ class ResultadosSimul(object):
         for v in símismo:
             v.actualizar()
 
-    def guardar(símismo, frmt='json', l_vars=None):
+    def guardar(símismo, frmt='json', l_vars=None, arch=None):
         """
         Guarda los resultados en un archivo.
 
@@ -55,18 +55,18 @@ class ResultadosSimul(object):
 
         if frmt[0] != '.':
             frmt = '.' + frmt
-        arch = valid_nombre_arch(símismo.nombre + frmt)
+        arch = arch + frmt if arch else valid_nombre_arch(símismo.nombre + frmt)
 
         if frmt == '.json':
             contenido = símismo.a_dic()
-            guardar_json(contenido, arch=arch)
+            guardar_json(jsonificar(contenido), arch=arch)
 
         elif frmt == '.csv':
 
             with open(arch, 'w', encoding='UTF-8', newline='') as a:
                 escr = csv.writer(a)
 
-                escr.writerow([_('fecha')] + símismo.t)
+                escr.writerow([_('fecha')] + list(símismo.t.eje()))
                 for var in l_vars:
                     vals = símismo[var].values
                     if len(vals.shape) == 1:
@@ -141,7 +141,7 @@ class ResultadosVar(object):
     def interpolar(símismo, fechas):
         eje_ant = símismo.vals[_('fecha')]
         nuevas_fechas = fechas.values[~np.isin(fechas.values, eje_ant.values)]
-        vals = símismo.vals
+        vals = símismo.vals.copy(deep=True)
         if nuevas_fechas.size:
             vals = vals.reindex(fecha=np.concatenate((eje_ant.values, nuevas_fechas)))
             vals = vals.sortby(_('fecha'))

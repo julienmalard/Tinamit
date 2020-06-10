@@ -69,10 +69,10 @@ class ValidadorMod(object):
         vals_extern = datos[list({_resolver_var(v, corresp_vars) for v in vars_extern}) + [_('fecha')]]
 
         # Para hacer: inter y extrapolación como opción en todas simulaciones, y extrapolación con función según líms
-        if not pd.to_datetime(t.f_inic) in vals_extern[_('fecha')]:
+        if not np.datetime64(t.f_inic) in vals_extern[_('fecha')].values:
             vals_extern = vals_extern.append({_('fecha'): pd.to_datetime(t.f_inic)}, ignore_index=True)
-            vals_extern = vals_extern.sort_values(_('fecha'))
-        vals_extern = vals_extern.interpolate().bfill()
+        vals_extern = vals_extern.sort_values(_('fecha'))
+        vals_extern = vals_extern.interpolate(limit_area='inside').bfill()
 
         vals_extern = vals_extern.set_index(_('fecha'))
         extern = {vr: vals_extern[_resolver_var(vr, corresp_vars)].dropna() for vr in vars_extern}
@@ -81,7 +81,14 @@ class ValidadorMod(object):
         res = símismo.mod.simular(t=t, extern={**paráms, **extern}, vars_interés=vars_valid, clima=clima)
 
         vals_calib = datos[list({_resolver_var(v, corresp_vars) for v in vars_valid}) + [_('fecha')]]
+        # Para hacer: inter y extrapolación como opción en todas simulaciones, y extrapolación con función según líms
+        if not np.datetime64(t.f_inic) in vals_calib[_('fecha')].values:
+            vals_calib = vals_calib.append({_('fecha'): pd.to_datetime(t.f_inic)}, ignore_index=True)
+        vals_calib = vals_calib.sort_values(_('fecha'))
+        vals_calib_interp = vals_calib.interpolate(limit_area='inside').set_index(_('fecha'))
         vals_calib = vals_calib.set_index(_('fecha'))
+        vals_calib.loc[t.f_inic] = vals_calib_interp.loc[t.f_inic]
+
         # Para hacer: si implementamos Dataset en ResultadosSimul este se puede combinar en una línea
         valid = {}
         for r in res:

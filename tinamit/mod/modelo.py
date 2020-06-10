@@ -213,11 +213,13 @@ class Modelo(object):
 
         """
         if símismo.corrida.extern:
-            símismo.cambiar_vals(símismo.corrida.obt_extern_act())
+            símismo.cambiar_vals({
+                vr: vl for vr, vl in símismo.corrida.obt_extern_act().items() if vr in símismo.variables
+            })
 
         if símismo.corrida.clima and símismo.vars_clima:
             t = símismo.corrida.t
-            símismo._act_vals_clima(t.fecha(), t.fecha_próxima() - 1 * t.fecha().freq)
+            símismo._act_vals_clima(t.fecha(), t.fecha_próxima() - ft.timedelta(days=1))
 
     def cerrar(símismo):
         """

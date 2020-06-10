@@ -1,19 +1,18 @@
 import os
 
+import matplotlib.pyplot as dib
 import numpy as np
 import shapefile as sf
 from matplotlib import colors, cm
+from matplotlib.axes import Axes
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura
 from matplotlib.figure import Figure as Figura
-from matplotlib.axes import Axes
-import matplotlib.pyplot as dib
-from tinamit.config import _
-from tinamit.cositas import detectar_codif
 
+from tinamit.config import _
 from ..mod import ResultadosSimul, ResultadosGrupo
 
 
-def dibujar_mapa(formas, archivo=None, título=None, fig=None):
+def dibujar_mapa(formas, archivo=None, título=None, fig=None, args_color=None):
     """
     Dibuja un mapa.
 
@@ -43,7 +42,7 @@ def dibujar_mapa(formas, archivo=None, título=None, fig=None):
     ejes.set_aspect('equal')
 
     for frm in formas:
-        frm.dibujar(ejes, fig)
+        frm.dibujar(ejes, fig, args_color=args_color)
     if título is not None:
         ejes.set_title(título)
     if archivo:
@@ -124,13 +123,14 @@ class Forma(object):
     """
     Clase pariente para todas las formas que se pueden dibujar.
     """
-    def __init__(símismo, archivo, llenar, alpha):
+
+    def __init__(símismo, archivo, llenar, alpha, **argsll):
         # codif = detectar_codif(os.path.splitext(archivo)[0] + '.dbf')
-        símismo.forma = sf.Reader(archivo)  #, encoding=codif)
+        símismo.forma = sf.Reader(archivo, **argsll)  # , encoding=codif)
         símismo.llenar = llenar
         símismo.alpha = alpha
 
-    def dibujar(símismo, ejes, fig):
+    def dibujar(símismo, ejes, fig, args_color=None):
         """
         Agrega la forma a la figura.
 
@@ -179,7 +179,7 @@ class FormaEstática(Forma):
         símismo.color = color
         super().__init__(archivo, llenar=llenar, alpha=alpha)
 
-    def dibujar(símismo, ejes, fig):
+    def dibujar(símismo, ejes, fig, args_color=None):
         símismo._dibujar_frm(ejes, color=símismo.color)
 
 
@@ -188,7 +188,7 @@ class FormaDinámica(Forma):
     Forma cuyos colores se asignan según valores numéricos.
     """
 
-    def __init__(símismo, archivo, escala_colores=None, llenar=True, alpha=1):
+    def __init__(símismo, archivo, escala_colores=None, llenar=True, alpha=1, **argsll):
         """
 
         Parameters
@@ -203,7 +203,7 @@ class FormaDinámica(Forma):
         alpha: float or int
             La opacidad del interior de la forma. Solamente aplica si ``llenar`` est ``False``.
         """
-        super().__init__(archivo, llenar=llenar, alpha=alpha)
+        super().__init__(archivo, llenar=llenar, alpha=alpha, **argsll)
 
         símismo.escala_colores = símismo._resolver_colores(escala_colores)
         símismo.valores = np.full(len(símismo.forma.shapes()), np.nan)
@@ -237,7 +237,8 @@ class FormaDinámica(Forma):
 
         símismo.escala = escala_valores
 
-    def dibujar(símismo, ejes, fig):
+    def dibujar(símismo, ejes, fig, args_color=None):
+        args_color = args_color or {}
         vals_norm = (símismo.valores - símismo.escala[0]) / (símismo.escala[1] - símismo.escala[0])
 
         d_clrs = _gen_d_mapacolores(colores=símismo.escala_colores)
@@ -253,9 +254,9 @@ class FormaDinámica(Forma):
         símismo._dibujar_frm(ejes=ejes, color=v_cols)
 
         if símismo.unidades is not None:
-            fig.colorbar(cpick, label=símismo.unidades)
+            fig.colorbar(cpick, label=símismo.unidades, **args_color)
         else:
-            fig.colorbar(cpick)
+            fig.colorbar(cpick, extend='both')
 
     @staticmethod
     def _resolver_colores(colores):
@@ -322,7 +323,7 @@ class FormaDinámicaNombrada(FormaDinámica):
     valores.
     """
 
-    def __init__(símismo, archivo, col_id, escala_colores=None, llenar=True, alpha=1):
+    def __init__(símismo, archivo, col_id, escala_colores=None, llenar=True, alpha=1, **argsll):
         """
 
         Parameters
@@ -339,7 +340,7 @@ class FormaDinámicaNombrada(FormaDinámica):
         alpha: float or int
             La opacidad del interior de la forma. Solamente aplica si ``llenar`` est ``False``.
         """
-        super().__init__(archivo, escala_colores, llenar, alpha)
+        super().__init__(archivo, escala_colores, llenar, alpha, **argsll)
         símismo.ids = [str(x) for x in símismo._extraer_col(col_id)]
 
     def _llenar_valores(símismo, valores):

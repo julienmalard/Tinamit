@@ -3,6 +3,7 @@ import pandas as pd
 import xarray as xr
 from tinamit.config import _
 from tinamit.tiempo.tiempo import TiempoCalendario
+from تقدیر.ذریعہ import ذریعہ
 from تقدیر.مقام import مقام
 
 
@@ -59,7 +60,8 @@ class Clima(object):
 
     def _obt_datos_de_taqdir(símismo, f_inic, f_final):
         return símismo._lugar.کوائف_پانا(
-            f_inic, f_final, ذرائع=(símismo.fuentes,), خاکے=símismo.escenario
+            f_inic, f_final, ذرائع=(símismo.fuentes,) if isinstance(símismo.fuentes, ذریعہ) else símismo.fuentes,
+            خاکے=símismo.escenario
         ).روزانہ()
 
     def obt_datos(símismo, f_inic, f_final=None):

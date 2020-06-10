@@ -1,4 +1,5 @@
 import os
+from warnings import warn as avisar
 
 import numpy as np
 import pandas as pd
@@ -131,7 +132,12 @@ def _gen_fuente(fnt, nombre=None, lugares=None, fechas=None):
 def _interpolar_xr(m, fechas=None):
     if fechas is not None:
         raise ValueError
-    return m.unstack().interpolate(limit_area='inside').stack()
+    interpolado = m.unstack().interpolate(limit_area='inside').stack()
+    if len(interpolado.dropna()):
+        return interpolado
+    avisar('Extrapolando por falta de datos.')
+    return m.unstack().interpolate().stack()
+
     if m.sizes[_('fecha')] > 1:
 
         m = m.interpolate_na(_('fecha')).fillna(m)
