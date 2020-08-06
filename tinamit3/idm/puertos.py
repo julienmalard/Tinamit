@@ -73,6 +73,8 @@ class Mensaje(object):
 
         # Mandar encabezado json
         símismo.conex.sendall(encabezado_bytes)
+        if not unpack('i', símismo.conex.recv(4))[0] == 0:
+            raise ConnectionError
 
         # Mandar contenido
         if símismo.contenido:
