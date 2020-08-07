@@ -178,7 +178,7 @@ class Modelo(object):
         if intento is not None:
             símismo.corrida.resultados.poner_vals_t(intento)
         else:
-            while símismo.corrida.t.avanzar():
+            while símismo.corrida.t.incrementar():
                 símismo.incrementar(
                     Rebanada(
                         símismo.corrida.t.pasos_avanzados(símismo.unidad_tiempo()),

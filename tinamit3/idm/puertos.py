@@ -4,10 +4,8 @@ from struct import pack, unpack
 
 import numpy as np
 
-from .idm import IDM
 
-
-class IDMEnchufes(IDM):
+class IDMEnchufes(object):
 
     def __init__(símismo, dirección='127.0.0.1', puerto=0):
         símismo.enchufe = enchf = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,7 +21,7 @@ class IDMEnchufes(IDM):
         símismo.con, dir_ = símismo.enchufe.accept()
         símismo.activo = True
 
-    def mandar(símismo, variable, valor):
+    def cambiar(símismo, variable, valor):
         MensajeCambiar(símismo.con, variable=variable, valor=valor).mandar()
 
     def recibir(símismo, variable):
@@ -73,15 +71,10 @@ class Mensaje(object):
 
         # Mandar encabezado json
         símismo.conex.sendall(encabezado_bytes)
-        if not unpack('i', símismo.conex.recv(4))[0] == 0:
-            raise ConnectionError
 
         # Mandar contenido
         if símismo.contenido:
             símismo.conex.sendall(símismo.contenido)
-
-            if not unpack('i', símismo.conex.recv(4))[0] == 0:
-                raise ConnectionError
 
         return símismo._procesar_respuesta()
 
@@ -94,8 +87,9 @@ class MensajeCambiar(Mensaje):
 
     def __init__(símismo, enchufe, variable: str, valor: np.ndarray):
         símismo.variable = variable
-        símismo.valor = valor
-        super().__init__(enchufe, contenido=valor.tobytes())
+        símismo.valor = valor if isinstance(valor, np.ndarray) else np.array(valor)
+
+        super().__init__(enchufe, contenido=símismo.valor.tobytes())
 
     def _encabezado(símismo):
         return {

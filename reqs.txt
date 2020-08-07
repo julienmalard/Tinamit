@@ -1,3 +1,5 @@
+websockets
+click
 numpy
 scipy
 matplotlib

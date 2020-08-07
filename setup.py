@@ -13,11 +13,6 @@ def leer(arch):
 # Leer la versión de Tinamït
 versión = leer(os.path.join('tinamit', 'versión.txt'))
 
-# Lo que sigue es código un poco complicado pero necesario para manejar las traducciones del código y de sus
-# mensajes al usuario. En gran parte, su necesidad es culpa del paquete Babel que no reconoce lenguas Mayas, entre
-# otras lenguas muy útiles.
-
-
 # Por fin, el código habitual de instalación.
 setup(
     name='tinamit',
@@ -58,5 +53,11 @@ setup(
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Programming Language :: Python :: 3 :: Only',
     ],
-    include_package_data=True
+    include_package_data=True,
+    entry_points={
+        'console_scripts': [
+            'tinamït=tinamit.ipa:correr',
+            'tinamit=tinamit.ipa:correr'
+        ]
+    }
 )

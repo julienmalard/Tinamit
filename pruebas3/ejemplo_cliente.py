@@ -1,6 +1,7 @@
 import json
 import socket
 import sys
+import time
 from struct import unpack, pack
 
 import numpy as np
@@ -32,11 +33,8 @@ def cliente_puertos(dirección, puerto, t_final):
                 else:
                     vals['t'][:] = min(vals['t'] + n_pasos, t_final)
 
-                e.sendall(pack('i', 0))
-
             elif tipo == 'leer':
                 var = encab['var']
-                e.sendall(pack('i', 0))
 
                 vals_bits = vals[var].tobytes()
                 encabezado = json.dumps({
@@ -54,15 +52,11 @@ def cliente_puertos(dirección, puerto, t_final):
                 tmñ = encab['tamaño']
                 tipo_m = encab['tipo_cont']
                 forma = encab['forma']
-                e.sendall(pack('i', 0))
 
                 val = np.frombuffer(e.recv(tmñ), dtype=tipo_m).reshape(forma)
                 vals[var] = val
 
-                e.sendall(pack('i', 0))
-
             elif tipo == 'cerrar':
-                e.sendall(pack('i', 0))
                 break
 
             else:
@@ -75,10 +69,4 @@ def _recibir_encabezado(e):
 
 
 if __name__ == '__main__':
-    tipo_ciente = sys.argv[1]
-    if tipo_ciente == 'puertos':
-        cliente_puertos(*sys.argv[2:])
-    elif tipo_ciente == 'er':
-        raise NotImplementedError
-    else:
-        raise ValueError(tipo_ciente)
+    cliente_puertos(*sys.argv[1:])
