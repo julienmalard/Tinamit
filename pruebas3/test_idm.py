@@ -16,7 +16,7 @@ class PruebaIDM(TestCase):
         símismo.clientes = []
 
     def _empezar_cliente(símismo, dirección, puerto):
-        cliente= Popen([sys.executable, "ejemplo_cliente.py", dirección, str(puerto), str(t_final)])
+        cliente = Popen([sys.executable, "ejemplo_cliente.py", dirección, str(puerto), str(t_final)])
         símismo.clientes.append(cliente)
         return cliente
 
@@ -27,22 +27,26 @@ class PruebaIDM(TestCase):
             servidor.cerrar()
 
     def test_mandar_datos(símismo):
-        for nmbr_dts, dts in datos.items():
-            with símismo.subTest(datos=nmbr_dts), IDMEnchufes() as servidor:
-                símismo._empezar_cliente(servidor.dirección, servidor.puerto)
-                servidor.activar()
-                servidor.cambiar('var', dts)
+        with IDMEnchufes() as servidor:
+            símismo._empezar_cliente(servidor.dirección, servidor.puerto)
+            servidor.activar()
 
-                recibido = servidor.recibir('var')
-                npt.assert_equal(dts, recibido)
+            for nmbr_dts, dts in datos.items():
+                with símismo.subTest(datos=nmbr_dts):
+                    servidor.cambiar('var', dts)
+
+                    recibido = servidor.recibir('var')
+                    npt.assert_equal(dts, recibido)
 
     def test_recibir_datos(símismo):
-        for nmbr_dts, dts in datos.items():
-            with símismo.subTest(datos=nmbr_dts), IDMEnchufes() as servidor:
-                símismo._empezar_cliente(servidor.dirección, servidor.puerto)
-                servidor.activar()
-                recibido = servidor.recibir(nmbr_dts)
-                npt.assert_equal(dts, recibido)
+        with IDMEnchufes() as servidor:
+            símismo._empezar_cliente(servidor.dirección, servidor.puerto)
+            servidor.activar()
+
+            for nmbr_dts, dts in datos.items():
+                with símismo.subTest(datos=nmbr_dts):
+                    recibido = servidor.recibir(nmbr_dts)
+                    npt.assert_equal(dts, recibido)
 
     def test_incrementar(símismo):
         n_pasos = 5
