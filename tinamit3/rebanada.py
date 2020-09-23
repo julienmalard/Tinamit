@@ -1,44 +1,32 @@
-from typing import List, Dict, Optional, Generator
+from typing import Optional, Generator
 
-import numpy as np
 import xarray as xr
 
 from .resultados import Resultados
+from .tiempo import Tiempo
 from .utils import EJE_TIEMPO
-from .variables import Variable
 
 
 class Rebanada(object):
     def __init__(
             símismo,
             n_pasos: int,
-            variables: List[Variable],
+            tiempo: Tiempo,
             resultados: Resultados,
-            ejes_vars: Optional[Dict[str, np.ndarray]] = None,
             externos: Optional[xr.Dataset] = None
     ):
         símismo.n_pasos = n_pasos
-        símismo.variables = variables
-        símismo.externos = externos
         símismo.resultados = resultados
+        símismo.variables = resultados.variables
+        símismo.externos = externos
 
-        ejes_vars = ejes_vars or {}
-        símismo.eje = np.array(sorted({símismo.n_pasos}.union({x for e in ejes_vars for x in e})))
-        símismo.ejes_vars = {
-            vr: ejes_vars[str(vr)] if str(vr) in ejes_vars else símismo.eje for vr in símismo.variables
-        }
-
-        símismo.vals = {
-            str(vr): xr.DataArray(
-                np.nan,
-                dims=[EJE_TIEMPO, *vr.dims],
-                coords={EJE_TIEMPO: símismo.ejes_vars[str(vr)], **vr.coords}
-            ) for vr in símismo.variables
-        }
+        símismo.eje = tiempo.eje[tiempo.paso + 1, tiempo.paso + 1 + n_pasos]
 
     def recibir(símismo, datos: xr.Dataset):
-        for vr, vl in datos.items():
-            símismo.vals[vr].fillna(vl)
+        if EJE_TIEMPO not in datos.coords:
+            datos = datos.set_coords([EJE_TIEMPO, *datos.coords])
+
+        símismo.resultados.recibir(datos)
 
     def __iter__(símismo) -> Generator["PasoRebanada"]:
         for i in range(símismo.n_pasos):
@@ -48,7 +36,15 @@ class Rebanada(object):
 class PasoRebanada(object):
     def __init__(símismo, rebanada: Rebanada, i: int):
         símismo.rebanada = rebanada
-        símismo.externos = rebanada.externos.isel[EJE_TIEMPO: i]
+        símismo.i = i
+
+        símismo.externos = rebanada.externos.isel[EJE_TIEMPO: i] if rebanada.externos else None
 
     def recibir(símismo, datos: xr.Dataset):
-        símismo.rebanada
+        if EJE_TIEMPO not in datos:
+            datos[EJE_TIEMPO] = [símismo.rebanada.eje[símismo.i]]
+
+        if EJE_TIEMPO not in datos.dims:
+            datos = datos.expand_dims({EJE_TIEMPO: 1})
+
+        símismo.rebanada.recibir(datos)

@@ -1,4 +1,5 @@
-from typing import List
+from numbers import Number
+from typing import Iterable, Dict, Callable, Union
 
 import numpy as np
 import xarray as xr
@@ -9,7 +10,7 @@ from .variables import Variable
 
 
 class Resultados(object):
-    def __init__(símismo, variables: List[Variable], tiempo: Tiempo):
+    def __init__(símismo, variables: Iterable[Variable], tiempo: Tiempo):
         símismo.variables = variables
 
         símismo.valores = xr.Dataset({
@@ -17,7 +18,7 @@ class Resultados(object):
                 np.nan,
                 coords={EJE_TIEMPO: tiempo.eje, **vr.coords},
                 dims=[EJE_TIEMPO, *vr.dims]
-            ) for vr in variables
+            ) for vr in símismo.variables
         })
 
     def recibir(símismo, datos: xr.Dataset):
@@ -30,22 +31,21 @@ class Resultados(object):
 
 
 class Transformador(object):
-    def __init__(símismo, f):
+    def __init__(símismo, f: Callable[[xr.DataArray], xr.DataArray]):
         símismo.f = f
 
-    def __call__(símismo, val):
+    def __call__(símismo, val: xr.DataArray) -> xr.DataArray:
         return símismo.f(val)
 
-    def __add__(símismo, otro):
-        f = otro.f if isinstance(otro, Transformador) else otro
+    def __add__(símismo, otro: Callable):
         return Transformador(f=lambda x: símismo.f(f(x)))
 
 
 class RenombrarEjes(Transformador):
-    def __init__(símismo, dic_nombres):
+    def __init__(símismo, dic_nombres: Dict[str, str]):
         super().__init__(f=lambda x: x.rename_dims(dic_nombres))
 
 
 class FactorConv(Transformador):
-    def __init__(símismo, factor):
+    def __init__(símismo, factor: Number):
         super().__init__(f=lambda x: x * factor)
