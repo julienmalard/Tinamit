@@ -16,23 +16,31 @@ _conv_unids = {
 }
 
 
+class EspecTiempo(object):
+    def __init__(
+            símismo,
+            n_pasos: int,
+            f_inic: Optional[Union[str, datetime, date, pd.Timestamp]] = None
+    ):
+        símismo.n_pasos = n_pasos
+        símismo.f_inic: pd.Timestamp = pd.Timestamp(f_inic or datetime.now())
+
+
 class Tiempo(object):
     def __init__(
             símismo,
             n_pasos: int,
-            unids: Optional[str, "UnidTiempo"],
-            tamaño_paso: int = 1,
-            f_inic: Optional[Union[str, datetime, date]] = None,
+            unids: Union[str, "UnidTiempo"],
+            f_inic: pd.Timestamp
     ):
         símismo.n_pasos = n_pasos
-        símismo.tamaño_paso = tamaño_paso
         símismo.unids: UnidTiempo = unids if isinstance(unids, UnidTiempo) else UnidTiempo[unids]
 
-        símismo.f_inic: pd.Timestamp = pd.Timestamp(f_inic or datetime.now())
-        símismo.eje = pd.date_range(símismo.f_inic, periods=n_pasos, freq=str(tamaño_paso) + símismo.unids.unid_freq)
+        símismo.f_inic = f_inic
+        símismo.eje = pd.date_range(símismo.f_inic, periods=n_pasos, freq=símismo.unids.unid_freq)
         símismo.paso: int = 0
 
-    def incrementar(símismo, n_pasos: int):
+    def incr(símismo, n_pasos: int):
         símismo.paso = min(símismo.paso + n_pasos, símismo.n_pasos)
 
     def finalizar(símismo):
@@ -55,6 +63,7 @@ class UnidTiempo(object):
         try:
             símismo.unid_delta = _conv_unids[símismo.base.lower()]["delta"]
             símismo.unid_freq = _conv_unids[símismo.base.lower()]["freq"]
+            símismo.unid_retallo = str(símismo.n) + símismo.unid_freq
         except KeyError:
             raise ValueError(
                 "Unidad de tiempo `{u}` desconocida. Debe ser una de:\n\t* {l}".format(
@@ -62,20 +71,32 @@ class UnidTiempo(object):
                 )
             )
 
+    def gen_tiempo(símismo, tiempo: Tiempo):
+        n_pasos = conv_tiempo(tiempo.n_pasos, de=tiempo.unids, a=símismo, t=tiempo.f_inic)
+        return Tiempo(
+            n_pasos=n_pasos,
+            unids=símismo,
+            f_inic=tiempo.f_inic
+        )
+
 
 def conv_tiempo(n: int, de: UnidTiempo, a: UnidTiempo, t: pd.Timestamp) -> int:
     dif = t + pd.offsets.DateOffset(**{de.unid_delta: n * de.n}) - t
     return round(getattr(dif, a.unid_delta) / a.n)
 
 
-def calc_tiempo_común(tiempos: List[UnidTiempo]):
+def calc_tiempo_común(tiempos: List[UnidTiempo]) -> UnidTiempo:
     return sorted(tiempos, key=lambda x: conv_tiempo(
         1, de=x, a=UnidTiempo("nanosecundo"), t=pd.Timestamp(2000, 1, 1)
     ))[-1]
 
 
-def gen_tiempo(tiempo: Union[int, Tiempo]) -> Tiempo:
-    if isinstance(tiempo, Tiempo):
-        return tiempo
-    else:
-        return Tiempo(tiempo, unids="día")
+def gen_tiempo(tiempo: Union[int, EspecTiempo], unid_tiempo: Union[str, UnidTiempo]) -> Tiempo:
+    if not isinstance(tiempo, EspecTiempo):
+        tiempo = EspecTiempo(tiempo)
+
+    return Tiempo(
+        n_pasos=tiempo.n_pasos,
+        unids=unid_tiempo,
+        f_inic=tiempo.f_inic
+    )
