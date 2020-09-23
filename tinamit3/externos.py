@@ -1,4 +1,4 @@
-from tinamit.mod import Modelo
+from tinamit3.modelo import Modelo
 
 
 class Externos(Modelo):

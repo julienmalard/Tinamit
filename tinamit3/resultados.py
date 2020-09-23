@@ -1,5 +1,5 @@
 from numbers import Number
-from typing import Iterable, Dict, Callable, Union
+from typing import Iterable, Dict, Callable
 
 import numpy as np
 import xarray as xr

@@ -5,8 +5,8 @@ import numpy as np
 from tinamit3.variables import Variable
 
 
-def gen_variables_SAHYSMOD(archivo: str) -> Dict[str, Variable]:
-    n_polígonos =
+def gen_variables_sahysmod(dic_paráms: Dict[str, np.ndarray]) -> Dict[str, Variable]:
+    n_polígonos = int(dic_paráms['NN_IN'])
     coords = {'polígono': np.arange(n_polígonos)}
     dims = ['polígono']
 

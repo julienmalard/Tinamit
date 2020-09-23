@@ -1,4 +1,5 @@
 from numbers import Number
+from typing import Type
 
 from .contexto import Contexto
 from .hilo import Hilo
@@ -11,8 +12,9 @@ class Clima(Contexto):
         símismo.escenario = escenario
         símismo.fuentes = fuentes
 
-    def hilo(símismo, tiempo: Tiempo) -> Hilo:
-        return HiloClima(tiempo)
+    @property
+    def hilo(símismo) -> Type[Hilo]:
+        return HiloClima
 
 
 class HiloClima(Hilo):

@@ -27,7 +27,7 @@ SOFTWARE.
 
 # !/bin/python
 
-# _ie.py
+# ie.py
 
 import os
 import sys

@@ -79,7 +79,7 @@ class SuperConectado(Modelo):
     def incrementar(símismo, rebanada):
         def incr_mod(mod, d, reb):
             try:
-                mod.incrementar(reb)
+                mod.incr(reb)
             except BaseException as e:
                 d[str(mod)] = e
                 raise

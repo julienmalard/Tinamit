@@ -1,4 +1,5 @@
 import os
+from ast import literal_eval
 from typing import Dict
 
 import pysd
@@ -20,5 +21,17 @@ def gen_mod_pysd(archivo):
         return pysd.read_vensim(archivo) if ext.lower() == '.mdl' else pysd.read_xmile(archivo)
 
 
-def gen_vars_pysd(archivo) -> Dict[str, Variable]:
-    mod = gen_mod_pysd(archivo)
+def decodar(tx: str) -> str:
+    if tx.startswith('b\''):
+        return literal_eval(tx).decode('unicode_escape')
+    return tx
+
+
+def obt_unid_t_mod_pysd(mod: pysd.functions.Model) -> str:
+    doc = mod.components.time_step.__doc__
+    partes = doc.split()
+    return decodar(partes[partes.index('Units:') + 1])
+
+
+def gen_vars_pysd(mod: pysd.functions.Model) -> Dict[str, Variable]:
+    return

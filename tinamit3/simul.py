@@ -2,22 +2,24 @@ from collections import Counter
 from typing import Iterable, List, Dict, Optional
 
 import trio
+import xarray as xr
 
 from .hilo import Hilo
 from .rebanada import Rebanada
 from .resultados import Resultados
-from .tiempo import conv_tiempo, calc_tiempo_común
+from .tiempo import conv_tiempo, UnidTiempo
+from .utils import EJE_TIEMPO
 
 
 class Simulación(object):
-    def __init__(símismo, hilos: Iterable[Hilo], resultados: Resultados):
+    def __init__(símismo, hilos: Iterable[Hilo], unid_tiempo: UnidTiempo, resultados: Dict[str, Resultados]):
         dups = [nmbr for nmbr, i in Counter([str(h) for h in hilos]).items() if i > 1]
         if dups:
             raise ValueError("Nombres de modelos duplicados:\n\t{}".format("\n\t".join(dups)))
 
         símismo.hilos: Dict[str, Hilo] = {str(h): h for h in hilos}
         símismo.resultados = resultados
-        símismo.unid_tiempo = calc_tiempo_común([h.tiempo.unids for h in hilos])
+        símismo.unid_tiempo = unid_tiempo
 
     def simular(símismo):
         return trio.run(símismo.simular_asinc())
@@ -55,12 +57,11 @@ class Simulación(object):
 
                 rebanada = Rebanada(
                     n_pasos=n_pasos_h,
-                    variables=símismo.resultados.variables,
-                    externos=
+                    tiempo=h.tiempo,
+                    resultados=símismo.resultados[str(h)],
+                    externos=símismo._gen_externos(h, n_pasos_h)
                 )
                 grupo.start_soon(h.incr, rebanada)
-
-        return rebanada
 
     async def correr_asinc(símismo):
         t_ant = 0
@@ -79,3 +80,18 @@ class Simulación(object):
     @property
     def quedan(símismo) -> List[Hilo]:
         return [h for h in símismo.hilos.values() if h.tiempo.terminado]
+
+    def _gen_externos(símismo, hilo: Hilo, n_pasos: int) -> xr.Dataset:
+        tiempo = hilo.tiempo
+        f_inic = tiempo.ahora
+        f_final = tiempo.eje[tiempo.paso + n_pasos]
+
+        externos: Dict[str, xr.DataArray] = {}
+        for req in hilo.requísitos:
+            res = símismo.resultados[str(req.hilo)].valores
+            externo = res[str(req.var_fuente)][f_inic, f_final]
+
+            remuestreo = req.transf(externo).resample(indexer={EJE_TIEMPO: tiempo.unids.unid_retallo})
+            externos[str(req.var_recep)] = getattr(remuestreo, req.integ_tiempo)()
+
+        return xr.Dataset(externos)

@@ -1,5 +1,5 @@
 from subprocess import Popen
-from typing import Type, List, Optional, Dict
+from typing import List, Optional, Dict
 
 import xarray as xr
 
@@ -9,18 +9,11 @@ from ..rebanada import Rebanada
 from ..tiempo import Tiempo
 
 
-class ModeloIDM(Modelo):
-
-    @property
-    def simulador(símismo) -> Type[SimulModelo]:
-        return SimulIDM
-
-
 class SimulIDM(SimulModelo):
 
     def __init__(
             símismo,
-            modelo: ModeloIDM,
+            modelo: Modelo,
             tiempo: Tiempo,
             comanda: List,
             args_proceso: Optional[Dict] = None
@@ -38,10 +31,12 @@ class SimulIDM(SimulModelo):
             for var in paso.externos:
                 await símismo.idm.cambiar(var, paso.externos[var])
 
-            await símismo.idm.incrementar(paso.n_pasos)
+            await símismo.idm.incrementar(1)
 
-            egr = {var: await símismo.idm.recibir(var) for var in paso.quiere}
-            paso.recibir(xr.Dataset.from_dataframe(egr))
+            egr = {var: await símismo.idm.recibir(var) for var in paso.rebanada.variables}
+            paso.recibir(xr.Dataset.from_dict(egr))
+
+        await super().incr(rebanada)
 
     async def cerrar(símismo):
         await símismo.idm.cerrar()

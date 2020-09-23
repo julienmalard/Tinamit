@@ -1,7 +1,6 @@
 import json
 import socket
 import sys
-import time
 from struct import unpack, pack
 
 import numpy as np

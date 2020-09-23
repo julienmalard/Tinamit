@@ -5,7 +5,7 @@ import logging
 import websockets
 
 
-def cambiar(simul, pedida):
+async def cambiar(simul, pedida):
     for vr, vl in pedida:
         simul.estab_valor(vr, vl)
 

@@ -1,10 +1,22 @@
-from tinamit3.modelo import Modelo
-from tinamit3.simul import Simulación
+from typing import Type, Dict, Union
+
+from tinamit3.modelo import Modelo, SimulModelo
+from tinamit3.tiempo import UnidTiempo
+from tinamit3.variables import Variable
+
 
 class Clima(Modelo):
 
-    def simulador(símismo):
-        return SimulaciónClima(símismo)
+    def __init__(
+            símismo,
+            unid_tiempo: Union[str, UnidTiempo]
+    ):
+        super().__init__(nombre='Clima', variables=variables, unid_tiempo=unid_tiempo)
 
-class SimulaciónClima(Simulación):
+    @property
+    def hilo(símismo) -> Type[SimulModelo]:
+        return SimulaciónClima
+
+
+class SimulaciónClima(SimulModelo):
     pass

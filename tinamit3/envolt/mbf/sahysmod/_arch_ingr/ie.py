@@ -27,15 +27,16 @@ SOFTWARE.
 
 # !/bin/python
 
-# _ie.py
+# ie.py
 
 import os
 import sys
 
 import numpy as np
+import trio
 from pkg_resources import resource_filename
 
-from ._arch_ingr import _anlzd_sntct
+from tinamit3.envolt.mbf.sahysmod._arch_ingr import _anlzd_sntct
 
 PLANTILLACSV = resource_filename(__name__, 'rcrs/sahysmod.csv.tmpl')
 PLANTILLAINP = resource_filename(__name__, 'rcrs/sahysmod.inp.tmpl')
@@ -87,7 +88,7 @@ paráms_enteros = [
 
 def transponer_paráms(dic_paráms):
     for parám in parámsParaTransponer:
-        matr = dic_paráms[parám]  # type: np.ndarray
+        matr: np.ndarray = dic_paráms[parám]
         matr.transpose()
 
 
@@ -111,7 +112,7 @@ def leer_info_dic_paráms(archivo_fnt):
     plantilla_fnt = PLANTILLACSV if archivo_fnt[-3:] == 'csv' else PLANTILLAINP
 
     # Leer el fuente de ingresos.
-    dic_paráms = _anlzd_sntct.leer_archivo(archivo_fnt, plantilla_fnt, paráms_ent=paráms_enteros)
+    dic_paráms = await _anlzd_sntct.leer_archivo(archivo_fnt, plantilla_fnt, paráms_ent=paráms_enteros)
     transponer_paráms(dic_paráms)  # Transpose parameters that require it.
 
     n_en_s = []
@@ -131,16 +132,16 @@ def leer_info_dic_paráms(archivo_fnt):
     return dic_paráms
 
 
-def escribir_desde_dic_paráms(dic_paráms, archivo_obj, csv=False):
+async def escribir_desde_dic_paráms(dic_paráms, archivo_obj, csv=False):
     plantilla_obj = PLANTILLACSV if csv else PLANTILLAINP
 
-    _anlzd_sntct.escribir_archivo(dic_paráms, archivo_obj, plantilla_obj, paráms_ent=paráms_enteros)
+    await _anlzd_sntct.escribir_archivo(dic_paráms, archivo_obj, plantilla_obj, paráms_ent=paráms_enteros)
 
 
-def central(archivo_fnt, archivo_obj):  # pragma: sin cobertura
+async def central(archivo_fnt, archivo_obj):  # pragma: sin cobertura
     dic_paráms = leer_info_dic_paráms(archivo_fnt=archivo_fnt)
 
-    escribir_desde_dic_paráms(dic_paráms=dic_paráms, archivo_obj=archivo_obj,
+    await escribir_desde_dic_paráms(dic_paráms=dic_paráms, archivo_obj=archivo_obj,
                               csv=archivo_obj[-3:] == 'csv')
     return 0
 
@@ -161,4 +162,4 @@ if __name__ == '__main__':
         archivoFnt = os.path.join(os.getcwd(), "459anew1.inp")
 
     # Ahora, correr la función central.
-    central(archivoFnt, archivoObj)
+    trio.run(central(archivoFnt, archivoObj))
