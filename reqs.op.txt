@@ -1,2 +1,0 @@
-pymc3>=3.4
-theano
