@@ -1,7 +1,6 @@
 language: python
 python:
   - '3.8'
-  - '3.9'
 
 os:
   - linux
@@ -10,7 +9,7 @@ env:
     - TX_BRANCH="master"
 install:
   - pip install poetry
-  - pip install transifex-client sphinx sphinx-int
+  - pip install transifex-client sphinx
   - pip install coveralls codecov
   - poetry install -v
 
