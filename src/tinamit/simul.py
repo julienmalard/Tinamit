@@ -22,7 +22,7 @@ class Simulación(object):
         símismo.unid_tiempo = unid_tiempo
 
     def simular(símismo):
-        return trio.run(símismo.simular_asinc())
+        return trio.run(símismo.simular_asinc)
 
     def iniciar(símismo):
         trio.run(símismo.iniciar_asinc)
@@ -79,7 +79,7 @@ class Simulación(object):
 
     @property
     def quedan(símismo) -> List[Hilo]:
-        return [h for h in símismo.hilos.values() if h.tiempo.terminado]
+        return [h for h in símismo.hilos.values() if not h.tiempo.terminado]
 
     def _gen_externos(símismo, hilo: Hilo, n_pasos: int) -> xr.Dataset:
         tiempo = hilo.tiempo
