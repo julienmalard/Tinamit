@@ -37,7 +37,7 @@ class Tiempo(object):
         símismo.unids: UnidTiempo = unids if isinstance(unids, UnidTiempo) else UnidTiempo[unids]
 
         símismo.f_inic = f_inic
-        símismo.eje = pd.date_range(símismo.f_inic, periods=n_pasos, freq=símismo.unids.unid_freq)
+        símismo.eje = pd.date_range(símismo.f_inic, periods=n_pasos + 1, freq=símismo.unids.unid_freq)
         símismo.paso: int = 0
 
     def incr(símismo, n_pasos: int):

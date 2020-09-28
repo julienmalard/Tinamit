@@ -1,9 +1,14 @@
+from __future__ import annotations
+
 from numbers import Number
+from typing import TYPE_CHECKING
 from typing import Union, Optional
 
-from fnt.tinamit3.modelo import Modelo
-from fnt.tinamit3.resultados import FactorConv, Transformador
-from fnt.tinamit3.variables import Variable
+from tinamit.resultados import FactorConv, Transformador
+from tinamit.variables import Variable
+
+if TYPE_CHECKING:
+    from .modelo import Modelo
 
 
 class ConexiónVars(object):

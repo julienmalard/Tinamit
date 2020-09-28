@@ -22,7 +22,7 @@ class Resultados(object):
         })
 
     def recibir(símismo, datos: xr.Dataset):
-        símismo.valores.update(datos)
+        símismo.valores = símismo.valores.fillna(datos)
 
     @property
     def completo(símismo):

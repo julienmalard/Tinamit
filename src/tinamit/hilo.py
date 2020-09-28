@@ -21,7 +21,7 @@ class Hilo(object):
         símismo.variables = variables
         símismo.requísitos: List[Requísito] = []
 
-    async def iniciar(símismo):
+    async def iniciar(símismo, rebanada: Rebanada):
         pass
 
     async def incr(símismo, rebanada: Rebanada):

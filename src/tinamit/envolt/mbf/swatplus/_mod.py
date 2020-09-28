@@ -2,9 +2,10 @@ import shutil
 import tempfile
 from typing import Type, Optional
 
-from fnt.tinamit3 import SimulIDM
-from fnt.tinamit3.modelo import Modelo, SimulModelo
-from fnt.tinamit3.tiempo import Tiempo
+from rebanada import Rebanada
+from tinamit.envolt.enchufes import SimulIDM
+from tinamit.modelo import Modelo, SimulModelo
+from tinamit.tiempo import Tiempo
 
 
 class ModeloSWATPlus(Modelo):
@@ -38,9 +39,6 @@ class SimulSWATPlus(SimulIDM):
         comanda = [símismo.exe_SWATPlus]
         args_proceso = {"cwd": símismo.direc_trabajo}
         super().__init__(modelo, tiempo, comanda, args_proceso)
-
-    async def iniciar(símismo):
-        return await super().iniciar()
 
     async def cerrar(símismo):
         await super().cerrar()

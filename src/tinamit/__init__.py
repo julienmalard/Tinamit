@@ -1,3 +1,6 @@
-from importlib.metadata import version
+from importlib.metadata import version, PackageNotFoundError
 
-__version__ = version(__name__)
+try:
+    __version__ = version(__name__)
+except PackageNotFoundError:
+    __version__ = None

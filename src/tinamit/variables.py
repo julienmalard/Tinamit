@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Union
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -13,7 +13,7 @@ class Variable(object):
             nombre: str,
             unids: Optional[str],
             ingreso: bool, egreso: bool,
-            modelo: Modelo,
+            modelo: Union[Modelo, str],
             coords: Optional[Dict] = None,
             dims: Optional[List] = None
     ):
@@ -21,6 +21,9 @@ class Variable(object):
         símismo.unids = unids
         símismo.ingreso = ingreso
         símismo.egreso = egreso
-        símismo.modelo = modelo
+        símismo.modelo = str(modelo)
         símismo.coords = coords or {}
         símismo.dims = dims or []
+
+    def __str__(símismo):
+        return símismo.nombre

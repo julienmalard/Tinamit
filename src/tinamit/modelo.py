@@ -90,10 +90,10 @@ class Modelo(object):
 
     def simular(
             símismo,
-            tiempo: Union[int, Tiempo],
+            tiempo: Union[int, EspecTiempo],
             variables: Optional[List[Union[str, Variable]]] = None,
             extras: Optional[Union[Modelo, List[Modelo]]] = None
-    ) -> Simulación:
+    ) -> Dict[str, Resultados]:
 
         return símismo.iniciar(tiempo, variables, extras).simular()
 
@@ -103,7 +103,7 @@ class Modelo(object):
             hilos: List[Hilo]
     ) -> Dict[str, Set[Variable]]:
 
-        variables or list(símismo.variables.values())
+        variables = variables or list(símismo.variables.values())
 
         for h in hilos:
             variables += [req.var_fuente for req in h.requísitos]
@@ -111,11 +111,14 @@ class Modelo(object):
         resueltos = {str(h): set() for h in hilos}
         for vr in variables:
             if isinstance(vr, Variable):
-                hilo = str(vr.modelo)
+                hilo = vr.modelo
             else:
-                vr, hilo = next(
-                    (v, h) for h in hilos for v in h.variables.values() if str(v) == vr
-                )
+                try:
+                    vr, hilo = next(
+                        (v, h) for h in hilos for v in h.variables.values() if str(v) == str(vr)
+                    )
+                except StopIteration:
+                    raise ValueError('Variable {} no encontrado'.format(vr))
 
             resueltos[str(hilo)].add(vr)
         return resueltos

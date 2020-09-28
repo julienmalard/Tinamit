@@ -1,11 +1,12 @@
+import os
 import sys
 from subprocess import Popen
 from unittest import TestCase
 
 import numpy.testing as npt
 
-from pruebas3.ejemplo_cliente import datos
-from fnt.tinamit3 import IDMEnchufes
+from tinamit.idm.puertos import IDMEnchufes
+from .ejemplo_cliente import datos
 
 t_final = 15
 
@@ -16,7 +17,10 @@ class PruebaIDM(TestCase):
         símismo.clientes = []
 
     def _empezar_cliente(símismo, dirección, puerto):
-        cliente = Popen([sys.executable, "ejemplo_cliente.py", dirección, str(puerto), str(t_final)])
+        DIR_BASE = os.path.split(__file__)[0]
+        arch_cliente = os.path.join(DIR_BASE, "ejemplo_cliente.py")
+        cliente = Popen([sys.executable, arch_cliente, dirección, str(puerto), str(t_final)])
+
         símismo.clientes.append(cliente)
         return cliente
 

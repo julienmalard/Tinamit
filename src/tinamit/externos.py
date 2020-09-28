@@ -1,4 +1,4 @@
-from fnt.tinamit3.modelo import Modelo
+from tinamit.modelo import Modelo
 
 
 class Externos(Modelo):

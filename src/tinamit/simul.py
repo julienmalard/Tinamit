@@ -21,7 +21,7 @@ class Simulación(object):
         símismo.resultados = resultados
         símismo.unid_tiempo = unid_tiempo
 
-    def simular(símismo):
+    def simular(símismo) -> Dict[str, Resultados]:
         return trio.run(símismo.simular_asinc)
 
     def iniciar(símismo):
@@ -34,9 +34,9 @@ class Simulación(object):
         trio.run(símismo.correr_asinc)
 
     def cerrar(símismo):
-        trio.run(símismo.cerrar_asinc())
+        trio.run(símismo.cerrar_asinc)
 
-    async def simular_asinc(símismo):
+    async def simular_asinc(símismo) -> Dict[str, Resultados]:
         await símismo.iniciar_asinc()
         await símismo.correr_asinc()
         await símismo.cerrar_asinc()
@@ -46,9 +46,15 @@ class Simulación(object):
     async def iniciar_asinc(símismo):
         async with trio.open_nursery() as grupo:
             for h in símismo.hilos.values():
-                grupo.start_soon(h.iniciar)
+                rebanada = Rebanada(
+                    n_pasos=0,
+                    tiempo=h.tiempo,
+                    resultados=símismo.resultados[str(h)],
+                    externos=símismo._gen_externos(h, 0)
+                )
+                grupo.start_soon(h.iniciar, rebanada)
 
-    async def incr_asinc(símismo, n_pasos: int, hilos: Optional[List[Hilo]] = None):
+    async def incr_asinc(símismo, n_pasos: int, hilos: Optional[Dict[str, Hilo]] = None):
         hilos = hilos or símismo.hilos
 
         async with trio.open_nursery() as grupo:
@@ -67,7 +73,7 @@ class Simulación(object):
         t_ant = 0
         while q := símismo.quedan:
             t_máximo = max(h.próximo_paso() for h in q)
-            próximos = [h for h in q if h.próximo_paso() == t_máximo]
+            próximos = {str(h): h for h in q if h.próximo_paso() == t_máximo}
 
             await símismo.incr_asinc(n_pasos=t_máximo - t_ant, hilos=próximos)
             t_ant = t_máximo

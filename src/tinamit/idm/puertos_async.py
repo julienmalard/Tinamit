@@ -1,3 +1,5 @@
+from typing import Dict
+
 import trio
 import json
 import socket
@@ -8,7 +10,7 @@ import numpy as np
 from .puertos import IDMEnchufes
 
 
-class IDMEnchufesAsinc(IDMEnchufes):
+class IDMEnchufesAsinc(object):
 
     def __init__(símismo, dirección='127.0.0.1', puerto=0):
         símismo.enchufe = enchf = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -24,13 +26,13 @@ class IDMEnchufesAsinc(IDMEnchufes):
         símismo.con, dir_ = símismo.enchufe.accept()
         símismo.activo = True
 
-    def cambiar(símismo, variable, valor):
+    def cambiar(símismo, variable: str, valor):
         MensajeCambiar(símismo.con, variable=variable, valor=valor).mandar()
 
-    def recibir(símismo, variable):
-        return MensajeRecibir(símismo.con, variable).mandar()
+    async def recibir(símismo, variable: str) -> np.ndarray:
+        return await MensajeRecibir(símismo.con, variable).mandar()
 
-    def incrementar(símismo, n_pasos):
+    def incrementar(símismo, n_pasos: int):
         MensajeIncrementar(símismo.con, pasos=n_pasos).mandar()
 
     def finalizar(símismo):
@@ -65,19 +67,19 @@ class Mensaje(object):
     def _encabezado(símismo):
         return {'tipo': símismo.tipo, 'tamaño': len(símismo.contenido) if símismo.contenido else 0}
 
-    def mandar(símismo):
+    async def mandar(símismo):
         encabezado = símismo._encabezado()
         encabezado_bytes = json.dumps(encabezado, ensure_ascii=False).encode('utf8')
 
         # Mandar tmñ encabezado
-        símismo.conex.send_all(pack('i', len(encabezado_bytes)))
+        await símismo.conex.send_all(pack('i', len(encabezado_bytes)))
 
         # Mandar encabezado json
-        símismo.conex.send_all(encabezado_bytes)
+        await símismo.conex.send_all(encabezado_bytes)
 
         # Mandar contenido
         if símismo.contenido:
-            símismo.conex.send_all(símismo.contenido)
+            await símismo.conex.send_all(símismo.contenido)
 
         return símismo._procesar_respuesta()
 
@@ -158,5 +160,5 @@ class Recepción(object):
 
 
 class RecepciónVariable(Recepción):
-    def _procesar(símismo, encabezado, contenido):
+    def _procesar(símismo, encabezado: Dict, contenido: bytes) -> np.ndarray:
         return np.frombuffer(contenido, dtype=encabezado['tipo_cont']).reshape(encabezado['forma'])

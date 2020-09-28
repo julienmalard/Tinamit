@@ -9,6 +9,8 @@ from fnt.tinamit3 import SimulIDM
 from fnt.tinamit3.instalador import obt_exe
 from fnt.tinamit3.modelo import Modelo, SimulModelo
 from fnt.tinamit3.tiempo import Tiempo
+
+from rebanada import Rebanada
 from ._arch_ingr.ie import escribir_desde_dic_paráms, leer_info_dic_paráms
 from ._vars import gen_variables_sahysmod
 
@@ -58,11 +60,11 @@ class SimulSAHYSMODIDM(SimulIDM):
         símismo.dic_paráms = deepcopy(modelo.dic_paráms)
         símismo.dic_paráms['NY'] = math.ceil(símismo.tiempo.n_pasos / 12)
 
-    async def iniciar(símismo):
+    async def iniciar(símismo, rebanada: Rebanada):
         arch_ingreso = os.path.join(símismo.direc_trabajo, 'SAHYSMOD.inp')
 
         await escribir_desde_dic_paráms(símismo.dic_paráms, archivo_obj=arch_ingreso)
-        return await super().iniciar()
+        return await super().iniciar(rebanada)
 
     async def cerrar(símismo):
         await super().cerrar()

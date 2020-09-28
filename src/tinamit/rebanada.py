@@ -20,7 +20,7 @@ class Rebanada(object):
         símismo.variables = resultados.variables
         símismo.externos = externos
 
-        símismo.eje = tiempo.eje[tiempo.paso + 1, tiempo.paso + 1 + n_pasos]
+        símismo.eje = tiempo.eje[tiempo.paso + 1: tiempo.paso + 1 + n_pasos]
 
     def recibir(símismo, datos: xr.Dataset):
         if EJE_TIEMPO not in datos.coords:
@@ -28,7 +28,7 @@ class Rebanada(object):
 
         símismo.resultados.recibir(datos)
 
-    def __iter__(símismo) -> Generator["PasoRebanada"]:
+    def __iter__(símismo) -> Generator["PasoRebanada", None, None]:
         for i in range(símismo.n_pasos):
             yield PasoRebanada(símismo, i)
 

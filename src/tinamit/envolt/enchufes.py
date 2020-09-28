@@ -3,6 +3,7 @@ from typing import List, Optional, Dict
 
 import xarray as xr
 
+from utils import EJE_TIEMPO
 from ..idm.puertos_async import IDMEnchufesAsinc
 from ..modelo import SimulModelo, Modelo
 from ..rebanada import Rebanada
@@ -23,8 +24,14 @@ class SimulIDM(SimulModelo):
         símismo.idm = IDMEnchufesAsinc()
         símismo.proceso = Popen(comanda, **args_proceso)
 
-    async def iniciar(símismo):
+    async def iniciar(símismo, rebanada: Rebanada):
         await símismo.idm.activar()
+
+        rebanada.recibir(xr.Dataset(
+            {
+                str(var): ([EJE_TIEMPO], await símismo.idm.recibir(str(var))) for var in rebanada.variables
+            }, coords={EJE_TIEMPO: rebanada.eje}
+        ))
 
     async def incr(símismo, rebanada: Rebanada):
         for paso in rebanada:

@@ -4,6 +4,11 @@ version = "3.0.0"
 description = "Conexión de modelos socioeconómicos (dinámicas de los sistemas) con modelos biofísicos."
 authors = ["julienmalard <julien.malard@mail.mcgill.ca>"]
 license = "AGPL-3.0-or-later"
+repository = "https://github.com/julienmalard/tinamit"
+documentation = "https://tinamit.rtfd.io"
+packages = [
+    { include = 'tinamit', from = 'src' }
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -20,9 +25,16 @@ python-dateutil = "^2.8.1"
 asks = "^2.4.10"
 tldextract = "^2.2.3"
 semantic-version = "^2.8.5"
+matplotlib = "^3.3.2"
+taqdir = "^2.1.3"
 
 [tool.poetry.dev-dependencies]
+pytest = "^6.0.2"
+pytest-subtests = "^0.3.2"
 
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+[tool.poetry.scripts]
+tinamit = "tinamit.ipa:correr"
