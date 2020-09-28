@@ -14,7 +14,7 @@ install:
   - poetry install -v
 
 script:
-  - poetry run pytest --cov=. -s tests
+  - poetry run pytest --cov="src" -s tests
 after_success:
   - coveralls --rcfile=.coverage
   - codecov

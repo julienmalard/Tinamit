@@ -37,6 +37,5 @@ _temp
 tinamit/EnvolturasBF/SAHYSMOD/*.txt
 */Name0
 
-# Archivos temporarios de Excel #
-#################################
-~$*.xlsx*
+
+.coveragerc
