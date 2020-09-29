@@ -41,8 +41,7 @@ class PruebaModelo(TestCase):
             def __init__(símismo, variables: List[Variable] = None, unid_tiempo="día"):
                 nombre = "prueba"
 
-                variables = variables or []
-                variables += [
+                variables = variables or [
                     Variable("a", ingreso=True, egreso=True, modelo=nombre, unids="m"),
                     Variable("b", ingreso=True, egreso=True, modelo=nombre, unids="m")
                 ]
@@ -118,12 +117,19 @@ class PruebaModelo(TestCase):
         xrt.assert_equal(res, ref)
 
     def test_variables_multidim(símismo):
+        x, y = 10, 5
+        n = 12
         variables = [Variable(
-            "multidim", unids=None, ingreso=True, egreso=True, coords={'x': np.arange(10), 'y': np.arange(5)},
+            "multidim", unids=None, ingreso=True, egreso=True, coords={'x': np.arange(x), 'y': np.arange(y)},
             dims=['x', 'y'],
             modelo='prueba'
         )]
-        res = símismo.clase_modelo(variables=variables).simular(12)['prueba'].valores
+        res = símismo.clase_modelo(variables=variables).simular(n)['prueba'].valores
+        ref = xr.Dataset(
+            {"multidim": ([EJE_TIEMPO, 'x', 'y'], np.repeat(np.arange(n + 1), x * y).reshape((n + 1, x, y)))},
+            coords={EJE_TIEMPO: res[EJE_TIEMPO], 'x': np.arange(x), 'y': np.arange(y)}
+        )
+        xrt.assert_equal(res, ref)
 
 
 class PruebaExterno(TestCase):

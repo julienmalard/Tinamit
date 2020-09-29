@@ -4,7 +4,7 @@ from typing import List, Optional, Dict
 import xarray as xr
 
 from utils import EJE_TIEMPO
-from ..idm.puertos_async import IDMEnchufesAsinc
+from ..idm.puertos_asinc import IDMEnchufesAsinc
 from ..modelo import SimulModelo, Modelo
 from ..rebanada import Rebanada
 from ..tiempo import Tiempo
@@ -21,10 +21,15 @@ class SimulIDM(SimulModelo):
     ):
         super().__init__(modelo, tiempo)
         símismo.comanda = comanda
+        símismo.args_proceso = args_proceso
+
         símismo.idm = IDMEnchufesAsinc()
-        símismo.proceso = Popen(comanda, **args_proceso)
+        símismo.proceso: Optional[Popen] = None
 
     async def iniciar(símismo, rebanada: Rebanada):
+        await símismo.idm.conectar()
+        puerto = símismo.idm.puerto
+        símismo.proceso = Popen(símismo.comanda + ['-p', str(puerto)], **símismo.args_proceso)
         await símismo.idm.activar()
 
         rebanada.recibir(xr.Dataset(
@@ -40,7 +45,7 @@ class SimulIDM(SimulModelo):
 
             await símismo.idm.incrementar(1)
 
-            egr = {var: await símismo.idm.recibir(var) for var in paso.rebanada.variables}
+            egr = {var: await símismo.idm.recibir(str(var)) for var in paso.rebanada.variables}
             paso.recibir(xr.Dataset.from_dict(egr))
 
         await super().incr(rebanada)

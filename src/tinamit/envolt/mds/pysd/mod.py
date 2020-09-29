@@ -49,6 +49,6 @@ class SimulPySD(SimulModelo):
         egr[EJE_TIEMPO] = rebanada.eje
         egr = egr.set_index(EJE_TIEMPO)
 
-        rebanada.recibir(xr.Dataset.from_dataframe(egr))
+        await rebanada.recibir(xr.Dataset.from_dataframe(egr))
 
         await super().incr(rebanada)

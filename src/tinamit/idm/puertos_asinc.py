@@ -1,62 +1,67 @@
-from typing import Dict
-
-import trio
 import json
 import socket
 from struct import pack, unpack
+from typing import Dict, Any, Optional
 
 import numpy as np
-
-from .puertos import IDMEnchufes
+import trio
 
 
 class IDMEnchufesAsinc(object):
 
-    def __init__(símismo, dirección='127.0.0.1', puerto=0):
-        símismo.enchufe = enchf = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        enchf.bind((dirección, puerto))
+    def __init__(símismo, dirección: str = '127.0.0.1', puerto: int = 0):
 
-        símismo.dirección, símismo.puerto = enchf.getsockname()
-        enchf.listen()
-
+        símismo.dirección: str = dirección
+        símismo.puerto: int = puerto
         símismo.activo = False
+        símismo.conectado = False
+
+        símismo.enchufe = None
         símismo.con = None
 
-    def activar(símismo):
-        símismo.con, dir_ = símismo.enchufe.accept()
+    async def conectar(símismo):
+        símismo.enchufe = trio.socket.socket()
+        await símismo.enchufe.bind((símismo.dirección, str(símismo.puerto)))
+
+        símismo.dirección, símismo.puerto = símismo.enchufe.getsockname()
+        símismo.enchufe.listen()
+        símismo.conectado = True
+
+    async def activar(símismo):
+        símismo.con, dir_ = await símismo.enchufe.accept()
         símismo.activo = True
 
-    def cambiar(símismo, variable: str, valor):
-        MensajeCambiar(símismo.con, variable=variable, valor=valor).mandar()
+    async def cambiar(símismo, variable: str, valor):
+        await MensajeCambiar(símismo.con, variable=variable, valor=valor).mandar()
 
     async def recibir(símismo, variable: str) -> np.ndarray:
         return await MensajeRecibir(símismo.con, variable).mandar()
 
-    def incrementar(símismo, n_pasos: int):
-        MensajeIncrementar(símismo.con, pasos=n_pasos).mandar()
+    async def incrementar(símismo, n_pasos: int):
+        await MensajeIncrementar(símismo.con, pasos=n_pasos).mandar()
 
-    def finalizar(símismo):
-        símismo.incrementar(0)
+    async def finalizar(símismo):
+        await símismo.incrementar(0)
 
-    def cerrar(símismo):
-        MensajeCerrar(símismo.con).mandar()
+    async def cerrar(símismo):
+        await MensajeCerrar(símismo.con).mandar()
         try:
             símismo.con.close()
         finally:
             símismo.enchufe.close()
         símismo.activo = False
 
-    def __enter__(símismo):
+    async def __aenter__(símismo):
         return símismo
 
-    def __exit__(símismo, *args):
+    async def __aexit__(símismo, *args):
         if símismo.activo:
-            símismo.cerrar()
+            await símismo.cerrar()
 
 
 class Mensaje(object):
 
-    def __init__(símismo, conex: trio.abc.Stream, contenido: bytes = None):
+    def __init__(símismo, conex, contenido: bytes = None):
         símismo.conex = conex
         símismo.contenido = contenido
 
@@ -64,26 +69,26 @@ class Mensaje(object):
     def tipo(símismo):
         raise NotImplementedError
 
-    def _encabezado(símismo):
+    def _encabezado(símismo) -> Dict:
         return {'tipo': símismo.tipo, 'tamaño': len(símismo.contenido) if símismo.contenido else 0}
 
-    async def mandar(símismo):
+    async def mandar(símismo) -> Any:
         encabezado = símismo._encabezado()
         encabezado_bytes = json.dumps(encabezado, ensure_ascii=False).encode('utf8')
 
         # Mandar tmñ encabezado
-        await símismo.conex.send_all(pack('i', len(encabezado_bytes)))
+        await símismo.conex.send(pack('i', len(encabezado_bytes)))
 
         # Mandar encabezado json
-        await símismo.conex.send_all(encabezado_bytes)
+        await símismo.conex.send(encabezado_bytes)
 
         # Mandar contenido
         if símismo.contenido:
-            await símismo.conex.send_all(símismo.contenido)
+            await símismo.conex.send(símismo.contenido)
 
-        return símismo._procesar_respuesta()
+        return await símismo._procesar_respuesta()
 
-    def _procesar_respuesta(símismo):
+    async def _procesar_respuesta(símismo):
         pass
 
 
@@ -96,7 +101,7 @@ class MensajeCambiar(Mensaje):
 
         super().__init__(enchufe, contenido=símismo.valor.tobytes())
 
-    def _encabezado(símismo):
+    def _encabezado(símismo) -> Dict:
         return {
             'var': símismo.variable,
             'tipo_cont': str(símismo.valor.dtype),
@@ -112,22 +117,22 @@ class MensajeRecibir(Mensaje):
         símismo.variable = variable
         super().__init__(conex)
 
-    def _encabezado(símismo):
+    def _encabezado(símismo) -> Dict:
         return {'var': símismo.variable, **super()._encabezado()}
 
-    def _procesar_respuesta(símismo):
-        return RecepciónVariable(símismo.conex).recibir()
+    async def _procesar_respuesta(símismo) -> Any:
+        return await RecepciónVariable(símismo.conex).recibir()
 
 
 class MensajeIncrementar(Mensaje):
     tipo = 'incr'
 
-    def __init__(símismo, enchufe, pasos):
+    def __init__(símismo, enchufe, pasos: int):
         símismo.pasos = pasos
 
         super().__init__(enchufe)
 
-    def _encabezado(símismo):
+    def _encabezado(símismo) -> Dict:
         encab = super()._encabezado()
 
         encab['n_pasos'] = símismo.pasos
@@ -146,16 +151,17 @@ class Recepción(object):
     def __init__(símismo, con):
         símismo.con = con
 
-    def recibir(símismo):
-        tmñ = unpack('i', símismo.con.recv(4))[0]
+    async def recibir(símismo) -> Any:
+        tmñ = unpack('i', await símismo.con.recv(4))[0]
 
-        encabezado = json.loads(símismo.con.recv(tmñ).decode('utf8'))
+        datos = await símismo.con.recv(tmñ)
+        encabezado = json.loads(datos.decode('utf8'))
 
-        contenido = símismo.con.recv(encabezado['tamaño'])
+        contenido = await símismo.con.recv(encabezado['tamaño'])
 
         return símismo._procesar(encabezado, contenido)
 
-    def _procesar(símismo, encabezado, contenido):
+    def _procesar(símismo, encabezado, contenido) -> Any:
         raise NotImplementedError
 
 
