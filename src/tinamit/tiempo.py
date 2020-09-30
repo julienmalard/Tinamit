@@ -1,18 +1,19 @@
 from datetime import datetime, date
 from typing import Union, Optional, List
 
+import numpy as np
 import pandas as pd
 
 _conv_unids = {
-    "año": {"delta": "years", "freq": "Y"},
-    "mes": {"delta": "months", "freq": "M"},
-    "semana": {"delta": "weeks", "freq": "W"},
-    "día": {"delta": "days", "freq": "D"},
-    "hora": {"delta": "hours", "freq": "H"},
-    "minuto": {"delta": "minutes", "freq": "T"},
-    "secundo": {"delta": "seconds", "freq": "S"},
-    "microsecundo": {"delta": "microseconds", "freq": "U"},
-    "nanosecundo": {"delta": "nanoseconds", "freq": "N"}
+    "año": {"delta": "years", "freq_pd": "Y", "freq_np": "Y"},
+    "mes": {"delta": "months", "freq_pd": "M", "freq_np": "M"},
+    "semana": {"delta": "weeks", "freq_pd": "W", "freq_np": "W"},
+    "día": {"delta": "days", "freq_pd": "D", "freq_np": "D"},
+    "hora": {"delta": "hours", "freq_pd": "H", "freq_np": "h"},
+    "minuto": {"delta": "minutes", "freq_pd": "T", "freq_np": "m"},
+    "secundo": {"delta": "seconds", "freq_pd": "S", "freq_np": "s"},
+    "microsecundo": {"delta": "microseconds", "freq_pd": "U", "freq_np": "us"},
+    "nanosecundo": {"delta": "nanoseconds", "freq_pd": "N", "freq_np": "ns"}
 }
 
 
@@ -37,7 +38,7 @@ class Tiempo(object):
         símismo.unids: UnidTiempo = unids if isinstance(unids, UnidTiempo) else UnidTiempo[unids]
 
         símismo.f_inic = f_inic
-        símismo.eje = pd.date_range(símismo.f_inic, periods=n_pasos + 1, freq=símismo.unids.unid_freq)
+        símismo.eje = pd.date_range(símismo.f_inic, periods=n_pasos + 1, freq=símismo.unids.unid_freq_pd)
         símismo.paso: int = 0
 
     def incr(símismo, n_pasos: int):
@@ -51,6 +52,12 @@ class Tiempo(object):
         return símismo.eje[símismo.paso]
 
     @property
+    def próximo(símismo) -> pd.Timestamp:
+        if símismo.terminado:
+            raise ValueError('Tiempo ya finnalizado.')
+        return símismo.eje[símismo.paso + 1]
+
+    @property
     def terminado(símismo) -> bool:
         return símismo.paso == símismo.n_pasos
 
@@ -61,15 +68,17 @@ class UnidTiempo(object):
         símismo.n = n
 
         try:
-            símismo.unid_delta = _conv_unids[símismo.base.lower()]["delta"]
-            símismo.unid_freq = _conv_unids[símismo.base.lower()]["freq"]
-            símismo.unid_retallo = str(símismo.n) + símismo.unid_freq
+            base = símismo.base.lower()
+            símismo.unid_delta = _conv_unids[base]["delta"]
+            símismo.unid_freq_pd = _conv_unids[base]["freq_pd"]
+            símismo.unid_freq_np = _conv_unids[base]["freq_np"]
         except KeyError:
             raise ValueError(
                 "Unidad de tiempo `{u}` desconocida. Debe ser una de:\n\t* {l}".format(
                     u=símismo.base, l="\n\t* ".join(_conv_unids)
                 )
             )
+        símismo.unid_retallo = str(símismo.n) + símismo.unid_freq_pd
 
     def gen_tiempo(símismo, tiempo: Tiempo):
         n_pasos = conv_tiempo(tiempo.n_pasos, de=tiempo.unids, a=símismo, t=tiempo.f_inic)
@@ -82,7 +91,8 @@ class UnidTiempo(object):
 
 def conv_tiempo(n: int, de: UnidTiempo, a: UnidTiempo, t: pd.Timestamp) -> int:
     dif = t + pd.offsets.DateOffset(**{de.unid_delta: n * de.n}) - t
-    return round(getattr(dif, a.unid_delta) / a.n)
+
+    return round(dif / np.timedelta64(1, a.unid_freq_np) / a.n)
 
 
 def calc_tiempo_común(tiempos: List[UnidTiempo]) -> UnidTiempo:
