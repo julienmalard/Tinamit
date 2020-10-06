@@ -91,11 +91,19 @@ class Modelo(object):
     def simular(
             símismo,
             tiempo: Union[int, EspecTiempo],
-            variables: Optional[List[Union[str, Variable]]] = None,
-            extras: Optional[Union[Modelo, List[Modelo]]] = None
+            variables: Optional[List[Union[str, Variable]]] = None
     ) -> Dict[str, Resultados]:
 
-        return símismo.iniciar(tiempo, variables, extras).simular()
+        return símismo.iniciar(tiempo, variables).simular()
+
+    async def simular_asinc(
+            símismo,
+            tiempo: Union[int, EspecTiempo],
+            variables: Optional[List[Union[str, Variable]]] = None
+    ) -> Dict[str, Resultados]:
+
+        simul = símismo.iniciar(tiempo, variables)
+        return await simul.simular_asinc()
 
     def resolver_variables(
             símismo,
