@@ -27,7 +27,7 @@ class Resultados(object):
     @property
     def completo(símismo):
         faltan = símismo.valores.isnull().any()
-        return not any(faltan[vr] for vr in símismo.variables)
+        return not any(faltan[str(vr)] for vr in símismo.variables)
 
 
 class Transformador(object):
@@ -38,7 +38,7 @@ class Transformador(object):
         return símismo.f(val)
 
     def __add__(símismo, otro: Callable):
-        return Transformador(f=lambda x: símismo.f(f(x)))
+        return Transformador(f=lambda x: símismo.f(otro(x)))
 
 
 class RenombrarEjes(Transformador):

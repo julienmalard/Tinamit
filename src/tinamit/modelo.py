@@ -35,7 +35,7 @@ class Modelo(object):
         símismo.variables = variables
         símismo.unid_tiempo = unid_tiempo if isinstance(unid_tiempo, UnidTiempo) else UnidTiempo(unid_tiempo)
 
-        símismo.conex: Dict[str, ConexiónVars] = {}
+        símismo.conex: List[ConexiónVars] = []
 
     def iniciar(
             símismo,
@@ -77,11 +77,11 @@ class Modelo(object):
 
     def _estab_reqs(símismo, hilos: List[Hilo]):
 
-        for cnx in símismo.conex.values():
+        for cnx in símismo.conex:
             hilo = next(h for h in hilos if h.nombre == cnx.modelo_a)
             hilo_fuente = next(h for h in hilos if h.nombre == cnx.modelo_de)
-            hilo.requiere(Requísito(
-                hilo=hilo_fuente,
+            hilo.requiere(cnx.clase_requísito(
+                hilo_fuente=hilo_fuente,
                 var_fuente=hilo_fuente.variables[cnx.de],
                 var_recep=hilo.variables[cnx.a],
                 transf=cnx.transf,
@@ -130,7 +130,7 @@ class Modelo(object):
             transf: Optional[Union[Transformador, Number]] = None,
             integ_tiempo: str = "mean"
     ):
-        símismo.conex[str(var)] = (ConexiónVars(
+        símismo.conex.append(ConexiónVars(
             de=var_clima, a=var, modelo_de='Clima', modelo_a=str(símismo),
             transf=transf, integ_tiempo=integ_tiempo
         ))
@@ -138,6 +138,9 @@ class Modelo(object):
     @property
     def hilo(símismo) -> Type[SimulModelo]:
         raise NotImplementedError
+
+    def __contains__(símismo, itema):
+        return str(itema) in símismo.variables
 
     def __str__(símismo):
         return símismo.nombre

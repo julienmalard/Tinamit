@@ -1,17 +1,20 @@
 from __future__ import annotations
 
 from numbers import Number
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Type
 from typing import Union, Optional
 
-from tinamit.resultados import FactorConv, Transformador
-from tinamit.variables import Variable
+from .hilo import RequísitoContemporáneo, RequísitoInicPaso, Requísito
+from .resultados import FactorConv, Transformador
+from .variables import Variable
 
 if TYPE_CHECKING:
     from .modelo import Modelo
 
 
 class ConexiónVars(object):
+    clase_requísito: Type[Requísito] = RequísitoInicPaso
+
     def __init__(
             símismo,
             de: Union[str, Variable],
@@ -27,9 +30,13 @@ class ConexiónVars(object):
         símismo.modelo_de = str(modelo_de)
         símismo.modelo_a = str(modelo_a)
 
-        if not isinstance(transf, Transformador):
+        if transf is not None and not isinstance(transf, Transformador):
             transf = FactorConv(transf)
 
         símismo.transf: Optional[Transformador] = transf
 
         símismo.integ_tiempo = integ_tiempo
+
+
+class ConexiónVarsContemporánea(ConexiónVars):
+    clase_requísito = RequísitoContemporáneo

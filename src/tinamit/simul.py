@@ -1,6 +1,8 @@
 from collections import Counter
-from typing import Iterable, List, Dict, Optional
+from typing import Iterable, List, Dict, Optional, Union
 
+import numpy as np
+import pandas as pd
 import trio
 import xarray as xr
 
@@ -54,12 +56,15 @@ class Simulación(object):
                 )
                 grupo.start_soon(h.iniciar, rebanada)
 
-    async def incr_asinc(símismo, n_pasos: int, hilos: Optional[Dict[str, Hilo]] = None):
+    async def incr_asinc(símismo, por: Union[int, pd.Timestamp], hilos: Optional[Dict[str, Hilo]] = None):
         hilos = hilos or símismo.hilos
 
         async with trio.open_nursery() as grupo:
             for h in hilos.values():
-                n_pasos_h = conv_tiempo(n_pasos, de=símismo.unid_tiempo, a=h.tiempo.unids, t=h.tiempo.ahora)
+                if isinstance(por, int):
+                    n_pasos_h = conv_tiempo(por, de=símismo.unid_tiempo, a=h.tiempo.unids, t=h.tiempo.ahora)
+                else:
+                    n_pasos_h = h.tiempo.eje.get_loc(por) - h.tiempo.paso
 
                 rebanada = Rebanada(
                     n_pasos=n_pasos_h,
@@ -70,13 +75,15 @@ class Simulación(object):
                 grupo.start_soon(h.incr, rebanada)
 
     async def correr_asinc(símismo):
-        t_ant = 0
         while q := símismo.quedan:
-            t_máximo = max(h.próximo_paso() for h in q)
-            próximos = {str(h): h for h in q if h.próximo_paso() == t_máximo}
+            próximo_t = {str(h): h.próximo_tiempo() for h in q}
+            f_máxima = max(próximo_t.values())
+            próximos = {str(h): h for h in q if próximo_t[str(h)] == f_máxima and próximo_t[str(h)] != h.tiempo.ahora}
 
-            await símismo.incr_asinc(n_pasos=t_máximo - t_ant, hilos=próximos)
-            t_ant = t_máximo
+            if not próximos:
+                raise RuntimeError('Iteración infinita entre {}'.format(', '.join([str(h) for h in q])))
+
+            await símismo.incr_asinc(por=f_máxima, hilos=próximos)
 
     async def cerrar_asinc(símismo):
         async with trio.open_nursery() as grupo:
@@ -89,15 +96,18 @@ class Simulación(object):
 
     def _gen_externos(símismo, hilo: Hilo, n_pasos: int) -> xr.Dataset:
         tiempo = hilo.tiempo
-        f_inic = tiempo.ahora
-        f_final = tiempo.eje[tiempo.paso + n_pasos]
 
         externos: Dict[str, xr.DataArray] = {}
         for req in hilo.requísitos:
-            res = símismo.resultados[str(req.hilo)].valores
-            externo = res[str(req.var_fuente)][f_inic, f_final]
 
-            remuestreo = req.transf(externo).resample(indexer={EJE_TIEMPO: tiempo.unids.unid_retallo})
+            res = símismo.resultados[str(req.hilo_fuente)].valores
+            f_inic, f_final = req.recortar(tiempo, n_pasos=n_pasos, res=res)
+            máscara = np.logical_and(res[EJE_TIEMPO] > f_inic, res[EJE_TIEMPO] <= f_final)
+            externo = res[str(req.var_fuente)].loc[máscara]
+
+            if req.transf:
+                externo = req.transf(externo)
+            remuestreo = externo.resample(indexer={EJE_TIEMPO: tiempo.unids.unid_retallo})
             externos[str(req.var_recep)] = getattr(remuestreo, req.integ_tiempo)()
 
         return xr.Dataset(externos)

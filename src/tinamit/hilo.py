@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
+
+import pandas as pd
+import xarray as xr
 
 from .rebanada import Rebanada
 from .resultados import Transformador
@@ -16,7 +19,7 @@ class Hilo(object):
             tiempo: Tiempo,
             variables: Dict[str, Variable]
     ):
-        símismo.nombre = nombre
+        símismo.nombre = nombre.replace('.', '_')
         símismo.tiempo = unid_tiempo.gen_tiempo(tiempo)
         símismo.variables = variables
         símismo.requísitos: List[Requísito] = []
@@ -33,15 +36,15 @@ class Hilo(object):
     def requiere(símismo, requísito: Requísito):
         símismo.requísitos.append(requísito)
 
-    def próximo_paso(símismo) -> int:
+    def próximo_tiempo(símismo) -> pd.Timestamp:
         return min([
-            símismo.tiempo.n_pasos,
-            *[h.paso + 1 for h in símismo.dependencias]
+            símismo.tiempo.eje[-1],
+            *[r.próximo_tiempo() for r in símismo.requísitos]
         ])
 
     @property
     def dependencias(símismo):
-        return {r.hilo for r in símismo.requísitos}
+        return {r.hilo_fuente for r in símismo.requísitos}
 
     def __str__(símismo):
         return símismo.nombre
@@ -50,14 +53,53 @@ class Hilo(object):
 class Requísito(object):
     def __init__(
             símismo,
-            hilo: Hilo,
+            hilo_fuente: Hilo,
             var_fuente: Variable,
             var_recep: Variable,
             transf: Optional[Transformador] = None,
             integ_tiempo: str = "sum"
     ):
-        símismo.hilo = hilo
+        símismo.hilo_fuente = hilo_fuente
         símismo.var_fuente = var_fuente
         símismo.var_recep = var_recep
         símismo.transf = transf
         símismo.integ_tiempo = integ_tiempo
+
+        símismo.anterior: Optional[pd.Timestamp] = None
+
+    def recortar(símismo, tiempo: Tiempo, n_pasos: int, res: xr.DataArray) -> Tuple[pd.Timestamp, pd.Timestamp]:
+        raise NotImplementedError
+
+    def próximo_tiempo(símismo) -> pd.Timestamp:
+        raise NotImplementedError
+
+
+class RequísitoInicPaso(Requísito):
+    def recortar(símismo, tiempo: Tiempo, n_pasos: int, res: xr.DataArray) -> Tuple[pd.Timestamp, pd.Timestamp]:
+        f_inic = símismo.anterior or tiempo.eje[0] - pd.Timedelta(tiempo.unids.unid_retallo)
+        f_final = tiempo.ahora + pd.Timedelta(str(tiempo.unids.n * max(0, n_pasos - 1)) + tiempo.unids.unid_freq_pd)
+        if n_pasos:
+            símismo.anterior = f_final
+        return f_inic, f_final
+
+    def próximo_tiempo(símismo) -> pd.Timestamp:
+        hilo = símismo.hilo_fuente
+        return hilo.tiempo.ahora + 1 * hilo.tiempo.ahora.freq
+
+
+class RequísitoContemporáneo(Requísito):
+    def recortar(símismo, tiempo: Tiempo, n_pasos: int, res: xr.DataArray) -> Tuple[pd.Timestamp, pd.Timestamp]:
+        f_inic = tiempo.ahora if símismo.anterior else tiempo.eje[0] - pd.Timedelta(tiempo.unids.unid_retallo)
+        f_final = tiempo.eje[tiempo.paso + n_pasos]
+        símismo.anterior = f_final
+        return f_inic, f_final
+
+    def próximo_tiempo(símismo) -> pd.Timestamp:
+        return símismo.hilo_fuente.tiempo.ahora
+
+
+class RequísitoInicial(Requísito):
+    def recortar(símismo, tiempo: Tiempo, n_pasos: int, res: xr.DataArray) -> Tuple[pd.Timestamp, pd.Timestamp]:
+        f_inic = tiempo.eje[0]
+        f_final = tiempo.eje[-1]
+        return f_inic, f_final

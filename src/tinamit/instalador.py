@@ -113,7 +113,7 @@ class VersiónDescargable(sv.Version):
         if forzar or not os.path.isfile(arch_local):
 
             r = await asks.get(símismo.url, stream=True)
-            with open(arch_local, 'ab') as d:
+            async with await trio.open_file(arch_local, 'ab') as d:
                 async with r.body:
                     async for pedazobits in r.body:
                         d.write(pedazobits)
