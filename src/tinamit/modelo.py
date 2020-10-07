@@ -4,7 +4,7 @@ from numbers import Number
 from typing import Type, Union, Dict, Optional, List, Set
 
 from .conex import ConexiónVars
-from .hilo import Hilo, Requísito
+from .hilo import Hilo
 from .instalador import Instalador
 from .rebanada import Rebanada
 from .resultados import Resultados, Transformador
@@ -35,24 +35,15 @@ class Modelo(object):
         símismo.variables = variables
         símismo.unid_tiempo = unid_tiempo if isinstance(unid_tiempo, UnidTiempo) else UnidTiempo(unid_tiempo)
 
-        símismo.conex: List[ConexiónVars] = []
-
     def iniciar(
             símismo,
             tiempo: Union[int, EspecTiempo],
             variables: Optional[List[Union[str, Variable]]] = None,
-            extras: Optional[Union[Modelo, List[Modelo]]] = None
     ):
 
         tiempo = gen_tiempo(tiempo, símismo.unid_tiempo)
-        extras = extras or []
-        extras = extras if isinstance(extras, list) else [extras]
 
-        otros_hilos = [h for e in extras for h in e.hilos(tiempo, extras)]
-        mis_hilos = símismo.hilos(tiempo, extras)
-
-        hilos: List[Hilo] = [*mis_hilos, *otros_hilos]
-        símismo._estab_reqs(hilos)
+        hilos = símismo.hilos(tiempo)
 
         dic_variables = símismo.resolver_variables(variables, hilos)
 
@@ -64,29 +55,9 @@ class Modelo(object):
             }
         )
 
-    def hilos(símismo, tiempo: Tiempo, otros: List[Hilo]) -> List[Hilo]:
+    def hilos(símismo, tiempo: Tiempo) -> List[Hilo]:
         hilo = símismo.hilo(símismo, tiempo)
-        for h in otros:
-            if h.nombre == 'Externos':
-                vars_externos = {ll: v for ll, v in h.variables.items() if ll in hilo.variables}
-                for ll, v in vars_externos.items():
-                    hilo.requiere(
-                        Requísito(h, var_fuente=v, var_recep=v, transf=None)
-                    )
         return [hilo]
-
-    def _estab_reqs(símismo, hilos: List[Hilo]):
-
-        for cnx in símismo.conex:
-            hilo = next(h for h in hilos if h.nombre == cnx.modelo_a)
-            hilo_fuente = next(h for h in hilos if h.nombre == cnx.modelo_de)
-            hilo.requiere(cnx.clase_requísito(
-                hilo_fuente=hilo_fuente,
-                var_fuente=hilo_fuente.variables[cnx.de],
-                var_recep=hilo.variables[cnx.a],
-                transf=cnx.transf,
-                integ_tiempo=cnx.integ_tiempo
-            ))
 
     def simular(
             símismo,

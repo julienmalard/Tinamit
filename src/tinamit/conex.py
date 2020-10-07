@@ -22,7 +22,7 @@ class ConexiónVars(object):
             modelo_de: Union[str, Modelo],
             modelo_a: Union[str, Modelo],
             transf: Optional[Union[Transformador, Number]] = None,
-            integ_tiempo: str = "mean"
+            integ_tiempo: str = "last"
     ):
         símismo.de = str(de)
         símismo.a = str(a)

@@ -2,8 +2,7 @@ from numbers import Number
 from typing import Type
 
 from tinamit.hilo import Hilo
-from tinamit.modelo import Modelo
-from .extras import Extra
+from .extras import Extra, ModeloExtra
 
 
 class Clima(Extra):
@@ -12,15 +11,16 @@ class Clima(Extra):
             lat: Number, long: Number,
             elev: Number,
             escenario: str = '8.5',
-            fuentes=None
+            fuentes=None,
+            nombre: str = 'clima'
     ):
         símismo.coords = (lat, long, elev)
         símismo.escenario = escenario
         símismo.fuentes = fuentes
-        super().__init__(modelos=ModeloClima())
+        super().__init__(nombre, modelos=ModeloClima())
 
 
-class ModeloClima(Modelo):
+class ModeloClima(ModeloExtra):
 
     @property
     def hilo(símismo) -> Type[Hilo]:

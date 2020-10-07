@@ -1,17 +1,22 @@
+from typing import Type
+
 from tinamit.hilo import Hilo
-from tinamit.modelo import Modelo
-from .extras import Extra
+from .extras import Extra, ModeloExtra
 
 
 class Externos(Extra):
-    def __init__(símismo, iniciales=None, temporales=None):
+    def __init__(
+            símismo,
+            iniciales=None,
+            temporales=None,
+            nombre: str = 'externos'
+    ):
         símismo.iniciales = iniciales or []
         símismo.temporales = temporales or {}
-        super().__init__(ModeloExterno())
+        super().__init__(nombre, modelos=ModeloExterno())
 
 
-class ModeloExterno(Modelo):
-
+class ModeloExterno(ModeloExtra):
     @property
     def hilo(símismo) -> Type[Hilo]:
         return HiloExterno

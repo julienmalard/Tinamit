@@ -97,17 +97,19 @@ class Simulación(object):
     def _gen_externos(símismo, hilo: Hilo, n_pasos: int) -> xr.Dataset:
         tiempo = hilo.tiempo
 
-        externos: Dict[str, xr.DataArray] = {}
+        externos: xr.Dataset = xr.Dataset(
+            {
+                str(req.var_recep): xr.DataArray(
+                    np.nan,
+                    coords={EJE_TIEMPO: tiempo.eje[tiempo.paso: tiempo.paso + n_pasos], **req.var_recep.coords},
+                    dims=[EJE_TIEMPO, *req.var_recep.dims]
+                ) for req in hilo.requísitos
+            }
+        )
         for req in hilo.requísitos:
+            res = símismo.resultados[str(req.hilo_fuente)].valores[str(req.var_fuente)]
+            externo = req.recortar(tiempo, n_pasos=n_pasos, res=res)
+            externos = externos.fillna(externo)
 
-            res = símismo.resultados[str(req.hilo_fuente)].valores
-            f_inic, f_final = req.recortar(tiempo, n_pasos=n_pasos, res=res)
-            máscara = np.logical_and(res[EJE_TIEMPO] > f_inic, res[EJE_TIEMPO] <= f_final)
-            externo = res[str(req.var_fuente)].loc[máscara]
-
-            if req.transf:
-                externo = req.transf(externo)
-            remuestreo = externo.resample(indexer={EJE_TIEMPO: tiempo.unids.unid_retallo})
-            externos[str(req.var_recep)] = getattr(remuestreo, req.integ_tiempo)()
-
-        return xr.Dataset(externos)
+        externos = externos.ffill(EJE_TIEMPO)
+        return externos

@@ -16,10 +16,12 @@ class Conectado(Modelo):
             variables={f'{m}.{vr}': vr for m in símismo.modelos.values() for vr in m.variables.values()},
             unid_tiempo=calc_tiempo_común([m.unid_tiempo for m in símismo.modelos.values()])
         )
-        símismo.conex += símismo._validar_conex(conex or [])
 
-    def hilos(símismo, tiempo: Tiempo, otros: List[Hilo]):
-        hilos = [h for mod in símismo.modelos.values() for h in mod.hilos(tiempo, otros)]
+        símismo.conex: List[ConexiónVars] = símismo._validar_conex(conex or [])
+
+    def hilos(símismo, tiempo: Tiempo):
+        hilos = [h for mod in símismo.modelos.values() for h in mod.hilos(tiempo)]
+        símismo._estab_reqs(hilos)
         return hilos
 
     @property
@@ -35,6 +37,18 @@ class Conectado(Modelo):
                 if v not in símismo.modelos[m]:
                     raise ValueError('Variable {v} no existe en modelo {m}'.format(v=v, m=m))
         return conex
+
+    def _estab_reqs(símismo, hilos: List[Hilo]):
+        for cnx in símismo.conex:
+            hilo = next(h for h in hilos if h.nombre == cnx.modelo_a)
+            hilo_fuente = next(h for h in hilos if h.nombre == cnx.modelo_de)
+            hilo.requiere(cnx.clase_requísito(
+                hilo_fuente=hilo_fuente,
+                var_fuente=hilo_fuente.variables[cnx.de],
+                var_recep=hilo.variables[cnx.a],
+                transf=cnx.transf,
+                integ_tiempo=cnx.integ_tiempo
+            ))
 
 
 class SimulConectado(SimulModelo):
