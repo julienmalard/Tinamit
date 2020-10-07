@@ -46,8 +46,8 @@ class TestConectado(unittest.TestCase):
 
         for ll, mod in símismo.modelos.items():
             with símismo.subTest(mod=ll):
-                egr1 = mod.simular(100, vars_interés=list(mod.variables))
-                egr2 = mod.simular(100, vars_interés=list(mod.variables))
+                egr1 = mod.simular(100)
+                egr2 = mod.simular(100)
 
                 for r1, r2 in zip(egr1, egr2):
                     xrt.assert_equal(r1.vals, r2.vals)
@@ -77,7 +77,7 @@ class TestConectado(unittest.TestCase):
             with símismo.subTest(mod=ll):
                 t_final = 10
                 ref = {
-                    'lago_%i' % i: mod.simular(t_final, extern={'Nivel lago inicial': i}, vars_interés='Lago')
+                    'lago_%i' % i: mod.simular(t_final)
                     for i in [50, 2000]
                 }
 
@@ -131,7 +131,7 @@ class Test3ModelosConectados(unittest.TestCase):
         )
 
         # Simular
-        res = conectado.simular(10, vars_interés=[mod_1.variables['Aleatorio'], mod_3.variables['Vacío']])
+        res = conectado.simular(10)
 
         # Comprobar que los resultados son iguales.
         xrt.assert_equal(res['modelo 1']['Aleatorio'].vals, res['modelo 3']['Vacío'].vals)
@@ -161,7 +161,7 @@ class Test3ModelosConectados(unittest.TestCase):
         )
 
         # Correr la simulación
-        res = conectado.simular(10, vars_interés=[mod_1.variables['Aleatorio'], mod_3.variables['Vacío']])
+        res = conectado.simular(10)
 
         # Verificar que los resultados sean iguales.
         xrt.assert_equal(res['sub']['modelo 1']['Aleatorio'].vals, res['modelo 3']['Vacío'].vals)

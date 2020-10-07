@@ -70,7 +70,5 @@ class PruebaExtrema(object):
     def verificar(símismo, t=2500, **argsll):
         valores = símismo.si.gen_valores(símismo.modelo)
         for val in valores:
-            res = símismo.modelo.simular(
-                t=t, nombre='prueba', extern=val, vars_interés=símismo.entonces.variables, **argsll
-            )
+            res = símismo.modelo.simular(**argsll)
             símismo.entonces.verificar(res)

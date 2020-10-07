@@ -33,11 +33,7 @@ class TestCalibModelo(unittest.TestCase):
         }
         cls.mod = gen_mds(arch_mds)
 
-        simul = cls.mod.simular(
-            t=100,
-            extern=cls.paráms,
-            vars_interés=['Individuos Suceptibles', 'Individuos Infectados', 'Individuos Resistentes']
-        )
+        simul = cls.mod.simular()
         datos = {ll: v[:, 0] for ll, v in simul.a_dic().items()}  # Para hacer: dimensiones múltiples,
         cls.datos = FuenteDic(
             datos, 'Datos', fechas=np.arange(101)
@@ -69,10 +65,7 @@ class TestCalibModeloEspacial(unittest.TestCase):
             }
         }
         cls.mod = gen_mds(arch_mds)
-        simul = SimuladorGeog(cls.mod).simular(
-            t=100, vals_geog=cls.paráms,
-            vars_interés=['Individuos Suceptibles', 'Individuos Infectados', 'Individuos Resistentes']
-        )
+        simul = SimuladorGeog(cls.mod).simular()
 
         # Para hacer: dimensiones múltiples,
         datos = {

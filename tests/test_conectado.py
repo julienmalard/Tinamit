@@ -8,7 +8,7 @@ import xarray as xr
 import xarray.testing as xrt
 
 from tinamit.conectado import Conectado
-from tinamit.conex import ConexiónVars
+from tinamit.conex import ConexiónVars, ConexiónVarsContemporánea
 from tinamit.modelo import Modelo, SimulModelo
 from tinamit.rebanada import Rebanada
 from tinamit.tiempo import UnidTiempo, EspecTiempo
@@ -37,7 +37,7 @@ class PruebaConectado(unittest.TestCase):
                 datos_egr = {str(vr): ([EJE_TIEMPO], vals) for vr in rebanada.variables if vr.egreso}
                 datos_ingr = {
                     str(vr): (
-                        [EJE_TIEMPO], rebanada.externos[str(vr)].loc[{EJE_TIEMPO: rebanada.eje}]
+                        [EJE_TIEMPO], rebanada.externos[str(vr)]
                         if str(vr) in rebanada.externos else np.full(rebanada.n_pasos, 0)
                     )
                     for vr in rebanada.variables if vr.ingreso
@@ -76,12 +76,15 @@ class PruebaConectado(unittest.TestCase):
         res_mod2 = res['mod2'].valores
 
         eje_t = pd.date_range(f_inic, periods=11, freq='D')
+        ref_i = np.roll(np.arange(11.), 1)
+        ref_i[0] = 0
+
         ref_mod1 = xr.Dataset(
             {'e': ([EJE_TIEMPO], np.arange(11.)), 'i': ([EJE_TIEMPO], np.full(11, 0))},
             coords={EJE_TIEMPO: eje_t}
         )
         ref_mod2 = xr.Dataset(
-            {vr: ([EJE_TIEMPO], np.arange(11.)) for vr in ['i', 'e']},
+            {'e': ([EJE_TIEMPO], np.arange(11.)), 'i': ([EJE_TIEMPO], ref_i)},
             coords={EJE_TIEMPO: eje_t}
         )
 
@@ -95,21 +98,29 @@ class PruebaConectado(unittest.TestCase):
             'conectado',
             modelos=[mod1, mod2],
             conex=[
-                ConexiónVars("e", "i", mod1, mod2),
+                ConexiónVarsContemporánea("e", "i", mod1, mod2),
                 ConexiónVars("e", "i", mod2, mod1)
             ]
         )
         f_inic = '2000-01-01'
         res = conectado.simular(EspecTiempo(10, f_inic=f_inic))
 
+        ref_i = np.roll(np.arange(11.), 1)
+        ref_i[0] = 0
+
         eje_t = pd.date_range(f_inic, periods=11, freq='D')
-        ref = xr.Dataset(
+        ref_1 = xr.Dataset(
+            {'e': ([EJE_TIEMPO], np.arange(11.)), 'i': ([EJE_TIEMPO], ref_i)},
+            coords={EJE_TIEMPO: eje_t}
+        )
+
+        ref_2 = xr.Dataset(
             {vr: ([EJE_TIEMPO], np.arange(11.)) for vr in ['i', 'e']},
             coords={EJE_TIEMPO: eje_t}
         )
 
-        xrt.assert_equal(res['mod1'].valores, ref)
-        xrt.assert_equal(res['mod2'].valores, ref)
+        xrt.assert_equal(res['mod1'].valores, ref_1)
+        xrt.assert_equal(res['mod2'].valores, ref_2)
 
     def test_unid_tiempos_distintos(símismo):
         mod_día = símismo.clase_modelo('día', unid_tiempo='día')
@@ -123,10 +134,26 @@ class PruebaConectado(unittest.TestCase):
                 ConexiónVars("e", "i", mod_mes, mod_día)
             ]
         )
-        res = conectado.simular(EspecTiempo(11, f_inic='2000-01-01'))
+        f_inic = '2000-01-01'
+        res = conectado.simular(EspecTiempo(12, f_inic=f_inic))
 
-        xrt.assert_equal(res['mes'].valores, ref_mes)
+        d_por_m = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        ref_i_día = np.zeros(367)
+        ref_i_día[1:] = np.repeat(np.arange(12), d_por_m)
+        ref_día = xr.Dataset(
+            {'e': ([EJE_TIEMPO], np.arange(367.)), 'i': ([EJE_TIEMPO], ref_i_día)},
+            coords={EJE_TIEMPO: pd.date_range(f_inic, periods=367, freq='D')}
+        )
+
+        ref_i_mes = np.zeros(13)
+        ref_i_mes[2:] = np.cumsum(d_por_m[:-1])
+        ref_mes = xr.Dataset(
+            {'e': ([EJE_TIEMPO], np.arange(13.)), 'i': ([EJE_TIEMPO], ref_i_mes)},
+            coords={EJE_TIEMPO: pd.date_range(f_inic, periods=13, freq='MS')}
+        )
+
         xrt.assert_equal(res['día'].valores, ref_día)
+        xrt.assert_equal(res['mes'].valores, ref_mes)
 
     def test_unid_tiempo_usuario(símismo):
         mod_mes = símismo.clase_modelo('mes', unid_tiempo='mes')

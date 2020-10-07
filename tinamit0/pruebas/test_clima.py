@@ -26,7 +26,7 @@ class TestClima(TestCase):
         mod = ModeloPrueba(unid_tiempo='días')
         mod.conectar_var_clima('Vacío', 'بارش', conv=1, combin='suma')
 
-        res = mod.simular(EspecTiempo(100, f_inic=símismo.fechas[0]), clima=símismo.clima, vars_interés='Vacío')
+        res = mod.simular(EspecTiempo(100, f_inic=símismo.fechas[0]))
 
         npt.assert_equal(res['Vacío'].vals[:, 0], símismo.lluvia[:101])
 
@@ -34,7 +34,7 @@ class TestClima(TestCase):
         mod = ModeloPrueba(unid_tiempo='mes')
         mod.conectar_var_clima('Vacío', 'بارش', conv=1, combin='suma')
 
-        res = mod.simular(EspecTiempo(2, f_inic=símismo.fechas[0]), clima=símismo.clima, vars_interés='Vacío')
+        res = mod.simular(EspecTiempo(2, f_inic=símismo.fechas[0]))
 
         ref = np.array([
             np.sum(x) for x in
@@ -46,7 +46,7 @@ class TestClima(TestCase):
         mod = ModeloPrueba(unid_tiempo='año')
         mod.conectar_var_clima('Vacío', 'بارش', conv=1, combin='suma')
 
-        res = mod.simular(EspecTiempo(2, f_inic=símismo.fechas[0]), clima=símismo.clima, vars_interés='Vacío')
+        res = mod.simular(EspecTiempo(2, f_inic=símismo.fechas[0]))
 
         ref = np.array([
             np.sum(x) for x in
@@ -81,7 +81,7 @@ class TestClimaBFs(TestCase):
             'ingreso_paso': ref_paso
         }
 
-        res = mod.simular(EspecTiempo(30 * 12 - 1, f_inic=símismo.fechas[0]), clima=símismo.clima)
+        res = mod.simular(EspecTiempo(30 * 12 - 1, f_inic=símismo.fechas[0]))
 
         for prb, ref in pruebas.items():
             if prb == 'ingreso_paso':
@@ -118,7 +118,7 @@ class TestClimaBFs(TestCase):
             'ingreso_bloque': ref_bloques
         }
 
-        res = mod.simular(EspecTiempo(23, f_inic=símismo.fechas[0]), clima=símismo.clima)
+        res = mod.simular(EspecTiempo(23, f_inic=símismo.fechas[0]))
         for prb, ref in pruebas.items():
             if prb in ['ingreso_paso', 'ingreso_bloque']:
                 continue

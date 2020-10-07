@@ -27,6 +27,7 @@ tldextract = "^2.2.3"
 semantic-version = "^2.8.5"
 matplotlib = "^3.3.2"
 taqdir = "^2.1.3"
+Bottleneck = "^1.3.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0.2"

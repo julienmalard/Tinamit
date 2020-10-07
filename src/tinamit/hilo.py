@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Callable, Union
 
 import numpy as np
 import pandas as pd
@@ -60,21 +60,32 @@ class Requísito(object):
             var_fuente: Variable,
             var_recep: Variable,
             transf: Optional[Transformador],
-            integ_tiempo: str
+            integ_tiempo: Union[str, Callable]
     ):
         símismo.hilo_fuente = hilo_fuente
         símismo.var_fuente = var_fuente
         símismo.var_recep = var_recep
         símismo.transf = transf
-        símismo.integ_tiempo = integ_tiempo
+
+        if isinstance(integ_tiempo, str):
+            símismo.f_integ = lambda x: getattr(x, integ_tiempo)()
+        else:
+            símismo.f_integ = lambda x: x.reduce(integ_tiempo)
 
         símismo.anterior: Optional[pd.Timestamp] = None
 
     def recortar(símismo, tiempo: Tiempo, n_pasos: int, res: xr.DataArray) -> xr.DataArray:
-        remuestreo = res.resample(indexer={EJE_TIEMPO: tiempo.unids.unid_retallo})
-        res = getattr(remuestreo, símismo.integ_tiempo)().rename(str(símismo.var_recep))
+        eje = tiempo.eje[tiempo.paso: tiempo.paso + max(1, n_pasos)]
+        res = res.assign_coords({EJE_TIEMPO: [next(x for x in eje if f <= x) for f in res[EJE_TIEMPO]]})
+        remuestreo = res.groupby(EJE_TIEMPO)
+        integrado = símismo.f_integ(remuestreo).rename(str(símismo.var_recep))
 
-        return símismo.transf(res) if símismo.transf else res
+        return símismo.transf(integrado) if símismo.transf else integrado
+
+    @staticmethod
+    def _ajustar_eje_t(res: xr.DataArray, dif: pd.DateOffset):
+        # Necesario por incompatibilidad entre xarray[np.datetime64] y pd.DateOffset
+        res[EJE_TIEMPO] = (pd.to_datetime(list(res[EJE_TIEMPO].values)) + dif).to_numpy()
 
     def próximo_tiempo(símismo) -> pd.Timestamp:
         raise NotImplementedError
@@ -82,8 +93,8 @@ class Requísito(object):
 
 class RequísitoInicPaso(Requísito):
     def recortar(símismo, tiempo: Tiempo, n_pasos: int, res: xr.DataArray) -> xr.DataArray:
-        f_inic = símismo.anterior or tiempo.eje[0] - pd.Timedelta(tiempo.unids.unid_retallo)
-        f_final = tiempo.ahora + pd.Timedelta(str(tiempo.unids.n * max(0, n_pasos - 1)) + tiempo.unids.unid_freq_pd)
+        f_inic = símismo.anterior if símismo.anterior else tiempo.eje[0] - tiempo.unids.retallo
+        f_final = tiempo.eje[tiempo.paso + max(n_pasos-1, 0)]
         máscara = np.logical_and(res[EJE_TIEMPO] > f_inic, res[EJE_TIEMPO] <= f_final)
         res = res.loc[máscara]
 
@@ -99,11 +110,11 @@ class RequísitoInicPaso(Requísito):
 
 class RequísitoContemporáneo(Requísito):
     def recortar(símismo, tiempo: Tiempo, n_pasos: int, res: xr.DataArray) -> xr.DataArray:
-        f_inic = tiempo.ahora if símismo.anterior else tiempo.eje[0] - pd.Timedelta(tiempo.unids.unid_retallo)
+        f_inic = tiempo.ahora if símismo.anterior else tiempo.eje[0] - tiempo.unids.retallo
         f_final = tiempo.eje[tiempo.paso + n_pasos]
         máscara = np.logical_and(res[EJE_TIEMPO] > f_inic, res[EJE_TIEMPO] <= f_final)
         res = res.loc[máscara]
-        res[EJE_TIEMPO] = res[EJE_TIEMPO] - pd.Timedelta(tiempo.unids.unid_retallo)
+        símismo._ajustar_eje_t(res, -tiempo.unids.retallo)
 
         símismo.anterior = f_final
         return super().recortar(tiempo, n_pasos, res=res)

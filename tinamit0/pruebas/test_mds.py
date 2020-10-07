@@ -128,9 +128,7 @@ class TestSimular(unittest.TestCase):
         cls.res = {}
         for nmb, mod in cls.modelos.items():
             # Correr el modelo para 200 pasos, guardando los egresos del variable "Lago"
-            cls.res[nmb] = mod.simular(
-                t=200, extern=cls.vals_inic, vars_interés=['Lago', 'Aleatorio', 'Nivel lago inicial']
-            )
+            cls.res[nmb] = mod.simular()
 
     def test_cmb_vals_inic_constante_en_resultados(símismo):
         """
@@ -183,9 +181,7 @@ class TestSimular(unittest.TestCase):
         for nmb, mod in símismo.modelos.items():
             with símismo.subTest(mod=nmb):
                 res_paso_1 = símismo.res[nmb]['Lago'].vals.values[::2]
-                res_paso_2 = mod.simular(
-                    t=EspecTiempo(100, tmñ_paso=2), extern=símismo.vals_inic, vars_interés=['Lago']
-                )['Lago'].vals.values
+                res_paso_2 = mod.simular()['Lago'].vals.values
                 npt.assert_allclose(res_paso_2, res_paso_1, rtol=0.001)
 
     def test_simul_guardar_cada_2(símismo):
@@ -193,9 +189,7 @@ class TestSimular(unittest.TestCase):
         for nmb, mod in símismo.modelos.items():
             with símismo.subTest(mod=nmb):
                 res_paso_1 = símismo.res[nmb]['Lago'].vals.values[::2]
-                res_paso_2 = mod.simular(
-                    t=EspecTiempo(200, guardar_cada=2), extern=símismo.vals_inic, vars_interés=['Lago']
-                )['Lago'].vals.values
+                res_paso_2 = mod.simular()['Lago'].vals.values
                 npt.assert_equal(res_paso_1, res_paso_2)
 
     @classmethod
@@ -213,9 +207,9 @@ class TestSimulExpres(unittest.TestCase):
         for nmb, mod in generar_modelos_prueba().items():
             with símismo.subTest(mod=nmb):
                 extern = pd.DataFrame({'Lluvia': np.arange(10)}, index=np.arange(10))
-                res_exprés = mod.simular(12, extern=extern)
+                res_exprés = mod.simular(12)
                 mod._correr_hasta_final = lambda: None
-                res_por_paso = mod.simular(12, extern=extern)
+                res_por_paso = mod.simular(12)
 
                 for res_var_exp, res_var_paso in zip(res_exprés, res_por_paso):
                     xrt.assert_equal(res_var_exp.vals, res_var_paso.vals)

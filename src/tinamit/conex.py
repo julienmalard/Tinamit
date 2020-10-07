@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from numbers import Number
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Type, Callable
 from typing import Union, Optional
 
 from .hilo import RequísitoContemporáneo, RequísitoInicPaso, Requísito
@@ -22,7 +22,7 @@ class ConexiónVars(object):
             modelo_de: Union[str, Modelo],
             modelo_a: Union[str, Modelo],
             transf: Optional[Union[Transformador, Number]] = None,
-            integ_tiempo: str = "last"
+            integ_tiempo: Union[str, Callable] = "last"
     ):
         símismo.de = str(de)
         símismo.a = str(a)

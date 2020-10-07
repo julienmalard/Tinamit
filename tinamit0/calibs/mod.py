@@ -135,9 +135,7 @@ class _ModSpotPy(object):
         return sp.parameter.generate(símismo.paráms)
 
     def simulation(símismo, x):
-        res = símismo.mod.simular(
-            t=símismo.t_final, vars_interés=símismo.vars_interés, extern=dict(zip(símismo.nombres_paráms, x))
-        )
+        res = símismo.mod.simular()
         m_res = np.array([res[v].vals for v in símismo.vars_interés]).T
 
         return ((m_res - símismo.mu_obs) / símismo.sg_obs).T.ravel()

@@ -81,6 +81,7 @@ class UnidTiempo(object):
                 )
             )
         símismo.unid_retallo = str(símismo.n) + símismo.unid_freq_pd
+        símismo.retallo = pd.DateOffset(**{símismo.unid_delta: símismo.n})
 
     def gen_tiempo(símismo, tiempo: Tiempo):
         n_pasos = conv_tiempo(tiempo.n_pasos, de=tiempo.unids, a=símismo, t=tiempo.f_inic)

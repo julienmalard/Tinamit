@@ -14,45 +14,6 @@ from tinamit.mod import OpsSimulGrupoCombin, OpsSimulGrupo
 _ = trads.trad
 
 
-class TestSimular(unittest.TestCase):
-    def test_simular_t_int(símismo):
-        mod = ModeloPrueba()
-        res = mod.simular(t=10)['Escala']
-        npt.assert_equal(res.vals, np.arange(11).reshape((11, 1)))
-
-    def test_simular_t_fecha(símismo):
-        mod = ModeloPrueba(unid_tiempo='días')
-        res = mod.simular(t=EspecTiempo(10, '2001-01-01'))['Escala']
-        pdt.assert_index_equal(
-            res.vals.indexes[_('fecha')], pd.date_range('2001-01-01', periods=11), check_names=False
-        )
-
-    def test_paso(símismo):
-        mod = ModeloPrueba()
-        res = mod.simular(t=EspecTiempo(10, tmñ_paso=2))['Escala']
-        npt.assert_equal(res.vals, np.arange(21, step=2).reshape((11, 1)))
-        npt.assert_equal(res.vals.indexes[_('fecha')], np.arange(21, step=2))
-
-    def test_paso_inválido(símismo):
-        mod = ModeloPrueba()
-        with símismo.assertRaises(ValueError):
-            mod.simular(EspecTiempo(100, tmñ_paso=0))
-
-    def test_guardar_cada(símismo):
-        mod = ModeloPrueba()
-        res = mod.simular(t=EspecTiempo(10, guardar_cada=2))['Escala']
-        npt.assert_equal(res.vals, np.arange(11, step=2).reshape((6, 1)))
-        npt.assert_equal(res.t.eje(), np.arange(11, step=2))
-
-    def test_guardar_cada_con_fecha(símismo):
-        mod = ModeloPrueba(unid_tiempo='días')
-        res = mod.simular(t=EspecTiempo(10, '2001-01-01', guardar_cada=2))['Escala']
-        npt.assert_equal(res.vals, np.arange(11, step=2).reshape((6, 1)))
-        pdt.assert_index_equal(
-            res.vals.indexes[_('fecha')], pd.date_range('2001-01-01', periods=6, freq='2D'), check_names=False
-        )
-
-
 class TestSimularGrupo(unittest.TestCase):
 
     def test_simular_grupo(símismo):
@@ -93,7 +54,7 @@ class TestSimulConDatos(unittest.TestCase):
     @staticmethod
     def _simul_con_extern(extern, ref, var_ref='Vacío', fecha=True):
         f_inic = '2000-01-01' if fecha else None
-        res = ModeloPrueba(unid_tiempo='días').simular(t=EspecTiempo(10, f_inic=f_inic), extern=extern)
+        res = ModeloPrueba(unid_tiempo='días').simular()
         npt.assert_equal(res[var_ref].vals.values.reshape(np.array(ref).shape), ref)
 
     def test_t_fecha_extern_núm(símismo):
@@ -133,4 +94,4 @@ class TestSimulConDatos(unittest.TestCase):
     def test_t_numérico_extern_fecha(símismo):
         extern = pd.DataFrame(data={'Vacío': np.arange(4)}, index=pd.date_range('2000-01-02', '2000-01-05'))
         with símismo.assertRaises(TypeError):
-            ModeloPrueba(unid_tiempo='días').simular(t=EspecTiempo(10), extern=extern)
+            ModeloPrueba(unid_tiempo='días').simular()
