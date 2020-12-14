@@ -166,7 +166,21 @@ class PruebaConectado(unittest.TestCase):
             ]
         )
 
-        res = conectado.simular(EspecTiempo(11, f_inic='2000-01-01'))
+        f_inic = '2000-01-01'
+        res = conectado.simular(EspecTiempo(5, f_inic=f_inic))
+
+        ref_i_mes = np.zeros(5 * 3 + 1)
+        ref_i_mes[1:] = np.repeat(np.arange(5),3)
+        ref_mes = xr.Dataset(
+            {'e': ([EJE_TIEMPO], np.arange(16)), 'i': ([EJE_TIEMPO], ref_i_mes)},
+            coords={EJE_TIEMPO: pd.date_range(f_inic, periods=16, freq='MS')}
+        )
+        ref_i_est = np.zeros(5 + 1)
+        ref_i_est[1:] = np.arange(5) * 3
+        ref_estacional = xr.Dataset(
+            {'e': ([EJE_TIEMPO], np.arange(6)), 'i': ([EJE_TIEMPO], ref_i_est)},
+            coords={EJE_TIEMPO: pd.date_range(f_inic, periods=6, freq='3MS')}
+        )
 
         xrt.assert_equal(res['mes'].valores, ref_mes)
         xrt.assert_equal(res['estación'].valores, ref_estacional)
