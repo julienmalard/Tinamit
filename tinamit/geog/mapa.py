@@ -256,7 +256,7 @@ class FormaDinámica(Forma):
         if símismo.unidades is not None:
             fig.colorbar(cpick, label=símismo.unidades, ax=ejes, **args_color)
         else:
-            fig.colorbar(cpick, ax=ejes, extend='both')
+            fig.colorbar(cpick, ax=ejes, **args_color)
 
     @staticmethod
     def _resolver_colores(colores):
