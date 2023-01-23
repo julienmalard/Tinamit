@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "tinamit"
+version = "0.1.0"
+description = "Conexión de modelos socioeconómicos (dinámicas de los sistemas, multi-agentes) con modelos biofísicos."
+authors = ["Julien Jean Malard-Adam <julien.malard@mail.mcgill.ca>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^1.24.1"
+pandas = "^1.5.3"
+xarray = "^2023.1.0"
+chardet = "^5.1.0"
+matplotlib = "^3.6.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -2,7 +2,7 @@ import os
 
 import matplotlib.pyplot as dib
 import numpy as np
-import shapefile as sf
+import shapefifile as sf
 from matplotlib import colors, cm
 from matplotlib.axes import Axes
 from matplotlib.backends.backend_agg import FigureCanvasAgg as TelaFigura

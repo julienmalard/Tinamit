@@ -29,7 +29,7 @@ setup(
     license='GNU GPL 3',
     author='Julien Jean Malard',
     author_email='julien.malard@mail.mcgill.ca',
-    description='Conexión de modelos socioeconómicos (dinámicas de los sistemas) con modelos biofísicos.',
+    description='',
     long_description=leer('README.rst'),
 
     install_requires=[
