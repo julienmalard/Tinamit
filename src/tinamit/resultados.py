@@ -1,5 +1,4 @@
-from numbers import Number
-from typing import Iterable, Dict, Callable
+from typing import Iterable
 
 import numpy as np
 import xarray as xr
@@ -29,23 +28,3 @@ class Resultados(object):
         faltan = símismo.valores.isnull().any()
         return not any(faltan[str(vr)] for vr in símismo.variables)
 
-
-class Transformador(object):
-    def __init__(símismo, f: Callable[[xr.DataArray], xr.DataArray]):
-        símismo.f = f
-
-    def __call__(símismo, val: xr.DataArray) -> xr.DataArray:
-        return símismo.f(val)
-
-    def __add__(símismo, otro: Callable):
-        return Transformador(f=lambda x: símismo.f(otro(x)))
-
-
-class RenombrarEjes(Transformador):
-    def __init__(símismo, dic_nombres: Dict[str, str]):
-        super().__init__(f=lambda x: x.rename_dims(dic_nombres))
-
-
-class FactorConv(Transformador):
-    def __init__(símismo, factor: Number):
-        super().__init__(f=lambda x: x * factor)

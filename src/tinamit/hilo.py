@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from utils import EJE_TIEMPO
+from .utils import EJE_TIEMPO
 from .rebanada import Rebanada
 from .resultados import Transformador
 from .tiempo import Tiempo, UnidTiempo
